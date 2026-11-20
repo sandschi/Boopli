@@ -1,29 +1,80 @@
 import { LitElement, html, css, nothing } from "lit";
+import { subscribe } from "./api";
+import "./boopli-today";
+import "./boopli-chores";
+import { sharedStyles } from "./styles";
+import type { Hass, Snapshot } from "./types";
 
-/** The slice of Home Assistant's `hass` object that the panel uses. */
-interface Hass {
-  user?: { name?: string };
-  states: Record<string, unknown>;
-}
+type Tab = "today" | "chores";
 
 /**
  * Boopli sidebar panel. Home Assistant creates this element and keeps
  * setting `hass` on it with live state, plus `narrow` on small screens.
  *
- * M1: a "hello" screen that proves the panel loads and receives live data.
+ * It subscribes once to the integration and re-renders on every update.
  */
 export class BoopliPanel extends LitElement {
   static properties = {
     hass: { attribute: false },
     narrow: { type: Boolean },
+    _snapshot: { state: true },
+    _tab: { state: true },
+    _nowMs: { state: true },
+    _connectionError: { state: true },
   };
 
   declare hass?: Hass;
   declare narrow: boolean;
+  declare _snapshot?: Snapshot;
+  declare _tab: Tab;
+  declare _nowMs: number;
+  declare _connectionError: string;
+
+  private _unsub?: () => void;
+  private _subscribing = false;
+  private _timer?: number;
 
   constructor() {
     super();
     this.narrow = false;
+    this._tab = "today";
+    this._nowMs = Date.now();
+    this._connectionError = "";
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    // Keep relative times ("in 2h") fresh.
+    this._timer = window.setInterval(() => (this._nowMs = Date.now()), 30_000);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.clearInterval(this._timer);
+    this._unsub?.();
+    this._unsub = undefined;
+    this._subscribing = false;
+  }
+
+  protected updated(): void {
+    if (this.hass && !this._unsub && !this._subscribing) {
+      this._subscribing = true;
+      subscribe(this.hass, (snapshot) => {
+        this._snapshot = snapshot;
+        this._nowMs = Date.now();
+        this._connectionError = "";
+      })
+        .then((unsub) => {
+          this._unsub = unsub;
+        })
+        .catch(() => {
+          this._connectionError =
+            "Could not reach Boopli. Is the integration set up?";
+        })
+        .finally(() => {
+          this._subscribing = false;
+        });
+    }
   }
 
   private _toggleSidebar(): void {
@@ -34,9 +85,6 @@ export class BoopliPanel extends LitElement {
   }
 
   render() {
-    const name = this.hass?.user?.name ?? "there";
-    const entityCount = this.hass ? Object.keys(this.hass.states).length : 0;
-
     return html`
       <header>
         ${this.narrow
@@ -49,71 +97,92 @@ export class BoopliPanel extends LitElement {
             </button>`
           : nothing}
         <h1>Boopli</h1>
+        <nav>
+          ${(["today", "chores"] as Tab[]).map(
+            (tab) => html`<button
+              class="tab ${this._tab === tab ? "on" : ""}"
+              @click=${() => (this._tab = tab)}
+            >
+              ${tab === "today" ? "Today" : "Chores"}
+            </button>`
+          )}
+        </nav>
       </header>
       <main>
-        <div class="pet" aria-hidden="true">🌱</div>
-        <h2>Hello, ${name}!</h2>
-        <p>Boopli is installed and the panel is alive.</p>
-        <p class="muted">
-          Live link to Home Assistant: ${entityCount} entities visible.
-        </p>
+        ${this._connectionError
+          ? html`<p class="error">${this._connectionError}</p>`
+          : this._tab === "today"
+            ? html`<boopli-today
+                .hass=${this.hass}
+                .snapshot=${this._snapshot}
+                .nowMs=${this._nowMs}
+              ></boopli-today>`
+            : html`<boopli-chores
+                .hass=${this.hass}
+                .snapshot=${this._snapshot}
+                .nowMs=${this._nowMs}
+              ></boopli-chores>`}
       </main>
     `;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      min-height: 100%;
-      box-sizing: border-box;
-      background: var(--primary-background-color, #111);
-      color: var(--primary-text-color, #fff);
-      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
-    }
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      height: 56px;
-      padding: 0 16px;
-      background: var(--app-header-background-color, var(--primary-color));
-      color: var(--app-header-text-color, #fff);
-    }
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 500;
-    }
-    .menu {
-      background: none;
-      border: 0;
-      color: inherit;
-      font-size: 22px;
-      cursor: pointer;
-      padding: 8px;
-    }
-    main {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 48px 16px;
-      text-align: center;
-    }
-    .pet {
-      font-size: 72px;
-      line-height: 1;
-    }
-    h2 {
-      margin: 16px 0 8px;
-      font-weight: 500;
-    }
-    p {
-      margin: 8px 0;
-    }
-    .muted {
-      color: var(--secondary-text-color, #aaa);
-      font-size: 14px;
-    }
-  `;
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        min-height: 100%;
+        background: var(--primary-background-color);
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 56px;
+        padding: 0 16px;
+        background: var(--app-header-background-color, var(--primary-color));
+        color: var(--app-header-text-color, #fff);
+      }
+      header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        margin-right: 8px;
+      }
+      header .menu {
+        background: none;
+        border: 0;
+        color: inherit;
+        font-size: 22px;
+        padding: 8px;
+        min-height: 0;
+      }
+      nav {
+        display: flex;
+        gap: 4px;
+      }
+      .tab {
+        background: none;
+        border: 0;
+        border-radius: 10px;
+        color: inherit;
+        opacity: 0.75;
+        padding: 8px 14px;
+      }
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .tab.on {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.2);
+        font-weight: 500;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 16px 48px;
+      }
+    `,
+  ];
 }
 
 customElements.define("boopli-panel", BoopliPanel);

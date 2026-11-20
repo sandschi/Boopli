@@ -6,10 +6,15 @@ import json
 import logging
 from pathlib import Path
 
+import voluptuous as vol
+
 from homeassistant.components import frontend, panel_custom
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ServiceValidationError
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .const import (
     DATA_STATIC_REGISTERED,
@@ -21,11 +26,30 @@ from .const import (
     PANEL_URL_PATH,
     STATIC_URL,
 )
+from .engine import WHERE_HOME, WHERE_VALUES
+from .manager import BoopliError, BoopliManager
+from .websocket_api import async_register_websocket_commands
 
 _LOGGER = logging.getLogger(__name__)
 
+CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
+
 FRONTEND_DIR = Path(__file__).parent / "frontend"
 MANIFEST = Path(__file__).parent / "manifest.json"
+
+SERVICE_ADD_TASK = "add_task"
+SERVICE_START_CHORE = "start_chore"
+SERVICE_COMPLETE_STEP = "complete_step"
+SERVICE_DELETE_CHORE = "delete_chore"
+
+ADD_TASK_SCHEMA = vol.Schema(
+    {
+        vol.Required("title"): cv.string,
+        vol.Optional("steps"): vol.All(cv.ensure_list, [cv.string]),
+        vol.Optional("where", default=WHERE_HOME): vol.In(WHERE_VALUES),
+    }
+)
+CHORE_SCHEMA = vol.Schema({vol.Required("chore"): cv.string})
 
 
 def _read_version() -> str:
@@ -33,8 +57,62 @@ def _read_version() -> str:
     return json.loads(MANIFEST.read_text(encoding="utf-8")).get("version", "0")
 
 
+def _manager(hass: HomeAssistant) -> BoopliManager:
+    manager: BoopliManager | None = hass.data.get(DOMAIN)
+    if manager is None:
+        raise ServiceValidationError("Boopli is not set up.")
+    return manager
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the websocket commands and services (once per Home Assistant run)."""
+    async_register_websocket_commands(hass)
+
+    async def add_task(call: ServiceCall) -> None:
+        try:
+            _manager(hass).add_task(
+                call.data["title"], call.data.get("steps"), call.data["where"]
+            )
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def start_chore(call: ServiceCall) -> None:
+        try:
+            _manager(hass).start_chore(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def complete_step(call: ServiceCall) -> None:
+        try:
+            _manager(hass).complete_active_step_for(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def delete_chore(call: ServiceCall) -> None:
+        try:
+            _manager(hass).delete_chore(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    hass.services.async_register(DOMAIN, SERVICE_ADD_TASK, add_task, ADD_TASK_SCHEMA)
+    hass.services.async_register(
+        DOMAIN, SERVICE_START_CHORE, start_chore, CHORE_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_COMPLETE_STEP, complete_step, CHORE_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_DELETE_CHORE, delete_chore, CHORE_SCHEMA
+    )
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Boopli: serve the panel bundle and add the sidebar entry."""
+    """Set up Boopli: load the data, serve the panel and add the sidebar entry."""
+    manager = BoopliManager(hass)
+    await manager.async_load()
+    hass.data[DOMAIN] = manager
+
     if not hass.data.get(DATA_STATIC_REGISTERED):
         await hass.http.async_register_static_paths(
             [StaticPathConfig(STATIC_URL, str(FRONTEND_DIR), cache_headers=False)]
@@ -52,11 +130,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         embed_iframe=False,
         require_admin=False,
     )
-    _LOGGER.debug("Boopli panel registered at /%s", PANEL_URL_PATH)
+    _LOGGER.debug("Boopli set up; panel registered at /%s", PANEL_URL_PATH)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Remove the sidebar entry when the integration is unloaded."""
+    """Stop the timer and remove the sidebar entry."""
+    manager: BoopliManager | None = hass.data.pop(DOMAIN, None)
+    if manager:
+        manager.async_shutdown()
     frontend.async_remove_panel(hass, PANEL_URL_PATH)
     return True

@@ -6,5 +6,63 @@
         "description": "Boopli adds a chore and task companion to your sidebar. Everything stays inside your Home Assistant, and nothing is sent anywhere else."
       }
     }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Home only",
+        "anywhere": "Anywhere"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Add task",
+      "description": "Creates a one-off task and starts it right away. It disappears once it is done.",
+      "fields": {
+        "title": {
+          "name": "Title",
+          "description": "What needs doing."
+        },
+        "steps": {
+          "name": "Steps",
+          "description": "Optional smaller steps. Without steps, the task has one step called like the title."
+        },
+        "where": {
+          "name": "Where",
+          "description": "Whether the task only makes sense at home or anywhere."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Start chore",
+      "description": "Starts a chore now, for example an on-demand chore like laundry.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Complete step",
+      "description": "Marks the step that is waiting for you in a chore as done.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Delete chore",
+      "description": "Deletes a chore and anything in progress for it.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    }
   }
 }
