@@ -1,0 +1,10 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Boopli",
+        "description": "Boopli adds a chore and task companion to your sidebar. Everything stays inside your Home Assistant, and nothing is sent anywhere else."
+      }
+    }
+  }
+}

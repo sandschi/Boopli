@@ -1,0 +1,16 @@
+# Local dev Home Assistant config (created by Docker, never committed)
+.devconfig/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Frontend tooling (the built bundle in custom_components/boopli/frontend IS committed)
+frontend/node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

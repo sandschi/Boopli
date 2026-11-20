@@ -1,0 +1,14 @@
+{
+  "domain": "boopli",
+  "name": "Boopli",
+  "codeowners": ["@sandschi"],
+  "config_flow": true,
+  "dependencies": ["http", "frontend", "panel_custom"],
+  "documentation": "https://github.com/sandschi/Boopli",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/sandschi/Boopli/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.0.1"
+}
