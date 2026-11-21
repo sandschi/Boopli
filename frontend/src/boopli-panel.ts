@@ -3,6 +3,7 @@ import { saveChore, saveSetup, subscribe, taskAdd } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
+import "./boopli-home";
 import "./boopli-wizard";
 import "./boopli-breakdown";
 import type { BreakdownResult } from "./boopli-breakdown";
@@ -10,11 +11,12 @@ import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
 
-type Tab = "today" | "chores" | "settings";
+type Tab = "today" | "chores" | "home" | "settings";
 
 const TAB_LABELS: Record<Tab, string> = {
   today: "Today",
   chores: "Chores",
+  home: "My home",
   settings: "Settings",
 };
 
@@ -67,7 +69,7 @@ export class BoopliPanel extends LitElement {
   declare _breakdownError: string;
   declare _choresRequest: { id: number; draft: ChoreDraft; schedule: boolean } | null;
   private _requestId = 0;
-  declare _dirty: { settings: boolean; chore: boolean };
+  declare _dirty: { settings: boolean; chore: boolean; home: boolean };
   declare _confirm: ((choice: Choice) => void) | null;
 
   private _unsub?: () => void;
@@ -85,18 +87,18 @@ export class BoopliPanel extends LitElement {
     this._breakdown = null;
     this._breakdownError = "";
     this._choresRequest = null;
-    this._dirty = { settings: false, chore: false };
+    this._dirty = { settings: false, chore: false, home: false };
     this._confirm = null;
   }
 
   // --- unsaved changes ---------------------------------------------------------
 
   private get _hasUnsaved(): boolean {
-    return this._dirty.settings || this._dirty.chore;
+    return this._dirty.settings || this._dirty.chore || this._dirty.home;
   }
 
   private _onDirty = (e: Event): void => {
-    const { source, dirty } = (e as CustomEvent<{ source: "settings" | "chore"; dirty: boolean }>).detail;
+    const { source, dirty } = (e as CustomEvent<{ source: "settings" | "chore" | "home"; dirty: boolean }>).detail;
     this._dirty = { ...this._dirty, [source]: dirty };
   };
 
@@ -108,7 +110,14 @@ export class BoopliPanel extends LitElement {
   };
 
   private _editable(): Editable | null {
-    const tag = this._tab === "settings" ? "boopli-settings" : this._tab === "chores" ? "boopli-chores" : "";
+    const tag =
+      this._tab === "settings"
+        ? "boopli-settings"
+        : this._tab === "chores"
+          ? "boopli-chores"
+          : this._tab === "home"
+            ? "boopli-home"
+            : "";
     return tag ? (this.renderRoot.querySelector(tag) as Editable | null) : null;
   }
 
@@ -127,7 +136,7 @@ export class BoopliPanel extends LitElement {
     } else {
       editor?.discard?.();
     }
-    this._dirty = { settings: false, chore: false };
+    this._dirty = { settings: false, chore: false, home: false };
     return true;
   }
 
@@ -287,6 +296,7 @@ export class BoopliPanel extends LitElement {
     const unsaved: Record<Tab, boolean> = {
       today: false,
       chores: this._dirty.chore,
+      home: this._dirty.home,
       settings: this._dirty.settings,
     };
     return html`
@@ -310,6 +320,7 @@ export class BoopliPanel extends LitElement {
       <main
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
+        @open-home=${() => this._selectTab("home")}
         @dirty-change=${this._onDirty}
       >
         ${this._connectionError
@@ -342,7 +353,9 @@ export class BoopliPanel extends LitElement {
                       .openRequest=${this._choresRequest}
                       @request-handled=${() => (this._choresRequest = null)}
                     ></boopli-chores>`
-                  : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
+                  : this._tab === "home"
+                    ? html`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>`
+                    : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>
       ${this._renderConfirm()}
     `;

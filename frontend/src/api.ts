@@ -1,10 +1,12 @@
 import type {
   AiAnswer,
+  AiPreview,
   AiQuestion,
   AiStep,
   AlarmDeviceCfg,
   ChoreDraft,
   Hass,
+  Home,
   LightCfg,
   PhoneCfg,
   Repeat,
@@ -24,15 +26,16 @@ export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 
-/** What the AI still wants to know about a task before it splits it. */
+/** `rooms` are the ids of the rooms whose notes go along; leave it out to let Boopli guess. */
 export function aiQuestions(
   hass: Hass,
   task: string,
   kind: "now" | "recurring",
   answers: AiAnswer[],
-  notes = ""
+  notes = "",
+  rooms?: string[]
 ): Promise<{ enough: boolean; questions: AiQuestion[] }> {
-  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes });
+  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes, ...(rooms ? { rooms } : {}) });
 }
 
 /** The task split into small steps by the AI. */
@@ -41,9 +44,56 @@ export function aiSteps(
   task: string,
   kind: "now" | "recurring",
   answers: AiAnswer[],
-  notes = ""
+  notes = "",
+  rooms?: string[]
 ): Promise<{ steps: AiStep[]; summary: string }> {
-  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes });
+  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, ...(rooms ? { rooms } : {}) });
+}
+
+/** Exactly what the first request to the AI would contain. */
+export function aiPreview(
+  hass: Hass,
+  task: string,
+  kind: "now" | "recurring",
+  answers: AiAnswer[],
+  notes: string,
+  rooms: string[]
+): Promise<AiPreview> {
+  return hass.callWS({ type: "boopli/ai_preview", task, kind, answers, notes, rooms });
+}
+
+/** The ids of the rooms a task is about, guessed from its words. */
+export async function roomsGuess(hass: Hass, task: string): Promise<string[]> {
+  const result = await hass.callWS<{ rooms: string[] }>({ type: "boopli/rooms_guess", task });
+  return result.rooms;
+}
+
+export function homeSave(hass: Hass, home: Home): Promise<void> {
+  return hass.callWS({ type: "boopli/home_save", home });
+}
+
+/** Add rooms for new Home Assistant areas and return the home. */
+export function homeSync(hass: Hass): Promise<Home> {
+  return hass.callWS({ type: "boopli/home_sync" });
+}
+
+export function roomQuestions(
+  hass: Hass,
+  room: string,
+  notes: string,
+  answers: AiAnswer[]
+): Promise<{ enough: boolean; questions: AiQuestion[] }> {
+  return hass.callWS({ type: "boopli/room_questions", room, notes, answers });
+}
+
+/** The notes the AI wrote about a room. Nothing is saved by this call. */
+export function roomNotes(
+  hass: Hass,
+  room: string,
+  notes: string,
+  answers: AiAnswer[]
+): Promise<{ notes: string }> {
+  return hass.callWS({ type: "boopli/room_notes", room, notes, answers });
 }
 
 /** The built-in prompts, to show and to reset to. */

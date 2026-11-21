@@ -135,8 +135,131 @@ def format_answers(answers: list[dict[str, str]]) -> str:
     return "\n".join(f"- {a['question']} {a['answer']}" for a in answers)
 
 
-def format_known(notes: str) -> str:
-    return clean_text(notes, 4000) or "(nothing yet)"
+def format_known(notes: str, rooms: str = "") -> str:
+    """What the AI already knows: the chore's own notes, then the notes of the rooms involved."""
+    parts = [clean_text(notes, 4000), rooms.strip()]
+    return "\n".join(p for p in parts if p) or "(nothing yet)"
+
+
+# --- rooms ("My home") -------------------------------------------------------------
+
+ROOM_NOTES_SENT_MAX = 1500  # per room, so a request stays small
+WHOLE_HOME_WORDS = (
+    "whole flat", "whole house", "whole home", "whole apartment", "entire flat",
+    "entire house", "entire home", "entire apartment", "everywhere", "every room",
+    "all rooms", "the whole place", "the house", "ganze wohnung", "ganzes haus", "gesamte wohnung",
+    "ganze bude", "alle zimmer", "alle räume", "überall", "ueberall",
+)
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"[^\w]+", " ", text.lower())).strip()
+
+
+def guess_rooms(task: str, rooms: list[tuple[str, str]]) -> list[str]:
+    """The ids of the rooms a task is about, from the room names in the task.
+
+    `rooms` is (id, name). A task about the whole flat means every room. The
+    panel shows the guess and the user can change it before anything is sent.
+    """
+    text = f" {_norm(task)} "
+    if any(f" {_norm(word)} " in text for word in WHOLE_HOME_WORDS):
+        return [room_id for room_id, _ in rooms]
+    found: list[str] = []
+    for room_id, name in rooms:
+        wanted = _norm(name)
+        if wanted and f" {wanted} " in text:
+            found.append(room_id)
+    return found
+
+
+def rooms_text(rooms: list[tuple[str, str]]) -> tuple[str, bool]:
+    """The notes block for an AI request from (name, notes) pairs, and whether any was shortened."""
+    lines: list[str] = []
+    shortened = False
+    for name, notes in rooms:
+        notes = (notes or "").strip()
+        if not notes:
+            continue
+        if len(notes) > ROOM_NOTES_SENT_MAX:
+            notes = notes[:ROOM_NOTES_SENT_MAX].rstrip() + " …"
+            shortened = True
+        lines.append(f"Room \"{clean_text(name, 60)}\": " + notes.replace("\n", "; "))
+    return "\n".join(lines), shortened
+
+
+ROOM_QUESTIONS_PROMPT = """You help a person with ADHD describe a room in their home, so a helper can later split chores in that room into small steps that really fit it.
+
+Room: {room}
+
+What is already known about this room:
+{known}
+
+Their answers so far:
+{answers}
+
+Ask short questions about what is in the room and how it is used: furniture and appliances, where things are stored, surfaces and floors, what usually gets messy, and anything awkward (a sticking door, a hard-to-reach corner). Do not ask about anything already known or already answered.
+- Keep every question short, one topic each. Give 2 to 6 short answer options that fit on a button. Set "multiple" to true when several options can be true at once. The person can always type their own words, so do not add an "other" option.
+- Ask at most 4 questions at a time. When the picture is good enough, set "enough" to true and leave "questions" empty.
+- Write in the language of the room name and the notes.
+
+Answer with a single JSON object and nothing else, like this:
+{"enough": false, "questions": [{"text": "What is on the floor?", "options": ["Carpet", "Wood", "Tiles"], "multiple": false}]}"""
+
+ROOM_NOTES_PROMPT = """Write short notes about a room in a person's home, from what they told you. The notes help a helper split chores in this room into small steps that fit it.
+
+Room: {room}
+
+What was already known about this room:
+{known}
+
+Their answers:
+{answers}
+
+Rules:
+- Plain short facts, one per line, for example "Dishwasher is under the counter" or "Balcony door sticks". Keep what was already known unless an answer replaces it.
+- Only facts about the room. No advice and no chores. At most 1500 characters.
+- Write in the language of the room name and the notes.
+
+Answer with a single JSON object and nothing else, like this:
+{"notes": "Dishwasher is under the counter\\nBalcony door sticks"}"""
+
+
+def clean_room_notes(value: Any, limit: int = 2000) -> str:
+    """Notes keep their line breaks; blank lines and stray spaces go."""
+    if isinstance(value, list):  # a model that answered with one fact per list item
+        value = "\n".join(str(v) for v in value)
+    lines = [" ".join(str(line).split()) for line in str(value or "").splitlines()]
+    return "\n".join(line for line in lines if line)[:limit]
+
+
+def room_instructions(default: str, room: str, answers: Any, notes: str) -> str:
+    return fill(
+        default,
+        room=clean_text(room, 60),
+        known=clean_room_notes(notes, 2000) or "(nothing yet)",
+        answers=format_answers(clean_answers(answers)),
+    )
+
+
+def parse_room_notes(data: Any) -> str:
+    """The notes the agent wrote. A plain-text answer is accepted as the notes."""
+    try:
+        parsed = extract_json(data)
+    except BreakdownError:
+        text = raw_text(data).strip()
+        if not text:
+            raise
+        broken = re.search(r'"notes"\s*:\s*"((?:[^"\\]|\\.)*)"', text)
+        if broken:  # JSON that does not parse, but the notes are readable
+            return clean_room_notes(_unescape(broken.group(1)))
+        if text.lstrip().startswith("{"):
+            raise
+        return clean_room_notes(re.sub(r"^```\w*\s*|\s*```$", "", text))
+    notes = clean_room_notes(parsed.get("notes"))
+    if not notes:
+        raise BreakdownError("The AI agent did not write any notes.")
+    return notes
 
 
 def fill(template: str, **values: str) -> str:
@@ -146,26 +269,28 @@ def fill(template: str, **values: str) -> str:
     return template
 
 
-def _instructions(default: str, custom: str, task: str, kind: str, answers: Any, notes: str) -> str:
+def _instructions(
+    default: str, custom: str, task: str, kind: str, answers: Any, notes: str, rooms: str
+) -> str:
     return fill(
         (custom or "").strip() or default,
         task=clean_text(task, TITLE_MAX),
         kind=KIND_TEXT.get(kind, KIND_TEXT[KIND_NOW]),
-        known=format_known(notes),
+        known=format_known(notes, rooms),
         answers=format_answers(clean_answers(answers)),
     )
 
 
 def questions_instructions(
-    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = ""
+    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = "", rooms: str = ""
 ) -> str:
-    return _instructions(QUESTIONS_PROMPT, custom, task, kind, answers, notes)
+    return _instructions(QUESTIONS_PROMPT, custom, task, kind, answers, notes, rooms)
 
 
 def steps_instructions(
-    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = ""
+    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = "", rooms: str = ""
 ) -> str:
-    return _instructions(STEPS_PROMPT, custom, task, kind, answers, notes)
+    return _instructions(STEPS_PROMPT, custom, task, kind, answers, notes, rooms)
 
 
 # --- reading the answer ---------------------------------------------------------

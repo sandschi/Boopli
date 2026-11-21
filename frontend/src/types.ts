@@ -199,12 +199,36 @@ export interface Setup {
   step: string; // id of the wizard step to resume at
 }
 
+/** One room with notes the user may let the AI see. */
+export interface Room {
+  id: string;
+  name: string;
+  area_id: string; // empty = added by hand
+  notes: string;
+  hidden: boolean;
+}
+
+/** "My home": the rooms, kept only in Boopli. */
+export interface Home {
+  enabled: boolean; // room notes go along with AI requests
+  rooms: Room[];
+}
+
+/** Exactly what the first AI request would contain. */
+export interface AiPreview {
+  instructions: string;
+  rooms_text: string;
+  shortened: boolean;
+  enabled: boolean;
+}
+
 export interface Snapshot {
   now: string;
   time_zone: string;
   is_home: boolean;
   pet: Pet;
   setup: Setup;
+  home: Home;
   settings: Settings;
   chores: Chore[];
   runs: Run[];

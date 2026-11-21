@@ -64,6 +64,7 @@ BREAK_DOWN_SCHEMA = vol.Schema(
         vol.Optional("kind", default="now"): vol.In(("now", "recurring")),
         vol.Optional("answers"): vol.All(cv.ensure_list, [dict]),
         vol.Optional("notes", default=""): cv.string,
+        vol.Optional("rooms"): vol.All(cv.ensure_list, [cv.string]),
     }
 )
 
@@ -124,6 +125,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
                 call.data["kind"],
                 call.data.get("answers"),
                 call.data.get("notes", ""),
+                call.data.get("rooms"),
             )
         except BoopliError as err:
             raise ServiceValidationError(str(err)) from err

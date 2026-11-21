@@ -16,6 +16,7 @@ from typing import Any
 
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError, ServiceNotFound
+from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
     async_track_state_change_event,
@@ -53,6 +54,7 @@ class BoopliManager:
         self.settings = engine.Settings()
         self.progress = engine.Progress()
         self.setup = engine.Setup()
+        self.home = engine.Home()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
         self.alarm_on: list[str] = []  # alarm devices Boopli switched on right now
         self.nudger = BoopliNudger(hass, self)
@@ -91,6 +93,8 @@ class BoopliManager:
             if "setup" in data
             else engine.initial_setup(data)
         )
+        self.home = engine.Home.from_dict(data.get("home"))
+        self.sync_areas()
         self.progress = engine.Progress.from_dict(data.get("progress"))
         if not self.progress.started_at:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
@@ -142,6 +146,7 @@ class BoopliManager:
             "settings": engine.to_dict(self.settings),
             "progress": engine.to_dict(self.progress),
             "setup": engine.to_dict(self.setup),
+            "home": engine.to_dict(self.home),
             "indicator_on": self.indicator_on,
             "alarm_on": self.alarm_on,
         }
@@ -190,6 +195,7 @@ class BoopliManager:
             "is_home": self.is_home(),
             "pet": self.pet(),
             "setup": engine.to_dict(self.setup),
+            "home": engine.to_dict(self.home),
             "settings": engine.to_dict(self.settings),
             "chores": [engine.to_dict(c) for c in self.chores.values()],
             "runs": [engine.to_dict(r) for r in self.runs.values()],
@@ -835,15 +841,128 @@ class BoopliManager:
             raise BoopliError("The kind must be 'now' or 'recurring'.")
         return kind
 
+    # --- My home: rooms and their notes ---------------------------------------------
+
+    def sync_areas(self) -> bool:
+        """Add a room for every Home Assistant area that has none yet."""
+        registry = ar.async_get(self.hass)
+        areas = [(a.id, a.name) for a in registry.async_list_areas()]
+        changed = engine.merge_areas(self.home, areas)
+        if changed:
+            self._save()
+        return changed
+
+    def save_home(self, data: dict[str, Any]) -> None:
+        """Replace the rooms and the on/off switch."""
+        home = engine.Home.from_dict(data)
+        error = engine.validate_home(home)
+        if error:
+            raise BoopliError(error)
+        self.home = home
+        self.sync_areas()
+        self._save()
+        self._notify()
+
+    def _rooms_for(self, task: str, rooms: list[str] | None) -> list[engine.Room]:
+        """The rooms whose notes go with a request. None = guess from the task text.
+
+        Entries may be room ids or names (a service call has no ids at hand).
+        """
+        usable = [r for r in self.home.rooms if not r.hidden]
+        if rooms is None:
+            wanted = set(breakdown.guess_rooms(task, [(r.id, r.name) for r in usable]))
+            return [r for r in usable if r.id in wanted]
+        wanted_names = {" ".join(str(x).lower().split()) for x in rooms}
+        return [r for r in usable if r.id in rooms or r.name.lower() in wanted_names]
+
+    def rooms_text(self, task: str, rooms: list[str] | None) -> tuple[str, bool]:
+        """The notes block that is added to a request, and whether a note was shortened."""
+        if not self.home.enabled:
+            return "", False
+        chosen = self._rooms_for(task, rooms)
+        return breakdown.rooms_text([(r.name, r.notes) for r in chosen])
+
+    def guess_rooms(self, task: str) -> list[str]:
+        return [r.id for r in self._rooms_for(task, None)]
+
+    def ai_preview(
+        self, task: str, kind: str, answers: Any, notes: str, rooms: list[str] | None
+    ) -> dict[str, Any]:
+        """Exactly what the first request to the AI would contain."""
+        text, shortened = self.rooms_text(task, rooms)
+        instructions = breakdown.questions_instructions(
+            breakdown.clean_text(task, breakdown.TITLE_MAX) or "(your task)",
+            self._check_kind(kind),
+            answers,
+            notes,
+            self.settings.ai.questions_prompt,
+            text,
+        )
+        return {
+            "instructions": instructions,
+            "rooms_text": text,
+            "shortened": shortened,
+            "enabled": self.home.enabled,
+        }
+
+    @staticmethod
+    def _room_name(room: str) -> str:
+        name = breakdown.clean_text(room, engine.ROOM_NAME_MAX)
+        if not name:
+            raise BoopliError("Give the room a name first.")
+        return name
+
+    async def async_room_questions(
+        self, room: str, notes: str, answers: Any = None
+    ) -> dict[str, Any]:
+        """Ask the agent what it still wants to know about a room (by name, so a new room works)."""
+        instructions = breakdown.room_instructions(
+            breakdown.ROOM_QUESTIONS_PROMPT, self._room_name(room), answers, notes
+        )
+        for attempt in (1, 2):
+            data = await self._run_agent("Boopli: room questions", instructions)
+            try:
+                enough, questions = breakdown.parse_questions(data)
+            except breakdown.BreakdownError as err:
+                if attempt == 2:
+                    raise BoopliError(str(err)) from err
+                continue
+            return {"enough": enough, "questions": [asdict(q) for q in questions]}
+        raise BoopliError("The AI agent did not answer.")  # not reached
+
+    async def async_room_notes(self, room: str, notes: str, answers: Any = None) -> dict[str, Any]:
+        """Ask the agent to write the room's notes. Nothing is saved here."""
+        instructions = breakdown.room_instructions(
+            breakdown.ROOM_NOTES_PROMPT, self._room_name(room), answers, notes
+        )
+        for attempt in (1, 2):
+            data = await self._run_agent("Boopli: room notes", instructions)
+            try:
+                return {"notes": breakdown.parse_room_notes(data)}
+            except breakdown.BreakdownError as err:
+                if attempt == 2:
+                    raise BoopliError(str(err)) from err
+        raise BoopliError("The AI agent did not answer.")  # not reached
+
     async def async_ai_questions(
-        self, task: str, kind: str, answers: Any = None, notes: str = ""
+        self,
+        task: str,
+        kind: str,
+        answers: Any = None,
+        notes: str = "",
+        rooms: list[str] | None = None,
     ) -> dict[str, Any]:
         """Ask the agent what it still needs to know before splitting the task."""
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
         if not task:
             raise BoopliError("Write what you want to get done first.")
         instructions = breakdown.questions_instructions(
-            task, self._check_kind(kind), answers, notes, self.settings.ai.questions_prompt
+            task,
+            self._check_kind(kind),
+            answers,
+            notes,
+            self.settings.ai.questions_prompt,
+            self.rooms_text(task, rooms)[0],
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
             data = await self._run_agent("Boopli: questions", instructions)
@@ -857,14 +976,24 @@ class BoopliManager:
         raise BoopliError("The AI agent did not answer.")  # not reached
 
     async def async_ai_steps(
-        self, task: str, kind: str, answers: Any = None, notes: str = ""
+        self,
+        task: str,
+        kind: str,
+        answers: Any = None,
+        notes: str = "",
+        rooms: list[str] | None = None,
     ) -> dict[str, Any]:
         """Ask the agent to split the task into small steps."""
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
         if not task:
             raise BoopliError("Write what you want to get done first.")
         instructions = breakdown.steps_instructions(
-            task, self._check_kind(kind), answers, notes, self.settings.ai.steps_prompt
+            task,
+            self._check_kind(kind),
+            answers,
+            notes,
+            self.settings.ai.steps_prompt,
+            self.rooms_text(task, rooms)[0],
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
             data = await self._run_agent("Boopli: steps", instructions)

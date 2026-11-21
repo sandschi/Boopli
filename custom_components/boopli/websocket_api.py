@@ -9,7 +9,7 @@ import voluptuous as vol
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
 
-from . import breakdown
+from . import breakdown, engine
 from .const import DOMAIN
 from .manager import BoopliError, BoopliManager
 
@@ -33,6 +33,12 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_ai_questions)
     websocket_api.async_register_command(hass, ws_ai_steps)
     websocket_api.async_register_command(hass, ws_ai_defaults)
+    websocket_api.async_register_command(hass, ws_home_save)
+    websocket_api.async_register_command(hass, ws_home_sync)
+    websocket_api.async_register_command(hass, ws_rooms_guess)
+    websocket_api.async_register_command(hass, ws_ai_preview)
+    websocket_api.async_register_command(hass, ws_room_questions)
+    websocket_api.async_register_command(hass, ws_room_notes)
     websocket_api.async_register_command(hass, ws_task_add)
     websocket_api.async_register_command(hass, ws_test_channel)
 
@@ -225,7 +231,117 @@ _AI_FIELDS = {
     vol.Optional("kind", default="now"): str,
     vol.Optional("answers", default=[]): list,
     vol.Optional("notes", default=""): str,
+    # The rooms whose notes go along. Left out = guess them from the task text.
+    vol.Optional("rooms"): [str],
 }
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/home_save", vol.Required("home"): dict})
+@callback
+def ws_home_save(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Save the rooms and their notes."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.save_home(msg["home"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/home_sync"})
+@callback
+def ws_home_sync(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Add rooms for new Home Assistant areas and return the home."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.sync_areas()
+    connection.send_result(msg["id"], engine.to_dict(manager.home))
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/rooms_guess", vol.Required("task"): str})
+@callback
+def ws_rooms_guess(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Which rooms a task is about, guessed from the words in it."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    connection.send_result(msg["id"], {"rooms": manager.guess_rooms(msg["task"])})
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/ai_preview", **_AI_FIELDS})
+@callback
+def ws_ai_preview(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Exactly what the first request to the AI would contain."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = manager.ai_preview(
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
+        )
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+_ROOM_FIELDS = {
+    vol.Required("room"): str,  # the room's name
+    vol.Optional("notes", default=""): str,
+    vol.Optional("answers", default=[]): list,
+}
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/room_questions", **_ROOM_FIELDS})
+@websocket_api.async_response
+async def ws_room_questions(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Ask the user's AI agent what it still wants to know about a room."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_room_questions(msg["room"], msg["notes"], msg["answers"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/room_notes", **_ROOM_FIELDS})
+@websocket_api.async_response
+async def ws_room_notes(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Ask the user's AI agent to write a room's notes (nothing is saved)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_room_notes(msg["room"], msg["notes"], msg["answers"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
 
 
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_questions", **_AI_FIELDS})
@@ -240,7 +356,7 @@ async def ws_ai_questions(
         return
     try:
         result = await manager.async_ai_questions(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"]
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
@@ -260,7 +376,7 @@ async def ws_ai_steps(
         return
     try:
         result = await manager.async_ai_steps(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"]
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))

@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
-import { aiQuestions, aiSteps, errorMessage } from "./api";
+import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess } from "./api";
 import { sharedStyles } from "./styles";
-import type { AiAnswer, AiQuestion, AiStep, Hass, Snapshot, StepSize } from "./types";
+import type { AiAnswer, AiPreview, AiQuestion, AiStep, Hass, Room, Snapshot, StepSize } from "./types";
 
 type Phase = "task" | "interview" | "working" | "review";
 type Kind = "now" | "recurring";
@@ -51,6 +51,8 @@ export class BoopliBreakdown extends LitElement {
     _busy: { state: true },
     _error: { state: true },
     _round: { state: true },
+    _rooms: { state: true },
+    _preview: { state: true },
   };
 
   declare hass?: Hass;
@@ -73,6 +75,12 @@ export class BoopliBreakdown extends LitElement {
   declare _busy: boolean;
   declare _error: string;
   declare _round: number;
+  declare _rooms: string[]; // ids of the rooms whose notes go along
+  declare _preview: AiPreview | null; // exactly what would be sent, when the user asks
+  private _roomsTouched = false; // the user chose the rooms, so stop guessing
+  private _guessedFor: string | null = null;
+  private _guessing?: Promise<void>;
+  private _guessTimer?: number;
   private _started = false;
 
   constructor() {
@@ -95,6 +103,8 @@ export class BoopliBreakdown extends LitElement {
     this._busy = false;
     this._error = "";
     this._round = 0;
+    this._rooms = [];
+    this._preview = null;
   }
 
   protected willUpdate(): void {
@@ -107,6 +117,113 @@ export class BoopliBreakdown extends LitElement {
   protected firstUpdated(): void {
     // A task that came with the click starts the questions at once.
     if (this._task.trim() && this._aiOn()) void this._begin();
+    else void this._guess();
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.clearTimeout(this._guessTimer);
+  }
+
+  // --- rooms: which notes go along ---------------------------------------------------
+
+  private _homeOn(): boolean {
+    return !!this.snapshot?.home?.enabled;
+  }
+
+  /** Rooms that have notes: only these have anything to send. */
+  private _notedRooms(): Room[] {
+    return (this.snapshot?.home?.rooms ?? []).filter((r) => !r.hidden && r.notes.trim());
+  }
+
+  /** Guess the rooms from the words of the task, unless the user already chose. */
+  private _guess(): Promise<void> {
+    window.clearTimeout(this._guessTimer);
+    const task = this._task.trim();
+    if (!this.hass || !task || this._roomsTouched || !this._homeOn()) return Promise.resolve();
+    if (this._guessedFor === task && this._guessing) return this._guessing; // already running or done
+    this._guessedFor = task;
+    this._guessing = (async () => {
+      try {
+        const ids = await roomsGuess(this.hass!, task);
+        if (this._roomsTouched || this._task.trim() !== task) return;
+        const noted = new Set(this._notedRooms().map((r) => r.id));
+        this._rooms = ids.filter((id) => noted.has(id));
+        this._preview = null;
+      } catch {
+        this._rooms = [];
+      }
+    })();
+    return this._guessing;
+  }
+
+  private _onTaskInput(value: string): void {
+    this._task = value;
+    window.clearTimeout(this._guessTimer);
+    this._guessTimer = window.setTimeout(() => void this._guess(), 400);
+  }
+
+  private _toggleRoom(id: string): void {
+    this._roomsTouched = true;
+    this._rooms = this._rooms.includes(id) ? this._rooms.filter((r) => r !== id) : [...this._rooms, id];
+    this._preview = null;
+  }
+
+  private async _showPreview(): Promise<void> {
+    if (!this.hass) return;
+    if (this._preview) {
+      this._preview = null;
+      return;
+    }
+    try {
+      this._preview = await aiPreview(
+        this.hass,
+        this._task.trim() || "(your task)",
+        this.kind,
+        this._answers,
+        this._notes,
+        this._rooms
+      );
+    } catch (err) {
+      this._error = errorMessage(err);
+    }
+  }
+
+  private _renderRooms() {
+    if (!this._homeOn()) return nothing;
+    const noted = this._notedRooms();
+    if (noted.length === 0) {
+      return html`<p class="muted small roomtip">
+        Tip: tell Boopli about your rooms and the steps will fit them.
+        <button type="button" class="link" @click=${() => this._fire("open-home")}>Open My home</button>
+      </p>`;
+    }
+    const chosen = noted.filter((r) => this._rooms.includes(r.id));
+    return html`<div class="rooms">
+      <div class="roomline">
+        <span class="muted small">Room notes the AI will see:</span>
+        ${noted.map(
+          (r) => html`<button
+            type="button"
+            class="chip ${this._rooms.includes(r.id) ? "on" : ""}"
+            aria-pressed=${this._rooms.includes(r.id)}
+            @click=${() => this._toggleRoom(r.id)}
+          >
+            ${r.name}
+          </button>`
+        )}
+        ${chosen.length === 0 ? html`<span class="muted small">none</span>` : nothing}
+        <button type="button" class="link" @click=${() => this._showPreview()}>
+          ${this._preview ? "Hide what is sent" : "What will the AI see?"}
+        </button>
+      </div>
+      ${this._preview
+        ? html`<div class="preview">
+            ${this._preview.shortened ? html`<div class="muted small">A long note was shortened to keep the request small.</div>` : nothing}
+            <pre>${this._preview.instructions}</pre>
+          </div>`
+        : nothing}
+    </div>`;
   }
 
   private _aiOn(): boolean {
@@ -139,8 +256,9 @@ export class BoopliBreakdown extends LitElement {
     this._answers = [];
     this._round = 0;
     this._phase = "working";
+    await this._guess();
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms),
       "task"
     );
     if (!result) return;
@@ -177,7 +295,7 @@ export class BoopliBreakdown extends LitElement {
     this._answers = answers;
     this._phase = "working";
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes, this._rooms),
       "interview"
     );
     if (!result) return;
@@ -192,8 +310,9 @@ export class BoopliBreakdown extends LitElement {
   private async _loadSteps(): Promise<void> {
     if (!this.hass) return;
     this._phase = "working";
+    await this._guess();
     const result = await this._ask(
-      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes),
+      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms),
       this._questions.length ? "interview" : "task"
     );
     if (!result) return;
@@ -274,8 +393,9 @@ export class BoopliBreakdown extends LitElement {
         rows="3"
         placeholder=${this.kind === "recurring" ? "For example: clean my room" : "For example: clean the bathroom"}
         .value=${this._task}
-        @input=${(e: Event) => (this._task = (e.target as HTMLTextAreaElement).value)}
+        @input=${(e: Event) => this._onTaskInput((e.target as HTMLTextAreaElement).value)}
       ></textarea>
+      ${this._renderRooms()}
       <div class="actions">
         <button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin()}>
           ${this.kind === "recurring" ? "Ask me about it" : "Break it down"}
@@ -339,6 +459,7 @@ export class BoopliBreakdown extends LitElement {
         ${this._round > 1 ? "A few more things, so the steps fit." : "A few questions so the steps fit your situation."}
         Tap what fits, or write as much as you like. You can skip any question.
       </p>
+      ${this._renderRooms()}
       ${this._questions.map((q, i) => this._renderQuestion(q, i))}
       <div class="question">
         <div class="qtext">Anything else I should know?</div>
@@ -656,6 +777,33 @@ export class BoopliBreakdown extends LitElement {
       .field {
         margin: 16px 0;
         max-width: 760px;
+      }
+      .rooms,
+      .roomtip {
+        margin: 12px 0;
+        max-width: 760px;
+      }
+      .roomline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .preview {
+        margin-top: 8px;
+      }
+      .preview pre {
+        white-space: pre-wrap;
+        font: inherit;
+        font-size: 13px;
+        line-height: 1.45;
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        padding: 10px 12px;
+        max-height: 320px;
+        overflow: auto;
+        margin: 6px 0 0;
       }
       @media (max-width: 700px) {
         .step {

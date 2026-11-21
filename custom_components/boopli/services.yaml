@@ -47,6 +47,11 @@ break_down:
       selector:
         text:
           multiline: true
+    rooms:
+      required: false
+      example: '["Bathroom"]'
+      selector:
+        object:
 
 start_chore:
   fields:

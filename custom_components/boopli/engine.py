@@ -493,6 +493,81 @@ def initial_setup(stored: dict[str, Any]) -> Setup:
     return Setup()
 
 
+# --- "My home": rooms and what the user wants the AI to know about them --------
+
+ROOM_NAME_MAX = 60
+ROOM_NOTES_MAX = 2000
+MAX_ROOMS = 40
+
+
+def _clean_notes(value: Any, limit: int) -> str:
+    """Notes keep their line breaks; blank lines and stray spaces go."""
+    lines = [" ".join(str(line).split()) for line in str(value or "").splitlines()]
+    return "\n".join(line for line in lines if line)[:limit]
+
+
+@dataclass
+class Room:
+    """One room (or place) with notes the user may let the AI see."""
+
+    id: str
+    name: str
+    area_id: str = ""  # the Home Assistant area it came from; empty = added by hand
+    notes: str = ""
+    hidden: bool = False  # an area room the user does not want; kept so it stays gone
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Room:
+        return cls(
+            id=str(d.get("id") or new_id()),
+            name=" ".join(str(d.get("name", "")).split())[:ROOM_NAME_MAX],
+            area_id=str(d.get("area_id") or ""),
+            notes=_clean_notes(d.get("notes"), ROOM_NOTES_MAX),
+            hidden=bool(d.get("hidden", False)),
+        )
+
+
+@dataclass
+class Home:
+    """The rooms, stored only in Boopli. Notes leave only inside an AI request."""
+
+    enabled: bool = True  # whether room notes go along with AI requests
+    rooms: list[Room] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> Home:
+        d = d or {}
+        return cls(
+            enabled=bool(d.get("enabled", True)),
+            rooms=[Room.from_dict(r) for r in (d.get("rooms") or []) if isinstance(r, dict)],
+        )
+
+
+def validate_home(home: Home) -> str | None:
+    if len(home.rooms) > MAX_ROOMS:
+        return f"At most {MAX_ROOMS} rooms."
+    seen: set[str] = set()
+    for room in home.rooms:
+        if not room.name:
+            return "Every room needs a name."
+        if room.id in seen:
+            return "Two rooms share the same id."
+        seen.add(room.id)
+    return None
+
+
+def merge_areas(home: Home, areas: list[tuple[str, str]]) -> bool:
+    """Add a room for every Home Assistant area that has none yet. True if anything changed."""
+    known = {r.area_id for r in home.rooms if r.area_id}
+    changed = False
+    for area_id, name in areas:
+        if area_id in known or len(home.rooms) >= MAX_ROOMS:
+            continue
+        home.rooms.append(Room(id=new_id(), name=name[:ROOM_NAME_MAX], area_id=area_id))
+        changed = True
+    return changed
+
+
 def validate_setup(setup: Setup) -> str | None:
     if setup.status not in SETUP_STATUSES:
         return "Unknown setup status."
