@@ -564,11 +564,47 @@ export class BoopliSettings extends LitElement {
     `;
   }
 
+  private _openWizard(sections?: string[]): void {
+    this.dispatchEvent(
+      new CustomEvent("open-wizard", {
+        detail: sections ? { sections, startAt: sections[0] } : {},
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  private _renderGuided() {
+    const areas: { label: string; sections: string[] }[] = [
+      { label: "Phone", sections: ["phone"] },
+      { label: "Quiet hours", sections: ["quiet"] },
+      { label: "Snooze and style", sections: ["nudging"] },
+      { label: "Lights", sections: ["lights"] },
+      { label: "Speakers and alarms", sections: ["speakers"] },
+      { label: "Presence", sections: ["presence"] },
+    ];
+    return html`
+      <section class="card">
+        <h2>Guided setup</h2>
+        <p class="muted small">
+          Prefer being asked one question at a time? Run the setup for one area, or all of it again.
+          Your current choices are kept.
+        </p>
+        <div class="guided">
+          ${areas.map(
+            (a) => html`<button type="button" class="chip" @click=${() => this._openWizard(a.sections)}>${a.label}</button>`
+          )}
+          <button type="button" class="primary" @click=${() => this._openWizard()}>Run the full setup again</button>
+        </div>
+      </section>
+    `;
+  }
+
   render() {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
     return html`
-      ${this._renderPhones(d)} ${this._renderLights(d)}
+      ${this._renderGuided()} ${this._renderPhones(d)} ${this._renderLights(d)}
       <boopli-speakers
         .hass=${this.hass}
         .settings=${d}
@@ -586,6 +622,12 @@ export class BoopliSettings extends LitElement {
   static styles = [
     sharedStyles,
     css`
+      .guided {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
       section.card {
         margin-bottom: 16px;
       }

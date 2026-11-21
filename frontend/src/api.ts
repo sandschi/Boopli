@@ -20,6 +20,14 @@ export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 
+export function saveSetup(
+  hass: Hass,
+  status: "new" | "in_progress" | "skipped" | "done",
+  step = ""
+): Promise<void> {
+  return hass.callWS({ type: "boopli/setup_save", status, step });
+}
+
 export function snoozeStep(
   hass: Hass,
   runId: string,

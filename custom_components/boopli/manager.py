@@ -48,6 +48,7 @@ class BoopliManager:
         self.history: list[engine.HistoryEntry] = []
         self.settings = engine.Settings()
         self.progress = engine.Progress()
+        self.setup = engine.Setup()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
         self.alarm_on: list[str] = []  # alarm devices Boopli switched on right now
         self.nudger = BoopliNudger(hass, self)
@@ -81,6 +82,11 @@ class BoopliManager:
             engine.HistoryEntry.from_dict(h) for h in data.get("history", [])
         ]
         self.settings = engine.Settings.from_dict(data.get("settings"))
+        self.setup = (
+            engine.Setup.from_dict(data["setup"])
+            if "setup" in data
+            else engine.initial_setup(data)
+        )
         self.progress = engine.Progress.from_dict(data.get("progress"))
         if not self.progress.started_at:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
@@ -131,6 +137,7 @@ class BoopliManager:
             "history": [engine.to_dict(h) for h in self.history],
             "settings": engine.to_dict(self.settings),
             "progress": engine.to_dict(self.progress),
+            "setup": engine.to_dict(self.setup),
             "indicator_on": self.indicator_on,
             "alarm_on": self.alarm_on,
         }
@@ -178,6 +185,7 @@ class BoopliManager:
             "time_zone": str(self.tz),
             "is_home": self.is_home(),
             "pet": self.pet(),
+            "setup": engine.to_dict(self.setup),
             "settings": engine.to_dict(self.settings),
             "chores": [engine.to_dict(c) for c in self.chores.values()],
             "runs": [engine.to_dict(r) for r in self.runs.values()],
@@ -635,6 +643,18 @@ class BoopliManager:
         self.settings = settings
         self._watch_presence()
         self._tick()
+
+    def save_setup(self, data: dict[str, Any]) -> None:
+        """Remember how far the setup wizard got."""
+        setup = engine.Setup.from_dict(data)
+        if data.get("status") not in engine.SETUP_STATUSES:
+            raise BoopliError("Unknown setup status.")
+        error = engine.validate_setup(setup)
+        if error:
+            raise BoopliError(error)
+        self.setup = setup
+        self._save()
+        self._notify()
 
     def save_chore(self, data: dict[str, Any]) -> engine.Chore:
         """Create or update a chore."""

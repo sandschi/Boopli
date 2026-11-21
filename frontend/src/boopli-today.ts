@@ -133,7 +133,22 @@ export class BoopliToday extends LitElement {
     const model = buildToday(this.snapshot, this.nowMs);
     const hasChores = this.snapshot.chores.length > 0;
 
+    const setup = this.snapshot.setup?.status;
     return html`
+      ${setup === "skipped" || setup === "in_progress"
+        ? html`<section class="card banner">
+            <span>Boopli is not fully set up yet.</span>
+            <button
+              class="primary"
+              @click=${() =>
+                this.dispatchEvent(
+                  new CustomEvent("open-wizard", { bubbles: true, composed: true })
+                )}
+            >
+              Finish setting up
+            </button>
+          </section>`
+        : nothing}
       ${this._renderPet()}
       ${model.now
         ? html`
@@ -213,6 +228,15 @@ export class BoopliToday extends LitElement {
     css`
       .small {
         font-size: 14px;
+      }
+      .banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        padding: 12px 16px;
       }
       .pet-card {
         display: flex;

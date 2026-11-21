@@ -1,10 +1,17 @@
 import { LitElement, html, css, nothing } from "lit";
-import { subscribe } from "./api";
+import { saveSetup, subscribe } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
+import { ALL_SECTIONS, type Section } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
 import type { Hass, Snapshot } from "./types";
+
+/** What the wizard should walk through, and where to start. */
+interface WizardRequest {
+  sections: Section[];
+  startAt: string;
+}
 
 type Tab = "today" | "chores" | "settings";
 
@@ -28,6 +35,7 @@ export class BoopliPanel extends LitElement {
     _tab: { state: true },
     _nowMs: { state: true },
     _connectionError: { state: true },
+    _wizard: { state: true },
   };
 
   declare hass?: Hass;
@@ -36,10 +44,12 @@ export class BoopliPanel extends LitElement {
   declare _tab: Tab;
   declare _nowMs: number;
   declare _connectionError: string;
+  declare _wizard: WizardRequest | null;
 
   private _unsub?: () => void;
   private _subscribing = false;
   private _timer?: number;
+  private _autoChecked = false;
 
   constructor() {
     super();
@@ -47,7 +57,33 @@ export class BoopliPanel extends LitElement {
     this._tab = "today";
     this._nowMs = Date.now();
     this._connectionError = "";
+    this._wizard = null;
   }
+
+  /** Open the wizard: the full setup, or a guided setup of part of it. */
+  private _openWizard(request: WizardRequest): void {
+    this._wizard = request;
+    if (this.hass && request.sections.includes("welcome")) {
+      // Opened but not finished: Today will show a banner until it is done.
+      void saveSetup(this.hass, "in_progress", request.startAt).catch(() => undefined);
+    }
+  }
+
+  private _closeWizard(): void {
+    this._wizard = null;
+  }
+
+  private _onOpenWizard = (e: Event): void => {
+    const detail = (e as CustomEvent<Partial<WizardRequest>>).detail ?? {};
+    const full = !detail.sections;
+    const step = this._snapshot?.setup;
+    this._openWizard({
+      sections: detail.sections ?? [...ALL_SECTIONS],
+      startAt:
+        detail.startAt ??
+        (full && step && step.status !== "done" && step.status !== "new" ? step.step : ""),
+    });
+  };
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -70,6 +106,13 @@ export class BoopliPanel extends LitElement {
         this._snapshot = snapshot;
         this._nowMs = Date.now();
         this._connectionError = "";
+        // The very first visit opens the wizard by itself (once per page load).
+        if (!this._autoChecked) {
+          this._autoChecked = true;
+          if (snapshot.setup?.status === "new") {
+            this._openWizard({ sections: [...ALL_SECTIONS], startAt: "" });
+          }
+        }
       })
         .then((unsub) => {
           this._unsub = unsub;
@@ -115,9 +158,17 @@ export class BoopliPanel extends LitElement {
           )}
         </nav>
       </header>
-      <main>
+      <main @open-wizard=${this._onOpenWizard}>
         ${this._connectionError
           ? html`<p class="error">${this._connectionError}</p>`
+          : this._wizard
+            ? html`<boopli-wizard
+                .hass=${this.hass}
+                .snapshot=${this._snapshot}
+                .sections=${this._wizard.sections}
+                .startAt=${this._wizard.startAt}
+                @wizard-close=${() => this._closeWizard()}
+              ></boopli-wizard>`
           : this._tab === "today"
             ? html`<boopli-today
                 .hass=${this.hass}

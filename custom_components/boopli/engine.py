@@ -133,6 +133,14 @@ ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01"
 CHANNELS_ALL = "all"
 CHANNELS_PHONE_ONLY = "phone_only"
 
+# The setup wizard: where the user is in it. Existing installs count as done.
+SETUP_NEW = "new"  # never opened: the panel opens the wizard by itself
+SETUP_IN_PROGRESS = "in_progress"  # opened but not finished
+SETUP_SKIPPED = "skipped"  # the user chose "Skip for now"
+SETUP_DONE = "done"
+SETUP_STATUSES = (SETUP_NEW, SETUP_IN_PROGRESS, SETUP_SKIPPED, SETUP_DONE)
+SETUP_STEP_MAX = 40
+
 # XP and the pet. Rewards only: nothing here ever takes XP or a level away.
 EVENT_XP_GAINED = "xp_gained"
 XP_STEP = 10  # for every step finished
@@ -389,6 +397,45 @@ class Event:
 def to_dict(obj: Any) -> dict[str, Any]:
     """Serialize any engine dataclass to plain JSON-safe data."""
     return asdict(obj)
+
+
+# --- setup wizard state ------------------------------------------------------
+
+
+@dataclass
+class Setup:
+    """Whether the setup wizard has been done, and where the user stopped."""
+
+    status: str = SETUP_NEW
+    step: str = ""  # id of the wizard step to resume at
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> Setup:
+        d = d or {}
+        status = str(d.get("status", SETUP_NEW))
+        return cls(
+            status=status if status in SETUP_STATUSES else SETUP_NEW,
+            step=str(d.get("step", ""))[:SETUP_STEP_MAX],
+        )
+
+
+def initial_setup(stored: dict[str, Any]) -> Setup:
+    """The setup state for stored data that has none yet.
+
+    Data from before the wizard existed (any chores, settings or history) means
+    an existing install: it counts as done, so the wizard never ambushes it.
+    """
+    if any(stored.get(key) for key in ("chores", "settings", "runs", "history")):
+        return Setup(status=SETUP_DONE)
+    return Setup()
+
+
+def validate_setup(setup: Setup) -> str | None:
+    if setup.status not in SETUP_STATUSES:
+        return "Unknown setup status."
+    if len(setup.step) > SETUP_STEP_MAX:
+        return "Unknown setup step."
+    return None
 
 
 # --- XP, levels and the pet ------------------------------------------------

@@ -175,11 +175,19 @@ export interface Pet {
   last_activity: string | null;
 }
 
+export type SetupStatus = "new" | "in_progress" | "skipped" | "done";
+
+export interface Setup {
+  status: SetupStatus;
+  step: string; // id of the wizard step to resume at
+}
+
 export interface Snapshot {
   now: string;
   time_zone: string;
   is_home: boolean;
   pet: Pet;
+  setup: Setup;
   settings: Settings;
   chores: Chore[];
   runs: Run[];

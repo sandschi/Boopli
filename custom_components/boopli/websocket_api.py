@@ -27,6 +27,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_step_complete)
     websocket_api.async_register_command(hass, ws_step_snooze)
     websocket_api.async_register_command(hass, ws_settings_save)
+    websocket_api.async_register_command(hass, ws_setup_save)
     websocket_api.async_register_command(hass, ws_test_channel)
 
 
@@ -183,6 +184,30 @@ def ws_settings_save(
         return
     try:
         manager.save_settings(msg["settings"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/setup_save",
+        vol.Required("status"): str,
+        vol.Optional("step"): str,
+    }
+)
+@callback
+def ws_setup_save(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Remember how far the setup wizard got (opened, skipped, done)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.save_setup({"status": msg["status"], "step": msg.get("step", "")})
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
         return

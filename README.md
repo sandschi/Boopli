@@ -2,7 +2,15 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.7).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no setup wizard or final pet art yet, so it is not ready for daily use.
+> **Status: early development (v0.0.8).** You can set Boopli up with a guided wizard, create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
+
+## Setup wizard
+
+The first time you open Boopli, a short wizard opens by itself: one question per screen, with a progress bar, a Back button and a safe default on every screen. Every step can be skipped, and **Skip for now** closes the whole wizard. Your answers are saved as you go, so closing the tab halfway loses nothing.
+
+It asks for: your pet's name, your phone, quiet hours (none, the same every day, or different on weekdays and weekends), snooze length and default nudge style, lights, speakers and alarm devices, whether you are home (a person entity), and a few starter chores (Dishwasher, Laundry, Trash, Pills, pre-ticked, added without a schedule so nothing nudges you until you set a time or start one). Nothing is sent to any device until you press a **Test** button.
+
+If you skip or leave the setup unfinished, Today shows a **Finish setting up** banner that continues where you stopped. In **Settings**, a **Guided setup** card runs the wizard for one area (phone, quiet hours, snooze and style, lights, speakers and alarms, presence) or the whole thing again, starting from your current choices. Installs that already had chores or settings before the wizard existed count as set up, so it never opens for them.
 
 ## XP and the pet
 
