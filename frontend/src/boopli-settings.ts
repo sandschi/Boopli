@@ -834,7 +834,7 @@ export class BoopliSettings extends LitElement {
         /* The browser balances the columns, so they end at about the same height
            and a short card is never pushed far down. */
         display: block;
-        columns: 380px;
+        column-count: 3;
         column-gap: 16px;
       }
       .slot {
@@ -846,7 +846,7 @@ export class BoopliSettings extends LitElement {
         .cards.advanced {
           display: flex;
           flex-direction: column;
-          columns: auto;
+          column-count: auto;
           gap: 16px;
         }
         .slot {
