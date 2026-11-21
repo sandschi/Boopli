@@ -3,15 +3,10 @@ import { saveSetup, subscribe } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
-import { ALL_SECTIONS, type Section } from "./boopli-wizard";
+import "./boopli-wizard";
+import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
 import type { Hass, Snapshot } from "./types";
-
-/** What the wizard should walk through, and where to start. */
-interface WizardRequest {
-  sections: Section[];
-  startAt: string;
-}
 
 type Tab = "today" | "chores" | "settings";
 
@@ -21,11 +16,27 @@ const TAB_LABELS: Record<Tab, string> = {
   settings: "Settings",
 };
 
+/** What the wizard should do, and where to start. */
+interface WizardRequest {
+  wizard: WizardId;
+  startAt: string;
+}
+
+type Choice = "save" | "discard" | "stay";
+
+/** What the Settings and Chores screens offer for unsaved changes. */
+interface Editable extends HTMLElement {
+  save?: () => Promise<boolean>;
+  discard?: () => void;
+}
+
 /**
  * Boopli sidebar panel. Home Assistant creates this element and keeps
  * setting `hass` on it with live state, plus `narrow` on small screens.
  *
  * It subscribes once to the integration and re-renders on every update.
+ * It also stands guard over unsaved changes: leaving a screen with edits that
+ * were not saved always asks first.
  */
 export class BoopliPanel extends LitElement {
   static properties = {
@@ -36,6 +47,8 @@ export class BoopliPanel extends LitElement {
     _nowMs: { state: true },
     _connectionError: { state: true },
     _wizard: { state: true },
+    _dirty: { state: true },
+    _confirm: { state: true },
   };
 
   declare hass?: Hass;
@@ -45,6 +58,8 @@ export class BoopliPanel extends LitElement {
   declare _nowMs: number;
   declare _connectionError: string;
   declare _wizard: WizardRequest | null;
+  declare _dirty: { settings: boolean; chore: boolean };
+  declare _confirm: ((choice: Choice) => void) | null;
 
   private _unsub?: () => void;
   private _subscribing = false;
@@ -58,30 +73,82 @@ export class BoopliPanel extends LitElement {
     this._nowMs = Date.now();
     this._connectionError = "";
     this._wizard = null;
+    this._dirty = { settings: false, chore: false };
+    this._confirm = null;
   }
 
-  /** Open the wizard: the full setup, or a guided setup of part of it. */
+  // --- unsaved changes ---------------------------------------------------------
+
+  private get _hasUnsaved(): boolean {
+    return this._dirty.settings || this._dirty.chore;
+  }
+
+  private _onDirty = (e: Event): void => {
+    const { source, dirty } = (e as CustomEvent<{ source: "settings" | "chore"; dirty: boolean }>).detail;
+    this._dirty = { ...this._dirty, [source]: dirty };
+  };
+
+  private _beforeUnload = (e: BeforeUnloadEvent): void => {
+    if (this._hasUnsaved) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  };
+
+  private _editable(): Editable | null {
+    const tag = this._tab === "settings" ? "boopli-settings" : this._tab === "chores" ? "boopli-chores" : "";
+    return tag ? (this.renderRoot.querySelector(tag) as Editable | null) : null;
+  }
+
+  /** Returns true when it is fine to leave: nothing unsaved, or it was saved or discarded. */
+  private async _guard(): Promise<boolean> {
+    if (!this._hasUnsaved) return true;
+    const choice = await new Promise<Choice>((resolve) => {
+      this._confirm = resolve;
+    });
+    this._confirm = null;
+    if (choice === "stay") return false;
+    const editor = this._editable();
+    if (choice === "save") {
+      const ok = (await editor?.save?.()) ?? false;
+      if (!ok) return false;
+    } else {
+      editor?.discard?.();
+    }
+    this._dirty = { settings: false, chore: false };
+    return true;
+  }
+
+  // --- tabs and the wizard ------------------------------------------------------
+
+  private async _selectTab(tab: Tab): Promise<void> {
+    if (tab === this._tab && !this._wizard) return;
+    if (!(await this._guard())) return;
+    this._wizard = null;
+    this._tab = tab;
+  }
+
+  /** Open a wizard. The first-run setup is also remembered as "in progress". */
   private _openWizard(request: WizardRequest): void {
     this._wizard = request;
-    if (this.hass && request.sections.includes("welcome")) {
+    if (this.hass && request.wizard === "first") {
       // Opened but not finished: Today will show a banner until it is done.
       void saveSetup(this.hass, "in_progress", request.startAt).catch(() => undefined);
     }
   }
 
-  private _closeWizard(): void {
-    this._wizard = null;
-  }
-
-  private _onOpenWizard = (e: Event): void => {
+  private _onOpenWizard = async (e: Event): Promise<void> => {
     const detail = (e as CustomEvent<Partial<WizardRequest>>).detail ?? {};
-    const full = !detail.sections;
-    const step = this._snapshot?.setup;
+    const wizard = detail.wizard ?? "first";
+    if (!(await this._guard())) return;
+    const setup = this._snapshot?.setup;
     this._openWizard({
-      sections: detail.sections ?? [...ALL_SECTIONS],
+      wizard,
       startAt:
         detail.startAt ??
-        (full && step && step.status !== "done" && step.status !== "new" ? step.step : ""),
+        (wizard === "first" && setup && (setup.status === "skipped" || setup.status === "in_progress")
+          ? setup.step
+          : ""),
     });
   };
 
@@ -89,11 +156,13 @@ export class BoopliPanel extends LitElement {
     super.connectedCallback();
     // Keep relative times ("in 2h") fresh.
     this._timer = window.setInterval(() => (this._nowMs = Date.now()), 30_000);
+    window.addEventListener("beforeunload", this._beforeUnload);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.clearInterval(this._timer);
+    window.removeEventListener("beforeunload", this._beforeUnload);
     this._unsub?.();
     this._unsub = undefined;
     this._subscribing = false;
@@ -110,7 +179,7 @@ export class BoopliPanel extends LitElement {
         if (!this._autoChecked) {
           this._autoChecked = true;
           if (snapshot.setup?.status === "new") {
-            this._openWizard({ sections: [...ALL_SECTIONS], startAt: "" });
+            this._openWizard({ wizard: "first", startAt: "" });
           }
         }
       })
@@ -118,8 +187,7 @@ export class BoopliPanel extends LitElement {
           this._unsub = unsub;
         })
         .catch(() => {
-          this._connectionError =
-            "Could not reach Boopli. Is the integration set up?";
+          this._connectionError = "Could not reach Boopli. Is the integration set up?";
         })
         .finally(() => {
           this._subscribing = false;
@@ -129,63 +197,67 @@ export class BoopliPanel extends LitElement {
 
   private _toggleSidebar(): void {
     // The documented way for a custom panel to open HA's sidebar on mobile.
-    this.dispatchEvent(
-      new CustomEvent("hass-toggle-menu", { bubbles: true, composed: true })
-    );
+    this.dispatchEvent(new CustomEvent("hass-toggle-menu", { bubbles: true, composed: true }));
+  }
+
+  private _renderConfirm() {
+    if (!this._confirm) return nothing;
+    const answer = (c: Choice) => () => this._confirm?.(c);
+    return html`<div class="backdrop" role="dialog" aria-modal="true" aria-label="Unsaved changes">
+      <div class="card dialog">
+        <h2>You have unsaved changes</h2>
+        <p class="muted">Leave without saving and they are lost.</p>
+        <div class="dialog-actions">
+          <button class="primary" @click=${answer("save")}>Save</button>
+          <button class="danger" @click=${answer("discard")}>Discard</button>
+          <button @click=${answer("stay")}>Stay</button>
+        </div>
+      </div>
+    </div>`;
   }
 
   render() {
+    const unsaved: Record<Tab, boolean> = {
+      today: false,
+      chores: this._dirty.chore,
+      settings: this._dirty.settings,
+    };
     return html`
       <header>
         ${this.narrow
-          ? html`<button
-              class="menu"
-              aria-label="Open sidebar"
-              @click=${this._toggleSidebar}
-            >
-              ☰
-            </button>`
+          ? html`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>`
           : nothing}
         <h1>Boopli</h1>
         <nav>
           ${(Object.keys(TAB_LABELS) as Tab[]).map(
             (tab) => html`<button
-              class="tab ${this._tab === tab ? "on" : ""}"
-              @click=${() => (this._tab = tab)}
+              class="tab ${this._tab === tab && !this._wizard ? "on" : ""}"
+              @click=${() => this._selectTab(tab)}
             >
               ${TAB_LABELS[tab]}
+              ${unsaved[tab] ? html`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : nothing}
             </button>`
           )}
         </nav>
       </header>
-      <main @open-wizard=${this._onOpenWizard}>
+      <main @open-wizard=${this._onOpenWizard} @dirty-change=${this._onDirty}>
         ${this._connectionError
           ? html`<p class="error">${this._connectionError}</p>`
           : this._wizard
             ? html`<boopli-wizard
                 .hass=${this.hass}
                 .snapshot=${this._snapshot}
-                .sections=${this._wizard.sections}
+                .wizard=${this._wizard.wizard}
                 .startAt=${this._wizard.startAt}
-                @wizard-close=${() => this._closeWizard()}
+                @wizard-close=${() => (this._wizard = null)}
               ></boopli-wizard>`
-          : this._tab === "today"
-            ? html`<boopli-today
-                .hass=${this.hass}
-                .snapshot=${this._snapshot}
-                .nowMs=${this._nowMs}
-              ></boopli-today>`
-            : this._tab === "chores"
-              ? html`<boopli-chores
-                  .hass=${this.hass}
-                  .snapshot=${this._snapshot}
-                  .nowMs=${this._nowMs}
-                ></boopli-chores>`
-              : html`<boopli-settings
-                  .hass=${this.hass}
-                  .snapshot=${this._snapshot}
-                ></boopli-settings>`}
+            : this._tab === "today"
+              ? html`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>`
+              : this._tab === "chores"
+                ? html`<boopli-chores .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-chores>`
+                : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>
+      ${this._renderConfirm()}
     `;
   }
 
@@ -224,6 +296,7 @@ export class BoopliPanel extends LitElement {
         gap: 4px;
       }
       .tab {
+        position: relative;
         background: none;
         border: 0;
         border-radius: 10px;
@@ -239,10 +312,38 @@ export class BoopliPanel extends LitElement {
         background: rgba(255, 255, 255, 0.2);
         font-weight: 500;
       }
+      .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: var(--warning-color, #ffa600);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+      }
       main {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 20px 16px 48px;
+        padding: 20px 24px 64px;
+      }
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 16px;
+      }
+      .dialog {
+        max-width: 420px;
+        width: 100%;
+        padding: 20px;
+      }
+      .dialog-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
       }
     `,
   ];

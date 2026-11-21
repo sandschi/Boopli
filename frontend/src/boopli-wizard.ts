@@ -1,35 +1,132 @@
 import { LitElement, html, css, nothing } from "lit";
-import { errorMessage, saveChore, saveSetup, saveSettings, testLight, testPhone } from "./api";
-import { TEMPLATES } from "./templates";
+import {
+  errorMessage,
+  saveChore,
+  saveSetup,
+  saveSettings,
+  testAlarmDevice,
+  testLight,
+  testPhone,
+  testSpeaker,
+} from "./api";
+import { diffSettings } from "./diff";
+import {
+  ALARM_DOMAINS,
+  DEFAULT_QUIET_DAY,
+  describeSpeaker,
+  entityIds,
+  friendlyName,
+  hexToRgb,
+  newAlarmDevice,
+  newLight,
+  newSpeaker,
+  phoneName,
+  rgbToHex,
+  speechTargets,
+} from "./helpers";
 import { sharedStyles } from "./styles";
-import "./boopli-speakers";
-import type { Hass, LightCfg, NudgeStyle, QuietDay, Settings, Snapshot } from "./types";
+import { TEMPLATES } from "./templates";
+import { WEEKDAY_NAMES } from "./time";
+import type {
+  AlarmDeviceCfg,
+  Hass,
+  LightCfg,
+  NudgeStyle,
+  PhoneCfg,
+  PhoneLevel,
+  QuietDay,
+  Settings,
+  Snapshot,
+  SoundCfg,
+  SoundKind,
+  SpeakerCfg,
+  SpeakerLevel,
+  SpeechRoute,
+} from "./types";
 
-/** Every step of the full setup, in order. Guided setups in Settings use a part of it. */
-export const ALL_SECTIONS = [
-  "welcome",
-  "phone",
-  "quiet",
-  "nudging",
-  "lights",
-  "speakers",
-  "presence",
-  "chores",
-  "done",
-] as const;
-export type Section = (typeof ALL_SECTIONS)[number];
+/** The wizards. "first" is the first-run setup; the others each set up one area. */
+export type WizardId =
+  | "first"
+  | "phone"
+  | "quiet"
+  | "lights"
+  | "speakers"
+  | "alarms"
+  | "presence"
+  | "nudging"
+  | "pet";
 
-const TITLES: Record<Section, string> = {
+type StepId =
+  | "welcome"
+  | "phone"
+  | "phone_detail"
+  | "quiet"
+  | "nudging"
+  | "lights"
+  | "lights_detail"
+  | "speaker_gate"
+  | "spk_pick"
+  | "spk_ding"
+  | "spk_speech"
+  | "spk_alarm"
+  | "spk_when"
+  | "alarm_devices"
+  | "alarm_detail"
+  | "presence"
+  | "pet"
+  | "chores"
+  | "done";
+
+const SEQUENCES: Record<WizardId, StepId[]> = {
+  first: ["welcome", "phone", "quiet", "nudging", "lights", "speaker_gate", "presence", "chores", "done"],
+  phone: ["phone", "phone_detail", "done"],
+  quiet: ["quiet", "done"],
+  lights: ["lights", "lights_detail", "done"],
+  speakers: ["spk_pick", "spk_ding", "spk_speech", "spk_alarm", "spk_when", "done"],
+  alarms: ["alarm_devices", "alarm_detail", "done"],
+  presence: ["presence", "done"],
+  nudging: ["nudging", "done"],
+  pet: ["pet", "done"],
+};
+
+/** What "Set up speakers" adds to the first-run setup. */
+const SPEAKER_STEPS: StepId[] = ["spk_pick", "spk_ding", "spk_speech", "spk_alarm", "alarm_devices"];
+
+export const WIZARD_TITLES: Record<WizardId, string> = {
+  first: "First setup",
+  phone: "Phone setup",
+  quiet: "Quiet hours setup",
+  lights: "Reminder lights setup",
+  speakers: "Speaker setup",
+  alarms: "Alarm devices setup",
+  presence: "Where you are",
+  nudging: "Snooze and style",
+  pet: "Your pet",
+};
+
+const TITLES: Record<StepId, string> = {
   welcome: "Welcome",
   phone: "Your phone",
+  phone_detail: "Phone details",
   quiet: "Quiet hours",
-  nudging: "How Boopli nudges",
-  lights: "Lights",
-  speakers: "Speakers and alarms",
-  presence: "Are you home?",
+  nudging: "Snooze and style",
+  lights: "Reminder lights",
+  lights_detail: "Light details",
+  speaker_gate: "Speaker reminders",
+  spk_pick: "Pick a speaker",
+  spk_ding: "A small ding",
+  spk_speech: "A spoken sentence",
+  spk_alarm: "An alarm sound",
+  spk_when: "When it joins in",
+  alarm_devices: "Alarm devices",
+  alarm_detail: "Alarm device details",
+  presence: "Where you are",
+  pet: "Your pet",
   chores: "First chores",
   done: "All set",
 };
+
+const OPTIONAL_STEPS: StepId[] = ["phone_detail", "lights_detail", "spk_when", "alarm_detail"];
 
 const STYLE_CHOICES: { value: NudgeStyle; label: string; text: string }[] = [
   { value: "one", label: "One nudge", text: "A single nudge, then quiet." },
@@ -38,78 +135,109 @@ const STYLE_CHOICES: { value: NudgeStyle; label: string; text: string }[] = [
   { value: "quiet", label: "Quiet", text: "Only shown in Boopli, never nudges." },
 ];
 
-const DAYS = [0, 1, 2, 3, 4, 5, 6];
-const WEEKDAYS = [0, 1, 2, 3, 4];
-const WEEKEND = [5, 6];
-const DEFAULT_QUIET: QuietDay = { start: "07:00", stop: "22:00" };
+const LEVELS: { value: PhoneLevel; label: string }[] = [
+  { value: "normal", label: "Normal notification" },
+  { value: "high", label: "High priority (pops up)" },
+  { value: "alarm", label: "Alarm volume" },
+  { value: "alarm_max", label: "Max volume (not on every phone)" },
+];
 
-type QuietMode = "none" | "same" | "split" | "custom";
+const ROUTES: { value: SpeechRoute; label: string }[] = [
+  { value: "alexa_media", label: "Alexa Media Player" },
+  { value: "alexa_devices", label: "Alexa Devices (notify entity)" },
+  { value: "tts", label: "A TTS voice on this speaker" },
+];
+
+const SOUND_KINDS: { value: SoundKind; label: string }[] = [
+  { value: "alexa", label: "Alexa sound" },
+  { value: "file", label: "File in my media folder" },
+];
+
+const SOUND_LIBRARY_URL =
+  "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html";
+const DAYS = [0, 1, 2, 3, 4, 5, 6];
 
 /**
- * The setup wizard: one question per screen, every step skippable, nothing is
- * sent to a device until you press Test. Answers are saved as you go, so
- * closing it halfway loses nothing.
- *
- * `sections` is what to walk through: all of them for the full setup, or one
- * or two for a guided setup of a single area from Settings.
+ * A wizard: one question per screen, a rail of the steps on the left, every
+ * step skippable, and nothing is sent to a device until you press Test.
+ * Answers are saved as you go. The last screen lists exactly what changed.
  */
 export class BoopliWizard extends LitElement {
   static properties = {
     hass: { attribute: false },
     snapshot: { attribute: false },
-    sections: { attribute: false },
+    wizard: { type: String },
     startAt: { type: String },
     _draft: { state: true },
+    _steps: { state: true },
     _index: { state: true },
     _busy: { state: true },
     _error: { state: true },
     _notes: { state: true },
     _picked: { state: true },
-    _quietMode: { state: true },
+    _speaker: { state: true },
+    _addDevice: { state: true },
   };
 
   declare hass?: Hass;
   declare snapshot?: Snapshot;
-  declare sections: Section[];
+  declare wizard: WizardId;
   declare startAt: string;
   declare _draft?: Settings;
+  declare _steps: StepId[];
   declare _index: number;
   declare _busy: boolean;
   declare _error: string;
   declare _notes: Record<string, string>;
   declare _picked: string[]; // labels of the starter chores to add
-  declare _quietMode: QuietMode;
+  declare _speaker: string; // entity id of the speaker being set up
+  declare _addDevice: string;
   private _started = false;
+  private _saved?: Settings; // what is saved right now
+  private _baseline?: Settings; // what it was when this wizard opened
 
   constructor() {
     super();
-    this.sections = [...ALL_SECTIONS];
+    this.wizard = "first";
     this.startAt = "";
+    this._steps = [];
     this._index = 0;
     this._busy = false;
     this._error = "";
     this._notes = {};
     this._picked = [];
-    this._quietMode = "none";
+    this._speaker = "";
+    this._addDevice = "";
   }
 
-  private get _full(): boolean {
-    return this.sections.includes("welcome") && this.sections.includes("done");
+  private get _first(): boolean {
+    return this.wizard === "first";
   }
 
-  private get _section(): Section {
-    return this.sections[Math.min(this._index, this.sections.length - 1)];
+  private get _step(): StepId {
+    return this._steps[Math.min(this._index, this._steps.length - 1)] ?? "done";
   }
 
   protected willUpdate(): void {
     if (this._started || !this.snapshot) return;
     this._started = true;
+    this._saved = structuredClone(this.snapshot.settings);
+    this._baseline = structuredClone(this.snapshot.settings);
     this._draft = structuredClone(this.snapshot.settings);
-    const resume = this.sections.indexOf(this.startAt as Section);
-    this._index = resume >= 0 ? resume : 0;
+    this._steps = [...SEQUENCES[this.wizard]];
+    const resume = this.startAt as StepId;
+    if (this._first && SPEAKER_STEPS.includes(resume)) {
+      const gate = this._steps.indexOf("speaker_gate");
+      this._steps.splice(gate + 1, 0, ...SPEAKER_STEPS);
+    }
+    const at = this._steps.indexOf(resume);
+    this._index = at >= 0 ? at : 0;
     this._picked = TEMPLATES.filter(
       (t) => !this.snapshot!.chores.some((c) => c.name === t.draft.name)
     ).map((t) => t.label);
+    if (this.snapshot.settings.speakers.length === 1) {
+      this._speaker = this.snapshot.settings.speakers[0].entity_id;
+    }
     this._enter();
   }
 
@@ -119,13 +247,12 @@ export class BoopliWizard extends LitElement {
     if (this._draft) this._draft = { ...this._draft, ...patch };
   }
 
-  private _friendly(entityId: string): string {
-    const name = this.hass?.states[entityId]?.attributes?.friendly_name;
-    return typeof name === "string" && name ? name : entityId;
-  }
-
   private _note(key: string, text: string): void {
     this._notes = { ...this._notes, [key]: text };
+  }
+
+  private _fn(id: string): string {
+    return friendlyName(this.hass, id);
   }
 
   private _phones(): string[] {
@@ -136,16 +263,50 @@ export class BoopliWizard extends LitElement {
     return [...new Set([...known, ...saved])].sort();
   }
 
-  private _lights(): string[] {
-    return Object.keys(this.hass?.states ?? {})
-      .filter((id) => id.startsWith("light."))
-      .sort((a, b) => this._friendly(a).localeCompare(this._friendly(b)));
+  private _num(raw: string, min: number, max: number): number | undefined {
+    const value = Math.round(Number(raw));
+    if (raw.trim() === "" || Number.isNaN(value)) return undefined;
+    return Math.min(max, Math.max(min, value));
   }
 
-  private _persons(): string[] {
-    return Object.keys(this.hass?.states ?? {})
-      .filter((id) => id.startsWith("person."))
-      .sort();
+  /** A labelled number field that keeps its value inside a range. */
+  private _numField(
+    label: string,
+    value: number,
+    min: number,
+    max: number,
+    onChange: (n: number) => void,
+    step = 1
+  ) {
+    return html`<label class="num">
+      ${label}
+      <input
+        type="number"
+        min=${min}
+        max=${max}
+        step=${step}
+        .value=${String(value)}
+        @change=${(e: Event) => {
+          const n = this._num((e.target as HTMLInputElement).value, min, max);
+          if (n !== undefined) onChange(n);
+        }}
+      />
+    </label>`;
+  }
+
+  private _currentSpeaker(): SpeakerCfg | undefined {
+    return this._draft?.speakers.find((s) => s.entity_id === this._speaker);
+  }
+
+  private _patchSpeaker(fn: (s: SpeakerCfg) => SpeakerCfg): void {
+    if (!this._draft) return;
+    this._set({
+      speakers: this._draft.speakers.map((s) => (s.entity_id === this._speaker ? fn(s) : s)),
+    });
+  }
+
+  private _patchSound(which: "cue" | "alarm", patch: Partial<SoundCfg>): void {
+    this._patchSpeaker((s) => ({ ...s, [which]: { ...s[which], ...patch } }));
   }
 
   /** Called whenever a step is shown. */
@@ -153,38 +314,43 @@ export class BoopliWizard extends LitElement {
     this._error = "";
     const d = this._draft;
     if (!d) return;
-    if (this._section === "phone" && d.phones.length === 0) {
+    if (this._step === "phone" && d.phones.length === 0) {
       const phones = this._phones();
       if (phones.length === 1) {
         this._set({ phones: [{ service: phones[0], level: "normal", start_at: 1 }] });
       }
     }
-    if (this._section === "quiet") this._quietMode = this._detectQuiet(d);
   }
 
   // --- navigation ----------------------------------------------------------
 
-  private _fresh(): void {
-    // Drop what was changed on this screen (used by Skip).
-    if (this.snapshot) this._draft = structuredClone(this.snapshot.settings);
-  }
-
-  private async _go(delta: 1 | -1, save: boolean): Promise<void> {
+  private async _go(delta: 1 | -1, mode: "next" | "skip" | "gate" = "next"): Promise<void> {
     if (!this.hass || !this._draft || this._busy) return;
     this._busy = true;
     this._error = "";
     try {
-      const target = this._index + delta;
-      if (delta === 1 && save) await saveSettings(this.hass, this._draft);
-      if (delta === 1 && !save) {
-        this._fresh();
-        if (this._section === "chores") this._picked = []; // skipped: add none
+      if (delta === 1 && mode === "next") {
+        if (this._step === "spk_pick" && !this._speaker) {
+          throw new Error("Pick a speaker, or press Skip.");
+        }
+        await saveSettings(this.hass, this._draft);
+        this._saved = structuredClone(this._draft);
       }
-      if (this._full) {
-        const next = this.sections[Math.min(target, this.sections.length - 1)];
-        await saveSetup(this.hass, "in_progress", next);
+      if (delta === 1 && mode === "skip") {
+        // Skip: drop what was changed on this screen.
+        this._draft = structuredClone(this._saved!);
+        if (this._step === "chores") this._picked = [];
       }
-      this._index = Math.max(0, Math.min(target, this.sections.length - 1));
+      if (mode === "gate") {
+        this._steps = [
+          ...this._steps.slice(0, this._index + 1),
+          ...SPEAKER_STEPS,
+          ...this._steps.slice(this._index + 1),
+        ];
+      }
+      const target = Math.max(0, Math.min(this._index + delta, this._steps.length - 1));
+      if (this._first) await saveSetup(this.hass, "in_progress", this._steps[target]);
+      this._index = target;
       this._enter();
     } catch (err) {
       this._error = errorMessage(err);
@@ -193,15 +359,21 @@ export class BoopliWizard extends LitElement {
     }
   }
 
+  private _jump(index: number): void {
+    if (this._busy || index >= this._index) return; // only back to steps already seen
+    this._index = index;
+    this._enter();
+  }
+
   private _close(): void {
     this.dispatchEvent(new CustomEvent("wizard-close", { bubbles: true, composed: true }));
   }
 
-  private async _skipAll(): Promise<void> {
+  private async _leave(): Promise<void> {
     if (!this.hass || this._busy) return;
     this._busy = true;
     try {
-      if (this._full) await saveSetup(this.hass, "skipped", this._section);
+      if (this._first) await saveSetup(this.hass, "skipped", this._step);
       this._close();
     } catch (err) {
       this._error = errorMessage(err);
@@ -216,7 +388,7 @@ export class BoopliWizard extends LitElement {
     this._error = "";
     try {
       await saveSettings(this.hass, this._draft);
-      if (this._full) {
+      if (this._first) {
         for (const t of TEMPLATES.filter((x) => this._picked.includes(x.label))) {
           // On demand: nothing nudges until you set a time or start it yourself.
           await saveChore(this.hass, {
@@ -234,108 +406,80 @@ export class BoopliWizard extends LitElement {
     }
   }
 
-  // --- quiet hours -----------------------------------------------------------
+  // --- quiet hours (one row per day, never grouped) -----------------------------
 
-  private _sameDay(a: QuietDay | null | undefined, b: QuietDay | null | undefined): boolean {
-    return (a?.start ?? "") === (b?.start ?? "") && (a?.stop ?? "") === (b?.stop ?? "");
-  }
-
-  private _detectQuiet(d: Settings): QuietMode {
-    const qh = d.quiet_hours;
-    if (!qh.enabled) return "none";
-    const day = (i: number) => qh.days[String(i)] ?? null;
-    if (DAYS.every((i) => day(i) && this._sameDay(day(i), day(0)))) return "same";
-    if (
-      WEEKDAYS.every((i) => day(i) && this._sameDay(day(i), day(0))) &&
-      WEEKEND.every((i) => day(i) && this._sameDay(day(i), day(5)))
-    )
-      return "split";
-    return "custom";
-  }
-
-  private _quiet(): Settings["quiet_hours"] {
-    return this._draft!.quiet_hours;
-  }
-
-  private _setQuietMode(mode: QuietMode): void {
+  private _setQuiet(enabled: boolean): void {
     if (!this._draft) return;
-    this._quietMode = mode;
-    if (mode === "none") {
-      this._set({ quiet_hours: { ...this._quiet(), enabled: false } });
-      return;
+    let days = this._draft.quiet_hours.days;
+    if (enabled && Object.keys(days).length === 0) {
+      days = Object.fromEntries(DAYS.map((i) => [String(i), { ...DEFAULT_QUIET_DAY }]));
     }
-    const days = this._quiet().days;
-    const weekday = days["0"] ?? { ...DEFAULT_QUIET };
-    const weekend = days["5"] ?? { ...weekday };
-    this._applyQuiet(weekday, mode === "same" ? weekday : weekend);
+    this._set({ quiet_hours: { enabled, days } });
   }
 
-  private _applyQuiet(weekday: QuietDay, weekend: QuietDay): void {
-    const days: Record<string, QuietDay | null> = {};
-    for (const i of DAYS) days[String(i)] = { ...(WEEKEND.includes(i) ? weekend : weekday) };
-    this._set({ quiet_hours: { enabled: true, days } });
+  private _setDay(day: number, value: QuietDay | null): void {
+    if (!this._draft) return;
+    const qh = this._draft.quiet_hours;
+    this._set({ quiet_hours: { ...qh, days: { ...qh.days, [String(day)]: value } } });
   }
 
-  private _editQuiet(which: "weekday" | "weekend", key: "start" | "stop", value: string): void {
-    const days = this._quiet().days;
-    const weekday = { ...(days["0"] ?? DEFAULT_QUIET) };
-    const weekend = { ...(days["5"] ?? weekday) };
-    if (this._quietMode === "same") {
-      weekday[key] = value;
-      this._applyQuiet(weekday, { ...weekday });
-    } else if (which === "weekday") {
-      weekday[key] = value;
-      this._applyQuiet(weekday, weekend);
-    } else {
-      weekend[key] = value;
-      this._applyQuiet(weekday, weekend);
-    }
+  private _copyDayAbove(day: number): void {
+    if (!this._draft || day === 0) return;
+    const above = this._draft.quiet_hours.days[String(day - 1)] ?? null;
+    this._setDay(day, above ? { ...above } : null);
   }
 
-  // --- tests -----------------------------------------------------------------
+  private _copyMondayToAll(): void {
+    if (!this._draft) return;
+    const qh = this._draft.quiet_hours;
+    const monday = qh.days["0"] ?? null;
+    this._set({
+      quiet_hours: {
+        ...qh,
+        days: Object.fromEntries(DAYS.map((i) => [String(i), monday ? { ...monday } : null])),
+      },
+    });
+  }
 
-  private async _testPhone(service: string): Promise<void> {
-    if (!this.hass || !this._draft) return;
-    const level = this._draft.phones.find((p) => p.service === service)?.level ?? "normal";
-    this._note(`phone:${service}`, "Sending…");
+  // --- tests -------------------------------------------------------------------
+
+  private async _try(key: string, run: () => Promise<{ note: string }>): Promise<void> {
+    this._note(key, "Testing…");
     try {
-      const result = await testPhone(this.hass, { service, level, start_at: 1 });
-      this._note(`phone:${service}`, result.note);
+      this._note(key, (await run()).note);
     } catch (err) {
-      this._note(`phone:${service}`, errorMessage(err));
+      this._note(key, errorMessage(err));
     }
   }
 
-  private async _testLight(light: LightCfg): Promise<void> {
-    if (!this.hass) return;
-    this._note(`light:${light.entity_id}`, "Testing…");
-    try {
-      const result = await testLight(this.hass, light);
-      this._note(`light:${light.entity_id}`, result.note);
-    } catch (err) {
-      this._note(`light:${light.entity_id}`, errorMessage(err));
-    }
+  private _noteLine(key: string) {
+    const note = this._notes[key];
+    return note ? html`<div class="muted small note">${note}</div>` : nothing;
   }
 
-  // --- screens ---------------------------------------------------------------
+  // --- screens -----------------------------------------------------------------
 
   private _renderWelcome(d: Settings) {
     return html`
       <p>
         Boopli breaks chores into small steps and nudges you with the lights, speakers and phone
         you already have. A few quick questions, and you can skip any of them. Nothing leaves your
-        home.
+        home, and nothing is sent to a device until you press a Test button.
       </p>
-      <div class="field">
-        <label for="petname">What should your pet be called?</label>
-        <input
-          id="petname"
-          maxlength="30"
-          .value=${d.pet_name ?? "Boopli"}
-          @input=${(e: Event) => this._set({ pet_name: (e.target as HTMLInputElement).value })}
-        />
-      </div>
+      ${this._renderPet(d)}
     `;
+  }
+
+  private _renderPet(d: Settings) {
+    return html`<div class="field">
+      <label for="petname">What should your pet be called?</label>
+      <input
+        id="petname"
+        maxlength="30"
+        .value=${d.pet_name ?? "Boopli"}
+        @input=${(e: Event) => this._set({ pet_name: (e.target as HTMLInputElement).value })}
+      />
+    </div>`;
   }
 
   private _renderPhone(d: Settings) {
@@ -347,84 +491,129 @@ export class BoopliWizard extends LitElement {
       </p>
       ${phones.length === 0
         ? html`<p class="muted">
-            No phone with the Home Assistant app found. Install the app and sign in, then come back
-            here from Settings. You can skip this for now.
+            No phone with the Home Assistant app found. Install the app and sign in, then come back.
+            You can skip this for now.
           </p>`
-        : phones.map((service) => {
-            const cfg = d.phones.find((p) => p.service === service);
-            const note = this._notes[`phone:${service}`];
-            return html`<div class="choice">
-              <label class="inline">
-                <input
-                  type="checkbox"
-                  .checked=${!!cfg}
-                  @change=${(e: Event) => {
-                    const on = (e.target as HTMLInputElement).checked;
-                    const rest = d.phones.filter((p) => p.service !== service);
-                    this._set({
-                      phones: on ? [...rest, { service, level: "normal", start_at: 1 }] : rest,
-                    });
-                  }}
-                />
-                ${service.replace("mobile_app_", "")}
-              </label>
-              <button type="button" @click=${() => this._testPhone(service)}>Send a test</button>
-              ${note ? html`<div class="muted small">${note}</div>` : nothing}
-            </div>`;
-          })}
+        : html`<div class="list">
+            ${phones.map((service) => {
+              const cfg = d.phones.find((p) => p.service === service);
+              return html`<div class="choice">
+                <label class="inline">
+                  <input
+                    type="checkbox"
+                    .checked=${!!cfg}
+                    @change=${(e: Event) => {
+                      const on = (e.target as HTMLInputElement).checked;
+                      const rest = d.phones.filter((p) => p.service !== service);
+                      this._set({
+                        phones: on ? [...rest, { service, level: "normal", start_at: 1 }] : rest,
+                      });
+                    }}
+                  />
+                  ${phoneName(service)}
+                </label>
+                <button type="button" @click=${() => this._try(`phone:${service}`, () => testPhone(this.hass!, { service, level: cfg?.level ?? "normal", start_at: 1 }))}>
+                  Send a test
+                </button>
+                ${this._noteLine(`phone:${service}`)}
+              </div>`;
+            })}
+          </div>`}
+    `;
+  }
+
+  private _renderPhoneDetail(d: Settings) {
+    if (d.phones.length === 0) return html`<p class="muted">No phone is set up yet. Skip this.</p>`;
+    return html`
+      <p>
+        How loud should each phone be, and from which nudge on? Nudge 1 is the first one for a step.
+        You can leave the defaults.
+      </p>
+      <div class="list">
+        ${d.phones.map(
+          (p: PhoneCfg) => html`<div class="choice col">
+            <b>${phoneName(p.service)}</b>
+            <label class="num">
+              Notification level
+              <select
+                @change=${(e: Event) =>
+                  this._set({
+                    phones: d.phones.map((x) =>
+                      x.service === p.service ? { ...x, level: (e.target as HTMLSelectElement).value as PhoneLevel } : x
+                    ),
+                  })}
+              >
+                ${LEVELS.map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
+              </select>
+            </label>
+            ${this._numField("Starts at nudge #", p.start_at ?? 1, 1, 20, (n) =>
+              this._set({ phones: d.phones.map((x) => (x.service === p.service ? { ...x, start_at: n } : x)) })
+            )}
+            <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>Send a test</button>
+            ${this._noteLine(`phone:${p.service}`)}
+          </div>`
+        )}
+      </div>
     `;
   }
 
   private _renderQuiet(d: Settings) {
-    const mode = this._quietMode;
-    const days = d.quiet_hours.days;
-    const weekday = days["0"] ?? DEFAULT_QUIET;
-    const weekend = days["5"] ?? weekday;
-    const times = (label: string, which: "weekday" | "weekend", day: QuietDay) => html`
-      <div class="times">
-        <span>${label}</span>
-        <input
-          type="time"
-          aria-label="${label} from"
-          .value=${day.start}
-          @input=${(e: Event) => this._editQuiet(which, "start", (e.target as HTMLInputElement).value)}
-        />
-        <span class="muted">until</span>
-        <input
-          type="time"
-          aria-label="${label} until"
-          .value=${day.stop}
-          @input=${(e: Event) => this._editQuiet(which, "stop", (e.target as HTMLInputElement).value)}
-        />
-      </div>
-    `;
-    const radio = (value: QuietMode, label: string) => html`<label class="inline option">
-      <input
-        type="radio"
-        name="quiet"
-        .checked=${mode === value}
-        @change=${() => this._setQuietMode(value)}
-      />
-      ${label}
-    </label>`;
+    const qh = d.quiet_hours;
     return html`
-      <p>Should Boopli stay quiet at certain times, like at night? Nudges wait until it is allowed again.</p>
-      ${radio("none", "No, nudge me any time")}
-      ${radio("same", "Yes, the same every day")}
-      ${radio("split", "Yes, different on weekdays and weekends")}
-      ${mode === "custom"
-        ? html`<p class="muted small">
-            You have custom hours for each day. They stay as they are; change them in Settings.
-          </p>`
+      <p>
+        Should Boopli stay quiet at certain times, like at night? Set the times Boopli may nudge you
+        for each day on its own. Outside them, nudges wait. A chore can opt out later, for example
+        pills.
+      </p>
+      <label class="inline option">
+        <input
+          type="checkbox"
+          .checked=${qh.enabled}
+          @change=${(e: Event) => this._setQuiet((e.target as HTMLInputElement).checked)}
+        />
+        Hold nudges outside the times below
+      </label>
+      ${qh.enabled
+        ? html`
+            <div class="days">
+              ${DAYS.map((i) => {
+                const day = qh.days[String(i)] ?? null;
+                return html`<div class="dayrow">
+                  <span class="dayname">${WEEKDAY_NAMES[i]}</span>
+                  <label class="inline small">
+                    <input
+                      type="checkbox"
+                      .checked=${day === null}
+                      @change=${(e: Event) =>
+                        this._setDay(i, (e.target as HTMLInputElement).checked ? null : { ...DEFAULT_QUIET_DAY })}
+                    />
+                    No limit
+                  </label>
+                  ${day
+                    ? html`<span class="muted small">from</span>
+                        <input
+                          type="time"
+                          aria-label="${WEEKDAY_NAMES[i]} from"
+                          .value=${day.start}
+                          @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
+                        />
+                        <span class="muted small">until</span>
+                        <input
+                          type="time"
+                          aria-label="${WEEKDAY_NAMES[i]} until"
+                          .value=${day.stop}
+                          @input=${(e: Event) => this._setDay(i, { ...day, stop: (e.target as HTMLInputElement).value })}
+                        />`
+                    : nothing}
+                  ${i > 0
+                    ? html`<button type="button" class="chip" @click=${() => this._copyDayAbove(i)}>Same as ${WEEKDAY_NAMES[i - 1]}</button>`
+                    : nothing}
+                </div>`;
+              })}
+            </div>
+            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>Copy Monday to all days</button>
+          `
         : nothing}
-      ${mode === "same"
-        ? html`<p class="muted small">Boopli may nudge you:</p>${times("Every day", "weekday", weekday)}`
-        : nothing}
-      ${mode === "split"
-        ? html`<p class="muted small">Boopli may nudge you:</p>
-            ${times("Mon to Fri", "weekday", weekday)} ${times("Sat and Sun", "weekend", weekend)}`
-        : nothing}
-      <p class="muted small">A chore can opt out later, for example pills.</p>
     `;
   }
 
@@ -434,13 +623,7 @@ export class BoopliWizard extends LitElement {
         <label for="snooze">When you press Snooze, how many minutes until the next nudge?</label>
         <div class="chips">
           ${[5, 10, 15, 30].map(
-            (m) => html`<button
-              type="button"
-              class="chip ${d.snooze_minutes === m ? "on" : ""}"
-              @click=${() => this._set({ snooze_minutes: m })}
-            >
-              ${m} min
-            </button>`
+            (m) => html`<button type="button" class="chip ${d.snooze_minutes === m ? "on" : ""}" @click=${() => this._set({ snooze_minutes: m })}>${m} min</button>`
           )}
           <input
             id="snooze"
@@ -449,20 +632,14 @@ export class BoopliWizard extends LitElement {
             min="1"
             max="720"
             .value=${String(d.snooze_minutes)}
-            @input=${(e: Event) =>
-              this._set({ snooze_minutes: Number((e.target as HTMLInputElement).value) || 15 })}
+            @input=${(e: Event) => this._set({ snooze_minutes: Number((e.target as HTMLInputElement).value) || 15 })}
           />
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
       ${STYLE_CHOICES.map(
         (s) => html`<label class="inline option">
-          <input
-            type="radio"
-            name="style"
-            .checked=${d.default_style === s.value}
-            @change=${() => this._set({ default_style: s.value })}
-          />
+          <input type="radio" name="style" .checked=${d.default_style === s.value} @change=${() => this._set({ default_style: s.value })} />
           <span><b>${s.label}</b> <span class="muted small">${s.text}</span></span>
         </label>`
       )}
@@ -470,86 +647,326 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderLights(d: Settings) {
-    const lights = this._lights();
+    const lights = entityIds(this.hass, ["light"]);
     return html`
       <p>
-        Want a light to blink when a step is your turn? Pick the ones you would notice. This is
-        optional.
+        Which lights should remind you? Each one either <b>blinks</b> when a step is your turn, or
+        is a <b>status light</b> that turns on and stays on until you are done. This is optional.
       </p>
       ${lights.length === 0
         ? html`<p class="muted">No lights found.</p>`
-        : lights.map((id) => {
-            const cfg = d.lights.find((l) => l.entity_id === id);
-            const note = this._notes[`light:${id}`];
-            return html`<div class="choice">
-              <label class="inline">
-                <input
-                  type="checkbox"
-                  .checked=${!!cfg}
-                  @change=${(e: Event) => {
-                    const on = (e.target as HTMLInputElement).checked;
-                    const rest = d.lights.filter((l) => l.entity_id !== id);
-                    const light: LightCfg = {
-                      entity_id: id,
-                      mode: "blink",
-                      color: [255, 90, 0],
-                      blink_ms: 1500,
-                      repeats: 1,
-                      gap_ms: 1000,
-                      start_at: 1,
-                    };
-                    this._set({ lights: on ? [...rest, light] : rest });
-                  }}
-                />
-                ${this._friendly(id)}
-              </label>
-              ${cfg
-                ? html`<button type="button" @click=${() => this._testLight(cfg)}>Test</button>`
-                : nothing}
-              ${note ? html`<div class="muted small">${note}</div>` : nothing}
-            </div>`;
-          })}
-      <p class="muted small">Blink length, color and more are in Settings.</p>
+        : html`<div class="list grid">
+            ${lights.map((id) => {
+              const cfg = d.lights.find((l) => l.entity_id === id);
+              return html`<div class="choice col">
+                <label class="inline">
+                  <input
+                    type="checkbox"
+                    .checked=${!!cfg}
+                    @change=${(e: Event) => {
+                      const on = (e.target as HTMLInputElement).checked;
+                      const rest = d.lights.filter((l) => l.entity_id !== id);
+                      this._set({ lights: on ? [...rest, newLight(id)] : rest });
+                    }}
+                  />
+                  ${this._fn(id)}
+                </label>
+                ${cfg
+                  ? html`<div class="radios">
+                      ${(["blink", "indicator"] as const).map(
+                        (mode) => html`<label class="inline small">
+                          <input
+                            type="radio"
+                            name="mode-${id}"
+                            .checked=${cfg.mode === mode}
+                            @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
+                          />
+                          ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
+                        </label>`
+                      )}
+                      <button type="button" @click=${() => this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
+                    </div>
+                    ${this._noteLine(`light:${id}`)}`
+                  : nothing}
+              </div>`;
+            })}
+          </div>`}
     `;
   }
 
-  private _renderSpeakers(d: Settings) {
+  private _renderLightDetail(d: Settings) {
+    if (d.lights.length === 0) return html`<p class="muted">No reminder light is set up yet. Skip this.</p>`;
     return html`
       <p>
-        Optional: a speaker can play a small ding, say the step out loud, or sound an alarm if you
-        keep ignoring it. You can also add a siren or a switch as an alarm. Skip this if you only
-        want lights and your phone.
+        Fine-tune each light. A light in your home can follow a few hundred milliseconds; a
+        cloud-connected light needs about a second or more, so find its limit with Test.
       </p>
-      <boopli-speakers
-        .hass=${this.hass}
-        .settings=${d}
-        @settings-patch=${(e: CustomEvent<Partial<Settings>>) => {
-          e.stopPropagation();
-          this._set(e.detail);
-        }}
-      ></boopli-speakers>
+      <div class="list grid">
+        ${d.lights.map((l: LightCfg) => {
+          const patch = (p: Partial<LightCfg>) =>
+            this._set({ lights: d.lights.map((x) => (x.entity_id === l.entity_id ? { ...x, ...p } : x)) });
+          return html`<div class="choice col">
+            <b>${this._fn(l.entity_id)}</b>
+            <label class="num">
+              Color
+              <input type="color" class="swatch" .value=${rgbToHex(l.color)} @input=${(e: Event) => patch({ color: hexToRgb((e.target as HTMLInputElement).value) })} />
+            </label>
+            ${l.mode === "blink"
+              ? html`${this._numField("Blink length (ms)", l.blink_ms, 100, 30000, (n) => patch({ blink_ms: n }), 100)}
+                ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
+                ${this._numField("Pause between blinks (ms)", l.gap_ms, 0, 30000, (n) => patch({ gap_ms: n }), 100)}`
+              : html`<span class="muted small">A status light has no blink settings.</span>`}
+            ${this._numField("Starts at nudge #", l.start_at ?? 1, 1, 20, (n) => patch({ start_at: n }))}
+            <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>Test</button>
+            ${this._noteLine(`light:${l.entity_id}`)}
+          </div>`;
+        })}
+      </div>
+    `;
+  }
+
+  private _renderGate() {
+    return html`
+      <p>
+        Do you want speaker reminders? A speaker can play a small ding, say the step out loud, or
+        sound an alarm if you keep ignoring it. You can also use a siren or a switch as an alarm.
+        If you only want lights and your phone, skip this.
+      </p>
+      <div class="gate">
+        <button type="button" class="primary big" ?disabled=${this._busy} @click=${() => this._go(1, "gate")}>Set up speakers</button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>
+      </div>
+    `;
+  }
+
+  private _renderSpkPick(d: Settings) {
+    const players = entityIds(this.hass, ["media_player"]);
+    return html`
+      <p>Which speaker do you want to set up? You can add more speakers afterwards.</p>
+      ${players.length === 0
+        ? html`<p class="muted">No speakers (media players) found.</p>`
+        : html`<div class="list grid">
+            ${players.map((id) => {
+              const cfg = d.speakers.find((s) => s.entity_id === id);
+              return html`<label class="inline option card-choice">
+                <input
+                  type="radio"
+                  name="speaker"
+                  .checked=${this._speaker === id}
+                  @change=${() => {
+                    this._speaker = id;
+                    if (!cfg) this._set({ speakers: [...d.speakers, newSpeaker(id)] });
+                  }}
+                />
+                <span>
+                  ${this._fn(id)}
+                  ${cfg ? html`<span class="muted small"><br />set up: ${describeSpeaker(cfg)}</span>` : nothing}
+                </span>
+              </label>`;
+            })}
+          </div>`}
+    `;
+  }
+
+  private _noSpeaker() {
+    return html`<p class="muted">Pick a speaker first. Press Back.</p>`;
+  }
+
+  private _soundBlock(which: "cue" | "alarm", s: SpeakerCfg, intro: string, level: SpeakerLevel) {
+    const sound = s[which];
+    return html`
+      <p>${intro}</p>
+      <label class="inline option">
+        <input type="checkbox" .checked=${sound.enabled} @change=${(e: Event) => this._patchSound(which, { enabled: (e.target as HTMLInputElement).checked })} />
+        Use this on ${this._fn(s.entity_id)}
+      </label>
+      ${sound.enabled
+        ? html`<div class="fields">
+            <label class="num">
+              Sound type
+              <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
+                ${SOUND_KINDS.map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
+              </select>
+            </label>
+            <label class="num wide">
+              ${sound.kind === "alexa" ? "Alexa sound id" : "File in the media folder (or a URL)"}
+              <input .value=${sound.sound} @input=${(e: Event) => this._patchSound(which, { sound: (e.target as HTMLInputElement).value })} />
+            </label>
+            ${sound.kind === "alexa"
+              ? html`<div class="muted small">
+                  Pick a sound from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
+                  <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
+                </div>`
+              : html`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
+            ${which === "alarm"
+              ? html`${this._numField("Lasts (seconds)", sound.seconds, 3, 600, (n) => this._patchSound("alarm", { seconds: n }))}
+                ${this._numField("Repeats every (seconds, 0 = once)", sound.repeat_s, 0, 60, (n) => this._patchSound("alarm", { repeat_s: n }))}`
+              : nothing}
+            <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>Test</button></div>
+            ${this._noteLine(`spk:${level}`)}
+          </div>`
+        : nothing}
+    `;
+  }
+
+  private _renderSpkSpeech(s: SpeakerCfg, d: Settings) {
+    const sp = s.speech;
+    const patch = (p: Partial<SpeakerCfg["speech"]>) => this._patchSpeaker((x) => ({ ...x, speech: { ...x.speech, ...p } }));
+    const targets = speechTargets(this.hass, sp.route, sp.target);
+    return html`
+      <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
+      <label class="inline option">
+        <input type="checkbox" .checked=${sp.enabled} @change=${(e: Event) => patch({ enabled: (e.target as HTMLInputElement).checked })} />
+        Say it on ${this._fn(s.entity_id)}
+      </label>
+      ${sp.enabled
+        ? html`<div class="fields">
+            <label class="num">
+              How
+              <select @change=${(e: Event) => patch({ route: (e.target as HTMLSelectElement).value as SpeechRoute, target: "" })}>
+                ${ROUTES.map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}
+              </select>
+            </label>
+            <label class="num">
+              ${sp.route === "tts" ? "Voice" : "Alexa device"}
+              <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value })}>
+                <option value="" .selected=${sp.target === ""}>Choose…</option>
+                ${targets.map((t) => html`<option value=${t.value} .selected=${t.value === sp.target}>${t.label}</option>`)}
+              </select>
+            </label>
+            ${sp.route === "alexa_media"
+              ? html`<label class="inline small">
+                  <input type="checkbox" .checked=${sp.announce} @change=${(e: Event) => patch({ announce: (e.target as HTMLInputElement).checked })} />
+                  Announce with a chime (some Alexas stay silent, so test it)
+                </label>`
+              : nothing}
+            <label class="num wide">
+              The sentence ({chore} and {step} are filled in)
+              <input .value=${d.speech_template} @input=${(e: Event) => this._set({ speech_template: (e.target as HTMLInputElement).value })} />
+            </label>
+            <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>Test</button></div>
+            ${this._noteLine("spk:speech")}
+          </div>`
+        : nothing}
+    `;
+  }
+
+  private _renderSpkWhen(s: SpeakerCfg) {
+    const rows: { label: string; on: boolean; value: number; set: (n: number) => void }[] = [
+      { label: "Ding", on: s.cue.enabled, value: s.cue.start_at, set: (n) => this._patchSound("cue", { start_at: n }) },
+      {
+        label: "Spoken sentence",
+        on: s.speech.enabled,
+        value: s.speech.start_at,
+        set: (n) => this._patchSpeaker((x) => ({ ...x, speech: { ...x.speech, start_at: n } })),
+      },
+      { label: "Alarm sound", on: s.alarm.enabled, value: s.alarm.start_at, set: (n) => this._patchSound("alarm", { start_at: n }) },
+    ];
+    const active = rows.filter((r) => r.on);
+    return html`
+      <p>
+        From which nudge does each thing join in on ${this._fn(s.entity_id)}? Nudge 1 is the first
+        for a step. A speaker plays the highest one reached.
+      </p>
+      ${active.length === 0
+        ? html`<p class="muted">Nothing is switched on for this speaker yet.</p>`
+        : html`<div class="fields">${active.map((r) => this._numField(`${r.label} starts at nudge #`, r.value, 1, 20, r.set))}</div>`}
+      <div class="actions inline-actions">
+        <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>Add another speaker</button>
+      </div>
+    `;
+  }
+
+  private async _addAnotherSpeaker(): Promise<void> {
+    if (!this.hass || !this._draft || this._busy) return;
+    this._busy = true;
+    try {
+      await saveSettings(this.hass, this._draft);
+      this._saved = structuredClone(this._draft);
+      this._speaker = "";
+      this._index = this._steps.indexOf("spk_pick");
+      this._enter();
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  private _renderAlarmDevices(d: Settings) {
+    const choices = entityIds(
+      this.hass,
+      ALARM_DOMAINS,
+      d.alarm_devices.map((x) => x.entity_id)
+    );
+    return html`
+      <p>
+        Optional: a siren, switch or script that Boopli switches on for a while if you keep ignoring
+        a step, and off again. It also stops when you answer.
+      </p>
+      <div class="list">
+        ${d.alarm_devices.map(
+          (a) => html`<div class="choice">
+            <span class="grow">${this._fn(a.entity_id)}</span>
+            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
+            <button type="button" aria-label="Remove" @click=${() => this._set({ alarm_devices: d.alarm_devices.filter((x) => x.entity_id !== a.entity_id) })}>✕</button>
+            ${this._noteLine(`alarm:${a.entity_id}`)}
+          </div>`
+        )}
+      </div>
+      <div class="choice">
+        <select class="grow" @change=${(e: Event) => (this._addDevice = (e.target as HTMLSelectElement).value)}>
+          <option value="" .selected=${this._addDevice === ""}>Add a siren, switch or script…</option>
+          ${choices.map((id) => html`<option value=${id} .selected=${id === this._addDevice}>${this._fn(id)}</option>`)}
+        </select>
+        <button
+          type="button"
+          ?disabled=${!this._addDevice}
+          @click=${() => {
+            this._set({ alarm_devices: [...d.alarm_devices, newAlarmDevice(this._addDevice)] });
+            this._addDevice = "";
+          }}
+        >
+          Add
+        </button>
+      </div>
+    `;
+  }
+
+  private _renderAlarmDetail(d: Settings) {
+    if (d.alarm_devices.length === 0) return html`<p class="muted">No alarm device is set up yet. Skip this.</p>`;
+    return html`
+      <p>How long should each device stay on, and from which nudge on?</p>
+      <div class="list grid">
+        ${d.alarm_devices.map((a: AlarmDeviceCfg) => {
+          const patch = (p: Partial<AlarmDeviceCfg>) =>
+            this._set({ alarm_devices: d.alarm_devices.map((x) => (x.entity_id === a.entity_id ? { ...x, ...p } : x)) });
+          return html`<div class="choice col">
+            <b>${this._fn(a.entity_id)}</b>
+            ${this._numField("On for (seconds)", a.seconds, 1, 600, (n) => patch({ seconds: n }))}
+            ${this._numField("Starts at nudge #", a.start_at ?? 4, 1, 20, (n) => patch({ start_at: n }))}
+            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
+            ${this._noteLine(`alarm:${a.entity_id}`)}
+          </div>`;
+        })}
+      </div>
     `;
   }
 
   private _renderPresence(d: Settings) {
+    const persons = entityIds(this.hass, ["person"]);
     return html`
       <p>
-        If Boopli knows whether you are home, it nudges your lights and speakers only when you are
-        there, and only your phone when you are away. This is optional. Without it, Boopli assumes
+        If Boopli knows where you are, it reminds you with lights and speakers only when you are
+        home, and only on your phone when you are away. This is optional. Without it, Boopli assumes
         you are home.
       </p>
       <div class="field">
         <label for="presence">Which person are you?</label>
-        <select
-          id="presence"
-          @change=${(e: Event) =>
-            this._set({ presence_entity: (e.target as HTMLSelectElement).value })}
-        >
-          <option value="" ?selected=${d.presence_entity === ""}>Skip (assume I am home)</option>
-          ${this._persons().map(
-            (id) =>
-              html`<option value=${id} ?selected=${id === d.presence_entity}>${this._friendly(id)}</option>`
-          )}
+        <select id="presence" @change=${(e: Event) => this._set({ presence_entity: (e.target as HTMLSelectElement).value })}>
+          <option value="" .selected=${d.presence_entity === ""}>Skip (assume I am home)</option>
+          ${persons.map((id) => html`<option value=${id} .selected=${id === d.presence_entity}>${this._fn(id)}</option>`)}
         </select>
       </div>
     `;
@@ -562,67 +979,81 @@ export class BoopliWizard extends LitElement {
         Some chores to start with. Untick what you do not want. They are added without a schedule,
         so nothing nudges you until you set a time (in the Chores tab) or start one yourself.
       </p>
-      ${TEMPLATES.map((t) => {
-        const taken = existing.has(t.draft.name);
-        return html`<label class="inline option">
-          <input
-            type="checkbox"
-            ?disabled=${taken}
-            .checked=${!taken && this._picked.includes(t.label)}
-            @change=${(e: Event) => {
-              const on = (e.target as HTMLInputElement).checked;
-              this._picked = on
-                ? [...this._picked, t.label]
-                : this._picked.filter((l) => l !== t.label);
-            }}
-          />
-          <span>
-            <b>${t.draft.name}</b>
-            <span class="muted small">
-              ${taken ? "already added" : t.draft.steps.map((s) => s.title).join(" → ")}
+      <div class="list">
+        ${TEMPLATES.map((t) => {
+          const taken = existing.has(t.draft.name);
+          return html`<label class="inline option">
+            <input
+              type="checkbox"
+              ?disabled=${taken}
+              .checked=${!taken && this._picked.includes(t.label)}
+              @change=${(e: Event) => {
+                const on = (e.target as HTMLInputElement).checked;
+                this._picked = on ? [...this._picked, t.label] : this._picked.filter((l) => l !== t.label);
+              }}
+            />
+            <span>
+              <b>${t.draft.name}</b>
+              <span class="muted small">${taken ? "already added" : t.draft.steps.map((s) => s.title).join(" → ")}</span>
             </span>
-          </span>
-        </label>`;
-      })}
+          </label>`;
+        })}
+      </div>
     `;
   }
 
   private _renderDone(d: Settings) {
-    const lines: string[] = [];
-    if (this._full) lines.push(`Your pet: ${d.pet_name}`);
-    lines.push(
-      d.phones.length ? `Phone notifications: ${d.phones.length}` : "Phone notifications: none yet"
-    );
-    lines.push(d.quiet_hours.enabled ? "Quiet hours: on" : "Quiet hours: off");
-    lines.push(`Snooze ${d.snooze_minutes} min, default style: ${d.default_style}`);
-    lines.push(`Lights: ${d.lights.length}, speakers: ${d.speakers.length}, alarm devices: ${d.alarm_devices.length}`);
+    const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
     const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
-    if (this._full) lines.push(adding.length ? `Adding chores: ${adding.join(", ")}` : "No chores added");
+    if (this._first && adding.length) changes.push(`Chores added: ${adding.join(", ")}`);
     return html`
-      <p>That is it. Here is what is set:</p>
-      <ul>
-        ${lines.map((l) => html`<li>${l}</li>`)}
-      </ul>
+      <p><b>What changed</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
+      ${changes.length === 0
+        ? html`<p class="muted">Nothing changed.</p>`
+        : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
       <p class="muted small">
-        Everything can be changed in Settings, and each part has a Guided setup button there.
+        Everything can be changed again in Settings, step by step or in the full forms.
       </p>
     `;
   }
 
   private _renderStep(d: Settings) {
-    switch (this._section) {
+    const s = this._currentSpeaker();
+    switch (this._step) {
       case "welcome":
         return this._renderWelcome(d);
+      case "pet":
+        return this._renderPet(d);
       case "phone":
         return this._renderPhone(d);
+      case "phone_detail":
+        return this._renderPhoneDetail(d);
       case "quiet":
         return this._renderQuiet(d);
       case "nudging":
         return this._renderNudging(d);
       case "lights":
         return this._renderLights(d);
-      case "speakers":
-        return this._renderSpeakers(d);
+      case "lights_detail":
+        return this._renderLightDetail(d);
+      case "speaker_gate":
+        return this._renderGate();
+      case "spk_pick":
+        return this._renderSpkPick(d);
+      case "spk_ding":
+        return s ? this._soundBlock("cue", s, "A short, friendly sound, the gentlest reminder.", "cue") : this._noSpeaker();
+      case "spk_speech":
+        return s ? this._renderSpkSpeech(s, d) : this._noSpeaker();
+      case "spk_alarm":
+        return s
+          ? this._soundBlock("alarm", s, "A loud sound that repeats for a while, for when a step keeps being ignored.", "alarm")
+          : this._noSpeaker();
+      case "spk_when":
+        return s ? this._renderSpkWhen(s) : this._noSpeaker();
+      case "alarm_devices":
+        return this._renderAlarmDevices(d);
+      case "alarm_detail":
+        return this._renderAlarmDetail(d);
       case "presence":
         return this._renderPresence(d);
       case "chores":
@@ -635,52 +1066,131 @@ export class BoopliWizard extends LitElement {
   render() {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
-    const section = this._section;
-    const last = section === "done" || this._index >= this.sections.length - 1;
-    const counted = this.sections.filter((s) => s !== "done").length;
-    const showBar = section !== "done" && counted > 1;
-    const sectionOnlyEnd = !this._full && last;
+    const step = this._step;
+    const isDone = step === "done";
+    const isGate = step === "speaker_gate";
+    const last = this._steps.length - 1;
     return html`
-      <section class="card wizard">
-        <div class="top">
-          ${showBar
-            ? html`<span class="muted small">Step ${this._index + 1} of ${counted}</span>`
-            : html`<span></span>`}
-          ${section === "done" && this._full
-            ? nothing
-            : html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._skipAll()}>
-                ${this._full ? "Skip for now" : "Close"}
-              </button>`}
-        </div>
-        ${showBar
-          ? html`<div class="bar"><div class="fill" style="width:${((this._index + 1) / counted) * 100}%"></div></div>`
-          : nothing}
-        <h2>${TITLES[section]}</h2>
-        ${this._renderStep(d)}
-        ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
-        <div class="actions">
-          ${this._index > 0
-            ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1, false)}>Back</button>`
+      <div class="shell">
+        <nav class="rail" aria-label="Steps">
+          <div class="rail-title">${WIZARD_TITLES[this.wizard]}</div>
+          ${this._steps.map(
+            (id, i) => html`<button
+              type="button"
+              class="rail-item ${i === this._index ? "current" : ""} ${i < this._index ? "past" : ""}"
+              ?disabled=${i >= this._index}
+              @click=${() => this._jump(i)}
+            >
+              <span class="mark">${i < this._index ? "✓" : i + 1}</span>
+              <span>${TITLES[id]}</span>
+            </button>`
+          )}
+        </nav>
+        <section class="card main">
+          <div class="top">
+            <span class="muted small">Step ${this._index + 1} of ${this._steps.length}</span>
+            ${isDone && this._first
+              ? nothing
+              : html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._leave()}>
+                  ${this._first ? "Skip for now" : "Close"}
+                </button>`}
+          </div>
+          <div class="bar"><div class="fill" style="width:${((this._index + 1) / this._steps.length) * 100}%"></div></div>
+          <h2>${TITLES[step]}</h2>
+          ${OPTIONAL_STEPS.includes(step)
+            ? html`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>`
             : nothing}
-          <span class="spacer"></span>
-          ${section === "done" || sectionOnlyEnd
-            ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
-                ${section === "done" ? "Finish" : "Save and close"}
-              </button>`
-            : html`
-                <button type="button" ?disabled=${this._busy} @click=${() => this._go(1, false)}>Skip</button>
-                <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._go(1, true)}>Next</button>
-              `}
-        </div>
-      </section>
+          ${this._renderStep(d)}
+          ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
+          <div class="actions">
+            ${this._index > 0
+              ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1)}>Back</button>`
+              : nothing}
+            <span class="spacer"></span>
+            ${isDone
+              ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
+                  ${this._first ? "Finish" : "Save and close"}
+                </button>`
+              : isGate
+                ? nothing
+                : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>
+                    <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>Next</button>`}
+          </div>
+        </section>
+      </div>
     `;
   }
 
   static styles = [
     sharedStyles,
     css`
-      .wizard {
-        padding: 20px;
+      .shell {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      .rail {
+        position: sticky;
+        top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .rail-title {
+        font-size: 13px;
+        color: var(--secondary-text-color);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0 0 8px 8px;
+      }
+      .rail-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        border: 0;
+        background: none;
+        border-radius: 10px;
+        padding: 8px 10px;
+        min-height: 0;
+        color: var(--secondary-text-color);
+      }
+      .rail-item.current {
+        background: var(--secondary-background-color);
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+      .rail-item.past {
+        color: var(--primary-text-color);
+        cursor: pointer;
+      }
+      .rail-item:disabled {
+        opacity: 1;
+        cursor: default;
+      }
+      .rail-item.past:disabled {
+        cursor: default;
+      }
+      .mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        border-radius: 50%;
+        border: 1px solid var(--divider-color);
+        font-size: 12px;
+      }
+      .past .mark {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--text-primary-color, #fff);
+      }
+      .main {
+        padding: 24px;
+        min-width: 0;
       }
       .top {
         display: flex;
@@ -701,7 +1211,7 @@ export class BoopliWizard extends LitElement {
         border-radius: 999px;
         background: var(--secondary-background-color);
         overflow: hidden;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
       .fill {
         height: 100%;
@@ -709,29 +1219,69 @@ export class BoopliWizard extends LitElement {
         transition: width 0.3s ease;
       }
       h2 {
-        margin-bottom: 12px;
+        font-size: 22px;
+        margin-bottom: 10px;
       }
       p {
         margin: 10px 0;
-        line-height: 1.45;
+        line-height: 1.5;
+        max-width: 760px;
       }
       .small {
         font-size: 13px;
       }
+      .optional {
+        margin-bottom: 8px;
+      }
       .field {
         margin: 14px 0;
+        max-width: 420px;
+      }
+      .list {
+        display: flex;
+        flex-direction: column;
+      }
+      .list.grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 10px;
+        margin-top: 6px;
+        align-items: start;
       }
       .choice {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 10px;
-        padding: 8px 0;
-        border-top: 1px solid var(--divider-color);
+        padding: 10px 12px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+        margin: 4px 0;
+      }
+      .list.grid .choice {
+        margin: 0;
+      }
+      .choice.col {
+        flex-direction: column;
+        align-items: stretch;
       }
       .choice .inline {
         flex: 1;
         min-width: 160px;
+      }
+      .choice select.grow,
+      .grow {
+        flex: 1;
+        min-width: 0;
+      }
+      .radios {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-left: 28px;
+      }
+      .note {
+        flex-basis: 100%;
       }
       label.inline {
         display: flex;
@@ -741,26 +1291,76 @@ export class BoopliWizard extends LitElement {
         color: var(--primary-text-color);
         margin: 0;
       }
+      label.inline.small {
+        font-size: 14px;
+      }
       label.inline input {
         width: auto;
         min-height: 0;
       }
       label.option {
-        padding: 10px 0;
-        border-top: 1px solid var(--divider-color);
+        padding: 10px 12px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+        margin: 6px 0;
+        max-width: 760px;
       }
-      .times {
+      label.card-choice {
+        margin: 0;
+        max-width: none;
+      }
+      label.num {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+        margin: 0;
+      }
+      label.num.wide {
+        max-width: 560px;
+      }
+      .fields {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 12px 0;
+        max-width: 560px;
+      }
+      .swatch {
+        width: 56px;
+        min-height: 36px;
+        padding: 2px;
+      }
+      code {
+        background: var(--secondary-background-color);
+        padding: 1px 5px;
+        border-radius: 5px;
+      }
+      a {
+        color: var(--primary-color);
+      }
+      .days {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .dayrow {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 10px;
-        margin: 8px 0;
+        padding: 8px 12px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+        max-width: 760px;
       }
-      .times > span:first-child {
-        min-width: 90px;
+      .dayname {
+        width: 40px;
+        font-weight: 500;
       }
-      .times input {
-        width: auto;
+      .dayrow input[type="time"] {
+        width: 130px;
       }
       .chips {
         display: flex;
@@ -771,11 +1371,24 @@ export class BoopliWizard extends LitElement {
       input.short {
         width: 84px;
       }
+      .gate {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      button.big {
+        min-height: 52px;
+        padding: 0 24px;
+        font-size: 16px;
+      }
       .actions {
         display: flex;
         gap: 10px;
         align-items: center;
-        margin-top: 22px;
+        margin-top: 24px;
+      }
+      .actions.inline-actions {
+        margin-top: 8px;
       }
       .actions button {
         min-width: 84px;
@@ -789,7 +1402,15 @@ export class BoopliWizard extends LitElement {
         padding-left: 20px;
       }
       li {
-        margin: 4px 0;
+        margin: 6px 0;
+      }
+      @media (max-width: 860px) {
+        .shell {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .rail {
+          display: none;
+        }
       }
     `,
   ];

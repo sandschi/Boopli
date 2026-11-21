@@ -135,6 +135,7 @@ export class BoopliToday extends LitElement {
 
     const setup = this.snapshot.setup?.status;
     return html`
+      <div class="cols"><div class="col">
       ${setup === "skipped" || setup === "in_progress"
         ? html`<section class="card banner">
             <span>Boopli is not fully set up yet.</span>
@@ -187,6 +188,7 @@ export class BoopliToday extends LitElement {
               </p>
             </section>
           `}
+      </div><div class="col">
       ${this._renderAuto()}
       ${model.groups.length > 0 || model.dueToday.length > 0
         ? html`
@@ -220,6 +222,7 @@ export class BoopliToday extends LitElement {
             </section>
           `
         : nothing}
+      </div></div>
     `;
   }
 
@@ -282,10 +285,18 @@ export class BoopliToday extends LitElement {
         max-width: 90vw;
         text-align: center;
       }
+      .cols {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 24px;
+        align-items: start;
+      }
+      .col {
+        min-width: 0;
+      }
       .now,
       .empty {
-        text-align: center;
-        padding: 28px 16px;
+        padding: 24px 20px;
       }
       .now h2 {
         font-size: 28px;
@@ -300,7 +311,7 @@ export class BoopliToday extends LitElement {
       }
       .later,
       .auto {
-        margin-top: 28px;
+        margin-bottom: 24px;
       }
       .auto h3 {
         font-size: 15px;

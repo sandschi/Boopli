@@ -45,12 +45,47 @@ export class BoopliChoreEditor extends LitElement {
   declare _busy: boolean;
   declare _confirmDelete: boolean;
 
+  private _base?: string; // the draft as it was when the editor opened
+  private _lastDirty = false;
+
   constructor() {
     super();
     this.defaultStyle = "one";
     this._error = "";
     this._busy = false;
     this._confirmDelete = false;
+  }
+
+  protected willUpdate(): void {
+    if (this._base === undefined && this.draft) this._base = JSON.stringify(this.draft);
+  }
+
+  protected updated(): void {
+    const dirty = this._isDirty();
+    if (dirty !== this._lastDirty) {
+      this._lastDirty = dirty;
+      this.dispatchEvent(
+        new CustomEvent("dirty-change", {
+          detail: { source: "chore", dirty },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+  }
+
+  private _isDirty(): boolean {
+    return this._base !== undefined && !!this.draft && JSON.stringify(this.draft) !== this._base;
+  }
+
+  /** Save the chore and close. Used by Save and by the panel's "Save" on leaving. */
+  async save(): Promise<boolean> {
+    return this._save();
+  }
+
+  /** Close without saving. */
+  discard(): void {
+    this._close();
   }
 
   private _update(patch: Partial<ChoreDraft>): void {
@@ -97,8 +132,8 @@ export class BoopliChoreEditor extends LitElement {
     this.dispatchEvent(new CustomEvent("editor-close", { bubbles: true, composed: true }));
   }
 
-  private async _save(): Promise<void> {
-    if (!this.hass || this._busy) return;
+  private async _save(): Promise<boolean> {
+    if (!this.hass || this._busy) return false;
     this._busy = true;
     this._error = "";
     try {
@@ -110,8 +145,10 @@ export class BoopliChoreEditor extends LitElement {
         steps: this.draft.steps.map((s) => ({ ...s, title: s.title.trim() })),
       });
       this._close();
+      return true;
     } catch (err) {
       this._error = errorMessage(err);
+      return false;
     } finally {
       this._busy = false;
     }
@@ -260,9 +297,14 @@ export class BoopliChoreEditor extends LitElement {
     const d = this.draft;
     if (!d) return nothing;
     return html`
-      <section class="card">
-        <h2>${d.id ? "Edit chore" : "New chore"}</h2>
+      <section class="card ${this._isDirty() ? "changed" : ""}">
+        <h2>
+          ${d.id ? "Edit chore" : "New chore"}
+          ${this._isDirty() ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+        </h2>
 
+        <div class="editor-grid">
+        <div class="col-a">
         <div class="field">
           <label for="name">Name</label>
           <input
@@ -318,9 +360,13 @@ export class BoopliChoreEditor extends LitElement {
           </label>
         </div>
 
+        </div>
+        <div class="col-b">
         <h3 class="steps-title">Steps</h3>
         ${d.steps.map((_, i) => this._renderStep(i))}
         <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
+        </div>
+        </div>
 
         ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
 
@@ -336,12 +382,69 @@ export class BoopliChoreEditor extends LitElement {
             : nothing}
         </div>
       </section>
+      ${this._isDirty()
+        ? html`<div class="savebar" role="status">
+            <span><b>●</b> You have unsaved changes</span>
+            <span class="spacer"></span>
+            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
+            <button ?disabled=${this._busy} @click=${() => this._close()}>Discard</button>
+          </div>`
+        : nothing}
     `;
   }
 
   static styles = [
     sharedStyles,
     css`
+      .editor-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
+        gap: 8px 32px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .editor-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .steps-title {
+        margin-top: 14px;
+      }
+      section.card.changed {
+        border-color: var(--warning-color, #ffa600);
+        box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
+      }
+      .unsaved-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #000;
+        background: var(--warning-color, #ffa600);
+        vertical-align: middle;
+      }
+      .savebar {
+        position: sticky;
+        bottom: 12px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 2px solid var(--warning-color, #ffa600);
+        background: var(--card-background-color, var(--primary-background-color));
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      }
+      .savebar b {
+        color: var(--warning-color, #ffa600);
+      }
+      .spacer {
+        flex: 1;
+      }
       .field {
         margin: 14px 0;
       }

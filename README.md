@@ -2,25 +2,24 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.8).** You can set Boopli up with a guided wizard, create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
+> **Status: early development (v0.0.9).** You can set Boopli up with guided wizards or plain forms, create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
 
-## Setup wizard
+## Setup, wizards and Settings
 
-The first time you open Boopli, a short wizard opens by itself: one question per screen, with a progress bar, a Back button and a safe default on every screen. Every step can be skipped, and **Skip for now** closes the whole wizard. Your answers are saved as you go, so closing the tab halfway loses nothing.
+**First setup.** The first time you open Boopli, a wizard opens by itself. A rail on the left lists the steps, with one question per screen, a progress bar, a Back button and a safe default everywhere. Every step can be skipped, and **Skip for now** closes the whole wizard. Answers are saved as you go, so closing the tab halfway loses nothing. It asks for: your pet's name, your phone, quiet hours, snooze length and default nudge style, reminder lights, whether you want speaker reminders (a single question: **Set up speakers** or **Skip**), where you are (a person entity, so Boopli knows when you are away), and a few starter chores (Dishwasher, Laundry, Trash, Pills, pre-ticked, added without a schedule so nothing nudges you until you set a time or start one). Nothing is sent to any device until you press a **Test** button.
 
-It asks for: your pet's name, your phone, quiet hours (none, the same every day, or different on weekdays and weekends), snooze length and default nudge style, lights, speakers and alarm devices, whether you are home (a person entity), and a few starter chores (Dishwasher, Laundry, Trash, Pills, pre-ticked, added without a schedule so nothing nudges you until you set a time or start one). Nothing is sent to any device until you press a **Test** button.
+If you skip or leave it unfinished, Today shows a **Finish setting up** banner that continues where you stopped. Installs that already had chores or settings before the wizard existed count as set up.
 
-If you skip or leave the setup unfinished, Today shows a **Finish setting up** banner that continues where you stopped. In **Settings**, a **Guided setup** card runs the wizard for one area (phone, quiet hours, snooze and style, lights, speakers and alarms, presence) or the whole thing again, starting from your current choices. Installs that already had chores or settings before the wizard existed count as set up, so it never opens for them.
+**Quiet hours are per day.** Every weekday has its own times, or "no limit". Nothing is grouped into "weekdays" and "weekend", because not everyone has the same weekend. Shortcuts like "Same as Monday" only fill in the times.
 
-## XP and the pet
+**Settings has two views**, switched with a button at the top (Boopli remembers your choice in the browser):
 
-Finishing steps earns XP, and XP levels up your pet. It is rewards only: XP and levels never go down, and the pet never dies.
+- **Simple (the default).** One card per area (your pet, phone, quiet hours, snooze and style, reminder lights, speakers, alarm devices, where you are) saying in plain words what is set, with a **Set up step by step** button. Each area has its own wizard with a quick path and the optional details (blink length and repeats, when each channel joins in, alarm length). Speakers are set up in small steps: pick a speaker, a ding, a spoken sentence, an alarm sound, when each joins in; alarm devices have their own wizard.
+- **Advanced.** All the forms, side by side, for people who prefer them.
 
-- **XP:** 10 for every step you finish (by hand or by itself), +20 for the step that finishes the chore, +5 if you answered within 10 minutes of the step becoming your turn. Snoozing costs nothing. Per chore and day, only the first 3 runs earn XP, so a chore cannot be farmed.
-- **Levels:** level 2 at 100 XP, level 3 at 250, level 4 at 450, then further and further apart.
-- **Mood** follows how long since you finished a step: happy (today), content (yesterday), sleepy (2 days), sad (3 to 6 days), hibernating like a bear (7 days or more). One finished step wakes it up and it keeps all its XP. With no enabled chores the pet stays content.
-- The pet card is on the **Today** screen, with a "+10 XP" note when you finish a step. Name your pet in **Settings**. The picture is a placeholder emoji for now, drawn in one place so real art or animation can replace it later.
-- **Sensors** for dashboards and automations: `sensor.boopli_xp`, `sensor.boopli_level` and `sensor.boopli_mood` (happy, content, sleepy, sad, hibernating), with the pet's name as an attribute. The `boopli_xp_gained` event fires when you earn XP or wake the pet.
+Every wizard ends with **All set**, which lists exactly what changed compared with before that wizard (for example "Snooze: 15 to 10 min" or "Mon: 07:00 to 22:00 to 07:30 to 22:00").
+
+**Unsaved changes are always visible.** In Advanced settings and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything ("You have unsaved changes", with Save and Discard). The cards you changed are marked, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) asks **Save / Discard / Stay**.
 
 ## Steps that finish by themselves
 

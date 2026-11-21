@@ -48,6 +48,19 @@ export class BoopliChores extends LitElement {
     };
   }
 
+  /** Save the chore being edited (the panel asks this when leaving with edits). */
+  async save(): Promise<boolean> {
+    const editor = this.renderRoot.querySelector("boopli-chore-editor") as
+      | { save?: () => Promise<boolean> }
+      | null;
+    return (await editor?.save?.()) ?? false;
+  }
+
+  /** Close the editor without saving. */
+  discard(): void {
+    this._editing = null;
+  }
+
   private async _start(chore: Chore): Promise<void> {
     if (!this.hass) return;
     this._error = "";
@@ -66,7 +79,17 @@ export class BoopliChores extends LitElement {
         .hass=${this.hass}
         .draft=${this._editing}
         .defaultStyle=${this.snapshot.settings.default_style}
-        @editor-close=${() => (this._editing = null)}
+        @editor-close=${() => {
+          this._editing = null;
+          // The editor is gone, so tell the panel nothing is unsaved any more.
+          this.dispatchEvent(
+            new CustomEvent("dirty-change", {
+              detail: { source: "chore", dirty: false },
+              bubbles: true,
+              composed: true,
+            })
+          );
+        }}
       ></boopli-chore-editor>`;
     }
 
@@ -100,7 +123,7 @@ export class BoopliChores extends LitElement {
         ? html`<p class="muted empty">
             No chores yet. Pick a template above or create your own.
           </p>`
-        : chores.map(
+        : html`<div class="chore-list">${chores.map(
             (c) => html`
               <section class="card chore">
                 <div class="chore-main">
@@ -127,7 +150,7 @@ export class BoopliChores extends LitElement {
                 </div>
               </section>
             `
-          )}
+          )}</div>`}
     `;
   }
 
@@ -148,15 +171,19 @@ export class BoopliChores extends LitElement {
         margin-bottom: 18px;
       }
       .empty {
-        text-align: center;
         padding: 24px 0;
+      }
+      .chore-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 12px;
+        align-items: start;
       }
       .chore {
         display: flex;
         justify-content: space-between;
         gap: 12px;
         align-items: center;
-        margin-bottom: 10px;
       }
       .name {
         font-size: 17px;

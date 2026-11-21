@@ -1,8 +1,29 @@
 import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, saveSettings, testLight, testPhone } from "./api";
+import type { WizardId } from "./boopli-wizard";
+import {
+  describeQuiet,
+  describeSpeaker,
+  friendlyName,
+  lightKind,
+  phoneName,
+  PHONE_LEVEL_LABEL,
+  STYLE_LABEL,
+} from "./helpers";
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
+
+type Mode = "simple" | "advanced";
+const MODE_KEY = "boopli.settings_mode";
+
+function loadMode(): Mode {
+  try {
+    return localStorage.getItem(MODE_KEY) === "advanced" ? "advanced" : "simple";
+  } catch {
+    return "simple";
+  }
+}
 import type {
   Hass,
   LightCfg,
@@ -46,6 +67,7 @@ export class BoopliSettings extends LitElement {
     _message: { state: true },
     _error: { state: true },
     _notes: { state: true },
+    _mode: { state: true },
   };
 
   declare hass?: Hass;
@@ -56,6 +78,10 @@ export class BoopliSettings extends LitElement {
   declare _message: string;
   declare _error: string;
   declare _notes: Record<string, string>;
+  declare _mode: Mode;
+  private _base?: Settings; // the saved settings the draft is compared with
+  private _justSaved = false;
+  private _lastDirty = false;
 
   constructor() {
     super();
@@ -64,13 +90,106 @@ export class BoopliSettings extends LitElement {
     this._message = "";
     this._error = "";
     this._notes = {};
+    this._mode = loadMode();
   }
 
   protected willUpdate(): void {
-    // Take a copy of the saved settings once; edits stay local until Save.
-    if (!this._draft && this.snapshot) {
-      this._draft = structuredClone(this.snapshot.settings);
+    const saved = this.snapshot?.settings;
+    if (!saved) return;
+    if (!this._draft || !this._base) {
+      this._base = structuredClone(saved);
+      this._draft = structuredClone(saved);
+      return;
     }
+    // Just saved: take the settings as the integration stored them, so what it
+    // tidied up (trimmed names and so on) does not count as an unsaved change.
+    if (this._justSaved && JSON.stringify(saved) !== JSON.stringify(this._base)) {
+      this._base = structuredClone(saved);
+      this._draft = structuredClone(saved);
+      this._justSaved = false;
+    }
+  }
+
+  protected updated(): void {
+    const dirty = this._isDirty();
+    if (dirty !== this._lastDirty) {
+      this._lastDirty = dirty;
+      this.dispatchEvent(
+        new CustomEvent("dirty-change", {
+          detail: { source: "settings", dirty },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+  }
+
+  // --- unsaved changes -----------------------------------------------------------
+
+  private _isDirty(): boolean {
+    return !!this._draft && !!this._base && JSON.stringify(this._draft) !== JSON.stringify(this._base);
+  }
+
+  /** Whether any of these settings differ from what is saved. */
+  private _changed(...keys: (keyof Settings)[]): boolean {
+    const d = this._draft;
+    const b = this._base;
+    if (!d || !b) return false;
+    return keys.some((k) => JSON.stringify(d[k]) !== JSON.stringify(b[k]));
+  }
+
+  private _badge(...keys: (keyof Settings)[]) {
+    return this._changed(...keys) ? html`<span class="unsaved-badge">Unsaved</span>` : nothing;
+  }
+
+  private _cardClass(...keys: (keyof Settings)[]): string {
+    return this._changed(...keys) ? "card changed" : "card";
+  }
+
+  /** Save the draft. Used by the Save buttons and by the panel's "Save" on leaving. */
+  async save(): Promise<boolean> {
+    if (!this.hass || !this._draft || this._busy) return false;
+    this._busy = true;
+    this._error = "";
+    this._message = "";
+    try {
+      await saveSettings(this.hass, this._draft);
+      this._justSaved = true;
+      this._base = structuredClone(this._draft);
+      this._message = "Saved.";
+      return true;
+    } catch (err) {
+      this._error = errorMessage(err);
+      return false;
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  /** Throw the unsaved edits away. */
+  discard(): void {
+    if (this._base) this._draft = structuredClone(this._base);
+    this._message = "";
+    this._error = "";
+  }
+
+  private _setMode(mode: Mode): void {
+    this._mode = mode;
+    try {
+      localStorage.setItem(MODE_KEY, mode);
+    } catch {
+      /* the choice just is not remembered */
+    }
+  }
+
+  private _openWizard(wizard?: WizardId): void {
+    this.dispatchEvent(
+      new CustomEvent("open-wizard", {
+        detail: wizard ? { wizard } : {},
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   // --- helpers ---------------------------------------------------------
@@ -269,18 +388,7 @@ export class BoopliSettings extends LitElement {
   // --- save ------------------------------------------------------------
 
   private async _save(): Promise<void> {
-    if (!this.hass || !this._draft || this._busy) return;
-    this._busy = true;
-    this._error = "";
-    this._message = "";
-    try {
-      await saveSettings(this.hass, this._draft);
-      this._message = "Saved.";
-    } catch (err) {
-      this._error = errorMessage(err);
-    } finally {
-      this._busy = false;
-    }
+    await this.save();
   }
 
   // --- render ----------------------------------------------------------
@@ -288,8 +396,8 @@ export class BoopliSettings extends LitElement {
   private _renderPhones(d: Settings) {
     const services = this._phoneServices();
     return html`
-      <section class="card">
-        <h2>Phones</h2>
+      <section class=${this._cardClass("phones")}>
+        <h2>Phones ${this._badge("phones")}</h2>
         <p class="muted small">
           Boopli sends a notification with Done and Snooze buttons through the
           Home Assistant app on the phones you turn on.
@@ -338,8 +446,8 @@ export class BoopliSettings extends LitElement {
   private _renderLights(d: Settings) {
     const choices = this._lightChoices();
     return html`
-      <section class="card">
-        <h2>Lights</h2>
+      <section class=${this._cardClass("lights")}>
+        <h2>Reminder lights ${this._badge("lights")}</h2>
         <p class="muted small">
           Boopli blinks a light itself and puts it back exactly as it was, or
           uses it as an indicator lamp that stays on in a color until you are
@@ -448,8 +556,8 @@ export class BoopliSettings extends LitElement {
   private _renderQuiet(d: Settings) {
     const qh = d.quiet_hours;
     return html`
-      <section class="card">
-        <h2>Quiet hours</h2>
+      <section class=${this._cardClass("quiet_hours")}>
+        <h2>Quiet hours ${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           Nudges wait outside these times. Set different hours for each day.
           A chore can opt out (for example pills).
@@ -508,10 +616,10 @@ export class BoopliSettings extends LitElement {
 
   private _renderOther(d: Settings) {
     return html`
-      <section class="card">
-        <h2>Presence, snooze and defaults</h2>
+      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "default_style")}>
+        <h2>Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
         <div class="field">
-          <label for="presence">Presence (optional)</label>
+          <label for="presence">Where you are (optional)</label>
           <select
             id="presence"
             .value=${d.presence_entity}
@@ -564,72 +672,201 @@ export class BoopliSettings extends LitElement {
     `;
   }
 
-  private _openWizard(sections?: string[]): void {
-    this.dispatchEvent(
-      new CustomEvent("open-wizard", {
-        detail: sections ? { sections, startAt: sections[0] } : {},
-        bubbles: true,
-        composed: true,
-      })
-    );
+  // --- the simple view: what is set, with a step-by-step button per area ---------
+
+  private _overviewCard(title: string, wizard: WizardId, lines: string[], empty: string, button = "Set up step by step") {
+    return html`<section class="card overview">
+      <h2>${title}</h2>
+      <div class="summary">
+        ${lines.length
+          ? lines.map((l) => html`<div>${l}</div>`)
+          : html`<div class="muted">${empty}</div>`}
+      </div>
+      <button type="button" class="primary" @click=${() => this._openWizard(wizard)}>${button}</button>
+    </section>`;
   }
 
-  private _renderGuided() {
-    const areas: { label: string; sections: string[] }[] = [
-      { label: "Phone", sections: ["phone"] },
-      { label: "Quiet hours", sections: ["quiet"] },
-      { label: "Snooze and style", sections: ["nudging"] },
-      { label: "Lights", sections: ["lights"] },
-      { label: "Speakers and alarms", sections: ["speakers"] },
-      { label: "Presence", sections: ["presence"] },
-    ];
+  private _renderSimple() {
+    // Always what is saved, so this view never shows half-finished edits.
+    const s = this.snapshot?.settings;
+    if (!s) return nothing;
+    const fn = (id: string) => friendlyName(this.hass, id);
     return html`
-      <section class="card">
-        <h2>Guided setup</h2>
-        <p class="muted small">
-          Prefer being asked one question at a time? Run the setup for one area, or all of it again.
-          Your current choices are kept.
-        </p>
-        <div class="guided">
-          ${areas.map(
-            (a) => html`<button type="button" class="chip" @click=${() => this._openWizard(a.sections)}>${a.label}</button>`
-          )}
-          <button type="button" class="primary" @click=${() => this._openWizard()}>Run the full setup again</button>
-        </div>
-      </section>
+      <div class="cards">
+        ${this._overviewCard("Your pet", "pet", [s.pet_name], "", "Rename")}
+        ${this._overviewCard(
+          "Phone",
+          "phone",
+          s.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}, from nudge ${p.start_at}`),
+          "No phone set up yet."
+        )}
+        ${this._overviewCard("Quiet hours", "quiet", [describeQuiet(s.quiet_hours)], "")}
+        ${this._overviewCard(
+          "Snooze and style",
+          "nudging",
+          [`Snooze ${s.snooze_minutes} minutes`, `New chores: ${STYLE_LABEL[s.default_style] ?? s.default_style}`],
+          ""
+        )}
+        ${this._overviewCard(
+          "Reminder lights",
+          "lights",
+          s.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`),
+          "No reminder lights yet."
+        )}
+        ${this._overviewCard(
+          "Speakers",
+          "speakers",
+          s.speakers.map((sp) => `${fn(sp.entity_id)}: ${describeSpeaker(sp)}`),
+          "No speakers yet."
+        )}
+        ${this._overviewCard(
+          "Alarm devices",
+          "alarms",
+          s.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s, from nudge ${a.start_at}`),
+          "No alarm devices yet."
+        )}
+        ${this._overviewCard(
+          "Where you are",
+          "presence",
+          s.presence_entity ? [fn(s.presence_entity)] : [],
+          "Not set. Boopli assumes you are home."
+        )}
+      </div>
+      <p class="muted small">
+        Want to do all of it again from the start?
+        <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
+      </p>
     `;
+  }
+
+  private _renderSaveBar() {
+    if (!this._isDirty()) return nothing;
+    return html`<div class="savebar" role="status">
+      <span><b>●</b> You have unsaved changes</span>
+      <span class="spacer"></span>
+      <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
+      <button ?disabled=${this._busy} @click=${() => this.discard()}>Discard</button>
+    </div>`;
   }
 
   render() {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
+    const simple = this._mode === "simple";
     return html`
-      ${this._renderGuided()} ${this._renderPhones(d)} ${this._renderLights(d)}
-      <boopli-speakers
-        .hass=${this.hass}
-        .settings=${d}
-        @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
-      ></boopli-speakers>
-      ${this._renderQuiet(d)} ${this._renderOther(d)}
-      ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
-      <div class="save">
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save settings</button>
-        ${this._message ? html`<span class="muted">${this._message}</span>` : nothing}
+      <div class="toolbar">
+        <h2 class="page-title">${simple ? "Settings" : "Settings: advanced"}</h2>
+        <button type="button" @click=${() => this._setMode(simple ? "advanced" : "simple")}>
+          ${simple ? "Advanced settings" : "Back to the simple view"}
+        </button>
       </div>
+      ${simple
+        ? this._renderSimple()
+        : html`
+            <div class="cards">
+              ${this._renderPhones(d)} ${this._renderLights(d)}
+              <boopli-speakers
+                class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
+                .hass=${this.hass}
+                .settings=${d}
+                @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
+              ></boopli-speakers>
+              ${this._renderQuiet(d)} ${this._renderOther(d)}
+            </div>
+            ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
+            <div class="save">
+              <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save settings</button>
+              ${this._message ? html`<span class="muted">${this._message}</span>` : nothing}
+            </div>
+          `}
+      ${this._renderSaveBar()}
     `;
   }
 
   static styles = [
     sharedStyles,
     css`
-      .guided {
+      .toolbar {
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        justify-content: space-between;
         align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .page-title {
+        font-size: 22px;
+        margin: 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      .overview {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .overview h2 {
+        margin: 0;
+      }
+      .summary {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        font-size: 15px;
+      }
+      .overview button {
+        align-self: flex-start;
+      }
+      .spacer {
+        flex: 1;
       }
       section.card {
-        margin-bottom: 16px;
+        margin: 0;
+      }
+      section.card.changed,
+      boopli-speakers.changed {
+        border-color: var(--warning-color, #ffa600);
+        box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
+      }
+      boopli-speakers.changed::before {
+        content: "● Unsaved changes in speakers and alarm devices";
+        display: block;
+        color: var(--warning-color, #ffa600);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 0 0 6px 4px;
+      }
+      .unsaved-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #000;
+        background: var(--warning-color, #ffa600);
+        vertical-align: middle;
+      }
+      .savebar {
+        position: sticky;
+        bottom: 12px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 2px solid var(--warning-color, #ffa600);
+        background: var(--card-background-color, var(--primary-background-color));
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      }
+      .savebar b {
+        color: var(--warning-color, #ffa600);
       }
       h2 {
         font-size: 18px;
