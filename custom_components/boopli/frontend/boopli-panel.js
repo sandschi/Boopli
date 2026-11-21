@@ -1530,18 +1530,18 @@ var We = class extends q {
 };
 customElements.define("boopli-chores", We);
 // src/boopli-speakers.ts
-var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
+var Ge = "amzn_sfx_scifi_alarm_01", Ke = "amzn_sfx_doorbell_chime_01", qe = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Je = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], qe = [{
+], Ye = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], Je = [
+}], Xe = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -1554,7 +1554,7 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], Ye = class extends q {
+], Ze = class extends q {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1619,7 +1619,7 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
 			cue: {
 				enabled: !1,
 				kind: "alexa",
-				sound: "",
+				sound: Ke,
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -1709,7 +1709,7 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
                     .value=${n.kind}
                     @change=${(e) => this._setSound(r, t, { kind: e.target.value })}
                   >
-                    ${qe.map((e) => I`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
+                    ${Ye.map((e) => I`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -1721,6 +1721,13 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
                     @change=${(e) => this._setSound(r, t, { sound: e.target.value.trim() })}
                   />
                 </label>
+                ${n.kind === "alexa" ? I`<div class="muted small libhint">
+                      Pick a sound from the
+                      <a href=${qe} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
+                      The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
+                      + a two-digit number, for example "Doorbell Chime (1)" is
+                      <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
+                    </div>` : R}
                 ${this._startAt(n.start_at, (e) => this._setSound(r, t, { start_at: e }))}
                 ${a ? I`
                       <label class="num">
@@ -1780,7 +1787,7 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
 			target: ""
 		})}
                   >
-                    ${Je.map((e) => I`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                    ${Xe.map((e) => I`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -1879,7 +1886,7 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Ke, t);
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Je, t);
 		return I`
       <section class="card">
         <h2>Alarm devices</h2>
@@ -2015,15 +2022,24 @@ var Ge = "amzn_sfx_scifi_alarm_01", Ke = [
       .note {
         padding: 2px 0 6px 28px;
       }
+      .libhint {
+        flex: 1 1 100%;
+      }
+      .libhint a {
+        color: var(--primary-color);
+      }
+      code {
+        font-size: 12px;
+      }
       .field {
         margin: 14px 0 4px;
       }
     `];
 	}
 };
-customElements.define("boopli-speakers", Ye);
+customElements.define("boopli-speakers", Ze);
 // src/boopli-settings.ts
-var Xe = [
+var Qe = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -2040,13 +2056,13 @@ var Xe = [
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], Ze = [{
+], $e = [{
 	value: "blink",
 	label: "Blink"
 }, {
 	value: "indicator",
 	label: "Indicator lamp (on until done)"
-}], Qe = [
+}], et = [
 	{
 		value: "quiet",
 		label: "Quiet (no nudges)"
@@ -2063,10 +2079,10 @@ var Xe = [
 		value: "persistent",
 		label: "Persistent"
 	}
-], $e = {
+], tt = {
 	start: "07:00",
 	stop: "22:00"
-}, et = class extends q {
+}, nt = class extends q {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2223,7 +2239,7 @@ var Xe = [
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(X.map((e, t) => [String(t), { ...$e }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(X.map((e, t) => [String(t), { ...tt }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -2286,7 +2302,7 @@ var Xe = [
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${Xe.map((e) => I`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${Qe.map((e) => I`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>Test</button>
                 </div>
@@ -2322,7 +2338,7 @@ var Xe = [
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${Ze.map((t) => I`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${$e.map((t) => I`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
               <input
                 type="color"
@@ -2422,7 +2438,7 @@ var Xe = [
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...$e })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...tt })}
                       />
                       No limit
                     </label>
@@ -2494,7 +2510,7 @@ var Xe = [
             .value=${e.default_style}
             @change=${(e) => this._set({ default_style: e.target.value })}
           >
-            ${Qe.map((t) => I`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+            ${et.map((t) => I`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           </select>
         </div>
       </section>
@@ -2619,13 +2635,13 @@ var Xe = [
     `];
 	}
 };
-customElements.define("boopli-settings", et);
+customElements.define("boopli-settings", nt);
 // src/boopli-panel.ts
-var tt = {
+var rt = {
 	today: "Today",
 	chores: "Chores",
 	settings: "Settings"
-}, nt = class extends q {
+}, it = class extends q {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2674,11 +2690,11 @@ var tt = {
             </button>` : R}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(tt).map((e) => I`<button
+          ${Object.keys(rt).map((e) => I`<button
               class="tab ${this._tab === e ? "on" : ""}"
               @click=${() => this._tab = e}
             >
-              ${tt[e]}
+              ${rt[e]}
             </button>`)}
         </nav>
       </header>
@@ -2755,5 +2771,5 @@ var tt = {
     `];
 	}
 };
-customElements.define("boopli-panel", nt);
-export { nt as BoopliPanel };
+customElements.define("boopli-panel", it);
+export { it as BoopliPanel };

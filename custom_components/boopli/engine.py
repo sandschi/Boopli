@@ -112,6 +112,7 @@ ALARM_REPEAT_MAX = 60
 ALARM_DEVICE_DOMAINS = ("siren", "switch", "input_boolean", "script")
 SPEECH_TEMPLATE_DEFAULT = "{chore}: {step}"
 ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01"
+ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01"
 
 # Which channels a nudge may use
 CHANNELS_ALL = "all"
@@ -696,7 +697,9 @@ class SpeakerCfg:
     """A speaker (a media player) that can play a cue, speak, and sound an alarm."""
 
     entity_id: str
-    cue: SoundCfg = field(default_factory=lambda: SoundCfg(start_at=1))
+    cue: SoundCfg = field(
+        default_factory=lambda: SoundCfg(sound=ALEXA_DING_SOUND, start_at=1)
+    )
     speech: SpeechCfg = field(default_factory=SpeechCfg)
     alarm: SoundCfg = field(
         default_factory=lambda: SoundCfg(
@@ -708,7 +711,7 @@ class SpeakerCfg:
     def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
         return cls(
             entity_id=str(d.get("entity_id", "")).strip(),
-            cue=SoundCfg.from_dict(d.get("cue"), 1),
+            cue=SoundCfg.from_dict(d.get("cue") or {"sound": ALEXA_DING_SOUND}, 1),
             speech=SpeechCfg.from_dict(d.get("speech")),
             alarm=SoundCfg.from_dict(d.get("alarm") or {"sound": ALEXA_ALARM_SOUND}, 4),
         )

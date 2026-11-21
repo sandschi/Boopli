@@ -14,6 +14,9 @@ import type {
 } from "./types";
 
 const ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01";
+const ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01";
+const SOUND_LIBRARY_URL =
+  "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html";
 const ALARM_DOMAINS = ["siren", "switch", "input_boolean", "script"];
 
 const SOUND_KINDS: { value: SoundKind; label: string }[] = [
@@ -115,7 +118,14 @@ export class BoopliSpeakers extends LitElement {
   private _newSpeaker(entityId: string): SpeakerCfg {
     return {
       entity_id: entityId,
-      cue: { enabled: false, kind: "alexa", sound: "", start_at: 1, seconds: 30, repeat_s: 5 },
+      cue: {
+        enabled: false,
+        kind: "alexa",
+        sound: ALEXA_DING_SOUND,
+        start_at: 1,
+        seconds: 30,
+        repeat_s: 5,
+      },
       speech: { enabled: false, route: "alexa_media", target: "", announce: false, start_at: 2 },
       alarm: {
         enabled: false,
@@ -217,6 +227,15 @@ export class BoopliSpeakers extends LitElement {
                       this._setSound(id, which, { sound: (e.target as HTMLInputElement).value.trim() })}
                   />
                 </label>
+                ${cfg.kind === "alexa"
+                  ? html`<div class="muted small libhint">
+                      Pick a sound from the
+                      <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
+                      The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
+                      + a two-digit number, for example "Doorbell Chime (1)" is
+                      <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
+                    </div>`
+                  : nothing}
                 ${this._startAt(cfg.start_at, (n) => this._setSound(id, which, { start_at: n }))}
                 ${alarm
                   ? html`
@@ -553,6 +572,15 @@ export class BoopliSpeakers extends LitElement {
       }
       .note {
         padding: 2px 0 6px 28px;
+      }
+      .libhint {
+        flex: 1 1 100%;
+      }
+      .libhint a {
+        color: var(--primary-color);
+      }
+      code {
+        font-size: 12px;
       }
       .field {
         margin: 14px 0 4px;

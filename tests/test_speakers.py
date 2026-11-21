@@ -69,6 +69,8 @@ def test_defaults_are_cue_1_speech_2_alarm_4_and_everything_off():
     assert (s.cue.start_at, s.speech.start_at, s.alarm.start_at) == (1, 2, 4)
     assert not (s.cue.enabled or s.speech.enabled or s.alarm.enabled)
     assert s.alarm.sound == "amzn_sfx_scifi_alarm_01"
+    assert s.cue.sound == "amzn_sfx_doorbell_chime_01"  # confirmed on a real Echo Dot
+    assert engine.SpeakerCfg.from_dict({"entity_id": "media_player.x"}).cue.sound == s.cue.sound
     assert (s.alarm.seconds, s.alarm.repeat_s) == (30, 5)
 
 
@@ -235,8 +237,8 @@ def test_alarm_device_and_other_validation_errors():
 def test_testing_a_level_does_not_need_it_switched_on():
     s = speaker()
     assert engine.validate_speaker_test(s, "alarm") is None  # default sound is set
-    assert engine.validate_speaker_test(s, "cue")  # no sound chosen yet
-    s.cue.sound = "amzn_sfx_x"
-    assert engine.validate_speaker_test(s, "cue") is None
+    assert engine.validate_speaker_test(s, "cue") is None  # so is the default ding
+    s.cue.sound = ""
+    assert engine.validate_speaker_test(s, "cue")  # emptied: nothing to play
     assert engine.validate_speaker_test(s, "speech")  # no target yet
     assert engine.validate_speaker_test(s, "loud")
