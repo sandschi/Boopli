@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import colorsys
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
 from typing import Any
 
@@ -87,6 +87,31 @@ GAP_MS_DEFAULT = 1000
 GAP_MS_MIN, GAP_MS_MAX = 0, 30000
 REPEATS_DEFAULT = 1
 REPEATS_MIN, REPEATS_MAX = 1, 5
+
+# Speakers: three levels per speaker. A speaker plays the highest enabled level
+# that has been reached (they would cut each other off on one speaker).
+SPEAKER_CUE = "cue"  # a small ding
+SPEAKER_SPEECH = "speech"  # a spoken sentence
+SPEAKER_ALARM = "alarm"  # a loud sound, repeated for a while
+SPEAKER_LEVELS = (SPEAKER_CUE, SPEAKER_SPEECH, SPEAKER_ALARM)  # low to high
+
+SOUND_ALEXA = "alexa"  # one of Amazon's built-in sounds, by id
+SOUND_FILE = "file"  # a file in Home Assistant's media folder, or a URL
+SOUND_KINDS = (SOUND_ALEXA, SOUND_FILE)
+
+SPEECH_ALEXA_MEDIA = "alexa_media"  # notify.alexa_media_* (Alexa Media Player)
+SPEECH_ALEXA_DEVICES = "alexa_devices"  # a notify.*_speak/_announce entity
+SPEECH_TTS = "tts"  # tts.speak on any media player
+SPEECH_ROUTES = (SPEECH_ALEXA_MEDIA, SPEECH_ALEXA_DEVICES, SPEECH_TTS)
+
+START_AT_MIN, START_AT_MAX = 1, 20
+ALARM_SECONDS_DEFAULT = 30
+ALARM_SECONDS_MIN, ALARM_SECONDS_MAX = 3, 600
+ALARM_REPEAT_DEFAULT = 5  # seconds between plays of an alarm sound; 0 = play once
+ALARM_REPEAT_MAX = 60
+ALARM_DEVICE_DOMAINS = ("siren", "switch", "input_boolean", "script")
+SPEECH_TEMPLATE_DEFAULT = "{chore}: {step}"
+ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01"
 
 # Which channels a nudge may use
 CHANNELS_ALL = "all"
@@ -567,6 +592,7 @@ class LightCfg:
     blink_ms: int = BLINK_MS_DEFAULT  # how long the color stays on per blink
     repeats: int = REPEATS_DEFAULT  # how many blinks
     gap_ms: int = GAP_MS_DEFAULT  # pause between blinks, light back to normal
+    start_at: int = 1  # used from this nudge number on
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> LightCfg:
@@ -576,10 +602,7 @@ class LightCfg:
             mode = LIGHT_BLINK
 
         def number(key: str, default: int) -> int:
-            try:
-                return int(d.get(key, default))
-            except (TypeError, ValueError):
-                return default
+            return _int(d.get(key), default)
 
         return cls(
             entity_id=str(d.get("entity_id", "")).strip(),
@@ -588,6 +611,7 @@ class LightCfg:
             blink_ms=number("blink_ms", BLINK_MS_DEFAULT),
             repeats=number("repeats", REPEATS_DEFAULT),
             gap_ms=number("gap_ms", GAP_MS_DEFAULT),
+            start_at=number("start_at", 1),
         )
 
     def blink_seconds(self) -> float:
@@ -601,12 +625,109 @@ class PhoneCfg:
 
     service: str  # without the "notify." prefix
     level: str = LEVEL_NORMAL
+    start_at: int = 1  # used from this nudge number on
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> PhoneCfg:
         return cls(
             service=str(d.get("service", "")).strip(),
             level=str(d.get("level", LEVEL_NORMAL)),
+            start_at=_int(d.get("start_at"), 1),
+        )
+
+
+def _int(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+@dataclass
+class SoundCfg:
+    """A sound a speaker plays: the cue (a ding) or the alarm."""
+
+    enabled: bool = False
+    kind: str = SOUND_ALEXA
+    sound: str = ""  # an Alexa sound id, or a file path / media-source id / URL
+    start_at: int = 1
+    seconds: int = ALARM_SECONDS_DEFAULT  # alarm only: how long it keeps playing
+    repeat_s: int = ALARM_REPEAT_DEFAULT  # alarm only: seconds between plays
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None, start_at: int) -> SoundCfg:
+        d = d or {}
+        return cls(
+            enabled=bool(d.get("enabled", False)),
+            kind=str(d.get("kind", SOUND_ALEXA)),
+            sound=str(d.get("sound", "")).strip(),
+            start_at=_int(d.get("start_at"), start_at),
+            seconds=_int(d.get("seconds"), ALARM_SECONDS_DEFAULT),
+            repeat_s=_int(d.get("repeat_s"), ALARM_REPEAT_DEFAULT),
+        )
+
+
+@dataclass
+class SpeechCfg:
+    """A spoken sentence on a speaker."""
+
+    enabled: bool = False
+    route: str = SPEECH_ALEXA_MEDIA
+    # alexa_media: the notify service (alexa_media_xxx); alexa_devices: a notify
+    # entity (notify.xxx_speak); tts: a tts entity (tts.xxx).
+    target: str = ""
+    announce: bool = False  # alexa_media only: announce (chime) instead of plain speech
+    start_at: int = 2
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> SpeechCfg:
+        d = d or {}
+        return cls(
+            enabled=bool(d.get("enabled", False)),
+            route=str(d.get("route", SPEECH_ALEXA_MEDIA)),
+            target=str(d.get("target", "")).strip(),
+            announce=bool(d.get("announce", False)),
+            start_at=_int(d.get("start_at"), 2),
+        )
+
+
+@dataclass
+class SpeakerCfg:
+    """A speaker (a media player) that can play a cue, speak, and sound an alarm."""
+
+    entity_id: str
+    cue: SoundCfg = field(default_factory=lambda: SoundCfg(start_at=1))
+    speech: SpeechCfg = field(default_factory=SpeechCfg)
+    alarm: SoundCfg = field(
+        default_factory=lambda: SoundCfg(
+            sound=ALEXA_ALARM_SOUND, start_at=4, kind=SOUND_ALEXA
+        )
+    )
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
+        return cls(
+            entity_id=str(d.get("entity_id", "")).strip(),
+            cue=SoundCfg.from_dict(d.get("cue"), 1),
+            speech=SpeechCfg.from_dict(d.get("speech")),
+            alarm=SoundCfg.from_dict(d.get("alarm") or {"sound": ALEXA_ALARM_SOUND}, 4),
+        )
+
+
+@dataclass
+class AlarmDeviceCfg:
+    """A siren, switch or script that sounds the alarm for a while."""
+
+    entity_id: str
+    seconds: int = ALARM_SECONDS_DEFAULT
+    start_at: int = 4
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> AlarmDeviceCfg:
+        return cls(
+            entity_id=str(d.get("entity_id", "")).strip(),
+            seconds=_int(d.get("seconds"), ALARM_SECONDS_DEFAULT),
+            start_at=_int(d.get("start_at"), 4),
         )
 
 
@@ -655,6 +776,9 @@ class Settings:
 
     lights: list[LightCfg] = field(default_factory=list)
     phones: list[PhoneCfg] = field(default_factory=list)
+    speakers: list[SpeakerCfg] = field(default_factory=list)
+    alarm_devices: list[AlarmDeviceCfg] = field(default_factory=list)
+    speech_template: str = SPEECH_TEMPLATE_DEFAULT
     quiet_hours: QuietHours = field(default_factory=QuietHours)
     presence_entity: str = ""  # optional person entity
     snooze_minutes: int = 15
@@ -666,11 +790,68 @@ class Settings:
         return cls(
             lights=[LightCfg.from_dict(x) for x in d.get("lights", [])],
             phones=[PhoneCfg.from_dict(x) for x in d.get("phones", [])],
+            speakers=[SpeakerCfg.from_dict(x) for x in d.get("speakers", [])],
+            alarm_devices=[
+                AlarmDeviceCfg.from_dict(x) for x in d.get("alarm_devices", [])
+            ],
+            speech_template=str(
+                d.get("speech_template") or SPEECH_TEMPLATE_DEFAULT
+            ).strip()
+            or SPEECH_TEMPLATE_DEFAULT,
             quiet_hours=QuietHours.from_dict(d.get("quiet_hours")),
             presence_entity=str(d.get("presence_entity", "")).strip(),
             snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
             default_style=str(d.get("default_style", STYLE_ONE)),
         )
+
+
+_START_AT_ERROR = f"'Starts at nudge' must be {START_AT_MIN} to {START_AT_MAX}."
+_ALARM_SECONDS_ERROR = (
+    f"An alarm must last {ALARM_SECONDS_MIN} to {ALARM_SECONDS_MAX} seconds."
+)
+
+
+def _validate_speaker(speaker: SpeakerCfg) -> str | None:
+    if not speaker.entity_id.startswith("media_player."):
+        return "A speaker must be a media player."
+    for name, sound in (("cue", speaker.cue), ("alarm", speaker.alarm)):
+        if not START_AT_MIN <= sound.start_at <= START_AT_MAX:
+            return _START_AT_ERROR
+        if sound.kind not in SOUND_KINDS:
+            return f"Unknown {name} sound type."
+        if sound.enabled and not sound.sound:
+            return f"Choose the {name} sound for {speaker.entity_id}."
+    if not ALARM_SECONDS_MIN <= speaker.alarm.seconds <= ALARM_SECONDS_MAX:
+        return _ALARM_SECONDS_ERROR
+    if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
+        return f"Alarm repeat must be 0 to {ALARM_REPEAT_MAX} seconds."
+    speech = speaker.speech
+    if not START_AT_MIN <= speech.start_at <= START_AT_MAX:
+        return _START_AT_ERROR
+    if speech.route not in SPEECH_ROUTES:
+        return "Unknown way of speaking."
+    if speech.enabled:
+        if speech.route == SPEECH_ALEXA_DEVICES and not speech.target.startswith("notify."):
+            return "Choose the Alexa notify entity (notify.…) for speech."
+        if speech.route == SPEECH_TTS and not speech.target.startswith("tts."):
+            return "Choose a TTS voice (tts.…) for speech."
+        if speech.route == SPEECH_ALEXA_MEDIA and not speech.target:
+            return "Choose the Alexa Media Player notify service for speech."
+    return None
+
+
+def validate_speaker_test(speaker: SpeakerCfg, level: str) -> str | None:
+    """Check a speaker before testing one level (which need not be switched on)."""
+    if level not in SPEAKER_LEVELS:
+        return "Unknown speaker level."
+    probe = speaker
+    if level == SPEAKER_CUE:
+        probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
+    elif level == SPEAKER_SPEECH:
+        probe = replace(speaker, speech=replace(speaker.speech, enabled=True))
+    else:
+        probe = replace(speaker, alarm=replace(speaker.alarm, enabled=True))
+    return _validate_speaker(probe)
 
 
 def validate_settings(settings: Settings) -> str | None:
@@ -693,6 +874,25 @@ def validate_settings(settings: Settings) -> str | None:
             return "A phone must be a notify service name."
         if phone.level not in LEVEL_VALUES:
             return "Unknown phone notification level."
+    for light in settings.lights:
+        if not START_AT_MIN <= light.start_at <= START_AT_MAX:
+            return _START_AT_ERROR
+    for phone in settings.phones:
+        if not START_AT_MIN <= phone.start_at <= START_AT_MAX:
+            return _START_AT_ERROR
+    for speaker in settings.speakers:
+        error = _validate_speaker(speaker)
+        if error:
+            return error
+    for device in settings.alarm_devices:
+        if device.entity_id.split(".")[0] not in ALARM_DEVICE_DOMAINS or "." not in device.entity_id:
+            return "An alarm device must be a siren, switch, input_boolean or script."
+        if not ALARM_SECONDS_MIN <= device.seconds <= ALARM_SECONDS_MAX:
+            return _ALARM_SECONDS_ERROR
+        if not START_AT_MIN <= device.start_at <= START_AT_MAX:
+            return _START_AT_ERROR
+    if "{chore}" not in settings.speech_template and "{step}" not in settings.speech_template:
+        return "The spoken sentence must contain {chore} or {step}."
     for key, day in settings.quiet_hours.days.items():
         if key not in {str(i) for i in range(7)}:
             return "Quiet hours days must be 0 (Monday) to 6 (Sunday)."
@@ -941,3 +1141,86 @@ def restore_plan(state: str, attrs: dict[str, Any]) -> tuple[str, dict[str, Any]
     if attribute and attrs.get(attribute) is not None:
         data[attribute] = list(attrs[attribute]) if isinstance(attrs[attribute], (list, tuple)) else attrs[attribute]
     return "turn_on", data
+
+
+# --- speakers and alarm devices ------------------------------------------
+
+
+def reached(start_at: int, number: int) -> bool:
+    """Whether a channel set to start at nudge `start_at` is used at nudge `number`."""
+    return start_at <= number
+
+
+def speaker_level(speaker: SpeakerCfg, number: int) -> str | None:
+    """The one level a speaker plays at this nudge: the highest enabled one reached."""
+    level = None
+    for name, cfg in (
+        (SPEAKER_CUE, speaker.cue),
+        (SPEAKER_SPEECH, speaker.speech),
+        (SPEAKER_ALARM, speaker.alarm),
+    ):
+        if cfg.enabled and reached(cfg.start_at, number):
+            level = name
+    return level
+
+
+def speech_text(template: str, chore: str, step: str) -> str:
+    """The sentence to speak. {chore} and {step} are filled in."""
+    return template.replace("{chore}", chore).replace("{step}", step)
+
+
+def sound_play_data(kind: str, sound: str) -> dict[str, str]:
+    """`media_player.play_media` data for an Alexa sound or a file.
+
+    A bare file path such as "boopli/ding.mp3" means a file in Home Assistant's
+    media folder. A media-source id, a /local path or a URL is used as given.
+    """
+    sound = sound.strip()
+    if kind == SOUND_ALEXA:
+        return {"media_content_id": sound, "media_content_type": "sound"}
+    if not (
+        sound.startswith(("media-source://", "http://", "https://", "/"))
+    ):
+        sound = "media-source://media_source/local/" + sound.lstrip("/")
+    return {"media_content_id": sound, "media_content_type": "music"}
+
+
+def speech_call(
+    speaker: SpeakerCfg, text: str
+) -> tuple[str, str, dict[str, Any]]:
+    """How to speak `text` on a speaker: (domain, service, data)."""
+    cfg = speaker.speech
+    if cfg.route == SPEECH_ALEXA_MEDIA:
+        service = cfg.target.removeprefix("notify.")
+        return (
+            "notify",
+            service,
+            {"message": text, "data": {"type": "announce" if cfg.announce else "tts"}},
+        )
+    if cfg.route == SPEECH_ALEXA_DEVICES:
+        return "notify", "send_message", {"entity_id": cfg.target, "message": text}
+    return (
+        "tts",
+        "speak",
+        {
+            "entity_id": cfg.target,
+            "media_player_entity_id": speaker.entity_id,
+            "message": text,
+        },
+    )
+
+
+def alarm_plays(seconds: int, repeat_s: int) -> int:
+    """How many times an alarm sound is played in `seconds` seconds."""
+    if repeat_s <= 0:
+        return 1
+    return max(1, -(-seconds // repeat_s))  # round up
+
+
+def device_alarm_call(entity_id: str, on: bool) -> tuple[str, str, dict[str, Any]]:
+    """The service call that switches an alarm device on or off."""
+    domain = entity_id.split(".")[0]
+    service = "turn_on" if on else "turn_off"
+    if domain == "script" and not on:
+        service = "turn_off"  # stops a running script
+    return domain, service, {"entity_id": entity_id}

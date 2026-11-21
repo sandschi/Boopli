@@ -48,6 +48,7 @@ class BoopliManager:
         self.history: list[engine.HistoryEntry] = []
         self.settings = engine.Settings()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
+        self.alarm_on: list[str] = []  # alarm devices Boopli switched on right now
         self.nudger = BoopliNudger(hass, self)
         self._listeners: list[Callable[[], None]] = []
         self._unsub_timer: CALLBACK_TYPE | None = None
@@ -75,6 +76,11 @@ class BoopliManager:
         ]
         self.settings = engine.Settings.from_dict(data.get("settings"))
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
+        # An alarm device still on from before a restart must not stay on.
+        left_on = [str(x) for x in data.get("alarm_on", [])]
+        if left_on:
+            self.hass.async_create_task(self.nudger.async_turn_off_alarm_devices(left_on))
+        self.alarm_on = []
         # Data saved before nudging existed: an open step has never been nudged.
         for run in self.runs.values():
             for step in run.steps:
@@ -109,6 +115,7 @@ class BoopliManager:
             "history": [engine.to_dict(h) for h in self.history],
             "settings": engine.to_dict(self.settings),
             "indicator_on": self.indicator_on,
+            "alarm_on": self.alarm_on,
         }
 
     def _save(self) -> None:
@@ -258,6 +265,7 @@ class BoopliManager:
                             step.step_id,
                             step.title,
                             decision.channels,
+                            number,
                         )
                     )
                     events.append(
@@ -297,6 +305,17 @@ class BoopliManager:
         """Remember that Boopli switched this light on as an indicator."""
         if entity_id not in self.indicator_on:
             self.indicator_on.append(entity_id)
+            self._save()
+
+    def mark_alarm_on(self, entity_id: str) -> None:
+        """Remember that Boopli switched this alarm device on (restart safety)."""
+        if entity_id not in self.alarm_on:
+            self.alarm_on.append(entity_id)
+            self._store.async_delay_save(self._data_to_save, 0)
+
+    def unmark_alarm_on(self, entity_id: str) -> None:
+        if entity_id in self.alarm_on:
+            self.alarm_on.remove(entity_id)
             self._save()
 
     def _reschedule(self, now: datetime, extra: list[datetime]) -> None:
@@ -501,4 +520,16 @@ class BoopliManager:
             if not phone.service or phone.level not in engine.LEVEL_VALUES:
                 raise BoopliError("Pick a phone and a level first.")
             return await self.nudger.async_test_phone(phone)
+        if kind == "speaker":
+            speaker = engine.SpeakerCfg.from_dict(data.get("speaker") or {})
+            level = str(data.get("level", ""))
+            error = engine.validate_speaker_test(speaker, level)
+            if error:
+                raise BoopliError(error)
+            return await self.nudger.async_test_speaker(speaker, level)
+        if kind == "alarm_device":
+            device = engine.AlarmDeviceCfg.from_dict(data.get("alarm_device") or {})
+            if device.entity_id.split(".")[0] not in engine.ALARM_DEVICE_DOMAINS:
+                raise BoopliError("Pick a siren, switch or script first.")
+            return await self.nudger.async_test_alarm_device(device)
         raise BoopliError("Unknown test.")

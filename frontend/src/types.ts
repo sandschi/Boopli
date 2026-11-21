@@ -74,11 +74,47 @@ export interface LightCfg {
   blink_ms: number; // how long the color stays on per blink
   repeats: number; // how many blinks
   gap_ms: number; // pause between blinks
+  start_at: number; // used from this nudge number on
 }
 
 export interface PhoneCfg {
   service: string; // notify service name without "notify."
   level: PhoneLevel;
+  start_at: number;
+}
+
+export type SoundKind = "alexa" | "file";
+export type SpeechRoute = "alexa_media" | "alexa_devices" | "tts";
+export type SpeakerLevel = "cue" | "speech" | "alarm";
+
+export interface SoundCfg {
+  enabled: boolean;
+  kind: SoundKind;
+  sound: string; // Alexa sound id, or a file path / media-source id / URL
+  start_at: number;
+  seconds: number; // alarm only
+  repeat_s: number; // alarm only
+}
+
+export interface SpeechCfg {
+  enabled: boolean;
+  route: SpeechRoute;
+  target: string;
+  announce: boolean;
+  start_at: number;
+}
+
+export interface SpeakerCfg {
+  entity_id: string; // a media_player
+  cue: SoundCfg;
+  speech: SpeechCfg;
+  alarm: SoundCfg;
+}
+
+export interface AlarmDeviceCfg {
+  entity_id: string; // siren, switch, input_boolean or script
+  seconds: number;
+  start_at: number;
 }
 
 export interface QuietDay {
@@ -95,6 +131,9 @@ export interface QuietHours {
 export interface Settings {
   lights: LightCfg[];
   phones: PhoneCfg[];
+  speakers: SpeakerCfg[];
+  alarm_devices: AlarmDeviceCfg[];
+  speech_template: string;
   quiet_hours: QuietHours;
   presence_entity: string;
   snooze_minutes: number;

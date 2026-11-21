@@ -22,6 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 NOTIFICATION_ACTION_EVENT = "mobile_app_notification_action"
 INDICATOR_TEST_SECONDS = 5
+ALARM_TEST_SECONDS = 3
 
 
 class BoopliNudger:
@@ -32,6 +33,8 @@ class BoopliNudger:
         self.manager = manager
         self._unsub_actions: CALLBACK_TYPE | None = None
         self._blinks: dict[str, asyncio.Task[None]] = {}
+        # Alarms that are sounding: target entity -> (step key, task)
+        self._alarms: dict[str, tuple[str, asyncio.Task[None]]] = {}
 
     # --- lifecycle -------------------------------------------------------
 
@@ -50,6 +53,9 @@ class BoopliNudger:
         for task in self._blinks.values():
             task.cancel()  # each blink puts its light back before it stops
         self._blinks.clear()
+        for _key, task in self._alarms.values():
+            task.cancel()  # each alarm stops its speaker or switches its device off
+        self._alarms.clear()
 
     @callback
     def _on_action(self, event: Event) -> None:
@@ -75,13 +81,25 @@ class BoopliNudger:
         step_id: str,
         step_title: str,
         channels: str,
+        number: int = 1,
     ) -> None:
-        """Send one nudge on every enabled channel. Never raises."""
+        """Send nudge number `number` on every channel that has reached it."""
         settings = self.manager.settings
+        key = f"{run_id}:{step_id}"
         if channels == engine.CHANNELS_ALL:
             for light in settings.lights:
-                await self._nudge_light(light)
+                if engine.reached(light.start_at, number):
+                    await self._nudge_light(light)
+            for speaker in settings.speakers:
+                level = engine.speaker_level(speaker, number)
+                if level:
+                    await self._play_speaker(speaker, level, chore_name, step_title, key)
+            for device in settings.alarm_devices:
+                if engine.reached(device.start_at, number):
+                    self._start_device_alarm(device, key)
         for phone in settings.phones:
+            if not engine.reached(phone.start_at, number):
+                continue
             payload = engine.phone_payload(
                 phone.level,
                 run_id,
@@ -191,10 +209,118 @@ class BoopliNudger:
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Boopli: could not restore %s", light.entity_id)
 
+    # --- speakers and alarm devices --------------------------------------
+
+    async def _call(self, domain: str, service: str, data: dict[str, Any]) -> bool:
+        """Call a service without ever raising. Returns whether it was sent."""
+        if not self.hass.services.has_service(domain, service):
+            _LOGGER.warning("Boopli: %s.%s does not exist", domain, service)
+            return False
+        _LOGGER.debug("Boopli: %s.%s %s", domain, service, data)
+        try:
+            await self.hass.services.async_call(domain, service, data, blocking=False)
+        except Exception:  # noqa: BLE001 - a broken speaker must not break Boopli
+            _LOGGER.exception("Boopli: %s.%s failed", domain, service)
+            return False
+        return True
+
+    def _speaker_available(self, entity_id: str) -> bool:
+        state = self.hass.states.get(entity_id)
+        if state is None or state.state == "unavailable":
+            _LOGGER.debug("Boopli: %s is unavailable, skipping", entity_id)
+            return False
+        return True
+
+    async def _play_speaker(
+        self,
+        speaker: engine.SpeakerCfg,
+        level: str,
+        chore_name: str,
+        step_title: str,
+        key: str,
+    ) -> bool:
+        """Play one level on a speaker. Returns whether something was sent."""
+        if not self._speaker_available(speaker.entity_id):
+            return False
+        if level == engine.SPEAKER_CUE:
+            return await self._call(
+                "media_player",
+                "play_media",
+                {
+                    "entity_id": speaker.entity_id,
+                    **engine.sound_play_data(speaker.cue.kind, speaker.cue.sound),
+                },
+            )
+        if level == engine.SPEAKER_SPEECH:
+            text = engine.speech_text(
+                self.manager.settings.speech_template, chore_name, step_title
+            )
+            domain, service, data = engine.speech_call(speaker, text)
+            return await self._call(domain, service, data)
+        return self._start_speaker_alarm(speaker, key)
+
+    def _start_speaker_alarm(self, speaker: engine.SpeakerCfg, key: str) -> bool:
+        """Repeat the alarm sound on a speaker for its duration, in the background."""
+        return self._start_alarm_task(
+            speaker.entity_id, key, self._speaker_alarm(speaker)
+        )
+
+    def _start_device_alarm(self, device: engine.AlarmDeviceCfg, key: str) -> bool:
+        """Switch an alarm device on for its duration, then off."""
+        return self._start_alarm_task(
+            device.entity_id, key, self._device_alarm(device.entity_id, device.seconds)
+        )
+
+    def _start_alarm_task(self, target: str, key: str, coro: Any) -> bool:
+        running = self._alarms.get(target)
+        if running is not None and not running[1].done():
+            coro.close()
+            _LOGGER.debug("Boopli: %s is already sounding", target)
+            return False
+        self._alarms[target] = (key, self.hass.async_create_task(coro))
+        return True
+
+    async def _speaker_alarm(self, speaker: engine.SpeakerCfg) -> None:
+        alarm = speaker.alarm
+        data = {
+            "entity_id": speaker.entity_id,
+            **engine.sound_play_data(alarm.kind, alarm.sound),
+        }
+        try:
+            for i in range(engine.alarm_plays(alarm.seconds, alarm.repeat_s)):
+                if i:
+                    await asyncio.sleep(alarm.repeat_s)
+                await self._call("media_player", "play_media", data)
+        except asyncio.CancelledError:
+            await self._call("media_player", "media_stop", {"entity_id": speaker.entity_id})
+            raise
+        # Let the last play finish; the sound ends by itself.
+
+    async def _device_alarm(self, entity_id: str, seconds: int) -> None:
+        self.manager.mark_alarm_on(entity_id)
+        try:
+            await self._call(*engine.device_alarm_call(entity_id, True))
+            await asyncio.sleep(seconds)
+        finally:
+            await self._call(*engine.device_alarm_call(entity_id, False))
+            self.manager.unmark_alarm_on(entity_id)
+
+    async def async_silence(self, key: str) -> None:
+        """Stop the alarms of a step that was answered (Done or Snooze)."""
+        for target, (alarm_key, task) in list(self._alarms.items()):
+            if alarm_key == key and not task.done():
+                task.cancel()
+
+    async def async_turn_off_alarm_devices(self, entity_ids: list[str]) -> None:
+        """Switch off devices that were left on (for example by a restart)."""
+        for entity_id in entity_ids:
+            await self._call(*engine.device_alarm_call(entity_id, False))
+
     # --- clearing --------------------------------------------------------
 
     async def async_clear_step(self, run_id: str, step_id: str) -> None:
-        """Remove the phone notification of a step that is resolved."""
+        """Remove the phone notification and stop the alarms of a resolved step."""
+        await self.async_silence(f"{run_id}:{step_id}")
         tag = engine.notification_tag(run_id, step_id)
         for phone in self.manager.settings.phones:
             await self._notify(
@@ -247,6 +373,48 @@ class BoopliNudger:
     async def _indicator_test_off(self, entity_id: str) -> None:
         await asyncio.sleep(INDICATOR_TEST_SECONDS)
         await self.async_turn_off_indicators([entity_id])
+
+    async def async_test_speaker(
+        self, speaker: engine.SpeakerCfg, level: str
+    ) -> dict[str, Any]:
+        """Play one level of a speaker once so the user hears it."""
+        if level not in engine.SPEAKER_LEVELS:
+            return {"ok": False, "note": "Unknown speaker level."}
+        if not self._speaker_available(speaker.entity_id):
+            return {"ok": False, "note": "That speaker is not available right now."}
+        if level == engine.SPEAKER_ALARM:
+            # One play only, so a test never rings for long.
+            ok = await self._call(
+                "media_player",
+                "play_media",
+                {
+                    "entity_id": speaker.entity_id,
+                    **engine.sound_play_data(speaker.alarm.kind, speaker.alarm.sound),
+                },
+            )
+            note = "Playing the alarm sound once."
+        else:
+            ok = await self._play_speaker(
+                speaker, level, "Boopli test", "Dishwasher: empty it", "test"
+            )
+            note = "Playing the sound." if level == engine.SPEAKER_CUE else "Speaking."
+        return {"ok": ok, "note": note if ok else "Boopli could not send that."}
+
+    async def async_test_alarm_device(
+        self, device: engine.AlarmDeviceCfg
+    ) -> dict[str, Any]:
+        """Switch an alarm device on for a few seconds."""
+        state = self.hass.states.get(device.entity_id)
+        if state is None or state.state == "unavailable":
+            return {"ok": False, "note": "That device is not available right now."}
+        short = engine.AlarmDeviceCfg(device.entity_id, ALARM_TEST_SECONDS, device.start_at)
+        started = self._start_device_alarm(short, "test")
+        return {
+            "ok": started,
+            "note": f"On for {ALARM_TEST_SECONDS} seconds, then off."
+            if started
+            else "It is already on.",
+        }
 
     async def async_test_phone(self, phone: engine.PhoneCfg) -> dict[str, Any]:
         """Send a test notification to a phone."""

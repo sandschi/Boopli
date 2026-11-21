@@ -192,9 +192,12 @@ def ws_settings_save(
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/test_channel",
-        vol.Required("kind"): vol.In(["light", "phone"]),
+        vol.Required("kind"): vol.In(["light", "phone", "speaker", "alarm_device"]),
         vol.Optional("light"): dict,
         vol.Optional("phone"): dict,
+        vol.Optional("speaker"): dict,
+        vol.Optional("level"): str,
+        vol.Optional("alarm_device"): dict,
     }
 )
 @websocket_api.async_response

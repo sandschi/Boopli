@@ -2,13 +2,16 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.4).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights and your phone with Done and Snooze buttons. There is no XP, pet, speaker or alarm channel, or setup wizard yet, so it is not ready for daily use.
+> **Status: early development (v0.0.5).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm. There is no XP, pet or setup wizard yet, so it is not ready for daily use.
 
 ## Nudges
 
 When a step becomes your turn, Boopli nudges you through the channels you turn on in the **Settings** tab:
 
 - **Lights.** Per light you choose **Blink** or **Indicator lamp**. Blink: Boopli saves the light's current look, shows your color for as long as you set (in milliseconds), repeats 1 to 5 times with a pause you set, then puts the light back exactly as it was. Indicator lamp: the light stays on in a color until you are done. Boopli does not use a light's built-in flash, because some lights say they support it and ignore it. Press **Test** to see what a light really does. A light in your home can follow a few hundred milliseconds; a cloud-connected light needs about a second or more.
+- **Speakers.** Add any media player. Each speaker has three levels you can switch on or off: a small **ding**, a **spoken sentence**, and an **alarm sound** that repeats for a time you set. A speaker plays the highest level that has been reached. Sounds: an Alexa sound by its id (for example `amzn_sfx_scifi_alarm_01`), or a file in your Home Assistant media folder (for example `boopli/ding.mp3`). Speech works through Alexa Media Player, an Alexa Devices notify entity, or a TTS voice on the speaker. Every level has a **Test** button.
+- **Alarm devices.** A siren, switch or script that Boopli switches on for a time you set and then off again. It also goes off when you answer the nudge, and when Home Assistant restarts.
+- **Levels.** Every channel has a "starts at nudge #" number: lights 1, phones 1, speaker ding 1, speech 2, alarm 4 by default. So a chore climbs from a light and a ding to speech and finally an alarm, as far as its style takes it.
 - **Phones.** A notification from the Home Assistant app with **Done** and **Snooze** buttons, at a level you choose: normal, high priority, alarm volume, or max volume (not every phone honours it).
 - **Styles, per chore:** quiet (panel only), one nudge, escalating (30, 15, 10, then every 5 minutes, then it stops), or persistent (every 5 minutes until done).
 - **Quiet hours,** off by default, with different start and stop times for each weekday. A chore can opt out (for example pills).

@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, saveSettings, testLight, testPhone } from "./api";
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
+import "./boopli-speakers";
 import type {
   Hass,
   LightCfg,
@@ -115,7 +116,36 @@ export class BoopliSettings extends LitElement {
   private _togglePhone(service: string, on: boolean): void {
     if (!this._draft) return;
     const rest = this._draft.phones.filter((p) => p.service !== service);
-    this._set({ phones: on ? [...rest, { service, level: "normal" }] : rest });
+    this._set({
+      phones: on ? [...rest, { service, level: "normal", start_at: 1 }] : rest,
+    });
+  }
+
+  private _startAtField(value: number, onChange: (n: number) => void) {
+    return html`
+      <label class="startat">
+        Starts at nudge #
+        <input
+          type="number"
+          min="1"
+          max="20"
+          .value=${String(value)}
+          @change=${(e: Event) => {
+            const n = Math.round(Number((e.target as HTMLInputElement).value));
+            if (!Number.isNaN(n)) onChange(Math.min(20, Math.max(1, n)));
+          }}
+        />
+      </label>
+    `;
+  }
+
+  private _setPhoneStart(service: string, start_at: number): void {
+    if (!this._draft) return;
+    this._set({
+      phones: this._draft.phones.map((p) =>
+        p.service === service ? { ...p, start_at } : p
+      ),
+    });
   }
 
   private _setPhoneLevel(service: string, level: PhoneLevel): void {
@@ -132,7 +162,7 @@ export class BoopliSettings extends LitElement {
     const level = this._draft.phones.find((p) => p.service === service)?.level ?? "normal";
     this._note(`phone:${service}`, "Sending…");
     try {
-      const result = await testPhone(this.hass, { service, level });
+      const result = await testPhone(this.hass, { service, level, start_at: 1 });
       this._note(`phone:${service}`, result.note);
     } catch (err) {
       this._note(`phone:${service}`, errorMessage(err));
@@ -150,6 +180,7 @@ export class BoopliSettings extends LitElement {
       blink_ms: 1500,
       repeats: 1,
       gap_ms: 1000,
+      start_at: 1,
     };
     this._set({ lights: [...this._draft.lights, light] });
     this._addLight = "";
@@ -292,6 +323,11 @@ export class BoopliSettings extends LitElement {
                   </select>
                   <button @click=${() => this._testPhone(service)}>Test</button>
                 </div>
+                ${cfg
+                  ? html`<div class="startrow">
+                      ${this._startAtField(cfg.start_at ?? 1, (n) => this._setPhoneStart(service, n))}
+                    </div>`
+                  : nothing}
                 ${note ? html`<div class="note muted small">${note}</div>` : nothing}
               `;
             })}
@@ -339,6 +375,9 @@ export class BoopliSettings extends LitElement {
               />
               <button @click=${() => this._testLight(light)}>Test</button>
               <button aria-label="Remove light" @click=${() => this._removeLight(id)}>✕</button>
+            </div>
+            <div class="startrow">
+              ${this._startAtField(light.start_at ?? 1, (n) => this._patchLight(id, { start_at: n }))}
             </div>
             ${blink
               ? html`
@@ -520,8 +559,13 @@ export class BoopliSettings extends LitElement {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
     return html`
-      ${this._renderPhones(d)} ${this._renderLights(d)} ${this._renderQuiet(d)}
-      ${this._renderOther(d)}
+      ${this._renderPhones(d)} ${this._renderLights(d)}
+      <boopli-speakers
+        .hass=${this.hass}
+        .settings=${d}
+        @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
+      ></boopli-speakers>
+      ${this._renderQuiet(d)} ${this._renderOther(d)}
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="save">
         <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save settings</button>
@@ -560,6 +604,19 @@ export class BoopliSettings extends LitElement {
       }
       .note {
         padding: 0 0 8px;
+      }
+      .startrow {
+        padding: 0 0 8px;
+      }
+      label.startat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        margin: 0;
+      }
+      label.startat input {
+        width: 80px;
       }
       .blinkopts {
         display: flex;

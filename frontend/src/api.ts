@@ -1,9 +1,12 @@
 import type {
+  AlarmDeviceCfg,
   ChoreDraft,
   Hass,
   LightCfg,
   PhoneCfg,
   Settings,
+  SpeakerCfg,
+  SpeakerLevel,
   Snapshot,
 } from "./types";
 
@@ -35,6 +38,21 @@ export function testLight(hass: Hass, light: LightCfg): Promise<TestResult> {
 
 export function testPhone(hass: Hass, phone: PhoneCfg): Promise<TestResult> {
   return hass.callWS({ type: "boopli/test_channel", kind: "phone", phone });
+}
+
+export function testSpeaker(
+  hass: Hass,
+  speaker: SpeakerCfg,
+  level: SpeakerLevel
+): Promise<TestResult> {
+  return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level });
+}
+
+export function testAlarmDevice(
+  hass: Hass,
+  alarm_device: AlarmDeviceCfg
+): Promise<TestResult> {
+  return hass.callWS({ type: "boopli/test_channel", kind: "alarm_device", alarm_device });
 }
 
 /** Subscribe to live updates. The callback receives a full snapshot each time. */
