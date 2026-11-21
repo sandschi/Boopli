@@ -35,6 +35,7 @@ export class BoopliSpeakers extends LitElement {
   static properties = {
     hass: { attribute: false },
     settings: { attribute: false },
+    show: { type: String, reflect: true },
     _addSpeaker: { state: true },
     _addDevice: { state: true },
     _notes: { state: true },
@@ -42,6 +43,7 @@ export class BoopliSpeakers extends LitElement {
 
   declare hass?: Hass;
   declare settings?: Settings;
+  declare show?: "all" | "speakers" | "devices";
   declare _addSpeaker: string;
   declare _addDevice: string;
   declare _notes: Record<string, string>;
@@ -501,14 +503,23 @@ export class BoopliSpeakers extends LitElement {
   render() {
     const d = this.settings;
     if (!d) return nothing;
-    return html`${this._renderSpeakers(d)} ${this._renderDevices(d)}`;
+    // `show` lets the Settings screen place the two cards in different columns.
+    const part = this.show || "all";
+    return html`${part !== "devices" ? this._renderSpeakers(d) : nothing}
+    ${part !== "speakers" ? this._renderDevices(d) : nothing}`;
   }
 
   static styles = [
     sharedStyles,
     css`
+      :host {
+        display: block;
+      }
       section.card {
-        margin-bottom: 16px;
+        margin: 0 0 16px;
+      }
+      :host([show]) section.card {
+        margin: 0;
       }
       h2 {
         font-size: 18px;

@@ -777,11 +777,23 @@ export class BoopliSettings extends LitElement {
         ? this._renderSimple()
         : html`
             <div class="cards advanced">
-              <div class="col">${this._renderOther(d)} ${this._renderQuiet(d)} ${this._renderPhones(d)}</div>
-              <div class="col">${this._renderLights(d)}</div>
-              <div class="col">
+              <div class="slot s-speakers">
                 <boopli-speakers
-                  class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
+                  show="speakers"
+                  class=${this._changed("speakers", "speech_template") ? "changed" : ""}
+                  .hass=${this.hass}
+                  .settings=${d}
+                  @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
+                ></boopli-speakers>
+              </div>
+              <div class="slot s-general">${this._renderOther(d)}</div>
+              <div class="slot s-quiet">${this._renderQuiet(d)}</div>
+              <div class="slot s-phones">${this._renderPhones(d)}</div>
+              <div class="slot s-lights">${this._renderLights(d)}</div>
+              <div class="slot s-alarms">
+                <boopli-speakers
+                  show="devices"
+                  class=${this._changed("alarm_devices") ? "changed" : ""}
                   .hass=${this.hass}
                   .settings=${d}
                   @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
@@ -819,16 +831,33 @@ export class BoopliSettings extends LitElement {
         align-items: start;
       }
       .cards.advanced {
-        /* Columns of stacked cards, so a tall card never pushes the next row down. */
-        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-        gap: 16px;
-        align-items: start;
+        /* The browser balances the columns, so they end at about the same height
+           and a short card is never pushed far down. */
+        display: block;
+        columns: 380px;
+        column-gap: 16px;
       }
-      .col {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        min-width: 0;
+      .slot {
+        break-inside: avoid;
+        margin: 0 0 16px;
+      }
+      /* Narrow screens: one column, the most used cards first. */
+      @media (max-width: 1100px) {
+        .cards.advanced {
+          display: flex;
+          flex-direction: column;
+          columns: auto;
+          gap: 16px;
+        }
+        .slot {
+          margin: 0;
+        }
+        .s-general { order: 1; }
+        .s-quiet { order: 2; }
+        .s-phones { order: 3; }
+        .s-lights { order: 4; }
+        .s-speakers { order: 5; }
+        .s-alarms { order: 6; }
       }
       .cards.simple {
         /* Cards in a row are the same height, and none is smaller than this. */
@@ -873,8 +902,16 @@ export class BoopliSettings extends LitElement {
         border-color: var(--warning-color, #ffa600);
         box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
       }
-      boopli-speakers.changed::before {
-        content: "● Unsaved changes in speakers and alarm devices";
+      boopli-speakers[show="speakers"].changed::before {
+        content: "● Unsaved changes in speakers";
+        display: block;
+        color: var(--warning-color, #ffa600);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 0 0 6px 4px;
+      }
+      boopli-speakers[show="devices"].changed::before {
+        content: "● Unsaved changes in alarm devices";
         display: block;
         color: var(--warning-color, #ffa600);
         font-size: 13px;
