@@ -46,6 +46,29 @@ export class BoopliToday extends LitElement {
     }
   }
 
+  /** Steps that finished by themselves in the last day, so nothing happens silently. */
+  private _renderAuto() {
+    const snapshot = this.snapshot;
+    if (!snapshot) return nothing;
+    const since = this.nowMs - 24 * 3600 * 1000;
+    const items = snapshot.history
+      .filter((h) => h.kind === "step_done" && h.by === "auto" && Date.parse(h.ts) >= since)
+      .slice(-3)
+      .reverse();
+    if (items.length === 0) return nothing;
+    return html`
+      <section class="auto dim">
+        <h3>Done by itself</h3>
+        ${items.map(
+          (h) => html`<div class="row">
+            <span>✓ ${h.chore_name}: ${h.step_title}</span>
+            <span class="hint">${h.reason ? `${h.reason}, ` : ""}${fmtTime(h.ts, snapshot.time_zone)}</span>
+          </div>`
+        )}
+      </section>
+    `;
+  }
+
   render() {
     if (!this.snapshot) return html`<p class="muted">Loading…</p>`;
     const tz = this.snapshot.time_zone;
@@ -90,6 +113,7 @@ export class BoopliToday extends LitElement {
               </p>
             </section>
           `}
+      ${this._renderAuto()}
       ${model.groups.length > 0 || model.dueToday.length > 0
         ? html`
             <section class="later dim">
@@ -147,8 +171,22 @@ export class BoopliToday extends LitElement {
         font-size: 20px;
         border-radius: 14px;
       }
-      .later {
+      .later,
+      .auto {
         margin-top: 28px;
+      }
+      .auto h3 {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--secondary-text-color);
+        margin-bottom: 8px;
+      }
+      .auto .row {
+        padding-left: 0;
+      }
+      .auto .hint {
+        white-space: normal;
+        text-align: right;
       }
       .later h3 {
         font-size: 15px;

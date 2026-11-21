@@ -36,7 +36,22 @@ REPEAT_WEEKLY = "weekly"
 REPEAT_EVERY_N_DAYS = "every_n_days"  # counted from completion
 REPEAT_TYPES = (REPEAT_NONE, REPEAT_DAILY, REPEAT_WEEKLY, REPEAT_EVERY_N_DAYS)
 
-RESOLVE_MANUAL = "manual"  # M4 adds entity/tag resolution
+RESOLVE_MANUAL = "manual"  # only the user finishes the step
+RESOLVE_AUTO = "auto"  # the step also finishes by itself (it has triggers)
+
+# Triggers: what finishes a step by itself
+TRIGGER_STATE = "state"  # an entity is in a state, or above/below a number
+TRIGGER_TAG = "tag"  # an NFC tag is scanned
+TRIGGER_BUTTON = "button"  # a button or event entity is pressed
+TRIGGER_KINDS = (TRIGGER_STATE, TRIGGER_TAG, TRIGGER_BUTTON)
+MODE_HAPPENS = "happens"  # it has to happen after the step became active
+MODE_IS = "is"  # already being true also counts (checked when the step starts)
+MODE_VALUES = (MODE_HAPPENS, MODE_IS)
+MAX_TRIGGERS = 5  # per step
+FOR_MINUTES_MAX = 24 * 60
+BY_MANUAL = "manual"
+BY_AUTO = "auto"
+NO_STATE = ("unavailable", "unknown", "")
 
 STEP_PENDING = "pending"
 STEP_WAITING = "waiting"
@@ -140,6 +155,44 @@ def fmt_ts(dt: datetime) -> str:
 # --- data classes --------------------------------------------------------
 
 
+def _float_or_none(value: Any) -> float | None:
+    if value is None or value == "":
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+@dataclass
+class Trigger:
+    """Something that finishes a step by itself. Any one of a step's triggers is enough."""
+
+    kind: str = TRIGGER_STATE
+    entity_id: str = ""  # state and button
+    mode: str = MODE_HAPPENS  # state only; tags and buttons always "happen"
+    state: str = ""  # state: the state to wait for, for example "on" or "open"
+    above: float | None = None  # state: a number the value must be above
+    below: float | None = None  # state: a number the value must be below
+    for_minutes: int = 0  # state: it has to hold this long
+    tag_id: str = ""  # tag
+    press: str = ""  # button: a specific event_type, empty = any press
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Trigger:
+        return cls(
+            kind=str(d.get("kind", TRIGGER_STATE)),
+            entity_id=str(d.get("entity_id", "")).strip(),
+            mode=str(d.get("mode", MODE_HAPPENS)),
+            state=str(d.get("state", "")).strip(),
+            above=_float_or_none(d.get("above")),
+            below=_float_or_none(d.get("below")),
+            for_minutes=int(d.get("for_minutes", 0) or 0),
+            tag_id=str(d.get("tag_id", "")).strip(),
+            press=str(d.get("press", "")).strip(),
+        )
+
+
 @dataclass
 class Step:
     """One step of a chore."""
@@ -148,14 +201,17 @@ class Step:
     title: str
     wait_minutes: int = 0  # wait after the previous step is done
     resolve: str = RESOLVE_MANUAL
+    triggers: list[Trigger] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Step:
+        triggers = [Trigger.from_dict(t) for t in d.get("triggers") or []]
         return cls(
             id=str(d.get("id") or new_id()),
             title=str(d.get("title", "")).strip(),
             wait_minutes=int(d.get("wait_minutes", 0) or 0),
-            resolve=str(d.get("resolve", RESOLVE_MANUAL)),
+            resolve=RESOLVE_AUTO if triggers else RESOLVE_MANUAL,
+            triggers=triggers,
         )
 
 
@@ -225,6 +281,9 @@ class StepRun:
     nudge_count: int = 0  # nudges sent for this step so far
     next_nudge_at: str | None = None  # when the next nudge is due (also holds a snooze)
     snoozed_until: str | None = None  # only for display in the panel
+    triggers: list[Trigger] = field(default_factory=list)  # snapshot from the chore
+    done_by: str | None = None  # "manual" or "auto"
+    done_reason: str | None = None  # for "auto": what happened
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
@@ -238,6 +297,9 @@ class StepRun:
             nudge_count=int(d.get("nudge_count", 0) or 0),
             next_nudge_at=d.get("next_nudge_at"),
             snoozed_until=d.get("snoozed_until"),
+            triggers=[Trigger.from_dict(t) for t in d.get("triggers") or []],
+            done_by=d.get("done_by"),
+            done_reason=d.get("done_reason"),
         )
 
 
@@ -278,6 +340,8 @@ class HistoryEntry:
     chore_name: str
     run_id: str
     step_title: str | None = None
+    by: str | None = None  # "manual" or "auto" (step_done only)
+    reason: str | None = None  # for "auto": what happened
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> HistoryEntry:
@@ -288,6 +352,8 @@ class HistoryEntry:
             chore_name=str(d.get("chore_name", "")),
             run_id=str(d.get("run_id", "")),
             step_title=d.get("step_title"),
+            by=d.get("by"),
+            reason=d.get("reason"),
         )
 
 
@@ -307,6 +373,30 @@ def to_dict(obj: Any) -> dict[str, Any]:
 # --- validation ----------------------------------------------------------
 
 
+def validate_trigger(t: Trigger) -> str | None:
+    """Return an error message, or None when the trigger is valid."""
+    if t.kind not in TRIGGER_KINDS:
+        return "Unknown way to finish by itself."
+    if t.kind == TRIGGER_TAG:
+        return None if t.tag_id else "Pick an NFC tag."
+    domain, _, name = t.entity_id.partition(".")
+    if not domain or not name:
+        return "Pick an entity."
+    if t.kind == TRIGGER_BUTTON:
+        return None
+    if t.mode not in MODE_VALUES:
+        return "Unknown mode."
+    if not t.state and t.above is None and t.below is None:
+        return "Say which state, or which number, finishes the step."
+    if t.state and (t.above is not None or t.below is not None):
+        return "Use either a state or a number, not both."
+    if t.above is not None and t.below is not None and t.above >= t.below:
+        return "'Above' must be lower than 'below'."
+    if not 0 <= t.for_minutes <= FOR_MINUTES_MAX:
+        return "'For' must be between 0 minutes and 24 hours."
+    return None
+
+
 def validate_chore(chore: Chore) -> str | None:
     """Return an error message, or None when the chore is valid."""
     if not chore.name:
@@ -320,6 +410,12 @@ def validate_chore(chore: Chore) -> str | None:
             return "Every step needs a title."
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
             return "A wait must be between 0 minutes and 7 days."
+        if len(step.triggers) > MAX_TRIGGERS:
+            return f"A step can have at most {MAX_TRIGGERS} ways to finish by itself."
+        for trigger in step.triggers:
+            error = validate_trigger(trigger)
+            if error:
+                return f"Step '{step.title}': {error}"
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
     if chore.nudge_style not in STYLE_VALUES:
@@ -448,7 +544,12 @@ def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
         where=chore.where,
         started_at=fmt_ts(now),
         steps=[
-            StepRun(step_id=s.id, title=s.title, wait_minutes=s.wait_minutes)
+            StepRun(
+                step_id=s.id,
+                title=s.title,
+                wait_minutes=s.wait_minutes,
+                triggers=[replace(t) for t in s.triggers],
+            )
             for s in chore.steps
         ],
     )
@@ -469,8 +570,17 @@ def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
     return run, events
 
 
-def complete_step(run: Run, step_id: str, now: datetime) -> list[Event]:
-    """Mark the active step done and advance. Idempotent: no-op if not active."""
+def complete_step(
+    run: Run,
+    step_id: str,
+    now: datetime,
+    by: str = BY_MANUAL,
+    reason: str = "",
+) -> list[Event]:
+    """Mark the active step done and advance. Idempotent: no-op if not active.
+
+    `by` is "manual" (the user) or "auto" (a trigger); `reason` says what happened.
+    """
     if run.status != RUN_ACTIVE:
         return []
     step = next((s for s in run.steps if s.step_id == step_id), None)
@@ -479,7 +589,12 @@ def complete_step(run: Run, step_id: str, now: datetime) -> list[Event]:
 
     step.status = STEP_DONE
     step.done_at = fmt_ts(now)
-    events = [_step_event(EVENT_STEP_DONE, run, step, now)]
+    step.done_by = by
+    step.done_reason = reason or None
+    done = _step_event(EVENT_STEP_DONE, run, step, now)
+    done.data["by"] = by
+    done.data["reason"] = reason
+    events = [done]
 
     upcoming = next((s for s in run.steps if s.status == STEP_PENDING), None)
     if upcoming is not None:
@@ -517,6 +632,117 @@ def wake_steps(run: Run, now: datetime) -> list[Event]:
             _became_active(step)
             events.append(_step_event(EVENT_STEP_ACTIVE, run, step, now))
     return events
+
+
+# --- triggers: finishing a step by itself ---------------------------------
+
+
+def state_matches(t: Trigger, state: str | None) -> bool:
+    """Whether an entity's current state satisfies a state trigger.
+
+    Unavailable, unknown or missing never counts: a broken sensor must not
+    finish a chore.
+    """
+    if state is None or state.strip().lower() in NO_STATE:
+        return False
+    if t.state:
+        return state.strip().lower() == t.state.lower()
+    try:
+        value = float(state)
+    except ValueError:
+        return False
+    if t.above is not None and not value > t.above:
+        return False
+    if t.below is not None and not value < t.below:
+        return False
+    return True
+
+
+@dataclass
+class TriggerWatch:
+    """What Boopli has seen of one state trigger (kept in memory, not saved)."""
+
+    seen: bool = False  # evaluated at least once
+    blocked: bool = False  # "happens" mode: it was already true at the start
+    since: datetime | None = None  # when it became (or was first seen) true
+
+
+def advance_watch(
+    t: Trigger,
+    watch: TriggerWatch,
+    matched: bool,
+    now: datetime,
+    last_changed: datetime | None = None,
+) -> bool:
+    """Feed the current reading of a state trigger. Return True once it is met.
+
+    "happens": already being true when the step starts does not count; it has to
+    turn false and then true again. "is": being true is enough, also at the start.
+    With `for_minutes` it must stay true that long.
+    """
+    first = not watch.seen
+    watch.seen = True
+    if not matched:
+        watch.since = None
+        watch.blocked = False
+        return False
+    if watch.blocked:
+        return False
+    if watch.since is None:
+        if first and t.mode == MODE_HAPPENS:
+            watch.blocked = True
+            return False
+        if first and t.state and last_changed is not None and last_changed < now:
+            watch.since = last_changed  # a state we can date: it has held since then
+        else:
+            watch.since = now
+    return now >= watch.since + timedelta(minutes=t.for_minutes)
+
+
+def watch_due(t: Trigger, watch: TriggerWatch) -> datetime | None:
+    """When a true-but-not-yet-long-enough trigger will be met, so a timer can be set."""
+    if t.for_minutes > 0 and watch.since is not None and not watch.blocked:
+        return watch.since + timedelta(minutes=t.for_minutes)
+    return None
+
+
+def tag_matches(t: Trigger, tag_id: str) -> bool:
+    return t.kind == TRIGGER_TAG and bool(t.tag_id) and t.tag_id == tag_id
+
+
+def button_pressed(
+    t: Trigger, old: str | None, new: str | None, event_type: str | None
+) -> bool:
+    """Whether a state change of a button or event entity is a press of this trigger.
+
+    An event entity's state is the time of its last event, so every press changes
+    it. Changes from or to unavailable and unknown are start-up noise, except the
+    very first press, which goes from "unknown" to a time.
+    """
+    if t.kind != TRIGGER_BUTTON or old is None or new is None:
+        return False
+    if old == new or new.strip().lower() in NO_STATE:
+        return False
+    if old.strip().lower() == "unavailable":
+        return False
+    return not t.press or t.press == (event_type or "")
+
+
+def trigger_reason(t: Trigger, name: str, state: str | None = None) -> str:
+    """A short human sentence for what finished a step."""
+    if t.kind == TRIGGER_TAG:
+        return f"NFC tag {name or t.tag_id} scanned"
+    if t.kind == TRIGGER_BUTTON:
+        return f"{name or t.entity_id} pressed"
+    name = name or t.entity_id
+    if t.state:
+        return f"{name} is {t.state}"
+    parts = []
+    if t.above is not None:
+        parts.append(f"above {t.above:g}")
+    if t.below is not None:
+        parts.append(f"below {t.below:g}")
+    return f"{name} {' and '.join(parts)}" + (f" ({state})" if state else "")
 
 
 def due_action(

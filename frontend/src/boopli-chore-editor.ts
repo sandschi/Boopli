@@ -2,7 +2,8 @@ import { LitElement, html, css, nothing } from "lit";
 import { deleteChore, errorMessage, saveChore } from "./api";
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
-import type { ChoreDraft, Hass, NudgeStyle, RepeatType } from "./types";
+import "./boopli-triggers";
+import type { ChoreDraft, Hass, NudgeStyle, RepeatType, Trigger } from "./types";
 
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
@@ -237,6 +238,20 @@ export class BoopliChoreEditor extends LitElement {
             </span>
           </div>
         </div>
+        <details class="auto" ?open=${(step.triggers ?? []).length > 0}>
+          <summary>
+            Finishes by itself when…
+            ${(step.triggers ?? []).length > 0
+              ? html`<span class="muted small">(${(step.triggers ?? []).length} set)</span>`
+              : nothing}
+          </summary>
+          <boopli-triggers
+            .hass=${this.hass}
+            .triggers=${step.triggers ?? []}
+            @triggers-change=${(e: CustomEvent<Trigger[]>) =>
+              this._updateStep(index, { triggers: e.detail })}
+          ></boopli-triggers>
+        </details>
       </div>
     `;
   }
@@ -379,6 +394,13 @@ export class BoopliChoreEditor extends LitElement {
       }
       .wait .chips {
         margin-top: 6px;
+      }
+      details.auto {
+        margin-top: 12px;
+      }
+      details.auto summary {
+        cursor: pointer;
+        font-size: 14px;
       }
       .custom {
         display: inline-flex;

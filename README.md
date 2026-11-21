@@ -2,7 +2,19 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.5).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm. There is no XP, pet or setup wizard yet, so it is not ready for daily use.
+> **Status: early development (v0.0.6).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), and get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm. There is no XP, pet or setup wizard yet, so it is not ready for daily use.
+
+## Steps that finish by themselves
+
+In the chore editor, every step has an optional **Finishes by itself when…** section. When one of its triggers fires, Boopli marks the step done, stops its nudges (lights, sounds, alarm, phone notification) and moves on. Any one trigger is enough, and the Done button always still works.
+
+- **An entity changes.** Pick any entity and a state (`on`, `open`, `home`…), or a number it must go above or below, and optionally how many minutes it must stay that way. Example: a door sensor opens, or soil moisture goes above 40.
+- **An NFC tag is scanned.** Pick a tag from Home Assistant's tag list, or press **Scan now** and hold your phone to the tag.
+- **A button is pressed.** Any `event`, `input_button` or `button` entity, optionally only one kind of press (single, double).
+
+By default a trigger has to happen **after the step starts**, so a door that was already open does not finish "open it to dry". Under **Advanced** you can also count "already true when the step starts" (for example "the windows are shut"). In that case the step finishes silently at once, and nothing nudges you for something that is already done.
+
+An unavailable or unknown sensor never counts as done. Steps finished this way show on the Today screen under "Done by itself" with what happened, and `boopli_step_done` events carry `by` (`manual` or `auto`) and `reason`. Triggers that were already true when Home Assistant restarts are checked again, but a press or scan that happened while Home Assistant was down is lost.
 
 ## Nudges
 
@@ -23,7 +35,6 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 ## Planned
 
 - Chores built from short steps, including waiting time between steps (for example a dishwasher: load, start, open to dry, empty hours later).
-- A nudge engine that only nudges for what is really undone, and checks the real world (sensors, NFC tags, buttons) where you have them.
 - Done and Snooze buttons in Home Assistant's phone notifications. No dismiss button.
 - Optional light, speaker and loud-alarm nudges, quiet hours, and presence conditions.
 - An optional AI task breakdown that uses your own Home Assistant AI agent.

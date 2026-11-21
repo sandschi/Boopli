@@ -53,6 +53,11 @@ class BoopliManager:
         self._listeners: list[Callable[[], None]] = []
         self._unsub_timer: CALLBACK_TYPE | None = None
         self._unsub_presence: CALLBACK_TYPE | None = None
+        # Steps that finish by themselves (see engine "triggers")
+        self._watches: dict[tuple[str, str, int], engine.TriggerWatch] = {}
+        self._trigger_entities: frozenset[str] = frozenset()
+        self._unsub_trigger_states: CALLBACK_TYPE | None = None
+        self._unsub_tags: CALLBACK_TYPE | None = None
 
     # --- lifecycle -------------------------------------------------------
 
@@ -92,6 +97,7 @@ class BoopliManager:
                     step.next_nudge_at = step.active_at
         self.nudger.async_start()
         self._watch_presence()
+        self._unsub_tags = self.hass.bus.async_listen("tag_scanned", self._tag_scanned)
         self._tick()
 
     @callback
@@ -103,6 +109,12 @@ class BoopliManager:
         if self._unsub_presence:
             self._unsub_presence()
             self._unsub_presence = None
+        if self._unsub_trigger_states:
+            self._unsub_trigger_states()
+            self._unsub_trigger_states = None
+        if self._unsub_tags:
+            self._unsub_tags()
+            self._unsub_tags = None
         self.nudger.async_stop()
         self._listeners.clear()
 
@@ -192,6 +204,8 @@ class BoopliManager:
                         chore_name=event.data["chore_name"],
                         run_id=event.data["run_id"],
                         step_title=event.data.get("step_title"),
+                        by=event.data.get("by"),
+                        reason=event.data.get("reason") or None,
                     )
                 )
         if len(self.history) > HISTORY_MAX:
@@ -222,13 +236,199 @@ class BoopliManager:
             if action in ("start", "skip"):
                 engine.advance_after_due(chore, now, self.tz)
 
+        # Steps that finish by themselves go first, so nothing nudges for a step
+        # whose world already says it is done.
+        events += self._auto_finish(now, wakeups)
         events += self._nudge_due_steps(now, wakeups)
         self._sync_indicators()
+        self._watch_triggers()
 
         self._announce(events)
         self._reschedule(now, wakeups)
         self._save()
         self._notify()
+
+    # --- steps that finish by themselves ----------------------------------
+
+    def _friendly(self, entity_id: str) -> str:
+        state = self.hass.states.get(entity_id)
+        return str(state.attributes.get("friendly_name") or entity_id) if state else entity_id
+
+    def _tag_name(self, tag_id: str) -> str:
+        for state in self.hass.states.async_all("tag"):
+            if state.attributes.get("tag_id") == tag_id:
+                return str(state.attributes.get("friendly_name") or tag_id)
+        return tag_id
+
+    def _active_steps(self) -> list[tuple[engine.Run, engine.StepRun]]:
+        return [
+            (run, step)
+            for run in self.runs.values()
+            for step in run.steps
+            if step.status == engine.STEP_ACTIVE and step.triggers
+        ]
+
+    def _finish_step(
+        self,
+        run: engine.Run,
+        step_id: str,
+        now: datetime,
+        by: str = engine.BY_MANUAL,
+        reason: str = "",
+    ) -> list[engine.Event]:
+        """Finish a step and clean up after it. The caller announces and ticks."""
+        step = next((s for s in run.steps if s.step_id == step_id), None)
+        was_nudged = step is not None and step.nudge_count > 0
+        events = engine.complete_step(run, step_id, now, by, reason)
+        if not events:
+            return []  # nothing changed (already done, or not the active step)
+        if was_nudged:
+            self.hass.async_create_task(self.nudger.async_clear_step(run.id, step_id))
+        if run.status == engine.RUN_DONE:
+            del self.runs[run.id]
+            chore = self.chores.get(run.chore_id)
+            if chore and engine.on_run_finished(chore, now, self.tz):
+                del self.chores[chore.id]
+        return events
+
+    def _auto_finish(
+        self, now: datetime, wakeups: list[datetime]
+    ) -> list[engine.Event]:
+        """Finish active steps whose state triggers are met (also chains of them)."""
+        events: list[engine.Event] = []
+        for _ in range(engine.MAX_STEPS * 2):  # a chain of steps may all be done already
+            alive = {
+                (run.id, step.step_id) for run, step in self._active_steps()
+            }
+            for key in [k for k in self._watches if k[:2] not in alive]:
+                del self._watches[key]
+            hit: tuple[engine.Run, str, str] | None = None
+            for run, step in self._active_steps():
+                reason = self._check_state_triggers(run, step, now, wakeups)
+                if reason is not None:
+                    hit = (run, step.step_id, reason)
+                    break
+            if hit is None:
+                break
+            events += self._finish_step(hit[0], hit[1], now, engine.BY_AUTO, hit[2])
+        return events
+
+    def _check_state_triggers(
+        self,
+        run: engine.Run,
+        step: engine.StepRun,
+        now: datetime,
+        wakeups: list[datetime],
+    ) -> str | None:
+        """Look at the state triggers of one active step. Return what finished it."""
+        found: str | None = None
+        for index, trigger in enumerate(step.triggers):
+            if trigger.kind != engine.TRIGGER_STATE:
+                continue
+            state = self.hass.states.get(trigger.entity_id)
+            matched = engine.state_matches(trigger, state.state if state else None)
+            watch = self._watches.setdefault(
+                (run.id, step.step_id, index), engine.TriggerWatch()
+            )
+            met = engine.advance_watch(
+                trigger,
+                watch,
+                matched,
+                now,
+                state.last_changed if state else None,
+            )
+            if met and found is None:
+                found = engine.trigger_reason(
+                    trigger, self._friendly(trigger.entity_id), state.state if state else None
+                )
+            due = engine.watch_due(trigger, watch)
+            if due is not None:
+                wakeups.append(due)
+        return found
+
+    def _watch_triggers(self) -> None:
+        """Listen to the entities of the steps that are waiting to finish by themselves."""
+        wanted = frozenset(
+            t.entity_id
+            for _run, step in self._active_steps()
+            for t in step.triggers
+            if t.kind in (engine.TRIGGER_STATE, engine.TRIGGER_BUTTON) and t.entity_id
+        )
+        if wanted == self._trigger_entities:
+            return
+        if self._unsub_trigger_states:
+            self._unsub_trigger_states()
+            self._unsub_trigger_states = None
+        self._trigger_entities = wanted
+        if wanted:
+            self._unsub_trigger_states = async_track_state_change_event(
+                self.hass, list(wanted), self._trigger_entity_changed
+            )
+
+    @callback
+    def _trigger_entity_changed(self, event: HAEvent) -> None:
+        entity_id = event.data.get("entity_id", "")
+        old = event.data.get("old_state")
+        new = event.data.get("new_state")
+        now = dt_util.utcnow()
+        events: list[engine.Event] = []
+        need_tick = False
+        for run, step in self._active_steps():
+            for index, trigger in enumerate(step.triggers):
+                if trigger.entity_id != entity_id:
+                    continue
+                if trigger.kind == engine.TRIGGER_BUTTON:
+                    if (
+                        step.status == engine.STEP_ACTIVE
+                        and engine.button_pressed(
+                            trigger,
+                            old.state if old else None,
+                            new.state if new else None,
+                            new.attributes.get("event_type") if new else None,
+                        )
+                    ):
+                        events += self._finish_step(
+                            run,
+                            step.step_id,
+                            now,
+                            engine.BY_AUTO,
+                            engine.trigger_reason(trigger, self._friendly(entity_id)),
+                        )
+                        break
+                elif trigger.kind == engine.TRIGGER_STATE:
+                    # Only look again when the answer to "does it match?" changed:
+                    # a sensor that reports every few seconds must not wake us each time.
+                    watch = self._watches.get((run.id, step.step_id, index))
+                    was = watch is not None and (watch.since is not None or watch.blocked)
+                    is_now = engine.state_matches(trigger, new.state if new else None)
+                    if watch is None or was != is_now:
+                        need_tick = True
+        if events:
+            self._announce(events)
+        if events or need_tick:
+            self._tick()
+
+    @callback
+    def _tag_scanned(self, event: HAEvent) -> None:
+        tag_id = str(event.data.get("tag_id", ""))
+        if not tag_id:
+            return
+        now = dt_util.utcnow()
+        events: list[engine.Event] = []
+        for run, step in self._active_steps():
+            for trigger in step.triggers:
+                if engine.tag_matches(trigger, tag_id):
+                    events += self._finish_step(
+                        run,
+                        step.step_id,
+                        now,
+                        engine.BY_AUTO,
+                        engine.trigger_reason(trigger, self._tag_name(tag_id)),
+                    )
+                    break
+        if events:
+            self._announce(events)
+            self._tick()
 
     def _nudge_due_steps(
         self, now: datetime, wakeups: list[datetime]
@@ -443,19 +643,9 @@ class BoopliManager:
         self._complete(run, step.step_id)
 
     def _complete(self, run: engine.Run, step_id: str) -> None:
-        now = dt_util.utcnow()
-        step = next((s for s in run.steps if s.step_id == step_id), None)
-        was_nudged = step is not None and step.nudge_count > 0
-        events = engine.complete_step(run, step_id, now)
+        events = self._finish_step(run, step_id, dt_util.utcnow())
         if not events:
-            return  # nothing changed (already done, or not the active step)
-        if was_nudged:
-            self.hass.async_create_task(self.nudger.async_clear_step(run.id, step_id))
-        if run.status == engine.RUN_DONE:
-            del self.runs[run.id]
-            chore = self.chores.get(run.chore_id)
-            if chore and engine.on_run_finished(chore, now, self.tz):
-                del self.chores[chore.id]
+            return
         self._announce(events)
         self._tick()
 

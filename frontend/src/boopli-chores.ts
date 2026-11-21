@@ -43,6 +43,7 @@ export class BoopliChores extends LitElement {
         id: s.id,
         title: s.title,
         wait_minutes: s.wait_minutes,
+        triggers: (s.triggers ?? []).map((t) => ({ ...t })),
       })),
     };
   }

@@ -7,11 +7,28 @@ export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent";
 export type PhoneLevel = "normal" | "high" | "alarm" | "alarm_max";
 export type LightMode = "blink" | "indicator";
 
+export type TriggerKind = "state" | "tag" | "button";
+export type TriggerMode = "happens" | "is";
+
+/** Something that finishes a step by itself. Any one of a step's triggers is enough. */
+export interface Trigger {
+  kind: TriggerKind;
+  entity_id: string; // state and button
+  mode: TriggerMode; // state only
+  state: string; // state: the state to wait for, for example "on"
+  above: number | null; // state: a number the value must be above
+  below: number | null; // state: a number the value must be below
+  for_minutes: number; // state: it has to hold this long
+  tag_id: string; // tag
+  press: string; // button: a specific press type, empty = any
+}
+
 export interface Step {
   id: string;
   title: string;
   wait_minutes: number;
   resolve: string;
+  triggers: Trigger[];
 }
 
 export interface Repeat {
@@ -45,6 +62,9 @@ export interface StepRun {
   nudge_count: number;
   next_nudge_at: string | null;
   snoozed_until: string | null;
+  triggers?: Trigger[];
+  done_by?: "manual" | "auto" | null;
+  done_reason?: string | null;
 }
 
 export interface Run {
@@ -65,6 +85,8 @@ export interface HistoryEntry {
   chore_name: string;
   run_id: string;
   step_title: string | null;
+  by?: "manual" | "auto" | null;
+  reason?: string | null;
 }
 
 export interface LightCfg {
@@ -160,7 +182,7 @@ export interface ChoreDraft {
   repeat: Repeat;
   nudge_style?: NudgeStyle; // missing: the integration uses your default
   ignore_quiet_hours?: boolean;
-  steps: { id?: string; title: string; wait_minutes: number }[];
+  steps: { id?: string; title: string; wait_minutes: number; triggers?: Trigger[] }[];
 }
 
 /** One entity state as Home Assistant gives it to the panel. */
@@ -179,6 +201,10 @@ export interface Hass {
     subscribeMessage<T>(
       callback: (message: T) => void,
       subscribeMessage: Record<string, unknown>
+    ): Promise<() => void>;
+    subscribeEvents<T>(
+      callback: (event: T) => void,
+      eventType?: string
     ): Promise<() => void>;
   };
 }
