@@ -71,20 +71,41 @@ export function sinceLabel(iso: string, tz: string): string {
   return `since ${fmtTime(iso, tz)}`;
 }
 
+/** "08:00" or "08:00 and 20:00" for the times of one day. */
+function joinTimes(times: string[]): string {
+  return times.length <= 2 ? times.join(" and ") : `${times.slice(0, -1).join(", ")} and ${times[times.length - 1]}`;
+}
+
+/**
+ * A schedule in plain words, for example "Mon to Fri 19:30, Sat 11:00".
+ * Days next to each other with the same times are written together only to keep
+ * it short; each day is stored on its own.
+ */
+export function describeSchedule(days: Record<string, string[]>): string {
+  const parts: string[] = [];
+  let i = 0;
+  while (i < 7) {
+    const times = days[String(i)] ?? [];
+    if (times.length === 0) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j + 1 < 7 && (days[String(j + 1)] ?? []).join() === times.join()) j++;
+    const name = i === j ? WEEKDAYS[i] : j === i + 1 ? `${WEEKDAYS[i]} and ${WEEKDAYS[j]}` : `${WEEKDAYS[i]} to ${WEEKDAYS[j]}`;
+    parts.push(`${name} ${joinTimes(times)}`);
+    i = j + 1;
+  }
+  return parts.length ? parts.join(", ") : "No days yet";
+}
+
 /** A short sentence for a repeat rule. */
 export function describeRepeat(repeat: Repeat): string {
   switch (repeat.type) {
     case "none":
       return "On demand";
-    case "daily":
-      return `Every day at ${repeat.time}`;
-    case "weekly": {
-      const days = [...repeat.weekdays]
-        .sort((a, b) => a - b)
-        .map((d) => WEEKDAYS[d])
-        .join(", ");
-      return `Every ${days} at ${repeat.time}`;
-    }
+    case "schedule":
+      return describeSchedule(repeat.days);
     case "every_n_days":
       return repeat.every_n_days === 1
         ? `Every day after you finish, at ${repeat.time}`

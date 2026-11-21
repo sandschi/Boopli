@@ -2,7 +2,7 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.9).** You can set Boopli up with guided wizards or plain forms, create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
+> **Status: early development (v0.0.10).** You can set Boopli up with guided wizards or plain forms, create chores made of steps (with waiting time between steps) on a schedule with a different time per day, see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
 
 ## Setup, wizards and Settings
 
@@ -20,6 +20,18 @@ If you skip or leave it unfinished, Today shows a **Finish setting up** banner t
 Every wizard ends with **All set**, which lists exactly what changed compared with before that wizard (for example "Snooze: 15 to 10 min" or "Mon: 07:00 to 22:00 to 07:30 to 22:00").
 
 **Unsaved changes are always visible.** In Advanced settings and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything ("You have unsaved changes", with Save and Discard). The cards you changed are marked, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) asks **Save / Discard / Stay**.
+
+## Chore schedules
+
+A chore is one of three kinds:
+
+- **On demand.** You start it yourself.
+- **On certain days and times.** Every weekday has its own times, or none. Nothing is grouped into "weekdays" and "weekend". A day can have several times (up to six), for example pills at 08:00 and 20:00, or the dishwasher Mon to Fri at 19:30 and Saturday at 11:00. In the chore editor each day is a row with a **Runs** checkbox, its times, and a **Same as the day above** button.
+- **Every N days after I finish.** It comes back N days after the last run was finished, at a time you set.
+
+If a chore comes due while its last run is still open, that round is skipped instead of stacking a second run.
+
+**Schedule wizard.** The **Set the schedule step by step** button in the chore editor opens a wizard: how often, which days (tap them), what time on each day, a preview of the next five runs (calculated by the integration itself), and a last screen showing what changed. Chores without a schedule show a **Set a schedule** button in the Chores list, which opens the wizard directly and saves the chore when you finish. Inside the editor the wizard only fills in the form, and the usual unsaved-changes bar tells you to save.
 
 ## Steps that finish by themselves
 

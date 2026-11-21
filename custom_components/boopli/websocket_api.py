@@ -28,6 +28,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_step_snooze)
     websocket_api.async_register_command(hass, ws_settings_save)
     websocket_api.async_register_command(hass, ws_setup_save)
+    websocket_api.async_register_command(hass, ws_schedule_preview)
     websocket_api.async_register_command(hass, ws_test_channel)
 
 
@@ -188,6 +189,30 @@ def ws_settings_save(
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/schedule_preview",
+        vol.Required("repeat"): dict,
+        vol.Optional("count", default=5): vol.All(int, vol.Range(min=1, max=10)),
+    }
+)
+@callback
+def ws_schedule_preview(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The next due times of a schedule, worked out by the integration itself."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        times = manager.preview_schedule(msg["repeat"], msg["count"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], {"times": times})
 
 
 @websocket_api.websocket_command(

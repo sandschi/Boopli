@@ -4,6 +4,7 @@ import type {
   Hass,
   LightCfg,
   PhoneCfg,
+  Repeat,
   Settings,
   SpeakerCfg,
   SpeakerLevel,
@@ -18,6 +19,16 @@ export interface TestResult {
 
 export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
+}
+
+/** The next due moments of a schedule, worked out by the integration (ISO strings). */
+export async function previewSchedule(hass: Hass, repeat: Repeat, count = 5): Promise<string[]> {
+  const result = await hass.callWS<{ times: string[] }>({
+    type: "boopli/schedule_preview",
+    repeat,
+    count,
+  });
+  return result.times;
 }
 
 export function saveSetup(

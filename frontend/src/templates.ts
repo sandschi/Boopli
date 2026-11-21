@@ -6,7 +6,7 @@ export interface Template {
   draft: ChoreDraft;
 }
 
-const noRepeat = { type: "none", time: "09:00", weekdays: [], every_n_days: 1 } as const;
+const noRepeat = { type: "none", time: "09:00", every_n_days: 1, days: {} } as const;
 
 export const TEMPLATES: Template[] = [
   {
@@ -16,7 +16,7 @@ export const TEMPLATES: Template[] = [
       where: "home",
       enabled: true,
       one_off: false,
-      repeat: { ...noRepeat, weekdays: [] },
+      repeat: { ...noRepeat, days: {} },
       steps: [
         { title: "Load the dishwasher", wait_minutes: 0 },
         { title: "Start the dishwasher", wait_minutes: 0 },
@@ -32,7 +32,7 @@ export const TEMPLATES: Template[] = [
       where: "home",
       enabled: true,
       one_off: false,
-      repeat: { ...noRepeat, weekdays: [] },
+      repeat: { ...noRepeat, days: {} },
       steps: [
         { title: "Start the washing machine", wait_minutes: 0 },
         { title: "Move the laundry to the dryer", wait_minutes: 60 },
@@ -47,7 +47,7 @@ export const TEMPLATES: Template[] = [
       where: "home",
       enabled: true,
       one_off: false,
-      repeat: { type: "weekly", time: "19:00", weekdays: [3], every_n_days: 1 },
+      repeat: { type: "schedule", time: "09:00", every_n_days: 1, days: { "3": ["19:00"] } },
       steps: [{ title: "Take out the trash", wait_minutes: 0 }],
     },
   },
@@ -58,7 +58,12 @@ export const TEMPLATES: Template[] = [
       where: "anywhere",
       enabled: true,
       one_off: false,
-      repeat: { type: "daily", time: "08:00", weekdays: [], every_n_days: 1 },
+      repeat: {
+        type: "schedule",
+        time: "09:00",
+        every_n_days: 1,
+        days: Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map((d) => [String(d), ["08:00"]])),
+      },
       nudge_style: "escalating",
       ignore_quiet_hours: true,
       steps: [{ title: "Take your pills", wait_minutes: 0 }],
@@ -72,7 +77,7 @@ export function blankDraft(): ChoreDraft {
     where: "home",
     enabled: true,
     one_off: false,
-    repeat: { type: "none", time: "09:00", weekdays: [], every_n_days: 1 },
+    repeat: { type: "none", time: "09:00", every_n_days: 1, days: {} },
     steps: [{ title: "", wait_minutes: 0 }],
   };
 }

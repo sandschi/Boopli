@@ -1,7 +1,7 @@
 /** Types shared by the panel. They mirror what the integration sends. */
 
 export type StepStatus = "pending" | "waiting" | "active" | "done";
-export type RepeatType = "none" | "daily" | "weekly" | "every_n_days";
+export type RepeatType = "none" | "schedule" | "every_n_days";
 export type Where = "home" | "anywhere";
 export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent";
 export type PhoneLevel = "normal" | "high" | "alarm" | "alarm_max";
@@ -33,9 +33,10 @@ export interface Step {
 
 export interface Repeat {
   type: RepeatType;
-  time: string; // HH:MM, local time
-  weekdays: number[]; // 0 = Monday
+  time: string; // HH:MM, local time (every_n_days only)
   every_n_days: number;
+  /** schedule: "0" (Monday) to "6" (Sunday) -> the times that day; a missing day has none. */
+  days: Record<string, string[]>;
 }
 
 export interface Chore {

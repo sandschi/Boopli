@@ -109,7 +109,7 @@ def test_single_step_chore_finishes():
 
 
 def test_daily_next_due():
-    rep = engine.Repeat(type="daily", time="09:00")
+    rep = engine.Repeat.daily("09:00")
     before = datetime(2026, 11, 21, 7, 0, tzinfo=VIENNA)
     after = datetime(2026, 11, 21, 9, 0, tzinfo=VIENNA)
     assert engine.compute_next_due(rep, before, VIENNA) == datetime(
@@ -121,7 +121,7 @@ def test_daily_next_due():
 
 
 def test_weekly_friday_and_saturday():
-    rep = engine.Repeat(type="weekly", time="09:00", weekdays=[4, 5])  # Fri, Sat
+    rep = engine.Repeat.weekly("09:00", [4, 5])  # Fri, Sat
     wed = datetime(2026, 11, 18, 12, 0, tzinfo=VIENNA)  # a Wednesday
     fri_after = datetime(2026, 11, 20, 10, 0, tzinfo=VIENNA)
     sat_after = datetime(2026, 11, 21, 10, 0, tzinfo=VIENNA)
@@ -153,7 +153,7 @@ def test_first_due_every_n_days_is_next_time_of_day():
 
 
 def test_daylight_saving_keeps_local_time():
-    rep = engine.Repeat(type="daily", time="09:00")
+    rep = engine.Repeat.daily("09:00")
     before_change = datetime(2026, 10, 24, 12, 0, tzinfo=VIENNA)  # CEST, UTC+2
     got = engine.compute_next_due(rep, before_change, VIENNA)
     assert got.astimezone(VIENNA).hour == 9
@@ -167,7 +167,7 @@ def test_on_demand_has_no_schedule():
 
 def test_due_action_start_skip_and_none():
     chore = dishwasher()
-    chore.repeat = engine.Repeat(type="daily", time="09:00")
+    chore.repeat = engine.Repeat.daily("09:00")
     chore.next_due = engine.fmt_ts(T0)
     assert engine.due_action(chore, False, T0 - timedelta(minutes=1)) is None
     assert engine.due_action(chore, False, T0) == "start"
@@ -178,7 +178,7 @@ def test_due_action_start_skip_and_none():
 
 def test_advance_after_due_daily_moves_forward_every_n_clears():
     chore = dishwasher()
-    chore.repeat = engine.Repeat(type="daily", time="09:00")
+    chore.repeat = engine.Repeat.daily("09:00")
     engine.advance_after_due(chore, T0, VIENNA)
     assert engine.parse_ts(chore.next_due) > T0
     chore.repeat = engine.Repeat(type="every_n_days", every_n_days=3)
@@ -193,7 +193,7 @@ def test_one_off_is_deleted_when_finished():
 
 def test_next_wakeup_picks_earliest():
     chore = dishwasher()
-    chore.repeat = engine.Repeat(type="daily", time="09:00")
+    chore.repeat = engine.Repeat.daily("09:00")
     chore.next_due = engine.fmt_ts(T0 + timedelta(hours=10))
     run, _ = engine.start_run(chore, T0)
     for sid in ("s1", "s2", "s3"):
@@ -227,11 +227,11 @@ def test_validation():
     assert engine.validate_chore(bad)
 
     bad = dishwasher()
-    bad.repeat = engine.Repeat(type="weekly", weekdays=[])
+    bad.repeat = engine.Repeat(type="schedule", days={})
     assert engine.validate_chore(bad)
 
     bad = dishwasher()
-    bad.repeat = engine.Repeat(type="daily", time="25:99")
+    bad.repeat = engine.Repeat.daily("25:99")
     assert engine.validate_chore(bad)
 
     bad = dishwasher()
@@ -241,6 +241,6 @@ def test_validation():
 
 def test_chore_roundtrip_through_json():
     chore = dishwasher()
-    chore.repeat = engine.Repeat(type="weekly", time="19:30", weekdays=[4, 5])
+    chore.repeat = engine.Repeat.weekly("19:30", [4, 5])
     again = engine.Chore.from_dict(json.loads(json.dumps(engine.to_dict(chore))))
     assert again == chore

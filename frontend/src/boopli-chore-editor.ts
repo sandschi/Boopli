@@ -1,9 +1,11 @@
 import { LitElement, html, css, nothing } from "lit";
 import { deleteChore, errorMessage, saveChore } from "./api";
-import { WEEKDAY_NAMES } from "./time";
+import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
-import type { ChoreDraft, Hass, NudgeStyle, RepeatType, Trigger } from "./types";
+import "./boopli-schedule-days";
+import "./boopli-schedule-wizard";
+import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Trigger } from "./types";
 
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
@@ -22,10 +24,13 @@ const WAIT_PRESETS: { minutes: number; label: string }[] = [
 
 const REPEAT_OPTIONS: { value: RepeatType; label: string }[] = [
   { value: "none", label: "On demand (I start it)" },
-  { value: "daily", label: "Every day" },
-  { value: "weekly", label: "On certain weekdays" },
+  { value: "schedule", label: "On certain days and times" },
   { value: "every_n_days", label: "Every N days after I finish" },
 ];
+
+const ALL_DAYS_AT_NINE: Record<string, string[]> = Object.fromEntries(
+  [0, 1, 2, 3, 4, 5, 6].map((d) => [String(d), ["09:00"]])
+);
 
 /** Create or edit a chore: name, repeat, where, and its steps with waits. */
 export class BoopliChoreEditor extends LitElement {
@@ -33,17 +38,25 @@ export class BoopliChoreEditor extends LitElement {
     hass: { attribute: false },
     draft: { attribute: false },
     defaultStyle: { attribute: false },
+    timeZone: { type: String },
+    startSchedule: { type: Boolean },
     _error: { state: true },
     _busy: { state: true },
     _confirmDelete: { state: true },
+    _sched: { state: true },
   };
 
   declare hass?: Hass;
   declare draft: ChoreDraft;
   declare defaultStyle: NudgeStyle;
+  declare timeZone: string;
+  /** Open straight in the schedule wizard (the "Set a schedule" button of the list). */
+  declare startSchedule: boolean;
   declare _error: string;
   declare _busy: boolean;
   declare _confirmDelete: boolean;
+  /** off: the form. inline: the wizard changes this draft. direct: it saves the chore itself. */
+  declare _sched: "off" | "inline" | "direct";
 
   private _base?: string; // the draft as it was when the editor opened
   private _lastDirty = false;
@@ -51,13 +64,36 @@ export class BoopliChoreEditor extends LitElement {
   constructor() {
     super();
     this.defaultStyle = "one";
+    this.timeZone = "UTC";
+    this.startSchedule = false;
     this._error = "";
     this._busy = false;
     this._confirmDelete = false;
+    this._sched = "off";
   }
 
   protected willUpdate(): void {
-    if (this._base === undefined && this.draft) this._base = JSON.stringify(this.draft);
+    if (this._base === undefined && this.draft) {
+      this._base = JSON.stringify(this.draft);
+      if (this.startSchedule) this._sched = "direct";
+    }
+  }
+
+  /** The schedule wizard is done: use its schedule (and save at once when it was opened from the list). */
+  private async _applySchedule(repeat: Repeat): Promise<void> {
+    this._update({ repeat });
+    if (this._sched === "direct") {
+      this._sched = "off";
+      await this.updateComplete;
+      if (!(await this._save())) return; // the error shows in the form
+    } else {
+      this._sched = "off";
+    }
+  }
+
+  private _cancelSchedule(): void {
+    if (this._sched === "direct") this._close();
+    else this._sched = "off";
   }
 
   protected updated(): void {
@@ -121,13 +157,6 @@ export class BoopliChoreEditor extends LitElement {
     this._update({ steps: [...this.draft.steps, { title: "", wait_minutes: 0 }] });
   }
 
-  private _toggleWeekday(day: number): void {
-    const set = new Set(this.draft.repeat.weekdays);
-    if (set.has(day)) set.delete(day);
-    else set.add(day);
-    this._updateRepeat({ weekdays: [...set].sort((a, b) => a - b) });
-  }
-
   private _close(): void {
     this.dispatchEvent(new CustomEvent("editor-close", { bubbles: true, composed: true }));
   }
@@ -175,57 +204,54 @@ export class BoopliChoreEditor extends LitElement {
         <select
           id="repeat"
           .value=${r.type}
-          @change=${(e: Event) =>
-            this._updateRepeat({ type: (e.target as HTMLSelectElement).value as RepeatType })}
+          @change=${(e: Event) => {
+            const type = (e.target as HTMLSelectElement).value as RepeatType;
+            // A new schedule starts on every day at 09:00, to be changed day by day.
+            const days = type === "schedule" && Object.keys(r.days).length === 0 ? ALL_DAYS_AT_NINE : r.days;
+            this._updateRepeat({ type, days });
+          }}
         >
           ${REPEAT_OPTIONS.map(
             (o) => html`<option value=${o.value} ?selected=${o.value === r.type}>${o.label}</option>`
           )}
         </select>
       </div>
-      ${r.type === "weekly"
+      ${r.type === "schedule"
         ? html`<div class="field">
-            <label>On these days</label>
-            <div class="chips">
-              ${WEEKDAY_NAMES.map(
-                (name, day) => html`<button
-                  type="button"
-                  class="chip ${r.weekdays.includes(day) ? "on" : ""}"
-                  @click=${() => this._toggleWeekday(day)}
-                >
-                  ${name}
-                </button>`
-              )}
-            </div>
+            <label>Each day has its own times. Untick a day that has none.</label>
+            <boopli-schedule-days
+              .days=${r.days}
+              @days-change=${(e: CustomEvent<Record<string, string[]>>) => this._updateRepeat({ days: e.detail })}
+            ></boopli-schedule-days>
+            <div class="muted small summary">${describeRepeat(r)}</div>
           </div>`
         : nothing}
       ${r.type === "every_n_days"
         ? html`<div class="field">
-            <label for="n">Number of days</label>
-            <input
-              id="n"
-              type="number"
-              min="1"
-              max="365"
-              .value=${String(r.every_n_days)}
-              @input=${(e: Event) =>
-                this._updateRepeat({
-                  every_n_days: Number((e.target as HTMLInputElement).value) || 1,
-                })}
-            />
-          </div>`
+              <label for="n">Number of days</label>
+              <input
+                id="n"
+                type="number"
+                min="1"
+                max="365"
+                .value=${String(r.every_n_days)}
+                @input=${(e: Event) =>
+                  this._updateRepeat({ every_n_days: Number((e.target as HTMLInputElement).value) || 1 })}
+              />
+            </div>
+            <div class="field">
+              <label for="time">At</label>
+              <input
+                id="time"
+                type="time"
+                .value=${r.time}
+                @input=${(e: Event) => this._updateRepeat({ time: (e.target as HTMLInputElement).value })}
+              />
+            </div>`
         : nothing}
-      ${r.type !== "none"
-        ? html`<div class="field">
-            <label for="time">At</label>
-            <input
-              id="time"
-              type="time"
-              .value=${r.time}
-              @input=${(e: Event) => this._updateRepeat({ time: (e.target as HTMLInputElement).value })}
-            />
-          </div>`
-        : nothing}
+      <div class="field">
+        <button type="button" @click=${() => (this._sched = "inline")}>Set the schedule step by step</button>
+      </div>
     `;
   }
 
@@ -296,6 +322,17 @@ export class BoopliChoreEditor extends LitElement {
   render() {
     const d = this.draft;
     if (!d) return nothing;
+    if (this._sched !== "off") {
+      return html`<boopli-schedule-wizard
+        .hass=${this.hass}
+        .repeat=${d.repeat}
+        .choreName=${d.name}
+        .timeZone=${this.timeZone}
+        .saves=${this._sched === "direct"}
+        @schedule-apply=${(e: CustomEvent<Repeat>) => this._applySchedule(e.detail)}
+        @schedule-cancel=${() => this._cancelSchedule()}
+      ></boopli-schedule-wizard>`;
+    }
     return html`
       <section class="card ${this._isDirty() ? "changed" : ""}">
         <h2>
@@ -409,6 +446,9 @@ export class BoopliChoreEditor extends LitElement {
       }
       .steps-title {
         margin-top: 14px;
+      }
+      .summary {
+        margin-top: 8px;
       }
       section.card.changed {
         border-color: var(--warning-color, #ffa600);

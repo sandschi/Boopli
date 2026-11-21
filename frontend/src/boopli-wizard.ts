@@ -393,7 +393,7 @@ export class BoopliWizard extends LitElement {
           // On demand: nothing nudges until you set a time or start it yourself.
           await saveChore(this.hass, {
             ...t.draft,
-            repeat: { type: "none", time: "09:00", weekdays: [], every_n_days: 1 },
+            repeat: { type: "none", time: "09:00", every_n_days: 1, days: {} },
           });
         }
         await saveSetup(this.hass, "done", "");

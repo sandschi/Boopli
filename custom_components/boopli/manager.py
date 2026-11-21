@@ -644,6 +644,15 @@ class BoopliManager:
         self._watch_presence()
         self._tick()
 
+    def preview_schedule(self, data: dict[str, Any], count: int = 5) -> list[str]:
+        """The next moments a repeat rule would come due (for the schedule wizard)."""
+        repeat = engine.Repeat.from_dict(data)
+        error = engine.validate_repeat(repeat)
+        if error:
+            raise BoopliError(error)
+        moments = engine.preview_schedule(repeat, dt_util.utcnow(), self.tz, count)
+        return [engine.fmt_ts(m) for m in moments]
+
     def save_setup(self, data: dict[str, Any]) -> None:
         """Remember how far the setup wizard got."""
         setup = engine.Setup.from_dict(data)

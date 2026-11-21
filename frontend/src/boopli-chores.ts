@@ -13,6 +13,7 @@ export class BoopliChores extends LitElement {
     snapshot: { attribute: false },
     nowMs: { type: Number },
     _editing: { state: true },
+    _openSchedule: { state: true },
     _error: { state: true },
   };
 
@@ -20,23 +21,30 @@ export class BoopliChores extends LitElement {
   declare snapshot?: Snapshot;
   declare nowMs: number;
   declare _editing: ChoreDraft | null;
+  declare _openSchedule: boolean;
   declare _error: string;
 
   constructor() {
     super();
     this.nowMs = Date.now();
     this._editing = null;
+    this._openSchedule = false;
     this._error = "";
   }
 
-  private _edit(chore: Chore): void {
+  /** Open the editor for a chore, or straight into its schedule wizard. */
+  private _edit(chore: Chore, schedule = false): void {
+    this._openSchedule = schedule;
     this._editing = {
       id: chore.id,
       name: chore.name,
       where: chore.where,
       enabled: chore.enabled,
       one_off: chore.one_off,
-      repeat: { ...chore.repeat, weekdays: [...chore.repeat.weekdays] },
+      repeat: {
+        ...chore.repeat,
+        days: Object.fromEntries(Object.entries(chore.repeat.days ?? {}).map(([d, t]) => [d, [...t]])),
+      },
       nudge_style: chore.nudge_style,
       ignore_quiet_hours: chore.ignore_quiet_hours,
       steps: chore.steps.map((s) => ({
@@ -79,8 +87,11 @@ export class BoopliChores extends LitElement {
         .hass=${this.hass}
         .draft=${this._editing}
         .defaultStyle=${this.snapshot.settings.default_style}
+        .timeZone=${this.snapshot.time_zone}
+        .startSchedule=${this._openSchedule}
         @editor-close=${() => {
           this._editing = null;
+          this._openSchedule = false;
           // The editor is gone, so tell the panel nothing is unsaved any more.
           this.dispatchEvent(
             new CustomEvent("dirty-change", {
@@ -146,6 +157,9 @@ export class BoopliChores extends LitElement {
                   ${running.has(c.id)
                     ? nothing
                     : html`<button @click=${() => this._start(c)}>Start now</button>`}
+                  ${c.repeat.type === "none"
+                    ? html`<button @click=${() => this._edit(c, true)}>Set a schedule</button>`
+                    : nothing}
                   <button @click=${() => this._edit(c)}>Edit</button>
                 </div>
               </section>
@@ -192,6 +206,8 @@ export class BoopliChores extends LitElement {
       }
       .chore-actions {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
         gap: 8px;
         flex-shrink: 0;
       }

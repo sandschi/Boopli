@@ -31,10 +31,14 @@ WHERE_ANYWHERE = "anywhere"
 WHERE_VALUES = (WHERE_HOME, WHERE_ANYWHERE)
 
 REPEAT_NONE = "none"  # on demand: the user starts it
+REPEAT_SCHEDULE = "schedule"  # certain days, each with its own times
+REPEAT_EVERY_N_DAYS = "every_n_days"  # counted from completion
+REPEAT_TYPES = (REPEAT_NONE, REPEAT_SCHEDULE, REPEAT_EVERY_N_DAYS)
+# Older data used "daily" and "weekly"; both are converted to a schedule on load.
 REPEAT_DAILY = "daily"
 REPEAT_WEEKLY = "weekly"
-REPEAT_EVERY_N_DAYS = "every_n_days"  # counted from completion
-REPEAT_TYPES = (REPEAT_NONE, REPEAT_DAILY, REPEAT_WEEKLY, REPEAT_EVERY_N_DAYS)
+MAX_TIMES_PER_DAY = 6
+PREVIEW_MAX = 10
 
 RESOLVE_MANUAL = "manual"  # only the user finishes the step
 RESOLVE_AUTO = "auto"  # the step also finishes by itself (it has triggers)
@@ -244,23 +248,60 @@ class Step:
         )
 
 
+def _clean_time(value: Any) -> str:
+    """Write a time as HH:MM when it can be read, otherwise keep it for validation."""
+    text = str(value).strip()
+    try:
+        hours, minutes = text.split(":")
+        return f"{int(hours):02d}:{int(minutes):02d}"
+    except ValueError:
+        return text
+
+
 @dataclass
 class Repeat:
-    """When a chore comes due on its own."""
+    """When a chore comes due on its own.
+
+    `schedule`: each weekday ("0" = Monday ... "6" = Sunday) has its own list of
+    local times, or is missing when the chore does not come that day.
+    `every_n_days`: N days after the last run was finished, at `time`.
+    """
 
     type: str = REPEAT_NONE
-    time: str = "09:00"  # local time, HH:MM
-    weekdays: list[int] = field(default_factory=list)  # 0 = Monday
+    time: str = "09:00"  # local time, HH:MM (every_n_days only)
     every_n_days: int = 1
+    days: dict[str, list[str]] = field(default_factory=dict)  # schedule only
+
+    @classmethod
+    def daily(cls, time: str) -> Repeat:
+        """A schedule with the same time every day."""
+        return cls(type=REPEAT_SCHEDULE, days={str(i): [time] for i in range(7)})
+
+    @classmethod
+    def weekly(cls, time: str, weekdays: list[int]) -> Repeat:
+        """A schedule with the same time on some days."""
+        return cls(type=REPEAT_SCHEDULE, days={str(i): [time] for i in sorted(set(weekdays))})
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Repeat:
         d = d or {}
+        kind = str(d.get("type", REPEAT_NONE))
+        time = _clean_time(d.get("time", "09:00"))
+        # Convert what older versions stored.
+        if kind == REPEAT_DAILY:
+            return cls.daily(time)
+        if kind == REPEAT_WEEKLY:
+            return cls.weekly(time, [int(x) for x in d.get("weekdays", [])])
+        days: dict[str, list[str]] = {}
+        for key, times in (d.get("days") or {}).items():
+            cleaned = sorted({_clean_time(t) for t in times or []})
+            if cleaned:
+                days[str(key)] = cleaned
         return cls(
-            type=str(d.get("type", REPEAT_NONE)),
-            time=str(d.get("time", "09:00")),
-            weekdays=sorted({int(x) for x in d.get("weekdays", [])}),
+            type=kind,
+            time=time,
             every_n_days=int(d.get("every_n_days", 1) or 1),
+            days=days,
         )
 
 
@@ -607,21 +648,36 @@ def validate_chore(chore: Chore) -> str | None:
         return "Where must be 'home' or 'anywhere'."
     if chore.nudge_style not in STYLE_VALUES:
         return "Unknown nudge style."
-    rep = chore.repeat
+    return validate_repeat(chore.repeat)
+
+
+def _time_ok(value: str) -> bool:
+    try:
+        _parse_hhmm(value)
+    except (ValueError, IndexError):
+        return False
+    return True
+
+
+def validate_repeat(rep: Repeat) -> str | None:
+    """Return an error message, or None when the repeat rule is valid."""
     if rep.type not in REPEAT_TYPES:
         return "Unknown repeat type."
-    if rep.type != REPEAT_NONE:
-        try:
-            _parse_hhmm(rep.time)
-        except (ValueError, IndexError):
+    if rep.type == REPEAT_EVERY_N_DAYS:
+        if not _time_ok(rep.time):
             return "The time must look like 09:30."
-    if rep.type == REPEAT_WEEKLY:
-        if not rep.weekdays:
-            return "Pick at least one weekday."
-        if any(d < 0 or d > 6 for d in rep.weekdays):
-            return "Weekdays must be 0 (Monday) to 6 (Sunday)."
-    if rep.type == REPEAT_EVERY_N_DAYS and not 1 <= rep.every_n_days <= 365:
-        return "Repeat every N days needs N between 1 and 365."
+        if not 1 <= rep.every_n_days <= 365:
+            return "Repeat every N days needs N between 1 and 365."
+    if rep.type == REPEAT_SCHEDULE:
+        if not rep.days:
+            return "Pick at least one day and a time."
+        for key, times in rep.days.items():
+            if key not in {str(i) for i in range(7)}:
+                return "Days must be 0 (Monday) to 6 (Sunday)."
+            if not 1 <= len(times) <= MAX_TIMES_PER_DAY:
+                return f"A day can have 1 to {MAX_TIMES_PER_DAY} times."
+            if any(not _time_ok(t) for t in times):
+                return "Every time must look like 09:30."
     return None
 
 
@@ -646,28 +702,19 @@ def compute_next_due(repeat: Repeat, after: datetime, tz: tzinfo) -> datetime | 
     if repeat.type == REPEAT_NONE:
         return None
     local = after.astimezone(tz)
-    t = _parse_hhmm(repeat.time)
 
-    if repeat.type == REPEAT_DAILY:
-        candidate = _at(local.date(), t, tz)
-        if candidate <= local:
-            candidate = _at(local.date() + timedelta(days=1), t, tz)
-        return candidate.astimezone(timezone.utc)
-
-    if repeat.type == REPEAT_WEEKLY:
-        if not repeat.weekdays:
-            return None
+    if repeat.type == REPEAT_SCHEDULE:
         for offset in range(0, 8):
             day = local.date() + timedelta(days=offset)
-            if day.weekday() in repeat.weekdays:
-                candidate = _at(day, t, tz)
+            for text in sorted(repeat.days.get(str(day.weekday()), [])):
+                candidate = _at(day, _parse_hhmm(text), tz)
                 if candidate > local:
                     return candidate.astimezone(timezone.utc)
         return None
 
     if repeat.type == REPEAT_EVERY_N_DAYS:
         day = local.date() + timedelta(days=max(1, repeat.every_n_days))
-        return _at(day, t, tz).astimezone(timezone.utc)
+        return _at(day, _parse_hhmm(repeat.time), tz).astimezone(timezone.utc)
 
     return None
 
@@ -676,8 +723,29 @@ def first_due(repeat: Repeat, now: datetime, tz: tzinfo) -> datetime | None:
     """Return the first due moment for a new or changed chore."""
     if repeat.type == REPEAT_EVERY_N_DAYS:
         # Start at the next occurrence of the time, like a daily chore.
-        return compute_next_due(Repeat(type=REPEAT_DAILY, time=repeat.time), now, tz)
+        return compute_next_due(Repeat.daily(repeat.time), now, tz)
     return compute_next_due(repeat, now, tz)
+
+
+def preview_schedule(
+    repeat: Repeat, now: datetime, tz: tzinfo, count: int = 5
+) -> list[datetime]:
+    """The next few moments a repeat rule comes due, for showing in the panel."""
+    count = max(1, min(count, PREVIEW_MAX))
+    if repeat.type == REPEAT_NONE:
+        return []
+    first = first_due(repeat, now, tz)
+    if first is None:
+        return []
+    if repeat.type == REPEAT_EVERY_N_DAYS:
+        return [first]  # after that it depends on when you finish
+    moments = [first]
+    while len(moments) < count:
+        nxt = compute_next_due(repeat, moments[-1], tz)
+        if nxt is None:
+            break
+        moments.append(nxt)
+    return moments
 
 
 def init_schedule(chore: Chore, now: datetime, tz: tzinfo) -> None:
@@ -950,10 +1018,10 @@ def due_action(
 def advance_after_due(chore: Chore, now: datetime, tz: tzinfo) -> None:
     """Move `next_due` forward after a run started (or was skipped).
 
-    Daily and weekly chores keep their fixed schedule. "Every N days" and
-    on-demand chores have no next due date until the run finishes.
+    Scheduled chores keep their fixed schedule. "Every N days" and on-demand
+    chores have no next due date until the run finishes.
     """
-    if chore.repeat.type in (REPEAT_DAILY, REPEAT_WEEKLY):
+    if chore.repeat.type == REPEAT_SCHEDULE:
         due = compute_next_due(chore.repeat, now, tz)
         chore.next_due = fmt_ts(due) if due else None
     else:
