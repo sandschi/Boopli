@@ -351,7 +351,7 @@ export class BoopliSpeakers extends LitElement {
     const choices = this._ids(["media_player"], used);
     return html`
       <section class="card">
-        <h2>Speakers</h2>
+        <h2>🔊 Speakers</h2>
         <p class="muted small">
           Each speaker can play a small ding, speak a sentence, and sound an
           alarm. A speaker plays the highest level that has been reached. Press
@@ -431,7 +431,7 @@ export class BoopliSpeakers extends LitElement {
     const choices = this._ids(ALARM_DOMAINS, used);
     return html`
       <section class="card">
-        <h2>Alarm devices</h2>
+        <h2>🚨 Alarm devices</h2>
         <p class="muted small">
           A siren, switch or script that sounds the alarm. Boopli switches it on
           for the time you set and then off again, and off when you answer or

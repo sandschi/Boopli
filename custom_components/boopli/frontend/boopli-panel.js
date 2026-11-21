@@ -2668,7 +2668,7 @@ var yt = "amzn_sfx_scifi_alarm_01", bt = "amzn_sfx_doorbell_chime_01", xt = "htt
 		let t = e.speakers.map((e) => e.entity_id), n = this._ids(["media_player"], t);
 		return E`
       <section class="card">
-        <h2>Speakers</h2>
+        <h2>🔊 Speakers</h2>
         <p class="muted small">
           Each speaker can play a small ding, speak a sentence, and sound an
           alarm. A speaker plays the highest level that has been reached. Press
@@ -2735,7 +2735,7 @@ var yt = "amzn_sfx_scifi_alarm_01", bt = "amzn_sfx_doorbell_chime_01", xt = "htt
 		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(St, t);
 		return E`
       <section class="card">
-        <h2>Alarm devices</h2>
+        <h2>🚨 Alarm devices</h2>
         <p class="muted small">
           A siren, switch or script that sounds the alarm. Boopli switches it on
           for the time you set and then off again, and off when you answer or
@@ -3177,7 +3177,7 @@ var Ot = [
 		let t = this._phoneServices();
 		return E`
       <section class=${this._cardClass("phones")}>
-        <h2>Phones ${this._badge("phones")}</h2>
+        <h2>📱 Phones ${this._badge("phones")}</h2>
         <p class="muted small">
           Boopli sends a notification with Done and Snooze buttons through the
           Home Assistant app on the phones you turn on.
@@ -3217,7 +3217,7 @@ var Ot = [
 		let t = this._lightChoices();
 		return E`
       <section class=${this._cardClass("lights")}>
-        <h2>Reminder lights ${this._badge("lights")}</h2>
+        <h2>💡 Reminder lights ${this._badge("lights")}</h2>
         <p class="muted small">
           Boopli blinks a light itself and puts it back exactly as it was, or
           uses it as an indicator lamp that stays on in a color until you are
@@ -3313,7 +3313,7 @@ var Ot = [
 		let t = e.quiet_hours;
 		return E`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>Quiet hours ${this._badge("quiet_hours")}</h2>
+        <h2>🌙 Quiet hours ${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           Nudges wait outside these times. Set different hours for each day.
           A chore can opt out (for example pills).
@@ -3373,7 +3373,7 @@ var Ot = [
 	_renderOther(e) {
 		return E`
       <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "default_style")}>
-        <h2>Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
+        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -3423,13 +3423,13 @@ var Ot = [
       </section>
     `;
 	}
-	_overviewCard(e, t, n, r, i = "Set up step by step") {
+	_overviewCard(e, t, n, r, i, a = "Set up step by step") {
 		return E`<section class="card overview">
-      <h2>${e}</h2>
+      <h2><span class="emoji" aria-hidden="true">${e}</span> ${t}</h2>
       <div class="summary">
-        ${n.length ? n.map((e) => E`<div>${e}</div>`) : E`<div class="muted">${r}</div>`}
+        ${r.length ? r.map((e) => E`<div>${e}</div>`) : E`<div class="muted">${i}</div>`}
       </div>
-      <button type="button" class="primary" @click=${() => this._openWizard(t)}>${i}</button>
+      <button type="button" class="primary" @click=${() => this._openWizard(n)}>${a}</button>
     </section>`;
 	}
 	_renderSimple() {
@@ -3437,15 +3437,15 @@ var Ot = [
 		if (!e) return O;
 		let t = (e) => J(this.hass, e);
 		return E`
-      <div class="cards">
-        ${this._overviewCard("Your pet", "pet", [e.pet_name], "", "Rename")}
-        ${this._overviewCard("Phone", "phone", e.phones.map((e) => `${X(e.service)}: ${Z[e.level] ?? e.level}, from nudge ${e.start_at}`), "No phone set up yet.")}
-        ${this._overviewCard("Quiet hours", "quiet", [_t(e.quiet_hours)], "")}
-        ${this._overviewCard("Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${gt[e.default_style] ?? e.default_style}`], "")}
-        ${this._overviewCard("Reminder lights", "lights", e.lights.map((e) => `${t(e.entity_id)}: ${Q(e)}`), "No reminder lights yet.")}
-        ${this._overviewCard("Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${vt(e)}`), "No speakers yet.")}
-        ${this._overviewCard("Alarm devices", "alarms", e.alarm_devices.map((e) => `${t(e.entity_id)}: on for ${e.seconds} s, from nudge ${e.start_at}`), "No alarm devices yet.")}
-        ${this._overviewCard("Where you are", "presence", e.presence_entity ? [t(e.presence_entity)] : [], "Not set. Boopli assumes you are home.")}
+      <div class="cards simple">
+        ${this._overviewCard("🐻", "Your pet", "pet", [e.pet_name], "", "Rename")}
+        ${this._overviewCard("📱", "Phone", "phone", e.phones.map((e) => `${X(e.service)}: ${Z[e.level] ?? e.level}, from nudge ${e.start_at}`), "No phone set up yet.")}
+        ${this._overviewCard("🌙", "Quiet hours", "quiet", [_t(e.quiet_hours)], "")}
+        ${this._overviewCard("⏰", "Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${gt[e.default_style] ?? e.default_style}`], "")}
+        ${this._overviewCard("💡", "Reminder lights", "lights", e.lights.map((e) => `${t(e.entity_id)}: ${Q(e)}`), "No reminder lights yet.")}
+        ${this._overviewCard("🔊", "Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${vt(e)}`), "No speakers yet.")}
+        ${this._overviewCard("🚨", "Alarm devices", "alarms", e.alarm_devices.map((e) => `${t(e.entity_id)}: on for ${e.seconds} s, from nudge ${e.start_at}`), "No alarm devices yet.")}
+        ${this._overviewCard("📍", "Where you are", "presence", e.presence_entity ? [t(e.presence_entity)] : [], "Not set. Boopli assumes you are home.")}
       </div>
       <p class="muted small">
         Want to do all of it again from the start?
@@ -3474,7 +3474,7 @@ var Ot = [
       </div>
       ${t ? this._renderSimple() : E`
             <div class="cards">
-              ${this._renderPhones(e)} ${this._renderLights(e)}
+              ${this._renderOther(e)} ${this._renderPhones(e)} ${this._renderLights(e)}
               <boopli-speakers
                 class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
                 .hass=${this.hass}
@@ -3511,13 +3511,27 @@ var Ot = [
         gap: 16px;
         align-items: start;
       }
+      .cards.simple {
+        /* Cards in a row are the same height, and none is smaller than this. */
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-auto-rows: minmax(200px, auto);
+        align-items: stretch;
+      }
       .overview {
         display: flex;
         flex-direction: column;
         gap: 12px;
+        height: 100%;
       }
       .overview h2 {
         margin: 0;
+        font-size: 20px;
+      }
+      .emoji {
+        display: inline-block;
+        margin-right: 6px;
+        font-size: 24px;
+        vertical-align: -2px;
       }
       .summary {
         display: flex;

@@ -397,7 +397,7 @@ export class BoopliSettings extends LitElement {
     const services = this._phoneServices();
     return html`
       <section class=${this._cardClass("phones")}>
-        <h2>Phones ${this._badge("phones")}</h2>
+        <h2>📱 Phones ${this._badge("phones")}</h2>
         <p class="muted small">
           Boopli sends a notification with Done and Snooze buttons through the
           Home Assistant app on the phones you turn on.
@@ -447,7 +447,7 @@ export class BoopliSettings extends LitElement {
     const choices = this._lightChoices();
     return html`
       <section class=${this._cardClass("lights")}>
-        <h2>Reminder lights ${this._badge("lights")}</h2>
+        <h2>💡 Reminder lights ${this._badge("lights")}</h2>
         <p class="muted small">
           Boopli blinks a light itself and puts it back exactly as it was, or
           uses it as an indicator lamp that stays on in a color until you are
@@ -557,7 +557,7 @@ export class BoopliSettings extends LitElement {
     const qh = d.quiet_hours;
     return html`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>Quiet hours ${this._badge("quiet_hours")}</h2>
+        <h2>🌙 Quiet hours ${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           Nudges wait outside these times. Set different hours for each day.
           A chore can opt out (for example pills).
@@ -617,7 +617,7 @@ export class BoopliSettings extends LitElement {
   private _renderOther(d: Settings) {
     return html`
       <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "default_style")}>
-        <h2>Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
+        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -674,9 +674,16 @@ export class BoopliSettings extends LitElement {
 
   // --- the simple view: what is set, with a step-by-step button per area ---------
 
-  private _overviewCard(title: string, wizard: WizardId, lines: string[], empty: string, button = "Set up step by step") {
+  private _overviewCard(
+    emoji: string,
+    title: string,
+    wizard: WizardId,
+    lines: string[],
+    empty: string,
+    button = "Set up step by step"
+  ) {
     return html`<section class="card overview">
-      <h2>${title}</h2>
+      <h2><span class="emoji" aria-hidden="true">${emoji}</span> ${title}</h2>
       <div class="summary">
         ${lines.length
           ? lines.map((l) => html`<div>${l}</div>`)
@@ -692,40 +699,46 @@ export class BoopliSettings extends LitElement {
     if (!s) return nothing;
     const fn = (id: string) => friendlyName(this.hass, id);
     return html`
-      <div class="cards">
-        ${this._overviewCard("Your pet", "pet", [s.pet_name], "", "Rename")}
+      <div class="cards simple">
+        ${this._overviewCard("🐻", "Your pet", "pet", [s.pet_name], "", "Rename")}
         ${this._overviewCard(
+          "📱",
           "Phone",
           "phone",
           s.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}, from nudge ${p.start_at}`),
           "No phone set up yet."
         )}
-        ${this._overviewCard("Quiet hours", "quiet", [describeQuiet(s.quiet_hours)], "")}
+        ${this._overviewCard("🌙", "Quiet hours", "quiet", [describeQuiet(s.quiet_hours)], "")}
         ${this._overviewCard(
+          "⏰",
           "Snooze and style",
           "nudging",
           [`Snooze ${s.snooze_minutes} minutes`, `New chores: ${STYLE_LABEL[s.default_style] ?? s.default_style}`],
           ""
         )}
         ${this._overviewCard(
+          "💡",
           "Reminder lights",
           "lights",
           s.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`),
           "No reminder lights yet."
         )}
         ${this._overviewCard(
+          "🔊",
           "Speakers",
           "speakers",
           s.speakers.map((sp) => `${fn(sp.entity_id)}: ${describeSpeaker(sp)}`),
           "No speakers yet."
         )}
         ${this._overviewCard(
+          "🚨",
           "Alarm devices",
           "alarms",
           s.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s, from nudge ${a.start_at}`),
           "No alarm devices yet."
         )}
         ${this._overviewCard(
+          "📍",
           "Where you are",
           "presence",
           s.presence_entity ? [fn(s.presence_entity)] : [],
@@ -764,7 +777,7 @@ export class BoopliSettings extends LitElement {
         ? this._renderSimple()
         : html`
             <div class="cards">
-              ${this._renderPhones(d)} ${this._renderLights(d)}
+              ${this._renderOther(d)} ${this._renderPhones(d)} ${this._renderLights(d)}
               <boopli-speakers
                 class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
                 .hass=${this.hass}
@@ -803,13 +816,27 @@ export class BoopliSettings extends LitElement {
         gap: 16px;
         align-items: start;
       }
+      .cards.simple {
+        /* Cards in a row are the same height, and none is smaller than this. */
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-auto-rows: minmax(200px, auto);
+        align-items: stretch;
+      }
       .overview {
         display: flex;
         flex-direction: column;
         gap: 12px;
+        height: 100%;
       }
       .overview h2 {
         margin: 0;
+        font-size: 20px;
+      }
+      .emoji {
+        display: inline-block;
+        margin-right: 6px;
+        font-size: 24px;
+        vertical-align: -2px;
       }
       .summary {
         display: flex;
