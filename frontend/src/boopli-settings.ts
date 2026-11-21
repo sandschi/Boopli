@@ -1,9 +1,10 @@
 import { LitElement, html, css, nothing } from "lit";
-import { errorMessage, saveSettings, testLight, testPhone } from "./api";
+import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testPhone } from "./api";
 import type { WizardId } from "./boopli-wizard";
 import {
   describeQuiet,
   describeSpeaker,
+  entityIds,
   friendlyName,
   lightKind,
   phoneName,
@@ -68,6 +69,8 @@ export class BoopliSettings extends LitElement {
     _error: { state: true },
     _notes: { state: true },
     _mode: { state: true },
+    _defaults: { state: true },
+    _aiNote: { state: true },
   };
 
   declare hass?: Hass;
@@ -79,6 +82,8 @@ export class BoopliSettings extends LitElement {
   declare _error: string;
   declare _notes: Record<string, string>;
   declare _mode: Mode;
+  declare _defaults: { questions_prompt: string; steps_prompt: string } | null;
+  declare _aiNote: string;
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
   private _lastDirty = false;
@@ -91,6 +96,8 @@ export class BoopliSettings extends LitElement {
     this._error = "";
     this._notes = {};
     this._mode = loadMode();
+    this._defaults = null;
+    this._aiNote = "";
   }
 
   protected willUpdate(): void {
@@ -672,6 +679,105 @@ export class BoopliSettings extends LitElement {
     `;
   }
 
+  // --- AI help ---------------------------------------------------------------------
+
+  private _setAi(patch: Partial<Settings["ai"]>): void {
+    if (!this._draft) return;
+    this._set({ ai: { ...this._draft.ai, ...patch } });
+    this._aiNote = "";
+  }
+
+  private async _loadDefaults(): Promise<void> {
+    if (this._defaults || !this.hass) return;
+    try {
+      this._defaults = await aiDefaults(this.hass);
+    } catch {
+      this._defaults = { questions_prompt: "", steps_prompt: "" };
+    }
+  }
+
+  /** Try the saved AI settings with a harmless sample task. */
+  private async _testAi(): Promise<void> {
+    if (!this.hass) return;
+    this._aiNote = "Asking the agent…";
+    try {
+      const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
+      this._aiNote = `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`;
+    } catch (err) {
+      this._aiNote = errorMessage(err);
+    }
+  }
+
+  private _renderAi(d: Settings) {
+    const agents = entityIds(this.hass, ["ai_task"]);
+    const ai = d.ai;
+    const def = this._defaults;
+    const changed = this._changed("ai");
+    const prompt = (key: "questions_prompt" | "steps_prompt", label: string) => html`
+      <div class="field">
+        <label for="ai-${key}">${label}</label>
+        <textarea
+          id="ai-${key}"
+          rows="10"
+          .value=${ai[key] || def?.[key] || ""}
+          @input=${(e: Event) => {
+            const value = (e.target as HTMLTextAreaElement).value;
+            this._setAi({ [key]: def && value.trim() === def[key].trim() ? "" : value });
+          }}
+        ></textarea>
+        <button type="button" class="chip" ?disabled=${!ai[key]} @click=${() => this._setAi({ [key]: "" })}>
+          Reset to the built-in prompt
+        </button>
+      </div>
+    `;
+    return html`
+      <section class=${this._cardClass("ai")}>
+        <h2>🤖 AI help ${this._badge("ai")}</h2>
+        <p class="muted small">
+          Boopli can split a task into tiny steps with your own Home Assistant AI agent. It is off until you
+          switch it on. Boopli sends nothing by itself: when you use it, the text of the task and your answers
+          go to the agent you choose, and nothing else (no device names, history or location). A cloud agent
+          receives that text, and free models may keep or learn from what they get, so do not type private
+          details. A local agent keeps everything at home.
+        </p>
+        <label class="inline">
+          <input
+            type="checkbox"
+            .checked=${ai.enabled}
+            @change=${(e: Event) => this._setAi({ enabled: (e.target as HTMLInputElement).checked })}
+          />
+          Switch AI help on
+        </label>
+        <div class="field">
+          <label for="ai-agent">Which AI agent?</label>
+          <select id="ai-agent" @change=${(e: Event) => this._setAi({ entity_id: (e.target as HTMLSelectElement).value })}>
+            <option value="" .selected=${ai.entity_id === ""}>Home Assistant default</option>
+            ${agents.map((id) => html`<option value=${id} .selected=${id === ai.entity_id}>${friendlyName(this.hass, id)}</option>`)}
+            ${ai.entity_id && !agents.includes(ai.entity_id)
+              ? html`<option value=${ai.entity_id} selected>${ai.entity_id} (not found)</option>`
+              : nothing}
+          </select>
+          ${agents.length === 0
+            ? html`<div class="muted small">No AI Task agent found in Home Assistant yet. Add one under Settings, Devices and services.</div>`
+            : nothing}
+        </div>
+        <div class="row">
+          <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>Test the agent</button>
+          ${changed ? html`<span class="muted small">Save first to test.</span>` : nothing}
+        </div>
+        ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
+        <details @toggle=${(e: Event) => (e.target as HTMLDetailsElement).open && this._loadDefaults()}>
+          <summary class="muted small">The prompts Boopli sends (advanced)</summary>
+          <p class="muted small">
+            These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the
+            built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.
+          </p>
+          ${prompt("questions_prompt", "Questions prompt")} ${prompt("steps_prompt", "Steps prompt")}
+        </details>
+      </section>
+    `;
+  }
+
   // --- the simple view: what is set, with a step-by-step button per area ---------
 
   private _overviewCard(
@@ -738,6 +844,15 @@ export class BoopliSettings extends LitElement {
           "No alarm devices yet."
         )}
         ${this._overviewCard(
+          "🤖",
+          "AI help",
+          "ai",
+          s.ai?.enabled
+            ? [`On, using ${s.ai.entity_id ? fn(s.ai.entity_id) : "the Home Assistant default agent"}`]
+            : [],
+          "Off. Splits big tasks into tiny steps with your own AI agent."
+        )}
+        ${this._overviewCard(
           "📍",
           "Where you are",
           "presence",
@@ -799,6 +914,7 @@ export class BoopliSettings extends LitElement {
                   @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
                 ></boopli-speakers>
               </div>
+              <div class="slot s-ai">${this._renderAi(d)}</div>
             </div>
             ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             <div class="save">
@@ -813,6 +929,17 @@ export class BoopliSettings extends LitElement {
   static styles = [
     sharedStyles,
     css`
+      textarea {
+        font: inherit;
+        width: 100%;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        padding: 10px 12px;
+        resize: vertical;
+        margin-bottom: 6px;
+      }
       .toolbar {
         display: flex;
         justify-content: space-between;
@@ -858,6 +985,7 @@ export class BoopliSettings extends LitElement {
         .s-lights { order: 4; }
         .s-speakers { order: 5; }
         .s-alarms { order: 6; }
+        .s-ai { order: 7; }
       }
       .cards.simple {
         /* Cards in a row are the same height, and none is smaller than this. */

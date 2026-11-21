@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
 
+from . import breakdown
 from .const import DOMAIN
 from .manager import BoopliError, BoopliManager
 
@@ -29,6 +30,10 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_settings_save)
     websocket_api.async_register_command(hass, ws_setup_save)
     websocket_api.async_register_command(hass, ws_schedule_preview)
+    websocket_api.async_register_command(hass, ws_ai_questions)
+    websocket_api.async_register_command(hass, ws_ai_steps)
+    websocket_api.async_register_command(hass, ws_ai_defaults)
+    websocket_api.async_register_command(hass, ws_task_add)
     websocket_api.async_register_command(hass, ws_test_channel)
 
 
@@ -213,6 +218,97 @@ def ws_schedule_preview(
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"], {"times": times})
+
+
+_AI_FIELDS = {
+    vol.Required("task"): str,
+    vol.Optional("kind", default="now"): str,
+    vol.Optional("answers", default=[]): list,
+    vol.Optional("notes", default=""): str,
+}
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/ai_questions", **_AI_FIELDS})
+@websocket_api.async_response
+async def ws_ai_questions(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Ask the user's AI agent what it still needs to know about a task."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_ai_questions(
+            msg["task"], msg["kind"], msg["answers"], msg["notes"]
+        )
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/ai_steps", **_AI_FIELDS})
+@websocket_api.async_response
+async def ws_ai_steps(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Ask the user's AI agent to split a task into small steps."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_ai_steps(
+            msg["task"], msg["kind"], msg["answers"], msg["notes"]
+        )
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/ai_defaults"})
+@callback
+def ws_ai_defaults(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The built-in prompts, so Settings can show them and reset to them."""
+    connection.send_result(
+        msg["id"],
+        {
+            "questions_prompt": breakdown.QUESTIONS_PROMPT,
+            "steps_prompt": breakdown.STEPS_PROMPT,
+        },
+    )
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/task_add",
+        vol.Required("title"): str,
+        vol.Required("steps"): list,
+        vol.Optional("notes", default=""): str,
+        vol.Optional("where", default="home"): str,
+    }
+)
+@callback
+def ws_task_add(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Create a one-off task from reviewed steps and start it."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        run = manager.add_task_steps(
+            msg["title"], msg["steps"], msg["notes"], msg["where"]
+        )
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], {"run_id": run.id})
 
 
 @websocket_api.websocket_command(

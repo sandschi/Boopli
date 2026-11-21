@@ -114,6 +114,14 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
       out.push(`${name(a.entity_id)}: starts at nudge ${b.start_at} → ${a.start_at}`);
   });
 
+  if (before.ai.enabled !== after.ai.enabled) out.push(`AI help: ${before.ai.enabled ? "on" : "off"} → ${after.ai.enabled ? "on" : "off"}`);
+  if (before.ai.entity_id !== after.ai.entity_id) {
+    const label = (id: string) => (id ? name(id) : "the Home Assistant default");
+    out.push(`AI agent: ${label(before.ai.entity_id)} → ${label(after.ai.entity_id)}`);
+  }
+  if (before.ai.questions_prompt !== after.ai.questions_prompt) out.push("AI questions prompt changed");
+  if (before.ai.steps_prompt !== after.ai.steps_prompt) out.push("AI steps prompt changed");
+
   if (before.presence_entity !== after.presence_entity) {
     const label = (id: string) => (id ? name(id) : "not set");
     out.push(`Where you are: ${label(before.presence_entity)} → ${label(after.presence_entity)}`);

@@ -5,6 +5,8 @@ import { fmtMinutes, isToday, untilLabel } from "./time";
 export interface NowItem {
   run: Run;
   step: StepRun;
+  done: number; // steps of this run already finished
+  total: number; // steps in this run
 }
 
 /** A remaining step of a run, shown small and dimmed. */
@@ -43,7 +45,14 @@ export function buildToday(snapshot: Snapshot, nowMs: number): TodayModel {
 
   const active: NowItem[] = snapshot.runs
     .flatMap((run) =>
-      run.steps.filter((s) => s.status === "active").map((step) => ({ run, step }))
+      run.steps
+        .filter((s) => s.status === "active")
+        .map((step) => ({
+          run,
+          step,
+          done: run.steps.filter((s) => s.status === "done").length,
+          total: run.steps.length,
+        }))
     )
     .sort((a, b) => {
       const ta = a.step.active_at ? Date.parse(a.step.active_at) : Infinity;

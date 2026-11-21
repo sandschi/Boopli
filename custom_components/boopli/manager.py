@@ -7,12 +7,15 @@ pure logic lives in `engine.py`; this module connects it to Home Assistant
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Callable
+from dataclasses import asdict
 from datetime import datetime, time as dtime, timedelta, tzinfo
 from typing import Any
 
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError, ServiceNotFound
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
     async_track_state_change_event,
@@ -20,7 +23,7 @@ from homeassistant.helpers.event import (
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
-from . import engine
+from . import breakdown, engine
 from .const import DOMAIN
 from .nudger import BoopliNudger
 
@@ -31,6 +34,7 @@ STORAGE_KEY = DOMAIN
 SAVE_DELAY = 1  # seconds
 HISTORY_MAX = 1000
 HISTORY_IN_SNAPSHOT = 200
+AI_TIMEOUT = 90  # seconds to wait for the AI agent
 
 
 class BoopliError(Exception):
@@ -341,6 +345,7 @@ class BoopliManager:
             self.tz,
             step.active_at if step else None,
             run.status == engine.RUN_DONE,
+            step.size if step else engine.SIZE_SMALL,
         )
         if award.xp <= 0 and not award.woke_up:
             return []
@@ -783,6 +788,106 @@ class BoopliManager:
             one_off=True,
             created_at=engine.fmt_ts(dt_util.utcnow()),
             nudge_style=self.settings.default_style,
+        )
+        error = engine.validate_chore(chore)
+        if error:
+            raise BoopliError(error)
+        self.chores[chore.id] = chore
+        return self.start_chore(chore.id)
+
+    # --- AI help: splitting a task into small steps -----------------------------
+
+    async def _run_agent(self, name: str, instructions: str) -> Any:
+        """Ask the user's own AI agent (Home Assistant's AI Task) and return its data."""
+        ai = self.settings.ai
+        if not ai.enabled:
+            raise BoopliError("AI help is switched off. Turn it on in Settings first.")
+        call: dict[str, Any] = {
+            "task_name": name,
+            "instructions": instructions,
+            "structure": breakdown.STRUCTURE,
+        }
+        if ai.entity_id:
+            call["entity_id"] = ai.entity_id
+        try:
+            async with asyncio.timeout(AI_TIMEOUT):
+                response = await self.hass.services.async_call(
+                    "ai_task",
+                    "generate_data",
+                    call,
+                    blocking=True,
+                    return_response=True,
+                )
+        except TimeoutError as err:
+            raise BoopliError(
+                f"The AI agent took too long (over {AI_TIMEOUT} seconds). Try again."
+            ) from err
+        except ServiceNotFound as err:
+            raise BoopliError(
+                "Home Assistant has no AI Task yet. Set up an AI agent first."
+            ) from err
+        except HomeAssistantError as err:
+            # The agent's own reason is the useful part ("credits depleted", "model gone").
+            raise BoopliError(f"The AI agent answered with an error: {err}") from err
+        return (response or {}).get("data")
+
+    @staticmethod
+    def _check_kind(kind: str) -> str:
+        if kind not in breakdown.KINDS:
+            raise BoopliError("The kind must be 'now' or 'recurring'.")
+        return kind
+
+    async def async_ai_questions(
+        self, task: str, kind: str, answers: Any = None, notes: str = ""
+    ) -> dict[str, Any]:
+        """Ask the agent what it still needs to know before splitting the task."""
+        task = breakdown.clean_text(task, breakdown.TITLE_MAX)
+        if not task:
+            raise BoopliError("Write what you want to get done first.")
+        instructions = breakdown.questions_instructions(
+            task, self._check_kind(kind), answers, notes, self.settings.ai.questions_prompt
+        )
+        data = await self._run_agent("Boopli: questions", instructions)
+        try:
+            enough, questions = breakdown.parse_questions(data)
+        except breakdown.BreakdownError as err:
+            raise BoopliError(str(err)) from err
+        return {"enough": enough, "questions": [asdict(q) for q in questions]}
+
+    async def async_ai_steps(
+        self, task: str, kind: str, answers: Any = None, notes: str = ""
+    ) -> dict[str, Any]:
+        """Ask the agent to split the task into small steps."""
+        task = breakdown.clean_text(task, breakdown.TITLE_MAX)
+        if not task:
+            raise BoopliError("Write what you want to get done first.")
+        instructions = breakdown.steps_instructions(
+            task, self._check_kind(kind), answers, notes, self.settings.ai.steps_prompt
+        )
+        data = await self._run_agent("Boopli: steps", instructions)
+        try:
+            steps, summary = breakdown.parse_steps(data, engine.MAX_STEPS)
+        except breakdown.BreakdownError as err:
+            raise BoopliError(str(err)) from err
+        return {"steps": [asdict(s) for s in steps], "summary": summary}
+
+    def add_task_steps(
+        self,
+        title: str,
+        steps: list[dict[str, Any]],
+        notes: str = "",
+        where: str = engine.WHERE_HOME,
+    ) -> engine.Run:
+        """Create a one-off task from reviewed steps (with sizes and groups) and start it."""
+        chore = engine.Chore(
+            id=engine.new_id(),
+            name=title.strip(),
+            steps=[engine.Step.from_dict(s) for s in steps],
+            where=where,
+            one_off=True,
+            created_at=engine.fmt_ts(dt_util.utcnow()),
+            nudge_style=self.settings.default_style,
+            notes=notes.strip()[: engine.NOTES_MAX],
         )
         error = engine.validate_chore(chore)
         if error:

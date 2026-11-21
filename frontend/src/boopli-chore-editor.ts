@@ -5,7 +5,9 @@ import { sharedStyles } from "./styles";
 import "./boopli-triggers";
 import "./boopli-schedule-days";
 import "./boopli-schedule-wizard";
-import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Trigger } from "./types";
+import "./boopli-breakdown";
+import type { BreakdownResult } from "./boopli-breakdown";
+import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Snapshot, StepSize, Trigger } from "./types";
 
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
@@ -39,17 +41,20 @@ export class BoopliChoreEditor extends LitElement {
     draft: { attribute: false },
     defaultStyle: { attribute: false },
     timeZone: { type: String },
+    snapshot: { attribute: false },
     startSchedule: { type: Boolean },
     _error: { state: true },
     _busy: { state: true },
     _confirmDelete: { state: true },
     _sched: { state: true },
+    _suggest: { state: true },
   };
 
   declare hass?: Hass;
   declare draft: ChoreDraft;
   declare defaultStyle: NudgeStyle;
   declare timeZone: string;
+  declare snapshot?: Snapshot;
   /** Open straight in the schedule wizard (the "Set a schedule" button of the list). */
   declare startSchedule: boolean;
   declare _error: string;
@@ -57,6 +62,8 @@ export class BoopliChoreEditor extends LitElement {
   declare _confirmDelete: boolean;
   /** off: the form. inline: the wizard changes this draft. direct: it saves the chore itself. */
   declare _sched: "off" | "inline" | "direct";
+  /** The AI "Suggest steps" screen is open. */
+  declare _suggest: boolean;
 
   private _base?: string; // the draft as it was when the editor opened
   private _lastDirty = false;
@@ -70,6 +77,7 @@ export class BoopliChoreEditor extends LitElement {
     this._busy = false;
     this._confirmDelete = false;
     this._sched = "off";
+    this._suggest = false;
   }
 
   protected willUpdate(): void {
@@ -154,7 +162,30 @@ export class BoopliChoreEditor extends LitElement {
   }
 
   private _addStep(): void {
-    this._update({ steps: [...this.draft.steps, { title: "", wait_minutes: 0 }] });
+    this._update({ steps: [...this.draft.steps, { title: "", wait_minutes: 0, size: "small", group: "" }] });
+  }
+
+  /** The AI steps are ready: put them in this chore (replacing or adding to what is there). */
+  private _applySuggestion(result: BreakdownResult): void {
+    const fresh = result.steps.map((s) => ({
+      title: s.title,
+      wait_minutes: s.wait_minutes,
+      size: s.size,
+      group: s.group,
+    }));
+    const existing = this.draft.steps.filter((s) => s.title.trim() !== "");
+    const steps = result.action === "append" ? [...existing, ...fresh] : fresh;
+    this._update({ steps: steps.slice(0, 50), notes: result.notes });
+    this._suggest = false;
+  }
+
+  private _openSuggest(): void {
+    if (!this.draft.name.trim()) {
+      this._error = "Give the chore a name first, so the AI knows what to split up.";
+      return;
+    }
+    this._error = "";
+    this._suggest = true;
   }
 
   private _close(): void {
@@ -269,6 +300,20 @@ export class BoopliChoreEditor extends LitElement {
             @input=${(e: Event) =>
               this._updateStep(index, { title: (e.target as HTMLInputElement).value })}
           />
+          ${step.group ? html`<span class="tag" title="Part of the task">${step.group}</span>` : nothing}
+          <span class="sizes" role="group" aria-label="Size of step ${index + 1}">
+            ${(["small", "medium", "big"] as StepSize[]).map(
+              (z) => html`<button
+                type="button"
+                class="chip size ${(step.size ?? "small") === z ? "on" : ""}"
+                title="${z === "small" ? "Small: 10 XP" : z === "medium" ? "Medium: 15 XP" : "Big: 20 XP"}"
+                aria-pressed=${(step.size ?? "small") === z}
+                @click=${() => this._updateStep(index, { size: z })}
+              >
+                ${z === "small" ? "S" : z === "medium" ? "M" : "B"}
+              </button>`
+            )}
+          </span>
           <button type="button" aria-label="Move up" ?disabled=${index === 0} @click=${() => this._moveStep(index, -1)}>↑</button>
           <button type="button" aria-label="Move down" ?disabled=${index === last} @click=${() => this._moveStep(index, 1)}>↓</button>
           <button type="button" aria-label="Remove step" ?disabled=${last === 0} @click=${() => this._removeStep(index)}>✕</button>
@@ -322,6 +367,19 @@ export class BoopliChoreEditor extends LitElement {
   render() {
     const d = this.draft;
     if (!d) return nothing;
+    if (this._suggest) {
+      return html`<boopli-breakdown
+        mode="editor"
+        .hass=${this.hass}
+        .snapshot=${this.snapshot}
+        .kind=${d.repeat.type === "none" ? "now" : "recurring"}
+        .task=${d.name}
+        .notes=${d.notes ?? ""}
+        .hasSteps=${d.steps.some((s) => s.title.trim() !== "")}
+        @breakdown-result=${(e: CustomEvent<BreakdownResult>) => this._applySuggestion(e.detail)}
+        @breakdown-cancel=${() => (this._suggest = false)}
+      ></boopli-breakdown>`;
+    }
     if (this._sched !== "off") {
       return html`<boopli-schedule-wizard
         .hass=${this.hass}
@@ -401,7 +459,10 @@ export class BoopliChoreEditor extends LitElement {
         <div class="col-b">
         <h3 class="steps-title">Steps</h3>
         ${d.steps.map((_, i) => this._renderStep(i))}
-        <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
+        <div class="step-buttons">
+          <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
+          <button type="button" @click=${() => this._openSuggest()}>✨ Suggest steps with AI</button>
+        </div>
         </div>
         </div>
 
@@ -449,6 +510,29 @@ export class BoopliChoreEditor extends LitElement {
       }
       .summary {
         margin-top: 8px;
+      }
+      .tag {
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: var(--secondary-background-color);
+        color: var(--primary-color);
+        white-space: nowrap;
+      }
+      .sizes {
+        display: inline-flex;
+        gap: 4px;
+      }
+      button.size {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 0;
+        font-weight: 600;
+      }
+      .step-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       section.card.changed {
         border-color: var(--warning-color, #ffa600);

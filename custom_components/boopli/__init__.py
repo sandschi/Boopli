@@ -11,7 +11,12 @@ import voluptuous as vol
 from homeassistant.components import frontend, panel_custom
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import (
+    HomeAssistant,
+    ServiceCall,
+    ServiceResponse,
+    SupportsResponse,
+)
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
@@ -39,6 +44,7 @@ FRONTEND_DIR = Path(__file__).parent / "frontend"
 MANIFEST = Path(__file__).parent / "manifest.json"
 
 SERVICE_ADD_TASK = "add_task"
+SERVICE_BREAK_DOWN = "break_down"
 SERVICE_START_CHORE = "start_chore"
 SERVICE_COMPLETE_STEP = "complete_step"
 SERVICE_SNOOZE_STEP = "snooze_step"
@@ -52,6 +58,14 @@ ADD_TASK_SCHEMA = vol.Schema(
     }
 )
 CHORE_SCHEMA = vol.Schema({vol.Required("chore"): cv.string})
+BREAK_DOWN_SCHEMA = vol.Schema(
+    {
+        vol.Required("task"): cv.string,
+        vol.Optional("kind", default="now"): vol.In(("now", "recurring")),
+        vol.Optional("answers"): vol.All(cv.ensure_list, [dict]),
+        vol.Optional("notes", default=""): cv.string,
+    }
+)
 
 
 def _read_version() -> str:
@@ -102,7 +116,26 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         except BoopliError as err:
             raise ServiceValidationError(str(err)) from err
 
+    async def break_down(call: ServiceCall) -> ServiceResponse:
+        """Split a task into small steps with the user's AI agent and return them."""
+        try:
+            return await _manager(hass).async_ai_steps(
+                call.data["task"],
+                call.data["kind"],
+                call.data.get("answers"),
+                call.data.get("notes", ""),
+            )
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
     hass.services.async_register(DOMAIN, SERVICE_ADD_TASK, add_task, ADD_TASK_SCHEMA)
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_BREAK_DOWN,
+        break_down,
+        BREAK_DOWN_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
+    )
     hass.services.async_register(
         DOMAIN, SERVICE_START_CHORE, start_chore, CHORE_SCHEMA
     )

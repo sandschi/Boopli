@@ -12,6 +12,7 @@ export class BoopliChores extends LitElement {
     hass: { attribute: false },
     snapshot: { attribute: false },
     nowMs: { type: Number },
+    openRequest: { attribute: false },
     _editing: { state: true },
     _openSchedule: { state: true },
     _error: { state: true },
@@ -20,6 +21,8 @@ export class BoopliChores extends LitElement {
   declare hass?: Hass;
   declare snapshot?: Snapshot;
   declare nowMs: number;
+  /** A chore the panel wants opened right away (from the AI breakdown), optionally in the schedule wizard. */
+  declare openRequest: { id: number; draft: ChoreDraft; schedule: boolean } | null;
   declare _editing: ChoreDraft | null;
   declare _openSchedule: boolean;
   declare _error: string;
@@ -27,9 +30,20 @@ export class BoopliChores extends LitElement {
   constructor() {
     super();
     this.nowMs = Date.now();
+    this.openRequest = null;
     this._editing = null;
     this._openSchedule = false;
     this._error = "";
+  }
+
+  protected willUpdate(): void {
+    if (this.openRequest && !this._editing) {
+      const request = this.openRequest;
+      this._openSchedule = request.schedule;
+      this._editing = request.draft;
+      // Tell the panel it was taken, so it is not opened a second time.
+      this.dispatchEvent(new CustomEvent("request-handled", { bubbles: true, composed: true }));
+    }
   }
 
   /** Open the editor for a chore, or straight into its schedule wizard. */
@@ -47,11 +61,14 @@ export class BoopliChores extends LitElement {
       },
       nudge_style: chore.nudge_style,
       ignore_quiet_hours: chore.ignore_quiet_hours,
+      notes: chore.notes ?? "",
       steps: chore.steps.map((s) => ({
         id: s.id,
         title: s.title,
         wait_minutes: s.wait_minutes,
         triggers: (s.triggers ?? []).map((t) => ({ ...t })),
+        size: s.size ?? "small",
+        group: s.group ?? "",
       })),
     };
   }
@@ -88,6 +105,7 @@ export class BoopliChores extends LitElement {
         .draft=${this._editing}
         .defaultStyle=${this.snapshot.settings.default_style}
         .timeZone=${this.snapshot.time_zone}
+        .snapshot=${this.snapshot}
         .startSchedule=${this._openSchedule}
         @editor-close=${() => {
           this._editing = null;
@@ -114,6 +132,14 @@ export class BoopliChores extends LitElement {
       <div class="toolbar">
         <button class="primary" @click=${() => (this._editing = blankDraft())}>
           + New chore
+        </button>
+        <button
+          @click=${() =>
+            this.dispatchEvent(
+              new CustomEvent("open-breakdown", { detail: { kind: "recurring" }, bubbles: true, composed: true })
+            )}
+        >
+          ✨ New chore with AI
         </button>
       </div>
 
@@ -176,6 +202,9 @@ export class BoopliChores extends LitElement {
       }
       .toolbar {
         margin-bottom: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .templates {
         display: flex;

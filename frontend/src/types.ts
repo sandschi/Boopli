@@ -23,12 +23,16 @@ export interface Trigger {
   press: string; // button: a specific press type, empty = any
 }
 
+export type StepSize = "small" | "medium" | "big";
+
 export interface Step {
   id: string;
   title: string;
   wait_minutes: number;
   resolve: string;
   triggers: Trigger[];
+  size: StepSize; // small, medium or big: worth 10, 15 or 20 XP
+  group: string; // the part of the task, for example Table
 }
 
 export interface Repeat {
@@ -51,6 +55,7 @@ export interface Chore {
   created_at: string;
   nudge_style: NudgeStyle;
   ignore_quiet_hours: boolean;
+  notes: string; // what the AI learned about the task
 }
 
 export interface StepRun {
@@ -66,6 +71,8 @@ export interface StepRun {
   triggers?: Trigger[];
   done_by?: "manual" | "auto" | null;
   done_reason?: string | null;
+  size?: StepSize;
+  group?: string;
 }
 
 export interface Run {
@@ -162,6 +169,15 @@ export interface Settings {
   snooze_minutes: number;
   default_style: NudgeStyle;
   pet_name: string;
+  ai: AiSettings;
+}
+
+/** Optional AI help: splitting tasks into small steps with your own Home Assistant AI agent. */
+export interface AiSettings {
+  enabled: boolean;
+  entity_id: string; // an ai_task entity, empty = Home Assistant's default
+  questions_prompt: string; // empty = the built-in prompt
+  steps_prompt: string;
 }
 
 export type Mood = "happy" | "content" | "sleepy" | "sad" | "hibernating";
@@ -205,7 +221,35 @@ export interface ChoreDraft {
   repeat: Repeat;
   nudge_style?: NudgeStyle; // missing: the integration uses your default
   ignore_quiet_hours?: boolean;
-  steps: { id?: string; title: string; wait_minutes: number; triggers?: Trigger[] }[];
+  notes?: string;
+  steps: {
+    id?: string;
+    title: string;
+    wait_minutes: number;
+    triggers?: Trigger[];
+    size?: StepSize;
+    group?: string;
+  }[];
+}
+
+/** A question the AI wants answered before it splits a task. */
+export interface AiQuestion {
+  text: string;
+  options: string[];
+  multiple: boolean;
+}
+
+export interface AiAnswer {
+  question: string;
+  answer: string;
+}
+
+/** A step as the AI suggests it. */
+export interface AiStep {
+  title: string;
+  group: string;
+  size: StepSize;
+  wait_minutes: number;
 }
 
 /** One entity state as Home Assistant gives it to the panel. */

@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import {
+  aiSteps,
   errorMessage,
   saveChore,
   saveSetup,
@@ -54,7 +55,8 @@ export type WizardId =
   | "alarms"
   | "presence"
   | "nudging"
-  | "pet";
+  | "pet"
+  | "ai";
 
 type StepId =
   | "welcome"
@@ -74,6 +76,8 @@ type StepId =
   | "alarm_detail"
   | "presence"
   | "pet"
+  | "ai_intro"
+  | "ai_agent"
   | "chores"
   | "done";
 
@@ -87,6 +91,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   presence: ["presence", "done"],
   nudging: ["nudging", "done"],
   pet: ["pet", "done"],
+  ai: ["ai_intro", "ai_agent", "done"],
 };
 
 /** What "Set up speakers" adds to the first-run setup. */
@@ -102,6 +107,7 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
   presence: "Where you are",
   nudging: "Snooze and style",
   pet: "Your pet",
+  ai: "AI help setup",
 };
 
 const TITLES: Record<StepId, string> = {
@@ -122,6 +128,8 @@ const TITLES: Record<StepId, string> = {
   alarm_detail: "Alarm device details",
   presence: "Where you are",
   pet: "Your pet",
+  ai_intro: "AI help",
+  ai_agent: "Your AI agent",
   chores: "First chores",
   done: "All set",
 };
@@ -1002,6 +1010,70 @@ export class BoopliWizard extends LitElement {
     `;
   }
 
+  private _renderAiIntro(d: Settings) {
+    return html`
+      <p>
+        Boopli can split a big task, like "clean my room", into tiny steps. It asks you a few questions first, so
+        the steps fit your situation. This uses <b>your own</b> Home Assistant AI agent.
+      </p>
+      <p class="muted">
+        Boopli sends nothing by itself. When you use it, the text of the task and your answers go to the agent you
+        choose, and nothing else: no device names, no history, no location. A cloud agent receives that text, and
+        free models may keep or learn from what they get, so do not type private details. A local agent keeps
+        everything at home.
+      </p>
+      <label class="inline option">
+        <input
+          type="checkbox"
+          .checked=${d.ai.enabled}
+          @change=${(e: Event) => this._set({ ai: { ...d.ai, enabled: (e.target as HTMLInputElement).checked } })}
+        />
+        Switch AI help on
+      </label>
+    `;
+  }
+
+  private _renderAiAgent(d: Settings) {
+    const agents = entityIds(this.hass, ["ai_task"]);
+    if (!d.ai.enabled) return html`<p class="muted">AI help is off. Go back to switch it on, or skip this.</p>`;
+    return html`
+      <p>Which AI agent should Boopli use?</p>
+      <div class="field">
+        <select @change=${(e: Event) => this._set({ ai: { ...d.ai, entity_id: (e.target as HTMLSelectElement).value } })}>
+          <option value="" .selected=${d.ai.entity_id === ""}>Home Assistant default</option>
+          ${agents.map((id) => html`<option value=${id} .selected=${id === d.ai.entity_id}>${this._fn(id)}</option>`)}
+        </select>
+        ${agents.length === 0
+          ? html`<div class="muted small">No AI Task agent found yet. Add one in Home Assistant under Settings, Devices and services, then come back.</div>`
+          : nothing}
+      </div>
+      <p class="muted small">Press the button to save and test it, or Next to only save it.</p>
+      <div class="actions inline-actions">
+        <button
+          type="button"
+          ?disabled=${this._busy}
+          @click=${() => this._testAiAgent(d)}
+        >
+          Save and test the agent
+        </button>
+      </div>
+      ${this._noteLine("ai:test")}
+    `;
+  }
+
+  private async _testAiAgent(d: Settings): Promise<void> {
+    if (!this.hass) return;
+    this._note("ai:test", "Saving and asking the agent…");
+    try {
+      await saveSettings(this.hass, d);
+      this._saved = structuredClone(d);
+      const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
+      this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`);
+    } catch (err) {
+      this._note("ai:test", errorMessage(err));
+    }
+  }
+
   private _renderDone(d: Settings) {
     const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
     const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
@@ -1024,6 +1096,10 @@ export class BoopliWizard extends LitElement {
         return this._renderWelcome(d);
       case "pet":
         return this._renderPet(d);
+      case "ai_intro":
+        return this._renderAiIntro(d);
+      case "ai_agent":
+        return this._renderAiAgent(d);
       case "phone":
         return this._renderPhone(d);
       case "phone_detail":

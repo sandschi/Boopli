@@ -66,7 +66,17 @@ RUN_ACTIVE = "active"
 RUN_DONE = "done"
 
 MAX_WAIT_MINUTES = 7 * 24 * 60
-MAX_STEPS = 30
+MAX_STEPS = 50
+
+# How big a step is. Harder steps are worth more XP.
+SIZE_SMALL = "small"
+SIZE_MEDIUM = "medium"
+SIZE_BIG = "big"
+SIZE_VALUES = (SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG)
+SIZE_XP = {SIZE_SMALL: 10, SIZE_MEDIUM: 15, SIZE_BIG: 20}
+GROUP_MAX = 40  # characters of a step's group ("Table", "Floor")
+STEP_TITLE_MAX = 200
+NOTES_MAX = 4000
 
 EVENT_CHORE_STARTED = "chore_started"
 EVENT_STEP_ACTIVE = "step_active"
@@ -235,16 +245,21 @@ class Step:
     wait_minutes: int = 0  # wait after the previous step is done
     resolve: str = RESOLVE_MANUAL
     triggers: list[Trigger] = field(default_factory=list)
+    size: str = SIZE_SMALL  # small, medium or big: worth 10, 15 or 20 XP
+    group: str = ""  # the part of the task it belongs to ("Table")
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Step:
         triggers = [Trigger.from_dict(t) for t in d.get("triggers") or []]
+        size = str(d.get("size", SIZE_SMALL))
         return cls(
             id=str(d.get("id") or new_id()),
             title=str(d.get("title", "")).strip(),
             wait_minutes=int(d.get("wait_minutes", 0) or 0),
             resolve=RESOLVE_AUTO if triggers else RESOLVE_MANUAL,
             triggers=triggers,
+            size=size if size in SIZE_VALUES else SIZE_SMALL,
+            group=str(d.get("group") or "").strip()[:GROUP_MAX],
         )
 
 
@@ -320,10 +335,12 @@ class Chore:
     created_at: str = ""
     nudge_style: str = STYLE_ONE
     ignore_quiet_hours: bool = False  # for things like pills
+    notes: str = ""  # what the AI learned about the task, kept for "update steps"
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            notes=str(d.get("notes") or "").strip()[:NOTES_MAX],
             id=str(d.get("id") or new_id()),
             name=str(d.get("name", "")).strip(),
             steps=[Step.from_dict(s) for s in d.get("steps", [])],
@@ -354,10 +371,15 @@ class StepRun:
     triggers: list[Trigger] = field(default_factory=list)  # snapshot from the chore
     done_by: str | None = None  # "manual" or "auto"
     done_reason: str | None = None  # for "auto": what happened
+    size: str = SIZE_SMALL  # snapshot from the chore
+    group: str = ""  # snapshot from the chore
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
+        size = str(d.get("size", SIZE_SMALL))
         return cls(
+            size=size if size in SIZE_VALUES else SIZE_SMALL,
+            group=str(d.get("group") or ""),
             step_id=str(d["step_id"]),
             title=str(d.get("title", "")),
             wait_minutes=int(d.get("wait_minutes", 0) or 0),
@@ -563,11 +585,13 @@ def award_step(
     tz: tzinfo,
     active_at: str | None,
     chore_done: bool,
+    size: str = SIZE_SMALL,
 ) -> Award:
     """Give XP for a finished step and note the activity.
 
-    Per chore and day only the first XP_RUNS_PER_DAY runs earn XP, so running a
-    chore over and over cannot be farmed. Finishing still wakes the pet up.
+    A step is worth 10, 15 or 20 XP for small, medium or big. Per chore and day
+    only the first XP_RUNS_PER_DAY runs earn XP, so running a chore over and
+    over cannot be farmed. Finishing still wakes the pet up.
     """
     mood_before = mood_for(progress, now, tz)
     level_before = level_for(progress.total_xp)[0]
@@ -578,7 +602,7 @@ def award_step(
     if run_id in runs or len(runs) < XP_RUNS_PER_DAY:
         if run_id not in runs:
             runs.append(run_id)
-        xp = XP_STEP + (XP_CHORE if chore_done else 0)
+        xp = SIZE_XP.get(size, XP_STEP) + (XP_CHORE if chore_done else 0)
         if active_at and now - parse_ts(active_at) <= timedelta(minutes=QUICK_MINUTES):
             xp += XP_QUICK
 
@@ -638,6 +662,10 @@ def validate_chore(chore: Chore) -> str | None:
             return "Every step needs a title."
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
             return "A wait must be between 0 minutes and 7 days."
+        if step.size not in SIZE_VALUES:
+            return "A step is small, medium or big."
+        if len(step.title) > STEP_TITLE_MAX:
+            return f"A step title can have at most {STEP_TITLE_MAX} letters."
         if len(step.triggers) > MAX_TRIGGERS:
             return f"A step can have at most {MAX_TRIGGERS} ways to finish by itself."
         for trigger in step.triggers:
@@ -804,6 +832,8 @@ def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
                 title=s.title,
                 wait_minutes=s.wait_minutes,
                 triggers=[replace(t) for t in s.triggers],
+                size=s.size,
+                group=s.group,
             )
             for s in chore.steps
         ],
@@ -1254,6 +1284,29 @@ class QuietHours:
         return _parse_hhmm(entry.start), _parse_hhmm(entry.stop)
 
 
+AI_PROMPT_MAX = 8000
+
+
+@dataclass
+class AiSettings:
+    """Optional AI help: splitting tasks into small steps with the user's own agent."""
+
+    enabled: bool = False  # off until the user switches it on
+    entity_id: str = ""  # an ai_task entity; empty = Home Assistant's default agent
+    questions_prompt: str = ""  # empty = the built-in prompt
+    steps_prompt: str = ""  # empty = the built-in prompt
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> AiSettings:
+        d = d or {}
+        return cls(
+            enabled=bool(d.get("enabled", False)),
+            entity_id=str(d.get("entity_id") or "").strip(),
+            questions_prompt=str(d.get("questions_prompt") or "").strip(),
+            steps_prompt=str(d.get("steps_prompt") or "").strip(),
+        )
+
+
 @dataclass
 class Settings:
     """Boopli's global settings."""
@@ -1268,11 +1321,13 @@ class Settings:
     snooze_minutes: int = 15
     default_style: str = STYLE_ONE
     pet_name: str = PET_NAME_DEFAULT
+    ai: AiSettings = field(default_factory=AiSettings)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
         return cls(
+            ai=AiSettings.from_dict(d.get("ai")),
             lights=[LightCfg.from_dict(x) for x in d.get("lights", [])],
             phones=[PhoneCfg.from_dict(x) for x in d.get("phones", [])],
             speakers=[SpeakerCfg.from_dict(x) for x in d.get("speakers", [])],
@@ -1395,6 +1450,13 @@ def validate_settings(settings: Settings) -> str | None:
         return "The presence source must be an entity id."
     if not 1 <= settings.snooze_minutes <= 720:
         return "Snooze must be between 1 minute and 12 hours."
+    if settings.ai.entity_id and not settings.ai.entity_id.startswith("ai_task."):
+        return "Pick an AI task agent, or leave it empty for the default."
+    if (
+        len(settings.ai.questions_prompt) > AI_PROMPT_MAX
+        or len(settings.ai.steps_prompt) > AI_PROMPT_MAX
+    ):
+        return f"A prompt can have at most {AI_PROMPT_MAX} letters."
     if len(settings.pet_name) > PET_NAME_MAX:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.default_style not in STYLE_VALUES:

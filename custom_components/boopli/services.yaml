@@ -21,6 +21,33 @@ add_task:
             - anywhere
           translation_key: where
 
+break_down:
+  fields:
+    task:
+      required: true
+      example: "Clean the bathroom"
+      selector:
+        text:
+    kind:
+      required: false
+      default: now
+      selector:
+        select:
+          options:
+            - now
+            - recurring
+    answers:
+      required: false
+      example: '[{"question": "How does the floor look?", "answer": "A few things on it"}]'
+      selector:
+        object:
+    notes:
+      required: false
+      example: "Bathroom has: shower, sink, toilet, floor."
+      selector:
+        text:
+          multiline: true
+
 start_chore:
   fields:
     chore:

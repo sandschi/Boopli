@@ -32,6 +32,7 @@ export class BoopliToday extends LitElement {
     _busy: { state: true },
     _error: { state: true },
     _toast: { state: true },
+    _quick: { state: true },
   };
 
   declare hass?: Hass;
@@ -40,6 +41,8 @@ export class BoopliToday extends LitElement {
   declare _busy: boolean;
   declare _error: string;
   declare _toast: string;
+  declare _quick: string;
+  private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
   private _toastTimer?: number;
 
@@ -49,6 +52,7 @@ export class BoopliToday extends LitElement {
     this._busy = false;
     this._error = "";
     this._toast = "";
+    this._quick = "";
   }
 
   disconnectedCallback(): void {
@@ -61,14 +65,69 @@ export class BoopliToday extends LitElement {
     const pet = this.snapshot.pet;
     const before = this._lastPet;
     this._lastPet = pet;
+    // A task that was running and is now finished: celebrate it by name.
+    const runIds = this.snapshot.runs.map((r) => r.id);
+    const finished = this._lastRunIds
+      .filter((id) => !runIds.includes(id))
+      .map((id) => this.snapshot!.history.find((h) => h.kind === "chore_done" && h.run_id === id)?.chore_name)
+      .filter((name): name is string => !!name);
+    this._lastRunIds = runIds;
     if (!before || pet.total_xp <= before.total_xp) return; // the first look shows nothing
     const parts = [`+${pet.total_xp - before.total_xp} XP`];
+    if (finished.length) parts.unshift(`🎉 ${finished[0]} is done!`);
     if (pet.level > before.level) parts.push(`Level ${pet.level}!`);
     if (before.mood === "sad" || before.mood === "hibernating")
       parts.push(`${pet.name} is awake. Welcome back!`);
     this._toast = parts.join("  ·  ");
     window.clearTimeout(this._toastTimer);
     this._toastTimer = window.setTimeout(() => (this._toast = ""), 5000);
+  }
+
+  private _openBreakdown(kind: "now" | "recurring"): void {
+    this.dispatchEvent(
+      new CustomEvent("open-breakdown", {
+        detail: { kind, task: this._quick.trim() },
+        bubbles: true,
+        composed: true,
+      })
+    );
+    this._quick = "";
+  }
+
+  /** The quick task box: say what you want to get done and let the AI break it down. */
+  private _renderQuick() {
+    const aiOn = !!this.snapshot?.settings.ai?.enabled;
+    return html`
+      <section class="card quick">
+        <h3>What do you want to get done?</h3>
+        ${aiOn
+          ? html`
+              <textarea
+                rows="2"
+                placeholder="For example: clean the bathroom"
+                .value=${this._quick}
+                @input=${(e: Event) => (this._quick = (e.target as HTMLTextAreaElement).value)}
+              ></textarea>
+              <div class="quick-actions">
+                <button class="primary" @click=${() => this._openBreakdown("now")}>✨ Break it down now</button>
+                <button @click=${() => this._openBreakdown("recurring")}>🔁 Break down a recurring chore</button>
+              </div>
+            `
+          : html`
+              <p class="muted small">
+                Boopli can split a big task into tiny steps with your own AI agent. It is switched off until you set it up.
+              </p>
+              <button
+                @click=${() =>
+                  this.dispatchEvent(
+                    new CustomEvent("open-wizard", { detail: { wizard: "ai" }, bubbles: true, composed: true })
+                  )}
+              >
+                🤖 Set up AI help
+              </button>
+            `}
+      </section>
+    `;
   }
 
   private _renderPet() {
@@ -154,8 +213,19 @@ export class BoopliToday extends LitElement {
       ${model.now
         ? html`
             <section class="card now">
-              <div class="muted small">${model.now.run.chore_name}</div>
+              <div class="muted small">
+                ${model.now.run.chore_name}
+                ${model.now.step.group ? html`<span class="tag">${model.now.step.group}</span>` : nothing}
+              </div>
               <h2>${model.now.step.title}</h2>
+              ${model.now.total > 1
+                ? html`<div class="progress">
+                    <div class="bar" role="progressbar" aria-valuenow=${model.now.done} aria-valuemin="0" aria-valuemax=${model.now.total}>
+                      <div class="fill" style="width:${(model.now.done / model.now.total) * 100}%"></div>
+                    </div>
+                    <div class="muted small">Step ${model.now.done + 1} of ${model.now.total}</div>
+                  </div>`
+                : nothing}
               ${model.now.step.active_at
                 ? html`<div class="muted small">
                     ${sinceLabel(model.now.step.active_at, tz)}
@@ -188,6 +258,7 @@ export class BoopliToday extends LitElement {
               </p>
             </section>
           `}
+      ${this._renderQuick()}
       </div><div class="col">
       ${this._renderAuto()}
       ${model.groups.length > 0 || model.dueToday.length > 0
@@ -231,6 +302,41 @@ export class BoopliToday extends LitElement {
     css`
       .small {
         font-size: 14px;
+      }
+      .quick h3 {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .quick textarea {
+        font: inherit;
+        width: 100%;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        padding: 10px 12px;
+        resize: vertical;
+      }
+      .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .tag {
+        margin-left: 6px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: var(--secondary-background-color);
+        color: var(--primary-color);
+      }
+      .progress {
+        margin: 6px 0 0;
+      }
+      .progress .bar {
+        margin: 4px 0;
       }
       .banner {
         display: flex;

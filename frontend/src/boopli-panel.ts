@@ -1,12 +1,14 @@
 import { LitElement, html, css, nothing } from "lit";
-import { saveSetup, subscribe } from "./api";
+import { saveChore, saveSetup, subscribe, taskAdd } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
 import "./boopli-wizard";
+import "./boopli-breakdown";
+import type { BreakdownResult } from "./boopli-breakdown";
 import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
-import type { Hass, Snapshot } from "./types";
+import type { ChoreDraft, Hass, Snapshot } from "./types";
 
 type Tab = "today" | "chores" | "settings";
 
@@ -47,6 +49,9 @@ export class BoopliPanel extends LitElement {
     _nowMs: { state: true },
     _connectionError: { state: true },
     _wizard: { state: true },
+    _breakdown: { state: true },
+    _breakdownError: { state: true },
+    _choresRequest: { state: true },
     _dirty: { state: true },
     _confirm: { state: true },
   };
@@ -58,6 +63,10 @@ export class BoopliPanel extends LitElement {
   declare _nowMs: number;
   declare _connectionError: string;
   declare _wizard: WizardRequest | null;
+  declare _breakdown: { kind: "now" | "recurring"; task: string } | null;
+  declare _breakdownError: string;
+  declare _choresRequest: { id: number; draft: ChoreDraft; schedule: boolean } | null;
+  private _requestId = 0;
   declare _dirty: { settings: boolean; chore: boolean };
   declare _confirm: ((choice: Choice) => void) | null;
 
@@ -73,6 +82,9 @@ export class BoopliPanel extends LitElement {
     this._nowMs = Date.now();
     this._connectionError = "";
     this._wizard = null;
+    this._breakdown = null;
+    this._breakdownError = "";
+    this._choresRequest = null;
     this._dirty = { settings: false, chore: false };
     this._confirm = null;
   }
@@ -125,11 +137,13 @@ export class BoopliPanel extends LitElement {
     if (tab === this._tab && !this._wizard) return;
     if (!(await this._guard())) return;
     this._wizard = null;
+    this._breakdown = null;
     this._tab = tab;
   }
 
   /** Open a wizard. The first-run setup is also remembered as "in progress". */
   private _openWizard(request: WizardRequest): void {
+    this._breakdown = null;
     this._wizard = request;
     if (this.hass && request.wizard === "first") {
       // Opened but not finished: Today will show a banner until it is done.
@@ -150,6 +164,59 @@ export class BoopliPanel extends LitElement {
           ? setup.step
           : ""),
     });
+  };
+
+  // --- breaking a task down with AI ---------------------------------------------
+
+  private _onOpenBreakdown = async (e: Event): Promise<void> => {
+    const detail = (e as CustomEvent<{ kind?: "now" | "recurring"; task?: string }>).detail ?? {};
+    if (!(await this._guard())) return;
+    this._wizard = null;
+    this._breakdownError = "";
+    this._breakdown = { kind: detail.kind ?? "now", task: detail.task ?? "" };
+  };
+
+  private _draftFrom(result: BreakdownResult): ChoreDraft {
+    return {
+      name: result.task,
+      where: "home",
+      enabled: true,
+      one_off: false,
+      repeat: { type: "none", time: "09:00", every_n_days: 1, days: {} },
+      notes: result.notes,
+      steps: result.steps.map((s) => ({
+        title: s.title,
+        wait_minutes: s.wait_minutes,
+        size: s.size,
+        group: s.group,
+      })),
+    };
+  }
+
+  /** The review is done: start the task, save the chore, or go on to its schedule. */
+  private _onBreakdownResult = async (e: Event): Promise<void> => {
+    if (!this.hass) return;
+    const result = (e as CustomEvent<BreakdownResult>).detail;
+    this._breakdownError = "";
+    try {
+      if (result.action === "start") {
+        await taskAdd(this.hass, result.task, result.steps, result.notes);
+        this._breakdown = null;
+        this._tab = "today";
+      } else if (result.action === "save") {
+        await saveChore(this.hass, this._draftFrom(result));
+        this._breakdown = null;
+        this._tab = "chores";
+      } else if (result.action === "schedule") {
+        // The chores screen opens the new chore straight in the schedule wizard.
+        this._choresRequest = { id: ++this._requestId, draft: this._draftFrom(result), schedule: true };
+        this._breakdown = null;
+        this._tab = "chores";
+      }
+    } catch (err) {
+      this._breakdownError =
+        err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : "Something went wrong.";
+    }
   };
 
   connectedCallback(): void {
@@ -240,7 +307,11 @@ export class BoopliPanel extends LitElement {
           )}
         </nav>
       </header>
-      <main @open-wizard=${this._onOpenWizard} @dirty-change=${this._onDirty}>
+      <main
+        @open-wizard=${this._onOpenWizard}
+        @open-breakdown=${this._onOpenBreakdown}
+        @dirty-change=${this._onDirty}
+      >
         ${this._connectionError
           ? html`<p class="error">${this._connectionError}</p>`
           : this._wizard
@@ -251,11 +322,27 @@ export class BoopliPanel extends LitElement {
                 .startAt=${this._wizard.startAt}
                 @wizard-close=${() => (this._wizard = null)}
               ></boopli-wizard>`
-            : this._tab === "today"
-              ? html`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>`
-              : this._tab === "chores"
-                ? html`<boopli-chores .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-chores>`
-                : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
+            : this._breakdown
+              ? html`<boopli-breakdown
+                  .hass=${this.hass}
+                  .snapshot=${this._snapshot}
+                  .kind=${this._breakdown.kind}
+                  .task=${this._breakdown.task}
+                  .externalError=${this._breakdownError}
+                  @breakdown-result=${this._onBreakdownResult}
+                  @breakdown-cancel=${() => (this._breakdown = null)}
+                ></boopli-breakdown>`
+              : this._tab === "today"
+                ? html`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>`
+                : this._tab === "chores"
+                  ? html`<boopli-chores
+                      .hass=${this.hass}
+                      .snapshot=${this._snapshot}
+                      .nowMs=${this._nowMs}
+                      .openRequest=${this._choresRequest}
+                      @request-handled=${() => (this._choresRequest = null)}
+                    ></boopli-chores>`
+                  : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>
       ${this._renderConfirm()}
     `;

@@ -2,7 +2,7 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.10).** You can set Boopli up with guided wizards or plain forms, create chores made of steps (with waiting time between steps) on a schedule with a different time per day, see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
+> **Status: early development (v0.0.11).** You can break a task into tiny steps with your own AI agent, set Boopli up with guided wizards or plain forms, create chores made of steps (with waiting time between steps) on a schedule with a different time per day, see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no final pet art or AI task breakdown yet, so it is not ready for daily use.
 
 ## Setup, wizards and Settings
 
@@ -32,6 +32,20 @@ A chore is one of three kinds:
 If a chore comes due while its last run is still open, that round is skipped instead of stacking a second run.
 
 **Schedule wizard.** The **Set the schedule step by step** button in the chore editor opens a wizard: how often, which days (tap them), what time on each day, a preview of the next five runs (calculated by the integration itself), and a last screen showing what changed. Chores without a schedule show a **Set a schedule** button in the Chores list, which opens the wizard directly and saves the chore when you finish. Inside the editor the wizard only fills in the form, and the usual unsaved-changes bar tells you to save.
+
+## AI help: break a task into tiny steps
+
+Boopli can split a big task, such as "clean my room", into very small steps with **your own Home Assistant AI agent** (the `ai_task` integration: Google, OpenRouter, a local model such as Ollama, and so on). It is **off until you switch it on** in Settings (the 🤖 AI help card, or its step-by-step wizard), where you also choose the agent and press **Test the agent**.
+
+- **Two ways in.** On Today, write what you want to get done and press **Break it down now** (a one-off task that disappears when done), or **Break down a recurring chore** (it ends in the schedule wizard). The Chores tab has **New chore with AI**, and inside the chore editor **Suggest steps with AI** fills a chore's steps.
+- **The AI asks first.** A clear task such as "take out the trash" goes straight to steps. For anything with several parts, the AI asks what it needs to know: what is in the room, how it looks, how much energy you have. Every question has buttons (several can be picked for lists) and a box for your own words, and there is always an **Anything else?** box and **Enough, go on**. There is no limit on rounds, and a recurring chore is asked about in more depth, because it is set up once and reused.
+- **Tiny, ordered steps.** Each step is one concrete action, the first one is the easiest possible start, steps are grouped by area (Table, Chairs, Floor...), and the AI can say that something needs waiting time. A chore can have up to 50 steps. Nothing is created until you have checked and changed the steps and pressed a button.
+- **Step sizes and XP.** Every step is small, medium or big (S, M, B), worth 10, 15 or 20 XP (steps you write yourself are small). Today shows the group, "Step 3 of 8" with a progress bar, and a celebration when a task is finished.
+- **Kept for next time.** What the AI learned about a recurring chore is saved with the chore (editable), and the AI uses it when you press **Suggest steps** again.
+- **Service.** `boopli.break_down` (`task`, optional `kind`, `answers`, `notes`) returns the steps, for your own automations and voice assistants.
+- **The prompts are yours.** Under Advanced settings you can read, change and reset the two prompts Boopli sends (questions and steps). The built-in ones ask for one JSON object, which works with any model.
+
+**Privacy.** Boopli sends nothing by itself. When you use AI help, the text of the task, your answers and the notes saved for that chore go to the agent you chose, and nothing else: no device names, history or location. A cloud agent receives that text, and free models may keep or learn from what they get, so do not type private details. A local agent keeps everything at home. If the agent fails (empty account, model gone, timeout), Boopli shows the agent's own reason.
 
 ## Steps that finish by themselves
 
@@ -66,7 +80,6 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 - Chores built from short steps, including waiting time between steps (for example a dishwasher: load, start, open to dry, empty hours later).
 - Done and Snooze buttons in Home Assistant's phone notifications. No dismiss button.
 - Optional light, speaker and loud-alarm nudges, quiet hours, and presence conditions.
-- An optional AI task breakdown that uses your own Home Assistant AI agent.
 - Services and events so your own automations can build on Boopli.
 
 ## Later ideas
@@ -101,6 +114,7 @@ pytest tests
 
 | Service | What it does |
 |---|---|
+| `boopli.break_down` | Splits a task into small steps with your AI agent and returns them (needs AI help switched on). |
 | `boopli.add_task` | Creates a one-off task (optionally with steps) and starts it. It disappears when done. |
 | `boopli.start_chore` | Starts a chore now, by name or id. |
 | `boopli.complete_step` | Marks the step that is waiting for you in a chore as done. |

@@ -1,4 +1,7 @@
 import type {
+  AiAnswer,
+  AiQuestion,
+  AiStep,
   AlarmDeviceCfg,
   ChoreDraft,
   Hass,
@@ -19,6 +22,43 @@ export interface TestResult {
 
 export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
+}
+
+/** What the AI still wants to know about a task before it splits it. */
+export function aiQuestions(
+  hass: Hass,
+  task: string,
+  kind: "now" | "recurring",
+  answers: AiAnswer[],
+  notes = ""
+): Promise<{ enough: boolean; questions: AiQuestion[] }> {
+  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes });
+}
+
+/** The task split into small steps by the AI. */
+export function aiSteps(
+  hass: Hass,
+  task: string,
+  kind: "now" | "recurring",
+  answers: AiAnswer[],
+  notes = ""
+): Promise<{ steps: AiStep[]; summary: string }> {
+  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes });
+}
+
+/** The built-in prompts, to show and to reset to. */
+export function aiDefaults(hass: Hass): Promise<{ questions_prompt: string; steps_prompt: string }> {
+  return hass.callWS({ type: "boopli/ai_defaults" });
+}
+
+/** Create a one-off task from reviewed steps and start it. */
+export function taskAdd(
+  hass: Hass,
+  title: string,
+  steps: AiStep[],
+  notes = ""
+): Promise<{ run_id: string }> {
+  return hass.callWS({ type: "boopli/task_add", title, steps, notes });
 }
 
 /** The next due moments of a schedule, worked out by the integration (ISO strings). */
