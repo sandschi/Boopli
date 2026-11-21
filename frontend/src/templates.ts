@@ -59,6 +59,8 @@ export const TEMPLATES: Template[] = [
       enabled: true,
       one_off: false,
       repeat: { type: "daily", time: "08:00", weekdays: [], every_n_days: 1 },
+      nudge_style: "escalating",
+      ignore_quiet_hours: true,
       steps: [{ title: "Take your pills", wait_minutes: 0 }],
     },
   },

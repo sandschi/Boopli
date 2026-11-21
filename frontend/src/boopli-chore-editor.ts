@@ -2,7 +2,14 @@ import { LitElement, html, css, nothing } from "lit";
 import { deleteChore, errorMessage, saveChore } from "./api";
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
-import type { ChoreDraft, Hass, RepeatType } from "./types";
+import type { ChoreDraft, Hass, NudgeStyle, RepeatType } from "./types";
+
+const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
+  { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
+  { value: "one", label: "One nudge" },
+  { value: "escalating", label: "Escalating: gets more frequent, then stops" },
+  { value: "persistent", label: "Persistent: every 5 minutes until done" },
+];
 
 const WAIT_PRESETS: { minutes: number; label: string }[] = [
   { minutes: 0, label: "No wait" },
@@ -24,6 +31,7 @@ export class BoopliChoreEditor extends LitElement {
   static properties = {
     hass: { attribute: false },
     draft: { attribute: false },
+    defaultStyle: { attribute: false },
     _error: { state: true },
     _busy: { state: true },
     _confirmDelete: { state: true },
@@ -31,12 +39,14 @@ export class BoopliChoreEditor extends LitElement {
 
   declare hass?: Hass;
   declare draft: ChoreDraft;
+  declare defaultStyle: NudgeStyle;
   declare _error: string;
   declare _busy: boolean;
   declare _confirmDelete: boolean;
 
   constructor() {
     super();
+    this.defaultStyle = "one";
     this._error = "";
     this._busy = false;
     this._confirmDelete = false;
@@ -93,6 +103,8 @@ export class BoopliChoreEditor extends LitElement {
     try {
       await saveChore(this.hass, {
         ...this.draft,
+        nudge_style: this.draft.nudge_style ?? this.defaultStyle,
+        ignore_quiet_hours: this.draft.ignore_quiet_hours ?? false,
         name: this.draft.name.trim(),
         steps: this.draft.steps.map((s) => ({ ...s, title: s.title.trim() })),
       });
@@ -261,6 +273,36 @@ export class BoopliChoreEditor extends LitElement {
 
         ${this._renderRepeat()}
 
+        <div class="field">
+          <label for="style">How should Boopli nudge you?</label>
+          <select
+            id="style"
+            .value=${d.nudge_style ?? this.defaultStyle}
+            @change=${(e: Event) =>
+              this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
+          >
+            ${STYLE_OPTIONS.map(
+              (o) => html`<option
+                value=${o.value}
+                ?selected=${o.value === (d.nudge_style ?? this.defaultStyle)}
+              >
+                ${o.label}
+              </option>`
+            )}
+          </select>
+        </div>
+        <div class="field check">
+          <label class="inline">
+            <input
+              type="checkbox"
+              .checked=${d.ignore_quiet_hours ?? false}
+              @change=${(e: Event) =>
+                this._update({ ignore_quiet_hours: (e.target as HTMLInputElement).checked })}
+            />
+            Nudge even in quiet hours (for example pills)
+          </label>
+        </div>
+
         <h3 class="steps-title">Steps</h3>
         ${d.steps.map((_, i) => this._renderStep(i))}
         <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
@@ -287,6 +329,18 @@ export class BoopliChoreEditor extends LitElement {
     css`
       .field {
         margin: 14px 0;
+      }
+      label.inline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--primary-text-color);
+        margin: 0;
+      }
+      label.inline input {
+        width: auto;
+        min-height: 0;
       }
       .small {
         font-size: 13px;

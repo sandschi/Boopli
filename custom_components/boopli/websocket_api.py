@@ -25,6 +25,9 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_chore_delete)
     websocket_api.async_register_command(hass, ws_chore_start)
     websocket_api.async_register_command(hass, ws_step_complete)
+    websocket_api.async_register_command(hass, ws_step_snooze)
+    websocket_api.async_register_command(hass, ws_settings_save)
+    websocket_api.async_register_command(hass, ws_test_channel)
 
 
 def _not_loaded(connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
@@ -144,3 +147,68 @@ def ws_step_complete(
         return
     manager.complete_step(msg["run_id"], msg["step_id"])
     connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/step_snooze",
+        vol.Required("run_id"): str,
+        vol.Required("step_id"): str,
+    }
+)
+@callback
+def ws_step_snooze(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The user pressed Snooze on a step."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.snooze(msg["run_id"], msg["step_id"])
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {vol.Required("type"): "boopli/settings_save", vol.Required("settings"): dict}
+)
+@callback
+def ws_settings_save(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Save the settings from the Settings screen."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.save_settings(msg["settings"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/test_channel",
+        vol.Required("kind"): vol.In(["light", "phone"]),
+        vol.Optional("light"): dict,
+        vol.Optional("phone"): dict,
+    }
+)
+@websocket_api.async_response
+async def ws_test_channel(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Try a light or a phone so the user sees what a nudge looks like."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_test_channel(msg)
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)

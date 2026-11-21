@@ -18,6 +18,7 @@ There is deliberately no "overdue" state. A step is active until it is done.
 
 from __future__ import annotations
 
+import colorsys
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
@@ -52,6 +53,40 @@ EVENT_CHORE_STARTED = "chore_started"
 EVENT_STEP_ACTIVE = "step_active"
 EVENT_STEP_DONE = "step_done"
 EVENT_CHORE_DONE = "chore_done"
+EVENT_NUDGE_SENT = "nudge_sent"
+
+# Nudge styles (per chore)
+STYLE_QUIET = "quiet"  # panel only, never nudges
+STYLE_ONE = "one"
+STYLE_ESCALATING = "escalating"
+STYLE_PERSISTENT = "persistent"
+STYLE_VALUES = (STYLE_QUIET, STYLE_ONE, STYLE_ESCALATING, STYLE_PERSISTENT)
+
+# Minutes between nudges for the escalating style, after nudge 1, 2, 3, ...
+ESCALATING_GAPS = (30, 15, 10, 5, 5, 5)
+PERSISTENT_GAP = 5
+
+# Phone notification levels
+LEVEL_NORMAL = "normal"
+LEVEL_HIGH = "high"  # pops up; on many phones only looks different
+LEVEL_ALARM = "alarm"  # plays on the alarm volume
+LEVEL_ALARM_MAX = "alarm_max"  # asks for maximum volume (not on every phone)
+LEVEL_VALUES = (LEVEL_NORMAL, LEVEL_HIGH, LEVEL_ALARM, LEVEL_ALARM_MAX)
+
+# Light modes
+LIGHT_AUTO = "auto"  # flash if the light can, otherwise indicator
+LIGHT_FLASH = "flash"
+LIGHT_INDICATOR = "indicator"  # on in a color until the step is resolved
+LIGHT_MODE_VALUES = (LIGHT_AUTO, LIGHT_FLASH, LIGHT_INDICATOR)
+
+LIGHT_FEATURE_FLASH = 8  # LightEntityFeature.FLASH
+
+# Which channels a nudge may use
+CHANNELS_ALL = "all"
+CHANNELS_PHONE_ONLY = "phone_only"
+
+ACTION_DONE = "BOOPLI_DONE"
+ACTION_SNOOZE = "BOOPLI_SNOOZE"
 
 
 def new_id() -> str:
@@ -124,6 +159,8 @@ class Chore:
     one_off: bool = False  # deleted automatically once its run is done
     next_due: str | None = None
     created_at: str = ""
+    nudge_style: str = STYLE_ONE
+    ignore_quiet_hours: bool = False  # for things like pills
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
@@ -137,6 +174,8 @@ class Chore:
             one_off=bool(d.get("one_off", False)),
             next_due=d.get("next_due"),
             created_at=str(d.get("created_at", "")),
+            nudge_style=str(d.get("nudge_style", STYLE_ONE)),
+            ignore_quiet_hours=bool(d.get("ignore_quiet_hours", False)),
         )
 
 
@@ -150,6 +189,9 @@ class StepRun:
     status: str = STEP_PENDING
     active_at: str | None = None  # when it is (or was) the user's turn
     done_at: str | None = None
+    nudge_count: int = 0  # nudges sent for this step so far
+    next_nudge_at: str | None = None  # when the next nudge is due (also holds a snooze)
+    snoozed_until: str | None = None  # only for display in the panel
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
@@ -160,6 +202,9 @@ class StepRun:
             status=str(d.get("status", STEP_PENDING)),
             active_at=d.get("active_at"),
             done_at=d.get("done_at"),
+            nudge_count=int(d.get("nudge_count", 0) or 0),
+            next_nudge_at=d.get("next_nudge_at"),
+            snoozed_until=d.get("snoozed_until"),
         )
 
 
@@ -244,6 +289,8 @@ def validate_chore(chore: Chore) -> str | None:
             return "A wait must be between 0 minutes and 7 days."
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
+    if chore.nudge_style not in STYLE_VALUES:
+        return "Unknown nudge style."
     rep = chore.repeat
     if rep.type not in REPEAT_TYPES:
         return "Unknown repeat type."
@@ -326,11 +373,19 @@ def init_schedule(chore: Chore, now: datetime, tz: tzinfo) -> None:
 # --- runs ----------------------------------------------------------------
 
 
+def _became_active(step: StepRun) -> None:
+    """A step is now the user's turn: its first nudge is due right away."""
+    step.status = STEP_ACTIVE
+    step.nudge_count = 0
+    step.next_nudge_at = step.active_at
+    step.snoozed_until = None
+
+
 def _activate(step: StepRun, base: datetime) -> bool:
     """Schedule a step after `base`. Return True when it is active right now."""
     step.active_at = fmt_ts(base + timedelta(minutes=step.wait_minutes))
     if step.wait_minutes <= 0:
-        step.status = STEP_ACTIVE
+        _became_active(step)
         return True
     step.status = STEP_WAITING
     return False
@@ -426,7 +481,7 @@ def wake_steps(run: Run, now: datetime) -> list[Event]:
             and step.active_at
             and parse_ts(step.active_at) <= now
         ):
-            step.status = STEP_ACTIVE
+            _became_active(step)
             events.append(_step_event(EVENT_STEP_ACTIVE, run, step, now))
     return events
 
@@ -470,10 +525,16 @@ def on_run_finished(chore: Chore, now: datetime, tz: tzinfo) -> bool:
 
 
 def next_wakeup(
-    chores: list[Chore], runs: list[Run], now: datetime
+    chores: list[Chore],
+    runs: list[Run],
+    now: datetime,
+    extra: list[datetime] | None = None,
 ) -> datetime | None:
-    """Return the earliest future moment something needs attention."""
-    moments: list[datetime] = []
+    """Return the earliest moment something needs attention.
+
+    `extra` holds additional moments, such as when a held-back nudge may go out.
+    """
+    moments: list[datetime] = list(extra or [])
     for run in runs:
         if run.status != RUN_ACTIVE:
             continue
@@ -484,3 +545,328 @@ def next_wakeup(
         if chore.enabled and chore.next_due:
             moments.append(parse_ts(chore.next_due))
     return min(moments) if moments else None
+
+
+# --- settings ------------------------------------------------------------
+
+
+@dataclass
+class LightCfg:
+    """A light used for nudges."""
+
+    entity_id: str
+    mode: str = LIGHT_AUTO
+    color: list[int] = field(default_factory=lambda: [255, 90, 0])
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> LightCfg:
+        color = d.get("color") or [255, 90, 0]
+        return cls(
+            entity_id=str(d.get("entity_id", "")).strip(),
+            mode=str(d.get("mode", LIGHT_AUTO)),
+            color=[int(c) for c in color][:3],
+        )
+
+
+@dataclass
+class PhoneCfg:
+    """A phone (a notify.mobile_app_* service) that receives nudges."""
+
+    service: str  # without the "notify." prefix
+    level: str = LEVEL_NORMAL
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> PhoneCfg:
+        return cls(
+            service=str(d.get("service", "")).strip(),
+            level=str(d.get("level", LEVEL_NORMAL)),
+        )
+
+
+@dataclass
+class QuietDay:
+    """Nudges are allowed from `start` until `stop` on this weekday."""
+
+    start: str
+    stop: str
+
+
+@dataclass
+class QuietHours:
+    """Per-weekday windows in which nudges may go out. Off by default.
+
+    Days are keyed "0" (Monday) to "6" (Sunday). A missing day, or None, means
+    no restriction that day. Outside a day's window it is quiet.
+    """
+
+    enabled: bool = False
+    days: dict[str, QuietDay | None] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> QuietHours:
+        d = d or {}
+        days: dict[str, QuietDay | None] = {}
+        for key, value in (d.get("days") or {}).items():
+            if value is None:
+                days[str(key)] = None
+            else:
+                days[str(key)] = QuietDay(
+                    start=str(value.get("start", "")), stop=str(value.get("stop", ""))
+                )
+        return cls(enabled=bool(d.get("enabled", False)), days=days)
+
+    def window(self, day: date) -> tuple[dtime, dtime] | None:
+        entry = self.days.get(str(day.weekday()))
+        if entry is None:
+            return None
+        return _parse_hhmm(entry.start), _parse_hhmm(entry.stop)
+
+
+@dataclass
+class Settings:
+    """Boopli's global settings."""
+
+    lights: list[LightCfg] = field(default_factory=list)
+    phones: list[PhoneCfg] = field(default_factory=list)
+    quiet_hours: QuietHours = field(default_factory=QuietHours)
+    presence_entity: str = ""  # optional person entity
+    snooze_minutes: int = 15
+    default_style: str = STYLE_ONE
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> Settings:
+        d = d or {}
+        return cls(
+            lights=[LightCfg.from_dict(x) for x in d.get("lights", [])],
+            phones=[PhoneCfg.from_dict(x) for x in d.get("phones", [])],
+            quiet_hours=QuietHours.from_dict(d.get("quiet_hours")),
+            presence_entity=str(d.get("presence_entity", "")).strip(),
+            snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
+            default_style=str(d.get("default_style", STYLE_ONE)),
+        )
+
+
+def validate_settings(settings: Settings) -> str | None:
+    """Return an error message, or None when the settings are valid."""
+    for light in settings.lights:
+        if not light.entity_id.startswith("light."):
+            return "A light must be a light entity."
+        if light.mode not in LIGHT_MODE_VALUES:
+            return "Unknown light mode."
+        if len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color):
+            return "A light color needs three values from 0 to 255."
+    for phone in settings.phones:
+        if not phone.service or "." in phone.service:
+            return "A phone must be a notify service name."
+        if phone.level not in LEVEL_VALUES:
+            return "Unknown phone notification level."
+    for key, day in settings.quiet_hours.days.items():
+        if key not in {str(i) for i in range(7)}:
+            return "Quiet hours days must be 0 (Monday) to 6 (Sunday)."
+        if day is None:
+            continue
+        try:
+            start, stop = _parse_hhmm(day.start), _parse_hhmm(day.stop)
+        except (ValueError, IndexError):
+            return "Quiet hours times must look like 07:30."
+        if start >= stop:
+            return "Nudges must start before they stop on the same day."
+    if settings.presence_entity and "." not in settings.presence_entity:
+        return "The presence source must be an entity id."
+    if not 1 <= settings.snooze_minutes <= 720:
+        return "Snooze must be between 1 minute and 12 hours."
+    if settings.default_style not in STYLE_VALUES:
+        return "Unknown default nudge style."
+    return None
+
+
+# --- quiet hours ---------------------------------------------------------
+
+
+def is_quiet(now: datetime, quiet: QuietHours, tz: tzinfo) -> bool:
+    """Whether nudges are held back at this moment."""
+    if not quiet.enabled:
+        return False
+    local = now.astimezone(tz)
+    window = quiet.window(local.date())
+    if window is None:
+        return False
+    start, stop = window
+    return not (start <= local.time() < stop)
+
+
+def quiet_ends(now: datetime, quiet: QuietHours, tz: tzinfo) -> datetime | None:
+    """If it is quiet now, return when nudges may go out again, else None."""
+    if not is_quiet(now, quiet, tz):
+        return None
+    local = now.astimezone(tz)
+    today = local.date()
+    window = quiet.window(today)
+    if window is not None and local.time() < window[0]:
+        return _at(today, window[0], tz).astimezone(timezone.utc)
+    # Past today's window: the next allowed moment is tomorrow's start, or
+    # midnight when tomorrow has no restriction.
+    tomorrow = today + timedelta(days=1)
+    window = quiet.window(tomorrow)
+    start = window[0] if window is not None else dtime(0, 0)
+    return _at(tomorrow, start, tz).astimezone(timezone.utc)
+
+
+# --- nudges --------------------------------------------------------------
+
+
+def next_gap(style: str, sent: int) -> int | None:
+    """Minutes until the next nudge after `sent` nudges, or None for no more."""
+    if style == STYLE_ESCALATING:
+        index = sent - 1
+        return ESCALATING_GAPS[index] if 0 <= index < len(ESCALATING_GAPS) else None
+    if style == STYLE_PERSISTENT:
+        return PERSISTENT_GAP
+    return None  # quiet and one-nudge send nothing after the first
+
+
+def channels_for(where: str, home: bool) -> str | None:
+    """Which channels may be used, or None when nudging has to wait."""
+    if home:
+        return CHANNELS_ALL
+    if where == WHERE_ANYWHERE:
+        return CHANNELS_PHONE_ONLY
+    return None  # a home-only chore waits until you are home
+
+
+@dataclass
+class NudgeDecision:
+    """What to do about an active step right now."""
+
+    action: str  # "send", "wait" or "none"
+    channels: str = CHANNELS_ALL
+    wake_at: datetime | None = None  # when to look again (None: wait for presence)
+
+
+def decide_nudge(
+    step: StepRun,
+    where: str,
+    style: str,
+    ignore_quiet: bool,
+    quiet: QuietHours,
+    home: bool,
+    now: datetime,
+    tz: tzinfo,
+) -> NudgeDecision:
+    """Decide whether an active step should be nudged now."""
+    if style == STYLE_QUIET or step.status != STEP_ACTIVE or not step.next_nudge_at:
+        return NudgeDecision("none")
+    due = parse_ts(step.next_nudge_at)
+    if due > now:
+        return NudgeDecision("wait", wake_at=due)
+    channels = channels_for(where, home)
+    if channels is None:
+        return NudgeDecision("wait")  # a presence change wakes it
+    if not ignore_quiet:
+        end = quiet_ends(now, quiet, tz)
+        if end is not None:
+            return NudgeDecision("wait", wake_at=end)
+    return NudgeDecision("send", channels)
+
+
+def record_nudge(step: StepRun, style: str, now: datetime) -> None:
+    """Remember that a nudge went out and schedule the next one."""
+    step.nudge_count += 1
+    step.snoozed_until = None
+    gap = next_gap(style, step.nudge_count)
+    step.next_nudge_at = fmt_ts(now + timedelta(minutes=gap)) if gap else None
+
+
+def snooze_step(step: StepRun, minutes: int, now: datetime) -> bool:
+    """Delay the next nudge. The step stays active. Returns False if not active."""
+    if step.status != STEP_ACTIVE:
+        return False
+    when = fmt_ts(now + timedelta(minutes=minutes))
+    step.next_nudge_at = when
+    step.snoozed_until = when
+    return True
+
+
+# --- notification and light payloads -------------------------------------
+
+
+def action_id(kind: str, run_id: str, step_id: str) -> str:
+    """Build the id carried by a notification button."""
+    return f"{kind}_{run_id}_{step_id}"
+
+
+def parse_action(action: str) -> tuple[str, str, str] | None:
+    """Split a button id into (kind, run_id, step_id), or None if not ours."""
+    for kind in (ACTION_DONE, ACTION_SNOOZE):
+        prefix = f"{kind}_"
+        if action.startswith(prefix):
+            parts = action[len(prefix) :].split("_")
+            if len(parts) == 2 and all(parts):
+                return kind, parts[0], parts[1]
+    return None
+
+
+def notification_tag(run_id: str, step_id: str) -> str:
+    """One tag per step, so a new nudge replaces the old notification."""
+    return f"boopli-{run_id}-{step_id}"
+
+
+def phone_payload(
+    level: str,
+    run_id: str,
+    step_id: str,
+    title: str,
+    message: str,
+    snooze_minutes: int,
+) -> dict[str, Any]:
+    """Build the data for a notify.mobile_app_* call."""
+    data: dict[str, Any] = {
+        "tag": notification_tag(run_id, step_id),
+        "actions": [
+            {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
+            {
+                "action": action_id(ACTION_SNOOZE, run_id, step_id),
+                "title": f"Snooze {snooze_minutes} min",
+            },
+        ],
+    }
+    if level == LEVEL_HIGH:
+        data.update(
+            channel="Boopli high priority", importance="high", priority="high", ttl=0
+        )
+    elif level == LEVEL_ALARM:
+        data.update(channel="alarm_stream", priority="high", ttl=0)
+    elif level == LEVEL_ALARM_MAX:
+        data.update(channel="alarm_stream_max", priority="high", ttl=0)
+    return {"title": title, "message": message, "data": data}
+
+
+def _color_data(color_modes: list[str], color: list[int]) -> dict[str, Any]:
+    if any(m in color_modes for m in ("rgb", "rgbw", "rgbww", "xy")):
+        return {"rgb_color": list(color)}
+    if "hs" in color_modes:
+        hue, sat, _ = colorsys.rgb_to_hsv(*(c / 255 for c in color))
+        return {"hs_color": [round(hue * 360, 1), round(sat * 100, 1)]}
+    return {}
+
+
+def light_plan(
+    mode: str, supported_features: int, color_modes: list[str], color: list[int]
+) -> dict[str, Any]:
+    """Decide how to nudge a light and with which `light.turn_on` data.
+
+    Flashing needs the light to support it. A light that cannot flash is used
+    as an indicator: switched on in a color until the step is resolved.
+    """
+    can_flash = bool(supported_features & LIGHT_FEATURE_FLASH)
+    effective = mode
+    if mode == LIGHT_AUTO:
+        effective = LIGHT_FLASH if can_flash else LIGHT_INDICATOR
+    if effective == LIGHT_FLASH and not can_flash:
+        effective = LIGHT_INDICATOR
+    if effective == LIGHT_FLASH:
+        return {"mode": LIGHT_FLASH, "data": {"flash": "short"}}
+    data: dict[str, Any] = _color_data(color_modes, color)
+    if color_modes and set(color_modes) != {"onoff"}:
+        data["brightness"] = 255
+    return {"mode": LIGHT_INDICATOR, "data": data}

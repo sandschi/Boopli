@@ -2,7 +2,18 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.2).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, and mark steps done. There are no nudges, XP or pet yet, so it is not ready for daily use.
+> **Status: early development (v0.0.3).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights and your phone with Done and Snooze buttons. There is no XP, pet, speaker or alarm channel, or setup wizard yet, so it is not ready for daily use.
+
+## Nudges
+
+When a step becomes your turn, Boopli nudges you through the channels you turn on in the **Settings** tab:
+
+- **Lights.** A light that can flash flashes. A light that cannot is used as an *indicator lamp*: it switches on in a color until you are done. Boopli checks what each light supports.
+- **Phones.** A notification from the Home Assistant app with **Done** and **Snooze** buttons, at a level you choose: normal, high priority, alarm volume, or max volume (not every phone honours it).
+- **Styles, per chore:** quiet (panel only), one nudge, escalating (30, 15, 10, then every 5 minutes, then it stops), or persistent (every 5 minutes until done).
+- **Quiet hours,** off by default, with different start and stop times for each weekday. A chore can opt out (for example pills).
+- **Presence (optional).** At home, every channel you turned on is used. Away, only your phone is used, and only for chores marked "anywhere". Without a presence source, Boopli assumes you are home.
+- **Snooze** delays the next nudge (15 minutes by default). The step stays open. There is no dismiss.
 
 Boopli turns chores into small steps, nudges you with the lights, speakers and phone you already have, and rewards progress with a pet. Everything runs inside your own Home Assistant: no account, no cloud, no server, and nothing leaves your home.
 
@@ -18,6 +29,7 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 ## Later ideas
 
 - **Away / vacation mode:** plan time away so home-only chores pause and home-only nudges (lights, speakers) stay quiet, while "anywhere" chores such as medication keep going through your phone. Possibly mark a trip location too.
+- **Richer notifications:** attach a picture to phone notifications, for example the pet looking happy or sad depending on how things are going, together with the Done and Snooze buttons.
 - **"Skip this round"** for a chore, as a deliberate action in the panel (never on a notification).
 - Custom nudge escalation, presence conditions, a wall-display view, Zigbee button support, and more pets.
 
@@ -49,9 +61,10 @@ pytest tests
 | `boopli.add_task` | Creates a one-off task (optionally with steps) and starts it. It disappears when done. |
 | `boopli.start_chore` | Starts a chore now, by name or id. |
 | `boopli.complete_step` | Marks the step that is waiting for you in a chore as done. |
+| `boopli.snooze_step` | Snoozes the step that is waiting for you in a chore. |
 | `boopli.delete_chore` | Deletes a chore and anything in progress. |
 
-Events fired on the Home Assistant bus: `boopli_chore_started`, `boopli_step_active`, `boopli_step_done`, `boopli_chore_done`.
+Events fired on the Home Assistant bus: `boopli_chore_started`, `boopli_step_active`, `boopli_step_done`, `boopli_chore_done`, `boopli_nudge_sent`.
 
 ## License
 

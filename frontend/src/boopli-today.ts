@@ -63,6 +63,12 @@ export class BoopliToday extends LitElement {
                     ${sinceLabel(model.now.step.active_at, tz)}
                   </div>`
                 : nothing}
+              ${model.now.step.snoozed_until &&
+              Date.parse(model.now.step.snoozed_until) > this.nowMs
+                ? html`<div class="muted small">
+                    Snoozed until ${fmtTime(model.now.step.snoozed_until, tz)}
+                  </div>`
+                : nothing}
               <button
                 class="primary done"
                 ?disabled=${this._busy}

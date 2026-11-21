@@ -37,6 +37,14 @@ complete_step:
       selector:
         text:
 
+snooze_step:
+  fields:
+    chore:
+      required: true
+      example: "Dishwasher"
+      selector:
+        text:
+
 delete_chore:
   fields:
     chore:

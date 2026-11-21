@@ -1,4 +1,41 @@
-import type { ChoreDraft, Hass, Snapshot } from "./types";
+import type {
+  ChoreDraft,
+  Hass,
+  LightCfg,
+  PhoneCfg,
+  Settings,
+  Snapshot,
+} from "./types";
+
+export interface TestResult {
+  ok: boolean;
+  mode?: string;
+  note: string;
+}
+
+export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
+  return hass.callWS({ type: "boopli/settings_save", settings });
+}
+
+export function snoozeStep(
+  hass: Hass,
+  runId: string,
+  stepId: string
+): Promise<void> {
+  return hass.callWS({
+    type: "boopli/step_snooze",
+    run_id: runId,
+    step_id: stepId,
+  });
+}
+
+export function testLight(hass: Hass, light: LightCfg): Promise<TestResult> {
+  return hass.callWS({ type: "boopli/test_channel", kind: "light", light });
+}
+
+export function testPhone(hass: Hass, phone: PhoneCfg): Promise<TestResult> {
+  return hass.callWS({ type: "boopli/test_channel", kind: "phone", phone });
+}
 
 /** Subscribe to live updates. The callback receives a full snapshot each time. */
 export function subscribe(

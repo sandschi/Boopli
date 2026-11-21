@@ -2,10 +2,17 @@ import { LitElement, html, css, nothing } from "lit";
 import { subscribe } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
+import "./boopli-settings";
 import { sharedStyles } from "./styles";
 import type { Hass, Snapshot } from "./types";
 
-type Tab = "today" | "chores";
+type Tab = "today" | "chores" | "settings";
+
+const TAB_LABELS: Record<Tab, string> = {
+  today: "Today",
+  chores: "Chores",
+  settings: "Settings",
+};
 
 /**
  * Boopli sidebar panel. Home Assistant creates this element and keeps
@@ -98,12 +105,12 @@ export class BoopliPanel extends LitElement {
           : nothing}
         <h1>Boopli</h1>
         <nav>
-          ${(["today", "chores"] as Tab[]).map(
+          ${(Object.keys(TAB_LABELS) as Tab[]).map(
             (tab) => html`<button
               class="tab ${this._tab === tab ? "on" : ""}"
               @click=${() => (this._tab = tab)}
             >
-              ${tab === "today" ? "Today" : "Chores"}
+              ${TAB_LABELS[tab]}
             </button>`
           )}
         </nav>
@@ -117,11 +124,16 @@ export class BoopliPanel extends LitElement {
                 .snapshot=${this._snapshot}
                 .nowMs=${this._nowMs}
               ></boopli-today>`
-            : html`<boopli-chores
-                .hass=${this.hass}
-                .snapshot=${this._snapshot}
-                .nowMs=${this._nowMs}
-              ></boopli-chores>`}
+            : this._tab === "chores"
+              ? html`<boopli-chores
+                  .hass=${this.hass}
+                  .snapshot=${this._snapshot}
+                  .nowMs=${this._nowMs}
+                ></boopli-chores>`
+              : html`<boopli-settings
+                  .hass=${this.hass}
+                  .snapshot=${this._snapshot}
+                ></boopli-settings>`}
       </main>
     `;
   }

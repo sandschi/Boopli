@@ -3,6 +3,9 @@
 export type StepStatus = "pending" | "waiting" | "active" | "done";
 export type RepeatType = "none" | "daily" | "weekly" | "every_n_days";
 export type Where = "home" | "anywhere";
+export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent";
+export type PhoneLevel = "normal" | "high" | "alarm" | "alarm_max";
+export type LightMode = "auto" | "flash" | "indicator";
 
 export interface Step {
   id: string;
@@ -28,6 +31,8 @@ export interface Chore {
   one_off: boolean;
   next_due: string | null;
   created_at: string;
+  nudge_style: NudgeStyle;
+  ignore_quiet_hours: boolean;
 }
 
 export interface StepRun {
@@ -37,6 +42,9 @@ export interface StepRun {
   status: StepStatus;
   active_at: string | null;
   done_at: string | null;
+  nudge_count: number;
+  next_nudge_at: string | null;
+  snoozed_until: string | null;
 }
 
 export interface Run {
@@ -59,9 +67,42 @@ export interface HistoryEntry {
   step_title: string | null;
 }
 
+export interface LightCfg {
+  entity_id: string;
+  mode: LightMode;
+  color: number[];
+}
+
+export interface PhoneCfg {
+  service: string; // notify service name without "notify."
+  level: PhoneLevel;
+}
+
+export interface QuietDay {
+  start: string; // HH:MM
+  stop: string;
+}
+
+export interface QuietHours {
+  enabled: boolean;
+  /** "0" (Monday) to "6" (Sunday). null or missing means no limit that day. */
+  days: Record<string, QuietDay | null>;
+}
+
+export interface Settings {
+  lights: LightCfg[];
+  phones: PhoneCfg[];
+  quiet_hours: QuietHours;
+  presence_entity: string;
+  snooze_minutes: number;
+  default_style: NudgeStyle;
+}
+
 export interface Snapshot {
   now: string;
   time_zone: string;
+  is_home: boolean;
+  settings: Settings;
   chores: Chore[];
   runs: Run[];
   history: HistoryEntry[];
@@ -75,13 +116,22 @@ export interface ChoreDraft {
   enabled: boolean;
   one_off: boolean;
   repeat: Repeat;
+  nudge_style?: NudgeStyle; // missing: the integration uses your default
+  ignore_quiet_hours?: boolean;
   steps: { id?: string; title: string; wait_minutes: number }[];
+}
+
+/** One entity state as Home Assistant gives it to the panel. */
+export interface HassState {
+  state: string;
+  attributes: Record<string, unknown>;
 }
 
 /** The slice of Home Assistant's `hass` object that the panel uses. */
 export interface Hass {
   user?: { name?: string };
-  states: Record<string, unknown>;
+  states: Record<string, HassState>;
+  services: Record<string, Record<string, unknown>>;
   callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;
   connection: {
     subscribeMessage<T>(

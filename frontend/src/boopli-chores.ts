@@ -37,6 +37,8 @@ export class BoopliChores extends LitElement {
       enabled: chore.enabled,
       one_off: chore.one_off,
       repeat: { ...chore.repeat, weekdays: [...chore.repeat.weekdays] },
+      nudge_style: chore.nudge_style,
+      ignore_quiet_hours: chore.ignore_quiet_hours,
       steps: chore.steps.map((s) => ({
         id: s.id,
         title: s.title,
@@ -62,6 +64,7 @@ export class BoopliChores extends LitElement {
       return html`<boopli-chore-editor
         .hass=${this.hass}
         .draft=${this._editing}
+        .defaultStyle=${this.snapshot.settings.default_style}
         @editor-close=${() => (this._editing = null)}
       ></boopli-chore-editor>`;
     }

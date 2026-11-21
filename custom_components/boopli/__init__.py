@@ -40,6 +40,7 @@ MANIFEST = Path(__file__).parent / "manifest.json"
 SERVICE_ADD_TASK = "add_task"
 SERVICE_START_CHORE = "start_chore"
 SERVICE_COMPLETE_STEP = "complete_step"
+SERVICE_SNOOZE_STEP = "snooze_step"
 SERVICE_DELETE_CHORE = "delete_chore"
 
 ADD_TASK_SCHEMA = vol.Schema(
@@ -88,6 +89,12 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         except BoopliError as err:
             raise ServiceValidationError(str(err)) from err
 
+    async def snooze_step(call: ServiceCall) -> None:
+        try:
+            _manager(hass).snooze_chore(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
     async def delete_chore(call: ServiceCall) -> None:
         try:
             _manager(hass).delete_chore(call.data["chore"])
@@ -100,6 +107,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     )
     hass.services.async_register(
         DOMAIN, SERVICE_COMPLETE_STEP, complete_step, CHORE_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_SNOOZE_STEP, snooze_step, CHORE_SCHEMA
     )
     hass.services.async_register(
         DOMAIN, SERVICE_DELETE_CHORE, delete_chore, CHORE_SCHEMA

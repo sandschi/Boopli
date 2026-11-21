@@ -54,6 +54,16 @@
         }
       }
     },
+    "snooze_step": {
+      "name": "Snooze step",
+      "description": "Delays the next nudge for the step that is waiting for you in a chore. The step stays open.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    },
     "delete_chore": {
       "name": "Delete chore",
       "description": "Deletes a chore and anything in progress for it.",
