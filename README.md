@@ -2,7 +2,17 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.6).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), and get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm. There is no XP, pet or setup wizard yet, so it is not ready for daily use.
+> **Status: early development (v0.0.7).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done (or let a sensor, NFC tag or button do it), get nudged through lights, speakers, alarm devices and your phone, climbing from a gentle cue to an alarm, and earn XP for a placeholder pet. There is no setup wizard or final pet art yet, so it is not ready for daily use.
+
+## XP and the pet
+
+Finishing steps earns XP, and XP levels up your pet. It is rewards only: XP and levels never go down, and the pet never dies.
+
+- **XP:** 10 for every step you finish (by hand or by itself), +20 for the step that finishes the chore, +5 if you answered within 10 minutes of the step becoming your turn. Snoozing costs nothing. Per chore and day, only the first 3 runs earn XP, so a chore cannot be farmed.
+- **Levels:** level 2 at 100 XP, level 3 at 250, level 4 at 450, then further and further apart.
+- **Mood** follows how long since you finished a step: happy (today), content (yesterday), sleepy (2 days), sad (3 to 6 days), hibernating like a bear (7 days or more). One finished step wakes it up and it keeps all its XP. With no enabled chores the pet stays content.
+- The pet card is on the **Today** screen, with a "+10 XP" note when you finish a step. Name your pet in **Settings**. The picture is a placeholder emoji for now, drawn in one place so real art or animation can replace it later.
+- **Sensors** for dashboards and automations: `sensor.boopli_xp`, `sensor.boopli_level` and `sensor.boopli_mood` (happy, content, sleepy, sad, hibernating), with the pet's name as an attribute. The `boopli_xp_gained` event fires when you earn XP or wake the pet.
 
 ## Steps that finish by themselves
 
@@ -78,7 +88,7 @@ pytest tests
 | `boopli.snooze_step` | Snoozes the step that is waiting for you in a chore. |
 | `boopli.delete_chore` | Deletes a chore and anything in progress. |
 
-Events fired on the Home Assistant bus: `boopli_chore_started`, `boopli_step_active`, `boopli_step_done`, `boopli_chore_done`, `boopli_nudge_sent`.
+Events fired on the Home Assistant bus: `boopli_chore_started`, `boopli_step_active`, `boopli_step_done`, `boopli_chore_done`, `boopli_nudge_sent`, `boopli_xp_gained`.
 
 ## License
 

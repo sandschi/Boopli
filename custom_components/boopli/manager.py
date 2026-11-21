@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, time as dtime, timedelta, tzinfo
 from typing import Any
 
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
@@ -47,6 +47,7 @@ class BoopliManager:
         self.runs: dict[str, engine.Run] = {}  # active runs only
         self.history: list[engine.HistoryEntry] = []
         self.settings = engine.Settings()
+        self.progress = engine.Progress()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
         self.alarm_on: list[str] = []  # alarm devices Boopli switched on right now
         self.nudger = BoopliNudger(hass, self)
@@ -80,6 +81,9 @@ class BoopliManager:
             engine.HistoryEntry.from_dict(h) for h in data.get("history", [])
         ]
         self.settings = engine.Settings.from_dict(data.get("settings"))
+        self.progress = engine.Progress.from_dict(data.get("progress"))
+        if not self.progress.started_at:
+            self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
         # An alarm device still on from before a restart must not stay on.
         left_on = [str(x) for x in data.get("alarm_on", [])]
@@ -126,6 +130,7 @@ class BoopliManager:
             "runs": [engine.to_dict(r) for r in self.runs.values()],
             "history": [engine.to_dict(h) for h in self.history],
             "settings": engine.to_dict(self.settings),
+            "progress": engine.to_dict(self.progress),
             "indicator_on": self.indicator_on,
             "alarm_on": self.alarm_on,
         }
@@ -149,6 +154,22 @@ class BoopliManager:
         for listener in list(self._listeners):
             listener()
 
+    def pet(self) -> dict[str, Any]:
+        """The pet as the panel and the sensors show it."""
+        level, into, needed = engine.level_for(self.progress.total_xp)
+        has_chores = any(c.enabled for c in self.chores.values())
+        return {
+            "name": self.settings.pet_name,
+            "mood": engine.mood_for(
+                self.progress, dt_util.utcnow(), self.tz, has_chores
+            ),
+            "level": level,
+            "total_xp": self.progress.total_xp,
+            "xp_in_level": into,
+            "xp_for_level": needed,
+            "last_activity": self.progress.last_activity,
+        }
+
     def snapshot(self) -> dict[str, Any]:
         """Everything the panel needs to draw itself."""
         now = dt_util.utcnow()
@@ -156,6 +177,7 @@ class BoopliManager:
             "now": engine.fmt_ts(now),
             "time_zone": str(self.tz),
             "is_home": self.is_home(),
+            "pet": self.pet(),
             "settings": engine.to_dict(self.settings),
             "chores": [engine.to_dict(c) for c in self.chores.values()],
             "runs": [engine.to_dict(r) for r in self.runs.values()],
@@ -221,6 +243,13 @@ class BoopliManager:
         now = dt_util.utcnow()
         events: list[engine.Event] = []
         wakeups: list[datetime] = []
+        # The pet's mood changes with the date: look again just after midnight.
+        local = now.astimezone(self.tz)
+        wakeups.append(
+            datetime.combine(
+                local.date() + timedelta(days=1), dtime(0, 0, 5), tzinfo=self.tz
+            )
+        )
 
         for run in list(self.runs.values()):
             events += engine.wake_steps(run, now)
@@ -284,12 +313,47 @@ class BoopliManager:
             return []  # nothing changed (already done, or not the active step)
         if was_nudged:
             self.hass.async_create_task(self.nudger.async_clear_step(run.id, step_id))
+        events += self._award(run, step, now)
         if run.status == engine.RUN_DONE:
             del self.runs[run.id]
             chore = self.chores.get(run.chore_id)
             if chore and engine.on_run_finished(chore, now, self.tz):
                 del self.chores[chore.id]
         return events
+
+    def _award(
+        self, run: engine.Run, step: engine.StepRun | None, now: datetime
+    ) -> list[engine.Event]:
+        """Give XP for a step that was just finished (by hand or by itself)."""
+        award = engine.award_step(
+            self.progress,
+            run.chore_id,
+            run.id,
+            now,
+            self.tz,
+            step.active_at if step else None,
+            run.status == engine.RUN_DONE,
+        )
+        if award.xp <= 0 and not award.woke_up:
+            return []
+        return [
+            engine.Event(
+                engine.EVENT_XP_GAINED,
+                {
+                    "chore_id": run.chore_id,
+                    "chore_name": run.chore_name,
+                    "run_id": run.id,
+                    "step_title": step.title if step else None,
+                    "xp": award.xp,
+                    "total_xp": award.total_xp,
+                    "level": award.level,
+                    "level_up": award.level_up,
+                    "woke_up": award.woke_up,
+                    "mood": award.mood,
+                    "time": engine.fmt_ts(now),
+                },
+            )
+        ]
 
     def _auto_finish(
         self, now: datetime, wakeups: list[datetime]

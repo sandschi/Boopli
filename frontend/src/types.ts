@@ -160,12 +160,26 @@ export interface Settings {
   presence_entity: string;
   snooze_minutes: number;
   default_style: NudgeStyle;
+  pet_name: string;
+}
+
+export type Mood = "happy" | "content" | "sleepy" | "sad" | "hibernating";
+
+export interface Pet {
+  name: string;
+  mood: Mood;
+  level: number;
+  total_xp: number;
+  xp_in_level: number;
+  xp_for_level: number;
+  last_activity: string | null;
 }
 
 export interface Snapshot {
   now: string;
   time_zone: string;
   is_home: boolean;
+  pet: Pet;
   settings: Settings;
   chores: Chore[];
   runs: Run[];

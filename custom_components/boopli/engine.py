@@ -133,6 +133,27 @@ ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01"
 CHANNELS_ALL = "all"
 CHANNELS_PHONE_ONLY = "phone_only"
 
+# XP and the pet. Rewards only: nothing here ever takes XP or a level away.
+EVENT_XP_GAINED = "xp_gained"
+XP_STEP = 10  # for every step finished
+XP_CHORE = 20  # extra, for the step that finishes the chore
+XP_QUICK = 5  # extra, for a step finished within QUICK_MINUTES of its turn
+QUICK_MINUTES = 10
+XP_RUNS_PER_DAY = 3  # runs of one chore that earn XP per day
+PROGRESS_DAYS_KEPT = 7  # how long the per-day XP bookkeeping is kept
+PET_NAME_DEFAULT = "Boopli"
+PET_NAME_MAX = 30
+
+MOOD_HAPPY = "happy"  # you finished something today
+MOOD_CONTENT = "content"  # yesterday, or just getting started
+MOOD_SLEEPY = "sleepy"  # 2 days quiet
+MOOD_SAD = "sad"  # 3 to 6 days quiet
+MOOD_HIBERNATING = "hibernating"  # 7 days or more: asleep like a bear, never gone
+MOOD_VALUES = (MOOD_HAPPY, MOOD_CONTENT, MOOD_SLEEPY, MOOD_SAD, MOOD_HIBERNATING)
+SLEEPY_AFTER_DAYS = 2
+SAD_AFTER_DAYS = 3
+HIBERNATE_AFTER_DAYS = 7
+
 ACTION_DONE = "BOOPLI_DONE"
 ACTION_SNOOZE = "BOOPLI_SNOOZE"
 
@@ -368,6 +389,125 @@ class Event:
 def to_dict(obj: Any) -> dict[str, Any]:
     """Serialize any engine dataclass to plain JSON-safe data."""
     return asdict(obj)
+
+
+# --- XP, levels and the pet ------------------------------------------------
+
+
+@dataclass
+class Progress:
+    """The pet's progress. XP only ever goes up."""
+
+    total_xp: int = 0
+    started_at: str = ""  # when the pet first appeared
+    last_activity: str | None = None  # the last time a step was finished
+    # local date -> chore id -> ids of the runs that earned XP that day
+    credited: dict[str, dict[str, list[str]]] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> Progress:
+        d = d or {}
+        return cls(
+            total_xp=max(0, int(d.get("total_xp", 0) or 0)),
+            started_at=str(d.get("started_at", "")),
+            last_activity=d.get("last_activity"),
+            credited={
+                str(day): {str(c): [str(r) for r in runs] for c, runs in chores.items()}
+                for day, chores in (d.get("credited") or {}).items()
+            },
+        )
+
+
+@dataclass
+class Award:
+    """What finishing a step gave."""
+
+    xp: int
+    total_xp: int
+    level: int
+    level_up: bool
+    woke_up: bool  # the pet was sad or hibernating until now
+    mood: str
+
+
+def level_threshold(level: int) -> int:
+    """Total XP needed to reach `level` (level 1 starts at 0, then 100, 250, 450, ...)."""
+    return 25 * (level - 1) * (level + 2) if level > 1 else 0
+
+
+def level_for(total_xp: int) -> tuple[int, int, int]:
+    """Return (level, XP gained inside this level, XP this level needs in all)."""
+    level = 1
+    while level_threshold(level + 1) <= total_xp:
+        level += 1
+    start = level_threshold(level)
+    return level, total_xp - start, level_threshold(level + 1) - start
+
+
+def mood_for(
+    progress: Progress, now: datetime, tz: tzinfo, has_chores: bool = True
+) -> str:
+    """How the pet feels. It only depends on how long since a step was finished.
+
+    Without any enabled chore there is nothing to be late for, so the pet never
+    gets sleepier than content.
+    """
+    reference = progress.last_activity or progress.started_at
+    if not reference:
+        return MOOD_CONTENT
+    days = (now.astimezone(tz).date() - parse_ts(reference).astimezone(tz).date()).days
+    if days <= 0:
+        return MOOD_HAPPY if progress.last_activity else MOOD_CONTENT
+    if days < SLEEPY_AFTER_DAYS or not has_chores:
+        return MOOD_CONTENT
+    if days < SAD_AFTER_DAYS:
+        return MOOD_SLEEPY
+    if days < HIBERNATE_AFTER_DAYS:
+        return MOOD_SAD
+    return MOOD_HIBERNATING
+
+
+def award_step(
+    progress: Progress,
+    chore_id: str,
+    run_id: str,
+    now: datetime,
+    tz: tzinfo,
+    active_at: str | None,
+    chore_done: bool,
+) -> Award:
+    """Give XP for a finished step and note the activity.
+
+    Per chore and day only the first XP_RUNS_PER_DAY runs earn XP, so running a
+    chore over and over cannot be farmed. Finishing still wakes the pet up.
+    """
+    mood_before = mood_for(progress, now, tz)
+    level_before = level_for(progress.total_xp)[0]
+
+    today = now.astimezone(tz).date()
+    runs = progress.credited.setdefault(today.isoformat(), {}).setdefault(chore_id, [])
+    xp = 0
+    if run_id in runs or len(runs) < XP_RUNS_PER_DAY:
+        if run_id not in runs:
+            runs.append(run_id)
+        xp = XP_STEP + (XP_CHORE if chore_done else 0)
+        if active_at and now - parse_ts(active_at) <= timedelta(minutes=QUICK_MINUTES):
+            xp += XP_QUICK
+
+    progress.total_xp += xp
+    progress.last_activity = fmt_ts(now)
+    cutoff = (today - timedelta(days=PROGRESS_DAYS_KEPT)).isoformat()
+    progress.credited = {d: c for d, c in progress.credited.items() if d >= cutoff}
+
+    level = level_for(progress.total_xp)[0]
+    return Award(
+        xp=xp,
+        total_xp=progress.total_xp,
+        level=level,
+        level_up=level > level_before,
+        woke_up=mood_before in (MOOD_SAD, MOOD_HIBERNATING),
+        mood=mood_for(progress, now, tz),
+    )
 
 
 # --- validation ----------------------------------------------------------
@@ -1012,6 +1152,7 @@ class Settings:
     presence_entity: str = ""  # optional person entity
     snooze_minutes: int = 15
     default_style: str = STYLE_ONE
+    pet_name: str = PET_NAME_DEFAULT
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
@@ -1031,6 +1172,8 @@ class Settings:
             presence_entity=str(d.get("presence_entity", "")).strip(),
             snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
             default_style=str(d.get("default_style", STYLE_ONE)),
+            pet_name=str(d.get("pet_name") or PET_NAME_DEFAULT).strip()
+            or PET_NAME_DEFAULT,
         )
 
 
@@ -1137,6 +1280,8 @@ def validate_settings(settings: Settings) -> str | None:
         return "The presence source must be an entity id."
     if not 1 <= settings.snooze_minutes <= 720:
         return "Snooze must be between 1 minute and 12 hours."
+    if len(settings.pet_name) > PET_NAME_MAX:
+        return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.default_style not in STYLE_VALUES:
         return "Unknown default nudge style."
     return None

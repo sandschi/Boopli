@@ -3,7 +3,20 @@ import { completeStep, errorMessage } from "./api";
 import { buildToday } from "./today";
 import { fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
-import type { Hass, Snapshot } from "./types";
+import "./boopli-pet";
+import type { Hass, Mood, Pet, Snapshot } from "./types";
+
+/** One friendly line per mood. Rewards only: nothing here ever scolds. */
+function moodLine(pet: Pet): string {
+  const lines: Record<Mood, string> = {
+    happy: "Nice, you got things done today.",
+    content: "Ready when you are.",
+    sleepy: `${pet.name} is a bit sleepy.`,
+    sad: `${pet.name} misses you. One step is enough.`,
+    hibernating: `${pet.name} is curled up, resting until you are back. One step wakes it.`,
+  };
+  return lines[pet.mood];
+}
 
 /**
  * The Today screen.
@@ -18,6 +31,7 @@ export class BoopliToday extends LitElement {
     nowMs: { type: Number },
     _busy: { state: true },
     _error: { state: true },
+    _toast: { state: true },
   };
 
   declare hass?: Hass;
@@ -25,12 +39,56 @@ export class BoopliToday extends LitElement {
   declare nowMs: number;
   declare _busy: boolean;
   declare _error: string;
+  declare _toast: string;
+  private _lastPet?: Pet;
+  private _toastTimer?: number;
 
   constructor() {
     super();
     this.nowMs = Date.now();
     this._busy = false;
     this._error = "";
+    this._toast = "";
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.clearTimeout(this._toastTimer);
+  }
+
+  protected willUpdate(changed: Map<string, unknown>): void {
+    if (!changed.has("snapshot") || !this.snapshot?.pet) return;
+    const pet = this.snapshot.pet;
+    const before = this._lastPet;
+    this._lastPet = pet;
+    if (!before || pet.total_xp <= before.total_xp) return; // the first look shows nothing
+    const parts = [`+${pet.total_xp - before.total_xp} XP`];
+    if (pet.level > before.level) parts.push(`Level ${pet.level}!`);
+    if (before.mood === "sad" || before.mood === "hibernating")
+      parts.push(`${pet.name} is awake. Welcome back!`);
+    this._toast = parts.join("  ·  ");
+    window.clearTimeout(this._toastTimer);
+    this._toastTimer = window.setTimeout(() => (this._toast = ""), 5000);
+  }
+
+  private _renderPet() {
+    const pet = this.snapshot?.pet;
+    if (!pet) return nothing;
+    const pct = pet.xp_for_level > 0 ? Math.round((pet.xp_in_level / pet.xp_for_level) * 100) : 0;
+    return html`
+      <section class="card pet-card">
+        <boopli-pet .mood=${pet.mood} .level=${pet.level}></boopli-pet>
+        <div class="pet-info">
+          <div class="pet-name">${pet.name} <span class="muted">· Level ${pet.level}</span></div>
+          <div class="bar" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100">
+            <div class="fill" style="width:${pct}%"></div>
+          </div>
+          <div class="muted small">${pet.xp_in_level} / ${pet.xp_for_level} XP to the next level</div>
+          <div class="small">${moodLine(pet)}</div>
+        </div>
+      </section>
+      ${this._toast ? html`<div class="toast" role="status">${this._toast}</div>` : nothing}
+    `;
   }
 
   private async _done(runId: string, stepId: string): Promise<void> {
@@ -76,6 +134,7 @@ export class BoopliToday extends LitElement {
     const hasChores = this.snapshot.chores.length > 0;
 
     return html`
+      ${this._renderPet()}
       ${model.now
         ? html`
             <section class="card now">
@@ -154,6 +213,50 @@ export class BoopliToday extends LitElement {
     css`
       .small {
         font-size: 14px;
+      }
+      .pet-card {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 12px 16px;
+      }
+      .pet-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .pet-name {
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .bar {
+        height: 8px;
+        border-radius: 999px;
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        overflow: hidden;
+        margin: 6px 0 4px;
+      }
+      .fill {
+        height: 100%;
+        background: var(--primary-color);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 28px;
+        transform: translateX(-50%);
+        background: var(--primary-color);
+        color: var(--text-primary-color, #fff);
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-weight: 500;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        z-index: 10;
+        max-width: 90vw;
+        text-align: center;
       }
       .now,
       .empty {

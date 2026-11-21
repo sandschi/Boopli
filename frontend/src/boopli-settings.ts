@@ -529,6 +529,15 @@ export class BoopliSettings extends LitElement {
           </div>
         </div>
         <div class="field">
+          <label for="petname">Your pet's name</label>
+          <input
+            id="petname"
+            maxlength="30"
+            .value=${d.pet_name ?? "Boopli"}
+            @input=${(e: Event) => this._set({ pet_name: (e.target as HTMLInputElement).value })}
+          />
+        </div>
+        <div class="field">
           <label for="snooze">Snooze length (minutes)</label>
           <input
             id="snooze"

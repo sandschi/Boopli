@@ -33,6 +33,7 @@ from .websocket_api import async_register_websocket_commands
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
+PLATFORMS = ["sensor"]
 
 FRONTEND_DIR = Path(__file__).parent / "frontend"
 MANIFEST = Path(__file__).parent / "manifest.json"
@@ -140,12 +141,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         embed_iframe=False,
         require_admin=False,
     )
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     _LOGGER.debug("Boopli set up; panel registered at /%s", PANEL_URL_PATH)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Stop the timer and remove the sidebar entry."""
+    """Stop the timer, remove the sensors and the sidebar entry."""
+    await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     manager: BoopliManager | None = hass.data.pop(DOMAIN, None)
     if manager:
         manager.async_shutdown()
