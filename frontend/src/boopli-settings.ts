@@ -776,15 +776,17 @@ export class BoopliSettings extends LitElement {
       ${simple
         ? this._renderSimple()
         : html`
-            <div class="cards">
-              ${this._renderOther(d)} ${this._renderPhones(d)} ${this._renderLights(d)}
-              <boopli-speakers
-                class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
-                .hass=${this.hass}
-                .settings=${d}
-                @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
-              ></boopli-speakers>
-              ${this._renderQuiet(d)} ${this._renderOther(d)}
+            <div class="cards advanced">
+              <div class="col">${this._renderOther(d)} ${this._renderQuiet(d)} ${this._renderPhones(d)}</div>
+              <div class="col">${this._renderLights(d)}</div>
+              <div class="col">
+                <boopli-speakers
+                  class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
+                  .hass=${this.hass}
+                  .settings=${d}
+                  @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
+                ></boopli-speakers>
+              </div>
             </div>
             ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             <div class="save">
@@ -815,6 +817,18 @@ export class BoopliSettings extends LitElement {
         grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
         gap: 16px;
         align-items: start;
+      }
+      .cards.advanced {
+        /* Columns of stacked cards, so a tall card never pushes the next row down. */
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
       }
       .cards.simple {
         /* Cards in a row are the same height, and none is smaller than this. */

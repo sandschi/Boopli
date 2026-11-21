@@ -3473,15 +3473,17 @@ var Ot = [
         </button>
       </div>
       ${t ? this._renderSimple() : E`
-            <div class="cards">
-              ${this._renderOther(e)} ${this._renderPhones(e)} ${this._renderLights(e)}
-              <boopli-speakers
-                class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
-                .hass=${this.hass}
-                .settings=${e}
-                @settings-patch=${(e) => this._set(e.detail)}
-              ></boopli-speakers>
-              ${this._renderQuiet(e)} ${this._renderOther(e)}
+            <div class="cards advanced">
+              <div class="col">${this._renderOther(e)} ${this._renderQuiet(e)} ${this._renderPhones(e)}</div>
+              <div class="col">${this._renderLights(e)}</div>
+              <div class="col">
+                <boopli-speakers
+                  class=${this._changed("speakers", "alarm_devices", "speech_template") ? "changed" : ""}
+                  .hass=${this.hass}
+                  .settings=${e}
+                  @settings-patch=${(e) => this._set(e.detail)}
+                ></boopli-speakers>
+              </div>
             </div>
             ${this._error ? E`<div class="error">${this._error}</div>` : O}
             <div class="save">
@@ -3510,6 +3512,18 @@ var Ot = [
         grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
         gap: 16px;
         align-items: start;
+      }
+      .cards.advanced {
+        /* Columns of stacked cards, so a tall card never pushes the next row down. */
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
       }
       .cards.simple {
         /* Cards in a row are the same height, and none is smaller than this. */
