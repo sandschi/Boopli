@@ -208,6 +208,58 @@ def test_unreadable_answers_raise_a_plain_error(bad):
         bd.parse_steps(bad)
 
 
+# --- what a real model really sent --------------------------------------------------
+
+# From a real run on 2026-11-21 (OpenRouter's free router): one line has a stray
+# `")` where a closing brace belongs, which makes the whole answer invalid JSON.
+REAL_BROKEN = """{
+  "summary": "Typical bedroom has: bed, desk, floor.",
+  "steps": [
+    {"title": "Set a timer for 5 minutes", "group": "Start", "size": "small", "wait_minutes": 0},
+    {"title": "Pick up one item from the floor", "group": "Floor", "size": "small", "wait_minutes": 0},
+    {"title": "Move relocated items to their proper room", "group": "Desk", "size": "small", "wait_minutes": 0"),
+    {"title": "Repeat: process each desk item until surface is clear", "group": "Desk", "size": "medium", "wait_minutes": 0},
+    {"title": "Bring the empty basket back", "group": "Laundry", "size": "small", "wait_minutes": 30}
+  ]
+}"""
+
+
+def test_a_real_answer_with_one_broken_line_still_gives_all_its_steps():
+    steps, summary = bd.parse_steps(REAL_BROKEN)
+    assert [s.title for s in steps] == [
+        "Set a timer for 5 minutes",
+        "Pick up one item from the floor",
+        "Move relocated items to their proper room",
+        "Repeat: process each desk item until surface is clear",
+        "Bring the empty basket back",
+    ]
+    assert summary == "Typical bedroom has: bed, desk, floor."
+    assert (steps[3].size, steps[4].wait_minutes, steps[4].group) == ("medium", 30, "Laundry")
+
+
+def test_rescued_steps_still_get_the_same_cleaning_and_limits():
+    broken = '{"steps": [\n{"title": "A", "size": "huge", "wait_minutes": "7"),\n{"title": "a"},\n{"title": "B\\"q"}'
+    steps, _ = bd.parse_steps(broken)
+    assert [(s.title, s.size, s.wait_minutes) for s in steps] == [("A", "small", 7), ("B\"q", "small", 0)]
+
+
+def test_text_with_no_steps_at_all_is_still_an_error():
+    with pytest.raises(bd.BreakdownError):
+        bd.parse_steps("...")
+    with pytest.raises(bd.BreakdownError):
+        bd.parse_steps({"json": "..."})  # what the forced structure once produced
+
+
+def test_a_plain_text_questions_answer_from_a_real_model_is_read():
+    real = '{"enough": false, "questions": [{"text": "What is in the room?", "options": ["Bed", "Desk"], "multiple": true}, {"text": "Is the bed made?", "options": ["Yes", "No"], "multiple": false}]}'
+    enough, questions = bd.parse_questions(real)
+    assert enough is False and [q.text for q in questions] == ["What is in the room?", "Is the bed made?"]
+
+
+def test_no_structure_is_forced_on_the_agent():
+    assert not hasattr(bd, "STRUCTURE")
+
+
 # --- the XP and the engine side ---------------------------------------------------
 
 

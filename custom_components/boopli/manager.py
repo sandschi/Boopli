@@ -802,11 +802,9 @@ class BoopliManager:
         ai = self.settings.ai
         if not ai.enabled:
             raise BoopliError("AI help is switched off. Turn it on in Settings first.")
-        call: dict[str, Any] = {
-            "task_name": name,
-            "instructions": instructions,
-            "structure": breakdown.STRUCTURE,
-        }
+        # No forced structure: the prompts ask for JSON as plain text, which every
+        # model handles (a forced single-field structure made a real model answer "...").
+        call: dict[str, Any] = {"task_name": name, "instructions": instructions}
         if ai.entity_id:
             call["entity_id"] = ai.entity_id
         try:
@@ -847,12 +845,16 @@ class BoopliManager:
         instructions = breakdown.questions_instructions(
             task, self._check_kind(kind), answers, notes, self.settings.ai.questions_prompt
         )
-        data = await self._run_agent("Boopli: questions", instructions)
-        try:
-            enough, questions = breakdown.parse_questions(data)
-        except breakdown.BreakdownError as err:
-            raise BoopliError(str(err)) from err
-        return {"enough": enough, "questions": [asdict(q) for q in questions]}
+        for attempt in (1, 2):  # an unreadable answer gets one more try
+            data = await self._run_agent("Boopli: questions", instructions)
+            try:
+                enough, questions = breakdown.parse_questions(data)
+            except breakdown.BreakdownError as err:
+                if attempt == 2:
+                    raise BoopliError(str(err)) from err
+                continue
+            return {"enough": enough, "questions": [asdict(q) for q in questions]}
+        raise BoopliError("The AI agent did not answer.")  # not reached
 
     async def async_ai_steps(
         self, task: str, kind: str, answers: Any = None, notes: str = ""
@@ -864,12 +866,16 @@ class BoopliManager:
         instructions = breakdown.steps_instructions(
             task, self._check_kind(kind), answers, notes, self.settings.ai.steps_prompt
         )
-        data = await self._run_agent("Boopli: steps", instructions)
-        try:
-            steps, summary = breakdown.parse_steps(data, engine.MAX_STEPS)
-        except breakdown.BreakdownError as err:
-            raise BoopliError(str(err)) from err
-        return {"steps": [asdict(s) for s in steps], "summary": summary}
+        for attempt in (1, 2):  # an unreadable answer gets one more try
+            data = await self._run_agent("Boopli: steps", instructions)
+            try:
+                steps, summary = breakdown.parse_steps(data, engine.MAX_STEPS)
+            except breakdown.BreakdownError as err:
+                if attempt == 2:
+                    raise BoopliError(str(err)) from err
+                continue
+            return {"steps": [asdict(s) for s in steps], "summary": summary}
+        raise BoopliError("The AI agent did not answer.")  # not reached
 
     def add_task_steps(
         self,

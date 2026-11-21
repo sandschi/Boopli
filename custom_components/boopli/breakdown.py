@@ -3,8 +3,9 @@
 Nothing here imports Home Assistant, so it is tested with plain pytest. The
 prompts are plain text with four placeholders ({task}, {kind}, {known},
 {answers}); a user may replace them in Settings. The agent is asked for ONE
-JSON object, which works with any model, and is cleaned and checked here
-before anything is used.
+JSON object as plain text (a forced structure made a real model answer "..."),
+and the answer is read tolerantly and checked here before anything is used:
+models sometimes break a bracket, so single steps are rescued line by line.
 """
 
 from __future__ import annotations
@@ -88,16 +89,6 @@ Rules:
 Answer with a single JSON object and nothing else, like this:
 {"summary": "Room has: table, floor.", "steps": [{"title": "Put the cups on the tray", "group": "Table", "size": "small", "wait_minutes": 0}]}"""
 
-# The structure Home Assistant's AI task asks the model to fill in: one text field.
-STRUCTURE: dict[str, Any] = {
-    "json": {
-        "description": "The JSON object described in the instructions, as text.",
-        "selector": {"text": {"multiline": True}},
-        "required": True,
-    }
-}
-
-
 class BreakdownError(Exception):
     """The agent's answer could not be used."""
 
@@ -180,6 +171,51 @@ def steps_instructions(
 # --- reading the answer ---------------------------------------------------------
 
 
+def raw_text(data: Any) -> str:
+    """The text of the agent's answer, whatever shape it came in."""
+    if isinstance(data, dict):
+        data = data.get("json", "")
+    return data if isinstance(data, str) else ""
+
+
+_TITLE = re.compile(r'"title"\s*:\s*"((?:[^"\\]|\\.)*)"')
+_GROUP = re.compile(r'"group"\s*:\s*"((?:[^"\\]|\\.)*)"')
+_SIZE = re.compile(r'"size"\s*:\s*"([A-Za-z]*)"')
+_WAIT = re.compile(r'"wait_minutes"\s*:\s*"?(-?\d+)')
+_SUMMARY = re.compile(r'"summary"\s*:\s*"((?:[^"\\]|\\.)*)"')
+
+
+def _unescape(value: str) -> str:
+    try:
+        return str(json.loads(f'"{value}"'))
+    except ValueError:
+        return value
+
+
+def salvage_steps(text: str) -> tuple[list[dict[str, Any]], str]:
+    """Pick the steps out of an answer that is not valid JSON, one line at a time.
+
+    A real model once wrote `"wait_minutes": 0"),` where a closing brace belonged.
+    Strict reading would have thrown away all 45 good steps for that one line.
+    """
+    steps: list[dict[str, Any]] = []
+    for line in text.splitlines():
+        title = _TITLE.search(line)
+        if not title:
+            continue
+        group, size, wait = _GROUP.search(line), _SIZE.search(line), _WAIT.search(line)
+        steps.append(
+            {
+                "title": _unescape(title.group(1)),
+                "group": _unescape(group.group(1)) if group else "",
+                "size": size.group(1) if size else "small",
+                "wait_minutes": wait.group(1) if wait else 0,
+            }
+        )
+    summary = _SUMMARY.search(text)
+    return steps, _unescape(summary.group(1)) if summary else ""
+
+
 def extract_json(data: Any) -> dict[str, Any]:
     """Get the JSON object out of whatever the agent returned."""
     if isinstance(data, dict) and "json" not in data:
@@ -234,7 +270,13 @@ def _int(value: Any, default: int = 0) -> int:
 
 def parse_steps(data: Any, max_steps: int = MAX_STEPS) -> tuple[list[StepDraft], str]:
     """Return (steps, summary). Raises BreakdownError when there is no usable step."""
-    parsed = extract_json(data)
+    try:
+        parsed = extract_json(data)
+    except BreakdownError:
+        rescued, summary = salvage_steps(raw_text(data))
+        if not rescued:
+            raise
+        parsed = {"steps": rescued, "summary": summary}
     steps: list[StepDraft] = []
     for item in parsed.get("steps") or []:
         if isinstance(item, str):
