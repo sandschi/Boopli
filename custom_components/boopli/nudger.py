@@ -31,6 +31,7 @@ class BoopliNudger:
         self.hass = hass
         self.manager = manager
         self._unsub_actions: CALLBACK_TYPE | None = None
+        self._blinks: dict[str, asyncio.Task[None]] = {}
 
     # --- lifecycle -------------------------------------------------------
 
@@ -46,6 +47,9 @@ class BoopliNudger:
         if self._unsub_actions:
             self._unsub_actions()
             self._unsub_actions = None
+        for task in self._blinks.values():
+            task.cancel()  # each blink puts its light back before it stops
+        self._blinks.clear()
 
     @callback
     def _on_action(self, event: Event) -> None:
@@ -102,40 +106,90 @@ class BoopliNudger:
             return False
         return True
 
-    def _plan_light(self, light: engine.LightCfg) -> dict[str, Any] | None:
+    def _light_info(self, light: engine.LightCfg) -> Any:
+        """The light's state, or None when it cannot be used right now."""
         state = self.hass.states.get(light.entity_id)
         if state is None or state.state == "unavailable":
             _LOGGER.debug("Boopli: %s is unavailable, skipping", light.entity_id)
             return None
-        attrs = state.attributes
-        return engine.light_plan(
-            light.mode,
-            int(attrs.get("supported_features") or 0),
-            list(attrs.get("supported_color_modes") or []),
-            light.color,
+        return state
+
+    async def _light_call(
+        self, service: str, entity_id: str, data: dict[str, Any]
+    ) -> None:
+        await self.hass.services.async_call(
+            "light", service, {"entity_id": entity_id, **data}, blocking=False
         )
 
+    def _indicator_data(self, light: engine.LightCfg, state: Any) -> dict[str, Any]:
+        return engine.light_plan(
+            light.mode,
+            list(state.attributes.get("supported_color_modes") or []),
+            light.color,
+        )["data"]
+
     async def _nudge_light(self, light: engine.LightCfg) -> str | None:
-        """Flash a light, or switch it on as an indicator. Returns the mode used."""
-        plan = self._plan_light(light)
-        if plan is None:
+        """Blink a light, or switch it on as an indicator. Returns the mode used."""
+        state = self._light_info(light)
+        if state is None:
             return None
-        _LOGGER.debug(
-            "Boopli: light %s as %s with %s", light.entity_id, plan["mode"], plan["data"]
-        )
+        if light.mode == engine.LIGHT_BLINK:
+            return self._start_blink(light, state)
+        data = self._indicator_data(light, state)
+        _LOGGER.debug("Boopli: light %s as indicator with %s", light.entity_id, data)
         try:
-            await self.hass.services.async_call(
-                "light",
-                "turn_on",
-                {"entity_id": light.entity_id, **plan["data"]},
-                blocking=False,
-            )
+            await self._light_call("turn_on", light.entity_id, data)
         except Exception:  # noqa: BLE001
             _LOGGER.exception("Boopli: could not nudge %s", light.entity_id)
             return None
-        if plan["mode"] == engine.LIGHT_INDICATOR:
-            self.manager.mark_indicator_on(light.entity_id)
-        return plan["mode"]
+        self.manager.mark_indicator_on(light.entity_id)
+        return engine.LIGHT_INDICATOR
+
+    def _start_blink(self, light: engine.LightCfg, state: Any) -> str | None:
+        """Start a blink in the background. Returns None if one is running."""
+        running = self._blinks.get(light.entity_id)
+        if running is not None and not running.done():
+            _LOGGER.debug("Boopli: %s is already blinking", light.entity_id)
+            return None
+        self._blinks[light.entity_id] = self.hass.async_create_task(
+            self._blink(light, state)
+        )
+        return engine.LIGHT_BLINK
+
+    async def _blink(self, light: engine.LightCfg, state: Any) -> None:
+        """Blink, then put the light back exactly as it was. Never raises."""
+        attrs = dict(state.attributes)
+        restore = engine.restore_plan(state.state, attrs)
+        alert = engine.blink_alert(
+            list(attrs.get("supported_color_modes") or []),
+            light.color,
+            state.state == "on",
+        )
+        _LOGGER.debug(
+            "Boopli: blink %s x%d (%d ms, pause %d ms) alert=%s restore=%s",
+            light.entity_id,
+            light.repeats,
+            light.blink_ms,
+            light.gap_ms,
+            alert,
+            restore,
+        )
+        try:
+            for i in range(light.repeats):
+                if i:
+                    await asyncio.sleep(light.gap_ms / 1000)
+                await self._light_call(alert[0], light.entity_id, alert[1])
+                await asyncio.sleep(light.blink_ms / 1000)
+                await self._light_call(restore[0], light.entity_id, restore[1])
+        except asyncio.CancelledError:
+            await self._light_call(restore[0], light.entity_id, restore[1])
+            raise
+        except Exception:  # noqa: BLE001 - a broken light must not break Boopli
+            _LOGGER.exception("Boopli: blink of %s failed", light.entity_id)
+            try:
+                await self._light_call(restore[0], light.entity_id, restore[1])
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Boopli: could not restore %s", light.entity_id)
 
     # --- clearing --------------------------------------------------------
 
@@ -161,35 +215,33 @@ class BoopliNudger:
     # --- tests from the Settings screen ---------------------------------
 
     async def async_test_light(self, light: engine.LightCfg) -> dict[str, Any]:
-        """Try a light so the user sees what a nudge looks like."""
-        plan = self._plan_light(light)
-        if plan is None:
+        """Try a light with the settings on screen so the user sees the nudge."""
+        state = self._light_info(light)
+        if state is None:
             return {"ok": False, "note": "That light is not available right now."}
-        if plan["mode"] == engine.LIGHT_FLASH:
-            await self._nudge_light(light)
-            return {"ok": True, "mode": plan["mode"], "note": "The light should flash."}
-
-        state = self.hass.states.get(light.entity_id)
-        if state is not None and state.state == "on":
+        if light.mode == engine.LIGHT_BLINK:
+            if self._start_blink(light, state) is None:
+                return {"ok": True, "mode": light.mode, "note": "It is still blinking."}
             return {
                 "ok": True,
-                "mode": plan["mode"],
-                "note": "This light cannot flash, so it is used as an indicator lamp "
-                "(on in a color until you are done). It is on already, so turn it off "
-                "and test again to see it.",
+                "mode": light.mode,
+                "note": f"Blinking {light.repeats}x, about {light.blink_seconds():.1f} "
+                "seconds. The light goes back to how it was afterwards.",
             }
-        await self.hass.services.async_call(
-            "light",
-            "turn_on",
-            {"entity_id": light.entity_id, **plan["data"]},
-            blocking=False,
-        )
+        if state.state == "on":
+            return {
+                "ok": True,
+                "mode": light.mode,
+                "note": "An indicator lamp switches on in a color until you are done. "
+                "This light is on already, so turn it off and test again to see it.",
+            }
+        await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
         self.hass.async_create_task(self._indicator_test_off(light.entity_id))
         return {
             "ok": True,
-            "mode": plan["mode"],
-            "note": f"This light cannot flash, so it is used as an indicator lamp. "
-            f"It switches on for {INDICATOR_TEST_SECONDS} seconds.",
+            "mode": light.mode,
+            "note": "An indicator lamp stays on in a color until you are done. "
+            f"For this test it switches on for {INDICATOR_TEST_SECONDS} seconds.",
         }
 
     async def _indicator_test_off(self, entity_id: str) -> None:

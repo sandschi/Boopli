@@ -309,24 +309,92 @@ def test_phone_payload_levels():
 # --- lights --------------------------------------------------------------
 
 
-def test_light_that_can_flash_flashes_in_auto_mode():
-    plan = engine.light_plan("auto", 44, ["color_temp", "rgb"], [255, 90, 0])  # Wohnzimmer
-    assert plan == {"mode": "flash", "data": {"flash": "short"}}
-
-
-def test_light_without_flash_becomes_an_indicator_in_auto_mode():
-    plan = engine.light_plan("auto", 0, ["color_temp", "hs"], [255, 90, 0])  # Spot
+def test_indicator_on_a_hs_light_uses_hs_color():
+    plan = engine.light_plan("indicator", ["color_temp", "hs"], [255, 90, 0])  # Spot
     assert plan["mode"] == "indicator"
     assert plan["data"]["brightness"] == 255
     assert "hs_color" in plan["data"] and "rgb_color" not in plan["data"]
 
 
 def test_rgb_light_indicator_uses_rgb_color():
-    plan = engine.light_plan("indicator", 44, ["rgb"], [1, 2, 3])
-    assert plan["mode"] == "indicator"
+    plan = engine.light_plan("indicator", ["rgb"], [1, 2, 3])
     assert plan["data"]["rgb_color"] == [1, 2, 3]
 
 
-def test_forced_flash_on_a_light_that_cannot_flash_falls_back():
-    plan = engine.light_plan("flash", 0, ["onoff"], [255, 90, 0])
-    assert plan == {"mode": "indicator", "data": {}}  # on/off only: no color, no brightness
+def test_on_off_light_indicator_has_no_color_or_brightness():
+    assert engine.light_plan("indicator", ["onoff"], [255, 90, 0])["data"] == {}
+
+
+def test_new_light_defaults_to_blink_once():
+    cfg = engine.LightCfg("light.x")
+    assert (cfg.mode, cfg.blink_ms, cfg.repeats, cfg.gap_ms) == ("blink", 1500, 1, 1000)
+    assert cfg.blink_seconds() == 1.5
+
+
+def test_blink_seconds_counts_repeats_and_pauses():
+    cfg = engine.LightCfg("light.x", blink_ms=1000, repeats=3, gap_ms=500)
+    assert cfg.blink_seconds() == 4.0  # 3 x 1 s on, 2 x 0.5 s pause
+
+
+def test_old_auto_and_flash_modes_become_blink():
+    for old in ("auto", "flash"):
+        cfg = engine.LightCfg.from_dict({"entity_id": "light.x", "mode": old})
+        assert cfg.mode == "blink"
+        assert (cfg.blink_ms, cfg.repeats, cfg.gap_ms) == (1500, 1, 1000)
+
+
+def test_light_blink_settings_are_validated():
+    def check(**kw):
+        s = engine.Settings(lights=[engine.LightCfg("light.x", **kw)])
+        return engine.validate_settings(s)
+
+    assert check(blink_ms=100, repeats=5, gap_ms=0) is None
+    assert check(blink_ms=99)
+    assert check(blink_ms=30001)
+    assert check(gap_ms=-1)
+    assert check(gap_ms=30001)
+    assert check(repeats=0)
+    assert check(repeats=6)
+
+
+def test_blink_on_a_color_light_shows_the_color():
+    service, data = engine.blink_alert(["color_temp", "rgb"], [255, 0, 0], True)
+    assert service == "turn_on"
+    assert data == {"rgb_color": [255, 0, 0], "brightness": 255}
+
+
+def test_blink_on_a_light_without_color_goes_dark_when_it_was_on():
+    assert engine.blink_alert(["brightness"], [255, 0, 0], True) == ("turn_off", {})
+    assert engine.blink_alert(["onoff"], [255, 0, 0], True) == ("turn_off", {})
+
+
+def test_blink_on_a_light_without_color_lights_up_when_it_was_off():
+    assert engine.blink_alert(["brightness"], [255, 0, 0], False) == (
+        "turn_on", {"brightness": 255},
+    )
+    assert engine.blink_alert(["onoff"], [255, 0, 0], False) == ("turn_on", {})
+
+
+def test_restore_puts_a_warm_white_light_back():
+    attrs = {"brightness": 255, "color_mode": "color_temp", "color_temp_kelvin": 4000,
+             "rgb_color": [255, 206, 166]}  # the Wohnzimmer strip
+    assert engine.restore_plan("on", attrs) == (
+        "turn_on", {"brightness": 255, "color_temp_kelvin": 4000},
+    )
+
+
+def test_restore_puts_a_colored_light_back():
+    attrs = {"brightness": 120, "color_mode": "rgb", "rgb_color": (10, 20, 30)}
+    assert engine.restore_plan("on", attrs) == (
+        "turn_on", {"brightness": 120, "rgb_color": [10, 20, 30]},
+    )
+    hs = {"brightness": 50, "color_mode": "hs", "hs_color": (200.0, 40.0)}
+    assert engine.restore_plan("on", hs)[1]["hs_color"] == [200.0, 40.0]
+
+
+def test_restore_turns_a_light_that_was_off_back_off():
+    assert engine.restore_plan("off", {"brightness": None}) == ("turn_off", {})
+
+
+def test_restore_of_an_on_off_light_is_a_plain_turn_on():
+    assert engine.restore_plan("on", {"color_mode": "onoff"}) == ("turn_on", {})

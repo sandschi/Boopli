@@ -2,13 +2,13 @@
 
 An ADHD-friendly chore and task companion for [Home Assistant](https://www.home-assistant.io/).
 
-> **Status: early development (v0.0.3).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights and your phone with Done and Snooze buttons. There is no XP, pet, speaker or alarm channel, or setup wizard yet, so it is not ready for daily use.
+> **Status: early development (v0.0.4).** You can create chores made of steps (with waiting time between steps), see what is due on a Today screen, mark steps done, and get nudged through lights and your phone with Done and Snooze buttons. There is no XP, pet, speaker or alarm channel, or setup wizard yet, so it is not ready for daily use.
 
 ## Nudges
 
 When a step becomes your turn, Boopli nudges you through the channels you turn on in the **Settings** tab:
 
-- **Lights.** A light that can flash flashes. A light that cannot is used as an *indicator lamp*: it switches on in a color until you are done. Boopli checks what each light supports.
+- **Lights.** Per light you choose **Blink** or **Indicator lamp**. Blink: Boopli saves the light's current look, shows your color for as long as you set (in milliseconds), repeats 1 to 5 times with a pause you set, then puts the light back exactly as it was. Indicator lamp: the light stays on in a color until you are done. Boopli does not use a light's built-in flash, because some lights say they support it and ignore it. Press **Test** to see what a light really does. A light in your home can follow a few hundred milliseconds; a cloud-connected light needs about a second or more.
 - **Phones.** A notification from the Home Assistant app with **Done** and **Snooze** buttons, at a level you choose: normal, high priority, alarm volume, or max volume (not every phone honours it).
 - **Styles, per chore:** quiet (panel only), one nudge, escalating (30, 15, 10, then every 5 minutes, then it stops), or persistent (every 5 minutes until done).
 - **Quiet hours,** off by default, with different start and stop times for each weekday. A chore can opt out (for example pills).

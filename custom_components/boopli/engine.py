@@ -74,12 +74,19 @@ LEVEL_ALARM_MAX = "alarm_max"  # asks for maximum volume (not on every phone)
 LEVEL_VALUES = (LEVEL_NORMAL, LEVEL_HIGH, LEVEL_ALARM, LEVEL_ALARM_MAX)
 
 # Light modes
-LIGHT_AUTO = "auto"  # flash if the light can, otherwise indicator
-LIGHT_FLASH = "flash"
+LIGHT_BLINK = "blink"  # Boopli blinks the light itself, then restores it
 LIGHT_INDICATOR = "indicator"  # on in a color until the step is resolved
-LIGHT_MODE_VALUES = (LIGHT_AUTO, LIGHT_FLASH, LIGHT_INDICATOR)
+LIGHT_MODE_VALUES = (LIGHT_BLINK, LIGHT_INDICATOR)
+# Older versions saved "auto" and "flash" (they used the light's built-in flash,
+# which some lights claim to support and ignore). Both now mean "blink".
+LEGACY_LIGHT_MODES = ("auto", "flash")
 
-LIGHT_FEATURE_FLASH = 8  # LightEntityFeature.FLASH
+BLINK_MS_DEFAULT = 1500
+BLINK_MS_MIN, BLINK_MS_MAX = 100, 30000
+GAP_MS_DEFAULT = 1000
+GAP_MS_MIN, GAP_MS_MAX = 0, 30000
+REPEATS_DEFAULT = 1
+REPEATS_MIN, REPEATS_MAX = 1, 5
 
 # Which channels a nudge may use
 CHANNELS_ALL = "all"
@@ -555,17 +562,37 @@ class LightCfg:
     """A light used for nudges."""
 
     entity_id: str
-    mode: str = LIGHT_AUTO
+    mode: str = LIGHT_BLINK
     color: list[int] = field(default_factory=lambda: [255, 90, 0])
+    blink_ms: int = BLINK_MS_DEFAULT  # how long the color stays on per blink
+    repeats: int = REPEATS_DEFAULT  # how many blinks
+    gap_ms: int = GAP_MS_DEFAULT  # pause between blinks, light back to normal
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> LightCfg:
         color = d.get("color") or [255, 90, 0]
+        mode = str(d.get("mode", LIGHT_BLINK))
+        if mode in LEGACY_LIGHT_MODES:
+            mode = LIGHT_BLINK
+
+        def number(key: str, default: int) -> int:
+            try:
+                return int(d.get(key, default))
+            except (TypeError, ValueError):
+                return default
+
         return cls(
             entity_id=str(d.get("entity_id", "")).strip(),
-            mode=str(d.get("mode", LIGHT_AUTO)),
+            mode=mode,
             color=[int(c) for c in color][:3],
+            blink_ms=number("blink_ms", BLINK_MS_DEFAULT),
+            repeats=number("repeats", REPEATS_DEFAULT),
+            gap_ms=number("gap_ms", GAP_MS_DEFAULT),
         )
+
+    def blink_seconds(self) -> float:
+        """How long one full blink sequence takes."""
+        return (self.repeats * self.blink_ms + (self.repeats - 1) * self.gap_ms) / 1000
 
 
 @dataclass
@@ -655,6 +682,12 @@ def validate_settings(settings: Settings) -> str | None:
             return "Unknown light mode."
         if len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color):
             return "A light color needs three values from 0 to 255."
+        if not BLINK_MS_MIN <= light.blink_ms <= BLINK_MS_MAX:
+            return f"Blink length must be {BLINK_MS_MIN} to {BLINK_MS_MAX} milliseconds."
+        if not GAP_MS_MIN <= light.gap_ms <= GAP_MS_MAX:
+            return f"The pause between blinks must be {GAP_MS_MIN} to {GAP_MS_MAX} milliseconds."
+        if not REPEATS_MIN <= light.repeats <= REPEATS_MAX:
+            return f"A light can blink {REPEATS_MIN} to {REPEATS_MAX} times."
     for phone in settings.phones:
         if not phone.service or "." in phone.service:
             return "A phone must be a notify service name."
@@ -850,23 +883,61 @@ def _color_data(color_modes: list[str], color: list[int]) -> dict[str, Any]:
     return {}
 
 
-def light_plan(
-    mode: str, supported_features: int, color_modes: list[str], color: list[int]
-) -> dict[str, Any]:
-    """Decide how to nudge a light and with which `light.turn_on` data.
+def _has_color(color_modes: list[str]) -> bool:
+    return any(m in color_modes for m in ("rgb", "rgbw", "rgbww", "xy", "hs"))
 
-    Flashing needs the light to support it. A light that cannot flash is used
-    as an indicator: switched on in a color until the step is resolved.
-    """
-    can_flash = bool(supported_features & LIGHT_FEATURE_FLASH)
-    effective = mode
-    if mode == LIGHT_AUTO:
-        effective = LIGHT_FLASH if can_flash else LIGHT_INDICATOR
-    if effective == LIGHT_FLASH and not can_flash:
-        effective = LIGHT_INDICATOR
-    if effective == LIGHT_FLASH:
-        return {"mode": LIGHT_FLASH, "data": {"flash": "short"}}
-    data: dict[str, Any] = _color_data(color_modes, color)
+
+def _color_light_data(color_modes: list[str], color: list[int]) -> dict[str, Any]:
+    data = _color_data(color_modes, color)
     if color_modes and set(color_modes) != {"onoff"}:
         data["brightness"] = 255
-    return {"mode": LIGHT_INDICATOR, "data": data}
+    return data
+
+
+def light_plan(mode: str, color_modes: list[str], color: list[int]) -> dict[str, Any]:
+    """The `light.turn_on` data for an indicator lamp (on in a color until done).
+
+    Blinking is planned step by step with `blink_alert` and `restore_plan`.
+    """
+    return {"mode": mode, "data": _color_light_data(color_modes, color)}
+
+
+def blink_alert(
+    color_modes: list[str], color: list[int], was_on: bool
+) -> tuple[str, dict[str, Any]]:
+    """What one blink does to a light: (service, data) for the light domain.
+
+    A light with color shows the color. A light without color goes dark when it
+    was on, or lights up when it was off, so the blink is visible either way.
+    """
+    if _has_color(color_modes):
+        return "turn_on", _color_light_data(color_modes, color)
+    if was_on:
+        return "turn_off", {}
+    data: dict[str, Any] = {}
+    if color_modes and set(color_modes) != {"onoff"}:
+        data["brightness"] = 255
+    return "turn_on", data
+
+
+_COLOR_ATTRIBUTE = {
+    "color_temp": "color_temp_kelvin",
+    "hs": "hs_color",
+    "rgb": "rgb_color",
+    "rgbw": "rgbw_color",
+    "rgbww": "rgbww_color",
+    "xy": "xy_color",
+}
+
+
+def restore_plan(state: str, attrs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """How to put a light back as it was: (service, data) for the light domain."""
+    if state != "on":
+        return "turn_off", {}
+    data: dict[str, Any] = {}
+    if attrs.get("brightness") is not None:
+        data["brightness"] = attrs["brightness"]
+    attribute = _COLOR_ATTRIBUTE.get(str(attrs.get("color_mode") or ""))
+    if attribute and attrs.get(attribute) is not None:
+        data[attribute] = list(attrs[attribute]) if isinstance(attrs[attribute], (list, tuple)) else attrs[attribute]
+    return "turn_on", data

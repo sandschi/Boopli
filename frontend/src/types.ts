@@ -5,7 +5,7 @@ export type RepeatType = "none" | "daily" | "weekly" | "every_n_days";
 export type Where = "home" | "anywhere";
 export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent";
 export type PhoneLevel = "normal" | "high" | "alarm" | "alarm_max";
-export type LightMode = "auto" | "flash" | "indicator";
+export type LightMode = "blink" | "indicator";
 
 export interface Step {
   id: string;
@@ -71,6 +71,9 @@ export interface LightCfg {
   entity_id: string;
   mode: LightMode;
   color: number[];
+  blink_ms: number; // how long the color stays on per blink
+  repeats: number; // how many blinks
+  gap_ms: number; // pause between blinks
 }
 
 export interface PhoneCfg {

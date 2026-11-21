@@ -1532,20 +1532,13 @@ var Ue = [
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], We = [
-	{
-		value: "auto",
-		label: "Auto (flash if it can)"
-	},
-	{
-		value: "flash",
-		label: "Flash"
-	},
-	{
-		value: "indicator",
-		label: "Indicator lamp (on until done)"
-	}
-], Ge = [
+], We = [{
+	value: "blink",
+	label: "Blink"
+}, {
+	value: "indicator",
+	label: "Indicator lamp (on until done)"
+}], Ge = [
 	{
 		value: "quiet",
 		label: "Quiet (no nudges)"
@@ -1565,7 +1558,7 @@ var Ue = [
 ], Ke = {
 	start: "07:00",
 	stop: "22:00"
-}, qe = 8, Je = class extends q {
+}, qe = class extends q {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1593,10 +1586,6 @@ var Ue = [
 	_friendly(e) {
 		let t = this.hass?.states[e]?.attributes?.friendly_name;
 		return typeof t == "string" && t ? t : e;
-	}
-	_canFlash(e) {
-		let t = this.hass?.states[e]?.attributes;
-		if (t) return (Number(t.supported_features ?? 0) & qe) !== 0;
 	}
 	_phoneServices() {
 		let e = Object.keys(this.hass?.services?.notify ?? {}).filter((e) => e.startsWith("mobile_app_")), t = this._draft?.phones.map((e) => e.service) ?? [];
@@ -1647,20 +1636,41 @@ var Ue = [
 		if (!this._draft || !this._addLight) return;
 		let e = {
 			entity_id: this._addLight,
-			mode: "auto",
+			mode: "blink",
 			color: [
 				255,
 				90,
 				0
-			]
+			],
+			blink_ms: 1500,
+			repeats: 1,
+			gap_ms: 1e3
 		};
 		this._set({ lights: [...this._draft.lights, e] }), this._addLight = "";
 	}
-	_setLightMode(e, t) {
+	_patchLight(e, t) {
 		this._draft && this._set({ lights: this._draft.lights.map((n) => n.entity_id === e ? {
 			...n,
-			mode: t
+			...t
 		} : n) });
+	}
+	_setLightMode(e, t) {
+		this._patchLight(e, { mode: t });
+	}
+	_setLightNumber(e, t, n, r, i) {
+		let a = Math.round(Number(n));
+		n.trim() === "" || Number.isNaN(a) || this._patchLight(e, { [t]: Math.min(i, Math.max(r, a)) });
+	}
+	_hexToRgb(e) {
+		let t = parseInt(e.replace("#", ""), 16);
+		return [
+			t >> 16 & 255,
+			t >> 8 & 255,
+			t & 255
+		];
+	}
+	_rgbToHex(e) {
+		return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 	}
 	_removeLight(e) {
 		this._draft && this._set({ lights: this._draft.lights.filter((t) => t.entity_id !== e) });
@@ -1758,30 +1768,77 @@ var Ue = [
       <section class="card">
         <h2>Lights</h2>
         <p class="muted small">
-          A light that can flash flashes. One that cannot is used as an
-          indicator lamp: it switches on in a color until you are done.
+          Boopli blinks a light itself and puts it back exactly as it was, or
+          uses it as an indicator lamp that stays on in a color until you are
+          done. Press Test to see what a light really does: lights differ a lot.
         </p>
         ${e.lights.map((e) => {
-			let t = this._canFlash(e.entity_id), n = this._notes[`light:${e.entity_id}`];
+			let t = this._notes[`light:${e.entity_id}`], n = e.entity_id, r = e.mode === "blink";
 			return I`
             <div class="row">
               <div class="grow">
-                <div>${this._friendly(e.entity_id)}</div>
-                <div class="muted small">
-                  ${t === void 0 ? "Not found right now" : t ? "Can flash" : "Cannot flash, so it works as an indicator lamp"}
-                </div>
+                <div>${this._friendly(n)}</div>
+                ${this.hass?.states[n] ? R : I`<div class="muted small">Not found right now</div>`}
               </div>
               <select
                 aria-label="Light mode"
                 .value=${e.mode}
-                @change=${(t) => this._setLightMode(e.entity_id, t.target.value)}
+                @change=${(e) => this._setLightMode(n, e.target.value)}
               >
                 ${We.map((t) => I`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
+              <input
+                type="color"
+                class="swatch"
+                aria-label="Color"
+                .value=${this._rgbToHex(e.color)}
+                @input=${(e) => this._patchLight(n, { color: this._hexToRgb(e.target.value) })}
+              />
               <button @click=${() => this._testLight(e)}>Test</button>
-              <button aria-label="Remove light" @click=${() => this._removeLight(e.entity_id)}>✕</button>
+              <button aria-label="Remove light" @click=${() => this._removeLight(n)}>✕</button>
             </div>
-            ${n ? I`<div class="note muted small">${n}</div>` : R}
+            ${r ? I`
+                  <div class="blinkopts">
+                    <label>
+                      Blink length (ms)
+                      <input
+                        type="number"
+                        min="100"
+                        max="30000"
+                        step="100"
+                        .value=${String(e.blink_ms)}
+                        @change=${(e) => this._setLightNumber(n, "blink_ms", e.target.value, 100, 3e4)}
+                      />
+                    </label>
+                    <label>
+                      Blinks
+                      <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        .value=${String(e.repeats)}
+                        @change=${(e) => this._setLightNumber(n, "repeats", e.target.value, 1, 5)}
+                      />
+                    </label>
+                    <label>
+                      Pause between (ms)
+                      <input
+                        type="number"
+                        min="0"
+                        max="30000"
+                        step="100"
+                        .value=${String(e.gap_ms)}
+                        @change=${(e) => this._setLightNumber(n, "gap_ms", e.target.value, 0, 3e4)}
+                      />
+                    </label>
+                  </div>
+                  <div class="muted small hint">
+                    A light in your home can follow a few hundred milliseconds. A
+                    light that goes through a cloud service needs about a second
+                    or more, so find its limit with Test.
+                  </div>
+                ` : R}
+            ${t ? I`<div class="note muted small">${t}</div>` : R}
           `;
 		})}
         <div class="row add">
@@ -1945,6 +2002,31 @@ var Ue = [
       .note {
         padding: 0 0 8px;
       }
+      .blinkopts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 0 0 4px;
+      }
+      .blinkopts label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+        margin: 0;
+      }
+      .blinkopts input {
+        width: 130px;
+      }
+      .hint {
+        padding: 0 0 8px;
+      }
+      .swatch {
+        width: 44px;
+        min-height: 36px;
+        padding: 2px;
+        flex: 0 0 auto;
+      }
       label.inline {
         display: flex;
         align-items: center;
@@ -1979,13 +2061,13 @@ var Ue = [
     `];
 	}
 };
-customElements.define("boopli-settings", Je);
+customElements.define("boopli-settings", qe);
 // src/boopli-panel.ts
-var Ye = {
+var Je = {
 	today: "Today",
 	chores: "Chores",
 	settings: "Settings"
-}, Xe = class extends q {
+}, Ye = class extends q {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2034,11 +2116,11 @@ var Ye = {
             </button>` : R}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(Ye).map((e) => I`<button
+          ${Object.keys(Je).map((e) => I`<button
               class="tab ${this._tab === e ? "on" : ""}"
               @click=${() => this._tab = e}
             >
-              ${Ye[e]}
+              ${Je[e]}
             </button>`)}
         </nav>
       </header>
@@ -2115,5 +2197,5 @@ var Ye = {
     `];
 	}
 };
-customElements.define("boopli-panel", Xe);
-export { Xe as BoopliPanel };
+customElements.define("boopli-panel", Ye);
+export { Ye as BoopliPanel };

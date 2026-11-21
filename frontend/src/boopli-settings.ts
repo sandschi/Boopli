@@ -21,8 +21,7 @@ const LEVELS: { value: PhoneLevel; label: string }[] = [
 ];
 
 const LIGHT_MODES: { value: LightMode; label: string }[] = [
-  { value: "auto", label: "Auto (flash if it can)" },
-  { value: "flash", label: "Flash" },
+  { value: "blink", label: "Blink" },
   { value: "indicator", label: "Indicator lamp (on until done)" },
 ];
 
@@ -34,7 +33,6 @@ const STYLES: { value: NudgeStyle; label: string }[] = [
 ];
 
 const DEFAULT_DAY: QuietDay = { start: "07:00", stop: "22:00" };
-const FLASH_FEATURE = 8;
 
 /** Settings: where Boopli nudges you, quiet hours, presence, snooze. */
 export class BoopliSettings extends LitElement {
@@ -85,12 +83,6 @@ export class BoopliSettings extends LitElement {
   private _friendly(entityId: string): string {
     const name = this.hass?.states[entityId]?.attributes?.friendly_name;
     return typeof name === "string" && name ? name : entityId;
-  }
-
-  private _canFlash(entityId: string): boolean | undefined {
-    const attrs = this.hass?.states[entityId]?.attributes;
-    if (!attrs) return undefined;
-    return (Number(attrs.supported_features ?? 0) & FLASH_FEATURE) !== 0;
   }
 
   private _phoneServices(): string[] {
@@ -153,20 +145,49 @@ export class BoopliSettings extends LitElement {
     if (!this._draft || !this._addLight) return;
     const light: LightCfg = {
       entity_id: this._addLight,
-      mode: "auto",
+      mode: "blink",
       color: [255, 90, 0],
+      blink_ms: 1500,
+      repeats: 1,
+      gap_ms: 1000,
     };
     this._set({ lights: [...this._draft.lights, light] });
     this._addLight = "";
   }
 
-  private _setLightMode(entityId: string, mode: LightMode): void {
+  private _patchLight(entityId: string, patch: Partial<LightCfg>): void {
     if (!this._draft) return;
     this._set({
       lights: this._draft.lights.map((l) =>
-        l.entity_id === entityId ? { ...l, mode } : l
+        l.entity_id === entityId ? { ...l, ...patch } : l
       ),
     });
+  }
+
+  private _setLightMode(entityId: string, mode: LightMode): void {
+    this._patchLight(entityId, { mode });
+  }
+
+  /** Update a number field, clamped to the range the integration accepts. */
+  private _setLightNumber(
+    entityId: string,
+    key: "blink_ms" | "repeats" | "gap_ms",
+    raw: string,
+    min: number,
+    max: number
+  ): void {
+    const value = Math.round(Number(raw));
+    if (raw.trim() === "" || Number.isNaN(value)) return;
+    this._patchLight(entityId, { [key]: Math.min(max, Math.max(min, value)) });
+  }
+
+  private _hexToRgb(hex: string): number[] {
+    const n = parseInt(hex.replace("#", ""), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  private _rgbToHex(rgb: number[]): string {
+    return "#" + rgb.map((c) => c.toString(16).padStart(2, "0")).join("");
   }
 
   private _removeLight(entityId: string): void {
@@ -284,37 +305,87 @@ export class BoopliSettings extends LitElement {
       <section class="card">
         <h2>Lights</h2>
         <p class="muted small">
-          A light that can flash flashes. One that cannot is used as an
-          indicator lamp: it switches on in a color until you are done.
+          Boopli blinks a light itself and puts it back exactly as it was, or
+          uses it as an indicator lamp that stays on in a color until you are
+          done. Press Test to see what a light really does: lights differ a lot.
         </p>
         ${d.lights.map((light) => {
-          const can = this._canFlash(light.entity_id);
           const note = this._notes[`light:${light.entity_id}`];
+          const id = light.entity_id;
+          const blink = light.mode === "blink";
           return html`
             <div class="row">
               <div class="grow">
-                <div>${this._friendly(light.entity_id)}</div>
-                <div class="muted small">
-                  ${can === undefined
-                    ? "Not found right now"
-                    : can
-                      ? "Can flash"
-                      : "Cannot flash, so it works as an indicator lamp"}
-                </div>
+                <div>${this._friendly(id)}</div>
+                ${this.hass?.states[id] ? nothing : html`<div class="muted small">Not found right now</div>`}
               </div>
               <select
                 aria-label="Light mode"
                 .value=${light.mode}
                 @change=${(e: Event) =>
-                  this._setLightMode(light.entity_id, (e.target as HTMLSelectElement).value as LightMode)}
+                  this._setLightMode(id, (e.target as HTMLSelectElement).value as LightMode)}
               >
                 ${LIGHT_MODES.map(
                   (m) => html`<option value=${m.value} ?selected=${m.value === light.mode}>${m.label}</option>`
                 )}
               </select>
+              <input
+                type="color"
+                class="swatch"
+                aria-label="Color"
+                .value=${this._rgbToHex(light.color)}
+                @input=${(e: Event) =>
+                  this._patchLight(id, { color: this._hexToRgb((e.target as HTMLInputElement).value) })}
+              />
               <button @click=${() => this._testLight(light)}>Test</button>
-              <button aria-label="Remove light" @click=${() => this._removeLight(light.entity_id)}>✕</button>
+              <button aria-label="Remove light" @click=${() => this._removeLight(id)}>✕</button>
             </div>
+            ${blink
+              ? html`
+                  <div class="blinkopts">
+                    <label>
+                      Blink length (ms)
+                      <input
+                        type="number"
+                        min="100"
+                        max="30000"
+                        step="100"
+                        .value=${String(light.blink_ms)}
+                        @change=${(e: Event) =>
+                          this._setLightNumber(id, "blink_ms", (e.target as HTMLInputElement).value, 100, 30000)}
+                      />
+                    </label>
+                    <label>
+                      Blinks
+                      <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        .value=${String(light.repeats)}
+                        @change=${(e: Event) =>
+                          this._setLightNumber(id, "repeats", (e.target as HTMLInputElement).value, 1, 5)}
+                      />
+                    </label>
+                    <label>
+                      Pause between (ms)
+                      <input
+                        type="number"
+                        min="0"
+                        max="30000"
+                        step="100"
+                        .value=${String(light.gap_ms)}
+                        @change=${(e: Event) =>
+                          this._setLightNumber(id, "gap_ms", (e.target as HTMLInputElement).value, 0, 30000)}
+                      />
+                    </label>
+                  </div>
+                  <div class="muted small hint">
+                    A light in your home can follow a few hundred milliseconds. A
+                    light that goes through a cloud service needs about a second
+                    or more, so find its limit with Test.
+                  </div>
+                `
+              : nothing}
             ${note ? html`<div class="note muted small">${note}</div>` : nothing}
           `;
         })}
@@ -489,6 +560,31 @@ export class BoopliSettings extends LitElement {
       }
       .note {
         padding: 0 0 8px;
+      }
+      .blinkopts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 0 0 4px;
+      }
+      .blinkopts label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+        margin: 0;
+      }
+      .blinkopts input {
+        width: 130px;
+      }
+      .hint {
+        padding: 0 0 8px;
+      }
+      .swatch {
+        width: 44px;
+        min-height: 36px;
+        padding: 2px;
+        flex: 0 0 auto;
       }
       label.inline {
         display: flex;
