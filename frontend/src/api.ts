@@ -256,3 +256,21 @@ export async function pasteHome(hass: Hass, text: string, rooms: { id: string; n
   });
   return result.rooms;
 }
+
+export type ParkWhen = "any" | "tomorrow" | "at";
+
+/** Set a part (group) of a running task aside as a small task of its own. */
+export function partPark(
+  hass: Hass,
+  runId: string,
+  group: string,
+  when: ParkWhen,
+  at = ""
+): Promise<{ chore_id: string }> {
+  return hass.callWS({ type: "boopli/part_park", run_id: runId, group, when, at });
+}
+
+/** Change when a parked part comes back. */
+export function partTime(hass: Hass, choreId: string, when: ParkWhen, at = ""): Promise<void> {
+  return hass.callWS({ type: "boopli/part_time", chore_id: choreId, when, at });
+}

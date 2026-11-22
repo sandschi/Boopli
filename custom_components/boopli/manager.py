@@ -338,13 +338,29 @@ class BoopliManager:
                 return str(state.attributes.get("friendly_name") or tag_id)
         return tag_id
 
-    def _active_steps(self) -> list[tuple[engine.Run, engine.StepRun]]:
-        return [
-            (run, step)
-            for run in self.runs.values()
-            for step in run.steps
-            if step.status == engine.STEP_ACTIVE and step.triggers
-        ]
+    def _watched(self) -> list[tuple[engine.Run, engine.StepRun, list[engine.Trigger], int, str]]:
+        """Steps whose triggers Boopli looks at: (run, step, triggers, watch offset, action).
+
+        An active step with "finishes by itself" triggers is finished when one is met.
+        A waiting step with "wait until" triggers is released (its turn begins) instead.
+        Their watches are kept apart by the offset.
+        """
+        result: list[tuple[engine.Run, engine.StepRun, list[engine.Trigger], int, str]] = []
+        for run in self.runs.values():
+            for step in run.steps:
+                if step.status == engine.STEP_ACTIVE and step.triggers:
+                    result.append((run, step, step.triggers, 0, "finish"))
+                elif step.status == engine.STEP_WAITING and step.wait_for:
+                    result.append((run, step, step.wait_for, 100, "release"))
+        return result
+
+    def _apply_trigger(
+        self, run: engine.Run, step_id: str, action: str, now: datetime, reason: str
+    ) -> list[engine.Event]:
+        """Finish an active step, or release a waiting one, because its trigger was met."""
+        if action == "release":
+            return engine.release_step(run, step_id, now)
+        return self._finish_step(run, step_id, now, engine.BY_AUTO, reason)
 
     def _finish_step(
         self,
@@ -408,41 +424,42 @@ class BoopliManager:
     def _auto_finish(
         self, now: datetime, wakeups: list[datetime]
     ) -> list[engine.Event]:
-        """Finish active steps whose state triggers are met (also chains of them)."""
+        """Finish active steps and release waiting steps whose state triggers are met (also chains)."""
         events: list[engine.Event] = []
         for _ in range(engine.MAX_STEPS * 2):  # a chain of steps may all be done already
-            alive = {
-                (run.id, step.step_id) for run, step in self._active_steps()
-            }
+            watched = self._watched()
+            alive = {(run.id, step.step_id) for run, step, _t, _o, _a in watched}
             for key in [k for k in self._watches if k[:2] not in alive]:
                 del self._watches[key]
-            hit: tuple[engine.Run, str, str] | None = None
-            for run, step in self._active_steps():
-                reason = self._check_state_triggers(run, step, now, wakeups)
+            hit: tuple[engine.Run, str, str, str] | None = None
+            for run, step, triggers, offset, action in watched:
+                reason = self._check_state_triggers(run, step, triggers, offset, now, wakeups)
                 if reason is not None:
-                    hit = (run, step.step_id, reason)
+                    hit = (run, step.step_id, action, reason)
                     break
             if hit is None:
                 break
-            events += self._finish_step(hit[0], hit[1], now, engine.BY_AUTO, hit[2])
+            events += self._apply_trigger(hit[0], hit[1], hit[2], now, hit[3])
         return events
 
     def _check_state_triggers(
         self,
         run: engine.Run,
         step: engine.StepRun,
+        triggers: list[engine.Trigger],
+        offset: int,
         now: datetime,
         wakeups: list[datetime],
     ) -> str | None:
-        """Look at the state triggers of one active step. Return what finished it."""
+        """Look at the state triggers of one watched step. Return what happened, if anything."""
         found: str | None = None
-        for index, trigger in enumerate(step.triggers):
+        for index, trigger in enumerate(triggers):
             if trigger.kind != engine.TRIGGER_STATE:
                 continue
             state = self.hass.states.get(trigger.entity_id)
             matched = engine.state_matches(trigger, state.state if state else None)
             watch = self._watches.setdefault(
-                (run.id, step.step_id, index), engine.TriggerWatch()
+                (run.id, step.step_id, index + offset), engine.TriggerWatch()
             )
             met = engine.advance_watch(
                 trigger,
@@ -464,8 +481,8 @@ class BoopliManager:
         """Listen to the entities of the steps that are waiting to finish by themselves."""
         wanted = frozenset(
             t.entity_id
-            for _run, step in self._active_steps()
-            for t in step.triggers
+            for _run, _step, triggers, _offset, _action in self._watched()
+            for t in triggers
             if t.kind in (engine.TRIGGER_STATE, engine.TRIGGER_BUTTON) and t.entity_id
         )
         if wanted == self._trigger_entities:
@@ -487,32 +504,29 @@ class BoopliManager:
         now = dt_util.utcnow()
         events: list[engine.Event] = []
         need_tick = False
-        for run, step in self._active_steps():
-            for index, trigger in enumerate(step.triggers):
+        for run, step, triggers, offset, action in self._watched():
+            for index, trigger in enumerate(triggers):
                 if trigger.entity_id != entity_id:
                     continue
                 if trigger.kind == engine.TRIGGER_BUTTON:
-                    if (
-                        step.status == engine.STEP_ACTIVE
-                        and engine.button_pressed(
-                            trigger,
-                            old.state if old else None,
-                            new.state if new else None,
-                            new.attributes.get("event_type") if new else None,
-                        )
+                    if engine.button_pressed(
+                        trigger,
+                        old.state if old else None,
+                        new.state if new else None,
+                        new.attributes.get("event_type") if new else None,
                     ):
-                        events += self._finish_step(
+                        events += self._apply_trigger(
                             run,
                             step.step_id,
+                            action,
                             now,
-                            engine.BY_AUTO,
                             engine.trigger_reason(trigger, self._friendly(entity_id)),
                         )
                         break
                 elif trigger.kind == engine.TRIGGER_STATE:
                     # Only look again when the answer to "does it match?" changed:
                     # a sensor that reports every few seconds must not wake us each time.
-                    watch = self._watches.get((run.id, step.step_id, index))
+                    watch = self._watches.get((run.id, step.step_id, index + offset))
                     was = watch is not None and (watch.since is not None or watch.blocked)
                     is_now = engine.state_matches(trigger, new.state if new else None)
                     if watch is None or was != is_now:
@@ -529,14 +543,14 @@ class BoopliManager:
             return
         now = dt_util.utcnow()
         events: list[engine.Event] = []
-        for run, step in self._active_steps():
-            for trigger in step.triggers:
+        for run, step, triggers, _offset, action in self._watched():
+            for trigger in triggers:
                 if engine.tag_matches(trigger, tag_id):
-                    events += self._finish_step(
+                    events += self._apply_trigger(
                         run,
                         step.step_id,
+                        action,
                         now,
-                        engine.BY_AUTO,
                         engine.trigger_reason(trigger, self._tag_name(tag_id)),
                     )
                     break
@@ -758,6 +772,70 @@ class BoopliManager:
         self._announce(events)
         self._tick()
         return run
+
+    def park_part(self, run_id: str, group: str, when: str, at: str = "") -> engine.Chore:
+        """Set a part of a running task aside as a small task of its own, to do later.
+
+        Nothing is deleted: the part's open steps move into a new task that starts
+        by itself at the chosen time, or waits until the user starts it.
+        """
+        run = self.runs.get(run_id)
+        if run is None:
+            raise BoopliError("That task is not running any more.")
+        now = dt_util.utcnow()
+        try:
+            due = engine.park_time(when, at, now, self.tz)
+            steps, events = engine.park_part(run, group, now)
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
+        chore = engine.parked_chore(run, self.chores.get(run.chore_id), group.strip(), steps, due, now)
+        self.chores[chore.id] = chore
+        self._announce(events)
+        self._tick()
+        return chore
+
+    def set_parked_time(self, chore_id: str, when: str, at: str = "") -> None:
+        """Change when a parked part comes back (or make it wait for the user again)."""
+        chore = self.chores.get(chore_id)
+        if chore is None or not chore.parked or self._active_run_for(chore.id):
+            raise BoopliError("That part is not waiting any more.")
+        try:
+            chore.next_due = engine.park_time(when, at, dt_util.utcnow(), self.tz)
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
+        self._tick()
+
+    def park_part(self, run_id: str, group: str, when: str, at: str = "") -> engine.Chore:
+        """Set a part of a running task aside as a small task of its own, to do later.
+
+        Nothing is deleted: the part's open steps move into a new task that starts
+        by itself at the chosen time, or waits until the user starts it.
+        """
+        run = self.runs.get(run_id)
+        if run is None:
+            raise BoopliError("That task is not running any more.")
+        now = dt_util.utcnow()
+        try:
+            due = engine.park_time(when, at, now, self.tz)
+            steps, events = engine.park_part(run, group, now)
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
+        chore = engine.parked_chore(run, self.chores.get(run.chore_id), group.strip(), steps, due, now)
+        self.chores[chore.id] = chore
+        self._announce(events)
+        self._tick()
+        return chore
+
+    def set_parked_time(self, chore_id: str, when: str, at: str = "") -> None:
+        """Change when a parked part comes back (or make it wait for the user again)."""
+        chore = self.chores.get(chore_id)
+        if chore is None or not chore.parked or self._active_run_for(chore.id):
+            raise BoopliError("That part is not waiting any more.")
+        try:
+            chore.next_due = engine.park_time(when, at, dt_util.utcnow(), self.tz)
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
+        self._tick()
 
     def complete_step(self, run_id: str, step_id: str) -> None:
         """Mark a step done (the user pressed Done)."""

@@ -79,7 +79,9 @@ Rules:
 - Each step is ONE concrete physical action that starts with a verb ("Put all the cups on the tray"). No explanations and no motivation talk inside a step.
 - Make the steps really small: usually one to five minutes, even smaller when the person has little energy. A big job becomes many tiny steps. Use as many steps as it takes, at most 50.
 - The first step is the easiest possible way to start and takes under two minutes.
-- Group the steps by part or area ("Table", "Chairs", "Floor") with "group", and keep the steps of a group together. Use an empty group for a task without parts.
+- Group the steps by part or area ("Table", "Chairs", "Floor") with "group", and keep the steps of a group together. Use an empty group for a task without parts. A part is something the person can set aside and do another day, so every group must be complete on its own.
+- A task about a whole room or area ("clean the living room") means the whole job. When the notes name the things in that room, make one group for each thing that can be tidied or cleaned (a sofa, a table, a desk, the kitchen counter, the floor, the bin). Every such group gets its own full set of small steps in this order: gather the things that do not belong there, throw away the rubbish, put things back where they belong, clear the surface, wipe or clean it. Do not write just one step per object. Things that need no cleaning (a clock, a door) get no group. Put the floor and the bin last.
+- Treat what you know about the place as background, never as a list of jobs. Do not move or rearrange furniture and big objects, and do not hang, fix or build anything unless the task says so.
 - Order the steps so nothing has to be done twice.
 - Give every step a size: "small" (quick and easy), "medium" (takes some effort) or "big" (hard or long). Most steps are small.
 - If time has to pass before a step (washing machine running, something drying or soaking), put the minutes in "wait_minutes" of the step that comes after the waiting, otherwise 0.
@@ -198,7 +200,7 @@ What is already known about this room:
 Their answers so far:
 {answers}
 
-Ask short questions about what is in the room and how it is used: furniture and appliances, where things are stored, surfaces and floors, what usually gets messy, and anything awkward (a sticking door, a hard-to-reach corner). Do not ask about anything already known or already answered.
+Ask short questions about what is in the room and how it is used: furniture and appliances, where things are stored, surfaces and floors, what usually gets messy, and anything awkward (a sticking door, a hard-to-reach corner). Once, also ask where things belong in this room (where papers, clothes, dishes or tools go); this one is optional and the person may skip it. Do not ask about anything already known or already answered.
 - Keep every question short, one topic each. Give 2 to 6 short answer options that fit on a button. Set "multiple" to true when several options can be true at once. The person can always type their own words, so do not add an "other" option.
 - Ask at most 4 questions at a time. When the picture is good enough, set "enough" to true and leave "questions" empty.
 - Write in the language of the room name and the notes.
@@ -217,7 +219,7 @@ Their answers:
 {answers}
 
 Rules:
-- Plain short facts, one per line, for example "Dishwasher is under the counter" or "Balcony door sticks". Keep what was already known unless an answer replaces it.
+- Plain short facts, one per line, for example "Dishwasher is under the counter" or "Balcony door sticks". When they said where things belong, write that too, for example "Clothes go in the wardrobe". Keep what was already known unless an answer replaces it.
 - Only facts about the room. No advice and no chores. At most 1500 characters.
 - Write in the language of the room name and the notes.
 
@@ -282,7 +284,7 @@ Answer with a single JSON object and nothing else, like this:
 ROOM_CHAT_PROMPT = """I want to describe the room "{room}" in my home, so a helper app can later split chores in that room into small steps that fit it. Please interview me about it. I may be talking by voice, so keep it relaxed.
 
 How to do it:
-- Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner).
+- Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner), and, if I know, where things belong (where papers, clothes, dishes or tools go).
 - Do not ask about things I already told you. Keep going until I say I am done.
 {known}
 When I say I am done, answer with ONLY the notes, in one code block, one short fact per line, with no title, no bullets and no comments. For example:
@@ -297,7 +299,7 @@ Start now with your first question."""
 HOME_CHAT_PROMPT = """I want to describe my whole home, room by room, so a helper app can later split chores into small steps that fit each room. Please interview me about it. I may be talking by voice, so keep it relaxed.
 
 How to do it:
-- Go through one room at a time. Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner).
+- Go through one room at a time. Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner), and, if I know, where things belong (where papers, clothes, dishes or tools go).
 - Do not ask about things I already told you. When a room is done, move on to the next one. Keep going until I say I am done.
 {names}{known}
 When I say I am done, answer with ONLY the notes, in one code block: a heading line for each room that starts with "## ", then one short fact per line, with no bullets and no comments. For example:

@@ -76,6 +76,8 @@ export function buildToday(snapshot: Snapshot, nowMs: number): TodayModel {
           if (s.status === "active") hint = "ready now";
           else if (s.status === "waiting" && s.active_at)
             hint = untilLabel(s.active_at, nowMs);
+          else if (s.status === "waiting" && (s.wait_for ?? []).length > 0)
+            hint = "waits for something to happen";
           else if (s.wait_minutes > 0)
             hint = `${fmtMinutes(s.wait_minutes)} after the step before`;
           return { title: s.title, status: s.status, hint };

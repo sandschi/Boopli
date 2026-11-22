@@ -300,7 +300,6 @@ export class BoopliChoreEditor extends LitElement {
             @input=${(e: Event) =>
               this._updateStep(index, { title: (e.target as HTMLInputElement).value })}
           />
-          ${step.group ? html`<span class="tag" title="Part of the task">${step.group}</span>` : nothing}
           <span class="sizes" role="group" aria-label="Size of step ${index + 1}">
             ${(["small", "medium", "big"] as StepSize[]).map(
               (z) => html`<button
@@ -318,8 +317,22 @@ export class BoopliChoreEditor extends LitElement {
           <button type="button" aria-label="Move down" ?disabled=${index === last} @click=${() => this._moveStep(index, 1)}>↓</button>
           <button type="button" aria-label="Remove step" ?disabled=${last === 0} @click=${() => this._removeStep(index)}>✕</button>
         </div>
+        <div class="part">
+          <label class="muted small" for="part-${index}">Part of the task (optional):</label>
+          <input
+            id="part-${index}"
+            class="part-input"
+            list="parts-list"
+            maxlength="40"
+            placeholder="For example: Desk"
+            .value=${step.group ?? ""}
+            @input=${(e: Event) => this._updateStep(index, { group: (e.target as HTMLInputElement).value })}
+          />
+        </div>
         <div class="wait">
-          <span class="muted small">Wait before this step:</span>
+          <span class="muted small">
+            ${(step.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
+          </span>
           <div class="chips">
             ${WAIT_PRESETS.map(
               (p) => html`<button
@@ -346,6 +359,24 @@ export class BoopliChoreEditor extends LitElement {
             </span>
           </div>
         </div>
+        <details class="auto" ?open=${(step.wait_for ?? []).length > 0}>
+          <summary>
+            Wait until this happens…
+            ${(step.wait_for ?? []).length > 0
+              ? html`<span class="muted small">(${(step.wait_for ?? []).length} set)</span>`
+              : nothing}
+          </summary>
+          <p class="muted small">
+            The step stays quiet, with no nudges, until one of these happens, for example your washing machine's
+            "cycle finished" event. Then it is your turn. The minutes above become the longest it waits.
+          </p>
+          <boopli-triggers
+            .hass=${this.hass}
+            .triggers=${step.wait_for ?? []}
+            @triggers-change=${(e: CustomEvent<Trigger[]>) =>
+              this._updateStep(index, { wait_for: e.detail })}
+          ></boopli-triggers>
+        </details>
         <details class="auto" ?open=${(step.triggers ?? []).length > 0}>
           <summary>
             Finishes by itself when…
@@ -458,6 +489,11 @@ export class BoopliChoreEditor extends LitElement {
         </div>
         <div class="col-b">
         <h3 class="steps-title">Steps</h3>
+        <datalist id="parts-list">
+          ${[...new Set(d.steps.map((s) => (s.group ?? "").trim()).filter(Boolean))].map(
+            (g) => html`<option value=${g}></option>`
+          )}
+        </datalist>
         ${d.steps.map((_, i) => this._renderStep(i))}
         <div class="step-buttons">
           <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
@@ -618,6 +654,16 @@ export class BoopliChoreEditor extends LitElement {
       }
       .wait {
         margin-top: 10px;
+      }
+      .part {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .part-input {
+        max-width: 220px;
       }
       .wait .chips {
         margin-top: 6px;

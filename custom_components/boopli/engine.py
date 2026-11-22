@@ -247,12 +247,16 @@ class Step:
     triggers: list[Trigger] = field(default_factory=list)
     size: str = SIZE_SMALL  # small, medium or big: worth 10, 15 or 20 XP
     group: str = ""  # the part of the task it belongs to ("Table")
+    # "Wait until this happens": the step stays quiet until one of these is met.
+    # `wait_minutes` is then the longest it waits (0 = as long as it takes).
+    wait_for: list[Trigger] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Step:
         triggers = [Trigger.from_dict(t) for t in d.get("triggers") or []]
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             id=str(d.get("id") or new_id()),
             title=str(d.get("title", "")).strip(),
             wait_minutes=int(d.get("wait_minutes", 0) or 0),
@@ -336,10 +340,12 @@ class Chore:
     nudge_style: str = STYLE_ONE
     ignore_quiet_hours: bool = False  # for things like pills
     notes: str = ""  # what the AI learned about the task, kept for "update steps"
+    parked: bool = False  # a part of a task that was set aside to do later
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            parked=bool(d.get("parked", False)),
             notes=str(d.get("notes") or "").strip()[:NOTES_MAX],
             id=str(d.get("id") or new_id()),
             name=str(d.get("name", "")).strip(),
@@ -373,11 +379,13 @@ class StepRun:
     done_reason: str | None = None  # for "auto": what happened
     size: str = SIZE_SMALL  # snapshot from the chore
     group: str = ""  # snapshot from the chore
+    wait_for: list[Trigger] = field(default_factory=list)  # snapshot from the chore
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             size=size if size in SIZE_VALUES else SIZE_SMALL,
             group=str(d.get("group") or ""),
             step_id=str(d["step_id"]),
@@ -741,6 +749,12 @@ def validate_chore(chore: Chore) -> str | None:
             return "A step is small, medium or big."
         if len(step.title) > STEP_TITLE_MAX:
             return f"A step title can have at most {STEP_TITLE_MAX} letters."
+        if len(step.wait_for) > MAX_TRIGGERS:
+            return f"A step can wait for at most {MAX_TRIGGERS} things."
+        for trigger in step.wait_for:
+            error = validate_trigger(trigger)
+            if error:
+                return f"Step '{step.title}' (wait until): {error}"
         if len(step.triggers) > MAX_TRIGGERS:
             return f"A step can have at most {MAX_TRIGGERS} ways to finish by itself."
         for trigger in step.triggers:
@@ -869,13 +883,35 @@ def _became_active(step: StepRun) -> None:
 
 
 def _activate(step: StepRun, base: datetime) -> bool:
-    """Schedule a step after `base`. Return True when it is active right now."""
+    """Schedule a step after `base`. Return True when it is active right now.
+
+    A step that waits for something to happen stays quiet until it does. Its
+    `wait_minutes` is then the longest it waits (0 = as long as it takes).
+    """
+    if step.wait_for:
+        step.status = STEP_WAITING
+        step.active_at = (
+            fmt_ts(base + timedelta(minutes=step.wait_minutes)) if step.wait_minutes > 0 else None
+        )
+        return False
     step.active_at = fmt_ts(base + timedelta(minutes=step.wait_minutes))
     if step.wait_minutes <= 0:
         _became_active(step)
         return True
     step.status = STEP_WAITING
     return False
+
+
+def release_step(run: Run, step_id: str, now: datetime) -> list[Event]:
+    """What a waiting step was waiting for has happened: it is the user's turn now."""
+    if run.status != RUN_ACTIVE:
+        return []
+    step = next((s for s in run.steps if s.step_id == step_id), None)
+    if step is None or step.status != STEP_WAITING:
+        return []
+    step.active_at = fmt_ts(now)
+    _became_active(step)
+    return [_step_event(EVENT_STEP_ACTIVE, run, step, now)]
 
 
 def _step_event(name: str, run: Run, step: StepRun, now: datetime) -> Event:
@@ -907,6 +943,7 @@ def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
                 title=s.title,
                 wait_minutes=s.wait_minutes,
                 triggers=[replace(t) for t in s.triggers],
+                wait_for=[replace(t) for t in s.wait_for],
                 size=s.size,
                 group=s.group,
             )
@@ -976,6 +1013,100 @@ def complete_step(
             )
         )
     return events
+
+
+# --- parking a part of a task for later -------------------------------------
+
+PARK_ANY = "any"  # waits until the user starts it
+PARK_TOMORROW = "tomorrow"
+PARK_AT = "at"  # a date and time the user picked
+PARK_WHEN = (PARK_ANY, PARK_TOMORROW, PARK_AT)
+PARK_TOMORROW_HOUR = 9  # "tomorrow" means 09:00 local time
+PARK_NAME_MAX = 100
+
+
+def park_part(run: Run, group: str, now: datetime) -> tuple[list[StepRun], list[Event]]:
+    """Take a part (every unfinished step of one group) out of a run, to do later.
+
+    Nothing is lost: the caller turns the returned steps into a task of their own.
+    The run carries on with what is left. Raises ValueError with a message the
+    user can read when this does not make sense.
+    """
+    if run.status != RUN_ACTIVE:
+        raise ValueError("This task is not running.")
+    group = group.strip()
+    if not group:
+        raise ValueError("This step does not belong to a part.")
+    moving = [s for s in run.steps if s.group == group and s.status != STEP_DONE]
+    if not moving:
+        raise ValueError("Nothing in that part is left to do.")
+    moving_ids = {s.step_id for s in moving}
+    staying = [s for s in run.steps if s.step_id not in moving_ids and s.status != STEP_DONE]
+    if not staying:
+        raise ValueError(
+            "That is all that is left of this task. Use Snooze to wait, or finish it."
+        )
+    run.steps = [s for s in run.steps if s.step_id not in moving_ids]
+    events: list[Event] = []
+    if not any(s.status in (STEP_ACTIVE, STEP_WAITING) for s in run.steps):
+        upcoming = next((s for s in run.steps if s.status == STEP_PENDING), None)
+        if upcoming is not None and _activate(upcoming, now):
+            events.append(_step_event(EVENT_STEP_ACTIVE, run, upcoming, now))
+    return moving, events
+
+
+def park_time(when: str, at: str, now: datetime, tz: tzinfo) -> str | None:
+    """When a parked part comes back: None (waits for the user), tomorrow 09:00, or a picked time.
+
+    `at` is a local date and time like "2026-11-28T10:00". Raises ValueError for
+    a time that is missing, unreadable or already past.
+    """
+    if when == PARK_ANY:
+        return None
+    if when == PARK_TOMORROW:
+        day = now.astimezone(tz).date() + timedelta(days=1)
+        return fmt_ts(datetime.combine(day, dtime(PARK_TOMORROW_HOUR, 0), tzinfo=tz))
+    if when == PARK_AT:
+        try:
+            local = datetime.fromisoformat(str(at).strip())
+        except ValueError as err:
+            raise ValueError("Pick a date and a time.") from err
+        due = local.replace(tzinfo=tz) if local.tzinfo is None else local
+        if due <= now:
+            raise ValueError("Pick a time that has not passed yet.")
+        return fmt_ts(due)
+    raise ValueError("Choose when it comes back.")
+
+
+def parked_chore(
+    run: Run, parent: Chore | None, group: str, steps: list[StepRun], next_due: str | None, now: datetime
+) -> Chore:
+    """The small task that holds a parked part. It starts by itself at `next_due`, if there is one."""
+    parts = [
+        Step(
+            id=new_id(),
+            title=s.title,
+            wait_minutes=0 if index == 0 else s.wait_minutes,
+            resolve=RESOLVE_AUTO if s.triggers else RESOLVE_MANUAL,
+            triggers=[replace(t) for t in s.triggers],
+            wait_for=[replace(t) for t in s.wait_for],
+            size=s.size,
+            group=group,
+        )
+        for index, s in enumerate(steps)
+    ]
+    return Chore(
+        id=new_id(),
+        name=f"{run.chore_name}: {group}"[:PARK_NAME_MAX],
+        steps=parts,
+        where=run.where,
+        one_off=True,
+        parked=True,
+        next_due=next_due,
+        created_at=fmt_ts(now),
+        nudge_style=parent.nudge_style if parent else STYLE_ONE,
+        ignore_quiet_hours=parent.ignore_quiet_hours if parent else False,
+    )
 
 
 def wake_steps(run: Run, now: datetime) -> list[Event]:

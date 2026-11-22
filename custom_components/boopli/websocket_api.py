@@ -25,6 +25,8 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_chore_save)
     websocket_api.async_register_command(hass, ws_chore_delete)
     websocket_api.async_register_command(hass, ws_chore_start)
+    websocket_api.async_register_command(hass, ws_part_park)
+    websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
     websocket_api.async_register_command(hass, ws_step_snooze)
     websocket_api.async_register_command(hass, ws_settings_save)
@@ -143,6 +145,57 @@ def ws_chore_start(
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"], {"run_id": run.id})
+
+
+_PARK_FIELDS = {
+    vol.Required("when"): vol.In(["any", "tomorrow", "at"]),
+    vol.Optional("at", default=""): str,  # local "YYYY-MM-DDTHH:MM" when `when` is "at"
+}
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/part_park",
+        vol.Required("run_id"): str,
+        vol.Required("group"): str,
+        **_PARK_FIELDS,
+    }
+)
+@callback
+def ws_part_park(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Set a part of a running task aside to do later."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        chore = manager.park_part(msg["run_id"], msg["group"], msg["when"], msg["at"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], {"chore_id": chore.id})
+
+
+@websocket_api.websocket_command(
+    {vol.Required("type"): "boopli/part_time", vol.Required("chore_id"): str, **_PARK_FIELDS}
+)
+@callback
+def ws_part_time(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Change when a parked part comes back."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.set_parked_time(msg["chore_id"], msg["when"], msg["at"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], {})
 
 
 @websocket_api.websocket_command(

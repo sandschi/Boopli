@@ -1,10 +1,31 @@
 import { LitElement, html, css, nothing } from "lit";
-import { completeStep, errorMessage } from "./api";
+import { completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
 import { buildToday } from "./today";
-import { fmtTime, sinceLabel } from "./time";
+import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-pet";
-import type { Hass, Mood, Pet, Snapshot } from "./types";
+import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
+
+/** The question "when should this part come back?", for a part of a running task or a parked one. */
+interface ParkAsk {
+  runId?: string; // setting a part of a running task aside
+  group?: string;
+  choreId?: string; // changing the time of a part that is already parked
+  picking: boolean; // the date and time picker is open
+  at: string; // "YYYY-MM-DDTHH:MM"
+}
+
+/** How far along the part (group) of this step is, and whether it can be set aside. */
+function partInfo(run: Run, step: StepRun): { done: number; total: number; canPark: boolean } | null {
+  if (!step.group) return null;
+  const inPart = run.steps.filter((s) => s.group === step.group);
+  const outside = run.steps.some((s) => s.group !== step.group && s.status !== "done");
+  return {
+    done: inPart.filter((s) => s.status === "done").length,
+    total: inPart.length,
+    canPark: outside,
+  };
+}
 
 /** One friendly line per mood. Rewards only: nothing here ever scolds. */
 function moodLine(pet: Pet): string {
@@ -33,6 +54,8 @@ export class BoopliToday extends LitElement {
     _error: { state: true },
     _toast: { state: true },
     _quick: { state: true },
+    _park: { state: true },
+    _removing: { state: true },
   };
 
   declare hass?: Hass;
@@ -42,6 +65,8 @@ export class BoopliToday extends LitElement {
   declare _error: string;
   declare _toast: string;
   declare _quick: string;
+  declare _park: ParkAsk | null;
+  declare _removing: string; // the parked part that is asked "really remove?"
   private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
   private _toastTimer?: number;
@@ -53,6 +78,8 @@ export class BoopliToday extends LitElement {
     this._error = "";
     this._toast = "";
     this._quick = "";
+    this._park = null;
+    this._removing = "";
   }
 
   disconnectedCallback(): void {
@@ -163,6 +190,121 @@ export class BoopliToday extends LitElement {
     }
   }
 
+  // --- setting a part aside for later ---------------------------------------------------------
+
+  /** A sensible default for the picker: tomorrow at 09:00, in the browser's own time. */
+  private _defaultPick(): string {
+    const d = new Date(this.nowMs + 24 * 3600 * 1000);
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T09:00`;
+  }
+
+  private _openPark(ask: Omit<ParkAsk, "picking" | "at">): void {
+    this._error = "";
+    this._park = { ...ask, picking: false, at: this._defaultPick() };
+  }
+
+  private async _choose(when: ParkWhen): Promise<void> {
+    const ask = this._park;
+    if (!this.hass || !ask || this._busy) return;
+    if (when === "at" && !ask.picking) {
+      this._park = { ...ask, picking: true };
+      return;
+    }
+    this._busy = true;
+    this._error = "";
+    try {
+      if (ask.choreId) await partTime(this.hass, ask.choreId, when, ask.at);
+      else await partPark(this.hass, ask.runId ?? "", ask.group ?? "", when, ask.at);
+      this._park = null;
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  private _renderParkAsk() {
+    const ask = this._park;
+    if (!ask) return nothing;
+    return html`<div class="park-ask" role="group" aria-label="When should this part come back?">
+      <div class="small">${ask.choreId ? "When should it come back?" : `Set “${ask.group}” aside. When should it come back?`}</div>
+      <div class="park-buttons">
+        <button ?disabled=${this._busy} @click=${() => this._choose("any")}>When I want</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>Tomorrow, 9:00</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("at")}>Pick a time</button>
+        <button class="link" @click=${() => (this._park = null)}>Cancel</button>
+      </div>
+      ${ask.picking
+        ? html`<div class="park-pick">
+            <input
+              type="datetime-local"
+              aria-label="Date and time"
+              .value=${ask.at}
+              @input=${(e: Event) => this._park && (this._park = { ...this._park, at: (e.target as HTMLInputElement).value })}
+            />
+            <button class="primary" ?disabled=${this._busy || !ask.at} @click=${() => this._choose("at")}>Set it</button>
+          </div>`
+        : nothing}
+      <div class="muted small">Nothing is lost. The steps wait as their own small task under “Set aside for later”.</div>
+    </div>`;
+  }
+
+  /** Parts that were set aside and are not running now. */
+  private _parkedParts(): Chore[] {
+    const running = new Set(this.snapshot?.runs.map((r) => r.chore_id) ?? []);
+    return (this.snapshot?.chores ?? []).filter((c) => c.parked && !running.has(c.id));
+  }
+
+  private async _partAction(fn: () => Promise<unknown>): Promise<void> {
+    if (!this.hass || this._busy) return;
+    this._busy = true;
+    this._error = "";
+    try {
+      await fn();
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  private _renderParked() {
+    const parts = this._parkedParts();
+    if (parts.length === 0) return nothing;
+    const tz = this.snapshot?.time_zone ?? "UTC";
+    return html`<section class="card parked">
+      <h3>Set aside for later</h3>
+      ${parts.map(
+        (c) => html`<div class="part">
+          <div class="part-name">${c.name}</div>
+          <div class="muted small">
+            ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"} ·
+            ${c.next_due ? `comes back ${describeWhen(c.next_due, this.nowMs, tz)}` : "waiting until you start it"}
+          </div>
+          ${this._park?.choreId === c.id
+            ? this._renderParkAsk()
+            : html`<div class="part-actions">
+                <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => startChore(this.hass!, c.id))}>
+                  Start now
+                </button>
+                <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>Change time</button>
+                ${this._removing === c.id
+                  ? html`<span class="small">Remove it?</span>
+                      <button
+                        ?disabled=${this._busy}
+                        @click=${() => this._partAction(async () => { await deleteChore(this.hass!, c.id); this._removing = ""; })}
+                      >
+                        Yes, remove
+                      </button>
+                      <button class="link" @click=${() => (this._removing = "")}>Keep</button>`
+                  : html`<button class="link" @click=${() => (this._removing = c.id)}>Remove</button>`}
+              </div>`}
+        </div>`
+      )}
+    </section>`;
+  }
+
   /** Steps that finished by themselves in the last day, so nothing happens silently. */
   private _renderAuto() {
     const snapshot = this.snapshot;
@@ -226,6 +368,12 @@ export class BoopliToday extends LitElement {
                     <div class="muted small">Step ${model.now.done + 1} of ${model.now.total}</div>
                   </div>`
                 : nothing}
+              ${(() => {
+                const part = partInfo(model.now!.run, model.now!.step);
+                return part && part.total > 1
+                  ? html`<div class="muted small">${model.now!.step.group}: step ${Math.min(part.done + 1, part.total)} of ${part.total}</div>`
+                  : nothing;
+              })()}
               ${model.now.step.active_at
                 ? html`<div class="muted small">
                     ${sinceLabel(model.now.step.active_at, tz)}
@@ -245,6 +393,18 @@ export class BoopliToday extends LitElement {
               >
                 Done
               </button>
+              ${(() => {
+                const part = partInfo(model.now!.run, model.now!.step);
+                if (!part?.canPark) return nothing;
+                if (this._park && this._park.runId === model.now!.run.id) return this._renderParkAsk();
+                return html`<button
+                  class="link later-btn"
+                  ?disabled=${this._busy}
+                  @click=${() => this._openPark({ runId: model.now!.run.id, group: model.now!.step.group })}
+                >
+                  Do this part later
+                </button>`;
+              })()}
               ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             </section>
           `
@@ -260,6 +420,7 @@ export class BoopliToday extends LitElement {
           `}
       ${this._renderQuick()}
       </div><div class="col">
+      ${this._renderParked()}
       ${this._renderAuto()}
       ${model.groups.length > 0 || model.dueToday.length > 0
         ? html`
@@ -416,8 +577,54 @@ export class BoopliToday extends LitElement {
         border-radius: 14px;
       }
       .later,
-      .auto {
+      .auto,
+      .parked {
         margin-bottom: 24px;
+      }
+      .parked h3 {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--secondary-text-color);
+        margin-bottom: 8px;
+      }
+      .part {
+        padding: 10px 0;
+        border-top: 1px solid var(--divider-color);
+      }
+      .part:first-of-type {
+        border-top: 0;
+      }
+      .part-name {
+        font-size: 16px;
+      }
+      .part-actions,
+      .park-buttons,
+      .park-pick {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .park-ask {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+      }
+      .later-btn,
+      .link {
+        border: 0;
+        background: none;
+        color: var(--secondary-text-color);
+        text-decoration: underline;
+        min-height: 0;
+        padding: 8px 4px;
+        font-size: 15px;
+      }
+      .later-btn {
+        display: block;
+        margin-top: 10px;
       }
       .auto h3 {
         font-size: 15px;

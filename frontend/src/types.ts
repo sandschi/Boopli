@@ -33,6 +33,7 @@ export interface Step {
   triggers: Trigger[];
   size: StepSize; // small, medium or big: worth 10, 15 or 20 XP
   group: string; // the part of the task, for example Table
+  wait_for?: Trigger[]; // the step stays quiet until one of these happens
 }
 
 export interface Repeat {
@@ -56,6 +57,7 @@ export interface Chore {
   nudge_style: NudgeStyle;
   ignore_quiet_hours: boolean;
   notes: string; // what the AI learned about the task
+  parked: boolean; // a part of a task that was set aside to do later
 }
 
 export interface StepRun {
@@ -69,6 +71,7 @@ export interface StepRun {
   next_nudge_at: string | null;
   snoozed_until: string | null;
   triggers?: Trigger[];
+  wait_for?: Trigger[];
   done_by?: "manual" | "auto" | null;
   done_reason?: string | null;
   size?: StepSize;
@@ -254,6 +257,7 @@ export interface ChoreDraft {
     title: string;
     wait_minutes: number;
     triggers?: Trigger[];
+    wait_for?: Trigger[];
     size?: StepSize;
     group?: string;
   }[];

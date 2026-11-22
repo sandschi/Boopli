@@ -35,8 +35,8 @@ export const TEMPLATES: Template[] = [
       repeat: { ...noRepeat, days: {} },
       steps: [
         { title: "Start the washing machine", wait_minutes: 0 },
-        { title: "Move the laundry to the dryer", wait_minutes: 60 },
-        { title: "Take the laundry out and fold it", wait_minutes: 90 },
+        { title: "Hang the laundry up", wait_minutes: 60 },
+        { title: "Take the laundry down and put it away", wait_minutes: 240 },
       ],
     },
   },
