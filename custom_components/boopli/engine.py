@@ -19,10 +19,12 @@ There is deliberately no "overdue" state. A step is active until it is done.
 from __future__ import annotations
 
 import colorsys
+import re
 import uuid
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
 from typing import Any
+from urllib.parse import quote
 
 # --- constants -----------------------------------------------------------
 
@@ -281,12 +283,14 @@ class Step:
     # `wait_minutes` is then the longest it waits (0 = as long as it takes).
     wait_for: list[Trigger] = field(default_factory=list)
     only_if: str = ""  # id of a question of the chore: the step is only there when it is answered yes
+    image: str = ""  # a picture for the phone notification: "camera.x" or a file in the media folder
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Step:
         triggers = [Trigger.from_dict(t) for t in d.get("triggers") or []]
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            image=str(d.get("image") or "").strip(),
             only_if=str(d.get("only_if") or "").strip(),
             wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             id=str(d.get("id") or new_id()),
@@ -419,11 +423,13 @@ class StepRun:
     only_if: str = ""  # snapshot from the chore: a question id
     on_it_since: str | None = None  # "On it": when the person said they are doing this step
     on_it_until: str | None = None  # while it is in progress: when Boopli checks in
+    image: str = ""  # snapshot from the chore: the picture for the phone notification
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            image=str(d.get("image") or ""),
             on_it_since=d.get("on_it_since"),
             on_it_until=d.get("on_it_until"),
             only_if=str(d.get("only_if") or ""),
@@ -809,6 +815,46 @@ def validate_trigger(t: Trigger) -> str | None:
     return None
 
 
+PICTURE_MAX = 120
+PICTURE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp")
+_CAMERA_RE = re.compile(r"^camera\.[a-z0-9_]+$")
+_PICTURE_FILE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 _.()\-]*(/[A-Za-z0-9][A-Za-z0-9 _.()\-]*)*$")
+
+
+def validate_picture(image: str) -> str | None:
+    """Return an error message, or None. Empty is fine (no picture).
+
+    A picture is a camera ("camera.front_door") or a file in the media folder
+    ("boopli/pills.jpg"). Never a web address, and never a way out of the folder.
+    """
+    if not image:
+        return None
+    if len(image) > PICTURE_MAX:
+        return f"A picture name can have at most {PICTURE_MAX} letters."
+    if _CAMERA_RE.match(image):
+        return None
+    if (
+        ".." in image
+        or not _PICTURE_FILE_RE.match(image)
+        or not image.lower().endswith(PICTURE_EXTENSIONS)
+    ):
+        return "A picture is a camera, or a .jpg, .png, .gif or .webp file in the media folder."
+    return None
+
+
+def picture_data(image: str, media_id: str = "local") -> dict[str, Any]:
+    """The notification data that makes the phone show the picture (empty when there is none).
+
+    A camera: a fresh snapshot (Android reads `image`, iOS reads `entity_id`).
+    A file: the media folder, which needs a login, unlike the public www folder.
+    """
+    if not image:
+        return {}
+    if _CAMERA_RE.match(image):
+        return {"image": f"/api/camera_proxy/{image}", "entity_id": image}
+    return {"image": f"/media/{media_id}/{quote(image)}"}
+
+
 def validate_chore(chore: Chore) -> str | None:
     """Return an error message, or None when the chore is valid."""
     if not chore.name:
@@ -837,6 +883,9 @@ def validate_chore(chore: Chore) -> str | None:
             return f"Step '{step.title}' points to a question that does not exist."
         if not step.title:
             return "Every step needs a title."
+        error = validate_picture(step.image)
+        if error:
+            return f"Step '{step.title}': {error}"
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
             return "A wait must be between 0 minutes and 7 days."
         if step.size not in SIZE_VALUES:
@@ -1066,6 +1115,7 @@ def start_run(
                 size=s.size,
                 group=s.group,
                 only_if=s.only_if,
+                image=s.image,
             )
             for s in chosen
         ],
@@ -2182,9 +2232,12 @@ def phone_payload(
     title: str,
     message: str,
     snooze_minutes: int,
+    image: str = "",
+    media_id: str = "local",
 ) -> dict[str, Any]:
     """Build the data for a notify.mobile_app_* call."""
     data: dict[str, Any] = {
+        **picture_data(image, media_id),
         "tag": notification_tag(run_id, step_id),
         "actions": [
             {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
@@ -2207,7 +2260,13 @@ def phone_payload(
 
 
 def on_it_payload(
-    run_id: str, step_id: str, chore_name: str, step_title: str, since: str
+    run_id: str,
+    step_id: str,
+    chore_name: str,
+    step_title: str,
+    since: str,
+    image: str = "",
+    media_id: str = "local",
 ) -> dict[str, Any]:
     """The same notification again, now green and quiet: "In progress".
 
@@ -2218,6 +2277,7 @@ def on_it_payload(
         "title": chore_name,
         "message": f"✅ In progress: {step_title} (since {since})",
         "data": {
+            **picture_data(image, media_id),  # the picture stays when the nudge is replaced
             "tag": notification_tag(run_id, step_id),
             "sticky": True,
             "color": ON_IT_COLOR,
@@ -2231,13 +2291,19 @@ def on_it_payload(
 
 
 def check_in_payload(
-    run_id: str, step_id: str, chore_name: str, step_title: str
+    run_id: str,
+    step_id: str,
+    chore_name: str,
+    step_title: str,
+    image: str = "",
+    media_id: str = "local",
 ) -> dict[str, Any]:
     """"Still on it?": replaces the green notification, back to the normal look, with a sound."""
     return {
         "title": chore_name,
         "message": f"Still on: {step_title}?",
         "data": {
+            **picture_data(image, media_id),
             "tag": notification_tag(run_id, step_id),
             "actions": [
                 {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},

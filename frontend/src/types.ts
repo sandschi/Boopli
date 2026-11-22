@@ -35,6 +35,7 @@ export interface Step {
   group: string; // the part of the task, for example Table
   wait_for?: Trigger[]; // the step stays quiet until one of these happens
   only_if?: string; // id of a question of the chore: the step is only there on "yes"
+  image?: string; // a picture for the phone notification: "camera.x" or a file in the media folder
 }
 
 /** A yes/no question a chore asks every time it starts ("Does the table need decluttering?"). */
@@ -293,6 +294,7 @@ export interface ChoreDraft {
     size?: StepSize;
     group?: string;
     only_if?: string;
+    image?: string;
   }[];
 }
 

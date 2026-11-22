@@ -3,6 +3,7 @@ import { deleteChore, errorMessage, saveChore } from "./api";
 import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
+import "./boopli-picture";
 import "./boopli-schedule-days";
 import "./boopli-schedule-wizard";
 import "./boopli-breakdown";
@@ -244,6 +245,7 @@ export class BoopliChoreEditor extends LitElement {
           ...s,
           title: s.title.trim(),
           only_if: s.only_if && known.has(s.only_if) ? s.only_if : "",
+          image: (s.image ?? "").trim(),
         })),
       });
       this._close();
@@ -433,6 +435,17 @@ export class BoopliChoreEditor extends LitElement {
             @triggers-change=${(e: CustomEvent<Trigger[]>) =>
               this._updateStep(index, { wait_for: e.detail })}
           ></boopli-triggers>
+        </details>
+        <details class="auto" ?open=${!!step.image}>
+          <summary>
+            📷 Picture…
+            ${step.image ? html`<span class="muted small">(set)</span>` : nothing}
+          </summary>
+          <boopli-picture
+            .hass=${this.hass}
+            .value=${step.image ?? ""}
+            @picture-change=${(e: CustomEvent<string>) => this._updateStep(index, { image: e.detail })}
+          ></boopli-picture>
         </details>
         <details class="auto" ?open=${(step.triggers ?? []).length > 0}>
           <summary>
