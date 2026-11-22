@@ -80,6 +80,7 @@ export class BoopliChores extends LitElement {
         size: s.size ?? "small",
         group: s.group ?? "",
         only_if: s.only_if ?? "",
+        image: s.image ?? "",
       })),
     };
   }

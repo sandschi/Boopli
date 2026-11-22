@@ -91,8 +91,12 @@ class BoopliNudger:
         step_title: str,
         channels: str,
         number: int = 1,
+        image: str = "",
     ) -> None:
-        """Send nudge number `number` on every channel that has reached it."""
+        """Send nudge number `number` on every channel that has reached it.
+
+        `image` (optional) is the picture the phones show with it.
+        """
         settings = self.manager.settings
         key = f"{run_id}:{step_id}"
         if channels == engine.CHANNELS_ALL:
@@ -116,6 +120,8 @@ class BoopliNudger:
                 chore_name,
                 step_title,
                 settings.snooze_minutes,
+                image,
+                self.manager.media_id(),
             )
             await self._notify(phone.service, payload)
 
@@ -126,13 +132,21 @@ class BoopliNudger:
         if not step.on_it_since:
             return
         since = engine.parse_ts(step.on_it_since).astimezone(self.manager.tz).strftime("%H:%M")
-        payload = engine.on_it_payload(run.id, step.step_id, run.chore_name, step.title, since)
+        payload = engine.on_it_payload(
+            run.id, step.step_id, run.chore_name, step.title, since, step.image, self.manager.media_id()
+        )
         for phone in self.manager.settings.phones:
             if step.nudge_count > 0 and engine.reached(phone.start_at, step.nudge_count):
                 await self._notify(phone.service, payload)
 
     async def async_send_check_in(
-        self, run_id: str, chore_name: str, step_id: str, step_title: str, number: int = 1
+        self,
+        run_id: str,
+        chore_name: str,
+        step_id: str,
+        step_title: str,
+        number: int = 1,
+        image: str = "",
     ) -> None:
         """"Still on it?": a normal looking notification on the phones, nothing else.
 
@@ -140,7 +154,9 @@ class BoopliNudger:
         It goes to the phones that have reached nudge `number`, the same ones that were
         shown the green notification, so every phone that has one gets it replaced.
         """
-        payload = engine.check_in_payload(run_id, step_id, chore_name, step_title)
+        payload = engine.check_in_payload(
+            run_id, step_id, chore_name, step_title, image, self.manager.media_id()
+        )
         for phone in self.manager.settings.phones:
             if engine.reached(phone.start_at, number):
                 await self._notify(phone.service, payload)

@@ -750,7 +750,12 @@ class BoopliManager:
                     if check_in:
                         self.hass.async_create_task(
                             self.nudger.async_send_check_in(
-                                run.id, run.chore_name, step.step_id, step.title, number
+                                run.id,
+                                run.chore_name,
+                                step.step_id,
+                                step.title,
+                                number,
+                                step.image,
                             )
                         )
                     else:
@@ -762,6 +767,7 @@ class BoopliManager:
                                 step.title,
                                 decision.channels,
                                 number,
+                                step.image,
                             )
                         )
                     events.append(
@@ -1420,6 +1426,11 @@ class BoopliManager:
             else:
                 raise BoopliError("Only JPEG or PNG photos work.")
         return result
+
+    def media_id(self) -> str:
+        """The id of the media folder pictures are read from ("local" unless it is named otherwise)."""
+        dirs = dict(getattr(self.hass.config, "media_dirs", None) or {})
+        return "local" if not dirs or "local" in dirs else next(iter(dirs))
 
     def _media_dir(self) -> tuple[str, str]:
         """(id, folder) of the media folder photos are handed over in."""
