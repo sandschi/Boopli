@@ -189,6 +189,7 @@ export interface Settings {
   snooze_minutes: number;
   default_style: NudgeStyle;
   pet_name: string;
+  pet_kind?: string; // which pet: bear, cat, dog, fox or slime
   ai: AiSettings;
   question_wait_minutes?: number; // how long the first nudge waits for the questions
   check_in_minutes?: number; // after "On it": when Boopli asks "still on it?"

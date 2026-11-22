@@ -49,6 +49,8 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   const out: string[] = [];
 
   if (before.pet_name !== after.pet_name) out.push(`Pet name: ${before.pet_name} → ${after.pet_name}`);
+  if ((before.pet_kind ?? "slime") !== (after.pet_kind ?? "slime"))
+    out.push(`Pet: ${before.pet_kind ?? "slime"} → ${after.pet_kind ?? "slime"}`);
 
   const phones = byKey(before.phones, after.phones, (p) => p.service);
   phones.added.forEach((p) => out.push(`Phone added: ${phoneName(p.service)} (${PHONE_LEVEL_LABEL[p.level] ?? p.level})`));

@@ -51,6 +51,7 @@ export class BoopliAway extends LitElement {
     snapshot: { attribute: false },
     nowMs: { type: Number },
     _changing: { state: true },
+    _expanded: { state: true },
     _later: { state: true },
     _start: { state: true },
     _open: { state: true },
@@ -64,6 +65,7 @@ export class BoopliAway extends LitElement {
   declare snapshot?: Snapshot;
   declare nowMs: number;
   declare _changing: boolean; // away mode is on and its form is open to change it
+  declare _expanded: boolean; // the card is open (it starts as one thin row)
   declare _later: boolean; // it begins at a date, not now
   declare _start: string;
   declare _open: boolean; // true = no end date, until you switch it off
@@ -77,6 +79,7 @@ export class BoopliAway extends LitElement {
     super();
     this.nowMs = Date.now();
     this._changing = false;
+    this._expanded = false;
     this._later = false;
     this._start = localPick(1, 8, "UTC");
     this._open = false;
@@ -113,6 +116,14 @@ export class BoopliAway extends LitElement {
     this._seedKeep();
     this._error = "";
     this._changing = true;
+    this._expanded = true;
+  }
+
+  private _toggle(): void {
+    const open = this._expanded || this._changing;
+    this._changing = false;
+    this._expanded = !open;
+    this._error = "";
   }
 
   private async _submit(): Promise<void> {
@@ -122,6 +133,7 @@ export class BoopliAway extends LitElement {
     try {
       await awaySet(this.hass, this._later ? this._start : "", this._open ? "" : this._until, this._keep);
       this._changing = false;
+      this._expanded = false; // done: back to the thin row, which now says it is on
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -136,6 +148,7 @@ export class BoopliAway extends LitElement {
     try {
       await awayEnd(this.hass);
       this._changing = false;
+      this._expanded = false;
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -147,7 +160,6 @@ export class BoopliAway extends LitElement {
     const onNow = !!this.snapshot?.away_now;
     const tz = this.snapshot?.time_zone ?? "UTC";
     return html`
-      <h2>🧳 Away mode is ${onNow ? "on" : "planned"}</h2>
       <p>${awayWhen(away, this.nowMs, tz, onNow)}</p>
       <p class="muted small">
         ${onNow
@@ -167,7 +179,6 @@ export class BoopliAway extends LitElement {
   private _renderForm(away: Away | undefined) {
     const chores = this._chores();
     return html`
-      <h2>🧳 ${away?.active ? "Change away mode" : "Away mode"}</h2>
       <p class="muted small">
         Boopli rests: nothing starts and nothing nudges you, except the chores you tick below. Your pet stays just as
         it is, and when you are back it carries on from there.
@@ -240,8 +251,29 @@ export class BoopliAway extends LitElement {
 
   render() {
     const away = this.snapshot?.away;
-    if (away?.active && !this._changing) return this._renderOn(away);
-    return this._renderForm(away);
+    const tz = this.snapshot?.time_zone ?? "UTC";
+    const onNow = !!this.snapshot?.away_now;
+    const open = this._expanded || this._changing;
+    const status = away?.active
+      ? `${onNow ? "On" : "Planned"}: ${awayWhen(away, this.nowMs, tz, onNow)}`
+      : "Off";
+    return html`
+      <div class="head-row">
+        <button type="button" class="head" aria-expanded=${open} @click=${() => this._toggle()}>
+          <span class="title">🧳 Away mode</span>
+          <span class="status ${away?.active ? "on" : ""}">${status}</span>
+          <span class="chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
+        </button>
+        ${away?.active && !open
+          ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
+              ${onNow ? "Back now" : "Cancel it"}
+            </button>`
+          : nothing}
+      </div>
+      ${open
+        ? html`<div class="body">${away?.active && !this._changing ? this._renderOn(away) : this._renderForm(away)}</div>`
+        : nothing}
+    `;
   }
 
   static styles = [
@@ -250,8 +282,48 @@ export class BoopliAway extends LitElement {
       :host {
         display: block;
       }
-      h2 {
-        margin-top: 0;
+      .head-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .head {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .title {
+        font-size: 18px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .status {
+        flex: 1;
+        min-width: 0;
+        font-size: 14px;
+        color: var(--secondary-text-color);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .status.on {
+        color: var(--warning-color, #ffa600);
+        font-weight: 600;
+      }
+      .chev {
+        color: var(--secondary-text-color);
+      }
+      .body {
+        margin-top: 8px;
       }
       .field {
         margin: 14px 0;

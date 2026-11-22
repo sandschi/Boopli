@@ -176,6 +176,8 @@ XP_RUNS_PER_DAY = 3  # runs of one chore that earn XP per day
 PROGRESS_DAYS_KEPT = 7  # how long the per-day XP bookkeeping is kept
 PET_NAME_DEFAULT = "Boopli"
 PET_NAME_MAX = 30
+PET_KINDS = ("bear", "cat", "dog", "fox", "slime")  # the pets to choose from
+PET_KIND_DEFAULT = "slime"  # the first one with real animated art
 
 MOOD_HAPPY = "happy"  # you finished something today
 MOOD_CONTENT = "content"  # yesterday, or just getting started
@@ -1914,6 +1916,7 @@ class Settings:
     snooze_minutes: int = 15
     default_style: str = STYLE_ONE
     pet_name: str = PET_NAME_DEFAULT
+    pet_kind: str = PET_KIND_DEFAULT  # which pet it is (see PET_KINDS)
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
@@ -1939,6 +1942,7 @@ class Settings:
             presence_entity=str(d.get("presence_entity", "")).strip(),
             snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
             default_style=str(d.get("default_style", STYLE_ONE)),
+            pet_kind=str(d.get("pet_kind") or PET_KIND_DEFAULT).strip(),
             pet_name=str(d.get("pet_name") or PET_NAME_DEFAULT).strip()
             or PET_NAME_DEFAULT,
         )
@@ -2064,6 +2068,8 @@ def validate_settings(settings: Settings) -> str | None:
         return f"A prompt can have at most {AI_PROMPT_MAX} letters."
     if len(settings.pet_name) > PET_NAME_MAX:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
+    if settings.pet_kind not in PET_KINDS:
+        return "Pick a pet from the list."
     if settings.default_style not in STYLE_VALUES:
         return "Unknown default nudge style."
     return None
