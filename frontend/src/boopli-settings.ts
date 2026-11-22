@@ -626,8 +626,8 @@ export class BoopliSettings extends LitElement {
 
   private _renderOther(d: Settings) {
     return html`
-      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "default_style")}>
-        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "default_style")}</h2>
+      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}>
+        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}</h2>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -679,6 +679,20 @@ export class BoopliSettings extends LitElement {
           <div class="muted small">
             For chores that start by themselves and have questions. They start with all steps; this is how long Boopli
             waits for your answers before it nudges.
+          </div>
+        </div>
+        <div class="field">
+          <label for="checkin">After "On it", Boopli asks "still on it?" after (minutes)</label>
+          <input
+            id="checkin"
+            type="number"
+            min="5"
+            max="720"
+            .value=${String(d.check_in_minutes ?? 30)}
+            @input=${(e: Event) => this._set({ check_in_minutes: Number((e.target as HTMLInputElement).value) || 30 })}
+          />
+          <div class="muted small">
+            When you press "On it" on a nudge, Boopli stays quiet while you work and checks in once after this time.
           </div>
         </div>
         <div class="field">

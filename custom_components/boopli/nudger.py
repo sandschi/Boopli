@@ -75,6 +75,10 @@ class BoopliNudger:
             self.manager.snooze(run_id, step_id)
         elif kind == engine.ACTION_ALL_STEPS:
             self.manager.answer_questions(run_id, {})  # no answers: start with all steps
+        elif kind == engine.ACTION_ON_IT:
+            self.manager.on_it(run_id, step_id)
+        elif kind == engine.ACTION_NOT_ON_IT:
+            self.manager.not_on_it(run_id, step_id)
 
     # --- sending ---------------------------------------------------------
 
@@ -113,6 +117,30 @@ class BoopliNudger:
                 settings.snooze_minutes,
             )
             await self._notify(phone.service, payload)
+
+    async def async_show_on_it(self, run: engine.Run, step: engine.StepRun) -> None:
+        """"On it": stop the alarms, blinks and speakers of this step, and turn the phone
+        notification green in place (same tag), so the person sees it was noticed."""
+        await self.async_silence(f"{run.id}:{step.step_id}")
+        if not step.on_it_since:
+            return
+        since = engine.parse_ts(step.on_it_since).astimezone(self.manager.tz).strftime("%H:%M")
+        payload = engine.on_it_payload(run.id, step.step_id, run.chore_name, step.title, since)
+        for phone in self.manager.settings.phones:
+            if step.nudge_count > 0 and engine.reached(phone.start_at, step.nudge_count):
+                await self._notify(phone.service, payload)
+
+    async def async_send_check_in(
+        self, run_id: str, chore_name: str, step_id: str, step_title: str
+    ) -> None:
+        """"Still on it?": a normal looking notification on the phones, nothing else.
+
+        It replaces the green one, so it makes a sound once. No lights, speakers or alarms.
+        """
+        payload = engine.check_in_payload(run_id, step_id, chore_name, step_title)
+        for phone in self.manager.settings.phones:
+            if engine.reached(phone.start_at, 1):
+                await self._notify(phone.service, payload)
 
     async def async_send_questions(self, run: engine.Run) -> None:
         """Tell the phones that a chore started and has questions to answer.

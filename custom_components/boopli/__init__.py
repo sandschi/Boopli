@@ -48,6 +48,8 @@ SERVICE_BREAK_DOWN = "break_down"
 SERVICE_START_CHORE = "start_chore"
 SERVICE_COMPLETE_STEP = "complete_step"
 SERVICE_SNOOZE_STEP = "snooze_step"
+SERVICE_STEP_ON_IT = "step_on_it"
+SERVICE_STEP_NOT_ON_IT = "step_not_on_it"
 SERVICE_DELETE_CHORE = "delete_chore"
 SERVICE_SET_AWAY = "set_away"
 SERVICE_END_AWAY = "end_away"
@@ -121,6 +123,18 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         except BoopliError as err:
             raise ServiceValidationError(str(err)) from err
 
+    async def step_on_it(call: ServiceCall) -> None:
+        try:
+            _manager(hass).on_it_chore(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def step_not_on_it(call: ServiceCall) -> None:
+        try:
+            _manager(hass).not_on_it_chore(call.data["chore"])
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
     async def delete_chore(call: ServiceCall) -> None:
         try:
             _manager(hass).delete_chore(call.data["chore"])
@@ -169,6 +183,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     hass.services.async_register(
         DOMAIN, SERVICE_SNOOZE_STEP, snooze_step, CHORE_SCHEMA
     )
+    hass.services.async_register(DOMAIN, SERVICE_STEP_ON_IT, step_on_it, CHORE_SCHEMA)
+    hass.services.async_register(DOMAIN, SERVICE_STEP_NOT_ON_IT, step_not_on_it, CHORE_SCHEMA)
     hass.services.async_register(
         DOMAIN, SERVICE_DELETE_CHORE, delete_chore, CHORE_SCHEMA
     )

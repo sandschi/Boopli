@@ -64,6 +64,26 @@
         }
       }
     },
+    "step_on_it": {
+      "name": "Step: on it",
+      "description": "Says you are doing the step that is waiting for you in a chore. It stays quiet until the check-in, then asks if you are still on it.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Step: not on it",
+      "description": "Takes \"on it\" back: the step is nudged again as usual.",
+      "fields": {
+        "chore": {
+          "name": "Chore",
+          "description": "The name or id of the chore."
+        }
+      }
+    },
     "delete_chore": {
       "name": "Delete chore",
       "description": "Deletes a chore and anything in progress for it.",

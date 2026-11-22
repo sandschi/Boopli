@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
+import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
 import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
@@ -191,6 +191,20 @@ export class BoopliToday extends LitElement {
     this._error = "";
     try {
       await completeStep(this.hass, runId, stepId);
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  /** "On it" (or "Still on it", or taking it back): quiet until the check-in. */
+  private async _working(runId: string, stepId: string, on: boolean): Promise<void> {
+    if (!this.hass || this._busy) return;
+    this._busy = true;
+    this._error = "";
+    try {
+      await (on ? onIt : notOnIt)(this.hass, runId, stepId);
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -486,7 +500,7 @@ export class BoopliToday extends LitElement {
       ${this._renderQuestions()}
       ${model.now
         ? html`
-            <section class="card now">
+            <section class=${model.now.step.on_it_until ? "card now working" : "card now"}>
               <div class="muted small">
                 ${model.now.run.chore_name}
                 ${model.now.step.group ? html`<span class="tag">${model.now.step.group}</span>` : nothing}
@@ -517,14 +531,37 @@ export class BoopliToday extends LitElement {
                     Snoozed until ${fmtTime(model.now.step.snoozed_until, tz)}
                   </div>`
                 : nothing}
-              <button
-                class="primary done"
-                ?disabled=${this._busy}
-                @click=${() =>
-                  this._done(model.now!.run.id, model.now!.step.step_id)}
-              >
-                Done
-              </button>
+              ${model.now.step.on_it_until
+                ? html`<div class="in-progress">
+                    ✅ In progress${model.now.step.on_it_since ? html` since ${fmtTime(model.now.step.on_it_since, tz)}` : nothing}
+                    <span class="muted small">· Boopli checks in at ${fmtTime(model.now.step.on_it_until, tz)}</span>
+                  </div>`
+                : nothing}
+              <div class="now-buttons">
+                <button
+                  class="primary done"
+                  ?disabled=${this._busy}
+                  @click=${() =>
+                    this._done(model.now!.run.id, model.now!.step.step_id)}
+                >
+                  Done
+                </button>
+                ${model.now.step.on_it_until
+                  ? html`<button
+                      class="link"
+                      ?disabled=${this._busy}
+                      @click=${() => this._working(model.now!.run.id, model.now!.step.step_id, false)}
+                    >
+                      Not on it
+                    </button>`
+                  : html`<button
+                      class="on-it"
+                      ?disabled=${this._busy}
+                      @click=${() => this._working(model.now!.run.id, model.now!.step.step_id, true)}
+                    >
+                      On it
+                    </button>`}
+              </div>
               ${(() => {
                 const part = partInfo(model.now!.run, model.now!.step);
                 if (!part?.canPark) return nothing;
@@ -726,11 +763,37 @@ export class BoopliToday extends LitElement {
         margin: 8px 0;
       }
       .done {
-        margin-top: 20px;
         min-width: 180px;
         min-height: 56px;
         font-size: 20px;
         border-radius: 14px;
+      }
+      .now-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .on-it {
+        min-height: 56px;
+        padding: 0 22px;
+        font-size: 18px;
+        border-radius: 14px;
+        border: 2px solid var(--success-color, #2e7d32);
+        color: var(--success-color, #2e7d32);
+        background: transparent;
+        cursor: pointer;
+      }
+      /* A step you said "On it" to: green, so it is clear it was noticed. */
+      .now.working {
+        border: 2px solid var(--success-color, #2e7d32);
+        background: color-mix(in srgb, var(--success-color, #2e7d32) 12%, var(--card-background-color, transparent));
+      }
+      .in-progress {
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--success-color, #2e7d32);
       }
       /* The lists next to the big step: a clear heading, a visible line, calm rows. */
       .sec {
