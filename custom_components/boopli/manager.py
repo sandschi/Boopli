@@ -43,8 +43,8 @@ STORAGE_KEY = DOMAIN
 SAVE_DELAY = 1  # seconds
 HISTORY_MAX = 1000
 HISTORY_IN_SNAPSHOT = 200
-AI_TIMEOUT = 90  # seconds to wait for the AI agent
-AI_PHOTO_TIMEOUT = 150  # reading photos takes longer
+AI_TIMEOUT = 180  # the longest Boopli waits for the AI agent, in seconds (free models can be slow)
+AI_PHOTO_TIMEOUT = 180  # reading photos: the same limit
 MAX_PHOTOS = 4  # per room, one time
 PHOTO_MAX_BYTES = 2_500_000  # each, after the panel shrank it
 PHOTO_DIR = "boopli_tmp"  # inside the media folder; emptied right after every request
@@ -223,6 +223,7 @@ class BoopliManager:
         return {
             "now": engine.fmt_ts(now),
             "time_zone": str(self.tz),
+            "ai_timeout": AI_TIMEOUT,  # so the panel can show how long it will wait
             "is_home": self.is_home(),
             "pet": self.pet(),
             "setup": engine.to_dict(self.setup),
@@ -1011,7 +1012,13 @@ class BoopliManager:
         return [r.id for r in self._rooms_for(task, None)]
 
     def ai_preview(
-        self, task: str, kind: str, answers: Any, notes: str, rooms: list[str] | None
+        self,
+        task: str,
+        kind: str,
+        answers: Any,
+        notes: str,
+        rooms: list[str] | None,
+        scene: str = "",
     ) -> dict[str, Any]:
         """Exactly what the first request to the AI would contain."""
         text, shortened = self.rooms_text(task, rooms)
@@ -1022,6 +1029,7 @@ class BoopliManager:
             notes,
             self.settings.ai.questions_prompt,
             text,
+            scene,
         )
         return {
             "instructions": instructions,
@@ -1145,6 +1153,39 @@ class BoopliManager:
         the answer, also when the agent fails. Nothing is saved here.
         """
         name = self._room_name(room)
+        instructions = breakdown.room_instructions(
+            breakdown.ROOM_PHOTOS_PROMPT, name, None, notes
+        )
+        text = await self._ask_with_photos(
+            "Boopli: room photos", instructions, photos, breakdown.parse_room_notes
+        )
+        return {"notes": text}
+
+    async def async_scene_from_photos(
+        self, task: str, photos: Any, rooms: list[str] | None = None
+    ) -> dict[str, Any]:
+        """Describe what a place looks like right now from photos, for one task.
+
+        Same one-time route as room photos: the photos are never kept. The answer
+        is text that the user can edit and that goes along with the next requests.
+        """
+        task = breakdown.clean_text(task, breakdown.TITLE_MAX)
+        if not task:
+            raise BoopliError("Write what you want to get done first.")
+        instructions = breakdown.scene_instructions(task, self.rooms_text(task, rooms)[0])
+        text = await self._ask_with_photos(
+            "Boopli: what it looks like today", instructions, photos, breakdown.parse_room_notes
+        )
+        return {"scene": text[: breakdown.SCENE_MAX]}
+
+    async def _ask_with_photos(
+        self, name: str, instructions: str, photos: Any, parse: Callable[[Any], str]
+    ) -> str:
+        """Hand photos to the agent through temporary files, read its answer, delete the files.
+
+        Home Assistant passes attachments as files in the media folder. Every file is
+        deleted right after the answer, also when the agent fails. Nothing is saved.
+        """
         decoded = self.decode_photos(photos)
         dir_id, base = self._media_dir()
         folder = Path(base) / PHOTO_DIR
@@ -1159,21 +1200,18 @@ class BoopliManager:
             }
             for path, mime in written
         ]
-        instructions = breakdown.room_instructions(
-            breakdown.ROOM_PHOTOS_PROMPT, name, None, notes
-        )
         agent = self.settings.ai.photo_entity_id
         try:
             for attempt in (1, 2):
                 data = await self._run_agent(
-                    "Boopli: room photos",
+                    name,
                     instructions,
                     attachments=attachments,
                     entity_id=agent,
                     timeout=AI_PHOTO_TIMEOUT,
                 )
                 try:
-                    return {"notes": breakdown.parse_room_notes(data)}
+                    return parse(data)
                 except breakdown.BreakdownError as err:
                     if attempt == 2:
                         raise BoopliError(str(err)) from err
@@ -1226,6 +1264,7 @@ class BoopliManager:
         answers: Any = None,
         notes: str = "",
         rooms: list[str] | None = None,
+        scene: str = "",
     ) -> dict[str, Any]:
         """Ask the agent what it still needs to know before splitting the task."""
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
@@ -1238,6 +1277,7 @@ class BoopliManager:
             notes,
             self.settings.ai.questions_prompt,
             self.rooms_text(task, rooms)[0],
+            scene,
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
             data = await self._run_agent("Boopli: questions", instructions)
@@ -1257,6 +1297,7 @@ class BoopliManager:
         answers: Any = None,
         notes: str = "",
         rooms: list[str] | None = None,
+        scene: str = "",
     ) -> dict[str, Any]:
         """Ask the agent to split the task into small steps."""
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
@@ -1269,6 +1310,7 @@ class BoopliManager:
             notes,
             self.settings.ai.steps_prompt,
             self.rooms_text(task, rooms)[0],
+            scene,
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
             data = await self._run_agent("Boopli: steps", instructions)

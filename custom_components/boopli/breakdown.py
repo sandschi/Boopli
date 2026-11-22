@@ -57,7 +57,7 @@ Decide whether you know enough to write really small, concrete steps for THIS pe
 - Otherwise ask what you need to know. For a task made of several parts (cleaning a room, laundry, tidying up), find out what is in it and how it looks now: which things there are (table, chairs, floor, bed, desk, shelves, windows...), what state they are in, what is already done, and how much time and energy they have today.
 - For a chore that repeats, dig deeper: ask about each part and what usually has to be done, so the steps can be tiny and complete.
 - Keep every question short, one topic each. Give 2 to 6 short answer options that fit on a button. Set "multiple" to true when several options can be true at once (for example a list of the things in a room). The person can always type their own words, so do not add an "other" option.
-- Never ask something they already answered or that is already in "What you already know". Ask only what would change the steps.
+- Never ask something they already answered or that is already in "What you already know". Ask only what would change the steps. When it says what the place looks like today, you can already see that: do not ask about it again.
 - When you know enough, set "enough" to true and leave "questions" empty.
 - Write in the language of the task.
 
@@ -81,6 +81,7 @@ Rules:
 - The first step is the easiest possible way to start and takes under two minutes.
 - Group the steps by part or area ("Table", "Chairs", "Floor") with "group", and keep the steps of a group together. Use an empty group for a task without parts. A part is something the person can set aside and do another day, so every group must be complete on its own.
 - A task about a whole room or area ("clean the living room") means the whole job. When the notes name the things in that room, make one group for each thing that can be tidied or cleaned (a sofa, a table, a desk, the kitchen counter, the floor, the bin). Every such group gets its own full set of small steps in this order: gather the things that do not belong there, throw away the rubbish, put things back where they belong, clear the surface, wipe or clean it. Do not write just one step per object. Things that need no cleaning (a clock, a door) get no group. Put the floor and the bin last.
+- If what you know says what the place looks like today (a snapshot from photos), that is the real state: write the steps for what needs work there and name the real things ("Put the bottles on a tray"), and leave out the parts that already look fine.
 - Treat what you know about the place as background, never as a list of jobs. Do not move or rearrange furniture and big objects, and do not hang, fix or build anything unless the task says so.
 - Order the steps so nothing has to be done twice.
 - Give every step a size: "small" (quick and easy), "medium" (takes some effort) or "big" (hard or long). Most steps are small.
@@ -137,9 +138,16 @@ def format_answers(answers: list[dict[str, str]]) -> str:
     return "\n".join(f"- {a['question']} {a['answer']}" for a in answers)
 
 
-def format_known(notes: str, rooms: str = "") -> str:
-    """What the AI already knows: the chore's own notes, then the notes of the rooms involved."""
+SCENE_MAX = 1500  # characters of "what it looks like today" that are sent
+
+
+def format_known(notes: str, rooms: str = "", scene: str = "") -> str:
+    """What the AI already knows: the chore's own notes, the notes of the rooms involved,
+    and what the place looks like today (the text of a one-time look at photos)."""
     parts = [clean_text(notes, 4000), rooms.strip()]
+    scene = clean_room_notes(scene, SCENE_MAX)
+    if scene:
+        parts.append("What it looks like today (a snapshot from photos):\n" + scene)
     return "\n".join(p for p in parts if p) or "(nothing yet)"
 
 
@@ -465,27 +473,69 @@ def fill(template: str, **values: str) -> str:
 
 
 def _instructions(
-    default: str, custom: str, task: str, kind: str, answers: Any, notes: str, rooms: str
+    default: str,
+    custom: str,
+    task: str,
+    kind: str,
+    answers: Any,
+    notes: str,
+    rooms: str,
+    scene: str = "",
 ) -> str:
     return fill(
         (custom or "").strip() or default,
         task=clean_text(task, TITLE_MAX),
         kind=KIND_TEXT.get(kind, KIND_TEXT[KIND_NOW]),
-        known=format_known(notes, rooms),
+        known=format_known(notes, rooms, scene),
         answers=format_answers(clean_answers(answers)),
     )
 
 
 def questions_instructions(
-    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = "", rooms: str = ""
+    task: str,
+    kind: str,
+    answers: Any = None,
+    notes: str = "",
+    custom: str = "",
+    rooms: str = "",
+    scene: str = "",
 ) -> str:
-    return _instructions(QUESTIONS_PROMPT, custom, task, kind, answers, notes, rooms)
+    return _instructions(QUESTIONS_PROMPT, custom, task, kind, answers, notes, rooms, scene)
 
 
 def steps_instructions(
-    task: str, kind: str, answers: Any = None, notes: str = "", custom: str = "", rooms: str = ""
+    task: str,
+    kind: str,
+    answers: Any = None,
+    notes: str = "",
+    custom: str = "",
+    rooms: str = "",
+    scene: str = "",
 ) -> str:
-    return _instructions(STEPS_PROMPT, custom, task, kind, answers, notes, rooms)
+    return _instructions(STEPS_PROMPT, custom, task, kind, answers, notes, rooms, scene)
+
+
+SCENE_PROMPT = """Look at the attached photo(s) and write down what the place looks like RIGHT NOW, so a helper can split the task "{task}" into small steps that fit.
+
+What was already known about this place:
+{known}
+
+Rules:
+- Plain short facts, one per line, grouped by thing (a sofa, a table, a desk, the floor, the counter, the bin). Say what is out of place or needs cleaning, with the real items you can see, for example "Coffee table: bottles, papers and a plate" or "Bin: full". A thing that already looks fine can get a line saying so.
+- Only things, no people, no pets, no screens, no papers' text, no names, no addresses, no brands. Do not guess what you cannot see. No advice and no chores. At most 1500 characters.
+- Write in the language of the task.
+
+Answer with a single JSON object and nothing else, like this:
+{"notes": "Coffee table: bottles and papers\\nSofa: blankets on it\\nBin: full\\nFloor: clear"}"""
+
+
+def scene_instructions(task: str, rooms: str = "") -> str:
+    """The request that makes the agent describe today's state from photos."""
+    return fill(
+        SCENE_PROMPT,
+        task=clean_text(task, TITLE_MAX) or "tidy up",
+        known=(rooms or "").strip() or "(nothing yet)",
+    )
 
 
 # --- reading the answer ---------------------------------------------------------

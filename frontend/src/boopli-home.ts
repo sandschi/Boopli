@@ -11,40 +11,12 @@ import {
   roomQuestions,
   type PastedRoom,
 } from "./api";
+import "./boopli-wait";
+import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
 import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot } from "./types";
 
 const NOTES_MAX = 2000;
-const MAX_PHOTOS = 4;
-const PHOTO_CHARS_MAX = 800_000; // per photo as base64, so four fit in one message
-
-/** Shrink a photo in the browser: a smaller JPEG is all the AI needs, and it keeps the request small. */
-async function shrinkPhoto(file: File): Promise<string> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error("This photo could not be opened. Try a JPEG or PNG photo."));
-      image.src = url;
-    });
-    let result = "";
-    for (const [side, quality] of [[1280, 0.8], [1024, 0.65], [800, 0.5]] as const) {
-      const scale = Math.min(1, side / Math.max(img.naturalWidth, img.naturalHeight));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
-      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("This browser cannot prepare photos.");
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      result = canvas.toDataURL("image/jpeg", quality);
-      if (result.length <= PHOTO_CHARS_MAX) break;
-    }
-    return result;
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
 
 /** Photos picked for one room. They live only in this screen's memory until they are sent. */
 interface PhotosTool {
@@ -127,6 +99,7 @@ export class BoopliHome extends LitElement {
   private _justSaved = false;
   private _lastDirty = false;
   private _synced = false;
+  private _run = 0; // counts AI requests, so an answer the person stopped waiting for is dropped
 
   constructor() {
     super();
@@ -310,13 +283,28 @@ export class BoopliHome extends LitElement {
     const room = tool?.kind === "photos" ? this._room(tool.roomId) : undefined;
     if (!this.hass || tool?.kind !== "photos" || !room || !tool.photos.length) return;
     this._error = "";
+    const run = ++this._run;
     this._patchTool({ working: true, sending: true });
     try {
       const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos);
+      if (run !== this._run) return; // the person stopped waiting
       this._review(room.id, "photos", result.notes); // the photos are gone with the tool
     } catch (err) {
+      if (run !== this._run) return;
       this._error = errorMessage(err);
       this._patchTool({ working: false, sending: false });
+    }
+  }
+
+  /** The person gave up waiting: keep what they have, ignore a late answer. */
+  private _stopWaiting(): void {
+    this._run++;
+    if (this._tool?.kind === "photos") {
+      this._patchTool({ working: false, sending: false });
+      this._error = "You stopped waiting. Your photos are still here, so you can try again.";
+    } else {
+      this._iv = null;
+      this._error = "You stopped waiting. Nothing was changed, so you can try again.";
     }
   }
 
@@ -430,8 +418,10 @@ export class BoopliHome extends LitElement {
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
     this._iv = { ...iv, phase: "working", answers };
+    const run = ++this._run;
     try {
       const result = await roomQuestions(this.hass, room.name, room.notes, answers);
+      if (run !== this._run) return; // the person stopped waiting
       if (result.enough || result.questions.length === 0) {
         await this._writeNotes(answers);
         return;
@@ -447,6 +437,7 @@ export class BoopliHome extends LitElement {
         round: iv.round + 1,
       };
     } catch (err) {
+      if (run !== this._run) return;
       this._error = errorMessage(err);
       this._iv = null;
     }
@@ -457,10 +448,13 @@ export class BoopliHome extends LitElement {
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
     this._iv = { ...iv, phase: "working", answers };
+    const run = ++this._run;
     try {
       const result = await roomNotes(this.hass, room.name, room.notes, answers);
+      if (run !== this._run) return; // the person stopped waiting
       this._iv = { ...iv, answers, phase: "review", result: result.notes };
     } catch (err) {
+      if (run !== this._run) return;
       this._error = errorMessage(err);
       this._iv = null;
     }
@@ -530,13 +524,14 @@ export class BoopliHome extends LitElement {
     return html`<section class="card interview">
       <div class="top">
         <h2>${room?.name ?? "Room"}: let me ask</h2>
-        <button type="button" class="link" @click=${() => (this._iv = null)}>Cancel</button>
+        <button type="button" class="link" @click=${() => ((this._run += 1), (this._iv = null))}>Cancel</button>
       </div>
       ${iv.phase === "working"
-        ? html`<div class="working" role="status">
-            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span>${iv.answers.length ? "Writing the notes…" : "Thinking…"}</span>
-          </div>`
+        ? html`<boopli-wait
+            .label=${iv.answers.length ? "Writing the notes…" : "Thinking…"}
+            .max=${this.snapshot?.ai_timeout ?? 180}
+            @stop-waiting=${() => this._stopWaiting()}
+          ></boopli-wait>`
         : nothing}
       ${iv.phase === "questions"
         ? html`
@@ -616,10 +611,11 @@ export class BoopliHome extends LitElement {
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${tool.sending
-        ? html`<div class="working" role="status">
-            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span>The AI is looking at your photos…</span>
-          </div>`
+        ? html`<boopli-wait
+            .label=${"The AI is looking at your photos…"}
+            .max=${this.snapshot?.ai_timeout ?? 180}
+            @stop-waiting=${() => this._stopWaiting()}
+          ></boopli-wait>`
         : html`
             <div class="thumbs">
               ${tool.photos.map(

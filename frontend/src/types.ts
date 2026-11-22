@@ -231,6 +231,7 @@ export interface AiPreview {
 export interface Snapshot {
   now: string;
   time_zone: string;
+  ai_timeout?: number; // the longest Boopli waits for the AI agent, in seconds
   is_home: boolean;
   pet: Pet;
   setup: Setup;

@@ -1,5 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
-import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess } from "./api";
+import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess, scenePhotos } from "./api";
+import "./boopli-wait";
+import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
 import type { AiAnswer, AiPreview, AiQuestion, AiStep, Hass, Room, Snapshot, StepSize } from "./types";
 
@@ -53,6 +55,11 @@ export class BoopliBreakdown extends LitElement {
     _round: { state: true },
     _rooms: { state: true },
     _preview: { state: true },
+    _scene: { state: true },
+    _photos: { state: true },
+    _photosOpen: { state: true },
+    _looking: { state: true },
+    _sending: { state: true },
   };
 
   declare hass?: Hass;
@@ -77,11 +84,19 @@ export class BoopliBreakdown extends LitElement {
   declare _round: number;
   declare _rooms: string[]; // ids of the rooms whose notes go along
   declare _preview: AiPreview | null; // exactly what would be sent, when the user asks
+  declare _scene: string; // what the place looks like today, from a one-time look at photos (text only)
+  declare _photos: string[]; // shrunk photos waiting to be looked at; never kept
+  declare _photosOpen: boolean;
+  declare _looking: boolean;
+  declare _sending: boolean; // the photos are with the agent right now
   private _roomsTouched = false; // the user chose the rooms, so stop guessing
   private _guessedFor: string | null = null;
   private _guessing?: Promise<void>;
   private _guessTimer?: number;
   private _started = false;
+  private _askId = 0; // counts requests, so an answer the person stopped waiting for is dropped
+  private _backPhase: Phase = "task";
+  private _lookId = 0; // the same for the look at photos
 
   constructor() {
     super();
@@ -105,6 +120,11 @@ export class BoopliBreakdown extends LitElement {
     this._round = 0;
     this._rooms = [];
     this._preview = null;
+    this._scene = "";
+    this._photos = [];
+    this._photosOpen = false;
+    this._looking = false;
+    this._sending = false;
   }
 
   protected willUpdate(): void {
@@ -182,7 +202,8 @@ export class BoopliBreakdown extends LitElement {
         this.kind,
         this._answers,
         this._notes,
-        this._rooms
+        this._rooms,
+        this._scene
       );
     } catch (err) {
       this._error = errorMessage(err);
@@ -226,6 +247,124 @@ export class BoopliBreakdown extends LitElement {
     </div>`;
   }
 
+  // --- photos of how it looks now: one look, text only -------------------------------------
+
+  private async _addPhotos(files: FileList | null): Promise<void> {
+    if (!files) return;
+    const room = Math.max(0, MAX_PHOTOS - this._photos.length);
+    this._error = "";
+    this._looking = true;
+    try {
+      const added: string[] = [];
+      for (const file of Array.from(files).slice(0, room)) added.push(await shrinkPhoto(file));
+      this._photos = [...this._photos, ...added];
+      if (files.length > room) this._error = `Up to ${MAX_PHOTOS} photos. The rest were left out.`;
+    } catch (err) {
+      this._error = errorMessage(err);
+    }
+    this._looking = false;
+  }
+
+  /** Send the photos once, keep only the text the agent writes about them. */
+  private async _look(): Promise<void> {
+    if (!this.hass || !this._photos.length || !this._task.trim()) return;
+    this._error = "";
+    const id = ++this._lookId;
+    this._sending = true;
+    this._looking = true;
+    try {
+      await this._guess();
+      const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms);
+      if (id !== this._lookId) return; // the person stopped waiting
+      this._scene = result.scene;
+      this._photos = []; // the photos are gone; only the text goes on
+      this._photosOpen = false;
+      this._preview = null;
+    } catch (err) {
+      if (id === this._lookId) this._error = errorMessage(err);
+    }
+    if (id === this._lookId) {
+      this._looking = false;
+      this._sending = false;
+    }
+  }
+
+  private _stopLooking(): void {
+    this._lookId++;
+    this._looking = false;
+    this._sending = false;
+    this._error = "You stopped waiting. Your photos are still here, so you can try again.";
+  }
+
+  private _renderScene() {
+    if (!this._aiOn()) return nothing;
+    if (this._scene) {
+      return html`<div class="scene">
+        <label for="scene">What the AI sees today (from your photos). Change anything that is wrong:</label>
+        <textarea
+          id="scene"
+          rows="5"
+          maxlength="1500"
+          .value=${this._scene}
+          @input=${(e: Event) => {
+            this._scene = (e.target as HTMLTextAreaElement).value;
+            this._preview = null;
+          }}
+        ></textarea>
+        <div class="muted small">The photos are already gone. This text goes with the questions and the steps, and is not saved afterwards.</div>
+        <button type="button" class="link" @click=${() => ((this._scene = ""), (this._preview = null))}>Remove it</button>
+      </div>`;
+    }
+    if (!this._photosOpen) {
+      return html`<div class="scene">
+        <button type="button" @click=${() => (this._photosOpen = true)}>📷 Add photos of how it looks now (optional)</button>
+      </div>`;
+    }
+    const full = this._photos.length >= MAX_PHOTOS;
+    return html`<div class="scene">
+      <p class="muted small">
+        Take or pick up to ${MAX_PHOTOS} photos. They go once to your AI agent, which writes down what is out of place.
+        Boopli keeps no photo: you see the text it wrote, and only that text is used.
+      </p>
+      <div class="thumbs">
+        ${this._photos.map(
+          (src, i) => html`<div class="thumb">
+            <img src=${src} alt="Photo ${i + 1}" />
+            <button type="button" class="x" aria-label="Remove photo ${i + 1}" @click=${() => (this._photos = this._photos.filter((_, k) => k !== i))}>×</button>
+          </div>`
+        )}
+      </div>
+      ${this._sending
+        ? html`<boopli-wait
+            .label=${"The AI is looking at your photos…"}
+            .max=${this.snapshot?.ai_timeout ?? 180}
+            @stop-waiting=${() => this._stopLooking()}
+          ></boopli-wait>`
+        : this._looking
+          ? html`<div class="muted" role="status">Preparing…</div>`
+          : html`<div class="actions">
+            <label class="filebtn ${full ? "off" : ""}">
+              ${this._photos.length ? "Add another photo" : "Take or pick photos"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                ?disabled=${full}
+                @change=${(e: Event) => {
+                  const input = e.target as HTMLInputElement;
+                  void this._addPhotos(input.files).then(() => (input.value = ""));
+                }}
+              />
+            </label>
+            <button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look()}>
+              Look at the photos
+            </button>
+            <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>Cancel</button>
+          </div>`}
+      <div class="muted small">The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced.</div>
+    </div>`;
+  }
+
   private _aiOn(): boolean {
     return !!this.snapshot?.settings.ai?.enabled;
   }
@@ -238,17 +377,29 @@ export class BoopliBreakdown extends LitElement {
 
   /** Run a call to the AI agent with a busy flag and a readable error. */
   private async _ask<T>(run: () => Promise<T>, phaseAfterError: Phase): Promise<T | null> {
+    const id = ++this._askId;
+    this._backPhase = phaseAfterError;
     this._busy = true;
     this._error = "";
     try {
-      return await run();
+      const result = await run();
+      return id === this._askId ? result : null; // the person stopped waiting: drop a late answer
     } catch (err) {
+      if (id !== this._askId) return null;
       this._error = errorMessage(err);
       this._phase = phaseAfterError;
       return null;
     } finally {
-      this._busy = false;
+      if (id === this._askId) this._busy = false;
     }
+  }
+
+  /** The person gave up waiting: go back, keep everything they typed, ignore a late answer. */
+  private _stopWaiting(): void {
+    this._askId++;
+    this._busy = false;
+    this._phase = this._backPhase;
+    this._error = "You stopped waiting. Your task and answers are still here, so you can try again.";
   }
 
   private async _begin(): Promise<void> {
@@ -258,7 +409,7 @@ export class BoopliBreakdown extends LitElement {
     this._phase = "working";
     await this._guess();
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene),
       "task"
     );
     if (!result) return;
@@ -295,7 +446,7 @@ export class BoopliBreakdown extends LitElement {
     this._answers = answers;
     this._phase = "working";
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes, this._rooms),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes, this._rooms, this._scene),
       "interview"
     );
     if (!result) return;
@@ -312,7 +463,7 @@ export class BoopliBreakdown extends LitElement {
     this._phase = "working";
     await this._guess();
     const result = await this._ask(
-      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms),
+      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene),
       this._questions.length ? "interview" : "task"
     );
     if (!result) return;
@@ -396,6 +547,7 @@ export class BoopliBreakdown extends LitElement {
         @input=${(e: Event) => this._onTaskInput((e.target as HTMLTextAreaElement).value)}
       ></textarea>
       ${this._renderRooms()}
+      ${this._renderScene()}
       <div class="actions">
         <button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin()}>
           ${this.kind === "recurring" ? "Ask me about it" : "Break it down"}
@@ -460,6 +612,7 @@ export class BoopliBreakdown extends LitElement {
         Tap what fits, or write as much as you like. You can skip any question.
       </p>
       ${this._renderRooms()}
+      ${this._renderScene()}
       ${this._questions.map((q, i) => this._renderQuestion(q, i))}
       <div class="question">
         <div class="qtext">Anything else I should know?</div>
@@ -479,10 +632,11 @@ export class BoopliBreakdown extends LitElement {
   }
 
   private _renderWorking() {
-    return html`<div class="working" role="status">
-      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span>${this._answers.length || this._steps.length ? "Writing the steps…" : "Thinking…"}</span>
-    </div>`;
+    return html`<boopli-wait
+      .label=${this._answers.length || this._steps.length ? "Writing the steps…" : "Thinking…"}
+      .max=${this.snapshot?.ai_timeout ?? 180}
+      @stop-waiting=${() => this._stopWaiting()}
+    ></boopli-wait>`;
   }
 
   private _xp(): number {
@@ -788,6 +942,78 @@ export class BoopliBreakdown extends LitElement {
         flex-wrap: wrap;
         align-items: center;
         gap: 8px;
+      }
+      .scene {
+        margin-top: 12px;
+        max-width: 760px;
+      }
+      .scene textarea {
+        font: inherit;
+        width: 100%;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        padding: 10px 12px;
+        resize: vertical;
+      }
+      .scene label {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .thumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 12px 0;
+      }
+      .thumb {
+        position: relative;
+        width: 140px;
+        height: 105px;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--divider-color);
+      }
+      .thumb .x {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 28px;
+        min-height: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 18px;
+        line-height: 1;
+      }
+      .filebtn {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        min-height: 40px;
+        padding: 0 16px;
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+      }
+      .filebtn.off {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .filebtn input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
       }
       .preview {
         margin-top: 8px;

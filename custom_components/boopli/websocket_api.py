@@ -42,6 +42,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_room_questions)
     websocket_api.async_register_command(hass, ws_room_notes)
     websocket_api.async_register_command(hass, ws_room_photos)
+    websocket_api.async_register_command(hass, ws_scene_photos)
     websocket_api.async_register_command(hass, ws_chat_prompt)
     websocket_api.async_register_command(hass, ws_paste_notes)
     websocket_api.async_register_command(hass, ws_task_add)
@@ -289,6 +290,8 @@ _AI_FIELDS = {
     vol.Optional("notes", default=""): str,
     # The rooms whose notes go along. Left out = guess them from the task text.
     vol.Optional("rooms"): [str],
+    # What the place looks like today, from a one-time look at photos (text only).
+    vol.Optional("scene", default=""): str,
 }
 
 
@@ -349,7 +352,7 @@ def ws_ai_preview(
         return
     try:
         result = manager.ai_preview(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
@@ -412,7 +415,7 @@ async def ws_ai_questions(
         return
     try:
         result = await manager.async_ai_questions(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
@@ -432,7 +435,7 @@ async def ws_ai_steps(
         return
     try:
         result = await manager.async_ai_steps(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms")
+            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
@@ -459,6 +462,31 @@ async def ws_room_photos(
         return
     try:
         result = await manager.async_room_photos(msg["room"], msg["notes"], msg["photos"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/scene_photos",
+        vol.Required("task"): str,
+        vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
+        vol.Optional("rooms"): [str],  # the rooms whose notes help the agent
+    }
+)
+@websocket_api.async_response
+async def ws_scene_photos(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Describe what a place looks like today from photos, one time (photos are deleted)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_scene_from_photos(msg["task"], msg["photos"], msg.get("rooms"))
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return

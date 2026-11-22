@@ -152,3 +152,35 @@ def test_room_prompts_ask_where_things_belong_but_only_optionally():
     assert "optional" in bd.ROOM_QUESTIONS_PROMPT and "where things belong" in bd.ROOM_QUESTIONS_PROMPT
     assert "Clothes go in the wardrobe" in bd.ROOM_NOTES_PROMPT
     assert "where things belong" in bd.ROOM_CHAT_PROMPT and "where things belong" in bd.HOME_CHAT_PROMPT
+
+
+# --- photos of how it looks today (one time, text only) ----------------------------------
+
+
+def test_scene_is_added_to_what_the_ai_knows_only_when_there_is_one():
+    plain = bd.steps_instructions("Clean the living room", "now", [], "", "", "")
+    assert "looks like today" not in plain.split("Rules:")[0]
+    with_scene = bd.steps_instructions(
+        "Clean the living room", "now", [], "", "", 'Room "Living Room": Sofa', "Coffee table: bottles\nBin: full"
+    )
+    known = with_scene.split("Rules:")[0]
+    assert "What it looks like today" in known and "Coffee table: bottles\nBin: full" in known
+    assert 'Room "Living Room": Sofa' in known
+
+
+def test_scene_is_capped_and_goes_into_questions_too():
+    text = bd.questions_instructions("Clean", "now", [], "", "", "", "x" * 5000)
+    assert "x" * bd.SCENE_MAX in text and "x" * (bd.SCENE_MAX + 1) not in text
+
+
+def test_scene_prompt_keeps_people_and_private_things_out():
+    text = bd.scene_instructions("Clean the living room", 'Room "Living Room": Sofa')
+    assert "Clean the living room" in text and 'Room "Living Room": Sofa' in text
+    assert "no people" in text and "RIGHT NOW" in text and "{task}" not in text
+    assert "(nothing yet)" in bd.scene_instructions("Tidy", "")
+
+
+def test_scene_answer_is_read_like_other_notes_and_prompts_use_it():
+    assert bd.parse_room_notes({"json": '{"notes": "Bin: full\nFloor: clear"}'}) == "Bin: full\nFloor: clear"
+    assert "what the place looks like today" in bd.QUESTIONS_PROMPT
+    assert "real state" in bd.STEPS_PROMPT

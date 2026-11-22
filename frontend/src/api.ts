@@ -34,9 +34,10 @@ export function aiQuestions(
   kind: "now" | "recurring",
   answers: AiAnswer[],
   notes = "",
-  rooms?: string[]
+  rooms?: string[],
+  scene = ""
 ): Promise<{ enough: boolean; questions: AiQuestion[] }> {
-  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes, ...(rooms ? { rooms } : {}) });
+  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes, scene, ...(rooms ? { rooms } : {}) });
 }
 
 /** The task split into small steps by the AI. */
@@ -46,9 +47,10 @@ export function aiSteps(
   kind: "now" | "recurring",
   answers: AiAnswer[],
   notes = "",
-  rooms?: string[]
+  rooms?: string[],
+  scene = ""
 ): Promise<{ steps: AiStep[]; summary: string }> {
-  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, ...(rooms ? { rooms } : {}) });
+  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, scene, ...(rooms ? { rooms } : {}) });
 }
 
 /** Exactly what the first request to the AI would contain. */
@@ -58,9 +60,10 @@ export function aiPreview(
   kind: "now" | "recurring",
   answers: AiAnswer[],
   notes: string,
-  rooms: string[]
+  rooms: string[],
+  scene = ""
 ): Promise<AiPreview> {
-  return hass.callWS({ type: "boopli/ai_preview", task, kind, answers, notes, rooms });
+  return hass.callWS({ type: "boopli/ai_preview", task, kind, answers, notes, rooms, scene });
 }
 
 /** The ids of the rooms a task is about, guessed from its words. */
@@ -273,4 +276,9 @@ export function partPark(
 /** Change when a parked part comes back. */
 export function partTime(hass: Hass, choreId: string, when: ParkWhen, at = ""): Promise<void> {
   return hass.callWS({ type: "boopli/part_time", chore_id: choreId, when, at });
+}
+
+/** What a place looks like today, from a one-time look at photos. The photos are deleted right after. */
+export function scenePhotos(hass: Hass, task: string, photos: string[], rooms?: string[]): Promise<{ scene: string }> {
+  return hass.callWS({ type: "boopli/scene_photos", task, photos, ...(rooms ? { rooms } : {}) });
 }
