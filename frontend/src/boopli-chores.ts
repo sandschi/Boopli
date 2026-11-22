@@ -68,6 +68,7 @@ export class BoopliChores extends LitElement {
       },
       nudge_style: chore.nudge_style,
       ignore_quiet_hours: chore.ignore_quiet_hours,
+      keeps_going: chore.keeps_going ?? false,
       notes: chore.notes ?? "",
       questions: (chore.questions ?? []).map((q) => ({ ...q })),
       steps: chore.steps.map((s) => ({

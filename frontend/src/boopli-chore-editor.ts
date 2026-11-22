@@ -237,6 +237,7 @@ export class BoopliChoreEditor extends LitElement {
         ...this.draft,
         nudge_style: this.draft.nudge_style ?? this.defaultStyle,
         ignore_quiet_hours: this.draft.ignore_quiet_hours ?? false,
+        keeps_going: this.draft.keeps_going ?? false,
         name: this.draft.name.trim(),
         questions,
         steps: this.draft.steps.map((s) => ({
@@ -539,6 +540,16 @@ export class BoopliChoreEditor extends LitElement {
                 this._update({ ignore_quiet_hours: (e.target as HTMLInputElement).checked })}
             />
             Nudge even in quiet hours (for example pills)
+          </label>
+        </div>
+        <div class="field check">
+          <label class="inline">
+            <input
+              type="checkbox"
+              .checked=${d.keeps_going ?? false}
+              @change=${(e: Event) => this._update({ keeps_going: (e.target as HTMLInputElement).checked })}
+            />
+            Keeps going while I'm away (for example pills)
           </label>
         </div>
 

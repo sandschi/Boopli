@@ -81,6 +81,10 @@ MAX_QUESTIONS = 8  # yes/no questions a chore can ask before it starts
 QUESTION_MAX = 120
 QUESTION_WAIT_DEFAULT = 30  # minutes the first nudge waits for the questions of a run that started by itself
 
+EVENT_AWAY_STARTED = "away_started"
+EVENT_AWAY_ENDED = "away_ended"
+AWAY_MAX_DAYS = 400
+AWAY_STAGGER_MINUTES = 2  # back from away: the frozen chores nudge one after the other, not all at once
 EVENT_QUESTIONS_ANSWERED = "questions_answered"
 EVENT_CHORE_STARTED = "chore_started"
 EVENT_STEP_ACTIVE = "step_active"
@@ -365,10 +369,12 @@ class Chore:
     notes: str = ""  # what the AI learned about the task, kept for "update steps"
     parked: bool = False  # a part of a task that was set aside to do later
     questions: list[Question] = field(default_factory=list)  # asked every time it starts
+    keeps_going: bool = False  # runs as usual while away mode is on (pills, feeding a cat)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            keeps_going=bool(d.get("keeps_going", False)),
             questions=[Question.from_dict(q) for q in d.get("questions") or []],
             parked=bool(d.get("parked", False)),
             notes=str(d.get("notes") or "").strip()[:NOTES_MAX],
@@ -1431,6 +1437,148 @@ def on_run_finished(chore: Chore, now: datetime, tz: tzinfo) -> bool:
         due = compute_next_due(chore.repeat, now, tz)
         chore.next_due = fmt_ts(due) if due else None
     return False
+
+
+# --- away mode ---------------------------------------------------------------
+
+
+@dataclass
+class Away:
+    """Away mode: Boopli rests for a few days. Chores that keep going are not affected."""
+
+    active: bool = False  # switched on (it may begin later, at `start`)
+    start: str | None = None  # when it begins; None = it began when it was switched on
+    until: str | None = None  # when it ends by itself; None = until it is switched off
+    began_at: str | None = None  # when it really began (the pet's mood is frozen from then)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any] | None) -> Away:
+        d = d or {}
+        return cls(
+            active=bool(d.get("active", False)),
+            start=d.get("start"),
+            until=d.get("until"),
+            began_at=d.get("began_at"),
+        )
+
+
+def away_in_effect(away: Away, now: datetime) -> bool:
+    """Whether away mode is on right now."""
+    if not away.active:
+        return False
+    if away.start and parse_ts(away.start) > now:
+        return False
+    return not (away.until and parse_ts(away.until) <= now)
+
+
+def _parse_local(text: str, tz: tzinfo) -> datetime | None:
+    """A local date and time like "2026-11-28T10:00" (or empty) as an aware datetime."""
+    text = (text or "").strip()
+    if not text:
+        return None
+    try:
+        value = datetime.fromisoformat(text)
+    except ValueError as err:
+        raise ValueError("The date and time could not be read.") from err
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=tz)
+    return value.astimezone(timezone.utc)
+
+
+def set_away(start_text: str, until_text: str, now: datetime, tz: tzinfo) -> Away:
+    """Switch away mode on, from `start_text` (empty = now) until `until_text` (empty = until switched off).
+
+    Raises ValueError with a message the user can read when the dates do not make sense.
+    """
+    start = _parse_local(start_text, tz)
+    until = _parse_local(until_text, tz)
+    if until is not None and until <= now:
+        raise ValueError("The end has to be in the future.")
+    if start is not None and until is not None and until <= start:
+        raise ValueError("It has to end after it starts.")
+    if until is not None and (until - (start or now)) > timedelta(days=AWAY_MAX_DAYS):
+        raise ValueError("Away mode can last at most 400 days.")
+    if start is not None and start <= now:
+        start = None  # it begins right away
+    return Away(
+        active=True,
+        start=fmt_ts(start) if start else None,
+        until=fmt_ts(until) if until else None,
+    )
+
+
+def advance_away(away: Away, now: datetime) -> str | None:
+    """Notice that away mode began or ended. Returns "started", "ended" or None.
+
+    "ended" is also returned when the end passed (the caller sends the pet and the
+    chores back to normal and clears the state).
+    """
+    if not away.active:
+        return None
+    if away.until and parse_ts(away.until) <= now:
+        return "ended"
+    if not away.began_at and away_in_effect(away, now):
+        away.began_at = fmt_ts(now)
+        return "started"
+    return None
+
+
+def shifted_progress(progress: Progress, began_at: str | None, now: datetime) -> Progress:
+    """The pet's progress with the days away not counted as days without activity.
+
+    Anything done before away mode began counts as done `now - began_at` later (never
+    later than now); things done while away are left alone.
+    """
+    if not began_at:
+        return progress
+    began = parse_ts(began_at)
+    shift = now - began
+    if shift <= timedelta(0):
+        return progress
+
+    def move(ts: str | None) -> str | None:
+        if not ts:
+            return ts
+        moment = parse_ts(ts)
+        return fmt_ts(min(now, moment + shift)) if moment <= began else ts
+
+    return replace(
+        progress,
+        last_activity=move(progress.last_activity),
+        started_at=move(progress.started_at) or progress.started_at,
+    )
+
+
+def return_from_away(
+    away: Away,
+    progress: Progress,
+    frozen_runs: list[Run],
+    chores: list[Chore],
+    now: datetime,
+    tz: tzinfo,
+) -> None:
+    """Back from away: the pet's mood carries on from where it was, the frozen runs nudge again
+    one after the other, and recurring chores that came due while away start over from today
+    (nothing is made up for). Set-aside parts and one-off tasks start now."""
+    moved = shifted_progress(progress, away.began_at, now)
+    progress.last_activity = moved.last_activity
+    progress.started_at = moved.started_at
+    for index, run in enumerate(sorted(frozen_runs, key=lambda r: r.started_at)):
+        for step in run.steps:
+            if step.status == STEP_ACTIVE:
+                step.next_nudge_at = fmt_ts(now + timedelta(minutes=AWAY_STAGGER_MINUTES * index))
+                step.snoozed_until = None
+    for chore in chores:
+        if chore.keeps_going or chore.parked or not chore.enabled or not chore.next_due:
+            continue
+        if parse_ts(chore.next_due) > now:
+            continue
+        if chore.repeat.type == REPEAT_SCHEDULE:
+            due = compute_next_due(chore.repeat, now, tz)
+            chore.next_due = fmt_ts(due) if due else None
+        elif chore.repeat.type == REPEAT_EVERY_N_DAYS:
+            due = compute_next_due(chore.repeat, now, tz)
+            chore.next_due = fmt_ts(due) if due else None
 
 
 def next_wakeup(

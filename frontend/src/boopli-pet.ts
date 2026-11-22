@@ -18,21 +18,24 @@ export class BoopliPet extends LitElement {
   static properties = {
     mood: { type: String },
     level: { type: Number },
+    away: { type: Boolean },
   };
 
   declare mood: Mood;
   declare level: number;
+  declare away: boolean; // away mode is on: a little suitcase instead of the mood
 
   constructor() {
     super();
     this.mood = "content";
     this.level = 1;
+    this.away = false;
   }
 
   /** Replace this with real art or an animation later. */
   private _art() {
     return html`<span class="bear" aria-hidden="true">🐻</span>
-      <span class="badge" aria-hidden="true">${BADGE[this.mood]}</span>`;
+      <span class="badge" aria-hidden="true">${this.away ? "🧳" : BADGE[this.mood]}</span>`;
   }
 
   /** A secret: tap the pet 7 times quickly and the Easter egg plays. Nothing in the panel points to it. */

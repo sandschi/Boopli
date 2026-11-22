@@ -26,6 +26,8 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_chore_delete)
     websocket_api.async_register_command(hass, ws_chore_start)
     websocket_api.async_register_command(hass, ws_questions_answer)
+    websocket_api.async_register_command(hass, ws_away_set)
+    websocket_api.async_register_command(hass, ws_away_end)
     websocket_api.async_register_command(hass, ws_egg_found)
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
@@ -156,6 +158,47 @@ def ws_chore_start(
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"], {"run_id": run.id})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/away_set",
+        # Local "YYYY-MM-DDTHH:MM"; empty start = now, empty until = until switched off.
+        vol.Optional("start", default=""): str,
+        vol.Optional("until", default=""): str,
+        # chore id -> keeps going while away
+        vol.Optional("keep_going"): _ANSWERS,
+    }
+)
+@callback
+def ws_away_set(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Switch away mode on, or change it."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.set_away(msg["start"], msg["until"], msg.get("keep_going"))
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/away_end"})
+@callback
+def ws_away_end(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Back now."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.end_away()
+    connection.send_result(msg["id"])
 
 
 @websocket_api.websocket_command(

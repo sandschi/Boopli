@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
-import { answerQuestions, completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
+import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
+import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
@@ -31,6 +32,7 @@ function partInfo(run: Run, step: StepRun): { done: number; total: number; canPa
 
 /** One friendly line per mood. Rewards only: nothing here ever scolds. */
 function moodLine(pet: Pet): string {
+  if (pet.away) return `${pet.name} is resting while you are away.`;
   const lines: Record<Mood, string> = {
     happy: "Nice, you got things done today.",
     content: "Ready when you are.",
@@ -168,7 +170,7 @@ export class BoopliToday extends LitElement {
     const pct = pet.xp_for_level > 0 ? Math.round((pet.xp_in_level / pet.xp_for_level) * 100) : 0;
     return html`
       <section class="card pet-card">
-        <boopli-pet .mood=${pet.mood} .level=${pet.level} @egg-found=${() => (this._egg = true)}></boopli-pet>
+        <boopli-pet .mood=${pet.mood} .level=${pet.level} .away=${pet.away ?? false} @egg-found=${() => (this._egg = true)}></boopli-pet>
         ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
         <div class="pet-info">
           <div class="pet-name">${pet.name} <span class="muted">· Level ${pet.level}</span></div>
@@ -254,6 +256,33 @@ export class BoopliToday extends LitElement {
         : nothing}
       <div class="muted small">Nothing is lost. The steps wait as their own small task under “Set aside for later”.</div>
     </div>`;
+  }
+
+  /** Away mode is on (or planned): a loud banner at the very top, as a firm reminder. Set up in Settings. */
+  private _renderAway(tz: string) {
+    const away = this.snapshot?.away;
+    if (!away?.active) return nothing;
+    const onNow = !!this.snapshot?.away_now;
+    return html`<section class="away-banner ${onNow ? "on" : "planned"}" role="status">
+      <div class="away-icon" aria-hidden="true">🧳</div>
+      <div class="away-text">
+        <div class="away-title">${onNow ? "AWAY MODE IS ON" : "AWAY MODE IS PLANNED"}</div>
+        <div class="away-when">${awayWhen(away, this.nowMs, tz, onNow)}</div>
+        <div class="away-note">
+          ${onNow
+            ? "Nothing starts and nothing nudges you, except the chores that keep going."
+            : "Boopli carries on as usual until then."}
+        </div>
+      </div>
+      <div class="away-actions">
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => awayEnd(this.hass!))}>
+          ${onNow ? "Back now" : "Cancel it"}
+        </button>
+        <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
+          Change in Settings
+        </button>
+      </div>
+    </section>`;
   }
 
   /** Chores that started by themselves with all steps and still wait for the answers to their questions. */
@@ -437,6 +466,7 @@ export class BoopliToday extends LitElement {
 
     const setup = this.snapshot.setup?.status;
     return html`
+      ${this._renderAway(tz)}
       <div class="cols"><div class="col">
       ${setup === "skipped" || setup === "in_progress"
         ? html`<section class="card banner">
@@ -580,6 +610,59 @@ export class BoopliToday extends LitElement {
         flex-wrap: wrap;
         margin-bottom: 16px;
         padding: 12px 16px;
+      }
+      .away-banner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 16px;
+        margin-bottom: 16px;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: var(--warning-color, #ffa600);
+        color: #1a1200;
+      }
+      .away-banner.planned {
+        background: transparent;
+        color: var(--primary-text-color);
+        border: 2px solid var(--warning-color, #ffa600);
+      }
+      .away-icon {
+        font-size: 40px;
+        line-height: 1;
+      }
+      .away-text {
+        flex: 1 1 220px;
+        min-width: 0;
+      }
+      .away-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .away-when {
+        font-size: 17px;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+      .away-note {
+        margin-top: 4px;
+        font-size: 14px;
+        opacity: 0.85;
+      }
+      .away-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        align-items: center;
+      }
+      .away-banner.on button.primary {
+        background: #1a1200;
+        color: #fff;
+        border-color: #1a1200;
+      }
+      .away-banner.on button.link {
+        color: #1a1200;
       }
       .pet-card {
         display: flex;

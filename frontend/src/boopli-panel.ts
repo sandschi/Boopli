@@ -6,6 +6,7 @@ import "./boopli-settings";
 import "./boopli-home";
 import "./boopli-wizard";
 import "./boopli-breakdown";
+import { awayWhen } from "./boopli-away";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
@@ -294,6 +295,21 @@ export class BoopliPanel extends LitElement {
     </div>`;
   }
 
+  /** A thin reminder under the tabs on every screen but Today (Today has the big banner) while away mode is on. */
+  private _renderAwayBar() {
+    const away = this._snapshot?.away;
+    // Today has the big banner and Settings has the card itself.
+    if (!away?.active || ((this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown)) {
+      return nothing;
+    }
+    const onNow = !!this._snapshot?.away_now;
+    const tz = this._snapshot?.time_zone ?? "UTC";
+    return html`<div class="away-bar" role="status">
+      <span>🧳 <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
+      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? "Back now…" : "Change"}</button>
+    </div>`;
+  }
+
   render() {
     const unsaved: Record<Tab, boolean> = {
       today: false,
@@ -319,7 +335,9 @@ export class BoopliPanel extends LitElement {
           )}
         </nav>
       </header>
+      ${this._renderAwayBar()}
       <main
+        @goto-settings=${() => this._selectTab("settings")}
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
         @open-home=${() => this._selectTab("home")}
@@ -453,6 +471,25 @@ export class BoopliPanel extends LitElement {
         gap: 10px;
         margin-top: 16px;
         flex-wrap: wrap;
+      }
+      .away-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px 12px;
+        padding: 8px 16px;
+        background: var(--warning-color, #ffa600);
+        color: #1a1200;
+        font-size: 15px;
+      }
+      .away-bar button {
+        min-height: 0;
+        padding: 4px 12px;
+        background: #1a1200;
+        color: #fff;
+        border: 0;
+        border-radius: 999px;
       }
       /* Phones: these come last so they win over the rules above. */
       @media (max-width: 600px) {

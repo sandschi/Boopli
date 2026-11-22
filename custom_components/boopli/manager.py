@@ -83,6 +83,7 @@ class BoopliManager:
         self.history: list[engine.HistoryEntry] = []
         self.settings = engine.Settings()
         self.progress = engine.Progress()
+        self.away = engine.Away()
         self.setup = engine.Setup()
         self.home = engine.Home()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
@@ -127,6 +128,7 @@ class BoopliManager:
         self.home = engine.Home.from_dict(data.get("home"))
         self.sync_areas()
         self.progress = engine.Progress.from_dict(data.get("progress"))
+        self.away = engine.Away.from_dict(data.get("away"))
         if not self.progress.started_at:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
@@ -176,6 +178,7 @@ class BoopliManager:
             "history": [engine.to_dict(h) for h in self.history],
             "settings": engine.to_dict(self.settings),
             "progress": engine.to_dict(self.progress),
+            "away": engine.to_dict(self.away),
             "setup": engine.to_dict(self.setup),
             "home": engine.to_dict(self.home),
             "indicator_on": self.indicator_on,
@@ -205,11 +208,14 @@ class BoopliManager:
         """The pet as the panel and the sensors show it."""
         level, into, needed = engine.level_for(self.progress.total_xp)
         has_chores = any(c.enabled for c in self.chores.values())
+        now = dt_util.utcnow()
+        away = engine.away_in_effect(self.away, now)
+        # While away the days do not count: the mood stays as it was when you left.
+        progress = engine.shifted_progress(self.progress, self.away.began_at, now) if away else self.progress
         return {
+            "away": away,
             "name": self.settings.pet_name,
-            "mood": engine.mood_for(
-                self.progress, dt_util.utcnow(), self.tz, has_chores
-            ),
+            "mood": engine.mood_for(progress, now, self.tz, has_chores),
             "level": level,
             "total_xp": self.progress.total_xp,
             "xp_in_level": into,
@@ -226,6 +232,8 @@ class BoopliManager:
             "ai_timeout": AI_TIMEOUT,  # so the panel can show how long it will wait
             "is_home": self.is_home(),
             "pet": self.pet(),
+            "away": engine.to_dict(self.away),
+            "away_now": engine.away_in_effect(self.away, now),
             "setup": engine.to_dict(self.setup),
             "home": engine.to_dict(self.home),
             "settings": engine.to_dict(self.settings),
@@ -235,6 +243,94 @@ class BoopliManager:
                 engine.to_dict(h) for h in self.history[-HISTORY_IN_SNAPSHOT:]
             ],
         }
+
+    # --- away mode -------------------------------------------------------
+
+    def _paused_run(self, run: engine.Run, now: datetime) -> bool:
+        """Whether away mode has this run frozen (chores that keep going are not)."""
+        if not engine.away_in_effect(self.away, now):
+            return False
+        chore = self.chores.get(run.chore_id)
+        return not (chore and chore.keeps_going)
+
+    def _away_changes(self, now: datetime, wakeups: list[datetime]) -> list[engine.Event]:
+        """Notice that away mode began or ended, and set the timers for its dates."""
+        events: list[engine.Event] = []
+        change = engine.advance_away(self.away, now)
+        if change == "started":
+            events.append(
+                engine.Event(
+                    engine.EVENT_AWAY_STARTED,
+                    {"time": engine.fmt_ts(now), "until": self.away.until},
+                )
+            )
+            self._silence_paused(now)
+        elif change == "ended":
+            events += self._end_away(now)
+        if self.away.active:
+            for moment in (self.away.start, self.away.until):
+                if moment and engine.parse_ts(moment) > now:
+                    wakeups.append(engine.parse_ts(moment))
+        return events
+
+    def _silence_paused(self, now: datetime) -> None:
+        """Away mode began: stop alarms and clear notifications of steps that are now frozen."""
+        for run in self.runs.values():
+            if not self._paused_run(run, now):
+                continue
+            for step in run.steps:
+                if step.status == engine.STEP_ACTIVE and step.nudge_count > 0:
+                    self.hass.async_create_task(
+                        self.nudger.async_silence(f"{run.id}:{step.step_id}")
+                    )
+                    self.hass.async_create_task(
+                        self.nudger.async_clear_step(run.id, step.step_id)
+                    )
+
+    def _end_away(self, now: datetime) -> list[engine.Event]:
+        """Away mode is over (the end came, or you pressed Back now)."""
+        began = self.away.began_at
+        frozen = [
+            r
+            for r in self.runs.values()
+            if not (self.chores.get(r.chore_id) and self.chores[r.chore_id].keeps_going)
+        ]
+        engine.return_from_away(
+            self.away, self.progress, frozen, list(self.chores.values()), now, self.tz
+        )
+        self.away = engine.Away()
+        if not began:
+            return []
+        return [engine.Event(engine.EVENT_AWAY_ENDED, {"time": engine.fmt_ts(now), "since": began})]
+
+    def set_away(
+        self, start: str = "", until: str = "", keep_going: dict[str, bool] | None = None
+    ) -> None:
+        """Switch away mode on (or change it): from `start` (empty = now) until `until` (empty = until switched off).
+
+        `keep_going` sets, for the chores named, whether they keep running while away.
+        """
+        now = dt_util.utcnow()
+        try:
+            away = engine.set_away(start, until, now, self.tz)
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
+        if engine.away_in_effect(self.away, now):
+            away.began_at = self.away.began_at  # changing it while away: the freeze carries on
+        for chore_id, flag in (keep_going or {}).items():
+            chore = self.chores.get(chore_id)
+            if chore is not None:
+                chore.keeps_going = bool(flag)
+        self.away = away
+        self._tick()
+
+    def end_away(self) -> None:
+        """Back now, or cancel away mode that has not begun yet."""
+        events: list[engine.Event] = []
+        if self.away.active:
+            events += self._end_away(dt_util.utcnow())
+        self._announce(events)
+        self._tick()
 
     # --- presence --------------------------------------------------------
 
@@ -301,10 +397,15 @@ class BoopliManager:
             )
         )
 
+        events += self._away_changes(now, wakeups)
+        away = engine.away_in_effect(self.away, now)
+
         for run in list(self.runs.values()):
             events += engine.wake_steps(run, now)
 
         for chore in list(self.chores.values()):
+            if away and not chore.keeps_going:
+                continue  # resting: nothing starts, nothing is skipped; coming back sorts it out
             action = engine.due_action(
                 chore, self._active_run_for(chore.id) is not None, now
             )
@@ -606,6 +707,8 @@ class BoopliManager:
             chore = self.chores.get(run.chore_id)
             style = chore.nudge_style if chore else self.settings.default_style
             ignore_quiet = chore.ignore_quiet_hours if chore else False
+            if self._paused_run(run, now):
+                continue  # away: frozen, nothing nudges until you are back
             if engine.nudges_held(run, now):
                 # Waiting for the answers to the questions; look again when that wait is over.
                 wakeups.append(engine.parse_ts(run.asking_until or ""))
@@ -661,9 +764,11 @@ class BoopliManager:
         """Switch indicator lights off once no nudged step is waiting any more."""
         if not self.indicator_on:
             return
+        now = dt_util.utcnow()
         waiting = any(
             step.status == engine.STEP_ACTIVE and step.nudge_count > 0
             for run in self.runs.values()
+            if not self._paused_run(run, now)
             for step in run.steps
         )
         if waiting:
@@ -692,9 +797,10 @@ class BoopliManager:
         if self._unsub_timer:
             self._unsub_timer()
             self._unsub_timer = None
-        wake = engine.next_wakeup(
-            list(self.chores.values()), list(self.runs.values()), now, extra
-        )
+        away = engine.away_in_effect(self.away, now)
+        # While away, chores that rest are not watched: their due times are sorted out on return.
+        chores = [c for c in self.chores.values() if c.keeps_going or not away]
+        wake = engine.next_wakeup(chores, list(self.runs.values()), now, extra)
         if wake is None:
             return
         if wake <= now:  # safety net: never spin

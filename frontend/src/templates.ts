@@ -66,6 +66,7 @@ export const TEMPLATES: Template[] = [
       },
       nudge_style: "escalating",
       ignore_quiet_hours: true,
+      keeps_going: true, // pills are taken on holiday too
       steps: [{ title: "Take your pills", wait_minutes: 0 }],
     },
   },

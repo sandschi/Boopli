@@ -196,6 +196,24 @@ export function startChore(
   return hass.callWS({ type: "boopli/chore_start", chore_id: choreId, ...(answers ? { answers } : {}) });
 }
 
+/**
+ * Switch away mode on (or change it). `start` and `until` are local "YYYY-MM-DDTHH:MM" or empty
+ * (now / until switched off). `keepGoing` says which chores keep running while away.
+ */
+export function awaySet(
+  hass: Hass,
+  start: string,
+  until: string,
+  keepGoing: Record<string, boolean>
+): Promise<void> {
+  return hass.callWS({ type: "boopli/away_set", start, until, keep_going: keepGoing });
+}
+
+/** Back now (or cancel away mode that has not begun). */
+export function awayEnd(hass: Hass): Promise<void> {
+  return hass.callWS({ type: "boopli/away_end" });
+}
+
 /** Answer the questions of a running chore. Empty answers mean "start with all steps". */
 export function answerQuestions(
   hass: Hass,

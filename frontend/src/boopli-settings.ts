@@ -14,6 +14,7 @@ import {
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
+import "./boopli-away";
 
 type Mode = "simple" | "advanced";
 const MODE_KEY = "boopli.settings_mode";
@@ -931,6 +932,9 @@ export class BoopliSettings extends LitElement {
           ${simple ? "Advanced settings" : "Back to the simple view"}
         </button>
       </div>
+      <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
+        <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
+      </section>
       ${simple
         ? this._renderSimple()
         : html`
@@ -993,6 +997,12 @@ export class BoopliSettings extends LitElement {
       .page-title {
         font-size: 22px;
         margin: 0;
+      }
+      .away-card {
+        margin-bottom: 16px;
+      }
+      .away-card.on {
+        border: 2px solid var(--warning-color, #ffa600);
       }
       .cards {
         display: grid;

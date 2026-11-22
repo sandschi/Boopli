@@ -73,6 +73,24 @@
           "description": "The name or id of the chore."
         }
       }
+    },
+    "set_away": {
+      "name": "Set away mode",
+      "description": "Boopli rests: scheduled chores do not start and nothing nudges you, except chores marked 'Keeps going while I'm away'. The pet does not get sad.",
+      "fields": {
+        "start": {
+          "name": "Starts",
+          "description": "Local date and time it begins, like 2026-11-28 08:00. Leave empty to begin now."
+        },
+        "until": {
+          "name": "Until",
+          "description": "Local date and time it ends by itself. Leave empty to stay away until you end it."
+        }
+      }
+    },
+    "end_away": {
+      "name": "End away mode",
+      "description": "Back now: Boopli carries on, and frozen chores nudge again one after the other."
     }
   }
 }

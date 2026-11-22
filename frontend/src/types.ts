@@ -66,6 +66,7 @@ export interface Chore {
   notes: string; // what the AI learned about the task
   parked: boolean; // a part of a task that was set aside to do later
   questions?: ChoreQuestion[]; // asked every time it starts
+  keeps_going?: boolean; // runs as usual while away mode is on
 }
 
 export interface StepRun {
@@ -210,6 +211,15 @@ export interface Pet {
   xp_in_level: number;
   xp_for_level: number;
   last_activity: string | null;
+  away?: boolean; // away mode is on: the mood stays as it was
+}
+
+/** Away mode: Boopli rests for a few days. */
+export interface Away {
+  active: boolean; // switched on (it may begin later)
+  start: string | null; // when it begins; null = it began when it was switched on
+  until: string | null; // when it ends by itself; null = until switched off
+  began_at: string | null;
 }
 
 export type SetupStatus = "new" | "in_progress" | "skipped" | "done";
@@ -248,6 +258,8 @@ export interface Snapshot {
   ai_timeout?: number; // the longest Boopli waits for the AI agent, in seconds
   is_home: boolean;
   pet: Pet;
+  away?: Away;
+  away_now?: boolean; // away mode is on right now
   setup: Setup;
   home: Home;
   settings: Settings;
@@ -268,6 +280,7 @@ export interface ChoreDraft {
   ignore_quiet_hours?: boolean;
   notes?: string;
   questions?: ChoreQuestion[];
+  keeps_going?: boolean;
   steps: {
     id?: string;
     title: string;

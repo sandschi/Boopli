@@ -84,3 +84,18 @@ delete_chore:
       example: "Dishwasher"
       selector:
         text:
+
+set_away:
+  fields:
+    start:
+      required: false
+      example: "2026-11-28 08:00"
+      selector:
+        text:
+    until:
+      required: false
+      example: "2026-12-05 18:00"
+      selector:
+        text:
+
+end_away:

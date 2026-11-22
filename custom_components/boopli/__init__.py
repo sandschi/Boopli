@@ -49,6 +49,16 @@ SERVICE_START_CHORE = "start_chore"
 SERVICE_COMPLETE_STEP = "complete_step"
 SERVICE_SNOOZE_STEP = "snooze_step"
 SERVICE_DELETE_CHORE = "delete_chore"
+SERVICE_SET_AWAY = "set_away"
+SERVICE_END_AWAY = "end_away"
+
+SET_AWAY_SCHEMA = vol.Schema(
+    {
+        # Local date and time like "2026-11-28 10:00" or "2026-11-28T10:00"; empty = now / until switched off.
+        vol.Optional("start", default=""): cv.string,
+        vol.Optional("until", default=""): cv.string,
+    }
+)
 
 ADD_TASK_SCHEMA = vol.Schema(
     {
@@ -117,6 +127,18 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         except BoopliError as err:
             raise ServiceValidationError(str(err)) from err
 
+    async def set_away(call: ServiceCall) -> None:
+        try:
+            _manager(hass).set_away(
+                call.data["start"].strip().replace(" ", "T"),
+                call.data["until"].strip().replace(" ", "T"),
+            )
+        except BoopliError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def end_away(call: ServiceCall) -> None:
+        _manager(hass).end_away()
+
     async def break_down(call: ServiceCall) -> ServiceResponse:
         """Split a task into small steps with the user's AI agent and return them."""
         try:
@@ -150,6 +172,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     hass.services.async_register(
         DOMAIN, SERVICE_DELETE_CHORE, delete_chore, CHORE_SCHEMA
     )
+    hass.services.async_register(DOMAIN, SERVICE_SET_AWAY, set_away, SET_AWAY_SCHEMA)
+    hass.services.async_register(DOMAIN, SERVICE_END_AWAY, end_away)
     return True
 
 
