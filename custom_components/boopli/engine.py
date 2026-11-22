@@ -1583,6 +1583,8 @@ def return_from_away(
             if step.status == STEP_ACTIVE:
                 step.next_nudge_at = fmt_ts(now + timedelta(minutes=AWAY_STAGGER_MINUTES * index))
                 step.snoozed_until = None
+                if step.on_it_until:  # in progress: the check-in is what comes next, show its real time
+                    step.on_it_until = step.next_nudge_at
     for chore in chores:
         if chore.keeps_going or chore.parked or not chore.enabled or not chore.next_due:
             continue

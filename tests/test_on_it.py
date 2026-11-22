@@ -126,6 +126,28 @@ def test_on_it_survives_a_round_trip():
     assert again.on_it_until == step.on_it_until
 
 
+def test_coming_back_from_away_shows_the_real_check_in_time():
+    chore = engine.Chore(id="c", name="Kitchen", steps=[engine.Step("a", "Wipe the counter")])
+    run, _events = engine.start_run(chore, T0)
+    step = run.steps[0]
+    engine.start_on_it(step, 30, T0)
+    back = T0 + timedelta(days=3)
+    away = engine.Away(active=True, began_at=engine.fmt_ts(T0))
+    progress = engine.Progress(total_xp=0, started_at=engine.fmt_ts(T0 - timedelta(days=30)))
+    engine.return_from_away(away, progress, [run], [], back, UTC)
+    assert step.next_nudge_at == engine.fmt_ts(back)
+    assert step.on_it_until == step.next_nudge_at  # what the panel shows is when it really comes
+
+
+def test_a_step_that_was_not_in_progress_keeps_no_check_in_time_after_away():
+    chore = engine.Chore(id="c", name="Kitchen", steps=[engine.Step("a", "Wipe the counter")])
+    run, _events = engine.start_run(chore, T0)
+    back = T0 + timedelta(days=3)
+    progress = engine.Progress(total_xp=0, started_at=engine.fmt_ts(T0 - timedelta(days=30)))
+    engine.return_from_away(engine.Away(active=True), progress, [run], [], back, UTC)
+    assert run.steps[0].on_it_until is None
+
+
 # --- the notifications -------------------------------------------------------------------------
 
 

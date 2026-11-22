@@ -750,7 +750,7 @@ class BoopliManager:
                     if check_in:
                         self.hass.async_create_task(
                             self.nudger.async_send_check_in(
-                                run.id, run.chore_name, step.step_id, step.title
+                                run.id, run.chore_name, step.step_id, step.title, number
                             )
                         )
                     else:
