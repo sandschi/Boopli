@@ -27,17 +27,33 @@ export class BoopliPetPicker extends LitElement {
     this.dispatchEvent(new CustomEvent("pet-kind-change", { detail: kind, bubbles: true, composed: true }));
   }
 
+  /** The arrow keys, Home and End move between the pets and choose, like any radio group. */
+  private _key(e: KeyboardEvent, index: number): void {
+    const last = PETS.length - 1;
+    let next = index;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = index === last ? 0 : index + 1;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = index === 0 ? last : index - 1;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = last;
+    else return;
+    e.preventDefault();
+    this._pick(PETS[next].kind);
+    (this.shadowRoot?.querySelectorAll<HTMLElement>("button.choice")[next])?.focus();
+  }
+
   render() {
     const chosen = petInfo(this.value);
     return html`
       <div class="grid" role="radiogroup" aria-label="Your pet">
         ${PETS.map(
-          (p) => html`<button
+          (p, i) => html`<button
             type="button"
             role="radio"
             class="choice ${p.kind === chosen.kind ? "on" : ""}"
             aria-checked=${p.kind === chosen.kind}
+            tabindex=${p.kind === chosen.kind ? 0 : -1}
             @click=${() => this._pick(p.kind)}
+            @keydown=${(e: KeyboardEvent) => this._key(e, i)}
           >
             <span class="pic"><boopli-pet .kind=${p.kind} .mood=${"content"} still></boopli-pet></span>
             <span class="name">${p.label}</span>

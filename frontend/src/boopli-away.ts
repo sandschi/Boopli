@@ -270,6 +270,7 @@ export class BoopliAway extends LitElement {
             </button>`
           : nothing}
       </div>
+      ${!open && this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       ${open
         ? html`<div class="body">${away?.active && !this._changing ? this._renderOn(away) : this._renderForm(away)}</div>`
         : nothing}
