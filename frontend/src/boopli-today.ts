@@ -269,12 +269,83 @@ export class BoopliToday extends LitElement {
     }
   }
 
+  // --- the lists next to the big step, in the order you read them ---------------------------
+
+  /** A list heading with a count, so the parts of the screen are easy to tell apart. */
+  private _heading(title: string, count: number) {
+    return html`<h3 class="sec-title">${title}<span class="count">${count}</span></h3>`;
+  }
+
+  /** 1. Other steps that are your turn right now. */
+  private _renderReady(model: ReturnType<typeof buildToday>) {
+    const count = model.ready.reduce((n, g) => n + g.steps.length, 0);
+    if (count === 0) return nothing;
+    return html`<section class="sec">
+      ${this._heading("Ready now", count)}
+      ${model.ready.map(
+        (g) => html`<div class="group">
+          <div class="group-name strong">${g.run.chore_name}</div>
+          ${g.steps.map((s) => html`<div class="row"><span>${s.title}</span></div>`)}
+        </div>`
+      )}
+    </section>`;
+  }
+
+  /** 2. The rest of what is going on today. */
+  private _renderStill(model: ReturnType<typeof buildToday>, tz: string) {
+    const count = model.groups.reduce((n, g) => n + g.steps.length, 0) + model.dueToday.length;
+    if (count === 0) return nothing;
+    return html`<section class="sec soft">
+      ${this._heading("Still to do today", count)}
+      ${model.groups.map(
+        (g) => html`<div class="group">
+          <div class="group-name">${g.run.chore_name}</div>
+          ${g.steps.map(
+            (s) => html`<div class="row">
+              <span>${s.title}</span>
+              <span class="hint">${s.hint}</span>
+            </div>`
+          )}
+        </div>`
+      )}
+      ${model.dueToday.map(
+        (d) => html`<div class="group">
+          <div class="row">
+            <span class="group-name">${d.chore.name}</span>
+            <span class="hint">at ${fmtTime(d.at, tz)}</span>
+          </div>
+        </div>`
+      )}
+    </section>`;
+  }
+
+  /** 3. Scheduled chores on later days. */
+  private _renderUpcoming(model: ReturnType<typeof buildToday>) {
+    if (model.upcoming.length === 0) return nothing;
+    const tz = this.snapshot?.time_zone ?? "UTC";
+    const shown = model.upcoming.slice(0, 8);
+    return html`<section class="sec soft">
+      ${this._heading("Upcoming", model.upcoming.length)}
+      ${shown.map(
+        (d) => html`<div class="group">
+          <div class="row">
+            <span class="group-name">${d.chore.name}</span>
+            <span class="hint">${describeWhen(d.at, this.nowMs, tz)}</span>
+          </div>
+        </div>`
+      )}
+      ${model.upcoming.length > shown.length
+        ? html`<div class="muted small more">and ${model.upcoming.length - shown.length} more in the Chores tab</div>`
+        : nothing}
+    </section>`;
+  }
+
   private _renderParked() {
     const parts = this._parkedParts();
     if (parts.length === 0) return nothing;
     const tz = this.snapshot?.time_zone ?? "UTC";
-    return html`<section class="card parked">
-      <h3>Set aside for later</h3>
+    return html`<section class="sec parked">
+      ${this._heading("Set aside for later", parts.length)}
       ${parts.map(
         (c) => html`<div class="part">
           <div class="part-name">${c.name}</div>
@@ -316,8 +387,8 @@ export class BoopliToday extends LitElement {
       .reverse();
     if (items.length === 0) return nothing;
     return html`
-      <section class="auto dim">
-        <h3>Done by itself</h3>
+      <section class="sec auto soft">
+        ${this._heading("Done by itself", items.length)}
         ${items.map(
           (h) => html`<div class="row">
             <span>✓ ${h.chore_name}: ${h.step_title}</span>
@@ -420,40 +491,11 @@ export class BoopliToday extends LitElement {
           `}
       ${this._renderQuick()}
       </div><div class="col">
+      ${this._renderReady(model)}
+      ${this._renderStill(model, tz)}
+      ${this._renderUpcoming(model)}
       ${this._renderParked()}
       ${this._renderAuto()}
-      ${model.groups.length > 0 || model.dueToday.length > 0
-        ? html`
-            <section class="later dim">
-              <h3>Still to do today</h3>
-              ${model.groups.map(
-                (g) => html`
-                  <div class="group">
-                    <div class="group-name">${g.run.chore_name}</div>
-                    ${g.steps.map(
-                      (s) => html`
-                        <div class="row">
-                          <span>${s.title}</span>
-                          <span class="hint">${s.hint}</span>
-                        </div>
-                      `
-                    )}
-                  </div>
-                `
-              )}
-              ${model.dueToday.map(
-                (d) => html`
-                  <div class="group">
-                    <div class="row">
-                      <span class="group-name">${d.chore.name}</span>
-                      <span class="hint">at ${fmtTime(d.at, tz)}</span>
-                    </div>
-                  </div>
-                `
-              )}
-            </section>
-          `
-        : nothing}
       </div></div>
     `;
   }
@@ -576,20 +618,38 @@ export class BoopliToday extends LitElement {
         font-size: 20px;
         border-radius: 14px;
       }
-      .later,
-      .auto,
-      .parked {
+      /* The lists next to the big step: a clear heading, a visible line, calm rows. */
+      .sec {
         margin-bottom: 24px;
+        --line: color-mix(in srgb, var(--primary-text-color) 20%, transparent);
       }
-      .parked h3 {
-        font-size: 15px;
+      .sec-title {
+        font-size: 16px;
         font-weight: 500;
+        color: var(--primary-text-color);
+        margin: 0 0 6px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--line);
+      }
+      .count {
+        margin-left: 8px;
+        font-size: 14px;
+        font-weight: 400;
         color: var(--secondary-text-color);
-        margin-bottom: 8px;
+      }
+      .soft .group,
+      .soft .more {
+        opacity: 0.7;
+      }
+      .strong {
+        font-weight: 500;
+      }
+      .more {
+        padding: 8px 0;
       }
       .part {
         padding: 10px 0;
-        border-top: 1px solid var(--divider-color);
+        border-top: 1px solid var(--line);
       }
       .part:first-of-type {
         border-top: 0;
@@ -626,12 +686,6 @@ export class BoopliToday extends LitElement {
         display: block;
         margin-top: 10px;
       }
-      .auto h3 {
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--secondary-text-color);
-        margin-bottom: 8px;
-      }
       .auto .row {
         padding-left: 0;
       }
@@ -639,15 +693,12 @@ export class BoopliToday extends LitElement {
         white-space: normal;
         text-align: right;
       }
-      .later h3 {
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--secondary-text-color);
-        margin-bottom: 8px;
-      }
       .group {
-        padding: 8px 0;
-        border-top: 1px solid var(--divider-color);
+        padding: 9px 0;
+        border-top: 1px solid var(--line);
+      }
+      .group:first-of-type {
+        border-top: 0;
       }
       .group-name {
         font-size: 15px;
