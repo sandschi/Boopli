@@ -88,6 +88,7 @@ AWAY_STAGGER_MINUTES = 2  # back from away: the frozen chores nudge one after th
 EVENT_QUESTIONS_ANSWERED = "questions_answered"
 EVENT_CHORE_STARTED = "chore_started"
 EVENT_STEP_ACTIVE = "step_active"
+EVENT_STEP_ON_IT = "step_on_it"
 EVENT_STEP_DONE = "step_done"
 EVENT_CHORE_DONE = "chore_done"
 EVENT_NUDGE_SENT = "nudge_sent"
@@ -187,6 +188,10 @@ HIBERNATE_AFTER_DAYS = 7
 ACTION_DONE = "BOOPLI_DONE"
 ACTION_SNOOZE = "BOOPLI_SNOOZE"
 ACTION_ALL_STEPS = "BOOPLI_ALLSTEPS"  # "Start with all steps" on the questions notification
+ACTION_ON_IT = "BOOPLI_ONIT"  # "On it" / "Still on it": I am doing this step now
+ACTION_NOT_ON_IT = "BOOPLI_NOTONIT"  # taken back: not working on it after all
+CHECK_IN_DEFAULT = 30  # minutes until Boopli asks "still on it?"
+ON_IT_COLOR = "#2e7d32"  # the green of a notification for a step that is in progress
 QUESTIONS_STEP = "q"  # stands in for a step id in the notification of the questions
 
 
@@ -412,11 +417,15 @@ class StepRun:
     group: str = ""  # snapshot from the chore
     wait_for: list[Trigger] = field(default_factory=list)  # snapshot from the chore
     only_if: str = ""  # snapshot from the chore: a question id
+    on_it_since: str | None = None  # "On it": when the person said they are doing this step
+    on_it_until: str | None = None  # while it is in progress: when Boopli checks in
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            on_it_since=d.get("on_it_since"),
+            on_it_until=d.get("on_it_until"),
             only_if=str(d.get("only_if") or ""),
             wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             size=size if size in SIZE_VALUES else SIZE_SMALL,
@@ -965,6 +974,8 @@ def _became_active(step: StepRun) -> None:
     step.nudge_count = 0
     step.next_nudge_at = step.active_at
     step.snoozed_until = None
+    step.on_it_since = None
+    step.on_it_until = None
 
 
 def _activate(step: StepRun, base: datetime) -> bool:
@@ -1572,6 +1583,8 @@ def return_from_away(
             if step.status == STEP_ACTIVE:
                 step.next_nudge_at = fmt_ts(now + timedelta(minutes=AWAY_STAGGER_MINUTES * index))
                 step.snoozed_until = None
+                if step.on_it_until:  # in progress: the check-in is what comes next, show its real time
+                    step.on_it_until = step.next_nudge_at
     for chore in chores:
         if chore.keeps_going or chore.parked or not chore.enabled or not chore.next_due:
             continue
@@ -1846,11 +1859,13 @@ class Settings:
     pet_name: str = PET_NAME_DEFAULT
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
+    check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
         return cls(
+            check_in_minutes=int(d.get("check_in_minutes", CHECK_IN_DEFAULT) or CHECK_IN_DEFAULT),
             question_wait_minutes=int(d.get("question_wait_minutes", QUESTION_WAIT_DEFAULT) or QUESTION_WAIT_DEFAULT),
             ai=AiSettings.from_dict(d.get("ai")),
             lights=[LightCfg.from_dict(x) for x in d.get("lights", [])],
@@ -1977,6 +1992,8 @@ def validate_settings(settings: Settings) -> str | None:
         return "Snooze must be between 1 minute and 12 hours."
     if not 5 <= settings.question_wait_minutes <= 720:
         return "The wait for the questions must be between 5 minutes and 12 hours."
+    if not 5 <= settings.check_in_minutes <= 720:
+        return "The check-in after \"On it\" must be between 5 minutes and 12 hours."
     if settings.ai.entity_id and not settings.ai.entity_id.startswith("ai_task."):
         return "Pick an AI task agent, or leave it empty for the default."
     if settings.ai.photo_entity_id and not settings.ai.photo_entity_id.startswith("ai_task."):
@@ -2099,7 +2116,39 @@ def snooze_step(step: StepRun, minutes: int, now: datetime) -> bool:
     when = fmt_ts(now + timedelta(minutes=minutes))
     step.next_nudge_at = when
     step.snoozed_until = when
+    step.on_it_since = None  # snoozing means: not now
+    step.on_it_until = None
     return True
+
+
+def start_on_it(step: StepRun, minutes: int, now: datetime) -> bool:
+    """"On it": the person is doing this step. No nudges until the check-in, `minutes` from now.
+
+    Pressing it again ("Still on it") only moves the check-in; the start time is kept.
+    Returns False when the step is not waiting for the person.
+    """
+    if step.status != STEP_ACTIVE:
+        return False
+    step.on_it_since = step.on_it_since or fmt_ts(now)
+    step.on_it_until = fmt_ts(now + timedelta(minutes=minutes))
+    step.next_nudge_at = step.on_it_until
+    step.snoozed_until = None
+    return True
+
+
+def stop_on_it(step: StepRun, now: datetime) -> bool:
+    """Taken back ("Not on it"): normal nudging again, right away. False when it was not in progress."""
+    if step.status != STEP_ACTIVE or not (step.on_it_since or step.on_it_until):
+        return False
+    step.on_it_since = None
+    step.on_it_until = None
+    step.next_nudge_at = fmt_ts(now)
+    return True
+
+
+def in_progress(step: StepRun) -> bool:
+    """Whether the person said "On it" and the check-in has not come yet."""
+    return step.status == STEP_ACTIVE and bool(step.on_it_until)
 
 
 # --- notification and light payloads -------------------------------------
@@ -2112,7 +2161,7 @@ def action_id(kind: str, run_id: str, step_id: str) -> str:
 
 def parse_action(action: str) -> tuple[str, str, str] | None:
     """Split a button id into (kind, run_id, step_id), or None if not ours."""
-    for kind in (ACTION_DONE, ACTION_SNOOZE, ACTION_ALL_STEPS):
+    for kind in (ACTION_DONE, ACTION_SNOOZE, ACTION_ALL_STEPS, ACTION_ON_IT, ACTION_NOT_ON_IT):
         prefix = f"{kind}_"
         if action.startswith(prefix):
             parts = action[len(prefix) :].split("_")
@@ -2143,6 +2192,7 @@ def phone_payload(
                 "action": action_id(ACTION_SNOOZE, run_id, step_id),
                 "title": f"Snooze {snooze_minutes} min",
             },
+            {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": "On it"},
         ],
     }
     if level == LEVEL_HIGH:
@@ -2154,6 +2204,47 @@ def phone_payload(
     elif level == LEVEL_ALARM_MAX:
         data.update(channel="alarm_stream_max", priority="high", ttl=0)
     return {"title": title, "message": message, "data": data}
+
+
+def on_it_payload(
+    run_id: str, step_id: str, chore_name: str, step_title: str, since: str
+) -> dict[str, Any]:
+    """The same notification again, now green and quiet: "In progress".
+
+    Same tag, so the phone replaces the nudge in place. Sticky, so a tap does not
+    dismiss it. Android shows the green colour; elsewhere the check mark carries it.
+    """
+    return {
+        "title": chore_name,
+        "message": f"✅ In progress: {step_title} (since {since})",
+        "data": {
+            "tag": notification_tag(run_id, step_id),
+            "sticky": True,
+            "color": ON_IT_COLOR,
+            "alert_once": True,  # replacing it must not make a sound or buzz again
+            "actions": [
+                {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
+                {"action": action_id(ACTION_NOT_ON_IT, run_id, step_id), "title": "Not on it"},
+            ],
+        },
+    }
+
+
+def check_in_payload(
+    run_id: str, step_id: str, chore_name: str, step_title: str
+) -> dict[str, Any]:
+    """"Still on it?": replaces the green notification, back to the normal look, with a sound."""
+    return {
+        "title": chore_name,
+        "message": f"Still on: {step_title}?",
+        "data": {
+            "tag": notification_tag(run_id, step_id),
+            "actions": [
+                {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
+                {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": "Still on it"},
+            ],
+        },
+    }
 
 
 PANEL_PATH = "/boopli"  # where Boopli lives inside Home Assistant (the app opens it from a button)

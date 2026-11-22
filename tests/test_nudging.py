@@ -293,7 +293,7 @@ def test_phone_payload_levels():
 
     normal = make("normal")["data"]
     assert normal["tag"] == "boopli-r1-s1"
-    assert [a["title"] for a in normal["actions"]] == ["Done", "Snooze 15 min"]
+    assert [a["title"] for a in normal["actions"]] == ["Done", "Snooze 15 min", "On it"]
     assert "channel" not in normal
 
     high = make("high")["data"]

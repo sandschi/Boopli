@@ -33,6 +33,8 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
     websocket_api.async_register_command(hass, ws_step_snooze)
+    websocket_api.async_register_command(hass, ws_step_on_it)
+    websocket_api.async_register_command(hass, ws_step_not_on_it)
     websocket_api.async_register_command(hass, ws_settings_save)
     websocket_api.async_register_command(hass, ws_setup_save)
     websocket_api.async_register_command(hass, ws_schedule_preview)
@@ -309,6 +311,46 @@ def ws_step_snooze(
         _not_loaded(connection, msg)
         return
     manager.snooze(msg["run_id"], msg["step_id"])
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/step_on_it",
+        vol.Required("run_id"): str,
+        vol.Required("step_id"): str,
+    }
+)
+@callback
+def ws_step_on_it(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The user pressed "On it" (or "Still on it") on a step."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.on_it(msg["run_id"], msg["step_id"])
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/step_not_on_it",
+        vol.Required("run_id"): str,
+        vol.Required("step_id"): str,
+    }
+)
+@callback
+def ws_step_not_on_it(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The user took "On it" back."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.not_on_it(msg["run_id"], msg["step_id"])
     connection.send_result(msg["id"])
 
 

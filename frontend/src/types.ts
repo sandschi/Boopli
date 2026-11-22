@@ -79,6 +79,8 @@ export interface StepRun {
   nudge_count: number;
   next_nudge_at: string | null;
   snoozed_until: string | null;
+  on_it_since?: string | null; // "On it": when you started this step
+  on_it_until?: string | null; // while it is in progress: when Boopli checks in
   triggers?: Trigger[];
   wait_for?: Trigger[];
   done_by?: "manual" | "auto" | null;
@@ -188,6 +190,7 @@ export interface Settings {
   pet_name: string;
   ai: AiSettings;
   question_wait_minutes?: number; // how long the first nudge waits for the questions
+  check_in_minutes?: number; // after "On it": when Boopli asks "still on it?"
 }
 
 /** Optional AI help: splitting tasks into small steps with your own Home Assistant AI agent. */

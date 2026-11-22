@@ -35,6 +35,7 @@ class BoopliNudger:
         self.manager = manager
         self._unsub_actions: CALLBACK_TYPE | None = None
         self._blinks: dict[str, asyncio.Task[None]] = {}
+        self._blink_owner: dict[str, str] = {}  # light entity -> step key that started its blink
         # Alarms that are sounding: target entity -> (step key, task)
         self._alarms: dict[str, tuple[str, asyncio.Task[None]]] = {}
 
@@ -75,6 +76,10 @@ class BoopliNudger:
             self.manager.snooze(run_id, step_id)
         elif kind == engine.ACTION_ALL_STEPS:
             self.manager.answer_questions(run_id, {})  # no answers: start with all steps
+        elif kind == engine.ACTION_ON_IT:
+            self.manager.on_it(run_id, step_id)
+        elif kind == engine.ACTION_NOT_ON_IT:
+            self.manager.not_on_it(run_id, step_id)
 
     # --- sending ---------------------------------------------------------
 
@@ -93,7 +98,7 @@ class BoopliNudger:
         if channels == engine.CHANNELS_ALL:
             for light in settings.lights:
                 if engine.reached(light.start_at, number):
-                    await self._nudge_light(light)
+                    await self._nudge_light(light, key)
             for speaker in settings.speakers:
                 level = engine.speaker_level(speaker, number)
                 if level:
@@ -113,6 +118,32 @@ class BoopliNudger:
                 settings.snooze_minutes,
             )
             await self._notify(phone.service, payload)
+
+    async def async_show_on_it(self, run: engine.Run, step: engine.StepRun) -> None:
+        """"On it": stop the alarms, blinks and speakers of this step, and turn the phone
+        notification green in place (same tag), so the person sees it was noticed."""
+        await self.async_silence(f"{run.id}:{step.step_id}")
+        if not step.on_it_since:
+            return
+        since = engine.parse_ts(step.on_it_since).astimezone(self.manager.tz).strftime("%H:%M")
+        payload = engine.on_it_payload(run.id, step.step_id, run.chore_name, step.title, since)
+        for phone in self.manager.settings.phones:
+            if step.nudge_count > 0 and engine.reached(phone.start_at, step.nudge_count):
+                await self._notify(phone.service, payload)
+
+    async def async_send_check_in(
+        self, run_id: str, chore_name: str, step_id: str, step_title: str, number: int = 1
+    ) -> None:
+        """"Still on it?": a normal looking notification on the phones, nothing else.
+
+        It replaces the green one, so it makes a sound once. No lights, speakers or alarms.
+        It goes to the phones that have reached nudge `number`, the same ones that were
+        shown the green notification, so every phone that has one gets it replaced.
+        """
+        payload = engine.check_in_payload(run_id, step_id, chore_name, step_title)
+        for phone in self.manager.settings.phones:
+            if engine.reached(phone.start_at, number):
+                await self._notify(phone.service, payload)
 
     async def async_send_questions(self, run: engine.Run) -> None:
         """Tell the phones that a chore started and has questions to answer.
@@ -169,13 +200,13 @@ class BoopliNudger:
             light.color,
         )["data"]
 
-    async def _nudge_light(self, light: engine.LightCfg) -> str | None:
+    async def _nudge_light(self, light: engine.LightCfg, key: str = "") -> str | None:
         """Blink a light, or switch it on as an indicator. Returns the mode used."""
         state = self._light_info(light)
         if state is None:
             return None
         if light.mode == engine.LIGHT_BLINK:
-            return self._start_blink(light, state)
+            return self._start_blink(light, state, key)
         data = self._indicator_data(light, state)
         _LOGGER.debug("Boopli: light %s as indicator with %s", light.entity_id, data)
         try:
@@ -186,12 +217,16 @@ class BoopliNudger:
         self.manager.mark_indicator_on(light.entity_id)
         return engine.LIGHT_INDICATOR
 
-    def _start_blink(self, light: engine.LightCfg, state: Any) -> str | None:
-        """Start a blink in the background. Returns None if one is running."""
+    def _start_blink(self, light: engine.LightCfg, state: Any, key: str = "") -> str | None:
+        """Start a blink in the background. Returns None if one is running.
+
+        `key` is the step the blink belongs to, so answering that step can stop it.
+        """
         running = self._blinks.get(light.entity_id)
         if running is not None and not running.done():
             _LOGGER.debug("Boopli: %s is already blinking", light.entity_id)
             return None
+        self._blink_owner[light.entity_id] = key
         self._blinks[light.entity_id] = self.hass.async_create_task(
             self._blink(light, state)
         )
@@ -335,6 +370,10 @@ class BoopliNudger:
         for target, (alarm_key, task) in list(self._alarms.items()):
             if alarm_key == key and not task.done():
                 task.cancel()
+        for entity_id, blink in list(self._blinks.items()):
+            # A blink of this step stops, and the light goes back as it was; others carry on.
+            if self._blink_owner.get(entity_id) == key and not blink.done():
+                blink.cancel()
 
     async def async_turn_off_alarm_devices(self, entity_ids: list[str]) -> list[str]:
         """Switch off devices that were left on (for example by a restart).

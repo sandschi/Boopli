@@ -742,19 +742,28 @@ class BoopliManager:
                 )
                 if decision.action == "send":
                     number = step.nudge_count + 1
+                    check_in = engine.in_progress(step)  # the "still on it?" after "On it"
+                    step.on_it_until = None  # asked now: back to the normal look
                     engine.record_nudge(step, style, now)
                     if step.next_nudge_at:
                         wakeups.append(engine.parse_ts(step.next_nudge_at))
-                    self.hass.async_create_task(
-                        self.nudger.async_send(
-                            run.id,
-                            run.chore_name,
-                            step.step_id,
-                            step.title,
-                            decision.channels,
-                            number,
+                    if check_in:
+                        self.hass.async_create_task(
+                            self.nudger.async_send_check_in(
+                                run.id, run.chore_name, step.step_id, step.title, number
+                            )
                         )
-                    )
+                    else:
+                        self.hass.async_create_task(
+                            self.nudger.async_send(
+                                run.id,
+                                run.chore_name,
+                                step.step_id,
+                                step.title,
+                                decision.channels,
+                                number,
+                            )
+                        )
                     events.append(
                         engine.Event(
                             engine.EVENT_NUDGE_SENT,
@@ -765,7 +774,8 @@ class BoopliManager:
                                 "step_id": step.step_id,
                                 "step_title": step.title,
                                 "nudge": number,
-                                "channels": decision.channels,
+                                "check_in": check_in,
+                                "channels": engine.CHANNELS_PHONE_ONLY if check_in else decision.channels,
                                 "time": engine.fmt_ts(now),
                             },
                         )
@@ -780,7 +790,9 @@ class BoopliManager:
             return
         now = dt_util.utcnow()
         waiting = any(
-            step.status == engine.STEP_ACTIVE and step.nudge_count > 0
+            step.status == engine.STEP_ACTIVE
+            and step.nudge_count > 0
+            and not engine.in_progress(step)  # "On it": nothing is nagging any more
             for run in self.runs.values()
             if not self._paused_run(run, now)
             for step in run.steps
@@ -1101,6 +1113,71 @@ class BoopliManager:
                     self.nudger.async_clear_step(run.id, step_id)
                 )
             self._tick()
+
+    def _find_step(self, run_id: str, step_id: str) -> tuple[engine.Run, engine.StepRun] | None:
+        run = self.runs.get(run_id)
+        if run is None:
+            return None
+        step = next((s for s in run.steps if s.step_id == step_id), None)
+        return (run, step) if step else None
+
+    def on_it(self, run_id: str, step_id: str) -> None:
+        """"On it" / "Still on it": the person is doing this step. Quiet until the check-in."""
+        found = self._find_step(run_id, step_id)
+        if found is None:
+            return
+        run, step = found
+        now = dt_util.utcnow()
+        if not engine.start_on_it(step, self.settings.check_in_minutes, now):
+            return
+        self.hass.async_create_task(self.nudger.async_show_on_it(run, step))
+        self._announce(
+            [
+                engine.Event(
+                    engine.EVENT_STEP_ON_IT,
+                    {
+                        "chore_id": run.chore_id,
+                        "chore_name": run.chore_name,
+                        "run_id": run.id,
+                        "step_id": step.step_id,
+                        "step_title": step.title,
+                        "check_in": step.on_it_until,
+                        "time": engine.fmt_ts(now),
+                    },
+                )
+            ]
+        )
+        self._tick()
+
+    def not_on_it(self, run_id: str, step_id: str) -> None:
+        """Taken back: normal nudging again, right away."""
+        found = self._find_step(run_id, step_id)
+        if found is None:
+            return
+        run, step = found
+        if engine.stop_on_it(step, dt_util.utcnow()):
+            # The green notification goes; the nudge that follows at once replaces it with a normal one.
+            self.hass.async_create_task(self.nudger.async_clear_step(run.id, step_id))
+            self._tick()
+
+    def _active_step_of(self, ref: str) -> tuple[engine.Run, engine.StepRun]:
+        chore = self.find_chore(ref)
+        run = self._active_run_for(chore.id)
+        step = (
+            next((s for s in run.steps if s.status == engine.STEP_ACTIVE), None) if run else None
+        )
+        if run is None or step is None:
+            raise BoopliError(f"'{chore.name}' has no step waiting for you right now.")
+        return run, step
+
+    def on_it_chore(self, ref: str) -> None:
+        """"On it" for the active step of a chore (used by services)."""
+        run, step = self._active_step_of(ref)
+        self.on_it(run.id, step.step_id)
+
+    def not_on_it_chore(self, ref: str) -> None:
+        run, step = self._active_step_of(ref)
+        self.not_on_it(run.id, step.step_id)
 
     def snooze_chore(self, ref: str) -> None:
         """Snooze the active step of a chore (used by services)."""

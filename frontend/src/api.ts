@@ -146,6 +146,14 @@ export function snoozeStep(
   });
 }
 
+export function onIt(hass: Hass, runId: string, stepId: string): Promise<void> {
+  return hass.callWS({ type: "boopli/step_on_it", run_id: runId, step_id: stepId });
+}
+
+export function notOnIt(hass: Hass, runId: string, stepId: string): Promise<void> {
+  return hass.callWS({ type: "boopli/step_not_on_it", run_id: runId, step_id: stepId });
+}
+
 export function testLight(hass: Hass, light: LightCfg): Promise<TestResult> {
   return hass.callWS({ type: "boopli/test_channel", kind: "light", light });
 }
