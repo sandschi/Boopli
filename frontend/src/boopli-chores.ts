@@ -219,9 +219,19 @@ export class BoopliChores extends LitElement {
       }
       .chore-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
         gap: 12px;
         align-items: start;
+      }
+      @media (max-width: 520px) {
+        .chore {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .chore-actions {
+          justify-content: flex-start;
+          flex-shrink: 1;
+        }
       }
       .chore {
         display: flex;

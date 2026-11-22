@@ -640,8 +640,13 @@ export class BoopliChoreEditor extends LitElement {
       }
       .step-head {
         display: flex;
+        flex-wrap: wrap;
         gap: 6px;
         align-items: center;
+      }
+      .step-head > input {
+        flex: 1 1 160px;
+        min-width: 120px;
       }
       .step-head button {
         padding: 4px 10px;

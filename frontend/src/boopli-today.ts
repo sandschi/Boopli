@@ -601,7 +601,7 @@ export class BoopliToday extends LitElement {
       }
       .cols {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
         gap: 24px;
         align-items: start;
       }

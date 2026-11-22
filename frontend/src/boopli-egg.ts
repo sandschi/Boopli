@@ -23,12 +23,25 @@ const EGG_AUDIO = new URL("./easter-egg.mp3", import.meta.url).href;
 const EGG_INTRO = new URL("./easter-egg-intro.webm", import.meta.url).href; // the first spins, as in the original
 const EGG_LOOP = new URL("./easter-egg-loop.webm", import.meta.url).href; // the steady spin that follows, repeated
 
+const NOTE_SECONDS = 12;
+
+/** Safari's engine (WebKit) can't show see-through VP9 video. Every browser on iPhone and iPad uses it. */
+function usesAppleEngine(): boolean {
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const safari = /safari/i.test(ua) && !/chrome|chromium|crios|fxios|edg|android/i.test(ua);
+  return ios || safari;
+}
+
 export class BoopliEgg extends LitElement {
   static properties = {
     _muted: { state: true },
     _cat: { state: true },
+    _note: { state: true },
   };
 
+  declare _note: boolean; // Safari's engine: show the note instead of the egg
+  private _noteTimer?: number;
   declare _muted: boolean;
   declare _cat: boolean; // the browser can show the see-through clips and the person allows motion
   private _frame?: number;
@@ -42,10 +55,18 @@ export class BoopliEgg extends LitElement {
     super();
     this._muted = false;
     this._cat = false;
+    this._note = false;
   }
 
   connectedCallback(): void {
     super.connectedCallback();
+    if (usesAppleEngine()) {
+      // Safari's engine (every browser on iPhone and iPad) can't show the see-through cat.
+      // No cat, no music, no gift: just a sassy note, then it is over.
+      this._note = true;
+      this._noteTimer = window.setTimeout(() => this._stop(true), NOTE_SECONDS * 1000);
+      return;
+    }
     const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     this._cat = !calm && document.createElement("video").canPlayType('video/webm; codecs="vp9"') !== "";
     this._started = performance.now();
@@ -130,6 +151,8 @@ export class BoopliEgg extends LitElement {
   private _stop(announce: boolean): void {
     if (this._frame) cancelAnimationFrame(this._frame);
     this._frame = undefined;
+    if (this._noteTimer) window.clearTimeout(this._noteTimer);
+    this._noteTimer = undefined;
     if (this._audio) {
       this._audio.pause();
       this._audio = undefined;
@@ -146,6 +169,16 @@ export class BoopliEgg extends LitElement {
   }
 
   render() {
+    if (this._note) {
+      return html`<div class="note" role="status">
+        <span
+          >Here would be an Easter egg. 🐱 But you're on Safari, so you get a sentence instead of a spinning cat. On an
+          iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to
+          non-Apple products 😉</span
+        >
+        <button type="button" class="ctl" aria-label="Close" @click=${() => this._stop(true)}>✕</button>
+      </div>`;
+    }
     return html`${this._cat
         ? html`<div class="egg-layer" aria-hidden="true">
             <div class="egg-cat">
@@ -204,6 +237,25 @@ export class BoopliEgg extends LitElement {
       z-index: 10000;
       display: flex;
       gap: 8px;
+    }
+    .note {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      left: 18px;
+      max-width: 420px;
+      margin-left: auto;
+      z-index: 10000;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border: 1px solid var(--divider-color);
+      border-radius: 12px;
+      background: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      font-size: 15px;
+      line-height: 1.4;
     }
     .ctl {
       border: 1px solid var(--divider-color);

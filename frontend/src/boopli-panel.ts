@@ -395,6 +395,12 @@ export class BoopliPanel extends LitElement {
       nav {
         display: flex;
         gap: 4px;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tab {
+        white-space: nowrap;
       }
       .tab {
         position: relative;
@@ -445,6 +451,35 @@ export class BoopliPanel extends LitElement {
         gap: 10px;
         margin-top: 16px;
         flex-wrap: wrap;
+      }
+      /* Phones: these come last so they win over the rules above. */
+      @media (max-width: 600px) {
+        header {
+          padding: 0 8px;
+          gap: 6px;
+        }
+        header h1 {
+          font-size: 18px;
+          margin-right: 0;
+        }
+        .tab {
+          padding: 8px 9px;
+          font-size: 14px;
+        }
+        main {
+          padding: 12px 12px 64px;
+        }
+      }
+      @media (max-width: 480px) {
+        header h1 {
+          display: none;
+        }
+        nav {
+          gap: 0;
+        }
+        .tab {
+          padding: 8px 7px;
+        }
       }
     `,
   ];
