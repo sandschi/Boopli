@@ -1,4 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
+import "./boopli-egg";
+
+const EGG_AFTER_SECONDS = 30; // the Easter egg shows up once a wait has lasted this long
 
 function mmss(seconds: number): string {
   const s = Math.max(0, Math.round(seconds));
@@ -10,6 +13,9 @@ function mmss(seconds: number): string {
  * so far, how long Boopli will wait at most, and a way to stop waiting.
  * The bar shows the waiting time used up, so it is honest, not a made-up percentage.
  * Emits `stop-waiting` when the person gives up.
+ *
+ * Easter egg: once a wait has gone past 30 seconds, the spinning cat plays once
+ * (see boopli-egg).
  */
 export class BoopliWait extends LitElement {
   static properties = {
@@ -17,14 +23,17 @@ export class BoopliWait extends LitElement {
     max: { type: Number },
     stoppable: { type: Boolean },
     _elapsed: { state: true },
+    _egg: { state: true },
   };
 
   declare label: string;
   declare max: number; // seconds Boopli waits at most
   declare stoppable: boolean;
   declare _elapsed: number;
+  declare _egg: boolean; // the Easter egg is playing
   private _timer?: number;
   private _since = 0;
+  private _eggShown = false; // one run per wait
 
   constructor() {
     super();
@@ -32,6 +41,7 @@ export class BoopliWait extends LitElement {
     this.max = 180;
     this.stoppable = true;
     this._elapsed = 0;
+    this._egg = false;
   }
 
   connectedCallback(): void {
@@ -40,6 +50,10 @@ export class BoopliWait extends LitElement {
     this._elapsed = 0;
     this._timer = window.setInterval(() => {
       this._elapsed = (Date.now() - this._since) / 1000;
+      if (!this._eggShown && this._elapsed >= EGG_AFTER_SECONDS) {
+        this._eggShown = true;
+        this._egg = true;
+      }
     }, 500);
   }
 
@@ -60,6 +74,7 @@ export class BoopliWait extends LitElement {
   render() {
     const used = Math.min(1, this._elapsed / Math.max(1, this.max));
     return html`<div class="wait" role="status" aria-live="polite">
+      ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
       <div class="head">
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="label">${this.label}</span>

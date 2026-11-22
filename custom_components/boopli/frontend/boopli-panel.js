@@ -29,11 +29,11 @@ var e = globalThis, t = e.ShadowRoot && (e.ShadyCSS === void 0 || e.ShadyCSS.nat
 	let t = "";
 	for (let n of e.cssRules) t += n.cssText;
 	return a(t);
-})(e) : e, { is: l, defineProperty: u, getOwnPropertyDescriptor: ee, getOwnPropertyNames: te, getOwnPropertySymbols: ne, getPrototypeOf: re } = Object, d = globalThis, ie = d.trustedTypes, ae = ie ? ie.emptyScript : "", oe = d.reactiveElementPolyfillSupport, f = (e, t) => e, p = {
+})(e) : e, { is: l, defineProperty: u, getOwnPropertyDescriptor: d, getOwnPropertyNames: ee, getOwnPropertySymbols: te, getPrototypeOf: ne } = Object, f = globalThis, re = f.trustedTypes, ie = re ? re.emptyScript : "", ae = f.reactiveElementPolyfillSupport, p = (e, t) => e, oe = {
 	toAttribute(e, t) {
 		switch (t) {
 			case Boolean:
-				e = e ? ae : null;
+				e = e ? ie : null;
 				break;
 			case Object:
 			case Array: e = e == null ? e : JSON.stringify(e);
@@ -61,12 +61,12 @@ var e = globalThis, t = e.ShadowRoot && (e.ShadyCSS === void 0 || e.ShadyCSS.nat
 }, se = (e, t) => !l(e, t), ce = {
 	attribute: !0,
 	type: String,
-	converter: p,
+	converter: oe,
 	reflect: !1,
 	useDefault: !1,
 	hasChanged: se
 };
-Symbol.metadata ??= Symbol("metadata"), d.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+Symbol.metadata ??= Symbol("metadata"), f.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
 var m = class extends HTMLElement {
 	static addInitializer(e) {
 		this._$Ei(), (this.l ??= []).push(e);
@@ -81,7 +81,7 @@ var m = class extends HTMLElement {
 		}
 	}
 	static getPropertyDescriptor(e, t, n) {
-		let { get: r, set: i } = ee(this.prototype, e) ?? {
+		let { get: r, set: i } = d(this.prototype, e) ?? {
 			get() {
 				return this[t];
 			},
@@ -103,14 +103,14 @@ var m = class extends HTMLElement {
 		return this.elementProperties.get(e) ?? ce;
 	}
 	static _$Ei() {
-		if (this.hasOwnProperty(f("elementProperties"))) return;
-		let e = re(this);
+		if (this.hasOwnProperty(p("elementProperties"))) return;
+		let e = ne(this);
 		e.finalize(), e.l !== void 0 && (this.l = [...e.l]), this.elementProperties = new Map(e.elementProperties);
 	}
 	static finalize() {
-		if (this.hasOwnProperty(f("finalized"))) return;
-		if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(f("properties"))) {
-			let e = this.properties, t = [...te(e), ...ne(e)];
+		if (this.hasOwnProperty(p("finalized"))) return;
+		if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(p("properties"))) {
+			let e = this.properties, t = [...ee(e), ...te(e)];
 			for (let n of t) this.createProperty(n, e[n]);
 		}
 		let e = this[Symbol.metadata];
@@ -171,14 +171,14 @@ var m = class extends HTMLElement {
 	_$ET(e, t) {
 		let n = this.constructor.elementProperties.get(e), r = this.constructor._$Eu(e, n);
 		if (r !== void 0 && !0 === n.reflect) {
-			let i = (n.converter?.toAttribute === void 0 ? p : n.converter).toAttribute(t, n.type);
+			let i = (n.converter?.toAttribute === void 0 ? oe : n.converter).toAttribute(t, n.type);
 			this._$Em = e, i == null ? this.removeAttribute(r) : this.setAttribute(r, i), this._$Em = null;
 		}
 	}
 	_$AK(e, t) {
 		let n = this.constructor, r = n._$Eh.get(e);
 		if (r !== void 0 && this._$Em !== r) {
-			let e = n.getPropertyOptions(r), i = typeof e.converter == "function" ? { fromAttribute: e.converter } : e.converter?.fromAttribute === void 0 ? p : e.converter;
+			let e = n.getPropertyOptions(r), i = typeof e.converter == "function" ? { fromAttribute: e.converter } : e.converter?.fromAttribute === void 0 ? oe : e.converter;
 			this._$Em = r;
 			let a = i.fromAttribute(t, e.type);
 			this[r] = a ?? this._$Ej?.get(r) ?? a, this._$Em = null;
@@ -251,7 +251,7 @@ var m = class extends HTMLElement {
 	updated(e) {}
 	firstUpdated(e) {}
 };
-m.elementStyles = [], m.shadowRootOptions = { mode: "open" }, m[f("elementProperties")] = /* @__PURE__ */ new Map(), m[f("finalized")] = /* @__PURE__ */ new Map(), oe?.({ ReactiveElement: m }), (d.reactiveElementVersions ??= []).push("2.1.2");
+m.elementStyles = [], m.shadowRootOptions = { mode: "open" }, m[p("elementProperties")] = /* @__PURE__ */ new Map(), m[p("finalized")] = /* @__PURE__ */ new Map(), ae?.({ ReactiveElement: m }), (f.reactiveElementVersions ??= []).push("2.1.2");
 // node_modules/lit-html/lit-html.js
 var h = globalThis, le = (e) => e, g = h.trustedTypes, ue = g ? g.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, de = "$lit$", _ = `lit$${Math.random().toFixed(9).slice(2)}$`, fe = "?" + _, pe = `<${fe}>`, v = document, y = () => v.createComment(""), b = (e) => e === null || typeof e != "object" && typeof e != "function", x = Array.isArray, me = (e) => x(e) || typeof e?.[Symbol.iterator] == "function", S = "[ 	\n\f\r]", C = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, he = /-->/g, ge = />/g, w = RegExp(`>|${S}(?:([^\\s"'>=/]+)(${S}*=${S}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), _e = /'/g, ve = /"/g, ye = /^(?:script|style|textarea|title)$/i, T = ((e) => (t, ...n) => ({
 	_$litType$: e,
@@ -267,8 +267,8 @@ var Se = (e, t) => {
 	for (let t = 0; t < n; t++) {
 		let n = e[t], s, c, l = -1, u = 0;
 		for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === C ? c[1] === "!--" ? o = he : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = w) : (ye.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = w) : o = ge : o === w ? c[0] === ">" ? (o = i ?? C, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? w : c[3] === "\"" ? ve : _e) : o === ve || o === _e ? o = w : o === he || o === ge ? o = C : (o = w, i = void 0);
-		let ee = o === w && e[t + 1].startsWith("/>") ? " " : "";
-		a += o === C ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + de + n.slice(l) + _ + ee) : n + _ + (l === -2 ? t : ee);
+		let d = o === w && e[t + 1].startsWith("/>") ? " " : "";
+		a += o === C ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + de + n.slice(l) + _ + d) : n + _ + (l === -2 ? t : d);
 	}
 	return [xe(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
 }, Ce = class e {
@@ -289,7 +289,7 @@ var Se = (e, t) => {
 						index: a,
 						name: r[2],
 						strings: n,
-						ctor: r[1] === "." ? Te : r[1] === "?" ? Ee : r[1] === "@" ? De : j
+						ctor: r[1] === "." ? Ee : r[1] === "?" ? De : r[1] === "@" ? Oe : A
 					}), i.removeAttribute(e);
 				} else e.startsWith(_) && (c.push({
 					type: 6,
@@ -349,7 +349,7 @@ var we = class {
 		for (; s !== void 0;) {
 			if (a === s.index) {
 				let t;
-				s.type === 2 ? t = new A(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Oe(i, this, e)), this._$AV.push(t), s = n[++o];
+				s.type === 2 ? t = new Te(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new ke(i, this, e)), this._$AV.push(t), s = n[++o];
 			}
 			a !== s?.index && (i = O.nextNode(), a++);
 		}
@@ -359,7 +359,7 @@ var we = class {
 		let t = 0;
 		for (let n of this._$AV) n !== void 0 && (n.strings === void 0 ? n._$AI(e[t]) : (n._$AI(e, n, t), t += n.strings.length - 2)), t++;
 	}
-}, A = class e {
+}, Te = class e {
 	get _$AU() {
 		return this._$AM?._$AU ?? this._$Cv;
 	}
@@ -415,7 +415,7 @@ var we = class {
 	setConnected(e) {
 		this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
 	}
-}, j = class {
+}, A = class {
 	get tagName() {
 		return this.element.tagName;
 	}
@@ -437,21 +437,21 @@ var we = class {
 	j(e) {
 		e === D ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
 	}
-}, Te = class extends j {
+}, Ee = class extends A {
 	constructor() {
 		super(...arguments), this.type = 3;
 	}
 	j(e) {
 		this.element[this.name] = e === D ? void 0 : e;
 	}
-}, Ee = class extends j {
+}, De = class extends A {
 	constructor() {
 		super(...arguments), this.type = 4;
 	}
 	j(e) {
 		this.element.toggleAttribute(this.name, !!e && e !== D);
 	}
-}, De = class extends j {
+}, Oe = class extends A {
 	constructor(e, t, n, r, i) {
 		super(e, t, n, r, i), this.type = 5;
 	}
@@ -463,7 +463,7 @@ var we = class {
 	handleEvent(e) {
 		typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
 	}
-}, Oe = class {
+}, ke = class {
 	constructor(e, t, n) {
 		this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
 	}
@@ -473,16 +473,16 @@ var we = class {
 	_$AI(e) {
 		k(this, e);
 	}
-}, ke = h.litHtmlPolyfillSupport;
-ke?.(Ce, A), (h.litHtmlVersions ??= []).push("3.3.3");
-var Ae = (e, t, n) => {
+}, Ae = h.litHtmlPolyfillSupport;
+Ae?.(Ce, Te), (h.litHtmlVersions ??= []).push("3.3.3");
+var je = (e, t, n) => {
 	let r = n?.renderBefore ?? t, i = r._$litPart$;
 	if (i === void 0) {
 		let e = n?.renderBefore ?? null;
-		r._$litPart$ = i = new A(t.insertBefore(y(), e), e, void 0, n ?? {});
+		r._$litPart$ = i = new Te(t.insertBefore(y(), e), e, void 0, n ?? {});
 	}
 	return i._$AI(e), i;
-}, M = globalThis, N = class extends m {
+}, j = globalThis, M = class extends m {
 	constructor() {
 		super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
 	}
@@ -492,7 +492,7 @@ var Ae = (e, t, n) => {
 	}
 	update(e) {
 		let t = this.render();
-		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = Ae(t, this.renderRoot, this.renderOptions);
+		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = je(t, this.renderRoot, this.renderOptions);
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -504,17 +504,17 @@ var Ae = (e, t, n) => {
 		return E;
 	}
 };
-N._$litElement$ = !0, N.finalized = !0, M.litElementHydrateSupport?.({ LitElement: N });
-var je = M.litElementPolyfillSupport;
-je?.({ LitElement: N }), (M.litElementVersions ??= []).push("4.2.2");
+M._$litElement$ = !0, M.finalized = !0, j.litElementHydrateSupport?.({ LitElement: M });
+var Me = j.litElementPolyfillSupport;
+Me?.({ LitElement: M }), (j.litElementVersions ??= []).push("4.2.2");
 // src/api.ts
-function P(e, t) {
+function N(e, t) {
 	return e.callWS({
 		type: "boopli/settings_save",
 		settings: t
 	});
 }
-function Me(e, t, n, r, i = "", a, o = "") {
+function Ne(e, t, n, r, i = "", a, o = "") {
 	return e.callWS({
 		type: "boopli/ai_questions",
 		task: t,
@@ -525,7 +525,7 @@ function Me(e, t, n, r, i = "", a, o = "") {
 		...a ? { rooms: a } : {}
 	});
 }
-function F(e, t, n, r, i = "", a, o = "") {
+function P(e, t, n, r, i = "", a, o = "") {
 	return e.callWS({
 		type: "boopli/ai_steps",
 		task: t,
@@ -536,7 +536,7 @@ function F(e, t, n, r, i = "", a, o = "") {
 		...a ? { rooms: a } : {}
 	});
 }
-function Ne(e, t, n, r, i, a, o = "") {
+function Pe(e, t, n, r, i, a, o = "") {
 	return e.callWS({
 		type: "boopli/ai_preview",
 		task: t,
@@ -547,22 +547,22 @@ function Ne(e, t, n, r, i, a, o = "") {
 		scene: o
 	});
 }
-async function Pe(e, t) {
+async function Fe(e, t) {
 	return (await e.callWS({
 		type: "boopli/rooms_guess",
 		task: t
 	})).rooms;
 }
-function Fe(e, t) {
+function Ie(e, t) {
 	return e.callWS({
 		type: "boopli/home_save",
 		home: t
 	});
 }
-function Ie(e) {
+function Le(e) {
 	return e.callWS({ type: "boopli/home_sync" });
 }
-function Le(e, t, n, r) {
+function Re(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/room_questions",
 		room: t,
@@ -570,7 +570,7 @@ function Le(e, t, n, r) {
 		answers: r
 	});
 }
-function Re(e, t, n, r) {
+function ze(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/room_notes",
 		room: t,
@@ -578,10 +578,10 @@ function Re(e, t, n, r) {
 		answers: r
 	});
 }
-function ze(e) {
+function Be(e) {
 	return e.callWS({ type: "boopli/ai_defaults" });
 }
-function Be(e, t, n, r = "") {
+function Ve(e, t, n, r = "") {
 	return e.callWS({
 		type: "boopli/task_add",
 		title: t,
@@ -589,21 +589,21 @@ function Be(e, t, n, r = "") {
 		notes: r
 	});
 }
-async function Ve(e, t, n = 5) {
+async function He(e, t, n = 5) {
 	return (await e.callWS({
 		type: "boopli/schedule_preview",
 		repeat: t,
 		count: n
 	})).times;
 }
-function I(e, t, n = "") {
+function F(e, t, n = "") {
 	return e.callWS({
 		type: "boopli/setup_save",
 		status: t,
 		step: n
 	});
 }
-function He(e, t) {
+function I(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "light",
@@ -719,6 +719,9 @@ function rt(e, t, n, r) {
 		...r ? { rooms: r } : {}
 	});
 }
+function it(e) {
+	return e.callWS({ type: "boopli/egg_found" });
+}
 // src/time.ts
 var R = [
 	"Mon",
@@ -745,12 +748,12 @@ function V(e, t) {
 		day: "2-digit"
 	}).format(e);
 }
-function it(e) {
+function at(e) {
 	let [t, n, r] = e.split("-").map(Number);
 	return Math.round(Date.UTC(t, n - 1, r) / 864e5);
 }
 function H(e, t, n) {
-	let r = new Date(e), i = it(V(r, n)) - it(V(new Date(t), n)), a = B(e, n);
+	let r = new Date(e), i = at(V(r, n)) - at(V(new Date(t), n)), a = B(e, n);
 	return i === 0 ? `today ${a}` : i === 1 ? `tomorrow ${a}` : `${new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
 		weekday: "short",
@@ -758,27 +761,27 @@ function H(e, t, n) {
 		month: "short"
 	}).format(r)}, ${a}`;
 }
-function at(e, t, n) {
+function ot(e, t, n) {
 	return V(new Date(e), n) === V(new Date(t), n);
 }
-function ot(e) {
+function st(e) {
 	let t = Math.max(0, Math.round(e));
 	if (t < 1) return "less than a minute";
 	if (t < 60) return `${t} min`;
 	let n = Math.floor(t / 60), r = t % 60;
 	return r === 0 ? `${n}h` : `${n}h ${r}m`;
 }
-function st(e, t) {
-	let n = (new Date(e).getTime() - t) / 6e4;
-	return n <= .5 ? "any moment now" : `in ${ot(n)}`;
-}
 function ct(e, t) {
+	let n = (new Date(e).getTime() - t) / 6e4;
+	return n <= .5 ? "any moment now" : `in ${st(n)}`;
+}
+function lt(e, t) {
 	return `since ${B(e, t)}`;
 }
-function lt(e) {
+function ut(e) {
 	return e.length <= 2 ? e.join(" and ") : `${e.slice(0, -1).join(", ")} and ${e[e.length - 1]}`;
 }
-function ut(e) {
+function dt(e) {
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e[String(n)] ?? [];
@@ -789,19 +792,19 @@ function ut(e) {
 		let i = n;
 		for (; i + 1 < 7 && (e[String(i + 1)] ?? []).join() === r.join();) i++;
 		let a = n === i ? R[n] : i === n + 1 ? `${R[n]} and ${R[i]}` : `${R[n]} to ${R[i]}`;
-		t.push(`${a} ${lt(r)}`), n = i + 1;
+		t.push(`${a} ${ut(r)}`), n = i + 1;
 	}
 	return t.length ? t.join(", ") : "No days yet";
 }
 function U(e) {
 	switch (e.type) {
 		case "none": return "On demand";
-		case "schedule": return ut(e.days);
+		case "schedule": return dt(e.days);
 		case "every_n_days": return e.every_n_days === 1 ? `Every day after you finish, at ${e.time}` : `${e.every_n_days} days after you finish, at ${e.time}`;
 	}
 }
 // src/today.ts
-function dt(e, t) {
+function ft(e, t) {
 	let n = e.time_zone, r = e.runs.flatMap((e) => e.steps.filter((e) => e.status === "active").map((t) => ({
 		run: e,
 		step: t,
@@ -809,7 +812,7 @@ function dt(e, t) {
 		total: e.steps.length
 	}))).sort((e, t) => (e.step.active_at ? Date.parse(e.step.active_at) : Infinity) - (t.step.active_at ? Date.parse(t.step.active_at) : Infinity))[0] ?? null, i = [...e.runs].sort((e, t) => Date.parse(e.started_at) - Date.parse(t.started_at)), a = (e, t) => !(r && r.run.id === e.id && r.step.step_id === t.step_id), o = (e) => {
 		let n = "";
-		return e.status === "active" ? n = "ready now" : e.status === "waiting" && e.active_at ? n = st(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = "waits for something to happen" : e.wait_minutes > 0 && (n = `${ot(e.wait_minutes)} after the step before`), {
+		return e.status === "active" ? n = "ready now" : e.status === "waiting" && e.active_at ? n = ct(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = "waits for something to happen" : e.wait_minutes > 0 && (n = `${st(e.wait_minutes)} after the step before`), {
 			title: e.title,
 			status: e.status,
 			hint: n
@@ -828,8 +831,8 @@ function dt(e, t) {
 		now: r,
 		ready: s,
 		groups: c,
-		dueToday: u.filter((e) => at(e.at, t, n)),
-		upcoming: u.filter((e) => !at(e.at, t, n) && Date.parse(e.at) > t)
+		dueToday: u.filter((e) => ot(e.at, t, n)),
+		upcoming: u.filter((e) => !ot(e.at, t, n) && Date.parse(e.at) > t)
 	};
 }
 // src/styles.ts
@@ -922,13 +925,13 @@ var W = o`
     font-size: 14px;
     margin: 8px 0;
   }
-`, ft = {
+`, pt = {
 	happy: "✨",
 	content: "",
 	sleepy: "💤",
 	sad: "💧",
 	hibernating: "🌙💤"
-}, pt = class extends N {
+}, mt = class extends M {
 	static {
 		this.properties = {
 			mood: { type: String },
@@ -936,14 +939,21 @@ var W = o`
 		};
 	}
 	constructor() {
-		super(), this.mood = "content", this.level = 1;
+		super(), this._taps = [], this.mood = "content", this.level = 1;
 	}
 	_art() {
 		return T`<span class="bear" aria-hidden="true">🐻</span>
-      <span class="badge" aria-hidden="true">${ft[this.mood]}</span>`;
+      <span class="badge" aria-hidden="true">${pt[this.mood]}</span>`;
+	}
+	_tap() {
+		let e = Date.now();
+		this._taps = [...this._taps.filter((t) => e - t < 4e3), e], this._taps.length >= 7 && (this._taps = [], this.dispatchEvent(new CustomEvent("egg-found", {
+			bubbles: !0,
+			composed: !0
+		})));
 	}
 	render() {
-		return T`<div class="pet ${this.mood}" role="img" aria-label="Your pet is ${this.mood}">
+		return T`<div class="pet ${this.mood}" role="img" aria-label="Your pet is ${this.mood}" @click=${() => this._tap()}>
       ${this._art()}
     </div>`;
 	}
@@ -981,9 +991,146 @@ var W = o`
   `;
 	}
 };
-customElements.define("boopli-pet", pt);
+customElements.define("boopli-pet", mt);
+// src/boopli-egg.ts
+var ht = 30, gt = 1.5, _t = .55, vt = 6.1, yt = 60 / 140, bt = 260, xt = 227, St = new URL("./easter-egg.mp3", "" + import.meta.url).href, Ct = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, wt = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Tt = class extends M {
+	static {
+		this.properties = {
+			_muted: { state: !0 },
+			_cat: { state: !0 }
+		};
+	}
+	constructor() {
+		super(), this._started = 0, this._lastHop = -1, this._hasSound = !1, this._over = !1, this._muted = !1, this._cat = !1;
+	}
+	connectedCallback() {
+		super.connectedCallback();
+		let e = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? !1;
+		this._cat = !e && document.createElement("video").canPlayType("video/webm; codecs=\"vp9\"") !== "", this._started = performance.now();
+		try {
+			let e = new Audio(St);
+			e.volume = _t, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
+		} catch {}
+		this.dispatchEvent(new CustomEvent("egg-started", {
+			bubbles: !0,
+			composed: !0
+		})), this.updateComplete.then(() => this._run());
+	}
+	disconnectedCallback() {
+		super.disconnectedCallback(), this._stop(!1);
+	}
+	_time() {
+		return this._hasSound && this._audio ? this._audio.currentTime : (performance.now() - this._started) / 1e3;
+	}
+	_run() {
+		let e = this.renderRoot.querySelector("video.intro"), t = this.renderRoot.querySelector("video.loop"), n = this.renderRoot.querySelector(".egg-cat"), r = this.renderRoot.querySelector(".egg-layer");
+		e && e.play().catch(() => void 0);
+		let i = !1;
+		if (n) {
+			let e = (window.innerWidth - bt) / 2, t = (window.innerHeight - xt) / 2;
+			n.style.transform = `translate(${e}px, ${t}px) scale(1)`;
+		}
+		let a = () => {
+			let o = this._time(), s = ht - o, c = Math.max(0, Math.min(1, s / gt));
+			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = _t * c), s <= 0) this._stop(!0);
+			else {
+				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= vt) {
+					let e = Math.floor((o - vt) / yt);
+					if (e !== this._lastHop) {
+						this._lastHop = e;
+						let t = .75 + Math.random() * .7, r = bt * t, i = xt * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
+						n.style.transform = `translate(${a}px, ${o}px) scale(${t})`;
+					}
+				}
+				this._frame = requestAnimationFrame(a);
+			}
+		};
+		this._frame = requestAnimationFrame(a);
+	}
+	_stop(e) {
+		this._frame && cancelAnimationFrame(this._frame), this._frame = void 0, this._audio &&= (this._audio.pause(), void 0), e && !this._over && (this._over = !0, this.dispatchEvent(new CustomEvent("egg-done", {
+			bubbles: !0,
+			composed: !0
+		})));
+	}
+	_toggleMute() {
+		this._muted = !this._muted, this._audio && (this._audio.muted = this._muted);
+	}
+	render() {
+		return T`${this._cat ? T`<div class="egg-layer" aria-hidden="true">
+            <div class="egg-cat">
+              <video class="intro" src=${Ct} muted playsinline preload="auto"></video>
+              <video class="loop" src=${wt} muted playsinline loop preload="auto" hidden></video>
+            </div>
+          </div>` : ""}
+      <div class="controls">
+        <button
+          type="button"
+          class="ctl"
+          aria-label=${this._muted ? "Turn the sound on" : "Turn the sound off"}
+          @click=${() => this._toggleMute()}
+        >
+          ${this._muted ? "🔇" : "🔊"}
+        </button>
+        <button type="button" class="ctl" aria-label="Stop the Easter egg" @click=${() => this._stop(!0)}>⏹ Stop</button>
+      </div>`;
+	}
+	static {
+		this.styles = o`
+    :host {
+      display: contents;
+    }
+    /* The cat roams over the whole screen and never takes a click. */
+    .egg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .egg-cat {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 260px;
+      height: 227px;
+      transform-origin: 0 0;
+      transition: transform 0.32s cubic-bezier(0.25, 1.35, 0.5, 1);
+      will-change: transform;
+    }
+    .egg-cat video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      pointer-events: none;
+    }
+    .controls {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 10000;
+      display: flex;
+      gap: 8px;
+    }
+    .ctl {
+      border: 1px solid var(--divider-color);
+      border-radius: 999px;
+      background: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      min-height: 0;
+      padding: 6px 14px;
+      font: inherit;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  `;
+	}
+};
+customElements.define("boopli-egg", Tt);
 // src/boopli-today.ts
-function mt(e, t) {
+function Et(e, t) {
 	if (!t.group) return null;
 	let n = e.steps.filter((e) => e.group === t.group), r = e.steps.some((e) => e.group !== t.group && e.status !== "done");
 	return {
@@ -992,7 +1139,7 @@ function mt(e, t) {
 		canPark: r
 	};
 }
-function ht(e) {
+function Dt(e) {
 	return {
 		happy: "Nice, you got things done today.",
 		content: "Ready when you are.",
@@ -1001,7 +1148,7 @@ function ht(e) {
 		hibernating: `${e.name} is curled up, resting until you are back. One step wakes it.`
 	}[e.mood];
 }
-var gt = class extends N {
+var Ot = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1012,11 +1159,12 @@ var gt = class extends N {
 			_toast: { state: !0 },
 			_quick: { state: !0 },
 			_park: { state: !0 },
-			_removing: { state: !0 }
+			_removing: { state: !0 },
+			_egg: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this._lastRunIds = [], this.nowMs = Date.now(), this._busy = !1, this._error = "", this._toast = "", this._quick = "", this._park = null, this._removing = "";
+		super(), this._lastRunIds = [], this.nowMs = Date.now(), this._busy = !1, this._error = "", this._toast = "", this._quick = "", this._park = null, this._removing = "", this._egg = !1;
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearTimeout(this._toastTimer);
@@ -1078,14 +1226,15 @@ var gt = class extends N {
 		let t = e.xp_for_level > 0 ? Math.round(e.xp_in_level / e.xp_for_level * 100) : 0;
 		return T`
       <section class="card pet-card">
-        <boopli-pet .mood=${e.mood} .level=${e.level}></boopli-pet>
+        <boopli-pet .mood=${e.mood} .level=${e.level} @egg-found=${() => this._egg = !0}></boopli-pet>
+        ${this._egg ? T`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : D}
         <div class="pet-info">
           <div class="pet-name">${e.name} <span class="muted">· Level ${e.level}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${t} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${t}%"></div>
           </div>
           <div class="muted small">${e.xp_in_level} / ${e.xp_for_level} XP to the next level</div>
-          <div class="small">${ht(e)}</div>
+          <div class="small">${Dt(e)}</div>
         </div>
       </section>
       ${this._toast ? T`<div class="toast" role="status">${this._toast}</div>` : D}
@@ -1267,7 +1416,7 @@ var gt = class extends N {
 	}
 	render() {
 		if (!this.snapshot) return T`<p class="muted">Loading…</p>`;
-		let e = this.snapshot.time_zone, t = dt(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
+		let e = this.snapshot.time_zone, t = ft(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
 		return T`
       <div class="cols"><div class="col">
       ${r === "skipped" || r === "in_progress" ? T`<section class="card banner">
@@ -1297,11 +1446,11 @@ var gt = class extends N {
                     <div class="muted small">Step ${t.now.done + 1} of ${t.now.total}</div>
                   </div>` : D}
               ${(() => {
-			let e = mt(t.now.run, t.now.step);
+			let e = Et(t.now.run, t.now.step);
 			return e && e.total > 1 ? T`<div class="muted small">${t.now.step.group}: step ${Math.min(e.done + 1, e.total)} of ${e.total}</div>` : D;
 		})()}
               ${t.now.step.active_at ? T`<div class="muted small">
-                    ${ct(t.now.step.active_at, e)}
+                    ${lt(t.now.step.active_at, e)}
                   </div>` : D}
               ${t.now.step.snoozed_until && Date.parse(t.now.step.snoozed_until) > this.nowMs ? T`<div class="muted small">
                     Snoozed until ${B(t.now.step.snoozed_until, e)}
@@ -1313,7 +1462,7 @@ var gt = class extends N {
               >
                 Done
               </button>
-              ${mt(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : T`<button
+              ${Et(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : T`<button
                   class="link later-btn"
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({
@@ -1562,9 +1711,9 @@ var gt = class extends N {
     `];
 	}
 };
-customElements.define("boopli-today", gt);
+customElements.define("boopli-today", Ot);
 // src/boopli-triggers.ts
-var _t = {
+var kt = {
 	binary_sensor: ["on", "off"],
 	switch: ["on", "off"],
 	input_boolean: ["on", "off"],
@@ -1573,15 +1722,15 @@ var _t = {
 	lock: ["locked", "unlocked"],
 	person: ["home", "not_home"],
 	device_tracker: ["home", "not_home"]
-}, vt = [
+}, At = [
 	"event",
 	"input_button",
 	"button"
 ];
-function yt(e) {
+function jt(e) {
 	return e.state ? "state" : e.above !== null && e.below !== null ? "between" : e.below === null ? e.above === null ? "state" : "above" : "below";
 }
-function bt(e) {
+function Mt(e) {
 	return {
 		kind: e,
 		entity_id: "",
@@ -1594,7 +1743,7 @@ function bt(e) {
 		press: ""
 	};
 }
-var xt = class extends N {
+var Nt = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1635,7 +1784,7 @@ var xt = class extends N {
 		} : n));
 	}
 	_add(e) {
-		this._emit([...this.triggers, bt(e)]);
+		this._emit([...this.triggers, Mt(e)]);
 	}
 	_remove(e) {
 		this._cancelScan(), this._emit(this.triggers.filter((t, n) => n !== e));
@@ -1690,7 +1839,7 @@ var xt = class extends N {
 		}
 	}
 	_renderState(e, t) {
-		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = _t[n] ?? [], a = yt(e);
+		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = kt[n] ?? [], a = jt(e);
 		return T`
       <div class="field">
         <label>Which entity?</label>
@@ -1848,7 +1997,7 @@ var xt = class extends N {
         ${this._entityIds().map((e) => T`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       <datalist id="buttons-list">
-        ${this._entityIds(vt).map((e) => T`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds(At).map((e) => T`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       ${this.triggers.length === 0 ? T`<div class="muted small">
             Nothing yet: only you finish this step (with Done). Add one below to let it finish by
@@ -1941,9 +2090,9 @@ var xt = class extends N {
     `];
 	}
 };
-customElements.define("boopli-triggers", xt);
+customElements.define("boopli-triggers", Nt);
 // src/boopli-schedule-days.ts
-var St = [
+var Pt = [
 	0,
 	1,
 	2,
@@ -1951,13 +2100,13 @@ var St = [
 	4,
 	5,
 	6
-], Ct = 6;
-function wt(e) {
+], Ft = 6;
+function It(e) {
 	if (e.length === 0) return "09:00";
 	let [t, n] = e[e.length - 1].split(":").map(Number);
 	return `${String(Math.min(23, (t || 0) + 4)).padStart(2, "0")}:${String(n || 0).padStart(2, "0")}`;
 }
-var Tt = class extends N {
+var Lt = class extends M {
 	static {
 		this.properties = {
 			days: { attribute: !1 },
@@ -1988,7 +2137,7 @@ var Tt = class extends N {
 		n && this._setDay(e, this._times(e).map((e, r) => r === t ? n : e));
 	}
 	_shownDays() {
-		return this.onlyActive ? St.filter((e) => this._times(e).length > 0) : St;
+		return this.onlyActive ? Pt.filter((e) => this._times(e).length > 0) : Pt;
 	}
 	render() {
 		let e = this._shownDays();
@@ -2002,7 +2151,7 @@ var Tt = class extends N {
                   <input
                     type="checkbox"
                     .checked=${a}
-                    @change=${(e) => this._setDay(t, e.target.checked ? [wt([])] : [])}
+                    @change=${(e) => this._setDay(t, e.target.checked ? [It([])] : [])}
                   />
                   Runs
                 </label>`}
@@ -2023,7 +2172,7 @@ var Tt = class extends N {
                             ✕
                           </button>` : D}
                     </span>`)}
-                  ${r.length < Ct ? T`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, wt(r)])}>+ time</button>` : D}
+                  ${r.length < Ft ? T`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, It(r)])}>+ time</button>` : D}
                 </div>` : T`<span class="muted small">No run this day</span>`}
             ${i === null ? D : T`<button
                   type="button"
@@ -2098,9 +2247,9 @@ var Tt = class extends N {
     `];
 	}
 };
-customElements.define("boopli-schedule-days", Tt);
+customElements.define("boopli-schedule-days", Lt);
 // src/boopli-schedule-wizard.ts
-var Et = {
+var Rt = {
 	none: ["how", "done"],
 	schedule: [
 		"how",
@@ -2115,14 +2264,14 @@ var Et = {
 		"preview",
 		"done"
 	]
-}, Dt = {
+}, zt = {
 	how: "How often",
 	days: "Which days",
 	times: "What time on each day",
 	interval: "Every how many days",
 	preview: "The next runs",
 	done: "All set"
-}, Ot = [
+}, Bt = [
 	{
 		value: "none",
 		label: "On demand",
@@ -2146,7 +2295,7 @@ var Et = {
 	4,
 	5,
 	6
-], kt = class extends N {
+], Vt = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2168,7 +2317,7 @@ var Et = {
 		!this._draft && this.repeat && (this._before = structuredClone(this.repeat), this._draft = structuredClone(this.repeat));
 	}
 	get _steps() {
-		return Et[this._draft?.type ?? "none"];
+		return Rt[this._draft?.type ?? "none"];
 	}
 	get _step() {
 		return this._steps[Math.min(this._index, this._steps.length - 1)];
@@ -2197,7 +2346,7 @@ var Et = {
 		if (this._steps[e] === "preview") {
 			this._busy = !0;
 			try {
-				this._preview = await Ve(this.hass, this._draft, 5);
+				this._preview = await He(this.hass, this._draft, 5);
 			} catch (e) {
 				this._error = L(e);
 				return;
@@ -2226,7 +2375,7 @@ var Et = {
 	_renderHow(e) {
 		return T`
       <p>How often should ${this.choreName ? T`<b>${this.choreName}</b>` : "this chore"} come up?</p>
-      ${Ot.map((t) => T`<label class="inline option">
+      ${Bt.map((t) => T`<label class="inline option">
           <input
             type="radio"
             name="how"
@@ -2348,7 +2497,7 @@ var Et = {
           <div class="rail-title">Schedule${this.choreName ? `: ${this.choreName}` : ""}</div>
           ${t.map((e, t) => T`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${Dt[e]}</span>
+              <span>${zt[e]}</span>
             </div>`)}
         </nav>
         <section class="card main">
@@ -2357,7 +2506,7 @@ var Et = {
             <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
-          <h2>${Dt[n]}</h2>
+          <h2>${zt[n]}</h2>
           ${this._renderStep(e)}
           ${this._error ? T`<div class="error">${this._error}</div>` : D}
           <div class="actions">
@@ -2538,27 +2687,29 @@ var Et = {
     `];
 	}
 };
-customElements.define("boopli-schedule-wizard", kt);
+customElements.define("boopli-schedule-wizard", Vt);
 // src/boopli-wait.ts
-function At(e) {
+var Ht = 30;
+function Ut(e) {
 	let t = Math.max(0, Math.round(e));
 	return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 }
-var jt = class extends N {
+var Wt = class extends M {
 	static {
 		this.properties = {
 			label: { type: String },
 			max: { type: Number },
 			stoppable: { type: Boolean },
-			_elapsed: { state: !0 }
+			_elapsed: { state: !0 },
+			_egg: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this._since = 0, this.label = "Thinking…", this.max = 180, this.stoppable = !0, this._elapsed = 0;
+		super(), this._since = 0, this._eggShown = !1, this.label = "Thinking…", this.max = 180, this.stoppable = !0, this._elapsed = 0, this._egg = !1;
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._since = Date.now(), this._elapsed = 0, this._timer = window.setInterval(() => {
-			this._elapsed = (Date.now() - this._since) / 1e3;
+			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Ht && (this._eggShown = !0, this._egg = !0);
 		}, 500);
 	}
 	disconnectedCallback() {
@@ -2571,6 +2722,7 @@ var jt = class extends N {
 	render() {
 		let e = Math.min(1, this._elapsed / Math.max(1, this.max));
 		return T`<div class="wait" role="status" aria-live="polite">
+      ${this._egg ? T`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : D}
       <div class="head">
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="label">${this.label}</span>
@@ -2586,8 +2738,8 @@ var jt = class extends N {
         <div class="fill" style="width:${e * 100}%"></div>
       </div>
       <div class="time">
-        <span>${At(this._elapsed)} so far</span>
-        <span>gives up after ${At(this.max)}</span>
+        <span>${Ut(this._elapsed)} so far</span>
+        <span>gives up after ${Ut(this.max)}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable ? T`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
@@ -2689,10 +2841,10 @@ var jt = class extends N {
   `;
 	}
 };
-customElements.define("boopli-wait", jt);
+customElements.define("boopli-wait", Wt);
 // src/photos.ts
-var Mt = 8e5;
-async function Nt(e) {
+var Gt = 8e5;
+async function Kt(e) {
 	let t = URL.createObjectURL(e);
 	try {
 		let e = await new Promise((e, n) => {
@@ -2708,7 +2860,7 @@ async function Nt(e) {
 			a.width = Math.max(1, Math.round(e.naturalWidth * i)), a.height = Math.max(1, Math.round(e.naturalHeight * i));
 			let o = a.getContext("2d");
 			if (!o) throw Error("This browser cannot prepare photos.");
-			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Mt) break;
+			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Gt) break;
 		}
 		return n;
 	} finally {
@@ -2716,7 +2868,7 @@ async function Nt(e) {
 	}
 }
 // src/boopli-breakdown.ts
-var Pt = [
+var qt = [
 	{
 		value: "small",
 		letter: "S",
@@ -2735,11 +2887,11 @@ var Pt = [
 		label: "Big: hard or long",
 		xp: 20
 	}
-], Ft = {
+], Jt = {
 	small: 10,
 	medium: 15,
 	big: 20
-}, It = 20, Lt = 50, Rt = class extends N {
+}, Yt = 20, Xt = 50, Zt = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2794,7 +2946,7 @@ var Pt = [
 		let e = this._task.trim();
 		return !this.hass || !e || this._roomsTouched || !this._homeOn() ? Promise.resolve() : (this._guessedFor === e && this._guessing || (this._guessedFor = e, this._guessing = (async () => {
 			try {
-				let t = await Pe(this.hass, e);
+				let t = await Fe(this.hass, e);
 				if (this._roomsTouched || this._task.trim() !== e) return;
 				let n = new Set(this._notedRooms().map((e) => e.id));
 				this._rooms = t.filter((e) => n.has(e)), this._preview = null;
@@ -2813,7 +2965,7 @@ var Pt = [
 		if (this.hass) {
 			if (this._preview) this._preview = null;
 			else try {
-				this._preview = await Ne(this.hass, this._task.trim() || "(your task)", this.kind, this._answers, this._notes, this._rooms, this._scene);
+				this._preview = await Pe(this.hass, this._task.trim() || "(your task)", this.kind, this._answers, this._notes, this._rooms, this._scene);
 			} catch (e) {
 				this._error = L(e);
 			}
@@ -2855,7 +3007,7 @@ var Pt = [
 		this._error = "", this._looking = !0;
 		try {
 			let n = [];
-			for (let r of Array.from(e).slice(0, t)) n.push(await Nt(r));
+			for (let r of Array.from(e).slice(0, t)) n.push(await Kt(r));
 			this._photos = [...this._photos, ...n], e.length > t && (this._error = "Up to 4 photos. The rest were left out.");
 		} catch (e) {
 			this._error = L(e);
@@ -2965,7 +3117,7 @@ var Pt = [
 	async _begin() {
 		if (!this.hass || !this._task.trim()) return;
 		this._answers = [], this._round = 0, this._phase = "working", await this._guess();
-		let e = await this._ask(() => Me(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene), "task");
+		let e = await this._ask(() => Ne(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene), "task");
 		e && this._showQuestions(e.enough, e.questions);
 	}
 	_showQuestions(e, t) {
@@ -2988,7 +3140,7 @@ var Pt = [
 		if (!this.hass) return;
 		let e = [...this._answers, ...this._currentAnswers()];
 		this._answers = e, this._phase = "working";
-		let t = await this._ask(() => Me(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene), "interview");
+		let t = await this._ask(() => Ne(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene), "interview");
 		t && this._showQuestions(t.enough, t.questions);
 	}
 	async _enough() {
@@ -2997,8 +3149,8 @@ var Pt = [
 	async _loadSteps() {
 		if (!this.hass) return;
 		this._phase = "working", await this._guess();
-		let e = await this._ask(() => F(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene), this._questions.length ? "interview" : "task");
-		e && (this._steps = e.steps.slice(0, Lt), e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
+		let e = await this._ask(() => P(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene), this._questions.length ? "interview" : "task");
+		e && (this._steps = e.steps.slice(0, Xt), e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
 	}
 	_patchStep(e, t) {
 		this._steps = this._steps.map((n, r) => r === e ? {
@@ -3022,7 +3174,7 @@ var Pt = [
 			group: t,
 			size: "small",
 			wait_minutes: 0
-		}), this._steps = n.slice(0, Lt);
+		}), this._steps = n.slice(0, Xt);
 	}
 	_finish(e) {
 		let t = this._steps.filter((e) => e.title.trim()).map((e) => ({
@@ -3141,7 +3293,7 @@ var Pt = [
     ></boopli-wait>`;
 	}
 	_xp() {
-		return this._steps.reduce((e, t) => e + Ft[t.size], 0) + It;
+		return this._steps.reduce((e, t) => e + Jt[t.size], 0) + Yt;
 	}
 	_renderStep(e, t) {
 		return T`
@@ -3156,7 +3308,7 @@ var Pt = [
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
         <span class="sizes" role="group" aria-label="Size">
-          ${Pt.map((n) => T`<button
+          ${qt.map((n) => T`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
               title="${n.label} (${n.xp} XP)"
@@ -3516,9 +3668,9 @@ var Pt = [
     `];
 	}
 };
-customElements.define("boopli-breakdown", Rt);
+customElements.define("boopli-breakdown", Zt);
 // src/boopli-chore-editor.ts
-var zt = [
+var Qt = [
 	{
 		value: "quiet",
 		label: "Quiet: only shown in Boopli, no nudges"
@@ -3535,7 +3687,7 @@ var zt = [
 		value: "persistent",
 		label: "Persistent: every 5 minutes until done"
 	}
-], Bt = [
+], $t = [
 	{
 		minutes: 0,
 		label: "No wait"
@@ -3556,7 +3708,7 @@ var zt = [
 		minutes: 180,
 		label: "3 h"
 	}
-], Vt = [
+], en = [
 	{
 		value: "none",
 		label: "On demand (I start it)"
@@ -3569,7 +3721,7 @@ var zt = [
 		value: "every_n_days",
 		label: "Every N days after I finish"
 	}
-], Ht = Object.fromEntries([
+], tn = Object.fromEntries([
 	0,
 	1,
 	2,
@@ -3577,7 +3729,7 @@ var zt = [
 	4,
 	5,
 	6
-].map((e) => [String(e), ["09:00"]])), Ut = class extends N {
+].map((e) => [String(e), ["09:00"]])), nn = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -3725,14 +3877,14 @@ var zt = [
           id="repeat"
           .value=${e.type}
           @change=${(t) => {
-			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? Ht : e.days;
+			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? tn : e.days;
 			this._updateRepeat({
 				type: n,
 				days: r
 			});
 		}}
         >
-          ${Vt.map((t) => T`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
+          ${en.map((t) => T`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
         </select>
       </div>
       ${e.type === "schedule" ? T`<div class="field">
@@ -3816,7 +3968,7 @@ var zt = [
             ${(t.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
           </span>
           <div class="chips">
-            ${Bt.map((n) => T`<button
+            ${$t.map((n) => T`<button
                 type="button"
                 class="chip ${t.wait_minutes === n.minutes ? "on" : ""}"
                 @click=${() => this._updateStep(e, { wait_minutes: n.minutes })}
@@ -3917,7 +4069,7 @@ var zt = [
             .value=${e.nudge_style ?? this.defaultStyle}
             @change=${(e) => this._update({ nudge_style: e.target.value })}
           >
-            ${zt.map((t) => T`<option
+            ${Qt.map((t) => T`<option
                 value=${t.value}
                 ?selected=${t.value === (e.nudge_style ?? this.defaultStyle)}
               >
@@ -4141,9 +4293,9 @@ var zt = [
     `];
 	}
 };
-customElements.define("boopli-chore-editor", Ut);
+customElements.define("boopli-chore-editor", nn);
 // src/templates.ts
-var Wt = {
+var rn = {
 	type: "none",
 	time: "09:00",
 	every_n_days: 1,
@@ -4157,7 +4309,7 @@ var Wt = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Wt,
+				...rn,
 				days: {}
 			},
 			steps: [
@@ -4188,7 +4340,7 @@ var Wt = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Wt,
+				...rn,
 				days: {}
 			},
 			steps: [
@@ -4256,7 +4408,7 @@ var Wt = {
 		}
 	}
 ];
-function Gt() {
+function an() {
 	return {
 		name: "",
 		where: "home",
@@ -4275,7 +4427,7 @@ function Gt() {
 	};
 }
 // src/boopli-chores.ts
-var Kt = class extends N {
+var on = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -4363,7 +4515,7 @@ var Kt = class extends N {
 		let e = this.snapshot.time_zone, t = new Set(this.snapshot.runs.map((e) => e.chore_id)), n = [...this.snapshot.chores].sort((e, t) => e.name.localeCompare(t.name));
 		return T`
       <div class="toolbar">
-        <button class="primary" @click=${() => this._editing = Gt()}>
+        <button class="primary" @click=${() => this._editing = an()}>
           + New chore
         </button>
         <button
@@ -4459,14 +4611,14 @@ var Kt = class extends N {
     `];
 	}
 };
-customElements.define("boopli-chores", Kt);
+customElements.define("boopli-chores", on);
 // src/helpers.ts
-var qt = "amzn_sfx_scifi_alarm_01", Jt = "amzn_sfx_doorbell_chime_01", Yt = [
+var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], Xt = {
+], un = {
 	start: "07:00",
 	stop: "22:00"
 };
@@ -4477,7 +4629,7 @@ function q(e, t) {
 function J(e, t, n = []) {
 	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => q(e, t).localeCompare(q(e, n)));
 }
-function Zt(e, t, n) {
+function dn(e, t, n) {
 	let r;
 	return r = t === "alexa_media" ? Object.keys(e?.services?.notify ?? {}).filter((e) => e.startsWith("alexa_media_") && e !== "alexa_media").sort().map((e) => ({
 		value: e,
@@ -4493,7 +4645,7 @@ function Zt(e, t, n) {
 		label: `${n} (not found)`
 	}), r;
 }
-function Qt(e) {
+function fn(e) {
 	return {
 		entity_id: e,
 		mode: "blink",
@@ -4508,13 +4660,13 @@ function Qt(e) {
 		start_at: 1
 	};
 }
-function $t(e) {
+function pn(e) {
 	return {
 		entity_id: e,
 		cue: {
 			enabled: !1,
 			kind: "alexa",
-			sound: Jt,
+			sound: cn,
 			start_at: 1,
 			seconds: 30,
 			repeat_s: 5
@@ -4529,21 +4681,21 @@ function $t(e) {
 		alarm: {
 			enabled: !1,
 			kind: "alexa",
-			sound: qt,
+			sound: sn,
 			start_at: 4,
 			seconds: 30,
 			repeat_s: 5
 		}
 	};
 }
-function en(e) {
+function mn(e) {
 	return {
 		entity_id: e,
 		seconds: 30,
 		start_at: 4
 	};
 }
-function tn(e) {
+function hn(e) {
 	let t = parseInt(e.replace("#", ""), 16);
 	return [
 		t >> 16 & 255,
@@ -4551,7 +4703,7 @@ function tn(e) {
 		t & 255
 	];
 }
-function nn(e) {
+function gn(e) {
 	return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 }
 function Y(e) {
@@ -4562,13 +4714,13 @@ var X = {
 	high: "high priority",
 	alarm: "alarm volume",
 	alarm_max: "max volume"
-}, rn = {
+}, _n = {
 	quiet: "Quiet",
 	one: "One nudge",
 	escalating: "Escalating",
 	persistent: "Persistent"
 };
-function an(e) {
+function vn(e) {
 	if (!e.enabled) return "Off: Boopli nudges at any time";
 	let t = [], n = 0;
 	for (; n < 7;) {
@@ -4579,7 +4731,7 @@ function an(e) {
 	}
 	return "Nudges allowed " + t.join(", ");
 }
-function on(e) {
+function yn(e) {
 	let t = [
 		e.cue.enabled ? `ding (from nudge ${e.cue.start_at})` : "",
 		e.speech.enabled ? `speech (from nudge ${e.speech.start_at})` : "",
@@ -4591,18 +4743,18 @@ function Z(e) {
 	return e.mode === "indicator" ? "status light (stays on until done)" : "blinks";
 }
 // src/boopli-speakers.ts
-var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", un = [
+var bn = "amzn_sfx_scifi_alarm_01", xn = "amzn_sfx_doorbell_chime_01", Sn = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Cn = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], dn = [{
+], wn = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], fn = [
+}], Tn = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -4615,7 +4767,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], pn = class extends N {
+], En = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -4684,7 +4836,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
 			cue: {
 				enabled: !1,
 				kind: "alexa",
-				sound: cn,
+				sound: xn,
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -4699,7 +4851,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
 			alarm: {
 				enabled: !1,
 				kind: "alexa",
-				sound: sn,
+				sound: bn,
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -4774,7 +4926,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
                     .value=${n.kind}
                     @change=${(e) => this._setSound(r, t, { kind: e.target.value })}
                   >
-                    ${dn.map((e) => T`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
+                    ${wn.map((e) => T`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -4788,7 +4940,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
                 </label>
                 ${n.kind === "alexa" ? T`<div class="muted small libhint">
                       Pick a sound from the
-                      <a href=${ln} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
+                      <a href=${Sn} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
                       The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
                       + a two-digit number, for example "Doorbell Chime (1)" is
                       <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
@@ -4852,7 +5004,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
 			target: ""
 		})}
                   >
-                    ${fn.map((e) => T`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                    ${Tn.map((e) => T`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -4951,7 +5103,7 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(un, t);
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Cn, t);
 		return T`
       <section class="card">
         <h2>🚨 Alarm devices</h2>
@@ -5111,17 +5263,17 @@ var sn = "amzn_sfx_scifi_alarm_01", cn = "amzn_sfx_doorbell_chime_01", ln = "htt
     `];
 	}
 };
-customElements.define("boopli-speakers", pn);
+customElements.define("boopli-speakers", En);
 // src/boopli-settings.ts
-var mn = "boopli.settings_mode";
-function hn() {
+var Dn = "boopli.settings_mode";
+function On() {
 	try {
-		return localStorage.getItem(mn) === "advanced" ? "advanced" : "simple";
+		return localStorage.getItem(Dn) === "advanced" ? "advanced" : "simple";
 	} catch {
 		return "simple";
 	}
 }
-var gn = [
+var kn = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -5138,13 +5290,13 @@ var gn = [
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], _n = [{
+], An = [{
 	value: "blink",
 	label: "Blink"
 }, {
 	value: "indicator",
 	label: "Indicator lamp (on until done)"
-}], vn = [
+}], jn = [
 	{
 		value: "quiet",
 		label: "Quiet (no nudges)"
@@ -5161,10 +5313,10 @@ var gn = [
 		value: "persistent",
 		label: "Persistent"
 	}
-], yn = {
+], Mn = {
 	start: "07:00",
 	stop: "22:00"
-}, bn = class extends N {
+}, Nn = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -5181,7 +5333,7 @@ var gn = [
 		};
 	}
 	constructor() {
-		super(), this._justSaved = !1, this._lastDirty = !1, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._mode = hn(), this._defaults = null, this._aiNote = "";
+		super(), this._justSaved = !1, this._lastDirty = !1, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._mode = On(), this._defaults = null, this._aiNote = "";
 	}
 	willUpdate() {
 		let e = this.snapshot?.settings;
@@ -5215,7 +5367,7 @@ var gn = [
 		if (!this.hass || !this._draft || this._busy) return !1;
 		this._busy = !0, this._error = "", this._message = "";
 		try {
-			return await P(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = "Saved.", !0;
+			return await N(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = "Saved.", !0;
 		} catch (e) {
 			return this._error = L(e), !1;
 		} finally {
@@ -5228,7 +5380,7 @@ var gn = [
 	_setMode(e) {
 		this._mode = e;
 		try {
-			localStorage.setItem(mn, e);
+			localStorage.setItem(Dn, e);
 		} catch {}
 	}
 	_openWizard(e) {
@@ -5366,7 +5518,7 @@ var gn = [
 		if (this.hass) {
 			this._note(`light:${e.entity_id}`, "Testing…");
 			try {
-				let t = await He(this.hass, e);
+				let t = await I(this.hass, e);
 				this._note(`light:${e.entity_id}`, t.note);
 			} catch (t) {
 				this._note(`light:${e.entity_id}`, L(t));
@@ -5376,7 +5528,7 @@ var gn = [
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(z.map((e, t) => [String(t), { ...yn }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(z.map((e, t) => [String(t), { ...Mn }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -5430,7 +5582,7 @@ var gn = [
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${gn.map((e) => T`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${kn.map((e) => T`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>Test</button>
                 </div>
@@ -5466,7 +5618,7 @@ var gn = [
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${_n.map((t) => T`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${An.map((t) => T`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
               <input
                 type="color"
@@ -5566,7 +5718,7 @@ var gn = [
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...yn })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Mn })}
                       />
                       No limit
                     </label>
@@ -5647,7 +5799,7 @@ var gn = [
             .value=${e.default_style}
             @change=${(e) => this._set({ default_style: e.target.value })}
           >
-            ${vn.map((t) => T`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+            ${jn.map((t) => T`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           </select>
         </div>
       </section>
@@ -5661,7 +5813,7 @@ var gn = [
 	}
 	async _loadDefaults() {
 		if (!this._defaults && this.hass) try {
-			this._defaults = await ze(this.hass);
+			this._defaults = await Be(this.hass);
 		} catch {
 			this._defaults = {
 				questions_prompt: "",
@@ -5675,7 +5827,7 @@ var gn = [
 		if (this.hass) {
 			this._aiNote = "Asking the agent…";
 			try {
-				let e = await F(this.hass, "Make a cup of tea", "now", []);
+				let e = await P(this.hass, "Make a cup of tea", "now", []);
 				this._aiNote = `It works. The agent split "Make a cup of tea" into ${e.steps.length} steps, starting with: ${e.steps[0]?.title ?? "(none)"}`;
 			} catch (e) {
 				this._aiNote = L(e);
@@ -5783,10 +5935,10 @@ var gn = [
       <div class="cards simple">
         ${this._overviewCard("🐻", "Your pet", "pet", [e.pet_name], "", "Rename")}
         ${this._overviewCard("📱", "Phone", "phone", e.phones.map((e) => `${Y(e.service)}: ${X[e.level] ?? e.level}, from nudge ${e.start_at}`), "No phone set up yet.")}
-        ${this._overviewCard("🌙", "Quiet hours", "quiet", [an(e.quiet_hours)], "")}
-        ${this._overviewCard("⏰", "Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${rn[e.default_style] ?? e.default_style}`], "")}
+        ${this._overviewCard("🌙", "Quiet hours", "quiet", [vn(e.quiet_hours)], "")}
+        ${this._overviewCard("⏰", "Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${_n[e.default_style] ?? e.default_style}`], "")}
         ${this._overviewCard("💡", "Reminder lights", "lights", e.lights.map((e) => `${t(e.entity_id)}: ${Z(e)}`), "No reminder lights yet.")}
-        ${this._overviewCard("🔊", "Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${on(e)}`), "No speakers yet.")}
+        ${this._overviewCard("🔊", "Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${yn(e)}`), "No speakers yet.")}
         ${this._overviewCard("🚨", "Alarm devices", "alarms", e.alarm_devices.map((e) => `${t(e.entity_id)}: on for ${e.seconds} s, from nudge ${e.start_at}`), "No alarm devices yet.")}
         ${this._overviewCard("🤖", "AI help", "ai", e.ai?.enabled ? [`On, using ${e.ai.entity_id ? t(e.ai.entity_id) : "the Home Assistant default agent"}`] : [], "Off. Splits big tasks into tiny steps with your own AI agent.")}
         ${this._overviewCard("📍", "Where you are", "presence", e.presence_entity ? [t(e.presence_entity)] : [], "Not set. Boopli assumes you are home.")}
@@ -6095,13 +6247,13 @@ var gn = [
     `];
 	}
 };
-customElements.define("boopli-settings", bn);
+customElements.define("boopli-settings", Nn);
 // src/boopli-home.ts
-var xn = 2e3;
-function Sn() {
+var Pn = 2e3;
+function Fn() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var Cn = class extends N {
+var In = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -6125,7 +6277,7 @@ var Cn = class extends N {
 		e && (!this._draft || !this._base ? (this._base = structuredClone(e), this._draft = structuredClone(e)) : this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base) && (this._base = structuredClone(e), this._draft = structuredClone(e), this._justSaved = !1));
 	}
 	updated() {
-		!this._synced && this.hass && (this._synced = !0, Ie(this.hass).then((e) => {
+		!this._synced && this.hass && (this._synced = !0, Le(this.hass).then((e) => {
 			this._isDirty() || (this._base = structuredClone(e), this._draft = structuredClone(e));
 		}).catch(() => void 0));
 		let e = this._isDirty();
@@ -6149,7 +6301,7 @@ var Cn = class extends N {
 		if (!this.hass || !this._draft || this._busy) return !1;
 		this._busy = !0, this._error = "", this._message = "";
 		try {
-			return await Fe(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = "Saved.", !0;
+			return await Ie(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = "Saved.", !0;
 		} catch (e) {
 			return this._error = L(e), !1;
 		} finally {
@@ -6173,7 +6325,7 @@ var Cn = class extends N {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: Sn(),
+				id: Fn(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -6243,7 +6395,7 @@ var Cn = class extends N {
 		this._error = "", this._patchTool({ working: !0 });
 		try {
 			let t = [];
-			for (let r of Array.from(e).slice(0, n)) t.push(await Nt(r));
+			for (let r of Array.from(e).slice(0, n)) t.push(await Kt(r));
 			let r = this._tool;
 			r?.kind === "photos" && this._patchTool({ photos: [...r.photos, ...t] }), e.length > n && (this._error = "Up to 4 photos per room. The rest were left out.");
 		} catch (e) {
@@ -6362,12 +6514,12 @@ var Cn = class extends N {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, xn);
+			let e = r.notes.trim().slice(0, Pn);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: Sn(),
+				id: Fn(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -6389,7 +6541,7 @@ var Cn = class extends N {
 		};
 		let r = ++this._run;
 		try {
-			let i = await Le(this.hass, n.name, n.notes, e);
+			let i = await Re(this.hass, n.name, n.notes, e);
 			if (r !== this._run) return;
 			if (i.enough || i.questions.length === 0) {
 				await this._writeNotes(e);
@@ -6420,7 +6572,7 @@ var Cn = class extends N {
 		};
 		let r = ++this._run;
 		try {
-			let i = await Re(this.hass, n.name, n.notes, e);
+			let i = await ze(this.hass, n.name, n.notes, e);
 			if (r !== this._run) return;
 			this._iv = {
 				...t,
@@ -6454,7 +6606,7 @@ var Cn = class extends N {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, xn) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Pn) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
@@ -6711,7 +6863,7 @@ var Cn = class extends N {
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${xn}
+        maxlength=${Pn}
         placeholder="For example: Dishwasher is under the counter. The balcony door sticks."
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
@@ -7110,7 +7262,7 @@ var Cn = class extends N {
     `];
 	}
 };
-customElements.define("boopli-home", Cn);
+customElements.define("boopli-home", In);
 // src/diff.ts
 function Q(e, t, n) {
 	let r = new Map(e.map((e) => [n(e), e])), i = new Map(t.map((e) => [n(e), e]));
@@ -7123,15 +7275,15 @@ function Q(e, t, n) {
 		}))
 	};
 }
-function wn(e, t, n, r) {
+function Ln(e, t, n, r) {
 	let i = [];
 	return t.enabled !== n.enabled && i.push(`${e} ${n.enabled ? "on" : "off"}`), n.enabled && (t.sound !== n.sound && i.push(`${e} sound ${t.sound} → ${n.sound}`), t.start_at !== n.start_at && i.push(`${e} starts at nudge ${t.start_at} → ${n.start_at}`), r && t.seconds !== n.seconds && i.push(`${e} lasts ${t.seconds} → ${n.seconds} s`), r && t.repeat_s !== n.repeat_s && i.push(`${e} repeats every ${t.repeat_s} → ${n.repeat_s} s`)), i;
 }
-function Tn(e, t) {
-	let n = [...wn("ding", e.cue, t.cue, !1), ...wn("alarm", e.alarm, t.alarm, !0)];
+function Rn(e, t) {
+	let n = [...Ln("ding", e.cue, t.cue, !1), ...Ln("alarm", e.alarm, t.alarm, !0)];
 	return e.speech.enabled !== t.speech.enabled && n.push(`speech ${t.speech.enabled ? "on" : "off"}`), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(`speech goes to ${t.speech.target || "nothing"}`), e.speech.start_at !== t.speech.start_at && n.push(`speech starts at nudge ${e.speech.start_at} → ${t.speech.start_at}`)), n;
 }
-function En(e, t, n) {
+function zn(e, t, n) {
 	let r = (e) => q(n, e), i = [];
 	e.pet_name !== t.pet_name && i.push(`Pet name: ${e.pet_name} → ${t.pet_name}`);
 	let a = Q(e.phones, t.phones, (e) => e.service);
@@ -7149,14 +7301,14 @@ function En(e, t, n) {
 			r !== a && i.push(`${t}: ${r} → ${a}`);
 		});
 	}
-	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), e.default_style !== t.default_style && i.push(`Default style: ${rn[e.default_style]} → ${rn[t.default_style]}`);
+	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), e.default_style !== t.default_style && i.push(`Default style: ${_n[e.default_style]} → ${_n[t.default_style]}`);
 	let c = Q(e.lights, t.lights, (e) => e.entity_id);
 	c.added.forEach((e) => i.push(`Reminder light added: ${r(e.entity_id)} (${Z(e)})`)), c.removed.forEach((e) => i.push(`Reminder light removed: ${r(e.entity_id)}`)), c.kept.forEach(({ before: e, after: t }) => {
 		let n = r(t.entity_id);
 		e.mode !== t.mode && i.push(`${n}: ${Z(e)} → ${Z(t)}`), e.color.join() !== t.color.join() && i.push(`${n}: color changed`), e.blink_ms !== t.blink_ms && i.push(`${n}: blink length ${e.blink_ms} → ${t.blink_ms} ms`), e.repeats !== t.repeats && i.push(`${n}: blinks ${e.repeats} → ${t.repeats}`), e.gap_ms !== t.gap_ms && i.push(`${n}: pause ${e.gap_ms} → ${t.gap_ms} ms`), e.start_at !== t.start_at && i.push(`${n}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	});
 	let l = Q(e.speakers, t.speakers, (e) => e.entity_id);
-	l.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), l.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), l.kept.forEach(({ before: e, after: t }) => Tn(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
+	l.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), l.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), l.kept.forEach(({ before: e, after: t }) => Rn(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
 	let u = Q(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
 	if (u.added.forEach((e) => i.push(`Alarm device added: ${r(e.entity_id)}`)), u.removed.forEach((e) => i.push(`Alarm device removed: ${r(e.entity_id)}`)), u.kept.forEach(({ before: e, after: t }) => {
 		e.seconds !== t.seconds && i.push(`${r(t.entity_id)}: on for ${e.seconds} → ${t.seconds} s`), e.start_at !== t.start_at && i.push(`${r(t.entity_id)}: starts at nudge ${e.start_at} → ${t.start_at}`);
@@ -7175,7 +7327,7 @@ function En(e, t, n) {
 	return i;
 }
 // src/boopli-wizard.ts
-var Dn = {
+var Bn = {
 	first: [
 		"welcome",
 		"phone",
@@ -7219,13 +7371,13 @@ var Dn = {
 		"ai_agent",
 		"done"
 	]
-}, On = [
+}, Vn = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], kn = {
+], Hn = {
 	first: "First setup",
 	phone: "Phone setup",
 	quiet: "Quiet hours setup",
@@ -7236,7 +7388,7 @@ var Dn = {
 	nudging: "Snooze and style",
 	pet: "Your pet",
 	ai: "AI help setup"
-}, An = {
+}, Un = {
 	welcome: "Welcome",
 	phone: "Your phone",
 	phone_detail: "Phone details",
@@ -7258,12 +7410,12 @@ var Dn = {
 	ai_agent: "Your AI agent",
 	chores: "First chores",
 	done: "All set"
-}, jn = [
+}, Wn = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], Mn = [
+], Gn = [
 	{
 		value: "one",
 		label: "One nudge",
@@ -7284,7 +7436,7 @@ var Dn = {
 		label: "Quiet",
 		text: "Only shown in Boopli, never nudges."
 	}
-], Nn = [
+], Kn = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -7301,7 +7453,7 @@ var Dn = {
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], Pn = [
+], qn = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -7314,13 +7466,13 @@ var Dn = {
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], Fn = [{
+], Jn = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], In = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", $ = [
+}], Yn = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", $ = [
 	0,
 	1,
 	2,
@@ -7328,7 +7480,7 @@ var Dn = {
 	4,
 	5,
 	6
-], Ln = class extends N {
+], Xn = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -7357,11 +7509,11 @@ var Dn = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Dn[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Bn[this.wizard]];
 		let e = this.startAt;
-		if (this._first && On.includes(e)) {
+		if (this._first && Vn.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...On);
+			this._steps.splice(e + 1, 0, ...Vn);
 		}
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0, this._picked = K.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
@@ -7438,15 +7590,15 @@ var Dn = {
 			try {
 				if (e === 1 && t === "next") {
 					if (this._step === "spk_pick" && !this._speaker) throw Error("Pick a speaker, or press Skip.");
-					await P(this.hass, this._draft), this._saved = structuredClone(this._draft);
+					await N(this.hass, this._draft), this._saved = structuredClone(this._draft);
 				}
 				e === 1 && t === "skip" && (this._draft = structuredClone(this._saved), this._step === "chores" && (this._picked = [])), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...On,
+					...Vn,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
-				this._first && await I(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
+				this._first && await F(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
 			} catch (e) {
 				this._error = L(e);
 			} finally {
@@ -7467,7 +7619,7 @@ var Dn = {
 		if (this.hass && !this._busy) {
 			this._busy = !0;
 			try {
-				this._first && await I(this.hass, "skipped", this._step), this._close();
+				this._first && await F(this.hass, "skipped", this._step), this._close();
 			} catch (e) {
 				this._error = L(e);
 			} finally {
@@ -7479,7 +7631,7 @@ var Dn = {
 		if (this.hass && this._draft && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				if (await P(this.hass, this._draft), this._first) {
+				if (await N(this.hass, this._draft), this._first) {
 					for (let e of K.filter((e) => this._picked.includes(e.label))) await qe(this.hass, {
 						...e.draft,
 						repeat: {
@@ -7489,7 +7641,7 @@ var Dn = {
 							days: {}
 						}
 					});
-					await I(this.hass, "done", "");
+					await F(this.hass, "done", "");
 				}
 				this._close();
 			} catch (e) {
@@ -7502,7 +7654,7 @@ var Dn = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries($.map((e) => [String(e), { ...Xt }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries($.map((e) => [String(e), { ...un }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -7623,7 +7775,7 @@ var Dn = {
 			level: n.target.value
 		} : e) })}
               >
-                ${Nn.map((e) => T`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${Kn.map((e) => T`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             ${this._numField("Starts at nudge #", t.start_at ?? 1, 1, 20, (n) => this._set({ phones: e.phones.map((e) => e.service === t.service ? {
@@ -7662,7 +7814,7 @@ var Dn = {
                     <input
                       type="checkbox"
                       .checked=${n === null}
-                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...Xt })}
+                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...un })}
                     />
                     No limit
                   </label>
@@ -7717,7 +7869,7 @@ var Dn = {
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
-      ${Mn.map((t) => T`<label class="inline option">
+      ${Gn.map((t) => T`<label class="inline option">
           <input type="radio" name="style" .checked=${e.default_style === t.value} @change=${() => this._set({ default_style: t.value })} />
           <span><b>${t.label}</b> <span class="muted small">${t.text}</span></span>
         </label>`)}
@@ -7740,7 +7892,7 @@ var Dn = {
                     .checked=${!!n}
                     @change=${(n) => {
 				let r = n.target.checked, i = e.lights.filter((e) => e.entity_id !== t);
-				this._set({ lights: r ? [...i, Qt(t)] : i });
+				this._set({ lights: r ? [...i, fn(t)] : i });
 			}}
                   />
                   ${this._fn(t)}
@@ -7758,7 +7910,7 @@ var Dn = {
                           />
                           ${r === "blink" ? "Blinks" : "Status light (stays on until done)"}
                         </label>`)}
-                      <button type="button" @click=${() => this._try(`light:${t}`, () => He(this.hass, n))}>Test</button>
+                      <button type="button" @click=${() => this._try(`light:${t}`, () => I(this.hass, n))}>Test</button>
                     </div>
                     ${this._noteLine(`light:${t}`)}` : D}
               </div>`;
@@ -7782,13 +7934,13 @@ var Dn = {
             <b>${this._fn(t.entity_id)}</b>
             <label class="num">
               Color
-              <input type="color" class="swatch" .value=${nn(t.color)} @input=${(e) => n({ color: tn(e.target.value) })} />
+              <input type="color" class="swatch" .value=${gn(t.color)} @input=${(e) => n({ color: hn(e.target.value) })} />
             </label>
             ${t.mode === "blink" ? T`${this._numField("Blink length (ms)", t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
                 ${this._numField("Number of blinks", t.repeats, 1, 5, (e) => n({ repeats: e }))}
                 ${this._numField("Pause between blinks (ms)", t.gap_ms, 0, 3e4, (e) => n({ gap_ms: e }), 100)}` : T`<span class="muted small">A status light has no blink settings.</span>`}
             ${this._numField("Starts at nudge #", t.start_at ?? 1, 1, 20, (e) => n({ start_at: e }))}
-            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => He(this.hass, t))}>Test</button>
+            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => I(this.hass, t))}>Test</button>
             ${this._noteLine(`light:${t.entity_id}`)}
           </div>`;
 		})}
@@ -7821,12 +7973,12 @@ var Dn = {
                   name="speaker"
                   .checked=${this._speaker === t}
                   @change=${() => {
-				this._speaker = t, n || this._set({ speakers: [...e.speakers, $t(t)] });
+				this._speaker = t, n || this._set({ speakers: [...e.speakers, pn(t)] });
 			}}
                 />
                 <span>
                   ${this._fn(t)}
-                  ${n ? T`<span class="muted small"><br />set up: ${on(n)}</span>` : D}
+                  ${n ? T`<span class="muted small"><br />set up: ${yn(n)}</span>` : D}
                 </span>
               </label>`;
 		})}
@@ -7848,7 +8000,7 @@ var Dn = {
             <label class="num">
               Sound type
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${Fn.map((e) => T`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${Jn.map((e) => T`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -7856,7 +8008,7 @@ var Dn = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? T`<div class="muted small">
-                  Pick a sound from the <a href=${In} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  Pick a sound from the <a href=${Yn} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
                   <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
                   <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
                 </div>` : T`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
@@ -7874,7 +8026,7 @@ var Dn = {
 				...t.speech,
 				...e
 			}
-		})), i = Zt(this.hass, n.route, n.target);
+		})), i = dn(this.hass, n.route, n.target);
 		return T`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
       <label class="inline option">
@@ -7888,7 +8040,7 @@ var Dn = {
 			route: e.target.value,
 			target: ""
 		})}>
-                ${Pn.map((e) => T`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${qn.map((e) => T`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -7953,7 +8105,7 @@ var Dn = {
 		if (this.hass && this._draft && !this._busy) {
 			this._busy = !0;
 			try {
-				await P(this.hass, this._draft), this._saved = structuredClone(this._draft), this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
+				await N(this.hass, this._draft), this._saved = structuredClone(this._draft), this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
 			} catch (e) {
 				this._error = L(e);
 			} finally {
@@ -7962,7 +8114,7 @@ var Dn = {
 		}
 	}
 	_renderAlarmDevices(e) {
-		let t = J(this.hass, Yt, e.alarm_devices.map((e) => e.entity_id));
+		let t = J(this.hass, ln, e.alarm_devices.map((e) => e.entity_id));
 		return T`
       <p>
         Optional: a siren, switch or script that Boopli switches on for a while if you keep ignoring
@@ -7985,7 +8137,7 @@ var Dn = {
           type="button"
           ?disabled=${!this._addDevice}
           @click=${() => {
-			this._set({ alarm_devices: [...e.alarm_devices, en(this._addDevice)] }), this._addDevice = "";
+			this._set({ alarm_devices: [...e.alarm_devices, mn(this._addDevice)] }), this._addDevice = "";
 		}}
         >
           Add
@@ -8115,8 +8267,8 @@ var Dn = {
 		if (this.hass) {
 			this._note("ai:test", "Saving and asking the agent…");
 			try {
-				await P(this.hass, e), this._saved = structuredClone(e);
-				let t = await F(this.hass, "Make a cup of tea", "now", []);
+				await N(this.hass, e), this._saved = structuredClone(e);
+				let t = await P(this.hass, "Make a cup of tea", "now", []);
 				this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${t.steps.length} steps, starting with: ${t.steps[0]?.title ?? "(none)"}`);
 			} catch (e) {
 				this._note("ai:test", L(e));
@@ -8124,7 +8276,7 @@ var Dn = {
 		}
 	}
 	_renderDone(e) {
-		let t = this._baseline ? En(this._baseline, e, this.hass) : [], n = K.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		let t = this._baseline ? zn(this._baseline, e, this.hass) : [], n = K.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(`Chores added: ${n.join(", ")}`), T`
       <p><b>What changed</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
       ${t.length === 0 ? T`<p class="muted">Nothing changed.</p>` : T`<ul>${t.map((e) => T`<li>${e}</li>`)}</ul>`}
@@ -8166,7 +8318,7 @@ var Dn = {
 		return T`
       <div class="shell">
         <nav class="rail" aria-label="Steps">
-          <div class="rail-title">${kn[this.wizard]}</div>
+          <div class="rail-title">${Hn[this.wizard]}</div>
           ${this._steps.map((e, t) => T`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -8174,7 +8326,7 @@ var Dn = {
               @click=${() => this._jump(t)}
             >
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${An[e]}</span>
+              <span>${Un[e]}</span>
             </button>`)}
         </nav>
         <section class="card main">
@@ -8185,8 +8337,8 @@ var Dn = {
                 </button>`}
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
-          <h2>${An[t]}</h2>
-          ${jn.includes(t) ? T`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : D}
+          <h2>${Un[t]}</h2>
+          ${Wn.includes(t) ? T`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : D}
           ${this._renderStep(e)}
           ${this._error ? T`<div class="error">${this._error}</div>` : D}
           <div class="actions">
@@ -8494,14 +8646,14 @@ var Dn = {
     `];
 	}
 };
-customElements.define("boopli-wizard", Ln);
+customElements.define("boopli-wizard", Xn);
 // src/boopli-panel.ts
-var Rn = {
+var Zn = {
 	today: "Today",
 	chores: "Chores",
 	home: "My home",
 	settings: "Settings"
-}, zn = class extends N {
+}, Qn = class extends M {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -8546,7 +8698,7 @@ var Rn = {
 			let t = e.detail;
 			this._breakdownError = "";
 			try {
-				t.action === "start" ? (await Be(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await qe(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
+				t.action === "start" ? (await Ve(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await qe(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
 					id: ++this._requestId,
 					draft: this._draftFrom(t),
 					schedule: !0
@@ -8587,7 +8739,7 @@ var Rn = {
 		(e !== this._tab || this._wizard) && await this._guard() && (this._wizard = null, this._breakdown = null, this._tab = e);
 	}
 	_openWizard(e) {
-		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && I(this.hass, "in_progress", e.startAt).catch(() => void 0);
+		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && F(this.hass, "in_progress", e.startAt).catch(() => void 0);
 	}
 	_draftFrom(e) {
 		return {
@@ -8663,11 +8815,11 @@ var Rn = {
         ${this.narrow ? T`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>` : D}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(Rn).map((t) => T`<button
+          ${Object.keys(Zn).map((t) => T`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${Rn[t]}
+              ${Zn[t]}
               ${e[t] ? T`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : D}
             </button>`)}
         </nav>
@@ -8676,6 +8828,7 @@ var Rn = {
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
         @open-home=${() => this._selectTab("home")}
+        @egg-started=${() => this.hass && void it(this.hass).catch(() => void 0)}
         @dirty-change=${this._onDirty}
       >
         ${this._connectionError ? T`<p class="error">${this._connectionError}</p>` : this._wizard ? T`<boopli-wizard
@@ -8789,5 +8942,5 @@ var Rn = {
     `];
 	}
 };
-customElements.define("boopli-panel", zn);
-export { zn as BoopliPanel };
+customElements.define("boopli-panel", Qn);
+export { Qn as BoopliPanel };

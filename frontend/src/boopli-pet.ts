@@ -35,8 +35,20 @@ export class BoopliPet extends LitElement {
       <span class="badge" aria-hidden="true">${BADGE[this.mood]}</span>`;
   }
 
+  /** A secret: tap the pet 7 times quickly and the Easter egg plays. Nothing in the panel points to it. */
+  private _taps: number[] = [];
+
+  private _tap(): void {
+    const now = Date.now();
+    this._taps = [...this._taps.filter((t) => now - t < 4000), now];
+    if (this._taps.length >= 7) {
+      this._taps = [];
+      this.dispatchEvent(new CustomEvent("egg-found", { bubbles: true, composed: true }));
+    }
+  }
+
   render() {
-    return html`<div class="pet ${this.mood}" role="img" aria-label="Your pet is ${this.mood}">
+    return html`<div class="pet ${this.mood}" role="img" aria-label="Your pet is ${this.mood}" @click=${() => this._tap()}>
       ${this._art()}
     </div>`;
   }

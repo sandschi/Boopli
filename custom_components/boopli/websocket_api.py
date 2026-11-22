@@ -25,6 +25,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_chore_save)
     websocket_api.async_register_command(hass, ws_chore_delete)
     websocket_api.async_register_command(hass, ws_chore_start)
+    websocket_api.async_register_command(hass, ws_egg_found)
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
@@ -550,6 +551,19 @@ def ws_paste_notes(
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command({vol.Required("type"): "boopli/egg_found"})
+@callback
+def ws_egg_found(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The Easter egg played. The first time it gives a small gift of XP."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    connection.send_result(msg["id"], {"xp": manager.found_egg()})
 
 
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_defaults"})

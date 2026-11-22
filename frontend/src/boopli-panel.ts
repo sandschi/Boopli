@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { saveChore, saveSetup, subscribe, taskAdd } from "./api";
+import { eggFound, saveChore, saveSetup, subscribe, taskAdd } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
@@ -321,6 +321,7 @@ export class BoopliPanel extends LitElement {
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
         @open-home=${() => this._selectTab("home")}
+        @egg-started=${() => this.hass && void eggFound(this.hass).catch(() => undefined)}
         @dirty-change=${this._onDirty}
       >
         ${this._connectionError

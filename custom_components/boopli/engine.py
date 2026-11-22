@@ -596,11 +596,13 @@ class Progress:
     last_activity: str | None = None  # the last time a step was finished
     # local date -> chore id -> ids of the runs that earned XP that day
     credited: dict[str, dict[str, list[str]]] = field(default_factory=dict)
+    egg_found: bool = False  # the Easter egg gave its one-time gift
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Progress:
         d = d or {}
         return cls(
+            egg_found=bool(d.get("egg_found", False)),
             total_xp=max(0, int(d.get("total_xp", 0) or 0)),
             started_at=str(d.get("started_at", "")),
             last_activity=d.get("last_activity"),
@@ -701,6 +703,31 @@ def award_step(
         level=level,
         level_up=level > level_before,
         woke_up=mood_before in (MOOD_SAD, MOOD_HIBERNATING),
+        mood=mood_for(progress, now, tz),
+    )
+
+
+EGG_XP = 10  # the one-time gift for finding the Easter egg
+
+
+def award_egg(progress: Progress, now: datetime, tz: tzinfo) -> Award:
+    """Give the Easter egg's gift: EGG_XP the first time it is found, nothing afterwards.
+
+    It is not chore work, so it does not wake the pet and does not count as activity.
+    """
+    level_before = level_for(progress.total_xp)[0]
+    xp = 0
+    if not progress.egg_found:
+        progress.egg_found = True
+        xp = EGG_XP
+        progress.total_xp += xp
+    level = level_for(progress.total_xp)[0]
+    return Award(
+        xp=xp,
+        total_xp=progress.total_xp,
+        level=level,
+        level_up=level > level_before,
+        woke_up=False,
         mood=mood_for(progress, now, tz),
     )
 

@@ -282,3 +282,8 @@ export function partTime(hass: Hass, choreId: string, when: ParkWhen, at = ""): 
 export function scenePhotos(hass: Hass, task: string, photos: string[], rooms?: string[]): Promise<{ scene: string }> {
   return hass.callWS({ type: "boopli/scene_photos", task, photos, ...(rooms ? { rooms } : {}) });
 }
+
+/** The Easter egg played. The first time it gives a small gift of XP. */
+export function eggFound(hass: Hass): Promise<{ xp: number }> {
+  return hass.callWS({ type: "boopli/egg_found" });
+}

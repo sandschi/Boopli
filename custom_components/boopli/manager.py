@@ -387,6 +387,36 @@ class BoopliManager:
                 del self.chores[chore.id]
         return events
 
+    def found_egg(self) -> int:
+        """The Easter egg was found. The first time it gives a small gift of XP; returns the XP."""
+        now = dt_util.utcnow()
+        award = engine.award_egg(self.progress, now, self.tz)
+        if award.xp <= 0:
+            return 0
+        self._announce(
+            [
+                engine.Event(
+                    engine.EVENT_XP_GAINED,
+                    {
+                        "chore_id": "",
+                        "chore_name": "Easter egg",
+                        "run_id": "",
+                        "step_title": None,
+                        "xp": award.xp,
+                        "total_xp": award.total_xp,
+                        "level": award.level,
+                        "level_up": award.level_up,
+                        "woke_up": False,
+                        "mood": award.mood,
+                        "time": engine.fmt_ts(now),
+                    },
+                )
+            ]
+        )
+        self._save()
+        self._notify()
+        return award.xp
+
     def _award(
         self, run: engine.Run, step: engine.StepRun | None, now: datetime
     ) -> list[engine.Event]:

@@ -4,6 +4,7 @@ import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-pet";
+import "./boopli-egg";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 
 /** The question "when should this part come back?", for a part of a running task or a parked one. */
@@ -56,6 +57,7 @@ export class BoopliToday extends LitElement {
     _quick: { state: true },
     _park: { state: true },
     _removing: { state: true },
+    _egg: { state: true },
   };
 
   declare hass?: Hass;
@@ -67,6 +69,7 @@ export class BoopliToday extends LitElement {
   declare _quick: string;
   declare _park: ParkAsk | null;
   declare _removing: string; // the parked part that is asked "really remove?"
+  declare _egg: boolean; // the Easter egg is playing (found by tapping the pet)
   private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
   private _toastTimer?: number;
@@ -80,6 +83,7 @@ export class BoopliToday extends LitElement {
     this._quick = "";
     this._park = null;
     this._removing = "";
+    this._egg = false;
   }
 
   disconnectedCallback(): void {
@@ -163,7 +167,8 @@ export class BoopliToday extends LitElement {
     const pct = pet.xp_for_level > 0 ? Math.round((pet.xp_in_level / pet.xp_for_level) * 100) : 0;
     return html`
       <section class="card pet-card">
-        <boopli-pet .mood=${pet.mood} .level=${pet.level}></boopli-pet>
+        <boopli-pet .mood=${pet.mood} .level=${pet.level} @egg-found=${() => (this._egg = true)}></boopli-pet>
+        ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
         <div class="pet-info">
           <div class="pet-name">${pet.name} <span class="muted">· Level ${pet.level}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100">

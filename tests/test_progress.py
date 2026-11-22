@@ -185,3 +185,30 @@ def test_the_pet_name_defaults_validates_and_roundtrips():
     assert named.pet_name == "Bruno" and engine.validate_settings(named) is None
     assert engine.Settings.from_dict(json.loads(json.dumps(engine.to_dict(named)))) == named
     assert engine.validate_settings(engine.Settings.from_dict({"pet_name": "x" * 31}))
+
+
+# --- the Easter egg's one-time gift -----------------------------------------------------
+
+
+def test_easter_egg_gives_ten_xp_only_the_first_time():
+    progress = engine.Progress()
+    first = engine.award_egg(progress, NOON, TZ)
+    assert first.xp == engine.EGG_XP == 10 and first.total_xp == 10 and progress.egg_found
+    again = engine.award_egg(progress, NOON, TZ)
+    assert again.xp == 0 and again.total_xp == 10 and not again.level_up
+
+
+def test_easter_egg_is_not_chore_work_and_can_level_up():
+    progress = engine.Progress(total_xp=95)
+    assert engine.award_egg(progress, NOON, TZ).level_up  # 95 + 10 passes level 2 at 100
+    quiet = engine.Progress()
+    award = engine.award_egg(quiet, NOON, TZ)
+    assert quiet.last_activity is None and not award.woke_up  # it does not wake the pet
+
+
+def test_easter_egg_flag_survives_storage():
+    progress = engine.Progress()
+    engine.award_egg(progress, NOON, TZ)
+    again = engine.Progress.from_dict(engine.to_dict(progress))
+    assert again.egg_found and again.total_xp == 10
+    assert not engine.Progress.from_dict({"total_xp": 5}).egg_found
