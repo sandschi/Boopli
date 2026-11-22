@@ -1039,19 +1039,27 @@ function G(e) {
 	}
 }
 // src/boopli-away.ts
+function K(e, t, n) {
+	let [r, i, a] = U(/* @__PURE__ */ new Date(), n).split("-").map(Number);
+	return `${new Date(Date.UTC(r, i - 1, a + e)).toISOString().slice(0, 10)}T${String(t).padStart(2, "0")}:00`;
+}
 function ht(e, t) {
-	let n = /* @__PURE__ */ new Date();
-	return n.setDate(n.getDate() + e), n.setHours(t, 0, 0, 0), gt(n);
+	let n = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+		timeZone: t,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		hourCycle: "h23"
+	}).formatToParts(new Date(e)).map((e) => [e.type, e.value]));
+	return `${n.year}-${n.month}-${n.day}T${n.hour}:${n.minute}`;
 }
-function gt(e) {
-	let t = (e) => String(e).padStart(2, "0");
-	return `${e.getFullYear()}-${t(e.getMonth() + 1)}-${t(e.getDate())}T${t(e.getHours())}:${t(e.getMinutes())}`;
-}
-function _t(e, t, n, r) {
+function gt(e, t, n, r) {
 	let i = e.until ? `until ${W(e.until, t, n)}` : "until you turn it off";
 	return r || !e.start ? i : `from ${W(e.start, t, n)} ${i}`;
 }
-var vt = class extends A {
+var _t = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1068,10 +1076,10 @@ var vt = class extends A {
 		};
 	}
 	constructor() {
-		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._later = !1, this._start = ht(1, 8), this._open = !1, this._until = ht(7, 18), this._keep = {}, this._busy = !1, this._error = "";
+		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._later = !1, this._start = K(1, 8, "UTC"), this._open = !1, this._until = K(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
 	}
 	willUpdate() {
-		!this._seeded && this.snapshot && (this._seeded = !0, this._seedKeep());
+		!this._seeded && this.snapshot && (this._seeded = !0, this._start = K(1, 8, this.snapshot.time_zone), this._until = K(7, 18, this.snapshot.time_zone), this._seedKeep());
 	}
 	_seedKeep() {
 		this._keep = Object.fromEntries(this._chores().map((e) => [e.id, e.keeps_going ?? !1]));
@@ -1080,7 +1088,8 @@ var vt = class extends A {
 		return (this.snapshot?.chores ?? []).filter((e) => !e.parked).sort((e, t) => e.name.localeCompare(t.name));
 	}
 	_change(e) {
-		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = gt(new Date(e.start))), this._open = !e.until, e.until && (this._until = gt(new Date(e.until))), this._seedKeep(), this._error = "", this._changing = !0;
+		let t = this.snapshot?.time_zone ?? "UTC";
+		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = ht(e.start, t)), this._open = !e.until, e.until && (this._until = ht(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0;
 	}
 	async _submit() {
 		if (this.hass && !this._busy) {
@@ -1110,7 +1119,7 @@ var vt = class extends A {
 		let t = !!this.snapshot?.away_now, n = this.snapshot?.time_zone ?? "UTC";
 		return x`
       <h2>🧳 Away mode is ${t ? "on" : "planned"}</h2>
-      <p>${_t(e, this.nowMs, n, t)}</p>
+      <p>${gt(e, this.nowMs, n, t)}</p>
       <p class="muted small">
         ${t ? "Nothing starts and nothing nudges you, except the chores that keep going." : "Boopli carries on as usual until then."}
       </p>
@@ -1245,9 +1254,9 @@ var vt = class extends A {
     `];
 	}
 };
-customElements.define("boopli-away", vt);
+customElements.define("boopli-away", _t);
 // src/today.ts
-function yt(e, t) {
+function vt(e, t) {
 	let n = e.time_zone, r = e.runs.flatMap((e) => e.steps.filter((e) => e.status === "active").map((t) => ({
 		run: e,
 		step: t,
@@ -1279,13 +1288,13 @@ function yt(e, t) {
 	};
 }
 // src/boopli-pet.ts
-var bt = {
+var yt = {
 	happy: "✨",
 	content: "",
 	sleepy: "💤",
 	sad: "💧",
 	hibernating: "🌙💤"
-}, xt = class extends A {
+}, bt = class extends A {
 	static {
 		this.properties = {
 			mood: { type: String },
@@ -1298,7 +1307,7 @@ var bt = {
 	}
 	_art() {
 		return x`<span class="bear" aria-hidden="true">🐻</span>
-      <span class="badge" aria-hidden="true">${this.away ? "🧳" : bt[this.mood]}</span>`;
+      <span class="badge" aria-hidden="true">${this.away ? "🧳" : yt[this.mood]}</span>`;
 	}
 	_tap() {
 		let e = Date.now();
@@ -1346,14 +1355,14 @@ var bt = {
   `;
 	}
 };
-customElements.define("boopli-pet", xt);
+customElements.define("boopli-pet", bt);
 // src/boopli-egg.ts
-var St = 30, Ct = 1.5, wt = .55, Tt = 6.1, Et = 60 / 140, Dt = 260, Ot = 227, kt = new URL("./easter-egg.mp3", "" + import.meta.url).href, At = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, jt = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Mt = 12;
-function Nt() {
+var xt = 30, St = 1.5, Ct = .55, wt = 6.1, Tt = 60 / 140, Et = 260, Dt = 227, Ot = new URL("./easter-egg.mp3", "" + import.meta.url).href, kt = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, At = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, jt = 12;
+function Mt() {
 	let e = navigator.userAgent, t = /iPhone|iPad|iPod/.test(e) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1, n = /safari/i.test(e) && !/chrome|chromium|crios|fxios|edg|android/i.test(e);
 	return t || n;
 }
-var Pt = class extends A {
+var Nt = class extends A {
 	static {
 		this.properties = {
 			_muted: { state: !0 },
@@ -1365,15 +1374,15 @@ var Pt = class extends A {
 		super(), this._started = 0, this._lastHop = -1, this._hasSound = !1, this._over = !1, this._muted = !1, this._cat = !1, this._note = !1;
 	}
 	connectedCallback() {
-		if (super.connectedCallback(), Nt()) {
-			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Mt * 1e3);
+		if (super.connectedCallback(), Mt()) {
+			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), jt * 1e3);
 			return;
 		}
 		let e = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? !1;
 		this._cat = !e && document.createElement("video").canPlayType("video/webm; codecs=\"vp9\"") !== "", this._started = performance.now();
 		try {
-			let e = new Audio(kt);
-			e.volume = wt, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
+			let e = new Audio(Ot);
+			e.volume = Ct, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
 		} catch {}
 		this.dispatchEvent(new CustomEvent("egg-started", {
 			bubbles: !0,
@@ -1391,18 +1400,18 @@ var Pt = class extends A {
 		e && e.play().catch(() => void 0);
 		let i = !1;
 		if (n) {
-			let e = (window.innerWidth - Dt) / 2, t = (window.innerHeight - Ot) / 2;
+			let e = (window.innerWidth - Et) / 2, t = (window.innerHeight - Dt) / 2;
 			n.style.transform = `translate(${e}px, ${t}px) scale(1)`;
 		}
 		let a = () => {
-			let o = this._time(), s = St - o, c = Math.max(0, Math.min(1, s / Ct));
-			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = wt * c), s <= 0) this._stop(!0);
+			let o = this._time(), s = xt - o, c = Math.max(0, Math.min(1, s / St));
+			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Ct * c), s <= 0) this._stop(!0);
 			else {
-				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Tt) {
-					let e = Math.floor((o - Tt) / Et);
+				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= wt) {
+					let e = Math.floor((o - wt) / Tt);
 					if (e !== this._lastHop) {
 						this._lastHop = e;
-						let t = .75 + Math.random() * .7, r = Dt * t, i = Ot * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
+						let t = .75 + Math.random() * .7, r = Et * t, i = Dt * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
 						n.style.transform = `translate(${a}px, ${o}px) scale(${t})`;
 					}
 				}
@@ -1430,8 +1439,8 @@ var Pt = class extends A {
         <button type="button" class="ctl" aria-label="Close" @click=${() => this._stop(!0)}>✕</button>
       </div>` : x`${this._cat ? x`<div class="egg-layer" aria-hidden="true">
             <div class="egg-cat">
-              <video class="intro" src=${At} muted playsinline preload="auto"></video>
-              <video class="loop" src=${jt} muted playsinline loop preload="auto" hidden></video>
+              <video class="intro" src=${kt} muted playsinline preload="auto"></video>
+              <video class="loop" src=${At} muted playsinline loop preload="auto" hidden></video>
             </div>
           </div>` : ""}
       <div class="controls">
@@ -1518,9 +1527,9 @@ var Pt = class extends A {
   `;
 	}
 };
-customElements.define("boopli-egg", Pt);
+customElements.define("boopli-egg", Nt);
 // src/boopli-today.ts
-function Ft(e, t) {
+function Pt(e, t) {
 	if (!t.group) return null;
 	let n = e.steps.filter((e) => e.group === t.group), r = e.steps.some((e) => e.group !== t.group && e.status !== "done");
 	return {
@@ -1529,7 +1538,7 @@ function Ft(e, t) {
 		canPark: r
 	};
 }
-function It(e) {
+function Ft(e) {
 	return e.away ? `${e.name} is resting while you are away.` : {
 		happy: "Nice, you got things done today.",
 		content: "Ready when you are.",
@@ -1538,7 +1547,7 @@ function It(e) {
 		hibernating: `${e.name} is curled up, resting until you are back. One step wakes it.`
 	}[e.mood];
 }
-var Lt = class extends A {
+var It = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1624,7 +1633,7 @@ var Lt = class extends A {
             <div class="fill" style="width:${t}%"></div>
           </div>
           <div class="muted small">${e.xp_in_level} / ${e.xp_for_level} XP to the next level</div>
-          <div class="small">${It(e)}</div>
+          <div class="small">${Ft(e)}</div>
         </div>
       </section>
       ${this._toast ? x`<div class="toast" role="status">${this._toast}</div>` : C}
@@ -1705,7 +1714,7 @@ var Lt = class extends A {
       <div class="away-icon" aria-hidden="true">🧳</div>
       <div class="away-text">
         <div class="away-title">${n ? "AWAY MODE IS ON" : "AWAY MODE IS PLANNED"}</div>
-        <div class="away-when">${_t(t, this.nowMs, e, n)}</div>
+        <div class="away-when">${gt(t, this.nowMs, e, n)}</div>
         <div class="away-note">
           ${n ? "Nothing starts and nothing nudges you, except the chores that keep going." : "Boopli carries on as usual until then."}
         </div>
@@ -1850,7 +1859,7 @@ var Lt = class extends A {
 	}
 	render() {
 		if (!this.snapshot) return x`<p class="muted">Loading…</p>`;
-		let e = this.snapshot.time_zone, t = yt(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
+		let e = this.snapshot.time_zone, t = vt(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
 		return x`
       ${this._renderAway(e)}
       <div class="cols"><div class="col">
@@ -1882,7 +1891,7 @@ var Lt = class extends A {
                     <div class="muted small">Step ${t.now.done + 1} of ${t.now.total}</div>
                   </div>` : C}
               ${(() => {
-			let e = Ft(t.now.run, t.now.step);
+			let e = Pt(t.now.run, t.now.step);
 			return e && e.total > 1 ? x`<div class="muted small">${t.now.step.group}: step ${Math.min(e.done + 1, e.total)} of ${e.total}</div>` : C;
 		})()}
               ${t.now.step.active_at ? x`<div class="muted small">
@@ -1898,7 +1907,7 @@ var Lt = class extends A {
               >
                 Done
               </button>
-              ${Ft(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : x`<button
+              ${Pt(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : x`<button
                   class="link later-btn"
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({
@@ -2200,9 +2209,9 @@ var Lt = class extends A {
     `];
 	}
 };
-customElements.define("boopli-today", Lt);
+customElements.define("boopli-today", It);
 // src/boopli-triggers.ts
-var Rt = {
+var Lt = {
 	binary_sensor: ["on", "off"],
 	switch: ["on", "off"],
 	input_boolean: ["on", "off"],
@@ -2211,15 +2220,15 @@ var Rt = {
 	lock: ["locked", "unlocked"],
 	person: ["home", "not_home"],
 	device_tracker: ["home", "not_home"]
-}, zt = [
+}, Rt = [
 	"event",
 	"input_button",
 	"button"
 ];
-function Bt(e) {
+function zt(e) {
 	return e.state ? "state" : e.above !== null && e.below !== null ? "between" : e.below === null ? e.above === null ? "state" : "above" : "below";
 }
-function Vt(e) {
+function Bt(e) {
 	return {
 		kind: e,
 		entity_id: "",
@@ -2232,7 +2241,7 @@ function Vt(e) {
 		press: ""
 	};
 }
-var Ht = class extends A {
+var Vt = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2273,7 +2282,7 @@ var Ht = class extends A {
 		} : n));
 	}
 	_add(e) {
-		this._emit([...this.triggers, Vt(e)]);
+		this._emit([...this.triggers, Bt(e)]);
 	}
 	_remove(e) {
 		this._cancelScan(), this._emit(this.triggers.filter((t, n) => n !== e));
@@ -2328,7 +2337,7 @@ var Ht = class extends A {
 		}
 	}
 	_renderState(e, t) {
-		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = Rt[n] ?? [], a = Bt(e);
+		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = Lt[n] ?? [], a = zt(e);
 		return x`
       <div class="field">
         <label>Which entity?</label>
@@ -2486,7 +2495,7 @@ var Ht = class extends A {
         ${this._entityIds().map((e) => x`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       <datalist id="buttons-list">
-        ${this._entityIds(zt).map((e) => x`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds(Rt).map((e) => x`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       ${this.triggers.length === 0 ? x`<div class="muted small">
             Nothing yet: only you finish this step (with Done). Add one below to let it finish by
@@ -2579,9 +2588,9 @@ var Ht = class extends A {
     `];
 	}
 };
-customElements.define("boopli-triggers", Ht);
+customElements.define("boopli-triggers", Vt);
 // src/boopli-schedule-days.ts
-var Ut = [
+var Ht = [
 	0,
 	1,
 	2,
@@ -2589,13 +2598,13 @@ var Ut = [
 	4,
 	5,
 	6
-], Wt = 6;
-function Gt(e) {
+], Ut = 6;
+function Wt(e) {
 	if (e.length === 0) return "09:00";
 	let [t, n] = e[e.length - 1].split(":").map(Number);
 	return `${String(Math.min(23, (t || 0) + 4)).padStart(2, "0")}:${String(n || 0).padStart(2, "0")}`;
 }
-var Kt = class extends A {
+var Gt = class extends A {
 	static {
 		this.properties = {
 			days: { attribute: !1 },
@@ -2626,7 +2635,7 @@ var Kt = class extends A {
 		n && this._setDay(e, this._times(e).map((e, r) => r === t ? n : e));
 	}
 	_shownDays() {
-		return this.onlyActive ? Ut.filter((e) => this._times(e).length > 0) : Ut;
+		return this.onlyActive ? Ht.filter((e) => this._times(e).length > 0) : Ht;
 	}
 	render() {
 		let e = this._shownDays();
@@ -2640,7 +2649,7 @@ var Kt = class extends A {
                   <input
                     type="checkbox"
                     .checked=${a}
-                    @change=${(e) => this._setDay(t, e.target.checked ? [Gt([])] : [])}
+                    @change=${(e) => this._setDay(t, e.target.checked ? [Wt([])] : [])}
                   />
                   Runs
                 </label>`}
@@ -2661,7 +2670,7 @@ var Kt = class extends A {
                             ✕
                           </button>` : C}
                     </span>`)}
-                  ${r.length < Wt ? x`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Gt(r)])}>+ time</button>` : C}
+                  ${r.length < Ut ? x`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Wt(r)])}>+ time</button>` : C}
                 </div>` : x`<span class="muted small">No run this day</span>`}
             ${i === null ? C : x`<button
                   type="button"
@@ -2736,9 +2745,9 @@ var Kt = class extends A {
     `];
 	}
 };
-customElements.define("boopli-schedule-days", Kt);
+customElements.define("boopli-schedule-days", Gt);
 // src/boopli-schedule-wizard.ts
-var qt = {
+var Kt = {
 	none: ["how", "done"],
 	schedule: [
 		"how",
@@ -2753,14 +2762,14 @@ var qt = {
 		"preview",
 		"done"
 	]
-}, Jt = {
+}, qt = {
 	how: "How often",
 	days: "Which days",
 	times: "What time on each day",
 	interval: "Every how many days",
 	preview: "The next runs",
 	done: "All set"
-}, Yt = [
+}, Jt = [
 	{
 		value: "none",
 		label: "On demand",
@@ -2776,7 +2785,7 @@ var qt = {
 		label: "Every few days, after I finish",
 		text: "It comes back a number of days after you finished it, for example every 90 days for a filter."
 	}
-], Xt = [
+], Yt = [
 	0,
 	1,
 	2,
@@ -2784,7 +2793,7 @@ var qt = {
 	4,
 	5,
 	6
-], Zt = class extends A {
+], Xt = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -2806,7 +2815,7 @@ var qt = {
 		!this._draft && this.repeat && (this._before = structuredClone(this.repeat), this._draft = structuredClone(this.repeat));
 	}
 	get _steps() {
-		return qt[this._draft?.type ?? "none"];
+		return Kt[this._draft?.type ?? "none"];
 	}
 	get _step() {
 		return this._steps[Math.min(this._index, this._steps.length - 1)];
@@ -2823,7 +2832,7 @@ var qt = {
 		(t[String(e)] ?? []).length > 0 ? delete t[String(e)] : t[String(e)] = ["09:00"], this._patch({ days: t });
 	}
 	_activeDays() {
-		return Xt.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
+		return Yt.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
 	}
 	async _next() {
 		if (!this.hass || !this._draft || this._busy) return;
@@ -2864,7 +2873,7 @@ var qt = {
 	_renderHow(e) {
 		return x`
       <p>How often should ${this.choreName ? x`<b>${this.choreName}</b>` : "this chore"} come up?</p>
-      ${Yt.map((t) => x`<label class="inline option">
+      ${Jt.map((t) => x`<label class="inline option">
           <input
             type="radio"
             name="how"
@@ -2880,7 +2889,7 @@ var qt = {
 		return x`
       <p>Tap the days it should come up. You set the time for each day in the next step.</p>
       <div class="chips">
-        ${Xt.map((e) => x`<button
+        ${Yt.map((e) => x`<button
             type="button"
             class="chip big ${t.includes(e) ? "on" : ""}"
             aria-pressed=${t.includes(e)}
@@ -2893,7 +2902,7 @@ var qt = {
         <button
           type="button"
           class="chip"
-          @click=${() => this._patch({ days: Object.fromEntries(Xt.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
+          @click=${() => this._patch({ days: Object.fromEntries(Yt.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
         >
           Every day
         </button>
@@ -2986,7 +2995,7 @@ var qt = {
           <div class="rail-title">Schedule${this.choreName ? `: ${this.choreName}` : ""}</div>
           ${t.map((e, t) => x`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${Jt[e]}</span>
+              <span>${qt[e]}</span>
             </div>`)}
         </nav>
         <section class="card main">
@@ -2995,7 +3004,7 @@ var qt = {
             <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
-          <h2>${Jt[n]}</h2>
+          <h2>${qt[n]}</h2>
           ${this._renderStep(e)}
           ${this._error ? x`<div class="error">${this._error}</div>` : C}
           <div class="actions">
@@ -3176,14 +3185,14 @@ var qt = {
     `];
 	}
 };
-customElements.define("boopli-schedule-wizard", Zt);
+customElements.define("boopli-schedule-wizard", Xt);
 // src/boopli-wait.ts
-var Qt = 30;
-function $t(e) {
+var Zt = 30;
+function Qt(e) {
 	let t = Math.max(0, Math.round(e));
 	return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 }
-var en = class extends A {
+var $t = class extends A {
 	static {
 		this.properties = {
 			label: { type: String },
@@ -3198,7 +3207,7 @@ var en = class extends A {
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._since = Date.now(), this._elapsed = 0, this._timer = window.setInterval(() => {
-			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Qt && (this._eggShown = !0, this._egg = !0);
+			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Zt && (this._eggShown = !0, this._egg = !0);
 		}, 500);
 	}
 	disconnectedCallback() {
@@ -3227,8 +3236,8 @@ var en = class extends A {
         <div class="fill" style="width:${e * 100}%"></div>
       </div>
       <div class="time">
-        <span>${$t(this._elapsed)} so far</span>
-        <span>gives up after ${$t(this.max)}</span>
+        <span>${Qt(this._elapsed)} so far</span>
+        <span>gives up after ${Qt(this.max)}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable ? x`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
@@ -3330,10 +3339,10 @@ var en = class extends A {
   `;
 	}
 };
-customElements.define("boopli-wait", en);
+customElements.define("boopli-wait", $t);
 // src/photos.ts
-var tn = 8e5;
-async function nn(e) {
+var en = 8e5;
+async function tn(e) {
 	let t = URL.createObjectURL(e);
 	try {
 		let e = await new Promise((e, n) => {
@@ -3349,7 +3358,7 @@ async function nn(e) {
 			a.width = Math.max(1, Math.round(e.naturalWidth * i)), a.height = Math.max(1, Math.round(e.naturalHeight * i));
 			let o = a.getContext("2d");
 			if (!o) throw Error("This browser cannot prepare photos.");
-			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= tn) break;
+			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= en) break;
 		}
 		return n;
 	} finally {
@@ -3357,7 +3366,7 @@ async function nn(e) {
 	}
 }
 // src/boopli-breakdown.ts
-var rn = [
+var nn = [
 	{
 		value: "small",
 		letter: "S",
@@ -3376,11 +3385,11 @@ var rn = [
 		label: "Big: hard or long",
 		xp: 20
 	}
-], an = {
+], rn = {
 	small: 10,
 	medium: 15,
 	big: 20
-}, on = 20, sn = 50, cn = class extends A {
+}, an = 20, on = 50, sn = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -3497,7 +3506,7 @@ var rn = [
 		this._error = "", this._looking = !0;
 		try {
 			let n = [];
-			for (let r of Array.from(e).slice(0, t)) n.push(await nn(r));
+			for (let r of Array.from(e).slice(0, t)) n.push(await tn(r));
 			this._photos = [...this._photos, ...n], e.length > t && (this._error = "Up to 4 photos. The rest were left out.");
 		} catch (e) {
 			this._error = R(e);
@@ -3510,7 +3519,7 @@ var rn = [
 		let e = ++this._lookId;
 		this._sending = !0, this._looking = !0;
 		try {
-			await this._guess();
+			if (await this._guess(), e !== this._lookId) return;
 			let t = await at(this.hass, this._task.trim(), this._photos, this._rooms);
 			if (e !== this._lookId) return;
 			this._scene = t.scene, this._photos = [], this._photosOpen = !1, this._preview = null;
@@ -3640,7 +3649,7 @@ var rn = [
 		if (!this.hass) return;
 		this._phase = "working", await this._guess();
 		let e = await this._ask(() => M(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene), this._questions.length ? "interview" : "task");
-		e && (this._steps = e.steps.slice(0, sn), this._checks = this.kind === "recurring" ? e.questions ?? [] : [], e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
+		e && (this._steps = e.steps.slice(0, on), this._checks = this.kind === "recurring" ? e.questions ?? [] : [], e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
 	}
 	_patchStep(e, t) {
 		this._steps = this._steps.map((n, r) => r === e ? {
@@ -3664,7 +3673,7 @@ var rn = [
 			group: t,
 			size: "small",
 			wait_minutes: 0
-		}), this._steps = n.slice(0, sn);
+		}), this._steps = n.slice(0, on);
 	}
 	_finish(e) {
 		let t = this._steps.filter((e) => e.title.trim()).map((e) => ({
@@ -3807,7 +3816,7 @@ var rn = [
     ></boopli-wait>`;
 	}
 	_xp() {
-		return this._steps.reduce((e, t) => e + an[t.size], 0) + on;
+		return this._steps.reduce((e, t) => e + rn[t.size], 0) + an;
 	}
 	_renderStep(e, t) {
 		return x`
@@ -3822,7 +3831,7 @@ var rn = [
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
         <span class="sizes" role="group" aria-label="Size">
-          ${rn.map((n) => x`<button
+          ${nn.map((n) => x`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
               title="${n.label} (${n.xp} XP)"
@@ -4236,9 +4245,9 @@ var rn = [
     `];
 	}
 };
-customElements.define("boopli-breakdown", cn);
+customElements.define("boopli-breakdown", sn);
 // src/boopli-chore-editor.ts
-var ln = 8, un = [
+var cn = 8, ln = [
 	{
 		value: "quiet",
 		label: "Quiet: only shown in Boopli, no nudges"
@@ -4255,7 +4264,7 @@ var ln = 8, un = [
 		value: "persistent",
 		label: "Persistent: every 5 minutes until done"
 	}
-], dn = [
+], un = [
 	{
 		minutes: 0,
 		label: "No wait"
@@ -4276,7 +4285,7 @@ var ln = 8, un = [
 		minutes: 180,
 		label: "3 h"
 	}
-], fn = [
+], dn = [
 	{
 		value: "none",
 		label: "On demand (I start it)"
@@ -4289,7 +4298,7 @@ var ln = 8, un = [
 		value: "every_n_days",
 		label: "Every N days after I finish"
 	}
-], pn = Object.fromEntries([
+], fn = Object.fromEntries([
 	0,
 	1,
 	2,
@@ -4297,7 +4306,7 @@ var ln = 8, un = [
 	4,
 	5,
 	6
-].map((e) => [String(e), ["09:00"]])), mn = class extends A {
+].map((e) => [String(e), ["09:00"]])), pn = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -4395,7 +4404,7 @@ var ln = 8, un = [
 		})), o = [...n, ...(e.questions ?? []).map((e) => ({
 			...e,
 			id: i.get(e.id) ?? e.id
-		}))].slice(0, ln), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
+		}))].slice(0, cn), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
 		this._update({
 			steps: c.slice(0, 50),
 			notes: e.notes,
@@ -4404,7 +4413,7 @@ var ln = 8, un = [
 	}
 	_addQuestion() {
 		let e = [...this.draft.questions ?? []];
-		e.length >= ln || (e.push({
+		e.length >= cn || (e.push({
 			id: `q${Math.random().toString(36).slice(2, 8)}`,
 			text: ""
 		}), this._update({ questions: e }));
@@ -4481,14 +4490,14 @@ var ln = 8, un = [
           id="repeat"
           .value=${e.type}
           @change=${(t) => {
-			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? pn : e.days;
+			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? fn : e.days;
 			this._updateRepeat({
 				type: n,
 				days: r
 			});
 		}}
         >
-          ${fn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
+          ${dn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
         </select>
       </div>
       ${e.type === "schedule" ? x`<div class="field">
@@ -4583,7 +4592,7 @@ var ln = 8, un = [
             ${(t.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
           </span>
           <div class="chips">
-            ${dn.map((n) => x`<button
+            ${un.map((n) => x`<button
                 type="button"
                 class="chip ${t.wait_minutes === n.minutes ? "on" : ""}"
                 @click=${() => this._updateStep(e, { wait_minutes: n.minutes })}
@@ -4684,7 +4693,7 @@ var ln = 8, un = [
             .value=${e.nudge_style ?? this.defaultStyle}
             @change=${(e) => this._update({ nudge_style: e.target.value })}
           >
-            ${un.map((t) => x`<option
+            ${ln.map((t) => x`<option
                 value=${t.value}
                 ?selected=${t.value === (e.nudge_style ?? this.defaultStyle)}
               >
@@ -4734,7 +4743,7 @@ var ln = 8, un = [
               />
               <button type="button" aria-label="Remove this question" @click=${() => this._removeQuestion(e.id)}>✕</button>
             </div>`)}
-          <button type="button" ?disabled=${(e.questions ?? []).length >= ln} @click=${() => this._addQuestion()}>
+          <button type="button" ?disabled=${(e.questions ?? []).length >= cn} @click=${() => this._addQuestion()}>
             + Add a question
           </button>
         </details>
@@ -4959,14 +4968,14 @@ var ln = 8, un = [
     `];
 	}
 };
-customElements.define("boopli-chore-editor", mn);
+customElements.define("boopli-chore-editor", pn);
 // src/templates.ts
-var hn = {
+var mn = {
 	type: "none",
 	time: "09:00",
 	every_n_days: 1,
 	days: {}
-}, K = [
+}, q = [
 	{
 		label: "Dishwasher",
 		draft: {
@@ -4975,7 +4984,7 @@ var hn = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...hn,
+				...mn,
 				days: {}
 			},
 			steps: [
@@ -5006,7 +5015,7 @@ var hn = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...hn,
+				...mn,
 				days: {}
 			},
 			steps: [
@@ -5075,7 +5084,7 @@ var hn = {
 		}
 	}
 ];
-function gn() {
+function hn() {
 	return {
 		name: "",
 		where: "home",
@@ -5094,7 +5103,7 @@ function gn() {
 	};
 }
 // src/boopli-chores.ts
-var _n = class extends A {
+var gn = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -5207,7 +5216,7 @@ var _n = class extends A {
 		let e = this.snapshot.time_zone, t = new Set(this.snapshot.runs.map((e) => e.chore_id)), n = [...this.snapshot.chores].sort((e, t) => e.name.localeCompare(t.name));
 		return x`
       <div class="toolbar">
-        <button class="primary" @click=${() => this._editing = gn()}>
+        <button class="primary" @click=${() => this._editing = hn()}>
           + New chore
         </button>
         <button
@@ -5223,7 +5232,7 @@ var _n = class extends A {
 
       <div class="templates">
         <span class="muted small">Start from a template:</span>
-        ${K.map((e) => x`<button
+        ${q.map((e) => x`<button
             class="chip"
             @click=${() => this._editing = structuredClone(e.draft)}
           >
@@ -5314,41 +5323,41 @@ var _n = class extends A {
     `];
 	}
 };
-customElements.define("boopli-chores", _n);
+customElements.define("boopli-chores", gn);
 // src/helpers.ts
-var vn = "amzn_sfx_scifi_alarm_01", yn = "amzn_sfx_doorbell_chime_01", bn = [
+var _n = "amzn_sfx_scifi_alarm_01", vn = "amzn_sfx_doorbell_chime_01", yn = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], xn = {
+], bn = {
 	start: "07:00",
 	stop: "22:00"
 };
-function q(e, t) {
+function J(e, t) {
 	let n = e?.states[t]?.attributes?.friendly_name;
 	return typeof n == "string" && n ? n : t;
 }
-function J(e, t, n = []) {
-	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => q(e, t).localeCompare(q(e, n)));
+function Y(e, t, n = []) {
+	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => J(e, t).localeCompare(J(e, n)));
 }
-function Sn(e, t, n) {
+function xn(e, t, n) {
 	let r;
 	return r = t === "alexa_media" ? Object.keys(e?.services?.notify ?? {}).filter((e) => e.startsWith("alexa_media_") && e !== "alexa_media").sort().map((e) => ({
 		value: e,
 		label: e.replace("alexa_media_", "")
 	})) : t === "alexa_devices" ? Object.keys(e?.states ?? {}).filter((e) => e.startsWith("notify.") && /_(speak|announce)$/.test(e)).sort().map((t) => ({
 		value: t,
-		label: q(e, t)
-	})) : J(e, ["tts"]).map((t) => ({
+		label: J(e, t)
+	})) : Y(e, ["tts"]).map((t) => ({
 		value: t,
-		label: q(e, t)
+		label: J(e, t)
 	})), n && !r.some((e) => e.value === n) && r.unshift({
 		value: n,
 		label: `${n} (not found)`
 	}), r;
 }
-function Cn(e) {
+function Sn(e) {
 	return {
 		entity_id: e,
 		mode: "blink",
@@ -5363,13 +5372,13 @@ function Cn(e) {
 		start_at: 1
 	};
 }
-function wn(e) {
+function Cn(e) {
 	return {
 		entity_id: e,
 		cue: {
 			enabled: !1,
 			kind: "alexa",
-			sound: yn,
+			sound: vn,
 			start_at: 1,
 			seconds: 30,
 			repeat_s: 5
@@ -5384,21 +5393,21 @@ function wn(e) {
 		alarm: {
 			enabled: !1,
 			kind: "alexa",
-			sound: vn,
+			sound: _n,
 			start_at: 4,
 			seconds: 30,
 			repeat_s: 5
 		}
 	};
 }
-function Tn(e) {
+function wn(e) {
 	return {
 		entity_id: e,
 		seconds: 30,
 		start_at: 4
 	};
 }
-function En(e) {
+function Tn(e) {
 	let t = parseInt(e.replace("#", ""), 16);
 	return [
 		t >> 16 & 255,
@@ -5406,24 +5415,24 @@ function En(e) {
 		t & 255
 	];
 }
-function Dn(e) {
+function En(e) {
 	return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-function Y(e) {
+function X(e) {
 	return e.replace("mobile_app_", "");
 }
-var X = {
+var Z = {
 	normal: "normal",
 	high: "high priority",
 	alarm: "alarm volume",
 	alarm_max: "max volume"
-}, On = {
+}, Dn = {
 	quiet: "Quiet",
 	one: "One nudge",
 	escalating: "Escalating",
 	persistent: "Persistent"
 };
-function kn(e) {
+function On(e) {
 	if (!e.enabled) return "Off: Boopli nudges at any time";
 	let t = [], n = 0;
 	for (; n < 7;) {
@@ -5434,7 +5443,7 @@ function kn(e) {
 	}
 	return "Nudges allowed " + t.join(", ");
 }
-function An(e) {
+function kn(e) {
 	let t = [
 		e.cue.enabled ? `ding (from nudge ${e.cue.start_at})` : "",
 		e.speech.enabled ? `speech (from nudge ${e.speech.start_at})` : "",
@@ -5442,22 +5451,22 @@ function An(e) {
 	].filter(Boolean);
 	return t.length ? t.join(", ") : "nothing switched on yet";
 }
-function Z(e) {
+function Q(e) {
 	return e.mode === "indicator" ? "status light (stays on until done)" : "blinks";
 }
 // src/boopli-speakers.ts
-var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Pn = [
+var An = "amzn_sfx_scifi_alarm_01", jn = "amzn_sfx_doorbell_chime_01", Mn = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Nn = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], Fn = [{
+], Pn = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], In = [
+}], Fn = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -5470,7 +5479,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], Ln = class extends A {
+], In = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -5539,7 +5548,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
 			cue: {
 				enabled: !1,
 				kind: "alexa",
-				sound: Mn,
+				sound: jn,
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -5554,7 +5563,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
 			alarm: {
 				enabled: !1,
 				kind: "alexa",
-				sound: jn,
+				sound: An,
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -5629,7 +5638,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
                     .value=${n.kind}
                     @change=${(e) => this._setSound(r, t, { kind: e.target.value })}
                   >
-                    ${Fn.map((e) => x`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
+                    ${Pn.map((e) => x`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -5643,7 +5652,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
                 </label>
                 ${n.kind === "alexa" ? x`<div class="muted small libhint">
                       Pick a sound from the
-                      <a href=${Nn} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
+                      <a href=${Mn} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
                       The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
                       + a two-digit number, for example "Doorbell Chime (1)" is
                       <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
@@ -5707,7 +5716,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
 			target: ""
 		})}
                   >
-                    ${In.map((e) => x`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                    ${Fn.map((e) => x`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -5806,7 +5815,7 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Pn, t);
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Nn, t);
 		return x`
       <section class="card">
         <h2>🚨 Alarm devices</h2>
@@ -5966,17 +5975,17 @@ var jn = "amzn_sfx_scifi_alarm_01", Mn = "amzn_sfx_doorbell_chime_01", Nn = "htt
     `];
 	}
 };
-customElements.define("boopli-speakers", Ln);
+customElements.define("boopli-speakers", In);
 // src/boopli-settings.ts
-var Rn = "boopli.settings_mode";
-function zn() {
+var Ln = "boopli.settings_mode";
+function Rn() {
 	try {
-		return localStorage.getItem(Rn) === "advanced" ? "advanced" : "simple";
+		return localStorage.getItem(Ln) === "advanced" ? "advanced" : "simple";
 	} catch {
 		return "simple";
 	}
 }
-var Bn = [
+var zn = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -5993,13 +6002,13 @@ var Bn = [
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], Vn = [{
+], Bn = [{
 	value: "blink",
 	label: "Blink"
 }, {
 	value: "indicator",
 	label: "Indicator lamp (on until done)"
-}], Hn = [
+}], Vn = [
 	{
 		value: "quiet",
 		label: "Quiet (no nudges)"
@@ -6016,10 +6025,10 @@ var Bn = [
 		value: "persistent",
 		label: "Persistent"
 	}
-], Un = {
+], Hn = {
 	start: "07:00",
 	stop: "22:00"
-}, Wn = class extends A {
+}, Un = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -6036,7 +6045,7 @@ var Bn = [
 		};
 	}
 	constructor() {
-		super(), this._justSaved = !1, this._lastDirty = !1, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._mode = zn(), this._defaults = null, this._aiNote = "";
+		super(), this._justSaved = !1, this._lastDirty = !1, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._mode = Rn(), this._defaults = null, this._aiNote = "";
 	}
 	willUpdate() {
 		let e = this.snapshot?.settings;
@@ -6069,8 +6078,9 @@ var Bn = [
 	async save() {
 		if (!this.hass || !this._draft || this._busy) return !1;
 		this._busy = !0, this._error = "", this._message = "";
+		let e = structuredClone(this._draft);
 		try {
-			return await j(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = "Saved.", !0;
+			return await j(this.hass, e), this._justSaved = !0, this._base = e, this._message = "Saved.", !0;
 		} catch (e) {
 			return this._error = R(e), !1;
 		} finally {
@@ -6083,7 +6093,7 @@ var Bn = [
 	_setMode(e) {
 		this._mode = e;
 		try {
-			localStorage.setItem(Rn, e);
+			localStorage.setItem(Ln, e);
 		} catch {}
 	}
 	_openWizard(e) {
@@ -6231,7 +6241,7 @@ var Bn = [
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(V.map((e, t) => [String(t), { ...Un }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(V.map((e, t) => [String(t), { ...Hn }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -6285,7 +6295,7 @@ var Bn = [
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${Bn.map((e) => x`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${zn.map((e) => x`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>Test</button>
                 </div>
@@ -6321,7 +6331,7 @@ var Bn = [
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${Vn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${Bn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
               <input
                 type="color"
@@ -6421,7 +6431,7 @@ var Bn = [
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Un })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Hn })}
                       />
                       No limit
                     </label>
@@ -6517,7 +6527,7 @@ var Bn = [
             .value=${e.default_style}
             @change=${(e) => this._set({ default_style: e.target.value })}
           >
-            ${Hn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+            ${Vn.map((t) => x`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           </select>
         </div>
       </section>
@@ -6553,7 +6563,7 @@ var Bn = [
 		}
 	}
 	_renderAi(e) {
-		let t = J(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => x`
+		let t = Y(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => x`
       <div class="field">
         <label for="ai-${e}">${t}</label>
         <textarea
@@ -6592,7 +6602,7 @@ var Bn = [
           <label for="ai-agent">Which AI agent?</label>
           <select id="ai-agent" @change=${(e) => this._setAi({ entity_id: e.target.value })}>
             <option value="" .selected=${n.entity_id === ""}>Home Assistant default</option>
-            ${t.map((e) => x`<option value=${e} .selected=${e === n.entity_id}>${q(this.hass, e)}</option>`)}
+            ${t.map((e) => x`<option value=${e} .selected=${e === n.entity_id}>${J(this.hass, e)}</option>`)}
             ${n.entity_id && !t.includes(n.entity_id) ? x`<option value=${n.entity_id} selected>${n.entity_id} (not found)</option>` : C}
           </select>
           ${t.length === 0 ? x`<div class="muted small">No AI Task agent found in Home Assistant yet. Add one under Settings, Devices and services.</div>` : C}
@@ -6611,7 +6621,7 @@ var Bn = [
               @change=${(e) => this._setAi({ photo_entity_id: e.target.value })}
             >
               <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>The same agent as above</option>
-              ${t.map((e) => x`<option value=${e} .selected=${e === n.photo_entity_id}>${q(this.hass, e)}</option>`)}
+              ${t.map((e) => x`<option value=${e} .selected=${e === n.photo_entity_id}>${J(this.hass, e)}</option>`)}
               ${n.photo_entity_id && !t.includes(n.photo_entity_id) ? x`<option value=${n.photo_entity_id} selected>${n.photo_entity_id} (not found)</option>` : C}
             </select>
             <div class="muted small">
@@ -6648,15 +6658,15 @@ var Bn = [
 	_renderSimple() {
 		let e = this.snapshot?.settings;
 		if (!e) return C;
-		let t = (e) => q(this.hass, e);
+		let t = (e) => J(this.hass, e);
 		return x`
       <div class="cards simple">
         ${this._overviewCard("🐻", "Your pet", "pet", [e.pet_name], "", "Rename")}
-        ${this._overviewCard("📱", "Phone", "phone", e.phones.map((e) => `${Y(e.service)}: ${X[e.level] ?? e.level}, from nudge ${e.start_at}`), "No phone set up yet.")}
-        ${this._overviewCard("🌙", "Quiet hours", "quiet", [kn(e.quiet_hours)], "")}
-        ${this._overviewCard("⏰", "Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${On[e.default_style] ?? e.default_style}`], "")}
-        ${this._overviewCard("💡", "Reminder lights", "lights", e.lights.map((e) => `${t(e.entity_id)}: ${Z(e)}`), "No reminder lights yet.")}
-        ${this._overviewCard("🔊", "Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${An(e)}`), "No speakers yet.")}
+        ${this._overviewCard("📱", "Phone", "phone", e.phones.map((e) => `${X(e.service)}: ${Z[e.level] ?? e.level}, from nudge ${e.start_at}`), "No phone set up yet.")}
+        ${this._overviewCard("🌙", "Quiet hours", "quiet", [On(e.quiet_hours)], "")}
+        ${this._overviewCard("⏰", "Snooze and style", "nudging", [`Snooze ${e.snooze_minutes} minutes`, `New chores: ${Dn[e.default_style] ?? e.default_style}`], "")}
+        ${this._overviewCard("💡", "Reminder lights", "lights", e.lights.map((e) => `${t(e.entity_id)}: ${Q(e)}`), "No reminder lights yet.")}
+        ${this._overviewCard("🔊", "Speakers", "speakers", e.speakers.map((e) => `${t(e.entity_id)}: ${kn(e)}`), "No speakers yet.")}
         ${this._overviewCard("🚨", "Alarm devices", "alarms", e.alarm_devices.map((e) => `${t(e.entity_id)}: on for ${e.seconds} s, from nudge ${e.start_at}`), "No alarm devices yet.")}
         ${this._overviewCard("🤖", "AI help", "ai", e.ai?.enabled ? [`On, using ${e.ai.entity_id ? t(e.ai.entity_id) : "the Home Assistant default agent"}`] : [], "Off. Splits big tasks into tiny steps with your own AI agent.")}
         ${this._overviewCard("📍", "Where you are", "presence", e.presence_entity ? [t(e.presence_entity)] : [], "Not set. Boopli assumes you are home.")}
@@ -6974,13 +6984,13 @@ var Bn = [
     `];
 	}
 };
-customElements.define("boopli-settings", Wn);
+customElements.define("boopli-settings", Un);
 // src/boopli-home.ts
-var Gn = 2e3;
-function Kn() {
+var Wn = 2e3;
+function Gn() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var qn = class extends A {
+var Kn = class extends A {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -6997,7 +7007,7 @@ var qn = class extends A {
 		};
 	}
 	constructor() {
-		super(), this._justSaved = !1, this._lastDirty = !1, this._synced = !1, this._run = 0, this._newName = "", this._showHidden = !1, this._iv = null, this._tool = null, this._busy = !1, this._error = "", this._message = "";
+		super(), this._justSaved = !1, this._lastDirty = !1, this._synced = !1, this._run = 0, this._promptAsk = 0, this._newName = "", this._showHidden = !1, this._iv = null, this._tool = null, this._busy = !1, this._error = "", this._message = "";
 	}
 	willUpdate() {
 		let e = this.snapshot?.home;
@@ -7052,7 +7062,7 @@ var qn = class extends A {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: Kn(),
+				id: Gn(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -7119,16 +7129,20 @@ var qn = class extends A {
 		let t = this._tool;
 		if (!e || t?.kind !== "photos") return;
 		let n = Math.max(0, 4 - t.photos.length);
-		this._error = "", this._patchTool({ working: !0 });
+		this._error = "";
+		let r = t.roomId;
+		this._patchTool({ working: !0 });
 		try {
 			let t = [];
-			for (let r of Array.from(e).slice(0, n)) t.push(await nn(r));
-			let r = this._tool;
-			r?.kind === "photos" && this._patchTool({ photos: [...r.photos, ...t] }), e.length > n && (this._error = "Up to 4 photos per room. The rest were left out.");
+			for (let r of Array.from(e).slice(0, n)) t.push(await tn(r));
+			let i = this._tool;
+			if (i?.kind !== "photos" || i.roomId !== r) return;
+			this._patchTool({ photos: [...i.photos, ...t] }), e.length > n && (this._error = "Up to 4 photos per room. The rest were left out.");
 		} catch (e) {
 			this._error = R(e);
 		}
-		this._patchTool({ working: !1 });
+		let i = this._tool;
+		i?.kind === "photos" && i.roomId === r && this._patchTool({ working: !1 });
 	}
 	async _sendPhotos() {
 		let e = this._tool, t = e?.kind === "photos" ? this._room(e.roomId) : void 0;
@@ -7177,18 +7191,19 @@ var qn = class extends A {
 	async _loadPrompt() {
 		let e = this._tool;
 		if (!this.hass || e?.kind !== "chat") return;
-		let t = e.roomId ? this._room(e.roomId) : void 0;
+		let t = e.roomId ? this._room(e.roomId) : void 0, n = ++this._promptAsk;
 		try {
-			let n = await et(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
+			let r = await et(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
 				name: e.name,
 				notes: e.notes
 			})));
+			if (n !== this._promptAsk) return;
 			this._patchTool({
-				prompt: n,
+				prompt: r,
 				copied: !1
 			});
 		} catch (e) {
-			this._error = R(e);
+			n === this._promptAsk && (this._error = R(e));
 		}
 	}
 	async _copyPrompt() {
@@ -7241,12 +7256,12 @@ var qn = class extends A {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, Gn);
+			let e = r.notes.trim().slice(0, Wn);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: Kn(),
+				id: Gn(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -7333,7 +7348,7 @@ var qn = class extends A {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Gn) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Wn) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
@@ -7501,7 +7516,10 @@ var qn = class extends A {
                   type="checkbox"
                   .checked=${e.include}
                   @change=${(e) => {
-			this._patchTool({ include: e.target.checked }), this._loadPrompt();
+			this._patchTool({
+				include: e.target.checked,
+				prompt: ""
+			}), this._loadPrompt();
 		}}
                 />
                 Include what I have written so far
@@ -7590,7 +7608,7 @@ var qn = class extends A {
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${Gn}
+        maxlength=${Wn}
         placeholder="For example: Dishwasher is under the counter. The balcony door sticks."
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
@@ -7989,9 +8007,9 @@ var qn = class extends A {
     `];
 	}
 };
-customElements.define("boopli-home", qn);
+customElements.define("boopli-home", Kn);
 // src/diff.ts
-function Q(e, t, n) {
+function $(e, t, n) {
 	let r = new Map(e.map((e) => [n(e), e])), i = new Map(t.map((e) => [n(e), e]));
 	return {
 		added: [...i].filter(([e]) => !r.has(e)).map(([, e]) => e),
@@ -8002,20 +8020,20 @@ function Q(e, t, n) {
 		}))
 	};
 }
-function Jn(e, t, n, r) {
+function qn(e, t, n, r) {
 	let i = [];
 	return t.enabled !== n.enabled && i.push(`${e} ${n.enabled ? "on" : "off"}`), n.enabled && (t.sound !== n.sound && i.push(`${e} sound ${t.sound} → ${n.sound}`), t.start_at !== n.start_at && i.push(`${e} starts at nudge ${t.start_at} → ${n.start_at}`), r && t.seconds !== n.seconds && i.push(`${e} lasts ${t.seconds} → ${n.seconds} s`), r && t.repeat_s !== n.repeat_s && i.push(`${e} repeats every ${t.repeat_s} → ${n.repeat_s} s`)), i;
 }
-function Yn(e, t) {
-	let n = [...Jn("ding", e.cue, t.cue, !1), ...Jn("alarm", e.alarm, t.alarm, !0)];
+function Jn(e, t) {
+	let n = [...qn("ding", e.cue, t.cue, !1), ...qn("alarm", e.alarm, t.alarm, !0)];
 	return e.speech.enabled !== t.speech.enabled && n.push(`speech ${t.speech.enabled ? "on" : "off"}`), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(`speech goes to ${t.speech.target || "nothing"}`), e.speech.start_at !== t.speech.start_at && n.push(`speech starts at nudge ${e.speech.start_at} → ${t.speech.start_at}`)), n;
 }
-function Xn(e, t, n) {
-	let r = (e) => q(n, e), i = [];
+function Yn(e, t, n) {
+	let r = (e) => J(n, e), i = [];
 	e.pet_name !== t.pet_name && i.push(`Pet name: ${e.pet_name} → ${t.pet_name}`);
-	let a = Q(e.phones, t.phones, (e) => e.service);
-	a.added.forEach((e) => i.push(`Phone added: ${Y(e.service)} (${X[e.level] ?? e.level})`)), a.removed.forEach((e) => i.push(`Phone removed: ${Y(e.service)}`)), a.kept.forEach(({ before: e, after: t }) => {
-		e.level !== t.level && i.push(`${Y(t.service)}: level ${X[e.level]} → ${X[t.level]}`), e.start_at !== t.start_at && i.push(`${Y(t.service)}: starts at nudge ${e.start_at} → ${t.start_at}`);
+	let a = $(e.phones, t.phones, (e) => e.service);
+	a.added.forEach((e) => i.push(`Phone added: ${X(e.service)} (${Z[e.level] ?? e.level})`)), a.removed.forEach((e) => i.push(`Phone removed: ${X(e.service)}`)), a.kept.forEach(({ before: e, after: t }) => {
+		e.level !== t.level && i.push(`${X(t.service)}: level ${Z[e.level]} → ${Z[t.level]}`), e.start_at !== t.start_at && i.push(`${X(t.service)}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	});
 	let o = e.quiet_hours, s = t.quiet_hours;
 	if (o.enabled !== s.enabled && i.push(`Quiet hours: ${o.enabled ? "on" : "off"} → ${s.enabled ? "on" : "off"}`), s.enabled) {
@@ -8028,15 +8046,15 @@ function Xn(e, t, n) {
 			r !== a && i.push(`${t}: ${r} → ${a}`);
 		});
 	}
-	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(`Wait for your answers: ${e.question_wait_minutes ?? 30} → ${t.question_wait_minutes ?? 30} min`), e.default_style !== t.default_style && i.push(`Default style: ${On[e.default_style]} → ${On[t.default_style]}`);
-	let c = Q(e.lights, t.lights, (e) => e.entity_id);
-	c.added.forEach((e) => i.push(`Reminder light added: ${r(e.entity_id)} (${Z(e)})`)), c.removed.forEach((e) => i.push(`Reminder light removed: ${r(e.entity_id)}`)), c.kept.forEach(({ before: e, after: t }) => {
+	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(`Wait for your answers: ${e.question_wait_minutes ?? 30} → ${t.question_wait_minutes ?? 30} min`), e.default_style !== t.default_style && i.push(`Default style: ${Dn[e.default_style]} → ${Dn[t.default_style]}`);
+	let c = $(e.lights, t.lights, (e) => e.entity_id);
+	c.added.forEach((e) => i.push(`Reminder light added: ${r(e.entity_id)} (${Q(e)})`)), c.removed.forEach((e) => i.push(`Reminder light removed: ${r(e.entity_id)}`)), c.kept.forEach(({ before: e, after: t }) => {
 		let n = r(t.entity_id);
-		e.mode !== t.mode && i.push(`${n}: ${Z(e)} → ${Z(t)}`), e.color.join() !== t.color.join() && i.push(`${n}: color changed`), e.blink_ms !== t.blink_ms && i.push(`${n}: blink length ${e.blink_ms} → ${t.blink_ms} ms`), e.repeats !== t.repeats && i.push(`${n}: blinks ${e.repeats} → ${t.repeats}`), e.gap_ms !== t.gap_ms && i.push(`${n}: pause ${e.gap_ms} → ${t.gap_ms} ms`), e.start_at !== t.start_at && i.push(`${n}: starts at nudge ${e.start_at} → ${t.start_at}`);
+		e.mode !== t.mode && i.push(`${n}: ${Q(e)} → ${Q(t)}`), e.color.join() !== t.color.join() && i.push(`${n}: color changed`), e.blink_ms !== t.blink_ms && i.push(`${n}: blink length ${e.blink_ms} → ${t.blink_ms} ms`), e.repeats !== t.repeats && i.push(`${n}: blinks ${e.repeats} → ${t.repeats}`), e.gap_ms !== t.gap_ms && i.push(`${n}: pause ${e.gap_ms} → ${t.gap_ms} ms`), e.start_at !== t.start_at && i.push(`${n}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	});
-	let l = Q(e.speakers, t.speakers, (e) => e.entity_id);
-	l.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), l.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), l.kept.forEach(({ before: e, after: t }) => Yn(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
-	let u = Q(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
+	let l = $(e.speakers, t.speakers, (e) => e.entity_id);
+	l.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), l.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), l.kept.forEach(({ before: e, after: t }) => Jn(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
+	let u = $(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
 	if (u.added.forEach((e) => i.push(`Alarm device added: ${r(e.entity_id)}`)), u.removed.forEach((e) => i.push(`Alarm device removed: ${r(e.entity_id)}`)), u.kept.forEach(({ before: e, after: t }) => {
 		e.seconds !== t.seconds && i.push(`${r(t.entity_id)}: on for ${e.seconds} → ${t.seconds} s`), e.start_at !== t.start_at && i.push(`${r(t.entity_id)}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	}), e.ai.enabled !== t.ai.enabled && i.push(`AI help: ${e.ai.enabled ? "on" : "off"} → ${t.ai.enabled ? "on" : "off"}`), e.ai.entity_id !== t.ai.entity_id) {
@@ -8054,7 +8072,7 @@ function Xn(e, t, n) {
 	return i;
 }
 // src/boopli-wizard.ts
-var Zn = {
+var Xn = {
 	first: [
 		"welcome",
 		"phone",
@@ -8098,13 +8116,13 @@ var Zn = {
 		"ai_agent",
 		"done"
 	]
-}, Qn = [
+}, Zn = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], $n = {
+], Qn = {
 	first: "First setup",
 	phone: "Phone setup",
 	quiet: "Quiet hours setup",
@@ -8115,7 +8133,7 @@ var Zn = {
 	nudging: "Snooze and style",
 	pet: "Your pet",
 	ai: "AI help setup"
-}, er = {
+}, $n = {
 	welcome: "Welcome",
 	phone: "Your phone",
 	phone_detail: "Phone details",
@@ -8137,12 +8155,12 @@ var Zn = {
 	ai_agent: "Your AI agent",
 	chores: "First chores",
 	done: "All set"
-}, tr = [
+}, er = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], nr = [
+], tr = [
 	{
 		value: "one",
 		label: "One nudge",
@@ -8163,7 +8181,7 @@ var Zn = {
 		label: "Quiet",
 		text: "Only shown in Boopli, never nudges."
 	}
-], rr = [
+], nr = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -8180,7 +8198,7 @@ var Zn = {
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], ir = [
+], rr = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -8193,13 +8211,13 @@ var Zn = {
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], ar = [{
+], ir = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], or = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", $ = [
+}], ar = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", or = [
 	0,
 	1,
 	2,
@@ -8236,14 +8254,14 @@ var Zn = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Zn[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Xn[this.wizard]];
 		let e = this.startAt;
-		if (this._first && Qn.includes(e)) {
+		if (this._first && Zn.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...Qn);
+			this._steps.splice(e + 1, 0, ...Zn);
 		}
 		let t = this._steps.indexOf(e);
-		this._index = t >= 0 ? t : 0, this._picked = K.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
+		this._index = t >= 0 ? t : 0, this._picked = q.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
 	}
 	_set(e) {
 		this._draft &&= {
@@ -8258,7 +8276,7 @@ var Zn = {
 		};
 	}
 	_fn(e) {
-		return q(this.hass, e);
+		return J(this.hass, e);
 	}
 	_phones() {
 		let e = Object.keys(this.hass?.services?.notify ?? {}).filter((e) => e.startsWith("mobile_app_")), t = this._draft?.phones.map((e) => e.service) ?? [];
@@ -8317,11 +8335,12 @@ var Zn = {
 			try {
 				if (e === 1 && t === "next") {
 					if (this._step === "spk_pick" && !this._speaker) throw Error("Pick a speaker, or press Skip.");
-					await j(this.hass, this._draft), this._saved = structuredClone(this._draft);
+					let e = structuredClone(this._draft);
+					await j(this.hass, e), this._saved = e;
 				}
 				e === 1 && t === "skip" && (this._draft = structuredClone(this._saved), this._step === "chores" && (this._picked = [])), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...Qn,
+					...Zn,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
@@ -8359,7 +8378,7 @@ var Zn = {
 			this._busy = !0, this._error = "";
 			try {
 				if (await j(this.hass, this._draft), this._first) {
-					for (let e of K.filter((e) => this._picked.includes(e.label))) await Ke(this.hass, {
+					for (let e of q.filter((e) => this._picked.includes(e.label))) await Ke(this.hass, {
 						...e.draft,
 						repeat: {
 							type: "none",
@@ -8381,7 +8400,7 @@ var Zn = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries($.map((e) => [String(e), { ...xn }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(or.map((e) => [String(e), { ...bn }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -8407,7 +8426,7 @@ var Zn = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries($.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(or.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -8470,7 +8489,7 @@ var Zn = {
 				}] : i });
 			}}
                   />
-                  ${Y(t)}
+                  ${X(t)}
                 </label>
                 <button type="button" @click=${() => this._try(`phone:${t}`, () => F(this.hass, {
 				service: t,
@@ -8493,7 +8512,7 @@ var Zn = {
       </p>
       <div class="list">
         ${e.phones.map((t) => x`<div class="choice col">
-            <b>${Y(t.service)}</b>
+            <b>${X(t.service)}</b>
             <label class="num">
               Notification level
               <select
@@ -8502,7 +8521,7 @@ var Zn = {
 			level: n.target.value
 		} : e) })}
               >
-                ${rr.map((e) => x`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${nr.map((e) => x`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             ${this._numField("Starts at nudge #", t.start_at ?? 1, 1, 20, (n) => this._set({ phones: e.phones.map((e) => e.service === t.service ? {
@@ -8533,7 +8552,7 @@ var Zn = {
       </label>
       ${t.enabled ? x`
             <div class="days">
-              ${$.map((e) => {
+              ${or.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return x`<div class="dayrow">
                   <span class="dayname">${V[e]}</span>
@@ -8541,7 +8560,7 @@ var Zn = {
                     <input
                       type="checkbox"
                       .checked=${n === null}
-                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...xn })}
+                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...bn })}
                     />
                     No limit
                   </label>
@@ -8596,14 +8615,14 @@ var Zn = {
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
-      ${nr.map((t) => x`<label class="inline option">
+      ${tr.map((t) => x`<label class="inline option">
           <input type="radio" name="style" .checked=${e.default_style === t.value} @change=${() => this._set({ default_style: t.value })} />
           <span><b>${t.label}</b> <span class="muted small">${t.text}</span></span>
         </label>`)}
     `;
 	}
 	_renderLights(e) {
-		let t = J(this.hass, ["light"]);
+		let t = Y(this.hass, ["light"]);
 		return x`
       <p>
         Which lights should remind you? Each one either <b>blinks</b> when a step is your turn, or
@@ -8619,7 +8638,7 @@ var Zn = {
                     .checked=${!!n}
                     @change=${(n) => {
 				let r = n.target.checked, i = e.lights.filter((e) => e.entity_id !== t);
-				this._set({ lights: r ? [...i, Cn(t)] : i });
+				this._set({ lights: r ? [...i, Sn(t)] : i });
 			}}
                   />
                   ${this._fn(t)}
@@ -8661,7 +8680,7 @@ var Zn = {
             <b>${this._fn(t.entity_id)}</b>
             <label class="num">
               Color
-              <input type="color" class="swatch" .value=${Dn(t.color)} @input=${(e) => n({ color: En(e.target.value) })} />
+              <input type="color" class="swatch" .value=${En(t.color)} @input=${(e) => n({ color: Tn(e.target.value) })} />
             </label>
             ${t.mode === "blink" ? x`${this._numField("Blink length (ms)", t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
                 ${this._numField("Number of blinks", t.repeats, 1, 5, (e) => n({ repeats: e }))}
@@ -8688,7 +8707,7 @@ var Zn = {
     `;
 	}
 	_renderSpkPick(e) {
-		let t = J(this.hass, ["media_player"]);
+		let t = Y(this.hass, ["media_player"]);
 		return x`
       <p>Which speaker do you want to set up? You can add more speakers afterwards.</p>
       ${t.length === 0 ? x`<p class="muted">No speakers (media players) found.</p>` : x`<div class="list grid">
@@ -8700,12 +8719,12 @@ var Zn = {
                   name="speaker"
                   .checked=${this._speaker === t}
                   @change=${() => {
-				this._speaker = t, n || this._set({ speakers: [...e.speakers, wn(t)] });
+				this._speaker = t, n || this._set({ speakers: [...e.speakers, Cn(t)] });
 			}}
                 />
                 <span>
                   ${this._fn(t)}
-                  ${n ? x`<span class="muted small"><br />set up: ${An(n)}</span>` : C}
+                  ${n ? x`<span class="muted small"><br />set up: ${kn(n)}</span>` : C}
                 </span>
               </label>`;
 		})}
@@ -8727,7 +8746,7 @@ var Zn = {
             <label class="num">
               Sound type
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${ar.map((e) => x`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${ir.map((e) => x`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -8735,7 +8754,7 @@ var Zn = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? x`<div class="muted small">
-                  Pick a sound from the <a href=${or} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  Pick a sound from the <a href=${ar} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
                   <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
                   <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
                 </div>` : x`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
@@ -8753,7 +8772,7 @@ var Zn = {
 				...t.speech,
 				...e
 			}
-		})), i = Sn(this.hass, n.route, n.target);
+		})), i = xn(this.hass, n.route, n.target);
 		return x`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
       <label class="inline option">
@@ -8767,7 +8786,7 @@ var Zn = {
 			route: e.target.value,
 			target: ""
 		})}>
-                ${ir.map((e) => x`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${rr.map((e) => x`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -8832,7 +8851,8 @@ var Zn = {
 		if (this.hass && this._draft && !this._busy) {
 			this._busy = !0;
 			try {
-				await j(this.hass, this._draft), this._saved = structuredClone(this._draft), this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
+				let e = structuredClone(this._draft);
+				await j(this.hass, e), this._saved = e, this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
 			} catch (e) {
 				this._error = R(e);
 			} finally {
@@ -8841,7 +8861,7 @@ var Zn = {
 		}
 	}
 	_renderAlarmDevices(e) {
-		let t = J(this.hass, bn, e.alarm_devices.map((e) => e.entity_id));
+		let t = Y(this.hass, yn, e.alarm_devices.map((e) => e.entity_id));
 		return x`
       <p>
         Optional: a siren, switch or script that Boopli switches on for a while if you keep ignoring
@@ -8864,7 +8884,7 @@ var Zn = {
           type="button"
           ?disabled=${!this._addDevice}
           @click=${() => {
-			this._set({ alarm_devices: [...e.alarm_devices, Tn(this._addDevice)] }), this._addDevice = "";
+			this._set({ alarm_devices: [...e.alarm_devices, wn(this._addDevice)] }), this._addDevice = "";
 		}}
         >
           Add
@@ -8893,7 +8913,7 @@ var Zn = {
     `;
 	}
 	_renderPresence(e) {
-		let t = J(this.hass, ["person"]);
+		let t = Y(this.hass, ["person"]);
 		return x`
       <p>
         If Boopli knows where you are, it reminds you with lights and speakers only when you are
@@ -8917,7 +8937,7 @@ var Zn = {
         so nothing nudges you until you set a time (in the Chores tab) or start one yourself.
       </p>
       <div class="list">
-        ${K.map((t) => {
+        ${q.map((t) => {
 			let n = e.has(t.draft.name);
 			return x`<label class="inline option">
             <input
@@ -8964,7 +8984,7 @@ var Zn = {
     `;
 	}
 	_renderAiAgent(e) {
-		let t = J(this.hass, ["ai_task"]);
+		let t = Y(this.hass, ["ai_task"]);
 		return e.ai.enabled ? x`
       <p>Which AI agent should Boopli use?</p>
       <div class="field">
@@ -8994,16 +9014,17 @@ var Zn = {
 		if (this.hass) {
 			this._note("ai:test", "Saving and asking the agent…");
 			try {
-				await j(this.hass, e), this._saved = structuredClone(e);
-				let t = await M(this.hass, "Make a cup of tea", "now", []);
-				this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${t.steps.length} steps, starting with: ${t.steps[0]?.title ?? "(none)"}`);
+				let t = structuredClone(e);
+				await j(this.hass, t), this._saved = t;
+				let n = await M(this.hass, "Make a cup of tea", "now", []);
+				this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${n.steps.length} steps, starting with: ${n.steps[0]?.title ?? "(none)"}`);
 			} catch (e) {
 				this._note("ai:test", R(e));
 			}
 		}
 	}
 	_renderDone(e) {
-		let t = this._baseline ? Xn(this._baseline, e, this.hass) : [], n = K.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		let t = this._baseline ? Yn(this._baseline, e, this.hass) : [], n = q.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(`Chores added: ${n.join(", ")}`), x`
       <p><b>What changed</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
       ${t.length === 0 ? x`<p class="muted">Nothing changed.</p>` : x`<ul>${t.map((e) => x`<li>${e}</li>`)}</ul>`}
@@ -9045,7 +9066,7 @@ var Zn = {
 		return x`
       <div class="shell">
         <nav class="rail" aria-label="Steps">
-          <div class="rail-title">${$n[this.wizard]}</div>
+          <div class="rail-title">${Qn[this.wizard]}</div>
           ${this._steps.map((e, t) => x`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -9053,7 +9074,7 @@ var Zn = {
               @click=${() => this._jump(t)}
             >
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${er[e]}</span>
+              <span>${$n[e]}</span>
             </button>`)}
         </nav>
         <section class="card main">
@@ -9064,8 +9085,8 @@ var Zn = {
                 </button>`}
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
-          <h2>${er[t]}</h2>
-          ${tr.includes(t) ? x`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : C}
+          <h2>${$n[t]}</h2>
+          ${er.includes(t) ? x`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : C}
           ${this._renderStep(e)}
           ${this._error ? x`<div class="error">${this._error}</div>` : C}
           <div class="actions">
@@ -9537,7 +9558,7 @@ var cr = {
 		if (!e?.active || (this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown) return C;
 		let t = !!this._snapshot?.away_now, n = this._snapshot?.time_zone ?? "UTC";
 		return x`<div class="away-bar" role="status">
-      <span>🧳 <b>${t ? "Away mode is on" : "Away mode is planned"}</b> ${_t(e, this._nowMs, n, t)}</span>
+      <span>🧳 <b>${t ? "Away mode is on" : "Away mode is planned"}</b> ${gt(e, this._nowMs, n, t)}</span>
       <button type="button" @click=${() => this._selectTab("settings")}>${t ? "Back now…" : "Change"}</button>
     </div>`;
 	}

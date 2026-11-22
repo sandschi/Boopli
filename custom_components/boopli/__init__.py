@@ -183,24 +183,32 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await manager.async_load()
     hass.data[DOMAIN] = manager
 
-    if not hass.data.get(DATA_STATIC_REGISTERED):
-        await hass.http.async_register_static_paths(
-            [StaticPathConfig(STATIC_URL, str(FRONTEND_DIR), cache_headers=False)]
-        )
-        hass.data[DATA_STATIC_REGISTERED] = True
+    try:
+        if not hass.data.get(DATA_STATIC_REGISTERED):
+            await hass.http.async_register_static_paths(
+                [StaticPathConfig(STATIC_URL, str(FRONTEND_DIR), cache_headers=False)]
+            )
+            hass.data[DATA_STATIC_REGISTERED] = True
 
-    version = await hass.async_add_executor_job(_read_version)
-    await panel_custom.async_register_panel(
-        hass,
-        frontend_url_path=PANEL_URL_PATH,
-        webcomponent_name=PANEL_ELEMENT,
-        sidebar_title=PANEL_TITLE,
-        sidebar_icon=PANEL_ICON,
-        module_url=f"{STATIC_URL}/{PANEL_BUNDLE}?v={version}",
-        embed_iframe=False,
-        require_admin=False,
-    )
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+        version = await hass.async_add_executor_job(_read_version)
+        await panel_custom.async_register_panel(
+            hass,
+            frontend_url_path=PANEL_URL_PATH,
+            webcomponent_name=PANEL_ELEMENT,
+            sidebar_title=PANEL_TITLE,
+            sidebar_icon=PANEL_ICON,
+            module_url=f"{STATIC_URL}/{PANEL_BUNDLE}?v={version}",
+            embed_iframe=False,
+            require_admin=False,
+        )
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    except Exception:
+        # Setup failed half way: do not leave a running manager behind, or the retry
+        # would start a second one and every nudge would come twice.
+        hass.data.pop(DOMAIN, None)
+        manager.async_shutdown()
+        frontend.async_remove_panel(hass, PANEL_URL_PATH, warn_if_unknown=False)
+        raise
     _LOGGER.debug("Boopli set up; panel registered at /%s", PANEL_URL_PATH)
     return True
 

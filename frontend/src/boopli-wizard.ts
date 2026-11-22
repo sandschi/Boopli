@@ -341,8 +341,9 @@ export class BoopliWizard extends LitElement {
         if (this._step === "spk_pick" && !this._speaker) {
           throw new Error("Pick a speaker, or press Skip.");
         }
-        await saveSettings(this.hass, this._draft);
-        this._saved = structuredClone(this._draft);
+        const sent = structuredClone(this._draft);
+        await saveSettings(this.hass, sent);
+        this._saved = sent;
       }
       if (delta === 1 && mode === "skip") {
         // Skip: drop what was changed on this screen.
@@ -890,8 +891,9 @@ export class BoopliWizard extends LitElement {
     if (!this.hass || !this._draft || this._busy) return;
     this._busy = true;
     try {
-      await saveSettings(this.hass, this._draft);
-      this._saved = structuredClone(this._draft);
+      const sent = structuredClone(this._draft);
+      await saveSettings(this.hass, sent);
+      this._saved = sent;
       this._speaker = "";
       this._index = this._steps.indexOf("spk_pick");
       this._enter();
@@ -1065,8 +1067,9 @@ export class BoopliWizard extends LitElement {
     if (!this.hass) return;
     this._note("ai:test", "Saving and asking the agent…");
     try {
-      await saveSettings(this.hass, d);
-      this._saved = structuredClone(d);
+      const sent = structuredClone(d);
+      await saveSettings(this.hass, sent);
+      this._saved = sent;
       const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
       this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`);
     } catch (err) {

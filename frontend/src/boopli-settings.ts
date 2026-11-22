@@ -161,10 +161,11 @@ export class BoopliSettings extends LitElement {
     this._busy = true;
     this._error = "";
     this._message = "";
+    const sent = structuredClone(this._draft); // what goes out now; edits made while it is on its way stay "unsaved"
     try {
-      await saveSettings(this.hass, this._draft);
+      await saveSettings(this.hass, sent);
       this._justSaved = true;
-      this._base = structuredClone(this._draft);
+      this._base = sent;
       this._message = "Saved.";
       return true;
     } catch (err) {

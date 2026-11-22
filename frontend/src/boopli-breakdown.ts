@@ -278,6 +278,7 @@ export class BoopliBreakdown extends LitElement {
     this._looking = true;
     try {
       await this._guess();
+      if (id !== this._lookId) return; // stopped while the rooms were being guessed: send nothing
       const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms);
       if (id !== this._lookId) return; // the person stopped waiting
       this._scene = result.scene;

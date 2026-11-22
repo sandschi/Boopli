@@ -100,6 +100,7 @@ export class BoopliHome extends LitElement {
   private _lastDirty = false;
   private _synced = false;
   private _run = 0; // counts AI requests, so an answer the person stopped waiting for is dropped
+  private _promptAsk = 0; // counts requests for the chat text, so only the newest answer is used
 
   constructor() {
     super();
@@ -265,17 +266,21 @@ export class BoopliHome extends LitElement {
     if (!files || tool?.kind !== "photos") return;
     const room = Math.max(0, MAX_PHOTOS - tool.photos.length);
     this._error = "";
+    const roomId = tool.roomId;
     this._patchTool({ working: true });
     try {
       const added: string[] = [];
       for (const file of Array.from(files).slice(0, room)) added.push(await shrinkPhoto(file));
       const now = this._tool;
-      if (now?.kind === "photos") this._patchTool({ photos: [...now.photos, ...added] });
+      // Only if the person is still looking at the same room's photos.
+      if (now?.kind !== "photos" || now.roomId !== roomId) return;
+      this._patchTool({ photos: [...now.photos, ...added] });
       if (files.length > room) this._error = `Up to ${MAX_PHOTOS} photos per room. The rest were left out.`;
     } catch (err) {
       this._error = errorMessage(err);
     }
-    this._patchTool({ working: false });
+    const after = this._tool;
+    if (after?.kind === "photos" && after.roomId === roomId) this._patchTool({ working: false });
   }
 
   private async _sendPhotos(): Promise<void> {
@@ -329,6 +334,7 @@ export class BoopliHome extends LitElement {
     const tool = this._tool;
     if (!this.hass || tool?.kind !== "chat") return;
     const room = tool.roomId ? this._room(tool.roomId) : undefined;
+    const ask = ++this._promptAsk;
     try {
       const prompt = await chatPrompt(
         this.hass,
@@ -337,9 +343,10 @@ export class BoopliHome extends LitElement {
         room?.notes ?? "",
         room ? undefined : this._liveRooms().map((r) => ({ name: r.name, notes: r.notes }))
       );
+      if (ask !== this._promptAsk) return; // a newer choice was made while this one was on its way
       this._patchTool({ prompt, copied: false });
     } catch (err) {
-      this._error = errorMessage(err);
+      if (ask === this._promptAsk) this._error = errorMessage(err);
     }
   }
 
@@ -680,7 +687,8 @@ export class BoopliHome extends LitElement {
                   type="checkbox"
                   .checked=${tool.include}
                   @change=${(e: Event) => {
-                    this._patchTool({ include: (e.target as HTMLInputElement).checked });
+                    // The old text is dropped at once, so a prompt with the wrong notes cannot be copied.
+                    this._patchTool({ include: (e.target as HTMLInputElement).checked, prompt: "" });
                     void this._loadPrompt();
                   }}
                 />

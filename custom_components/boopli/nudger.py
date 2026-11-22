@@ -325,8 +325,10 @@ class BoopliNudger:
             await self._call(*engine.device_alarm_call(entity_id, True))
             await asyncio.sleep(seconds)
         finally:
-            await self._call(*engine.device_alarm_call(entity_id, False))
-            self.manager.unmark_alarm_on(entity_id)
+            if await self._call(*engine.device_alarm_call(entity_id, False)):
+                self.manager.unmark_alarm_on(entity_id)
+            else:
+                self.manager.keep_alarm_marked(entity_id)  # try again later
 
     async def async_silence(self, key: str) -> None:
         """Stop the alarms of a step that was answered (Done or Snooze)."""
@@ -334,10 +336,16 @@ class BoopliNudger:
             if alarm_key == key and not task.done():
                 task.cancel()
 
-    async def async_turn_off_alarm_devices(self, entity_ids: list[str]) -> None:
-        """Switch off devices that were left on (for example by a restart)."""
+    async def async_turn_off_alarm_devices(self, entity_ids: list[str]) -> list[str]:
+        """Switch off devices that were left on (for example by a restart).
+
+        Returns the ones whose "off" call could not be sent, so they can be tried again.
+        """
+        failed: list[str] = []
         for entity_id in entity_ids:
-            await self._call(*engine.device_alarm_call(entity_id, False))
+            if not await self._call(*engine.device_alarm_call(entity_id, False)):
+                failed.append(entity_id)
+        return failed
 
     # --- clearing --------------------------------------------------------
 

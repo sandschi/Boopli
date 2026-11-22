@@ -819,7 +819,11 @@ def validate_chore(chore: Chore) -> str | None:
         if question.id in question_ids:
             return "Two questions have the same id."
         question_ids.add(question.id)
+    step_ids: set[str] = set()
     for step in chore.steps:
+        if step.id in step_ids:
+            return "Two steps have the same id."
+        step_ids.add(step.id)
         if step.only_if and step.only_if not in question_ids:
             return f"Step '{step.title}' points to a question that does not exist."
         if not step.title:

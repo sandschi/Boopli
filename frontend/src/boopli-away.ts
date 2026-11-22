@@ -1,20 +1,36 @@
 import { LitElement, html, css, nothing } from "lit";
 import { awayEnd, awaySet, errorMessage } from "./api";
 import { sharedStyles } from "./styles";
-import { describeWhen } from "./time";
+import { dayKey, describeWhen } from "./time";
 import type { Away, Hass, Snapshot } from "./types";
 
-/** A local date and time for a date picker ("YYYY-MM-DDTHH:MM"), `days` from today at `hour`:00. */
-function localPick(days: number, hour: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  d.setHours(hour, 0, 0, 0);
-  return pickValue(d);
+/**
+ * A date and time for a date picker ("YYYY-MM-DDTHH:MM"), `days` from today at `hour`:00.
+ * "Today" and the time are in Home Assistant's time zone, the one the server reads the
+ * picked value in, not the zone of whatever browser or phone is looking.
+ */
+function localPick(days: number, hour: number, tz: string): string {
+  const [y, m, d] = dayKey(new Date(), tz).split("-").map(Number);
+  const day = new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+  return `${day}T${String(hour).padStart(2, "0")}:00`;
 }
 
-function pickValue(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+/** The same kind of value for a moment in time, written in the given time zone. */
+function pickValue(iso: string, tz: string): string {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    })
+      .formatToParts(new Date(iso))
+      .map((p) => [p.type, p.value])
+  );
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
 
 /** One line for banners: "until Sun 29 Nov, 18:00", "from Sat 28 Nov, 08:00 until …" or "until you turn it off". */
@@ -62,9 +78,9 @@ export class BoopliAway extends LitElement {
     this.nowMs = Date.now();
     this._changing = false;
     this._later = false;
-    this._start = localPick(1, 8);
+    this._start = localPick(1, 8, "UTC");
     this._open = false;
-    this._until = localPick(7, 18);
+    this._until = localPick(7, 18, "UTC");
     this._keep = {};
     this._busy = false;
     this._error = "";
@@ -73,6 +89,8 @@ export class BoopliAway extends LitElement {
   protected willUpdate(): void {
     if (!this._seeded && this.snapshot) {
       this._seeded = true;
+      this._start = localPick(1, 8, this.snapshot.time_zone);
+      this._until = localPick(7, 18, this.snapshot.time_zone);
       this._seedKeep();
     }
   }
@@ -87,10 +105,11 @@ export class BoopliAway extends LitElement {
   }
 
   private _change(away: Away): void {
+    const tz = this.snapshot?.time_zone ?? "UTC";
     this._later = !!away.start && new Date(away.start).getTime() > Date.now();
-    if (away.start) this._start = pickValue(new Date(away.start));
+    if (away.start) this._start = pickValue(away.start, tz);
     this._open = !away.until;
-    if (away.until) this._until = pickValue(new Date(away.until));
+    if (away.until) this._until = pickValue(away.until, tz);
     this._seedKeep();
     this._error = "";
     this._changing = true;

@@ -197,6 +197,13 @@ def test_validation_of_questions():
     assert engine.validate_chore(chore)
 
 
+def test_two_steps_with_the_same_id_are_refused():
+    chore = room()
+    assert engine.validate_chore(chore) is None
+    chore.steps[1].id = chore.steps[0].id
+    assert "same id" in engine.validate_chore(chore)
+
+
 def test_the_wait_for_the_questions_is_a_setting():
     settings = engine.Settings.from_dict({})
     assert settings.question_wait_minutes == engine.QUESTION_WAIT_DEFAULT

@@ -26,6 +26,7 @@ from homeassistant.exceptions import (
 )
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.event import (
+    async_call_later,
     async_track_point_in_utc_time,
     async_track_state_change_event,
 )
@@ -45,6 +46,7 @@ HISTORY_MAX = 1000
 HISTORY_IN_SNAPSHOT = 200
 AI_TIMEOUT = 180  # the longest Boopli waits for the AI agent, in seconds (free models can be slow)
 AI_PHOTO_TIMEOUT = 180  # reading photos: the same limit
+ALARM_RETRY_SECONDS = (30, 120, 600, 3600)  # tries to switch off an alarm device that was left on
 MAX_PHOTOS = 4  # per room, one time
 PHOTO_MAX_BYTES = 2_500_000  # each, after the panel shrank it
 PHOTO_DIR = "boopli_tmp"  # inside the media folder; emptied right after every request
@@ -97,6 +99,8 @@ class BoopliManager:
         self._trigger_entities: frozenset[str] = frozenset()
         self._unsub_trigger_states: CALLBACK_TYPE | None = None
         self._unsub_tags: CALLBACK_TYPE | None = None
+        self._alarm_stuck: list[str] = []  # alarm devices that may still be on from before a restart
+        self._unsub_alarm_retry: CALLBACK_TYPE | None = None
 
     # --- lifecycle -------------------------------------------------------
 
@@ -133,9 +137,8 @@ class BoopliManager:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
         # An alarm device still on from before a restart must not stay on.
-        left_on = [str(x) for x in data.get("alarm_on", [])]
-        if left_on:
-            self.hass.async_create_task(self.nudger.async_turn_off_alarm_devices(left_on))
+        # They stay on this list until the "off" call really went out, also across restarts.
+        self._alarm_stuck = [str(x) for x in data.get("alarm_on", [])]
         self.alarm_on = []
         # Data saved before nudging existed: an open step has never been nudged.
         for run in self.runs.values():
@@ -147,6 +150,8 @@ class BoopliManager:
                 ):
                     step.next_nudge_at = step.active_at
         self.nudger.async_start()
+        if self._alarm_stuck:
+            self.hass.async_create_task(self._async_release_stuck_alarms(0))
         self._watch_presence()
         self._unsub_tags = self.hass.bus.async_listen("tag_scanned", self._tag_scanned)
         self._tick()
@@ -166,6 +171,9 @@ class BoopliManager:
         if self._unsub_tags:
             self._unsub_tags()
             self._unsub_tags = None
+        if self._unsub_alarm_retry:
+            self._unsub_alarm_retry()
+            self._unsub_alarm_retry = None
         self.nudger.async_stop()
         self._listeners.clear()
 
@@ -182,7 +190,7 @@ class BoopliManager:
             "setup": engine.to_dict(self.setup),
             "home": engine.to_dict(self.home),
             "indicator_on": self.indicator_on,
-            "alarm_on": self.alarm_on,
+            "alarm_on": self.alarm_on + [x for x in self._alarm_stuck if x not in self.alarm_on],
         }
 
     def _save(self) -> None:
@@ -315,13 +323,19 @@ class BoopliManager:
             away = engine.set_away(start, until, now, self.tz)
         except ValueError as err:
             raise BoopliError(str(err)) from err
-        if engine.away_in_effect(self.away, now):
-            away.began_at = self.away.began_at  # changing it while away: the freeze carries on
         for chore_id, flag in (keep_going or {}).items():
             chore = self.chores.get(chore_id)
             if chore is not None:
                 chore.keeps_going = bool(flag)
+        events: list[engine.Event] = []
+        if engine.away_in_effect(self.away, now):
+            if engine.away_in_effect(away, now):
+                away.began_at = self.away.began_at  # changing it while away: the freeze carries on
+            else:
+                # Moved to a later start: you are back for now, the new period begins by itself.
+                events += self._end_away(now)
         self.away = away
+        self._announce(events)
         self._tick()
 
     def end_away(self) -> None:
@@ -792,6 +806,35 @@ class BoopliManager:
         if entity_id in self.alarm_on:
             self.alarm_on.remove(entity_id)
             self._save()
+
+    def keep_alarm_marked(self, entity_id: str) -> None:
+        """The "off" call for this device did not go out: keep it listed and try again later."""
+        if entity_id in self.alarm_on:
+            self.alarm_on.remove(entity_id)
+        if entity_id not in self._alarm_stuck:
+            self._alarm_stuck.append(entity_id)
+        self._store.async_delay_save(self._data_to_save, 0)
+        self._schedule_alarm_retry(0)
+
+    def _schedule_alarm_retry(self, attempt: int) -> None:
+        if self._unsub_alarm_retry or attempt >= len(ALARM_RETRY_SECONDS):
+            return
+
+        @callback
+        def _again(_now: datetime) -> None:
+            self._unsub_alarm_retry = None
+            self.hass.async_create_task(self._async_release_stuck_alarms(attempt + 1))
+
+        self._unsub_alarm_retry = async_call_later(self.hass, ALARM_RETRY_SECONDS[attempt], _again)
+
+    async def _async_release_stuck_alarms(self, attempt: int) -> None:
+        """Switch off alarm devices that may have been left on; retry the ones that fail."""
+        if not self._alarm_stuck:
+            return
+        self._alarm_stuck = await self.nudger.async_turn_off_alarm_devices(list(self._alarm_stuck))
+        self._store.async_delay_save(self._data_to_save, 0)
+        if self._alarm_stuck:
+            self._schedule_alarm_retry(attempt)
 
     def _reschedule(self, now: datetime, extra: list[datetime]) -> None:
         if self._unsub_timer:
@@ -1312,19 +1355,28 @@ class BoopliManager:
         return key, dirs[key]
 
     @staticmethod
-    def _write_photos(folder: Path, photos: list[tuple[bytes, str, str]]) -> list[tuple[Path, str]]:
-        folder.mkdir(parents=True, exist_ok=True)
+    def _plan_photos(
+        folder: Path, photos: list[tuple[bytes, str, str]]
+    ) -> list[tuple[Path, bytes, str]]:
+        """Choose every file name before anything is written, so cleanup always knows them all."""
         batch = uuid.uuid4().hex[:12]
-        written: list[tuple[Path, str]] = []
+        return [
+            (folder / f"{batch}_{index}{ext}", data, mime)
+            for index, (data, ext, mime) in enumerate(photos, 1)
+        ]
+
+    @staticmethod
+    def _write_photos(
+        folder: Path, planned: list[tuple[Path, bytes, str]]
+    ) -> list[tuple[Path, str]]:
+        folder.mkdir(parents=True, exist_ok=True)
         try:
-            for index, (data, ext, mime) in enumerate(photos, 1):
-                path = folder / f"{batch}_{index}{ext}"
+            for path, data, _mime in planned:
                 path.write_bytes(data)
-                written.append((path, mime))
         except OSError:
-            _delete_files([p for p, _ in written])
+            _delete_files([p for p, _, _ in planned])  # also the one that failed halfway
             raise
-        return written
+        return [(path, mime) for path, _data, mime in planned]
 
     async def async_room_photos(self, room: str, notes: str, photos: Any) -> dict[str, Any]:
         """Ask the agent to describe a room from photos. The photos are never kept.
@@ -1370,8 +1422,19 @@ class BoopliManager:
         decoded = self.decode_photos(photos)
         dir_id, base = self._media_dir()
         folder = Path(base) / PHOTO_DIR
+        planned = self._plan_photos(folder, decoded)
+        job = self.hass.async_add_executor_job(self._write_photos, folder, planned)
         try:
-            written = await self.hass.async_add_executor_job(self._write_photos, folder, decoded)
+            # Shielded: if the person leaves while the files are being written, the write
+            # still finishes in its thread, and the cleanup below runs after it.
+            written = await asyncio.shield(job)
+        except asyncio.CancelledError:
+            job.add_done_callback(
+                lambda _f: self.hass.async_add_executor_job(
+                    _delete_files, [p for p, _, _ in planned], folder
+                )
+            )
+            raise
         except OSError as err:
             raise BoopliError(f"Boopli could not hand the photos over: {err}") from err
         attachments = [
