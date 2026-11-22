@@ -119,8 +119,14 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
     const label = (id: string) => (id ? name(id) : "the Home Assistant default");
     out.push(`AI agent: ${label(before.ai.entity_id)} → ${label(after.ai.entity_id)}`);
   }
+  if ((before.ai.photo_entity_id ?? "") !== (after.ai.photo_entity_id ?? "")) {
+    const label = (id: string) => (id ? name(id) : "the same agent");
+    out.push(`Agent for photos: ${label(before.ai.photo_entity_id ?? "")} → ${label(after.ai.photo_entity_id ?? "")}`);
+  }
   if (before.ai.questions_prompt !== after.ai.questions_prompt) out.push("AI questions prompt changed");
   if (before.ai.steps_prompt !== after.ai.steps_prompt) out.push("AI steps prompt changed");
+  if ((before.ai.chat_room_prompt ?? "") !== (after.ai.chat_room_prompt ?? "")) out.push("Chat prompt for one room changed");
+  if ((before.ai.chat_home_prompt ?? "") !== (after.ai.chat_home_prompt ?? "")) out.push("Chat prompt for the whole home changed");
 
   if (before.presence_entity !== after.presence_entity) {
     const label = (id: string) => (id ? name(id) : "not set");

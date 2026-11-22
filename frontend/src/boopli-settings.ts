@@ -31,6 +31,7 @@ import type {
   LightMode,
   NudgeStyle,
   PhoneLevel,
+  PromptDefaults,
   QuietDay,
   Settings,
   Snapshot,
@@ -82,7 +83,7 @@ export class BoopliSettings extends LitElement {
   declare _error: string;
   declare _notes: Record<string, string>;
   declare _mode: Mode;
-  declare _defaults: { questions_prompt: string; steps_prompt: string } | null;
+  declare _defaults: PromptDefaults | null;
   declare _aiNote: string;
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
@@ -692,7 +693,7 @@ export class BoopliSettings extends LitElement {
     try {
       this._defaults = await aiDefaults(this.hass);
     } catch {
-      this._defaults = { questions_prompt: "", steps_prompt: "" };
+      this._defaults = { questions_prompt: "", steps_prompt: "", chat_room_prompt: "", chat_home_prompt: "" };
     }
   }
 
@@ -713,7 +714,7 @@ export class BoopliSettings extends LitElement {
     const ai = d.ai;
     const def = this._defaults;
     const changed = this._changed("ai");
-    const prompt = (key: "questions_prompt" | "steps_prompt", label: string) => html`
+    const prompt = (key: keyof PromptDefaults, label: string) => html`
       <div class="field">
         <label for="ai-${key}">${label}</label>
         <textarea
@@ -767,12 +768,39 @@ export class BoopliSettings extends LitElement {
         </div>
         ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
         <details @toggle=${(e: Event) => (e.target as HTMLDetailsElement).open && this._loadDefaults()}>
-          <summary class="muted small">The prompts Boopli sends (advanced)</summary>
+          <summary class="muted small">Advanced: agent for photos, and the prompts Boopli sends</summary>
+          <div class="field">
+            <label for="ai-photo-agent">Agent for room photos</label>
+            <select
+              id="ai-photo-agent"
+              @change=${(e: Event) => this._setAi({ photo_entity_id: (e.target as HTMLSelectElement).value })}
+            >
+              <option value="" .selected=${(ai.photo_entity_id ?? "") === ""}>The same agent as above</option>
+              ${agents.map(
+                (id) => html`<option value=${id} .selected=${id === ai.photo_entity_id}>${friendlyName(this.hass, id)}</option>`
+              )}
+              ${ai.photo_entity_id && !agents.includes(ai.photo_entity_id)
+                ? html`<option value=${ai.photo_entity_id} selected>${ai.photo_entity_id} (not found)</option>`
+                : nothing}
+            </select>
+            <div class="muted small">
+              Only used when you describe a room from photos on the My home screen. Pick an agent whose model can
+              read images. Your normal agent stays as it is.
+            </div>
+          </div>
           <p class="muted small">
             These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the
             built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.
           </p>
           ${prompt("questions_prompt", "Questions prompt")} ${prompt("steps_prompt", "Steps prompt")}
+          <h3>Prompts you copy into your own AI chat</h3>
+          <p class="muted small">
+            These are the texts the "In my own chat" buttons on My home give you to copy. Boopli fills in {room}
+            (the room name), {names} (your rooms) and {known} (the notes so far, if you tick that). Keep the part that
+            asks for the answer in the same shape: one short fact per line in one code block, and for the whole home
+            a "## Room" heading line before each room. Boopli reads the pasted answer that way.
+          </p>
+          ${prompt("chat_room_prompt", "Chat prompt for one room")} ${prompt("chat_home_prompt", "Chat prompt for the whole home")}
         </details>
       </section>
     `;

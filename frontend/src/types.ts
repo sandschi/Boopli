@@ -176,8 +176,11 @@ export interface Settings {
 export interface AiSettings {
   enabled: boolean;
   entity_id: string; // an ai_task entity, empty = Home Assistant's default
+  photo_entity_id: string; // optional agent for reading photos, empty = the same agent
   questions_prompt: string; // empty = the built-in prompt
   steps_prompt: string;
+  chat_room_prompt: string; // the text to copy into your own chat, one room; empty = built-in
+  chat_home_prompt: string; // the same for the whole home
 }
 
 export type Mood = "happy" | "content" | "sleepy" | "sad" | "hibernating";
@@ -298,4 +301,12 @@ export interface Hass {
       eventType?: string
     ): Promise<() => void>;
   };
+}
+
+/** The built-in AI and chat prompts, to show and to reset to. */
+export interface PromptDefaults {
+  questions_prompt: string;
+  steps_prompt: string;
+  chat_room_prompt: string;
+  chat_home_prompt: string;
 }

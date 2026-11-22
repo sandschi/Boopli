@@ -8,14 +8,22 @@ pure logic lives in `engine.py`; this module connects it to Home Assistant
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import asdict
 from datetime import datetime, time as dtime, timedelta, tzinfo
+from pathlib import Path
 from typing import Any
 
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError, ServiceNotFound
+from homeassistant.exceptions import (
+    HomeAssistantError,
+    ServiceNotFound,
+    ServiceValidationError,
+)
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
@@ -36,10 +44,32 @@ SAVE_DELAY = 1  # seconds
 HISTORY_MAX = 1000
 HISTORY_IN_SNAPSHOT = 200
 AI_TIMEOUT = 90  # seconds to wait for the AI agent
+AI_PHOTO_TIMEOUT = 150  # reading photos takes longer
+MAX_PHOTOS = 4  # per room, one time
+PHOTO_MAX_BYTES = 2_500_000  # each, after the panel shrank it
+PHOTO_DIR = "boopli_tmp"  # inside the media folder; emptied right after every request
+_PHOTO_KINDS = (  # (magic bytes, extension, mime type)
+    (b"\xff\xd8\xff", ".jpg", "image/jpeg"),
+    (b"\x89PNG\r\n\x1a\n", ".png", "image/png"),
+)
 
 
 class BoopliError(Exception):
     """A problem the caller can fix (bad input, unknown chore)."""
+
+
+def _delete_files(paths: list[Path], folder: Path | None = None) -> None:
+    """Remove temporary photo files (and the folder when it is empty). Never raises."""
+    for path in paths:
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            _LOGGER.warning("Could not delete the temporary photo %s", path)
+    if folder is not None:
+        try:
+            folder.rmdir()  # only works when empty, which is what we want
+        except OSError:
+            pass
 
 
 class BoopliManager:
@@ -76,6 +106,7 @@ class BoopliManager:
     async def async_load(self) -> None:
         """Load stored data, catch up on anything that came due, and start timers."""
         data = await self._store.async_load() or {}
+        await self._async_clear_photo_leftovers()
         self.chores = {
             c["id"]: engine.Chore.from_dict(c) for c in data.get("chores", [])
         }
@@ -803,7 +834,14 @@ class BoopliManager:
 
     # --- AI help: splitting a task into small steps -----------------------------
 
-    async def _run_agent(self, name: str, instructions: str) -> Any:
+    async def _run_agent(
+        self,
+        name: str,
+        instructions: str,
+        attachments: list[dict[str, str]] | None = None,
+        entity_id: str = "",
+        timeout: int = AI_TIMEOUT,
+    ) -> Any:
         """Ask the user's own AI agent (Home Assistant's AI Task) and return its data."""
         ai = self.settings.ai
         if not ai.enabled:
@@ -811,10 +849,12 @@ class BoopliManager:
         # No forced structure: the prompts ask for JSON as plain text, which every
         # model handles (a forced single-field structure made a real model answer "...").
         call: dict[str, Any] = {"task_name": name, "instructions": instructions}
-        if ai.entity_id:
-            call["entity_id"] = ai.entity_id
+        if attachments:
+            call["attachments"] = attachments
+        if entity_id or ai.entity_id:
+            call["entity_id"] = entity_id or ai.entity_id
         try:
-            async with asyncio.timeout(AI_TIMEOUT):
+            async with asyncio.timeout(timeout):
                 response = await self.hass.services.async_call(
                     "ai_task",
                     "generate_data",
@@ -824,12 +864,19 @@ class BoopliManager:
                 )
         except TimeoutError as err:
             raise BoopliError(
-                f"The AI agent took too long (over {AI_TIMEOUT} seconds). Try again."
+                f"The AI agent took too long (over {timeout} seconds). Try again."
             ) from err
         except ServiceNotFound as err:
             raise BoopliError(
                 "Home Assistant has no AI Task yet. Set up an AI agent first."
             ) from err
+        except ServiceValidationError as err:
+            if getattr(err, "translation_key", "") == "attachments_not_supported":
+                raise BoopliError(
+                    "This AI agent can't read photos. Pick an agent that can under "
+                    "Settings, Advanced, AI help, or describe the room another way."
+                ) from err
+            raise BoopliError(f"The AI agent answered with an error: {err}") from err
         except HomeAssistantError as err:
             # The agent's own reason is the useful part ("credits depleted", "model gone").
             raise BoopliError(f"The AI agent answered with an error: {err}") from err
@@ -943,6 +990,156 @@ class BoopliManager:
                 if attempt == 2:
                     raise BoopliError(str(err)) from err
         raise BoopliError("The AI agent did not answer.")  # not reached
+
+    # --- My home: describing a room from photos (one time, never kept) ---------------
+
+    async def _async_clear_photo_leftovers(self) -> None:
+        """Delete photo files a crash may have left behind (they are never needed again)."""
+        dirs = getattr(self.hass.config, "media_dirs", None) or {}
+        folders = [Path(base) / PHOTO_DIR for base in dirs.values()]
+
+        def clear() -> None:
+            for folder in folders:
+                if folder.is_dir():
+                    _delete_files(list(folder.iterdir()), folder)
+
+        try:
+            await self.hass.async_add_executor_job(clear)
+        except OSError:
+            _LOGGER.debug("Could not look for leftover photos")
+
+    @staticmethod
+    def decode_photos(photos: Any) -> list[tuple[bytes, str, str]]:
+        """Check the photos the panel sent (base64) and return (bytes, extension, mime type)."""
+        if not isinstance(photos, list) or not photos:
+            raise BoopliError("Pick at least one photo.")
+        if len(photos) > MAX_PHOTOS:
+            raise BoopliError(f"Use at most {MAX_PHOTOS} photos.")
+        result: list[tuple[bytes, str, str]] = []
+        for item in photos:
+            text = str(item or "")
+            if text.startswith("data:") and "," in text:
+                text = text.split(",", 1)[1]
+            try:
+                data = base64.b64decode(text, validate=False)
+            except (binascii.Error, ValueError) as err:
+                raise BoopliError("One of the photos could not be read.") from err
+            if len(data) > PHOTO_MAX_BYTES:
+                raise BoopliError("One of the photos is too big. Try a smaller one.")
+            for magic, ext, mime in _PHOTO_KINDS:
+                if data.startswith(magic):
+                    result.append((data, ext, mime))
+                    break
+            else:
+                raise BoopliError("Only JPEG or PNG photos work.")
+        return result
+
+    def _media_dir(self) -> tuple[str, str]:
+        """(id, folder) of the media folder photos are handed over in."""
+        dirs = dict(getattr(self.hass.config, "media_dirs", None) or {})
+        if not dirs:
+            raise BoopliError(
+                "Home Assistant has no media folder, so Boopli cannot hand photos to the agent."
+            )
+        key = "local" if "local" in dirs else next(iter(dirs))
+        return key, dirs[key]
+
+    @staticmethod
+    def _write_photos(folder: Path, photos: list[tuple[bytes, str, str]]) -> list[tuple[Path, str]]:
+        folder.mkdir(parents=True, exist_ok=True)
+        batch = uuid.uuid4().hex[:12]
+        written: list[tuple[Path, str]] = []
+        try:
+            for index, (data, ext, mime) in enumerate(photos, 1):
+                path = folder / f"{batch}_{index}{ext}"
+                path.write_bytes(data)
+                written.append((path, mime))
+        except OSError:
+            _delete_files([p for p, _ in written])
+            raise
+        return written
+
+    async def async_room_photos(self, room: str, notes: str, photos: Any) -> dict[str, Any]:
+        """Ask the agent to describe a room from photos. The photos are never kept.
+
+        They are written to a temporary file in the media folder only because Home
+        Assistant hands attachments over by file; every file is deleted right after
+        the answer, also when the agent fails. Nothing is saved here.
+        """
+        name = self._room_name(room)
+        decoded = self.decode_photos(photos)
+        dir_id, base = self._media_dir()
+        folder = Path(base) / PHOTO_DIR
+        try:
+            written = await self.hass.async_add_executor_job(self._write_photos, folder, decoded)
+        except OSError as err:
+            raise BoopliError(f"Boopli could not hand the photos over: {err}") from err
+        attachments = [
+            {
+                "media_content_id": f"media-source://media_source/{dir_id}/{PHOTO_DIR}/{path.name}",
+                "media_content_type": mime,
+            }
+            for path, mime in written
+        ]
+        instructions = breakdown.room_instructions(
+            breakdown.ROOM_PHOTOS_PROMPT, name, None, notes
+        )
+        agent = self.settings.ai.photo_entity_id
+        try:
+            for attempt in (1, 2):
+                data = await self._run_agent(
+                    "Boopli: room photos",
+                    instructions,
+                    attachments=attachments,
+                    entity_id=agent,
+                    timeout=AI_PHOTO_TIMEOUT,
+                )
+                try:
+                    return {"notes": breakdown.parse_room_notes(data)}
+                except breakdown.BreakdownError as err:
+                    if attempt == 2:
+                        raise BoopliError(str(err)) from err
+            raise BoopliError("The AI agent did not answer.")  # not reached
+        finally:
+            await self.hass.async_add_executor_job(
+                _delete_files, [p for p, _ in written], folder
+            )
+
+    # --- My home: talking it out in the person's own AI chat -------------------------
+
+    def room_chat_prompt(self, room: str, notes: str, include_notes: bool) -> str:
+        return breakdown.room_chat_prompt(
+            room, notes, include_notes, self.settings.ai.chat_room_prompt
+        )
+
+    def home_chat_prompt(
+        self, include_notes: bool, rooms: list[tuple[str, str]] | None = None
+    ) -> str:
+        if rooms is None:
+            rooms = [(r.name, r.notes) for r in self.home.rooms if not r.hidden]
+        return breakdown.home_chat_prompt(rooms, include_notes, self.settings.ai.chat_home_prompt)
+
+    @staticmethod
+    def paste_room(text: str) -> dict[str, Any]:
+        try:
+            return {"notes": breakdown.parse_pasted_notes(text)}
+        except breakdown.BreakdownError as err:
+            raise BoopliError(str(err)) from err
+
+    def paste_home(
+        self, text: str, rooms: list[tuple[str, str]] | None = None
+    ) -> dict[str, Any]:
+        """Split pasted notes into rooms. Nothing is saved; the panel shows them for review."""
+        known = (
+            rooms
+            if rooms is not None
+            else [(r.id, r.name) for r in self.home.rooms if not r.hidden]
+        )
+        try:
+            sections = breakdown.parse_pasted_home(text, known)
+        except breakdown.BreakdownError as err:
+            raise BoopliError(str(err)) from err
+        return {"rooms": sections}
 
     async def async_ai_questions(
         self,

@@ -151,3 +151,152 @@ def test_parse_room_notes_rejects_empty():
         bd.parse_room_notes({"json": json.dumps({"notes": ""})})
     with pytest.raises(bd.BreakdownError):
         bd.parse_room_notes("")
+
+
+# --- photos: the prompt ------------------------------------------------------------------
+
+
+def test_photo_prompt_keeps_people_and_private_things_out():
+    text = bd.room_instructions(bd.ROOM_PHOTOS_PROMPT, "Küche", None, "Door sticks")
+    assert "Room: Küche" in text and "Door sticks" in text and "{room}" not in text
+    assert "No people" in text and "JSON" in text
+
+
+def test_photo_answer_is_read_like_other_room_notes():
+    out = bd.parse_room_notes({"json": json.dumps({"notes": "Oven by the window\nTiles"})})
+    assert out == "Oven by the window\nTiles"
+
+
+# --- talking it out in the person's own chat ---------------------------------------------
+
+
+def test_room_chat_prompt_names_the_room_and_asks_for_plain_lines():
+    text = bd.room_chat_prompt("Kitchen", "", True)
+    assert '"Kitchen"' in text and "one short fact per line" in text and "{" not in text
+    assert "already wrote" not in text
+
+
+def test_room_chat_prompt_includes_old_notes_only_when_asked():
+    with_notes = bd.room_chat_prompt("Kitchen", "Door sticks\nTiles", True)
+    assert "Door sticks\nTiles" in with_notes and "already wrote" in with_notes
+    without = bd.room_chat_prompt("Kitchen", "Door sticks", False)
+    assert "Door sticks" not in without
+
+
+def test_home_chat_prompt_lists_rooms_and_old_notes():
+    text = bd.home_chat_prompt([("Kitchen", "Door sticks"), ("Bedroom", "")], True)
+    assert "Kitchen, Bedroom" in text and "Kitchen: Door sticks" in text and "## Kitchen" in text
+    assert "Door sticks" not in bd.home_chat_prompt([("Kitchen", "Door sticks")], False)
+
+
+def test_home_chat_prompt_without_rooms_still_works():
+    assert "## " in bd.home_chat_prompt([], True)
+
+
+# --- pasting one room back ---------------------------------------------------------------
+
+
+def test_paste_notes_strips_fences_bullets_and_markdown():
+    pasted = "Here are your notes:\n```\n- Dishwasher is **under** the counter\n* Balcony door sticks\n1. Tiles\n```\nHope that helps!"
+    assert bd.parse_pasted_notes(pasted) == "Dishwasher is under the counter\nBalcony door sticks\nTiles"
+
+
+def test_paste_notes_without_fence_keeps_every_line():
+    assert bd.parse_pasted_notes("a\n\n  b  \n- c") == "a\nb\nc"
+
+
+def test_paste_notes_accepts_json_from_a_chat():
+    assert bd.parse_pasted_notes('```json\n{"notes": "a\nb"}\n```') == "a\nb"
+
+
+def test_paste_notes_rejects_empty():
+    with pytest.raises(bd.BreakdownError):
+        bd.parse_pasted_notes("   ")
+    with pytest.raises(bd.BreakdownError):
+        bd.parse_pasted_notes("```\n```")
+
+
+def test_paste_notes_is_capped():
+    assert len(bd.parse_pasted_notes("x" * 5000)) == 2000
+
+
+# --- pasting the whole home back ---------------------------------------------------------
+
+PASTE_ROOMS = [("r1", "Kitchen"), ("r2", "Living Room"), ("r3", "Bedroom")]
+
+
+def test_paste_home_splits_hash_headings_and_matches_rooms():
+    pasted = "```\n## Kitchen\nDishwasher is low\nDoor sticks\n## living room\nSofa by the window\n## Balkon\nTwo chairs\n```"
+    out = bd.parse_pasted_home(pasted, PASTE_ROOMS)
+    assert out == [
+        {"name": "Kitchen", "id": "r1", "notes": "Dishwasher is low\nDoor sticks"},
+        {"name": "Living Room", "id": "r2", "notes": "Sofa by the window"},
+        {"name": "Balkon", "id": None, "notes": "Two chairs"},
+    ]
+
+
+def test_paste_home_reads_other_heading_styles():
+    pasted = "Sure!\n**Kitchen**\n- Dishwasher is low\nRoom: Bedroom\n- Wardrobe sticks\nLiving Room:\n- Sofa"
+    out = bd.parse_pasted_home(pasted, PASTE_ROOMS)
+    assert [(r["name"], r["notes"]) for r in out] == [
+        ("Kitchen", "Dishwasher is low"),
+        ("Bedroom", "Wardrobe sticks"),
+        ("Living Room", "Sofa"),
+    ]
+
+
+def test_paste_home_a_known_room_name_with_a_colon_and_a_fact():
+    out = bd.parse_pasted_home("Kitchen: dishwasher is low\nOven on the left", PASTE_ROOMS)
+    assert out == [{"name": "Kitchen", "id": "r1", "notes": "dishwasher is low\nOven on the left"}]
+
+
+def test_paste_home_joins_a_room_that_comes_twice_and_skips_empty_ones():
+    out = bd.parse_pasted_home("## Kitchen\na\n## Bedroom\n## Kitchen\nb", PASTE_ROOMS)
+    assert out == [{"name": "Kitchen", "id": "r1", "notes": "a\nb"}]
+
+
+def test_paste_home_a_fact_with_bold_words_is_not_a_heading():
+    out = bd.parse_pasted_home("## Kitchen\n**Important** the door sticks", PASTE_ROOMS)
+    assert out[0]["notes"] == "Important the door sticks"
+
+
+def test_paste_home_without_any_heading_explains_what_to_do():
+    with pytest.raises(bd.BreakdownError, match="heading"):
+        bd.parse_pasted_home("just some lines\nwithout rooms", PASTE_ROOMS)
+
+
+# --- photo settings ----------------------------------------------------------------------
+
+
+def test_photo_agent_setting_round_trips_and_is_checked():
+    ok = engine.Settings.from_dict({"ai": {"photo_entity_id": " ai_task.vision "}})
+    assert ok.ai.photo_entity_id == "ai_task.vision"
+    assert engine.validate_settings(ok) is None
+    assert engine.to_dict(ok)["ai"]["photo_entity_id"] == "ai_task.vision"
+    bad = engine.Settings.from_dict({"ai": {"photo_entity_id": "light.x"}})
+    assert engine.validate_settings(bad)
+
+
+# --- your own chat prompts ---------------------------------------------------------------
+
+
+def test_custom_chat_prompts_replace_the_built_in_ones():
+    room = bd.room_chat_prompt("Kitchen", "Door sticks", True, "Talk about {room}. Known: {known}")
+    assert room.startswith('Talk about Kitchen. Known: \nHere is what I already wrote')
+    assert "Door sticks" in room and "interview" not in room
+    home = bd.home_chat_prompt([("Kitchen", "")], True, "Rooms:{names}")
+    assert "Kitchen" in home and "{names}" not in home
+
+
+def test_empty_custom_chat_prompt_falls_back_to_the_built_in_one():
+    assert bd.room_chat_prompt("Kitchen", "", True, "  ") == bd.room_chat_prompt("Kitchen", "", True)
+    assert bd.home_chat_prompt([], True, "") == bd.home_chat_prompt([], True)
+
+
+def test_chat_prompt_settings_round_trip_and_are_capped():
+    s = engine.Settings.from_dict({"ai": {"chat_room_prompt": " a {room} ", "chat_home_prompt": "b"}})
+    assert s.ai.chat_room_prompt == "a {room}" and s.ai.chat_home_prompt == "b"
+    assert engine.to_dict(s)["ai"]["chat_room_prompt"] == "a {room}"
+    assert engine.validate_settings(s) is None
+    s.ai.chat_home_prompt = "x" * (engine.AI_PROMPT_MAX + 1)
+    assert engine.validate_settings(s)

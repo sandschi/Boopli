@@ -1,13 +1,83 @@
 import { LitElement, html, css, nothing } from "lit";
-import { errorMessage, homeSave, homeSync, roomNotes, roomQuestions } from "./api";
+import {
+  chatPrompt,
+  errorMessage,
+  homeSave,
+  homeSync,
+  pasteHome,
+  pasteNotes,
+  roomNotes,
+  roomPhotos,
+  roomQuestions,
+  type PastedRoom,
+} from "./api";
 import { sharedStyles } from "./styles";
 import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot } from "./types";
 
 const NOTES_MAX = 2000;
+const MAX_PHOTOS = 4;
+const PHOTO_CHARS_MAX = 800_000; // per photo as base64, so four fit in one message
+
+/** Shrink a photo in the browser: a smaller JPEG is all the AI needs, and it keeps the request small. */
+async function shrinkPhoto(file: File): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("This photo could not be opened. Try a JPEG or PNG photo."));
+      image.src = url;
+    });
+    let result = "";
+    for (const [side, quality] of [[1280, 0.8], [1024, 0.65], [800, 0.5]] as const) {
+      const scale = Math.min(1, side / Math.max(img.naturalWidth, img.naturalHeight));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("This browser cannot prepare photos.");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      result = canvas.toDataURL("image/jpeg", quality);
+      if (result.length <= PHOTO_CHARS_MAX) break;
+    }
+    return result;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+/** Photos picked for one room. They live only in this screen's memory until they are sent. */
+interface PhotosTool {
+  kind: "photos";
+  roomId: string;
+  photos: string[]; // shrunk JPEG data URLs
+  working: boolean; // preparing or sending
+  sending: boolean;
+}
+
+/** Talking a room (or the whole home) out in the person's own AI chat. */
+interface ChatTool {
+  kind: "chat";
+  roomId: string; // "" = the whole home
+  prompt: string;
+  include: boolean;
+  pasted: string;
+  working: boolean;
+  copied: boolean;
+}
+
+/** Pasted notes of the whole home, split into rooms for a last look. */
+interface FlatTool {
+  kind: "flat";
+  items: (PastedRoom & { on: boolean })[];
+}
+
+type Tool = PhotosTool | ChatTool | FlatTool;
 
 /** One room being described by the AI, from the first question to the notes it wrote. */
 interface Interview {
   roomId: string;
+  source: "ai" | "photos" | "paste";
   phase: "working" | "questions" | "review";
   questions: AiQuestion[];
   picked: string[][];
@@ -37,6 +107,7 @@ export class BoopliHome extends LitElement {
     _newName: { state: true },
     _showHidden: { state: true },
     _iv: { state: true },
+    _tool: { state: true },
     _busy: { state: true },
     _error: { state: true },
     _message: { state: true },
@@ -49,6 +120,7 @@ export class BoopliHome extends LitElement {
   declare _newName: string;
   declare _showHidden: boolean;
   declare _iv: Interview | null;
+  declare _tool: Tool | null;
   declare _busy: boolean;
   declare _error: string;
   declare _message: string;
@@ -61,6 +133,7 @@ export class BoopliHome extends LitElement {
     this._newName = "";
     this._showHidden = false;
     this._iv = null;
+    this._tool = null;
     this._busy = false;
     this._error = "";
     this._message = "";
@@ -144,6 +217,7 @@ export class BoopliHome extends LitElement {
   discard(): void {
     if (this._base) this._draft = structuredClone(this._base);
     this._iv = null;
+    this._tool = null;
     this._message = "";
     this._error = "";
   }
@@ -191,8 +265,164 @@ export class BoopliHome extends LitElement {
   private async _startInterview(room: Room): Promise<void> {
     if (!this.hass) return;
     this._error = "";
-    this._iv = { roomId: room.id, phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
+    this._iv = { roomId: room.id, source: "ai", phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
     await this._askQuestions([]);
+  }
+
+  /** Open the review screen with notes that came from somewhere else (photos or a paste). */
+  private _review(roomId: string, source: Interview["source"], notes: string): void {
+    this._tool = null;
+    this._iv = { roomId, source, phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
+  }
+
+  // --- describing a room from photos (one time, never kept) --------------------------------
+
+  private _openPhotos(room: Room): void {
+    this._error = "";
+    this._message = "";
+    this._tool = { kind: "photos", roomId: room.id, photos: [], working: false, sending: false };
+  }
+
+  private _patchTool(patch: Partial<PhotosTool> | Partial<ChatTool> | Partial<FlatTool>): void {
+    if (this._tool) this._tool = { ...this._tool, ...patch } as Tool;
+  }
+
+  private async _addPhotos(files: FileList | null): Promise<void> {
+    const tool = this._tool;
+    if (!files || tool?.kind !== "photos") return;
+    const room = Math.max(0, MAX_PHOTOS - tool.photos.length);
+    this._error = "";
+    this._patchTool({ working: true });
+    try {
+      const added: string[] = [];
+      for (const file of Array.from(files).slice(0, room)) added.push(await shrinkPhoto(file));
+      const now = this._tool;
+      if (now?.kind === "photos") this._patchTool({ photos: [...now.photos, ...added] });
+      if (files.length > room) this._error = `Up to ${MAX_PHOTOS} photos per room. The rest were left out.`;
+    } catch (err) {
+      this._error = errorMessage(err);
+    }
+    this._patchTool({ working: false });
+  }
+
+  private async _sendPhotos(): Promise<void> {
+    const tool = this._tool;
+    const room = tool?.kind === "photos" ? this._room(tool.roomId) : undefined;
+    if (!this.hass || tool?.kind !== "photos" || !room || !tool.photos.length) return;
+    this._error = "";
+    this._patchTool({ working: true, sending: true });
+    try {
+      const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos);
+      this._review(room.id, "photos", result.notes); // the photos are gone with the tool
+    } catch (err) {
+      this._error = errorMessage(err);
+      this._patchTool({ working: false, sending: false });
+    }
+  }
+
+  // --- talking it out in your own AI chat --------------------------------------------------
+
+  private _liveRooms(): Room[] {
+    return (this._draft?.rooms ?? []).filter((r) => !r.hidden);
+  }
+
+  private _hasNotes(roomId: string): boolean {
+    return roomId ? !!this._room(roomId)?.notes.trim() : this._liveRooms().some((r) => r.notes.trim());
+  }
+
+  private async _openChat(room: Room | null): Promise<void> {
+    this._error = "";
+    this._message = "";
+    this._tool = { kind: "chat", roomId: room?.id ?? "", prompt: "", include: true, pasted: "", working: false, copied: false };
+    await this._loadPrompt();
+  }
+
+  private async _loadPrompt(): Promise<void> {
+    const tool = this._tool;
+    if (!this.hass || tool?.kind !== "chat") return;
+    const room = tool.roomId ? this._room(tool.roomId) : undefined;
+    try {
+      const prompt = await chatPrompt(
+        this.hass,
+        tool.include,
+        room?.name ?? "",
+        room?.notes ?? "",
+        room ? undefined : this._liveRooms().map((r) => ({ name: r.name, notes: r.notes }))
+      );
+      this._patchTool({ prompt, copied: false });
+    } catch (err) {
+      this._error = errorMessage(err);
+    }
+  }
+
+  private async _copyPrompt(): Promise<void> {
+    const tool = this._tool;
+    if (tool?.kind !== "chat") return;
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(tool.prompt);
+      ok = true;
+    } catch {
+      // No clipboard access (an insecure address): copy from the visible box instead.
+      const box = this.renderRoot.querySelector<HTMLTextAreaElement>("#promptbox");
+      if (box) {
+        box.select();
+        ok = document.execCommand("copy");
+      }
+    }
+    this._patchTool({ copied: ok });
+    if (!ok) this._error = "Copying did not work here. Select the text in the box and copy it yourself.";
+  }
+
+  private async _readPasted(): Promise<void> {
+    const tool = this._tool;
+    if (!this.hass || tool?.kind !== "chat" || !tool.pasted.trim()) return;
+    this._error = "";
+    this._patchTool({ working: true });
+    try {
+      if (tool.roomId) {
+        const result = await pasteNotes(this.hass, tool.pasted);
+        this._review(tool.roomId, "paste", result.notes);
+      } else {
+        const rooms = await pasteHome(
+          this.hass,
+          tool.pasted,
+          this._liveRooms().map((r) => ({ id: r.id, name: r.name }))
+        );
+        this._tool = { kind: "flat", items: rooms.map((r) => ({ ...r, on: true })) };
+      }
+    } catch (err) {
+      this._error = errorMessage(err);
+      this._patchTool({ working: false });
+    }
+  }
+
+  private _patchFlat(index: number, patch: Partial<PastedRoom & { on: boolean }>): void {
+    const tool = this._tool;
+    if (tool?.kind !== "flat") return;
+    this._patchTool({ items: tool.items.map((it, i) => (i === index ? { ...it, ...patch } : it)) });
+  }
+
+  private _applyFlat(): void {
+    const tool = this._tool;
+    if (tool?.kind !== "flat" || !this._draft) return;
+    let rooms = [...this._draft.rooms];
+    let changed = 0;
+    for (const item of tool.items) {
+      const notes = item.notes.trim().slice(0, NOTES_MAX);
+      if (!item.on || !notes) continue;
+      changed += 1;
+      if (item.id && rooms.some((r) => r.id === item.id)) {
+        rooms = rooms.map((r) => (r.id === item.id ? { ...r, notes } : r));
+      } else {
+        rooms.push({ id: newId(), name: item.name, area_id: "", notes, hidden: false });
+      }
+    }
+    this._draft = { ...this._draft, rooms };
+    this._tool = null;
+    this._message = changed
+      ? `Notes for ${changed} ${changed === 1 ? "room" : "rooms"} are in. Press Save to keep them.`
+      : "Nothing was used.";
   }
 
   private async _askQuestions(answers: AiAnswer[]): Promise<void> {
@@ -338,7 +568,12 @@ export class BoopliHome extends LitElement {
       ${iv.phase === "review"
         ? html`
             <p>
-              This is what I would write down. Change anything that is wrong.
+              ${iv.source === "paste"
+                ? "This is what I read from what you pasted."
+                : iv.source === "photos"
+                  ? "This is what the AI saw in your photos. The photos are already gone."
+                  : "This is what I would write down."}
+              Change anything that is wrong.
               ${room?.notes ? html`<b>It replaces the notes you have now.</b>` : nothing}
               Nothing is saved until you press Save afterwards.
             </p>
@@ -351,11 +586,176 @@ export class BoopliHome extends LitElement {
             ></textarea>
             <div class="actions">
               <button class="primary big" ?disabled=${!iv.result.trim()} @click=${() => this._acceptNotes()}>Use these notes</button>
-              <button class="big" @click=${() => this._askQuestions(iv.answers)}>Ask me more</button>
+              ${iv.source !== "paste" && this._aiOn()
+                ? html`<button class="big" @click=${() => this._askQuestions(iv.answers)}>Ask me more</button>`
+                : nothing}
               <button class="big" @click=${() => (this._iv = null)}>Throw away</button>
             </div>
           `
         : nothing}
+    </section>`;
+  }
+
+  private _renderTool(tool: Tool) {
+    if (tool.kind === "photos") return this._renderPhotos(tool);
+    if (tool.kind === "chat") return this._renderChat(tool);
+    return this._renderFlat(tool);
+  }
+
+  private _renderPhotos(tool: PhotosTool) {
+    const room = this._room(tool.roomId);
+    const full = tool.photos.length >= MAX_PHOTOS;
+    return html`<section class="card interview">
+      <div class="top">
+        <h2>${room?.name ?? "Room"}: describe it from photos</h2>
+        <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>Cancel</button>
+      </div>
+      <p class="muted">
+        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to your AI agent, which writes down what it
+        sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.
+      </p>
+      ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
+      ${tool.sending
+        ? html`<div class="working" role="status">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>The AI is looking at your photos…</span>
+          </div>`
+        : html`
+            <div class="thumbs">
+              ${tool.photos.map(
+                (src, i) => html`<div class="thumb">
+                  <img src=${src} alt="Photo ${i + 1}" />
+                  <button
+                    type="button"
+                    class="x"
+                    aria-label="Remove photo ${i + 1}"
+                    @click=${() => this._patchTool({ photos: tool.photos.filter((_, k) => k !== i) })}
+                  >
+                    ×
+                  </button>
+                </div>`
+              )}
+            </div>
+            <div class="actions">
+              <label class="filebtn big ${full || tool.working ? "off" : ""}">
+                ${tool.working ? "Preparing…" : tool.photos.length ? "Add another photo" : "Take or pick photos"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  ?disabled=${full || tool.working}
+                  @change=${(e: Event) => {
+                    const input = e.target as HTMLInputElement;
+                    void this._addPhotos(input.files).then(() => (input.value = ""));
+                  }}
+                />
+              </label>
+              <button class="primary big" ?disabled=${!tool.photos.length || tool.working} @click=${() => this._sendPhotos()}>
+                Describe the room
+              </button>
+            </div>
+            <p class="muted small">
+              The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings
+              under AI help, Advanced.
+            </p>
+          `}
+    </section>`;
+  }
+
+  private _renderChat(tool: ChatTool) {
+    const room = tool.roomId ? this._room(tool.roomId) : undefined;
+    const whole = !tool.roomId;
+    return html`<section class="card interview">
+      <div class="top">
+        <h2>${whole ? "My whole home" : room?.name ?? "Room"}: talk it out in your own AI chat</h2>
+        <button type="button" class="link" @click=${() => (this._tool = null)}>Cancel</button>
+      </div>
+      <p class="muted">
+        Use any chat you like, for example one you can talk to by voice. Boopli sends nothing: you copy and paste
+        yourself, so this works even with AI help switched off.
+      </p>
+      ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
+      <ol class="stepslist">
+        <li>
+          <b>Copy this</b> and paste it into your chat.
+          ${this._hasNotes(tool.roomId)
+            ? html`<label class="inline">
+                <input
+                  type="checkbox"
+                  .checked=${tool.include}
+                  @change=${(e: Event) => {
+                    this._patchTool({ include: (e.target as HTMLInputElement).checked });
+                    void this._loadPrompt();
+                  }}
+                />
+                Include what I have written so far
+              </label>`
+            : nothing}
+          <textarea id="promptbox" class="promptbox" rows="7" readonly .value=${tool.prompt}></textarea>
+          <div class="actions">
+            <button class="primary big" ?disabled=${!tool.prompt} @click=${() => this._copyPrompt()}>
+              ${tool.copied ? "Copied ✓" : "Copy the prompt"}
+            </button>
+          </div>
+        </li>
+        <li>
+          <b>Talk it through</b> with the chat. When you say you are done, it answers with the notes.
+        </li>
+        <li>
+          <b>Copy the notes</b> it gives back and paste them here.
+          <textarea
+            class="pastebox"
+            rows="6"
+            aria-label="Pasted notes"
+            placeholder=${whole ? "## Kitchen\nDishwasher is under the counter\n## Bedroom\n…" : "Dishwasher is under the counter\nBalcony door sticks"}
+            .value=${tool.pasted}
+            @input=${(e: Event) => this._patchTool({ pasted: (e.target as HTMLTextAreaElement).value })}
+          ></textarea>
+          <div class="actions">
+            <button class="primary big" ?disabled=${!tool.pasted.trim() || tool.working} @click=${() => this._readPasted()}>
+              ${tool.working ? "Reading…" : "Read the notes"}
+            </button>
+          </div>
+        </li>
+      </ol>
+    </section>`;
+  }
+
+  private _renderFlat(tool: FlatTool) {
+    const used = tool.items.filter((i) => i.on && i.notes.trim()).length;
+    return html`<section class="card interview">
+      <div class="top">
+        <h2>My whole home: what I found</h2>
+        <button type="button" class="link" @click=${() => (this._tool = null)}>Cancel</button>
+      </div>
+      <p>
+        Here are the rooms in what you pasted. Change anything that is wrong, and untick a room you do not want.
+        Nothing is saved until you press Save afterwards.
+      </p>
+      ${tool.items.map((item, i) => {
+        const existing = item.id ? this._room(item.id) : undefined;
+        return html`<div class="question">
+          <label class="inline qtext">
+            <input type="checkbox" .checked=${item.on} @change=${(e: Event) => this._patchFlat(i, { on: (e.target as HTMLInputElement).checked })} />
+            ${item.name}
+            <span class="tag">${item.id ? "your room" : "new room"}</span>
+          </label>
+          ${existing?.notes.trim() ? html`<div class="muted small">It replaces the notes this room has now.</div>` : nothing}
+          <textarea
+            class="notes"
+            rows="5"
+            aria-label="Notes for ${item.name}"
+            .value=${item.notes}
+            @input=${(e: Event) => this._patchFlat(i, { notes: (e.target as HTMLTextAreaElement).value })}
+          ></textarea>
+        </div>`;
+      })}
+      <div class="actions">
+        <button class="primary big" ?disabled=${used === 0} @click=${() => this._applyFlat()}>
+          Use ${used} ${used === 1 ? "room" : "rooms"}
+        </button>
+        <button class="big" @click=${() => (this._tool = null)}>Throw away</button>
+      </div>
     </section>`;
   }
 
@@ -385,9 +785,15 @@ export class BoopliHome extends LitElement {
       <div class="row-actions">
         ${aiOn
           ? html`<button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
-              ✨ Let the AI ask me
-            </button>`
+                ✨ Let the AI ask me
+              </button>
+              <button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
+                📷 From photos
+              </button>`
           : nothing}
+        <button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
+          💬 In my own chat
+        </button>
         <span class="spacer"></span>
         <button type="button" class="link" @click=${() => this._removeRoom(room)}>${room.area_id ? "Hide" : "Delete"}</button>
       </div>
@@ -408,6 +814,7 @@ export class BoopliHome extends LitElement {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
     if (this._iv) return html`${this._renderInterview(this._iv)}${this._renderSaveBar()}`;
+    if (this._tool) return html`${this._renderTool(this._tool)}${this._renderSaveBar()}`;
     const shown = d.rooms.filter((r) => !r.hidden);
     const hidden = d.rooms.filter((r) => r.hidden);
     return html`
@@ -434,6 +841,10 @@ export class BoopliHome extends LitElement {
             notes yourself.
           </p>`
         : nothing}
+      <div class="whole">
+        <button type="button" @click=${() => this._openChat(null)}>💬 Talk through my whole home in my own chat</button>
+        <span class="muted small">Copy a prompt, talk it out by voice or text, paste the result back.</span>
+      </div>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${this._message ? html`<div class="ok">${this._message}</div>` : nothing}
       <div class="grid">${shown.map((r) => this._renderRoom(r))}</div>
@@ -643,6 +1054,100 @@ export class BoopliHome extends LitElement {
         min-height: 48px;
         padding: 0 22px;
         font-size: 16px;
+      }
+      .whole {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin: 6px 0 4px;
+      }
+      .row-actions {
+        flex-wrap: wrap;
+      }
+      .thumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 12px 0;
+      }
+      .thumb {
+        position: relative;
+        width: 140px;
+        height: 105px;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--divider-color);
+      }
+      .thumb .x {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 28px;
+        min-height: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 18px;
+        line-height: 1;
+      }
+      .filebtn {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+      }
+      .filebtn.off {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .filebtn input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .stepslist {
+        max-width: 760px;
+        padding-left: 22px;
+        line-height: 1.5;
+      }
+      .stepslist li {
+        margin: 0 0 18px;
+      }
+      .promptbox,
+      .pastebox {
+        display: block;
+        margin-top: 8px;
+      }
+      .inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 6px;
+      }
+      .inline input {
+        width: 20px;
+        min-height: 20px;
+        height: 20px;
+      }
+      .tag {
+        font-size: 12px;
+        font-weight: 400;
+        padding: 1px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--divider-color);
+        color: var(--secondary-text-color);
       }
       .working {
         display: flex;

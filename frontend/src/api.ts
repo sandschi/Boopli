@@ -9,6 +9,7 @@ import type {
   Home,
   LightCfg,
   PhoneCfg,
+  PromptDefaults,
   Repeat,
   Settings,
   SpeakerCfg,
@@ -97,7 +98,7 @@ export function roomNotes(
 }
 
 /** The built-in prompts, to show and to reset to. */
-export function aiDefaults(hass: Hass): Promise<{ questions_prompt: string; steps_prompt: string }> {
+export function aiDefaults(hass: Hass): Promise<PromptDefaults> {
   return hass.callWS({ type: "boopli/ai_defaults" });
 }
 
@@ -204,4 +205,54 @@ export function errorMessage(err: unknown): string {
     return String((err as { message: unknown }).message);
   }
   return "Something went wrong.";
+}
+
+/** Describe a room from photos, one time. `photos` are base64 JPEGs; they are deleted right after. */
+export function roomPhotos(
+  hass: Hass,
+  room: string,
+  notes: string,
+  photos: string[]
+): Promise<{ notes: string }> {
+  return hass.callWS({ type: "boopli/room_photos", room, notes, photos });
+}
+
+/** The text to copy into your own AI chat. An empty room means the whole home. */
+export async function chatPrompt(
+  hass: Hass,
+  includeNotes: boolean,
+  room = "",
+  notes = "",
+  rooms?: { name: string; notes: string }[]
+): Promise<string> {
+  const result = await hass.callWS<{ prompt: string }>({
+    type: "boopli/chat_prompt",
+    room,
+    notes,
+    include_notes: includeNotes,
+    ...(rooms ? { rooms } : {}),
+  });
+  return result.prompt;
+}
+
+/** Clean up notes pasted back from your own AI chat for one room. Nothing is saved. */
+export function pasteNotes(hass: Hass, text: string): Promise<{ notes: string }> {
+  return hass.callWS({ type: "boopli/paste_notes", text });
+}
+
+export interface PastedRoom {
+  name: string;
+  id: string | null; // null = not one of your rooms yet
+  notes: string;
+}
+
+/** Split pasted notes of the whole home into rooms. Nothing is saved. */
+export async function pasteHome(hass: Hass, text: string, rooms: { id: string; name: string }[]): Promise<PastedRoom[]> {
+  const result = await hass.callWS<{ rooms: PastedRoom[] }>({
+    type: "boopli/paste_notes",
+    text,
+    whole_home: true,
+    rooms,
+  });
+  return result.rooms;
 }

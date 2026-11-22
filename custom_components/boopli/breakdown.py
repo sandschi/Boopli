@@ -262,6 +262,199 @@ def parse_room_notes(data: Any) -> str:
     return notes
 
 
+ROOM_PHOTOS_PROMPT = """Look at the attached photo(s) of one room in a person's home and write short notes about the room. The notes help a helper split chores in this room into small steps that fit it.
+
+Room: {room}
+
+What was already known about this room:
+{known}
+
+Rules:
+- Plain short facts about what you can see, one per line, for example "Dishwasher is under the counter" or "Carpet on the floor, a desk by the window". Keep what was already known unless a photo clearly shows something different.
+- Only fixed things and furniture: appliances, furniture, storage, floors and surfaces, windows and doors, and places where things pile up. No people, no pets, no screens, no papers, no names, no addresses, no brands. Do not guess what you cannot see. No advice and no chores. At most 1500 characters.
+- Write in the language of the room name and the notes.
+
+Answer with a single JSON object and nothing else, like this:
+{"notes": "Dishwasher is under the counter\\nWindow above the sink"}"""
+
+# --- talking it out in the person's own AI chat (copy a prompt, paste the result back) ---
+
+ROOM_CHAT_PROMPT = """I want to describe the room "{room}" in my home, so a helper app can later split chores in that room into small steps that fit it. Please interview me about it. I may be talking by voice, so keep it relaxed.
+
+How to do it:
+- Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner).
+- Do not ask about things I already told you. Keep going until I say I am done.
+{known}
+When I say I am done, answer with ONLY the notes, in one code block, one short fact per line, with no title, no bullets and no comments. For example:
+```
+Dishwasher is under the counter
+Balcony door sticks
+```
+Facts about the room only: no advice and no chores. Write the notes in the language I speak.
+
+Start now with your first question."""
+
+HOME_CHAT_PROMPT = """I want to describe my whole home, room by room, so a helper app can later split chores into small steps that fit each room. Please interview me about it. I may be talking by voice, so keep it relaxed.
+
+How to do it:
+- Go through one room at a time. Ask one or two short questions at a time: what is in the room, where things are stored, floors and surfaces, what usually gets messy, anything awkward (a sticking door, a hard-to-reach corner).
+- Do not ask about things I already told you. When a room is done, move on to the next one. Keep going until I say I am done.
+{names}{known}
+When I say I am done, answer with ONLY the notes, in one code block: a heading line for each room that starts with "## ", then one short fact per line, with no bullets and no comments. For example:
+```
+## Kitchen
+Dishwasher is under the counter
+Balcony door sticks
+## Bedroom
+Wardrobe has sliding doors
+```
+Facts about the rooms only: no advice and no chores. Write the notes in the language I speak.
+
+Start now by asking which room we begin with."""
+
+
+def room_chat_prompt(room: str, notes: str, include_notes: bool = True, custom: str = "") -> str:
+    """The text to copy into the person's own AI chat for one room."""
+    notes = clean_room_notes(notes, 2000) if include_notes else ""
+    known = (
+        "\nHere is what I already wrote about this room. Keep it, and add to it or correct it:\n"
+        + notes
+        + "\n"
+        if notes
+        else ""
+    )
+    return fill(
+        (custom or "").strip() or ROOM_CHAT_PROMPT, room=clean_text(room, 60) or "my room", known=known
+    )
+
+
+def home_chat_prompt(
+    rooms: list[tuple[str, str]], include_notes: bool = True, custom: str = ""
+) -> str:
+    """The text to copy into the person's own AI chat for the whole home."""
+    names = [clean_text(n, 60) for n, _ in rooms if clean_text(n, 60)]
+    names_text = (
+        "\nMy rooms are: " + ", ".join(names) + ". Use these names for the headings when they fit.\n"
+        if names
+        else ""
+    )
+    known = ""
+    if include_notes:
+        lines = [
+            f"{clean_text(n, 60)}: " + clean_room_notes(t, 1500).replace("\n", "; ")
+            for n, t in rooms
+            if (t or "").strip()
+        ]
+        if lines:
+            known = (
+                "\nHere is what I already wrote. Keep it, and add to it or correct it:\n"
+                + "\n".join(lines)
+                + "\n"
+            )
+    return fill((custom or "").strip() or HOME_CHAT_PROMPT, names=names_text, known=known)
+
+
+_BULLET = re.compile(r"^\s*(?:[-*•–—]+|\d+[.)])\s+")
+_HEADING = re.compile(r"^\s*(?:#{1,6}\s*|\*\*|__)\s*(.+?)\s*(?:\*\*|__)?\s*:?\s*$")
+_ROOM_LABEL = re.compile(r"^\s*(?:room|raum|zimmer)\s*[:\-]\s*(.+?)\s*$", re.IGNORECASE)
+
+
+def _strip_markup(line: str) -> str:
+    line = _BULLET.sub("", line.strip())
+    return line.replace("**", "").replace("__", "").replace("`", "").strip()
+
+
+def _unfenced(text: str) -> str:
+    """The inside of the first code block when there is one, else the whole text."""
+    block = re.search(r"```[\w-]*\s*\n(.*?)```", text, re.DOTALL)
+    return block.group(1) if block else text.replace("```", "")
+
+
+def parse_pasted_notes(text: Any) -> str:
+    """Notes pasted back from the person's own AI chat: bullets, markdown and fences go."""
+    raw = str(text or "").strip()
+    if not raw:
+        raise BreakdownError("Nothing was pasted.")
+    if raw.lstrip("` \n").startswith("{") or '"notes"' in raw:
+        try:
+            return parse_room_notes(raw)
+        except BreakdownError:
+            pass
+    lines = []
+    for line in _unfenced(raw).splitlines():
+        line = _strip_markup(line)
+        if line.startswith("#"):
+            line = line.lstrip("# ").strip()
+        if line:
+            lines.append(line)
+    notes = clean_room_notes(lines)
+    if not notes:
+        raise BreakdownError("No notes found in what was pasted.")
+    return notes
+
+
+def parse_pasted_home(text: Any, rooms: list[tuple[str, str]]) -> list[dict[str, Any]]:
+    """Split pasted notes into rooms. `rooms` is (id, name); a name that matches gets its id.
+
+    A room starts at a heading line ("## Kitchen", "**Kitchen**", "Room: Kitchen" or
+    "Kitchen:" on its own). Text before the first heading is ignored. A room that is
+    not in `rooms` comes back with id None, so the panel can offer to add it.
+    """
+    body = _unfenced(str(text or "").strip())
+    known = {_norm(name): (room_id, name) for room_id, name in rooms if _norm(name)}
+    sections: list[tuple[str, list[str]]] = []
+    for raw_line in body.splitlines():
+        if not raw_line.strip():
+            continue
+        title = None
+        label = _ROOM_LABEL.match(_strip_markup(raw_line))
+        heading = _HEADING.match(raw_line)
+        stripped = _strip_markup(raw_line)
+        if label and raw_line.lstrip()[:1] != "-":
+            title = label.group(1)
+        elif (
+            heading
+            and raw_line.lstrip().startswith(("#", "**", "__"))
+            and "**" not in heading.group(1)
+            and "__" not in heading.group(1)
+        ):
+            title = heading.group(1)
+        elif stripped.endswith(":") and len(stripped.split()) <= 4 and not _BULLET.match(raw_line):
+            title = stripped[:-1]
+        elif ":" in stripped and _norm(stripped.split(":", 1)[0]) in known:
+            name, _, rest = stripped.partition(":")
+            sections.append((name.strip(), [rest.strip()] if rest.strip() else []))
+            continue
+        if title is not None:
+            title = clean_text(_strip_markup(title).rstrip(":"), 60)
+            if title:
+                sections.append((title, []))
+            continue
+        if sections:
+            line = stripped
+            if line:
+                sections[-1][1].append(line)
+    result: list[dict[str, Any]] = []
+    seen: dict[str, int] = {}
+    for name, lines in sections:
+        notes = clean_room_notes(lines)
+        if not notes:
+            continue
+        key = _norm(name)
+        if key in seen:  # the same room twice: join the notes
+            entry = result[seen[key]]
+            entry["notes"] = clean_room_notes([entry["notes"], notes])
+            continue
+        match = known.get(key)
+        seen[key] = len(result)
+        result.append({"name": match[1] if match else name, "id": match[0] if match else None, "notes": notes})
+    if not result:
+        raise BreakdownError(
+            "I could not find any rooms. Each room needs a heading line, for example: ## Kitchen"
+        )
+    return result
+
+
 def fill(template: str, **values: str) -> str:
     """Replace {name} placeholders. Unlike str.format it leaves the JSON braces alone."""
     for key, value in values.items():

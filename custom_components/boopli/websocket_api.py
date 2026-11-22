@@ -39,6 +39,9 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_ai_preview)
     websocket_api.async_register_command(hass, ws_room_questions)
     websocket_api.async_register_command(hass, ws_room_notes)
+    websocket_api.async_register_command(hass, ws_room_photos)
+    websocket_api.async_register_command(hass, ws_chat_prompt)
+    websocket_api.async_register_command(hass, ws_paste_notes)
     websocket_api.async_register_command(hass, ws_task_add)
     websocket_api.async_register_command(hass, ws_test_channel)
 
@@ -384,6 +387,90 @@ async def ws_ai_steps(
     connection.send_result(msg["id"], result)
 
 
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/room_photos",
+        vol.Required("room"): str,
+        vol.Optional("notes", default=""): str,
+        vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
+    }
+)
+@websocket_api.async_response
+async def ws_room_photos(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Describe a room from photos, one time (the photos are deleted right after)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_room_photos(msg["room"], msg["notes"], msg["photos"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/chat_prompt",
+        vol.Optional("room", default=""): str,  # empty = the whole home
+        vol.Optional("notes", default=""): str,
+        vol.Optional("include_notes", default=True): bool,
+        # the panel's current rooms (it may have unsaved edits); default: the saved ones
+        vol.Optional("rooms"): [{vol.Required("name"): str, vol.Optional("notes", default=""): str}],
+    }
+)
+@callback
+def ws_chat_prompt(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The text to copy into the person's own AI chat (nothing leaves Home Assistant)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    if msg["room"].strip():
+        prompt = manager.room_chat_prompt(msg["room"], msg["notes"], msg["include_notes"])
+    else:
+        prompt = manager.home_chat_prompt(
+            msg["include_notes"],
+            [(r["name"], r["notes"]) for r in msg["rooms"]] if "rooms" in msg else None,
+        )
+    connection.send_result(msg["id"], {"prompt": prompt})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/paste_notes",
+        vol.Required("text"): str,
+        vol.Optional("whole_home", default=False): bool,
+        # the panel's current rooms, so a room it has not saved yet still matches
+        vol.Optional("rooms"): [{vol.Required("id"): str, vol.Required("name"): str}],
+    }
+)
+@callback
+def ws_paste_notes(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Clean up notes pasted back from the person's own AI chat (nothing is saved)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = (
+            manager.paste_home(msg["text"], [(r["id"], r["name"]) for r in msg["rooms"]] if "rooms" in msg else None)
+            if msg["whole_home"]
+            else manager.paste_room(msg["text"])
+        )
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_defaults"})
 @callback
 def ws_ai_defaults(
@@ -395,6 +482,8 @@ def ws_ai_defaults(
         {
             "questions_prompt": breakdown.QUESTIONS_PROMPT,
             "steps_prompt": breakdown.STEPS_PROMPT,
+            "chat_room_prompt": breakdown.ROOM_CHAT_PROMPT,
+            "chat_home_prompt": breakdown.HOME_CHAT_PROMPT,
         },
     )
 

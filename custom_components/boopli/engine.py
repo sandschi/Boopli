@@ -1368,8 +1368,11 @@ class AiSettings:
 
     enabled: bool = False  # off until the user switches it on
     entity_id: str = ""  # an ai_task entity; empty = Home Assistant's default agent
+    photo_entity_id: str = ""  # optional agent that reads photos; empty = the agent above
     questions_prompt: str = ""  # empty = the built-in prompt
     steps_prompt: str = ""  # empty = the built-in prompt
+    chat_room_prompt: str = ""  # the text to copy into your own chat, one room; empty = built-in
+    chat_home_prompt: str = ""  # the same for the whole home; empty = built-in
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> AiSettings:
@@ -1377,8 +1380,11 @@ class AiSettings:
         return cls(
             enabled=bool(d.get("enabled", False)),
             entity_id=str(d.get("entity_id") or "").strip(),
+            photo_entity_id=str(d.get("photo_entity_id") or "").strip(),
             questions_prompt=str(d.get("questions_prompt") or "").strip(),
             steps_prompt=str(d.get("steps_prompt") or "").strip(),
+            chat_room_prompt=str(d.get("chat_room_prompt") or "").strip(),
+            chat_home_prompt=str(d.get("chat_home_prompt") or "").strip(),
         )
 
 
@@ -1527,9 +1533,13 @@ def validate_settings(settings: Settings) -> str | None:
         return "Snooze must be between 1 minute and 12 hours."
     if settings.ai.entity_id and not settings.ai.entity_id.startswith("ai_task."):
         return "Pick an AI task agent, or leave it empty for the default."
+    if settings.ai.photo_entity_id and not settings.ai.photo_entity_id.startswith("ai_task."):
+        return "Pick an AI task agent for photos, or leave it empty to use the same agent."
     if (
         len(settings.ai.questions_prompt) > AI_PROMPT_MAX
         or len(settings.ai.steps_prompt) > AI_PROMPT_MAX
+        or len(settings.ai.chat_room_prompt) > AI_PROMPT_MAX
+        or len(settings.ai.chat_home_prompt) > AI_PROMPT_MAX
     ):
         return f"A prompt can have at most {AI_PROMPT_MAX} letters."
     if len(settings.pet_name) > PET_NAME_MAX:
