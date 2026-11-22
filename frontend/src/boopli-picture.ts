@@ -5,7 +5,14 @@ import type { Hass } from "./types";
 
 type Mode = "none" | "camera" | "file";
 
-const FILE_OK = /\.(jpe?g|png|gif|webp)$/i;
+// The same as in the integration: what phones show in a notification (JPEG, PNG, GIF).
+const FILE_OK = /\.(jpe?g|png|gif)$/i;
+const CAMERA_ID = /^camera\.[a-z0-9_]+$/;
+
+/** A camera id. A name that ends like a picture file ("camera.png") is a file. */
+function isCamera(value: string): boolean {
+  return CAMERA_ID.test(value) && !FILE_OK.test(value);
+}
 
 /**
  * A picture for the phone notification of one step: nothing, a camera of Home Assistant,
@@ -30,6 +37,7 @@ export class BoopliPicture extends LitElement {
   private _timer = 0;
   private _seq = 0;
   private _seeded = false;
+  private _emitted: string | null = null; // the last value this element sent out itself
 
   constructor() {
     super();
@@ -40,12 +48,14 @@ export class BoopliPicture extends LitElement {
   }
 
   protected willUpdate(changed: PropertyValues): void {
-    if (!this._seeded || (changed.has("value") && this.value)) {
-      // A value always says what kind it is. An empty one keeps what the person picked
-      // (a kind chosen but no camera or file named yet).
+    if (!this._seeded) {
       this._seeded = true;
-      if (this.value) this._mode = this.value.startsWith("camera.") ? "camera" : "file";
-      else if (!changed.has("value") || this._mode === "none") this._mode = "none";
+      this._mode = !this.value ? "none" : isCamera(this.value) ? "camera" : "file";
+    } else if (changed.has("value") && this.value && this.value !== this._emitted) {
+      // The value was changed from outside (the editor loaded another one): it says what kind it is.
+      // What the person types or picks here never changes the kind they chose, so typing
+      // a file name that starts with "camera." stays a file.
+      this._mode = isCamera(this.value) ? "camera" : "file";
     }
     if (changed.has("value")) this._preview();
   }
@@ -56,6 +66,7 @@ export class BoopliPicture extends LitElement {
   }
 
   private _emit(value: string): void {
+    this._emitted = value;
     this.dispatchEvent(new CustomEvent("picture-change", { detail: value, bubbles: true, composed: true }));
   }
 
@@ -72,14 +83,14 @@ export class BoopliPicture extends LitElement {
     this._note = "";
     const v = (this.value ?? "").trim();
     if (!v) return;
-    if (v.startsWith("camera.")) {
+    if (this._mode === "camera") {
       const pic = this.hass?.states[v]?.attributes?.entity_picture;
       if (typeof pic === "string" && pic) this._src = pic;
       else this._note = "This camera gives no picture right now.";
       return;
     }
     if (!FILE_OK.test(v)) {
-      this._note = "Use a .jpg, .png, .gif or .webp file.";
+      this._note = "Use a .jpg, .png or .gif file.";
       return;
     }
     this._timer = window.setTimeout(async () => {
@@ -98,7 +109,7 @@ export class BoopliPicture extends LitElement {
 
   render() {
     const cameras = entityIds(this.hass, ["camera"]);
-    const hasCameras = cameras.length > 0 || this.value.startsWith("camera.");
+    const hasCameras = cameras.length > 0 || isCamera(this.value);
     return html`
       <div class="row">
         <span class="muted small">Picture in the phone notification (optional):</span>
@@ -150,7 +161,7 @@ export class BoopliPicture extends LitElement {
             src=${this._src}
             @error=${() => {
               this._src = "";
-              this._note = this.value.startsWith("camera.")
+              this._note = this._mode === "camera"
                 ? "The picture could not be loaded."
                 : "That file is not in the media folder, or it is not a picture.";
             }}

@@ -816,9 +816,15 @@ def validate_trigger(t: Trigger) -> str | None:
 
 
 PICTURE_MAX = 120
-PICTURE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp")
+# Only what phones show in a notification: the companion apps list JPEG, PNG and GIF.
+PICTURE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif")
 _CAMERA_RE = re.compile(r"^camera\.[a-z0-9_]+$")
 _PICTURE_FILE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 _.()\-]*(/[A-Za-z0-9][A-Za-z0-9 _.()\-]*)*$")
+
+
+def is_camera(image: str) -> bool:
+    """Whether a picture is a camera. A name that ends like a picture file ("camera.png") is a file."""
+    return bool(_CAMERA_RE.match(image)) and not image.lower().endswith(PICTURE_EXTENSIONS)
 
 
 def validate_picture(image: str) -> str | None:
@@ -831,14 +837,14 @@ def validate_picture(image: str) -> str | None:
         return None
     if len(image) > PICTURE_MAX:
         return f"A picture name can have at most {PICTURE_MAX} letters."
-    if _CAMERA_RE.match(image):
+    if is_camera(image):
         return None
     if (
         ".." in image
         or not _PICTURE_FILE_RE.match(image)
         or not image.lower().endswith(PICTURE_EXTENSIONS)
     ):
-        return "A picture is a camera, or a .jpg, .png, .gif or .webp file in the media folder."
+        return "A picture is a camera, or a .jpg, .png or .gif file in the media folder."
     return None
 
 
@@ -850,7 +856,7 @@ def picture_data(image: str, media_id: str = "local") -> dict[str, Any]:
     """
     if not image:
         return {}
-    if _CAMERA_RE.match(image):
+    if is_camera(image):
         return {"image": f"/api/camera_proxy/{image}", "entity_id": image}
     return {"image": f"/media/{media_id}/{quote(image)}"}
 
@@ -1322,6 +1328,7 @@ def parked_chore(
             wait_for=[replace(t) for t in s.wait_for],
             size=s.size,
             group=group,
+            image=s.image,  # a part set aside keeps its pictures
         )
         for index, s in enumerate(steps)
     ]

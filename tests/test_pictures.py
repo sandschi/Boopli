@@ -45,7 +45,7 @@ def test_a_camera_is_accepted():
 
 
 def test_files_in_the_media_folder_are_accepted():
-    for ok in ("pills.jpg", "boopli/pills.png", "boopli/my pills (1).webp", "a/b/c.GIF", "x.jpeg"):
+    for ok in ("pills.jpg", "boopli/pills.png", "boopli/my pills (1).jpg", "a/b/c.GIF", "x.jpeg"):
         assert engine.validate_picture(ok) is None, ok
 
 
@@ -57,6 +57,8 @@ def test_everything_else_is_refused():
         "../secret.jpg",
         "boopli/../../etc/x.jpg",
         "pills.txt",  # not a picture
+        "pills.webp",  # phones do not show it in a notification
+        "pills.heic",
         "pills",
         "camera.Front Door",
         "camera.",
@@ -90,6 +92,23 @@ def test_a_file_comes_from_the_media_folder_not_www():
     assert engine.picture_data("boopli/my pills.jpg", "kitchen") == {
         "image": "/media/kitchen/boopli/my%20pills.jpg"
     }
+
+
+def test_a_file_named_like_a_camera_is_still_a_file():
+    # "camera.snapshot.png" is not a camera id; "camera.png" ends like a picture, so it is one too.
+    for name in ("camera.snapshot.png", "camera.png", "camera.my_pic.jpg"):
+        assert engine.validate_picture(name) is None, name
+        assert not engine.is_camera(name), name
+        assert engine.picture_data(name) == {"image": f"/media/local/{name}"}
+    assert engine.is_camera("camera.front_door")
+    assert engine.is_camera("camera.demo_camera_png")  # an underscore, not a dot: a camera
+
+
+def test_a_part_set_aside_keeps_its_pictures():
+    c = chore("boopli/pills.jpg")
+    run, _events = engine.start_run(c, T0)
+    parked = engine.parked_chore(run, c, "Pills", run.steps, None, T0)
+    assert [s.image for s in parked.steps] == ["boopli/pills.jpg"]
 
 
 def test_no_picture_means_no_extra_data():
