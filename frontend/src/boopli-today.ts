@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
-import { completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
+import { answerQuestions, completeStep, deleteChore, errorMessage, partPark, partTime, startChore, type ParkWhen } from "./api";
+import "./boopli-questions";
 import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
@@ -255,6 +256,30 @@ export class BoopliToday extends LitElement {
     </div>`;
   }
 
+  /** Chores that started by themselves with all steps and still wait for the answers to their questions. */
+  private _renderQuestions() {
+    const open = (this.snapshot?.runs ?? []).filter((r) => r.questions_open && (r.questions ?? []).length > 0);
+    return open.map(
+      (run) => html`<section class="card ask">
+        <div class="muted small">${run.chore_name}</div>
+        <h2>Quick look first</h2>
+        <p class="muted small">
+          It started with all its steps. Answer, and the steps you do not need today disappear.
+        </p>
+        <boopli-questions
+          .questions=${run.questions ?? []}
+          .busy=${this._busy}
+          .cancelable=${false}
+          label="Done"
+          allLabel="Keep all steps"
+          @answered=${(e: CustomEvent<{ answers: Record<string, boolean> }>) =>
+            this._partAction(() => answerQuestions(this.hass!, run.id, e.detail.answers))}
+          @all-steps=${() => this._partAction(() => answerQuestions(this.hass!, run.id, {}))}
+        ></boopli-questions>
+      </section>`
+    );
+  }
+
   /** Parts that were set aside and are not running now. */
   private _parkedParts(): Chore[] {
     const running = new Set(this.snapshot?.runs.map((r) => r.chore_id) ?? []);
@@ -428,6 +453,7 @@ export class BoopliToday extends LitElement {
           </section>`
         : nothing}
       ${this._renderPet()}
+      ${this._renderQuestions()}
       ${model.now
         ? html`
             <section class="card now">

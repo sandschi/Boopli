@@ -34,6 +34,13 @@ export interface Step {
   size: StepSize; // small, medium or big: worth 10, 15 or 20 XP
   group: string; // the part of the task, for example Table
   wait_for?: Trigger[]; // the step stays quiet until one of these happens
+  only_if?: string; // id of a question of the chore: the step is only there on "yes"
+}
+
+/** A yes/no question a chore asks every time it starts ("Does the table need decluttering?"). */
+export interface ChoreQuestion {
+  id: string;
+  text: string;
 }
 
 export interface Repeat {
@@ -58,6 +65,7 @@ export interface Chore {
   ignore_quiet_hours: boolean;
   notes: string; // what the AI learned about the task
   parked: boolean; // a part of a task that was set aside to do later
+  questions?: ChoreQuestion[]; // asked every time it starts
 }
 
 export interface StepRun {
@@ -87,6 +95,11 @@ export interface Run {
   status: "active" | "done";
   steps: StepRun[];
   finished_at: string | null;
+  questions?: ChoreQuestion[];
+  answers?: Record<string, boolean>; // question id -> yes
+  /** Started by itself with all steps: the questions are still waiting for your answers. */
+  questions_open?: boolean;
+  asking_until?: string | null; // the first nudge waits for the answers until then
 }
 
 export interface HistoryEntry {
@@ -173,6 +186,7 @@ export interface Settings {
   default_style: NudgeStyle;
   pet_name: string;
   ai: AiSettings;
+  question_wait_minutes?: number; // how long the first nudge waits for the questions
 }
 
 /** Optional AI help: splitting tasks into small steps with your own Home Assistant AI agent. */
@@ -253,6 +267,7 @@ export interface ChoreDraft {
   nudge_style?: NudgeStyle; // missing: the integration uses your default
   ignore_quiet_hours?: boolean;
   notes?: string;
+  questions?: ChoreQuestion[];
   steps: {
     id?: string;
     title: string;
@@ -261,6 +276,7 @@ export interface ChoreDraft {
     wait_for?: Trigger[];
     size?: StepSize;
     group?: string;
+    only_if?: string;
   }[];
 }
 
@@ -282,6 +298,7 @@ export interface AiStep {
   group: string;
   size: StepSize;
   wait_minutes: number;
+  only_if?: string; // id of a question the AI wrote for this chore
 }
 
 /** One entity state as Home Assistant gives it to the panel. */

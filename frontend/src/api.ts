@@ -5,6 +5,7 @@ import type {
   AiStep,
   AlarmDeviceCfg,
   ChoreDraft,
+  ChoreQuestion,
   Hass,
   Home,
   LightCfg,
@@ -49,7 +50,7 @@ export function aiSteps(
   notes = "",
   rooms?: string[],
   scene = ""
-): Promise<{ steps: AiStep[]; summary: string }> {
+): Promise<{ steps: AiStep[]; summary: string; questions?: ChoreQuestion[] }> {
   return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, scene, ...(rooms ? { rooms } : {}) });
 }
 
@@ -186,8 +187,22 @@ export function deleteChore(hass: Hass, choreId: string): Promise<void> {
   return hass.callWS({ type: "boopli/chore_delete", chore_id: choreId });
 }
 
-export function startChore(hass: Hass, choreId: string): Promise<{ run_id: string }> {
-  return hass.callWS({ type: "boopli/chore_start", chore_id: choreId });
+/** Start a chore. With `answers` (question id -> yes) the steps for a "no" are left out. */
+export function startChore(
+  hass: Hass,
+  choreId: string,
+  answers?: Record<string, boolean>
+): Promise<{ run_id: string }> {
+  return hass.callWS({ type: "boopli/chore_start", chore_id: choreId, ...(answers ? { answers } : {}) });
+}
+
+/** Answer the questions of a running chore. Empty answers mean "start with all steps". */
+export function answerQuestions(
+  hass: Hass,
+  runId: string,
+  answers: Record<string, boolean>
+): Promise<void> {
+  return hass.callWS({ type: "boopli/questions_answer", run_id: runId, answers });
 }
 
 export function completeStep(

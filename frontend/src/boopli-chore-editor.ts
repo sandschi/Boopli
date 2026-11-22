@@ -9,6 +9,8 @@ import "./boopli-breakdown";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Snapshot, StepSize, Trigger } from "./types";
 
+const MAX_QUESTIONS = 8; // the same as in the integration
+
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
   { value: "one", label: "One nudge" },
@@ -167,16 +169,45 @@ export class BoopliChoreEditor extends LitElement {
 
   /** The AI steps are ready: put them in this chore (replacing or adding to what is there). */
   private _applySuggestion(result: BreakdownResult): void {
+    const append = result.action === "append";
+    const have = append ? this.draft.questions ?? [] : [];
+    // New questions get fresh ids when adding to a chore, so they cannot mix with the ones it has.
+    const taken = new Set(have.map((q) => q.id));
+    const rename = new Map<string, string>();
+    for (const q of result.questions ?? []) rename.set(q.id, taken.has(q.id) ? `${q.id}-${Math.random().toString(36).slice(2, 6)}` : q.id);
     const fresh = result.steps.map((s) => ({
       title: s.title,
       wait_minutes: s.wait_minutes,
       size: s.size,
       group: s.group,
+      only_if: s.only_if ? rename.get(s.only_if) ?? "" : "",
     }));
+    const questions = [...have, ...(result.questions ?? []).map((q) => ({ ...q, id: rename.get(q.id) ?? q.id }))].slice(0, MAX_QUESTIONS);
     const existing = this.draft.steps.filter((s) => s.title.trim() !== "");
-    const steps = result.action === "append" ? [...existing, ...fresh] : fresh;
-    this._update({ steps: steps.slice(0, 50), notes: result.notes });
+    const steps = append ? [...existing, ...fresh] : fresh;
+    this._update({ steps: steps.slice(0, 50), notes: result.notes, questions });
     this._suggest = false;
+  }
+
+  // --- questions asked when the chore starts -------------------------------------
+
+  private _addQuestion(): void {
+    const questions = [...(this.draft.questions ?? [])];
+    if (questions.length >= MAX_QUESTIONS) return;
+    questions.push({ id: `q${Math.random().toString(36).slice(2, 8)}`, text: "" });
+    this._update({ questions });
+  }
+
+  private _setQuestion(id: string, text: string): void {
+    this._update({ questions: (this.draft.questions ?? []).map((q) => (q.id === id ? { ...q, text } : q)) });
+  }
+
+  /** Taking a question away keeps its steps: they become steps that are always there. */
+  private _removeQuestion(id: string): void {
+    this._update({
+      questions: (this.draft.questions ?? []).filter((q) => q.id !== id),
+      steps: this.draft.steps.map((s) => (s.only_if === id ? { ...s, only_if: "" } : s)),
+    });
   }
 
   private _openSuggest(): void {
@@ -197,12 +228,22 @@ export class BoopliChoreEditor extends LitElement {
     this._busy = true;
     this._error = "";
     try {
+      // A question with no words is dropped, and the steps that pointed to it are always there.
+      const questions = (this.draft.questions ?? [])
+        .map((q) => ({ ...q, text: q.text.trim() }))
+        .filter((q) => q.text);
+      const known = new Set(questions.map((q) => q.id));
       await saveChore(this.hass, {
         ...this.draft,
         nudge_style: this.draft.nudge_style ?? this.defaultStyle,
         ignore_quiet_hours: this.draft.ignore_quiet_hours ?? false,
         name: this.draft.name.trim(),
-        steps: this.draft.steps.map((s) => ({ ...s, title: s.title.trim() })),
+        questions,
+        steps: this.draft.steps.map((s) => ({
+          ...s,
+          title: s.title.trim(),
+          only_if: s.only_if && known.has(s.only_if) ? s.only_if : "",
+        })),
       });
       this._close();
       return true;
@@ -329,6 +370,21 @@ export class BoopliChoreEditor extends LitElement {
             @input=${(e: Event) => this._updateStep(index, { group: (e.target as HTMLInputElement).value })}
           />
         </div>
+        ${(this.draft.questions ?? []).length
+          ? html`<div class="part">
+              <label class="muted small" for="only-if-${index}">Only if:</label>
+              <select
+                id="only-if-${index}"
+                class="part-input"
+                @change=${(e: Event) => this._updateStep(index, { only_if: (e.target as HTMLSelectElement).value })}
+              >
+                <option value="" ?selected=${!step.only_if}>Always there</option>
+                ${(this.draft.questions ?? []).map(
+                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${q.text || "(question without words)"} → yes</option>`
+                )}
+              </select>
+            </div>`
+          : nothing}
         <div class="wait">
           <span class="muted small">
             ${(step.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
@@ -488,6 +544,33 @@ export class BoopliChoreEditor extends LitElement {
 
         </div>
         <div class="col-b">
+        <details class="auto questions" ?open=${(d.questions ?? []).length > 0}>
+          <summary>
+            Questions before starting…
+            ${(d.questions ?? []).length > 0
+              ? html`<span class="muted small">(${(d.questions ?? []).length})</span>`
+              : nothing}
+          </summary>
+          <p class="muted small">
+            Asked every time you start this chore, because things look different each time. A step you link to a
+            question is only in the list when you answer yes.
+          </p>
+          ${(d.questions ?? []).map(
+            (q) => html`<div class="question">
+              <input
+                aria-label="Question"
+                maxlength="120"
+                placeholder="Does the table need decluttering?"
+                .value=${q.text}
+                @input=${(e: Event) => this._setQuestion(q.id, (e.target as HTMLInputElement).value)}
+              />
+              <button type="button" aria-label="Remove this question" @click=${() => this._removeQuestion(q.id)}>✕</button>
+            </div>`
+          )}
+          <button type="button" ?disabled=${(d.questions ?? []).length >= MAX_QUESTIONS} @click=${() => this._addQuestion()}>
+            + Add a question
+          </button>
+        </details>
         <h3 class="steps-title">Steps</h3>
         <datalist id="parts-list">
           ${[...new Set(d.steps.map((s) => (s.group ?? "").trim()).filter(Boolean))].map(
@@ -659,6 +742,19 @@ export class BoopliChoreEditor extends LitElement {
       }
       .wait {
         margin-top: 10px;
+      }
+      .question {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .question input {
+        flex: 1;
+        min-width: 0;
+      }
+      details.questions {
+        margin-bottom: 8px;
       }
       .part {
         display: flex;

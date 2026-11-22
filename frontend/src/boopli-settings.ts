@@ -624,8 +624,8 @@ export class BoopliSettings extends LitElement {
 
   private _renderOther(d: Settings) {
     return html`
-      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "default_style")}>
-        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "default_style")}</h2>
+      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "default_style")}>
+        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "default_style")}</h2>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -663,6 +663,21 @@ export class BoopliSettings extends LitElement {
             .value=${String(d.snooze_minutes)}
             @input=${(e: Event) => this._set({ snooze_minutes: Number((e.target as HTMLInputElement).value) || 15 })}
           />
+        </div>
+        <div class="field">
+          <label for="qwait">How long the first nudge waits for your answers (minutes)</label>
+          <input
+            id="qwait"
+            type="number"
+            min="5"
+            max="720"
+            .value=${String(d.question_wait_minutes ?? 30)}
+            @input=${(e: Event) => this._set({ question_wait_minutes: Number((e.target as HTMLInputElement).value) || 30 })}
+          />
+          <div class="muted small">
+            For chores that start by themselves and have questions. They start with all steps; this is how long Boopli
+            waits for your answers before it nudges.
+          </div>
         </div>
         <div class="field">
           <label for="style">Default nudge style for new chores</label>

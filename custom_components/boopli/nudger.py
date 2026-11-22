@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 
+from homeassistant.util import dt as dt_util
+
 from . import engine
 
 if TYPE_CHECKING:
@@ -71,6 +73,8 @@ class BoopliNudger:
             self.manager.complete_step(run_id, step_id)
         elif kind == engine.ACTION_SNOOZE:
             self.manager.snooze(run_id, step_id)
+        elif kind == engine.ACTION_ALL_STEPS:
+            self.manager.answer_questions(run_id, {})  # no answers: start with all steps
 
     # --- sending ---------------------------------------------------------
 
@@ -109,6 +113,25 @@ class BoopliNudger:
                 settings.snooze_minutes,
             )
             await self._notify(phone.service, payload)
+
+    async def async_send_questions(self, run: engine.Run) -> None:
+        """Tell the phones that a chore started and has questions to answer.
+
+        Quiet hours are respected (the card on Today is still there). Only phones that
+        reach nudge 1 get it, and only when you could be nudged right now.
+        """
+        manager = self.manager
+        chore = manager.chores.get(run.chore_id)
+        now = dt_util.utcnow()
+        if engine.channels_for(run.where, manager.is_home()) is None:
+            return
+        if not (chore and chore.ignore_quiet_hours):
+            if engine.quiet_ends(now, manager.settings.quiet_hours, manager.tz) is not None:
+                return
+        payload = engine.questions_payload(run.id, run.chore_name, len(run.questions))
+        for phone in manager.settings.phones:
+            if engine.reached(phone.start_at, 1):
+                await self._notify(phone.service, payload)
 
     async def _notify(self, service: str, payload: dict[str, Any]) -> bool:
         if not self.hass.services.has_service("notify", service):

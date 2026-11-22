@@ -22,6 +22,8 @@ KINDS = (KIND_NOW, KIND_RECURRING)
 MAX_QUESTIONS = 6  # per round
 MAX_OPTIONS = 8
 MAX_STEPS = 50
+MAX_CHECKS = 8  # yes/no questions a chore may ask when it starts
+CHECK_TEXT_MAX = 120
 MAX_ANSWERS = 80  # question and answer pairs kept in a request
 TEXT_MAX = 500
 QUESTION_MAX = 240
@@ -83,6 +85,7 @@ Rules:
 - A task about a whole room or area ("clean the living room") means the whole job. When the notes name the things in that room, make one group for each thing that can be tidied or cleaned (a sofa, a table, a desk, the kitchen counter, the floor, the bin). Every such group gets its own full set of small steps in this order: gather the things that do not belong there, throw away the rubbish, put things back where they belong, clear the surface, wipe or clean it. Do not write just one step per object. Things that need no cleaning (a clock, a door) get no group. Put the floor and the bin last.
 - If what you know says what the place looks like today (a snapshot from photos), that is the real state: write the steps for what needs work there and name the real things ("Put the bottles on a tray"), and leave out the parts that already look fine.
 - Treat what you know about the place as background, never as a list of jobs. Do not move or rearrange furniture and big objects, and do not hang, fix or build anything unless the task says so.
+- Only for a chore that repeats: when whether a part needs any work changes from week to week (a table that may be cluttered, laundry that may be on the floor, a bin that may be full), do not decide it now. Write a short yes/no question for it in "questions" (for example "Does the table need decluttering?") with a short id ("q1"), and give the steps that are only needed when the answer is yes that id in "only_if". Steps that are needed every time (wiping, vacuuming) get an empty "only_if". Ask at most 8 questions, only where the answer really changes the work. Keep a question even when the notes or photos say how it looks today, because next week it may look different. For a one-off task never write questions: just leave out the steps that are not needed.
 - Order the steps so nothing has to be done twice.
 - Give every step a size: "small" (quick and easy), "medium" (takes some effort) or "big" (hard or long). Most steps are small.
 - If time has to pass before a step (washing machine running, something drying or soaking), put the minutes in "wait_minutes" of the step that comes after the waiting, otherwise 0.
@@ -90,7 +93,9 @@ Rules:
 - Write in the language of the task.
 
 Answer with a single JSON object and nothing else, like this:
-{"summary": "Room has: table, floor.", "steps": [{"title": "Put the cups on the tray", "group": "Table", "size": "small", "wait_minutes": 0}]}"""
+{"summary": "Room has: table, floor.", "questions": [{"id": "q1", "text": "Does the table need decluttering?"}], "steps": [{"title": "Put the cups on the tray", "group": "Table", "size": "small", "wait_minutes": 0, "only_if": "q1"}, {"title": "Wipe the table", "group": "Table", "size": "small", "wait_minutes": 0, "only_if": ""}]}
+(Leave "questions" empty and every "only_if" empty when there are no questions.)"""
+
 
 class BreakdownError(Exception):
     """The agent's answer could not be used."""
@@ -109,6 +114,15 @@ class StepDraft:
     group: str = ""
     size: str = "small"
     wait_minutes: int = 0
+    only_if: str = ""  # id of one of the chore's yes/no questions
+
+
+@dataclass
+class CheckQuestion:
+    """A yes/no question the chore asks every time it starts."""
+
+    id: str
+    text: str
 
 
 # --- prompts -----------------------------------------------------------------
@@ -640,6 +654,30 @@ def _int(value: Any, default: int = 0) -> int:
 
 def parse_steps(data: Any, max_steps: int = MAX_STEPS) -> tuple[list[StepDraft], str]:
     """Return (steps, summary). Raises BreakdownError when there is no usable step."""
+    steps, summary, _questions = parse_steps_and_questions(data, max_steps)
+    return steps, summary
+
+
+def _question_id(value: Any, used: set[str]) -> str:
+    """A short, safe id for a question; made up when the agent gave none."""
+    wanted = re.sub(r"[^a-z0-9_-]", "", str(value or "").lower())[:20]
+    if not wanted or wanted in used:
+        number = len(used) + 1
+        while f"q{number}" in used:
+            number += 1
+        wanted = f"q{number}"
+    return wanted
+
+
+def parse_steps_and_questions(
+    data: Any, max_steps: int = MAX_STEPS
+) -> tuple[list[StepDraft], str, list[CheckQuestion]]:
+    """Return (steps, summary, questions).
+
+    Questions are only kept when at least one step points to them, and a step that
+    points to a question that does not exist is made a normal step, so the result
+    can always be saved. Raises BreakdownError when there is no usable step.
+    """
     try:
         parsed = extract_json(data)
     except BreakdownError:
@@ -647,6 +685,19 @@ def parse_steps(data: Any, max_steps: int = MAX_STEPS) -> tuple[list[StepDraft],
         if not rescued:
             raise
         parsed = {"steps": rescued, "summary": summary}
+    questions: list[CheckQuestion] = []
+    for item in parsed.get("questions") or []:
+        if isinstance(item, str):
+            item = {"text": item}
+        if not isinstance(item, dict):
+            continue
+        text = clean_text(item.get("text"), CHECK_TEXT_MAX)
+        if not text or text.lower() in {q.text.lower() for q in questions}:
+            continue
+        questions.append(CheckQuestion(_question_id(item.get("id"), {q.id for q in questions}), text))
+        if len(questions) >= MAX_CHECKS:
+            break
+    asked = {q.id.lower(): q.id for q in questions}
     steps: list[StepDraft] = []
     for item in parsed.get("steps") or []:
         if isinstance(item, str):
@@ -665,10 +716,12 @@ def parse_steps(data: Any, max_steps: int = MAX_STEPS) -> tuple[list[StepDraft],
                 group=clean_text(item.get("group"), GROUP_MAX),
                 size=size if size in SIZES else "small",
                 wait_minutes=max(0, min(WAIT_MAX, _int(item.get("wait_minutes")))),
+                only_if=asked.get(re.sub(r"[^a-z0-9_-]", "", str(item.get("only_if") or "").lower()), ""),
             )
         )
         if len(steps) >= max_steps:
             break
     if not steps:
         raise BreakdownError("The AI agent did not send any steps.")
-    return steps, clean_text(parsed.get("summary"), 400)
+    used = {s.only_if for s in steps if s.only_if}
+    return steps, clean_text(parsed.get("summary"), 400), [q for q in questions if q.id in used]

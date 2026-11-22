@@ -3,7 +3,7 @@ import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess, scenePhotos 
 import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
-import type { AiAnswer, AiPreview, AiQuestion, AiStep, Hass, Room, Snapshot, StepSize } from "./types";
+import type { AiAnswer, AiPreview, AiQuestion, AiStep, ChoreQuestion, Hass, Room, Snapshot, StepSize } from "./types";
 
 type Phase = "task" | "interview" | "working" | "review";
 type Kind = "now" | "recurring";
@@ -14,6 +14,7 @@ export interface BreakdownResult {
   task: string;
   steps: AiStep[];
   notes: string;
+  questions: ChoreQuestion[]; // asked every time the chore starts; steps point to them with only_if
 }
 
 const SIZES: { value: StepSize; letter: string; label: string; xp: number }[] = [
@@ -49,6 +50,7 @@ export class BoopliBreakdown extends LitElement {
     _typed: { state: true },
     _extra: { state: true },
     _steps: { state: true },
+    _checks: { state: true },
     _notes: { state: true },
     _busy: { state: true },
     _error: { state: true },
@@ -78,6 +80,7 @@ export class BoopliBreakdown extends LitElement {
   declare _typed: string[]; // own words per question
   declare _extra: string;
   declare _steps: AiStep[];
+  declare _checks: ChoreQuestion[]; // yes/no questions the AI wrote for a chore that repeats
   declare _notes: string;
   declare _busy: boolean;
   declare _error: string;
@@ -114,6 +117,7 @@ export class BoopliBreakdown extends LitElement {
     this._typed = [];
     this._extra = "";
     this._steps = [];
+    this._checks = [];
     this._notes = "";
     this._busy = false;
     this._error = "";
@@ -468,6 +472,7 @@ export class BoopliBreakdown extends LitElement {
     );
     if (!result) return;
     this._steps = result.steps.slice(0, MAX_STEPS);
+    this._checks = this.kind === "recurring" ? (result.questions ?? []) : [];
     if (result.summary && !this._notes.includes(result.summary)) {
       this._notes = [this._notes, result.summary].filter(Boolean).join("\n");
     }
@@ -505,12 +510,27 @@ export class BoopliBreakdown extends LitElement {
       this._error = "There is no step yet. Add one, or try again.";
       return;
     }
+    // Only the questions that a step still points to are kept, with a text that is not empty.
+    const usedIds = new Set(steps.map((s) => s.only_if).filter(Boolean));
+    const questions = this._checks.filter((q) => q.text.trim() && usedIds.has(q.id)).map((q) => ({ ...q, text: q.text.trim() }));
+    const known = new Set(questions.map((q) => q.id));
     this._fire("breakdown-result", {
       action,
       task: this._task.trim(),
-      steps,
+      steps: steps.map((s) => (s.only_if && !known.has(s.only_if) ? { ...s, only_if: "" } : s)),
       notes: this._notes.trim(),
+      questions,
     } satisfies BreakdownResult);
+  }
+
+  private _patchCheck(id: string, text: string): void {
+    this._checks = this._checks.map((q) => (q.id === id ? { ...q, text } : q));
+  }
+
+  /** Take a question away: the steps that pointed to it stay, as steps that are always there. */
+  private _removeCheck(id: string): void {
+    this._checks = this._checks.filter((q) => q.id !== id);
+    this._steps = this._steps.map((s) => (s.only_if === id ? { ...s, only_if: "" } : s));
   }
 
   private _cancel(): void {
@@ -679,7 +699,34 @@ export class BoopliBreakdown extends LitElement {
           <button type="button" aria-label="Remove" @click=${() => this._remove(i)}>✕</button>
         </span>
       </div>
+      ${this._checks.length
+        ? html`<div class="only-if">
+            <label>
+              <span class="muted small">Only if</span>
+              <select aria-label="Only if, for step ${i + 1}" @change=${(e: Event) => this._patchStep(i, { only_if: (e.target as HTMLSelectElement).value })}>
+                <option value="" ?selected=${!s.only_if}>Always there</option>
+                ${this._checks.map((q) => html`<option value=${q.id} ?selected=${s.only_if === q.id}>${q.text} → yes</option>`)}
+              </select>
+            </label>
+          </div>`
+        : nothing}
     `;
+  }
+
+  private _renderChecks() {
+    if (!this._checks.length) return nothing;
+    return html`<div class="checks">
+      <b>Questions asked each time you start this chore</b>
+      <div class="muted small">
+        Today it may look different than next week. Steps that belong to a question only show up when you answer yes.
+      </div>
+      ${this._checks.map(
+        (q) => html`<div class="check">
+          <input aria-label="Question" .value=${q.text} @input=${(e: Event) => this._patchCheck(q.id, (e.target as HTMLInputElement).value)} />
+          <button type="button" aria-label="Remove this question" @click=${() => this._removeCheck(q.id)}>✕</button>
+        </div>`
+      )}
+    </div>`;
   }
 
   private _renderReview() {
@@ -690,6 +737,7 @@ export class BoopliBreakdown extends LitElement {
         <b>${steps.length} ${steps.length === 1 ? "step" : "steps"}</b>
         <span class="muted"> · worth about ${this._xp()} XP when all are done. Check them, change what does not fit.</span>
       </p>
+      ${this._renderChecks()}
       <div class="steps">${steps.map((s, i) => this._renderStep(s, i))}</div>
       <div class="inline-actions">
         <button type="button" @click=${() => this._add(steps.length - 1)}>+ Add a step</button>
@@ -888,6 +936,38 @@ export class BoopliBreakdown extends LitElement {
         gap: 8px;
         padding: 6px 0;
         border-bottom: 1px solid var(--divider-color);
+      }
+      .only-if {
+        padding: 2px 0 8px 34px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .only-if label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+      .only-if select {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+      }
+      .checks {
+        margin: 12px 0;
+        padding: 12px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+        display: grid;
+        gap: 8px;
+      }
+      .check {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .check input {
+        flex: 1;
+        min-width: 0;
       }
       .num {
         width: 26px;

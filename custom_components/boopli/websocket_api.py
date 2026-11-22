@@ -25,6 +25,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_chore_save)
     websocket_api.async_register_command(hass, ws_chore_delete)
     websocket_api.async_register_command(hass, ws_chore_start)
+    websocket_api.async_register_command(hass, ws_questions_answer)
     websocket_api.async_register_command(hass, ws_egg_found)
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
@@ -129,8 +130,16 @@ def ws_chore_delete(
     connection.send_result(msg["id"])
 
 
+_ANSWERS = vol.Schema({str: bool})  # question id -> yes
+
+
 @websocket_api.websocket_command(
-    {vol.Required("type"): "boopli/chore_start", vol.Required("chore_id"): str}
+    {
+        vol.Required("type"): "boopli/chore_start",
+        vol.Required("chore_id"): str,
+        # The answers to the chore's questions; left out, the chore asks them afterwards.
+        vol.Optional("answers"): _ANSWERS,
+    }
 )
 @callback
 def ws_chore_start(
@@ -142,11 +151,31 @@ def ws_chore_start(
         _not_loaded(connection, msg)
         return
     try:
-        run = manager.start_chore(msg["chore_id"])
+        run = manager.start_chore(msg["chore_id"], msg.get("answers"))
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
         return
     connection.send_result(msg["id"], {"run_id": run.id})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/questions_answer",
+        vol.Required("run_id"): str,
+        vol.Required("answers"): _ANSWERS,  # an empty object means "start with all steps"
+    }
+)
+@callback
+def ws_questions_answer(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Answer the questions of a running chore."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.answer_questions(msg["run_id"], msg["answers"])
+    connection.send_result(msg["id"])
 
 
 _PARK_FIELDS = {

@@ -80,6 +80,10 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
 
   if (before.snooze_minutes !== after.snooze_minutes)
     out.push(`Snooze: ${before.snooze_minutes} → ${after.snooze_minutes} min`);
+  if ((before.question_wait_minutes ?? 30) !== (after.question_wait_minutes ?? 30))
+    out.push(
+      `Wait for your answers: ${before.question_wait_minutes ?? 30} → ${after.question_wait_minutes ?? 30} min`
+    );
   if (before.default_style !== after.default_style)
     out.push(`Default style: ${STYLE_LABEL[before.default_style]} → ${STYLE_LABEL[after.default_style]}`);
 

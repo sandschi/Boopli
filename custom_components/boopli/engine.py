@@ -77,7 +77,11 @@ SIZE_XP = {SIZE_SMALL: 10, SIZE_MEDIUM: 15, SIZE_BIG: 20}
 GROUP_MAX = 40  # characters of a step's group ("Table", "Floor")
 STEP_TITLE_MAX = 200
 NOTES_MAX = 4000
+MAX_QUESTIONS = 8  # yes/no questions a chore can ask before it starts
+QUESTION_MAX = 120
+QUESTION_WAIT_DEFAULT = 30  # minutes the first nudge waits for the questions of a run that started by itself
 
+EVENT_QUESTIONS_ANSWERED = "questions_answered"
 EVENT_CHORE_STARTED = "chore_started"
 EVENT_STEP_ACTIVE = "step_active"
 EVENT_STEP_DONE = "step_done"
@@ -178,6 +182,8 @@ HIBERNATE_AFTER_DAYS = 7
 
 ACTION_DONE = "BOOPLI_DONE"
 ACTION_SNOOZE = "BOOPLI_SNOOZE"
+ACTION_ALL_STEPS = "BOOPLI_ALLSTEPS"  # "Start with all steps" on the questions notification
+QUESTIONS_STEP = "q"  # stands in for a step id in the notification of the questions
 
 
 def new_id() -> str:
@@ -237,6 +243,21 @@ class Trigger:
 
 
 @dataclass
+class Question:
+    """A yes/no question a chore asks when it starts ("Does the table need decluttering?").
+
+    Steps that point to it with `only_if` are only part of the run when the answer is yes.
+    """
+
+    id: str
+    text: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Question:
+        return cls(id=str(d.get("id") or new_id()), text=str(d.get("text", "")).strip())
+
+
+@dataclass
 class Step:
     """One step of a chore."""
 
@@ -250,12 +271,14 @@ class Step:
     # "Wait until this happens": the step stays quiet until one of these is met.
     # `wait_minutes` is then the longest it waits (0 = as long as it takes).
     wait_for: list[Trigger] = field(default_factory=list)
+    only_if: str = ""  # id of a question of the chore: the step is only there when it is answered yes
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Step:
         triggers = [Trigger.from_dict(t) for t in d.get("triggers") or []]
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            only_if=str(d.get("only_if") or "").strip(),
             wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             id=str(d.get("id") or new_id()),
             title=str(d.get("title", "")).strip(),
@@ -341,10 +364,12 @@ class Chore:
     ignore_quiet_hours: bool = False  # for things like pills
     notes: str = ""  # what the AI learned about the task, kept for "update steps"
     parked: bool = False  # a part of a task that was set aside to do later
+    questions: list[Question] = field(default_factory=list)  # asked every time it starts
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            questions=[Question.from_dict(q) for q in d.get("questions") or []],
             parked=bool(d.get("parked", False)),
             notes=str(d.get("notes") or "").strip()[:NOTES_MAX],
             id=str(d.get("id") or new_id()),
@@ -380,11 +405,13 @@ class StepRun:
     size: str = SIZE_SMALL  # snapshot from the chore
     group: str = ""  # snapshot from the chore
     wait_for: list[Trigger] = field(default_factory=list)  # snapshot from the chore
+    only_if: str = ""  # snapshot from the chore: a question id
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> StepRun:
         size = str(d.get("size", SIZE_SMALL))
         return cls(
+            only_if=str(d.get("only_if") or ""),
             wait_for=[Trigger.from_dict(t) for t in d.get("wait_for") or []],
             size=size if size in SIZE_VALUES else SIZE_SMALL,
             group=str(d.get("group") or ""),
@@ -415,10 +442,18 @@ class Run:
     steps: list[StepRun]
     status: str = RUN_ACTIVE
     finished_at: str | None = None
+    questions: list[Question] = field(default_factory=list)  # snapshot from the chore
+    answers: dict[str, bool] = field(default_factory=dict)  # question id -> yes
+    questions_open: bool = False  # started without answers: all steps are in, still to be asked
+    asking_until: str | None = None  # the first nudge waits for the answers until then
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Run:
         return cls(
+            questions=[Question.from_dict(q) for q in d.get("questions") or []],
+            answers={str(k): bool(v) for k, v in (d.get("answers") or {}).items()},
+            questions_open=bool(d.get("questions_open", False)),
+            asking_until=d.get("asking_until"),
             id=str(d["id"]),
             chore_id=str(d["chore_id"]),
             chore_name=str(d.get("chore_name", "")),
@@ -767,7 +802,20 @@ def validate_chore(chore: Chore) -> str | None:
         return "A chore needs at least one step."
     if len(chore.steps) > MAX_STEPS:
         return f"A chore can have at most {MAX_STEPS} steps."
+    if len(chore.questions) > MAX_QUESTIONS:
+        return f"A chore can ask at most {MAX_QUESTIONS} questions."
+    question_ids: set[str] = set()
+    for question in chore.questions:
+        if not question.text:
+            return "Every question needs some text."
+        if len(question.text) > QUESTION_MAX:
+            return f"A question can have at most {QUESTION_MAX} letters."
+        if question.id in question_ids:
+            return "Two questions have the same id."
+        question_ids.add(question.id)
     for step in chore.steps:
+        if step.only_if and step.only_if not in question_ids:
+            return f"Step '{step.title}' points to a question that does not exist."
         if not step.title:
             return "Every step needs a title."
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
@@ -956,8 +1004,31 @@ def _step_event(name: str, run: Run, step: StepRun, now: datetime) -> Event:
     )
 
 
-def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
-    """Start a new run of a chore. Its first step is scheduled from `now`."""
+def _answers_by_text(run: Run) -> dict[str, bool]:
+    """The answers with the question's own words as keys, for events and automations."""
+    return {q.text: bool(run.answers.get(q.id, True)) for q in run.questions}
+
+
+def start_run(
+    chore: Chore,
+    now: datetime,
+    answers: dict[str, bool] | None = None,
+    ask_minutes: int = QUESTION_WAIT_DEFAULT,
+) -> tuple[Run, list[Event]]:
+    """Start a new run of a chore. Its first step is scheduled from `now`.
+
+    A chore with questions is started with the `answers` (question id -> yes): the
+    steps that point to a question answered no are left out, so they never show up.
+    A question without an answer counts as yes. Started with `answers=None` (by
+    itself, at its time), the run has all steps and `questions_open`; the first nudge
+    waits `ask_minutes` for `answer_questions`. Raises ValueError when the answers
+    leave nothing to do.
+    """
+    asking = bool(chore.questions) and answers is None
+    given = {} if asking else {q.id: bool((answers or {}).get(q.id, True)) for q in chore.questions}
+    chosen = [s for s in chore.steps if asking or not s.only_if or given.get(s.only_if, True)]
+    if not chosen:
+        raise ValueError("With those answers there is nothing left to do.")
     run = Run(
         id=new_id(),
         chore_id=chore.id,
@@ -973,25 +1044,86 @@ def start_run(chore: Chore, now: datetime) -> tuple[Run, list[Event]]:
                 wait_for=[replace(t) for t in s.wait_for],
                 size=s.size,
                 group=s.group,
+                only_if=s.only_if,
             )
-            for s in chore.steps
+            for s in chosen
         ],
+        questions=[replace(q) for q in chore.questions],
+        answers=given,
+        questions_open=asking,
+        asking_until=fmt_ts(now + timedelta(minutes=max(1, ask_minutes))) if asking else None,
     )
+    data: dict[str, Any] = {
+        "chore_id": run.chore_id,
+        "chore_name": run.chore_name,
+        "run_id": run.id,
+        "where": run.where,
+        "time": fmt_ts(now),
+    }
+    if run.questions:
+        data["questions_open"] = asking
+        data["answers"] = {} if asking else _answers_by_text(run)
+    events = [Event(EVENT_CHORE_STARTED, data)]
+    if run.steps and _activate(run.steps[0], now):
+        events.append(_step_event(EVENT_STEP_ACTIVE, run, run.steps[0], now))
+    return run, events
+
+
+def nudges_held(run: Run, now: datetime) -> bool:
+    """Whether the first nudge still waits for the answers to the questions."""
+    return bool(run.questions_open and run.asking_until and parse_ts(run.asking_until) > now)
+
+
+def answer_questions(run: Run, answers: dict[str, bool], now: datetime) -> list[Event]:
+    """Answer the questions of a run that started with all steps (idempotent).
+
+    Steps that are not done yet and point to a question answered no are removed;
+    steps already done stay. A question without an answer counts as yes ("start with
+    all steps"). When nothing is left the run is over (no XP).
+    """
+    if run.status != RUN_ACTIVE or not run.questions_open:
+        return []
+    run.answers = {q.id: bool(answers.get(q.id, True)) for q in run.questions}
+    run.questions_open = False
+    run.asking_until = None
+    run.steps = [
+        s
+        for s in run.steps
+        if s.status == STEP_DONE or not s.only_if or run.answers.get(s.only_if, True)
+    ]
     events = [
         Event(
-            EVENT_CHORE_STARTED,
+            EVENT_QUESTIONS_ANSWERED,
             {
                 "chore_id": run.chore_id,
                 "chore_name": run.chore_name,
                 "run_id": run.id,
-                "where": run.where,
+                "answers": _answers_by_text(run),
                 "time": fmt_ts(now),
             },
         )
     ]
-    if run.steps and _activate(run.steps[0], now):
-        events.append(_step_event(EVENT_STEP_ACTIVE, run, run.steps[0], now))
-    return run, events
+    if not any(s.status != STEP_DONE for s in run.steps):
+        run.status = RUN_DONE
+        run.finished_at = fmt_ts(now)
+        events.append(
+            Event(
+                EVENT_CHORE_DONE,
+                {
+                    "chore_id": run.chore_id,
+                    "chore_name": run.chore_name,
+                    "run_id": run.id,
+                    "where": run.where,
+                    "time": fmt_ts(now),
+                },
+            )
+        )
+        return events
+    if not any(s.status in (STEP_ACTIVE, STEP_WAITING) for s in run.steps):
+        upcoming = next((s for s in run.steps if s.status == STEP_PENDING), None)
+        if upcoming is not None and _activate(upcoming, now):
+            events.append(_step_event(EVENT_STEP_ACTIVE, run, upcoming, now))
+    return events
 
 
 def complete_step(
@@ -1561,11 +1693,13 @@ class Settings:
     default_style: str = STYLE_ONE
     pet_name: str = PET_NAME_DEFAULT
     ai: AiSettings = field(default_factory=AiSettings)
+    question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
         return cls(
+            question_wait_minutes=int(d.get("question_wait_minutes", QUESTION_WAIT_DEFAULT) or QUESTION_WAIT_DEFAULT),
             ai=AiSettings.from_dict(d.get("ai")),
             lights=[LightCfg.from_dict(x) for x in d.get("lights", [])],
             phones=[PhoneCfg.from_dict(x) for x in d.get("phones", [])],
@@ -1689,6 +1823,8 @@ def validate_settings(settings: Settings) -> str | None:
         return "The presence source must be an entity id."
     if not 1 <= settings.snooze_minutes <= 720:
         return "Snooze must be between 1 minute and 12 hours."
+    if not 5 <= settings.question_wait_minutes <= 720:
+        return "The wait for the questions must be between 5 minutes and 12 hours."
     if settings.ai.entity_id and not settings.ai.entity_id.startswith("ai_task."):
         return "Pick an AI task agent, or leave it empty for the default."
     if settings.ai.photo_entity_id and not settings.ai.photo_entity_id.startswith("ai_task."):
@@ -1824,7 +1960,7 @@ def action_id(kind: str, run_id: str, step_id: str) -> str:
 
 def parse_action(action: str) -> tuple[str, str, str] | None:
     """Split a button id into (kind, run_id, step_id), or None if not ours."""
-    for kind in (ACTION_DONE, ACTION_SNOOZE):
+    for kind in (ACTION_DONE, ACTION_SNOOZE, ACTION_ALL_STEPS):
         prefix = f"{kind}_"
         if action.startswith(prefix):
             parts = action[len(prefix) :].split("_")
@@ -1866,6 +2002,33 @@ def phone_payload(
     elif level == LEVEL_ALARM_MAX:
         data.update(channel="alarm_stream_max", priority="high", ttl=0)
     return {"title": title, "message": message, "data": data}
+
+
+PANEL_PATH = "/boopli"  # where Boopli lives inside Home Assistant (the app opens it from a button)
+
+
+def questions_payload(run_id: str, chore_name: str, count: int) -> dict[str, Any]:
+    """The phone notification for a chore that started by itself and has questions to answer.
+
+    "Start with all steps" starts it as it is; "Answer the questions" opens Boopli in
+    the Home Assistant app. The chore itself is already running either way.
+    """
+    many = "questions" if count != 1 else "question"
+    return {
+        "title": chore_name,
+        "message": f"Quick look first: {count} {many} about what needs doing.",
+        "data": {
+            "tag": notification_tag(run_id, QUESTIONS_STEP),
+            "clickAction": PANEL_PATH,
+            "actions": [
+                {
+                    "action": action_id(ACTION_ALL_STEPS, run_id, QUESTIONS_STEP),
+                    "title": "Start with all steps",
+                },
+                {"action": "URI", "title": "Answer the questions", "uri": PANEL_PATH},
+            ],
+        },
+    }
 
 
 def _color_data(color_modes: list[str], color: list[int]) -> dict[str, Any]:

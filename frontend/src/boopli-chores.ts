@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, startChore } from "./api";
 import "./boopli-chore-editor";
+import "./boopli-questions";
 import { blankDraft, TEMPLATES } from "./templates";
 import { describeRepeat, describeWhen } from "./time";
 import { sharedStyles } from "./styles";
@@ -16,6 +17,8 @@ export class BoopliChores extends LitElement {
     _editing: { state: true },
     _openSchedule: { state: true },
     _error: { state: true },
+    _asking: { state: true },
+    _busy: { state: true },
   };
 
   declare hass?: Hass;
@@ -26,6 +29,8 @@ export class BoopliChores extends LitElement {
   declare _editing: ChoreDraft | null;
   declare _openSchedule: boolean;
   declare _error: string;
+  declare _asking: Chore | null; // the chore whose questions are being answered before it starts
+  declare _busy: boolean;
 
   constructor() {
     super();
@@ -34,6 +39,8 @@ export class BoopliChores extends LitElement {
     this._editing = null;
     this._openSchedule = false;
     this._error = "";
+    this._asking = null;
+    this._busy = false;
   }
 
   protected willUpdate(): void {
@@ -62,6 +69,7 @@ export class BoopliChores extends LitElement {
       nudge_style: chore.nudge_style,
       ignore_quiet_hours: chore.ignore_quiet_hours,
       notes: chore.notes ?? "",
+      questions: (chore.questions ?? []).map((q) => ({ ...q })),
       steps: chore.steps.map((s) => ({
         id: s.id,
         title: s.title,
@@ -70,6 +78,7 @@ export class BoopliChores extends LitElement {
         wait_for: (s.wait_for ?? []).map((t) => ({ ...t })),
         size: s.size ?? "small",
         group: s.group ?? "",
+        only_if: s.only_if ?? "",
       })),
     };
   }
@@ -87,13 +96,22 @@ export class BoopliChores extends LitElement {
     this._editing = null;
   }
 
-  private async _start(chore: Chore): Promise<void> {
+  private async _start(chore: Chore, answers?: Record<string, boolean>): Promise<void> {
     if (!this.hass) return;
     this._error = "";
+    // A chore with questions asks them first, so the list only has what needs doing.
+    if (!answers && (chore.questions ?? []).length > 0) {
+      this._asking = chore;
+      return;
+    }
+    this._busy = true;
     try {
-      await startChore(this.hass, chore.id);
+      await startChore(this.hass, chore.id, answers);
+      this._asking = null;
     } catch (err) {
       this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
     }
   }
 
@@ -121,6 +139,22 @@ export class BoopliChores extends LitElement {
           );
         }}
       ></boopli-chore-editor>`;
+    }
+
+    if (this._asking) {
+      const chore = this._asking;
+      return html`<section class="card">
+        <h2>${chore.name}</h2>
+        <p class="muted">A quick look first, so the list only has what needs doing today.</p>
+        <boopli-questions
+          .questions=${chore.questions ?? []}
+          .busy=${this._busy}
+          label="Start"
+          @answered=${(e: CustomEvent<{ answers: Record<string, boolean> }>) => this._start(chore, e.detail.answers)}
+          @cancel=${() => (this._asking = null)}
+        ></boopli-questions>
+        ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
+      </section>`;
     }
 
     const tz = this.snapshot.time_zone;
@@ -223,16 +257,6 @@ export class BoopliChores extends LitElement {
         gap: 12px;
         align-items: start;
       }
-      @media (max-width: 520px) {
-        .chore {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .chore-actions {
-          justify-content: flex-start;
-          flex-shrink: 1;
-        }
-      }
       .chore {
         display: flex;
         justify-content: space-between;
@@ -250,6 +274,17 @@ export class BoopliChores extends LitElement {
         justify-content: flex-end;
         gap: 8px;
         flex-shrink: 0;
+      }
+      /* Phones: last, so it wins over the rules above. */
+      @media (max-width: 520px) {
+        .chore {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .chore-actions {
+          justify-content: flex-start;
+          flex-shrink: 1;
+        }
       }
     `,
   ];

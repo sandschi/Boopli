@@ -193,11 +193,13 @@ export class BoopliPanel extends LitElement {
       one_off: false,
       repeat: { type: "none", time: "09:00", every_n_days: 1, days: {} },
       notes: result.notes,
+      questions: result.questions,
       steps: result.steps.map((s) => ({
         title: s.title,
         wait_minutes: s.wait_minutes,
         size: s.size,
         group: s.group,
+        only_if: s.only_if ?? "",
       })),
     };
   }

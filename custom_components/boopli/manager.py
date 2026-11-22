@@ -309,9 +309,16 @@ class BoopliManager:
                 chore, self._active_run_for(chore.id) is not None, now
             )
             if action == "start":
-                run, started = engine.start_run(chore, now)
-                self.runs[run.id] = run
-                events += started
+                try:
+                    run, started = engine.start_run(
+                        chore, now, None, self.settings.question_wait_minutes
+                    )
+                except ValueError:  # cannot happen without answers; never lose the schedule over it
+                    action = "skip"
+                else:
+                    self.runs[run.id] = run
+                    events += started
+                    self._ask_questions(run)
             if action in ("start", "skip"):
                 engine.advance_after_due(chore, now, self.tz)
 
@@ -599,6 +606,10 @@ class BoopliManager:
             chore = self.chores.get(run.chore_id)
             style = chore.nudge_style if chore else self.settings.default_style
             ignore_quiet = chore.ignore_quiet_hours if chore else False
+            if engine.nudges_held(run, now):
+                # Waiting for the answers to the questions; look again when that wait is over.
+                wakeups.append(engine.parse_ts(run.asking_until or ""))
+                continue
             for step in run.steps:
                 if step.status != engine.STEP_ACTIVE:
                     continue
@@ -791,18 +802,52 @@ class BoopliManager:
         del self.chores[chore.id]
         self._tick()
 
-    def start_chore(self, ref: str) -> engine.Run:
-        """Start a chore now (for on-demand chores). Idempotent while running."""
+    def start_chore(self, ref: str, answers: dict[str, bool] | None = None) -> engine.Run:
+        """Start a chore now (for on-demand chores). Idempotent while running.
+
+        The panel asks the chore's questions first and passes the `answers`. Started
+        without answers (a service call), a chore with questions starts with all steps
+        and asks them afterwards, like a chore that starts by itself.
+        """
         chore = self.find_chore(ref)
         existing = self._active_run_for(chore.id)
         if existing:
             return existing
         now = dt_util.utcnow()
-        run, events = engine.start_run(chore, now)
+        try:
+            run, events = engine.start_run(
+                chore, now, answers, self.settings.question_wait_minutes
+            )
+        except ValueError as err:
+            raise BoopliError(str(err)) from err
         self.runs[run.id] = run
         self._announce(events)
+        self._ask_questions(run)
         self._tick()
         return run
+
+    def _ask_questions(self, run: engine.Run) -> None:
+        """A run started with its questions still open: tell the phones so you can answer them."""
+        if not run.questions_open:
+            return
+        self.hass.async_create_task(self.nudger.async_send_questions(run))
+
+    def answer_questions(self, run_id: str, answers: dict[str, bool]) -> None:
+        """Answer the questions of a run (or start it with all steps: answer nothing)."""
+        run = self.runs.get(run_id)
+        if run is None:
+            return  # already over: answering twice is harmless
+        events = engine.answer_questions(run, answers, dt_util.utcnow())
+        if not events:
+            return
+        self.hass.async_create_task(self.nudger.async_clear_step(run.id, engine.QUESTIONS_STEP))
+        if run.status == engine.RUN_DONE:
+            del self.runs[run.id]
+            chore = self.chores.get(run.chore_id)
+            if chore and engine.on_run_finished(chore, dt_util.utcnow(), self.tz):
+                del self.chores[chore.id]
+        self._announce(events)
+        self._tick()
 
     def park_part(self, run_id: str, group: str, when: str, at: str = "") -> engine.Chore:
         """Set a part of a running task aside as a small task of its own, to do later.
@@ -1345,12 +1390,23 @@ class BoopliManager:
         for attempt in (1, 2):  # an unreadable answer gets one more try
             data = await self._run_agent("Boopli: steps", instructions)
             try:
-                steps, summary = breakdown.parse_steps(data, engine.MAX_STEPS)
+                steps, summary, questions = breakdown.parse_steps_and_questions(
+                    data, engine.MAX_STEPS
+                )
             except breakdown.BreakdownError as err:
                 if attempt == 2:
                     raise BoopliError(str(err)) from err
                 continue
-            return {"steps": [asdict(s) for s in steps], "summary": summary}
+            if kind != breakdown.KIND_RECURRING:
+                # A one-off task has no use for questions: it is already written for today.
+                questions = []
+                for step in steps:
+                    step.only_if = ""
+            return {
+                "steps": [asdict(s) for s in steps],
+                "summary": summary,
+                "questions": [asdict(q) for q in questions],
+            }
         raise BoopliError("The AI agent did not answer.")  # not reached
 
     def add_task_steps(
