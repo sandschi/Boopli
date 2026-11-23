@@ -148,16 +148,16 @@ export const catCss = css`
   .cat {
     --k: 0.4;
   }
-  .ear,
-  .tail,
-  .whiskers {
+  .cat .ear,
+  .cat .tail,
+  .cat .whiskers {
     transform-box: fill-box;
   }
-  .ear {
+  .cat .ear {
     transform-origin: 50% 100%;
     animation: cat-ear 8s ease-in-out infinite;
   }
-  .earR {
+  .cat .earR {
     animation-delay: 3.5s;
   }
   @keyframes cat-ear {
@@ -173,7 +173,7 @@ export const catCss = css`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .cat .tail {
     transform-origin: 0% 100%;
     animation: cat-swish 3.6s ease-in-out infinite alternate;
   }
@@ -207,7 +207,7 @@ export const catCss = css`
       transform: rotate(6deg);
     }
   }
-  .whiskers {
+  .cat .whiskers {
     transform-origin: 50% 50%;
     animation: whisker 6s ease-in-out infinite;
   }

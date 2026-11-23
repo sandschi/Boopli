@@ -2410,15 +2410,15 @@ var mn = o`
   .bear {
     --k: 0.3;
   }
-  .ear,
-  .foot {
+  .bear .ear,
+  .bear .foot {
     transform-box: fill-box;
   }
-  .ear {
+  .bear .ear {
     transform-origin: 50% 70%;
     animation: ear-twitch 9s ease-in-out infinite;
   }
-  .earR {
+  .bear .earR {
     animation-delay: 3.5s;
   }
   @keyframes ear-twitch {
@@ -2551,16 +2551,16 @@ var An = o`
   .cat {
     --k: 0.4;
   }
-  .ear,
-  .tail,
-  .whiskers {
+  .cat .ear,
+  .cat .tail,
+  .cat .whiskers {
     transform-box: fill-box;
   }
-  .ear {
+  .cat .ear {
     transform-origin: 50% 100%;
     animation: cat-ear 8s ease-in-out infinite;
   }
-  .earR {
+  .cat .earR {
     animation-delay: 3.5s;
   }
   @keyframes cat-ear {
@@ -2576,7 +2576,7 @@ var An = o`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .cat .tail {
     transform-origin: 0% 100%;
     animation: cat-swish 3.6s ease-in-out infinite alternate;
   }
@@ -2610,7 +2610,7 @@ var An = o`
       transform: rotate(6deg);
     }
   }
-  .whiskers {
+  .cat .whiskers {
     transform-origin: 50% 50%;
     animation: whisker 6s ease-in-out infinite;
   }
@@ -2739,15 +2739,15 @@ var Jn = o`
   .dog {
     --k: 0.5;
   }
-  .ear,
-  .tail {
+  .dog .ear,
+  .dog .tail {
     transform-box: fill-box;
   }
-  .earL {
+  .dog .earL {
     transform-origin: 90% 10%;
     animation: ear-flop-l 6s ease-in-out infinite;
   }
-  .earR {
+  .dog .earR {
     transform-origin: 10% 10%;
     animation: ear-flop-r 6s ease-in-out 2s infinite;
   }
@@ -2777,7 +2777,7 @@ var Jn = o`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .dog .tail {
     transform-origin: 0% 90%;
     animation: wag 2.4s ease-in-out infinite alternate;
   }
@@ -2928,15 +2928,15 @@ var lr = o`
   .fox {
     --k: 0.4;
   }
-  .ear,
-  .tail {
+  .fox .ear,
+  .fox .tail {
     transform-box: fill-box;
   }
-  .ear {
+  .fox .ear {
     transform-origin: 50% 100%;
     animation: fox-ear 7s ease-in-out infinite;
   }
-  .earR {
+  .fox .earR {
     animation-delay: 3s;
   }
   @keyframes fox-ear {
@@ -2952,7 +2952,7 @@ var lr = o`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .fox .tail {
     transform-origin: 0% 90%;
     animation: fox-sway 3s ease-in-out infinite alternate;
   }
@@ -3134,9 +3134,17 @@ var br = {
 		};
 	}
 	constructor() {
-		super(), this._momentTimer = 0, this._onVisibility = () => {
-			this.toggleAttribute("paused", document.hidden);
+		super(), this._momentTimer = 0, this._momentLeft = 0, this._momentSince = 0, this._onVisibility = () => {
+			this.toggleAttribute("paused", document.hidden), document.hidden ? this._momentTimer && (window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._momentLeft = Math.max(0, this._momentLeft - (Date.now() - this._momentSince))) : this._playing && !this._momentTimer && this._startMomentTimer();
 		}, this._taps = [], this.kind = "slime", this.mood = "content", this.level = 1, this.away = !1, this.still = !1, this.activity = "", this.moment = "", this.momentSeq = 0, this.momentText = "", this._playing = "", this._text = "";
+	}
+	_startMomentTimer() {
+		this._momentSince = Date.now(), this._momentTimer = window.setTimeout(() => {
+			this._momentTimer = 0, this._momentLeft = 0, this._playing = "", this.dispatchEvent(new CustomEvent("moment-end", {
+				bubbles: !0,
+				composed: !0
+			}));
+		}, this._momentLeft);
 	}
 	connectedCallback() {
 		super.connectedCallback(), document.addEventListener("visibilitychange", this._onVisibility), this._onVisibility();
@@ -3148,12 +3156,7 @@ var br = {
 		e.has("momentSeq") && this.moment && this._play(this.moment, this.momentText);
 	}
 	async _play(e, t = "") {
-		window.clearTimeout(this._momentTimer), this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentTimer = window.setTimeout(() => {
-			this._playing = "", this.dispatchEvent(new CustomEvent("moment-end", {
-				bubbles: !0,
-				composed: !0
-			}));
-		}, zt[e]);
+		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = zt[e], document.hidden || this._startMomentTimer();
 	}
 	_art() {
 		let e = yr(this.kind), t = {
@@ -3314,11 +3317,19 @@ var X = "#101010", Sr = v`<svg viewBox="0 0 72 48" aria-hidden="true">
 		};
 	}
 	constructor() {
-		super(), this.kind = "slime", this.mood = "content", this.level = 1, this.away = !1, this.activity = "", this.moment = "", this.momentSeq = 0, this.momentText = "";
+		super(), this._onVisibility = () => {
+			this.toggleAttribute("paused", document.hidden);
+		}, this.kind = "slime", this.mood = "content", this.level = 1, this.away = !1, this.activity = "", this.moment = "", this.momentSeq = 0, this.momentText = "";
+	}
+	connectedCallback() {
+		super.connectedCallback(), document.addEventListener("visibilitychange", this._onVisibility), this._onVisibility();
+	}
+	disconnectedCallback() {
+		document.removeEventListener("visibilitychange", this._onVisibility), super.disconnectedCallback();
 	}
 	render() {
-		let e = this.level >= 3, t = this.away ? "hibernating" : this.mood, n = e && !this.activity && (t === "sleepy" || t === "hibernating");
-		return _`<div class="scene ${n ? "sleeping" : ""} ${n && t === "hibernating" ? "deep" : ""}" role="group" aria-label="Your pet's room">
+		let e = this.level >= 3, t = this.away ? "hibernating" : this.mood, n = this.away ? "" : this.activity, r = e && !n && (t === "sleepy" || t === "hibernating");
+		return _`<div class="scene ${r ? "sleeping" : ""} ${r && t === "hibernating" ? "deep" : ""}" role="group" aria-label="Your pet's room">
       <div class="floor"></div>
       <div class="prop water">${Sr}</div>
       ${this.level >= 2 ? _`<div class="prop food">${Cr}</div>` : b}
@@ -3329,7 +3340,7 @@ var X = "#101010", Sr = v`<svg viewBox="0 0 72 48" aria-hidden="true">
           .mood=${t}
           .level=${this.level}
           .away=${this.away}
-          .activity=${this.activity}
+          .activity=${n}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}
           .momentText=${this.momentText}
@@ -3427,6 +3438,9 @@ var X = "#101010", Sr = v`<svg viewBox="0 0 72 48" aria-hidden="true">
         transform-box: fill-box;
         transform-origin: 50% 50%;
         animation: ripple 3.4s ease-out infinite;
+      }
+      :host([paused]) .ripple {
+        animation-play-state: paused;
       }
       @keyframes ripple {
         0% {
@@ -5711,7 +5725,7 @@ var Ti = class extends C {
 		return _`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? _`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : b}
       <div class="head">
-        ${yr(this.pet).art ? _`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : _`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
+        ${this.pet && yr(this.pet).art ? _`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : _`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>
       <div
@@ -10135,6 +10149,7 @@ var la = class extends C {
       </div>
       ${e.phase === "working" ? _`<boopli-wait
             .label=${e.answers.length ? "Writing the notes…" : "Thinking…"}
+            .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${this.snapshot?.ai_timeout ?? 180}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>` : b}
@@ -10202,6 +10217,7 @@ var la = class extends C {
       ${this._error ? _`<div class="error">${this._error}</div>` : b}
       ${e.sending ? _`<boopli-wait
             .label=${"The AI is looking at your photos…"}
+            .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${this.snapshot?.ai_timeout ?? 180}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>` : _`

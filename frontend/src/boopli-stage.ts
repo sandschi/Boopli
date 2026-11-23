@@ -113,12 +113,30 @@ export class BoopliStage extends LitElement {
     this.momentText = "";
   }
 
+  // The bowl's ripple belongs to the stage, outside the pet, so the stage pauses it itself while the page is hidden.
+  private _onVisibility = (): void => {
+    this.toggleAttribute("paused", document.hidden);
+  };
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    document.addEventListener("visibilitychange", this._onVisibility);
+    this._onVisibility();
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener("visibilitychange", this._onVisibility);
+    super.disconnectedCallback();
+  }
+
   render() {
     const hasBed = this.level >= 3;
     // While you are away the pet always hibernates, whatever its mood was.
     const mood: Mood = this.away ? "hibernating" : this.mood;
+    // While you are away it is not busy either (Today never sends an activity then): the same here, so the preview matches.
+    const activity: Activity = this.away ? "" : this.activity;
     // Asleep in the bed, unless it is busy with something.
-    const sleeping = hasBed && !this.activity && (mood === "sleepy" || mood === "hibernating");
+    const sleeping = hasBed && !activity && (mood === "sleepy" || mood === "hibernating");
     const deep = sleeping && mood === "hibernating";
     return html`<div class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}" role="group" aria-label="Your pet's room">
       <div class="floor"></div>
@@ -131,7 +149,7 @@ export class BoopliStage extends LitElement {
           .mood=${mood}
           .level=${this.level}
           .away=${this.away}
-          .activity=${this.activity}
+          .activity=${activity}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}
           .momentText=${this.momentText}
@@ -231,6 +249,9 @@ export class BoopliStage extends LitElement {
         transform-box: fill-box;
         transform-origin: 50% 50%;
         animation: ripple 3.4s ease-out infinite;
+      }
+      :host([paused]) .ripple {
+        animation-play-state: paused;
       }
       @keyframes ripple {
         0% {

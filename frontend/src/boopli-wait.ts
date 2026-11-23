@@ -81,7 +81,7 @@ export class BoopliWait extends LitElement {
     return html`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
       <div class="head">
-        ${petInfo(this.pet).art
+        ${this.pet && petInfo(this.pet).art
           ? html`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>`
           : html`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>

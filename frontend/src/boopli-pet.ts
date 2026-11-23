@@ -56,6 +56,8 @@ export class BoopliPet extends LitElement {
   declare _text: string;
 
   private _momentTimer = 0;
+  private _momentLeft = 0; // ms of the playing moment still to go (the clock stops while the page is hidden)
+  private _momentSince = 0; // when the timer was last started
 
   constructor() {
     super();
@@ -74,7 +76,28 @@ export class BoopliPet extends LitElement {
 
   private _onVisibility = (): void => {
     this.toggleAttribute("paused", document.hidden);
+    // The animation pauses while the page is hidden, so its clock must too: otherwise the moment
+    // would be over before the page is seen again.
+    if (document.hidden) {
+      if (this._momentTimer) {
+        window.clearTimeout(this._momentTimer);
+        this._momentTimer = 0;
+        this._momentLeft = Math.max(0, this._momentLeft - (Date.now() - this._momentSince));
+      }
+    } else if (this._playing && !this._momentTimer) {
+      this._startMomentTimer();
+    }
   };
+
+  private _startMomentTimer(): void {
+    this._momentSince = Date.now();
+    this._momentTimer = window.setTimeout(() => {
+      this._momentTimer = 0;
+      this._momentLeft = 0;
+      this._playing = "";
+      this.dispatchEvent(new CustomEvent("moment-end", { bubbles: true, composed: true }));
+    }, this._momentLeft);
+  }
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -95,15 +118,14 @@ export class BoopliPet extends LitElement {
   /** Play a moment once: take the class off, let the page notice, put it on again, take it off at the end. */
   private async _play(moment: Exclude<Moment, "">, text = ""): Promise<void> {
     window.clearTimeout(this._momentTimer);
+    this._momentTimer = 0;
     this._playing = "";
     await this.updateComplete;
     void this.offsetWidth;
     this._text = text;
     this._playing = moment;
-    this._momentTimer = window.setTimeout(() => {
-      this._playing = "";
-      this.dispatchEvent(new CustomEvent("moment-end", { bubbles: true, composed: true }));
-    }, MOMENT_MS[moment]);
+    this._momentLeft = MOMENT_MS[moment];
+    if (!document.hidden) this._startMomentTimer(); // when hidden it starts when the page is shown again
   }
 
   private _art() {

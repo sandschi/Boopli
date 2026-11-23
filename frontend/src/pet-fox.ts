@@ -150,15 +150,15 @@ export const foxCss = css`
   .fox {
     --k: 0.4;
   }
-  .ear,
-  .tail {
+  .fox .ear,
+  .fox .tail {
     transform-box: fill-box;
   }
-  .ear {
+  .fox .ear {
     transform-origin: 50% 100%;
     animation: fox-ear 7s ease-in-out infinite;
   }
-  .earR {
+  .fox .earR {
     animation-delay: 3s;
   }
   @keyframes fox-ear {
@@ -174,7 +174,7 @@ export const foxCss = css`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .fox .tail {
     transform-origin: 0% 90%;
     animation: fox-sway 3s ease-in-out infinite alternate;
   }

@@ -152,15 +152,15 @@ export const dogCss = css`
   .dog {
     --k: 0.5;
   }
-  .ear,
-  .tail {
+  .dog .ear,
+  .dog .tail {
     transform-box: fill-box;
   }
-  .earL {
+  .dog .earL {
     transform-origin: 90% 10%;
     animation: ear-flop-l 6s ease-in-out infinite;
   }
-  .earR {
+  .dog .earR {
     transform-origin: 10% 10%;
     animation: ear-flop-r 6s ease-in-out 2s infinite;
   }
@@ -190,7 +190,7 @@ export const dogCss = css`
       transform: rotate(3deg);
     }
   }
-  .tail {
+  .dog .tail {
     transform-origin: 0% 90%;
     animation: wag 2.4s ease-in-out infinite alternate;
   }

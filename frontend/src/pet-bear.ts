@@ -140,15 +140,15 @@ export const bearCss = css`
   .bear {
     --k: 0.3;
   }
-  .ear,
-  .foot {
+  .bear .ear,
+  .bear .foot {
     transform-box: fill-box;
   }
-  .ear {
+  .bear .ear {
     transform-origin: 50% 70%;
     animation: ear-twitch 9s ease-in-out infinite;
   }
-  .earR {
+  .bear .earR {
     animation-delay: 3.5s;
   }
   @keyframes ear-twitch {
