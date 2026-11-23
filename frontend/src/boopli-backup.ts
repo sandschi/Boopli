@@ -174,9 +174,13 @@ export class BoopliBackup extends LitElement {
       if (first) this._parts = [...preview.parts];
       this._error = "";
     } catch (err) {
-      this._preview = null;
       this._error = errorMessage(err);
-      if (first) this._file = null;
+      if (first) {
+        // the file itself cannot be used
+        this._preview = null;
+        this._file = null;
+      }
+      // else: the parts picked do not fit together. The list stays, so they can be changed; Import stays off until they fit.
     } finally {
       this._busy = false;
     }
@@ -289,7 +293,7 @@ export class BoopliBackup extends LitElement {
           `
         : nothing}
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !pre || !this._parts.length} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
+        <button class="primary" ?disabled=${this._busy || !pre || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
         <button ?disabled=${this._busy} @click=${this._close}>Cancel</button>
       </div>
     `;

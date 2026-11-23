@@ -1331,16 +1331,19 @@ class BoopliManager:
         wanted = [p for p in engine.BACKUP_PARTS if p in parts]
         if not wanted:
             raise BoopliError("Pick at least one part to back up.")
-        return engine.build_backup(
-            wanted,
-            settings=self.settings,
-            chores=self.chores.values(),
-            home=self.home,
-            progress=self.progress,
-            history=self.history,
-            boopli_version=boopli_version,
-            exported_at=engine.fmt_ts(dt_util.utcnow()),
-        )
+        try:
+            return engine.build_backup(
+                wanted,
+                settings=self.settings,
+                chores=self.chores.values(),
+                home=self.home,
+                progress=self.progress,
+                history=self.history,
+                boopli_version=boopli_version,
+                exported_at=engine.fmt_ts(dt_util.utcnow()),
+            )
+        except engine.BackupError as err:
+            raise BoopliError(str(err)) from err
 
     def _read_backup(self, data: Any, parts: list[str]) -> engine.Backup:
         """Read and check a backup file, and that the parts picked fit together. Changes nothing."""
@@ -1398,8 +1401,7 @@ class BoopliManager:
         if "chores" in chosen and backup.chores is not None:
             new: dict[str, engine.Chore] = {}
             for chore in backup.chores:
-                engine.init_schedule(chore, now, self.tz)
-                chore.created_at = chore.created_at or engine.fmt_ts(now)
+                engine.settle_imported_chore(chore, now, self.tz)
                 new[chore.id] = chore
             # A run that was going on for a chore that is not in the backup ends with it.
             for run in [r for r in self.runs.values() if r.chore_id not in new]:

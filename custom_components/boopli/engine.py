@@ -3072,6 +3072,9 @@ def build_backup(
 ) -> dict[str, Any]:
     """The backup file as plain data, with the parts that were asked for."""
     asked = set(parts)
+    chores = list(chores)
+    if "chores" in asked and len(chores) > BACKUP_CHORES_MAX:
+        raise BackupError(f"There are more than {BACKUP_CHORES_MAX} chores, which is more than a backup can hold.")
     data: dict[str, Any] = {
         "format": BACKUP_FORMAT,
         "version": BACKUP_VERSION,
@@ -3161,6 +3164,14 @@ def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
     return backup
 
 
+def settle_imported_chore(chore: Chore, now: datetime, tz: tzinfo) -> None:
+    """Make an imported chore ready: its next due time is worked out again from now, except for a parked
+    part of a task, which has no schedule and keeps the time it comes back (or waits for the user)."""
+    if not chore.parked:
+        init_schedule(chore, now, tz)
+    chore.created_at = chore.created_at or fmt_ts(now)
+
+
 def check_backup_selection(
     backup: Backup, chosen: Iterable[str], settings: Settings, chores: Iterable[Chore]
 ) -> str | None:
@@ -3199,7 +3210,12 @@ def backup_references(settings: Settings | None, chores: Iterable[Chore] | None)
     services: set[str] = set()
     if settings is not None:
         entities.update(light.entity_id for light in settings.lights)
-        entities.update(speaker.entity_id for speaker in settings.speakers)
+        for speaker in settings.speakers:
+            entities.add(speaker.entity_id)
+            speech = speaker.speech
+            if speech.enabled and speech.target:
+                # Alexa (media) speaks through a notify service; the other routes use an entity
+                (services if speech.route == SPEECH_ALEXA_MEDIA else entities).add(speech.target)
         entities.update(device.entity_id for device in settings.alarm_devices)
         entities.update([settings.presence_entity, settings.ai.entity_id, settings.ai.photo_entity_id])
         for board in settings.boards:

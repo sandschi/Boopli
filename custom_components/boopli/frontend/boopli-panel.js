@@ -9722,7 +9722,7 @@ var Ma = class extends x {
 				let t = e ? [] : this._parts, n = await qe(this.hass, this._file.data, t);
 				this._preview = n, e && (this._parts = [...n.parts]), this._error = "";
 			} catch (t) {
-				this._preview = null, this._error = w(t), e && (this._file = null);
+				this._error = w(t), e && (this._preview = null, this._file = null);
 			} finally {
 				this._busy = !1;
 			}
@@ -9809,7 +9809,7 @@ var Ma = class extends x {
             </p>
           ` : y}
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !e || !this._parts.length} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
+        <button class="primary" ?disabled=${this._busy || !e || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
         <button ?disabled=${this._busy} @click=${this._close}>Cancel</button>
       </div>
     `;
@@ -10097,9 +10097,12 @@ var Na = {
 		let e = this.snapshot?.settings;
 		if (e) {
 			if (!this._draft || !this._base) this._base = structuredClone(e), this._draft = structuredClone(e);
-			else if (this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base)) {
-				let t = JSON.stringify(this._draft) === JSON.stringify(this._base);
-				this._base = structuredClone(e), t && (this._draft = structuredClone(e), this._modal && (this._modalBase = structuredClone(e))), this._justSaved = !1;
+			else {
+				if (this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base)) {
+					let t = JSON.stringify(this._draft) === JSON.stringify(this._base);
+					this._base = structuredClone(e), t && (this._draft = structuredClone(e), this._modal && (this._modalBase = structuredClone(e))), this._justSaved = !1;
+				}
+				!this._isDirty() && JSON.stringify(e) !== JSON.stringify(this._base) && (this._base = structuredClone(e), this._draft = structuredClone(e), this._modal && (this._modalBase = structuredClone(e)));
 			}
 		}
 	}

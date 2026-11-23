@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -240,3 +241,61 @@ def test_the_references_of_a_backup_are_listed():
 
 def test_without_settings_or_chores_there_are_no_references():
     assert engine.backup_references(None, None) == ([], [])
+
+
+# --- an imported chore is made ready ------------------------------------------------------------
+
+
+def test_a_recurring_chore_gets_a_fresh_next_due_time_on_import():
+    now = datetime(2026, 11, 23, 8, 0, tzinfo=timezone.utc)
+    chore = a_chore()
+    chore.repeat = engine.Repeat.daily("09:00")
+    chore.next_due = "2020-01-01T09:00:00Z"
+    engine.settle_imported_chore(chore, now, timezone.utc)
+    assert chore.next_due == engine.fmt_ts(datetime(2026, 11, 23, 9, 0, tzinfo=timezone.utc))  # today 09:00, not the old time
+    assert chore.created_at == engine.fmt_ts(now)
+
+
+def test_a_parked_part_keeps_the_time_it_comes_back():
+    now = datetime(2026, 11, 23, 8, 0, tzinfo=timezone.utc)
+    parked = a_chore()
+    parked.parked = True
+    parked.next_due = "2026-11-24T09:00:00Z"
+    parked.created_at = "2026-11-22T10:00:00Z"
+    engine.settle_imported_chore(parked, now, timezone.utc)
+    assert parked.next_due == "2026-11-24T09:00:00Z"
+    assert parked.created_at == "2026-11-22T10:00:00Z"
+    waiting = a_chore("c2", "Waits")
+    waiting.parked = True  # no time: it waits for the user
+    engine.settle_imported_chore(waiting, now, timezone.utc)
+    assert waiting.next_due is None or waiting.next_due == ""
+
+
+# --- what the file points to: speech ------------------------------------------------------------
+
+
+def test_the_speech_target_of_a_speaker_is_listed_by_its_route():
+    s = engine.Settings.from_dict(
+        {
+            "speakers": [
+                {"entity_id": "media_player.a", "speech": {"enabled": True, "route": engine.SPEECH_ALEXA_MEDIA, "target": "alexa_media_a"}},
+                {"entity_id": "media_player.b", "speech": {"enabled": True, "route": engine.SPEECH_TTS, "target": "tts.home"}},
+                {"entity_id": "media_player.c", "speech": {"enabled": False, "route": engine.SPEECH_TTS, "target": "tts.unused"}},
+            ]
+        }
+    )
+    entities, services = engine.backup_references(s, [])
+    assert entities == ["media_player.a", "media_player.b", "media_player.c", "tts.home"]
+    assert services == ["alexa_media_a"]
+
+
+# --- the most chores ----------------------------------------------------------------------------
+
+
+def test_a_backup_at_the_limit_comes_back_and_one_past_it_cannot_be_made():
+    limit = engine.BACKUP_CHORES_MAX
+    chores = [a_chore(f"c{i}", f"Chore {i}") for i in range(limit)]
+    assert len(engine.parse_backup(make(["chores"], chores=chores)).chores) == limit
+    with pytest.raises(engine.BackupError, match="more than"):
+        make(["chores"], chores=chores + [a_chore("extra", "One too many")])
+    make(["settings"], chores=chores + [a_chore("extra", "One too many")])  # chores not asked for: no problem

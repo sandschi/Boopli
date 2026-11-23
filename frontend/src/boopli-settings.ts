@@ -156,6 +156,13 @@ export class BoopliSettings extends LitElement {
       }
       this._justSaved = false;
     }
+    // Settings that changed on the server without this page saving them (an import, another screen): while
+    // there is nothing unsaved here, take them in, so the next Save cannot bring the old values back.
+    if (!this._isDirty() && JSON.stringify(saved) !== JSON.stringify(this._base)) {
+      this._base = structuredClone(saved);
+      this._draft = structuredClone(saved);
+      if (this._modal) this._modalBase = structuredClone(saved);
+    }
   }
 
   protected updated(): void {
