@@ -52,7 +52,7 @@ export class WallTileEntity extends WallTile {
     const name = this.text("name") || friendlyName(this.hass, id);
     const unit = typeof st?.attributes?.unit_of_measurement === "string" ? ` ${st.attributes.unit_of_measurement}` : "";
     const on = st?.state === "on";
-    const tappable = !!TAP[domain] && this.text("tap", "toggle") === "toggle";
+    const tappable = !!TAP[domain] && this.text("tap", "toggle") === "toggle" && !this.preview; // in the editor it does nothing, so it is no button there
     const inside = html`<div class="icon big">${ICON[domain] ?? "◻️"}</div>
       <div>
         <div class="label">${name}</div>

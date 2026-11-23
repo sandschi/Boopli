@@ -41,7 +41,7 @@ export class BoopliWall extends LitElement {
   declare _awakeUntil: number;
   declare _live: Tile[] | null; // the tiles as they are while one is being dragged or resized
 
-  private _drag?: { id: string; pid: number; mode: "move" | "resize"; gx: number; gy: number; x0: number; y0: number; moved: boolean };
+  private _drag?: { id: string; bid: string; pid: number; mode: "move" | "resize"; gx: number; gy: number; x0: number; y0: number; moved: boolean };
 
   private _lock?: { release(): Promise<void> };
   private _awakeTimer?: number;
@@ -208,7 +208,7 @@ export class BoopliWall extends LitElement {
     const tile = board.tiles.find((t) => t.id === id);
     const at = this._cellAt(e.clientX, e.clientY);
     if (!tile || !at) return;
-    this._drag = { id, pid: e.pointerId, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
+    this._drag = { id, bid: board.id, pid: e.pointerId, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     e.preventDefault();
   };
@@ -217,6 +217,12 @@ export class BoopliWall extends LitElement {
     const d = this._drag;
     const board = this._board();
     if (!d || !board || e.pointerId !== d.pid) return;
+    if (board.id !== d.bid) {
+      // the board was switched while the pointer is held: drop the drag, it must not land on the other board
+      this._drag = undefined;
+      this._live = null;
+      return;
+    }
     if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 6) return; // still a tap
     d.moved = true;
     const at = this._cellAt(e.clientX, e.clientY);
@@ -240,7 +246,7 @@ export class BoopliWall extends LitElement {
     }
     const tiles = this._live;
     this._live = null;
-    if (tiles) this.dispatchEvent(new CustomEvent("tiles-change", { detail: tiles, bubbles: true, composed: true }));
+    if (tiles && this._board()?.id === d.bid) this.dispatchEvent(new CustomEvent("tiles-change", { detail: tiles, bubbles: true, composed: true }));
   };
 
   private _cancel = (e: PointerEvent): void => {

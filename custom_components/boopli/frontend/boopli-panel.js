@@ -12231,7 +12231,7 @@ var Ra = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return g`<div class="center muted normal">Pick an entity in the board settings.</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || K(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!Ra[n] && this.text("tap", "toggle") === "toggle", s = g`<div class="icon big">${za[n] ?? "◻️"}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || K(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!Ra[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = g`<div class="icon big">${za[n] ?? "◻️"}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : "not found"}</div>
@@ -12326,7 +12326,22 @@ var Va = {
 };
 customElements.define("wall-tile-weather", Ha);
 // src/wall-tile-calendar.ts
-var Ua = 6e5, Wa = 7, Ga = class extends Z {
+function Ua(e, t) {
+	let n = new Intl.DateTimeFormat("en-US", {
+		timeZone: t,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		hourCycle: "h23"
+	}).formatToParts(new Date(e)).reduce((e, t) => (e[t.type] = t.value, e), {});
+	return {
+		day: `${n.year}-${n.month}-${n.day}`,
+		time: `${n.hour}:${n.minute}`
+	};
+}
+var Wa = 6e5, Ga = 7, Ka = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -12338,7 +12353,7 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), Ua);
+		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), Wa);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer);
@@ -12354,34 +12369,49 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 		}
 		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
-		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + Wa * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + Ga * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
+			let a = this.snapshot?.time_zone;
 			this._events = e.map((e) => {
-				let t = !e.start.dateTime, n = t ? String(e.start.date ?? "") : "", r = Date.parse(e.start.dateTime ?? `${n}T00:00:00`);
+				let t = e.summary ?? "(no title)";
+				if (!e.start.dateTime) {
+					let n = String(e.start.date ?? "");
+					return /^\d{4}-\d{2}-\d{2}$/.test(n) ? {
+						title: t,
+						at: 0,
+						allDay: !0,
+						day: n,
+						key: `${n}T00:00`
+					} : null;
+				}
+				let n = Date.parse(e.start.dateTime);
+				if (Number.isNaN(n)) return null;
+				let { day: r, time: i } = Ua(n, a);
 				return {
-					title: e.summary ?? "(no title)",
-					at: r,
-					allDay: t,
-					date: n
+					title: t,
+					at: n,
+					allDay: !1,
+					day: r,
+					key: `${r}T${i}`
 				};
-			}).filter((e) => !Number.isNaN(e.at)).sort((e, t) => e.at - t.at), this._error = "";
+			}).filter((e) => e !== null).sort((e, t) => e.key < t.key ? -1 : +(e.key > t.key)), this._error = "";
 		} catch {
 			n === this._seq && (this._error = "Could not read the calendar.");
 		}
 	}
 	_when(e) {
-		let t = this.snapshot?.time_zone, n = (e) => new Intl.DateTimeFormat("en-CA", { timeZone: t }).format(new Date(e)), r = (e) => {
+		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, i = n(this.nowMs || Date.now()), a = e.allDay ? e.date : n(e.at), o = a === i ? "Today" : a === r(i) ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
+		}, r = Ua(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? "Today" : i === n(r) ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
 			month: "short"
-		}).format(/* @__PURE__ */ new Date(`${a}T12:00:00Z`));
-		return e.allDay ? o : `${o} ${new Intl.DateTimeFormat(void 0, {
+		}).format(/* @__PURE__ */ new Date(`${i}T12:00:00Z`));
+		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(void 0, {
 			timeZone: t,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -12390,9 +12420,9 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 	}
 	render() {
 		if (!this.text("entity_id")) return g`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
-		let e = this._events.filter((e) => e.at >= (this.nowMs || Date.now()) - 864e5).slice(0, this.num("count", 4));
+		let e = Ua(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
 		return g`<div class="label">Calendar</div>
-      ${this._error ? g`<div class="error">${this._error}</div>` : e.length ? e.map((e) => g`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : g`<div class="normal muted">Nothing in the next week.</div>`}`;
+      ${this._error ? g`<div class="error">${this._error}</div>` : t.length ? t.map((e) => g`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : g`<div class="normal muted">Nothing in the next week.</div>`}`;
 	}
 	static {
 		this.styles = [Q, o`
@@ -12413,9 +12443,9 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-calendar", Ga);
+customElements.define("wall-tile-calendar", Ka);
 // src/wall-tile-camera.ts
-var Ka = class extends Z {
+var qa = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -12456,9 +12486,9 @@ var Ka = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-camera", Ka);
+customElements.define("wall-tile-camera", qa);
 // src/wall-tile-note.ts
-var qa = class extends Z {
+var Ja = class extends Z {
 	render() {
 		let e = this.text("text").trim();
 		return e ? g`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : g`<div class="center muted normal">Write a note in the board settings.</div>`;
@@ -12467,18 +12497,18 @@ var qa = class extends Z {
 		this.styles = [Q, o`.center div { white-space: pre-line; }`];
 	}
 };
-customElements.define("wall-tile-note", qa);
+customElements.define("wall-tile-note", Ja);
 // src/wall-layout.ts
-function Ja(e, t) {
+function Ya(e, t) {
 	return e.x < t.x + t.w && t.x < e.x + e.w && e.y < t.y + t.h && t.y < e.y + e.h;
 }
-function Ya(e) {
+function Xa(e) {
 	return e.reduce((e, t) => Math.max(e, t.y + t.h), 0);
 }
-function Xa(e) {
+function Za(e) {
 	return e.reduce((e, t) => Math.max(e, t.x + t.w), 0);
 }
-function Za(e, t, n = "") {
+function Qa(e, t, n = "") {
 	let r = e.map((e) => ({
 		...e,
 		options: e.options
@@ -12487,7 +12517,7 @@ function Za(e, t, n = "") {
 	let o = r.filter((e) => e !== a).sort((e, t) => e.y - t.y || e.x - t.x);
 	for (let e of o) {
 		for (;;) {
-			let t = i.filter((t) => Ja(t, e));
+			let t = i.filter((t) => Ya(t, e));
 			if (!t.length) break;
 			e.y = Math.max(...t.map((e) => e.y + e.h));
 		}
@@ -12496,9 +12526,9 @@ function Za(e, t, n = "") {
 	}
 	return r;
 }
-function Qa(e, t, n, r, i) {
+function $a(e, t, n, r, i) {
 	r = Math.min(r, t);
-	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => Ja({
+	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => Ya({
 		x: n,
 		y: a,
 		w: r,
@@ -12509,7 +12539,7 @@ function Qa(e, t, n, r, i) {
 	};
 	return null;
 }
-function $a(e, t) {
+function eo(e, t) {
 	return t === 2 ? e.map((e) => ({
 		...e,
 		x: e.x * 2,
@@ -12525,7 +12555,7 @@ function $a(e, t) {
 	}));
 }
 // src/wall-tiles.ts
-var eo = [
+var to = [
 	{
 		type: "clock",
 		label: "Clock",
@@ -12689,13 +12719,13 @@ var eo = [
 		}]
 	}
 ];
-function to(e) {
-	return eo.find((t) => t.type === e);
+function no(e) {
+	return to.find((t) => t.type === e);
 }
-function no(e, t = [], n = 16, r = 9) {
-	let i = to(e), a = {};
+function ro(e, t = [], n = 16, r = 9) {
+	let i = no(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let o = Math.max(1, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), s = Math.max(1, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r)), c = Qa(t, n, r, o, s);
+	let o = Math.max(1, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), s = Math.max(1, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r)), c = $a(t, n, r, o, s);
 	return c ? {
 		id: Y(),
 		type: e,
@@ -12705,19 +12735,19 @@ function no(e, t = [], n = 16, r = 9) {
 		options: a
 	} : null;
 }
-function ro(e = 16, t = 9) {
-	let n = no("clock", [], e, t);
-	return [n, no("due_now", [n], e, t)];
+function io(e = 16, t = 9) {
+	let n = ro("clock", [], e, t);
+	return [n, ro("due_now", [n], e, t)];
 }
-function io(e, t) {
+function ao(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
 	return r && n.find((e) => e.name.toLowerCase() === r || e.id === t) || n[0];
 }
-function ao(e) {
+function oo(e) {
 	return `${location.origin}${location.pathname}?wall=${encodeURIComponent(e.name)}`;
 }
 // src/boopli-wizard.ts
-var oo = {
+var so = {
 	first: [
 		"welcome",
 		"phone",
@@ -12763,13 +12793,13 @@ var oo = {
 	],
 	ladders: ["lad_start", "done"],
 	wall: ["wall_start", "done"]
-}, so = [
+}, co = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], co = {
+], lo = {
 	first: "First setup",
 	phone: "Phone setup",
 	quiet: "Quiet hours setup",
@@ -12782,7 +12812,7 @@ var oo = {
 	ai: "AI help setup",
 	ladders: "Nudge it your way",
 	wall: "Wall board"
-}, lo = 10, $ = 20, uo = {
+}, uo = 10, $ = 20, fo = {
 	welcome: "Welcome",
 	phone: "Your phone",
 	phone_detail: "Phone details",
@@ -12811,12 +12841,12 @@ var oo = {
 	lad_delete: "Delete a ladder",
 	wall_start: "Which board?",
 	done: "All set"
-}, fo = [
+}, po = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], po = [
+], mo = [
 	{
 		value: "one",
 		label: "One nudge",
@@ -12837,7 +12867,7 @@ var oo = {
 		label: "Quiet",
 		text: "Only shown in Boopli, never nudges."
 	}
-], mo = [
+], ho = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -12854,7 +12884,7 @@ var oo = {
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], ho = [
+], go = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -12867,13 +12897,13 @@ var oo = {
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], go = [{
+], _o = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], _o = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", vo = [
+}], vo = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", yo = [
 	0,
 	1,
 	2,
@@ -12881,7 +12911,7 @@ var oo = {
 	4,
 	5,
 	6
-], yo = class extends S {
+], bo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -12917,11 +12947,11 @@ var oo = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...oo[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...so[this.wizard]];
 		let e = this.startAt;
-		if (this._first && so.includes(e)) {
+		if (this._first && co.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...so);
+			this._steps.splice(e + 1, 0, ...co);
 		}
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0, this._picked = Ji.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
@@ -13009,7 +13039,7 @@ var oo = {
 					...this._steps.slice(this._index + 1)
 				]), this._rungAt(this._nudgesBefore(this._index + 1))), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...so,
+					...co,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
@@ -13100,7 +13130,7 @@ var oo = {
 		}
 		let n = this._boardName.trim();
 		if (!n) throw Error("Give the new board a name.");
-		if (t.length >= lo) throw Error(`You have ${lo} boards, the most. Edit or delete one.`);
+		if (t.length >= uo) throw Error(`You have ${uo} boards, the most. Edit or delete one.`);
 		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(`There is already a board called "${n}".`);
 		let r = {
 			id: Y(),
@@ -13108,7 +13138,7 @@ var oo = {
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: ro(16, 9)
+			tiles: io(16, 9)
 		};
 		this._boardId = r.id, this._boardPick = r.id, this._set({ boards: [...t, r] });
 	}
@@ -13231,7 +13261,7 @@ var oo = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? `Nudge ${this._nudgesBefore(t) + 1}` : uo[e];
+		return e === "lad_nudge" ? `Nudge ${this._nudgesBefore(t) + 1}` : fo[e];
 	}
 	_renderLadStart(e) {
 		let t = e.ladders ?? [], n = t.length === 0, r = (e, t, n, r = !1) => g`<label class="inline option">
@@ -13361,7 +13391,7 @@ var oo = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(vo.map((e) => [String(e), { ...$r }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(yo.map((e) => [String(e), { ...$r }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -13387,7 +13417,7 @@ var oo = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(vo.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(yo.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -13489,7 +13519,7 @@ var oo = {
 			level: n.target.value
 		} : e) })}
               >
-                ${mo.map((e) => g`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${ho.map((e) => g`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             ${this._numField("Starts at nudge #", t.start_at ?? 1, 1, 20, (n) => this._set({ phones: e.phones.map((e) => e.service === t.service ? {
@@ -13520,7 +13550,7 @@ var oo = {
       </label>
       ${t.enabled ? g`
             <div class="days">
-              ${vo.map((e) => {
+              ${yo.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return g`<div class="dayrow">
                   <span class="dayname">${D[e]}</span>
@@ -13583,7 +13613,7 @@ var oo = {
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
-      ${[...po, ...(e.ladders ?? []).map((e) => ({
+      ${[...mo, ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
 			text: `Your own ladder, ${e.rungs.length} ${e.rungs.length === 1 ? "nudge" : "nudges"}.`
@@ -13718,7 +13748,7 @@ var oo = {
             <label class="num">
               Sound type
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${go.map((e) => g`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${_o.map((e) => g`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -13726,7 +13756,7 @@ var oo = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? g`<div class="muted small">
-                  Pick a sound from the <a href=${_o} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  Pick a sound from the <a href=${vo} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
                   <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
                   <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
                 </div>` : g`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
@@ -13758,7 +13788,7 @@ var oo = {
 			route: e.target.value,
 			target: ""
 		})}>
-                ${ho.map((e) => g`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${go.map((e) => g`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -14013,7 +14043,7 @@ var oo = {
       ${t.length === 0 ? g`<p class="muted">Nothing changed.</p>` : g`<ul>${t.map((e) => g`<li>${e}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board() ? g`<p>Next: put the tiles where you want them, on the board itself.</p>
             <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>Edit it on the wall</button></p>
-            <p class="small">Link for the tablet's start page: <code>${ao(this._board())}</code></p>` : y}
+            <p class="small">Link for the tablet's start page: <code>${oo(this._board())}</code></p>` : y}
       <p class="muted small">
         Everything can be changed again in Settings, step by step or in the full forms.
       </p>
@@ -14059,7 +14089,7 @@ var oo = {
 		return g`
       <div class="shell">
         <nav class="rail" aria-label="Steps">
-          <div class="rail-title">${co[this.wizard]}</div>
+          <div class="rail-title">${lo[this.wizard]}</div>
           ${this._steps.map((e, t) => g`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -14079,7 +14109,7 @@ var oo = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${fo.includes(t) ? g`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : y}
+          ${po.includes(t) ? g`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : y}
           ${this._renderStep(e)}
           ${this._error ? g`<div class="error">${this._error}</div>` : y}
           <div class="actions">
@@ -14387,31 +14417,31 @@ var oo = {
     `];
 	}
 };
-customElements.define("boopli-wizard", yo);
+customElements.define("boopli-wizard", bo);
 // node_modules/lit-html/static.js
-var bo = Symbol.for(""), xo = (e) => {
-	if (e?.r === bo) return e?._$litStatic$;
-}, So = (e) => ({
+var xo = Symbol.for(""), So = (e) => {
+	if (e?.r === xo) return e?._$litStatic$;
+}, Co = (e) => ({
 	_$litStatic$: e,
-	r: bo
-}), Co = /* @__PURE__ */ new Map(), wo = ((e) => (t, ...n) => {
+	r: xo
+}), wo = /* @__PURE__ */ new Map(), To = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = xo(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = So(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = Co.get(e)) === void 0 && (o.raw = o, Co.set(e, t = o)), n = s;
+		(t = wo.get(e)) === void 0 && (o.raw = o, wo.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
 })(g);
 // src/wall-night.ts
-function To(e) {
-	let t = /^(\d{1,2}):(\d{2})$/.exec(String(e).trim());
-	return t ? Number(t[1]) * 60 + Number(t[2]) : NaN;
+function Eo(e) {
+	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
+	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function Eo(e, t, n) {
+function Do(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -14429,11 +14459,11 @@ function Eo(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = To(o.start), l = To(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = Eo(o.start), l = Eo(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Do = 3e4, Oo = class extends S {
+var Oo = 3e4, ko = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14455,7 +14485,7 @@ var Do = 3e4, Oo = class extends S {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Do, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Oo, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -14463,6 +14493,7 @@ var Do = 3e4, Oo = class extends S {
 			let i = r.tiles.find((e) => e.id === n), a = this._cellAt(e.clientX, e.clientY);
 			i && a && (this._drag = {
 				id: n,
+				bid: r.id,
 				pid: e.pointerId,
 				mode: t.hasAttribute("data-resize") ? "resize" : "move",
 				gx: a.cx - i.x,
@@ -14473,7 +14504,12 @@ var Do = 3e4, Oo = class extends S {
 			}, e.currentTarget.setPointerCapture(e.pointerId), e.preventDefault());
 		}, this._move = (e) => {
 			let t = this._drag, n = this._board();
-			if (!t || !n || e.pointerId !== t.pid || !t.moved && Math.hypot(e.clientX - t.x0, e.clientY - t.y0) < 6) return;
+			if (!t || !n || e.pointerId !== t.pid) return;
+			if (n.id !== t.bid) {
+				this._drag = void 0, this._live = null;
+				return;
+			}
+			if (!t.moved && Math.hypot(e.clientX - t.x0, e.clientY - t.y0) < 6) return;
 			t.moved = !0;
 			let r = this._cellAt(e.clientX, e.clientY), i = n.tiles.find((e) => e.id === t.id);
 			if (!r || !i) return;
@@ -14485,7 +14521,7 @@ var Do = 3e4, Oo = class extends S {
 				...i,
 				w: Math.max(1, Math.min(r.cx - i.x + 1, r.cols - i.x)),
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
-			}, o = Za(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
+			}, o = Qa(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
 		}, this._up = (e) => {
 			let t = this._drag;
@@ -14495,7 +14531,7 @@ var Do = 3e4, Oo = class extends S {
 				return;
 			}
 			let n = this._live;
-			this._live = null, n && this.dispatchEvent(new CustomEvent("tiles-change", {
+			this._live = null, n && this._board()?.id === t.bid && this.dispatchEvent(new CustomEvent("tiles-change", {
 				detail: n,
 				bubbles: !0,
 				composed: !0
@@ -14528,7 +14564,7 @@ var Do = 3e4, Oo = class extends S {
 		} catch {}
 	}
 	_board() {
-		return this.board ?? io(this.snapshot?.settings?.boards, this.boardName);
+		return this.board ?? ao(this.snapshot?.settings?.boards, this.boardName);
 	}
 	render() {
 		let e = this._board();
@@ -14537,22 +14573,22 @@ var Do = 3e4, Oo = class extends S {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Bt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Eo(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Bt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Do(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return g`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
       ${a ? g`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${Rt(a, this.nowMs, t, !0)}</span></div>` : y}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : y}
-        ${(this._live ?? e.tiles).filter((e) => !!to(e.type)).map((e) => g`<div
+        ${(this._live ?? e.tiles).filter((e) => !!no(e.type)).map((e) => g`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${wo`<${So(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${To`<${Co(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${So(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? g`<button type="button" class="shield" data-id=${e.id} aria-label="Edit this tile: ${e.type.replace(/_/g, " ")}" @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+            ></${Co(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? g`<button type="button" class="shield" data-id=${e.id} aria-label="Edit this tile: ${e.type.replace(/_/g, " ")}" @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
                   <span class="handle" data-id=${e.id} data-resize title="Drag to resize"></span>
                   <button type="button" class="del" aria-label="Remove this tile" title="Remove this tile" @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
@@ -14801,9 +14837,9 @@ var Do = 3e4, Oo = class extends S {
   `;
 	}
 };
-customElements.define("boopli-wall", Oo);
+customElements.define("boopli-wall", ko);
 // src/boopli-wall-edit.ts
-var ko = 10, Ao = 30, jo = 40, Mo = [
+var Ao = 10, jo = 30, Mo = 40, No = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -14820,11 +14856,11 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 	"automation",
 	"person",
 	"media_player"
-], No = [
+], Po = [
 	["dim", "Dim the screen"],
 	["black", "Black, with a small clock"],
 	["off", "Keep as it is"]
-], Po = [
+], Fo = [
 	[
 		"window",
 		"This window",
@@ -14840,10 +14876,10 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 		"Upright",
 		"A tablet hung upright (9:16)"
 	]
-], Fo = {
+], Io = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, Io = class extends S {
+}, Lo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14878,7 +14914,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 		let e = this.snapshot.settings.boards ?? [];
 		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
 		let t = structuredClone(e), n = this._boards ? this._id : "";
-		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || io(t, this.boardName)?.id || t[0]?.id || "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || ao(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
 		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
@@ -14922,7 +14958,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : Fo[this._view];
+		return this._view === "window" ? this._win : Io[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -14939,7 +14975,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 	_pick(e) {
 		this._sel = e.detail;
 		let t = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
-		this._modal = to(t)?.options.length ? "tile" : "";
+		this._modal = no(t)?.options.length ? "tile" : "";
 	}
 	_uniqueName(e) {
 		let t = new Set((this._boards ?? []).map((e) => e.name.toLowerCase()));
@@ -14949,14 +14985,14 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= ko) return;
+		if (!this._boards || this._boards.length >= Ao) return;
 		let e = {
 			id: Y(),
 			name: this._uniqueName("My board"),
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: ro(16, 9)
+			tiles: io(16, 9)
 		};
 		this._boards = [...this._boards, e], this._id = e.id, this._sel = "";
 	}
@@ -14967,12 +15003,12 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= Ao) {
-			this._error = `A board can have ${Ao} tiles at most.`, this._modal = "";
+		if (t.tiles.length >= jo) {
+			this._error = `A board can have ${jo} tiles at most.`, this._modal = "";
 			return;
 		}
-		let n = no(e, t.tiles, t.columns, t.rows);
-		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = to(e)?.options.length ? "tile" : "") : (this._error = "There is no room left on this board. Make the grid bigger or remove a tile.", this._modal = "");
+		let n = ro(e, t.tiles, t.columns, t.rows);
+		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = no(e)?.options.length ? "tile" : "") : (this._error = "There is no room left on this board. Make the grid bigger or remove a tile.", this._modal = "");
 	}
 	_remove(e = this._sel) {
 		this._edit((t) => t.tiles = t.tiles.filter((t) => t.id !== e)), e === this._sel && (this._sel = ""), this._modal = "";
@@ -14983,7 +15019,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 	_resize(e, t) {
 		let n = this._cur, r = this._tile;
 		if (!n || !r) return;
-		let i = Za(n.tiles.map((i) => i.id === r.id ? {
+		let i = Qa(n.tiles.map((i) => i.id === r.id ? {
 			...i,
 			w: Math.max(1, Math.min(e, n.columns - i.x)),
 			h: Math.max(1, Math.min(t, n.rows - i.y))
@@ -14996,7 +15032,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 			columns: e,
 			rows: t
 		};
-		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = Xa(n.tiles), o = Ya(n.tiles);
+		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = Za(n.tiles), o = Xa(n.tiles);
 		return r < a || i < o ? (this._error = `Some tiles reach to column ${a} and row ${o}. Move or shrink them first.`, {
 			columns: n.columns,
 			rows: n.rows
@@ -15010,7 +15046,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 	_scaleGrid(e) {
 		let t = this._cur;
 		if (!t) return;
-		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = $a(t.tiles, n);
+		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = eo(t.tiles, n);
 		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? "32 by 18 is the finest grid." : "This grid cannot be made coarser evenly." : a ? this._edit((e) => {
 			e.columns = r, e.rows = i, e.tiles = a;
 		}) : this._error = "Some tiles do not line up with a coarser grid. Move or resize them first.";
@@ -15072,7 +15108,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = q(this.hass, t.domains ?? Mo), a = `dl-${e.id}-${t.key}`;
+				let i = q(this.hass, t.domains ?? No), a = `dl-${e.id}-${t.key}`;
 				return g`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder="Start typing a name…" .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
@@ -15080,13 +15116,13 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
           ${n && !this.hass?.states[String(n)] ? g`<div class="error small">${n} was not found.</div>` : y}</div>`;
 			}
 			default: return g`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${jo} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${Mo} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
 		let t = this._tile;
 		if (!t) return y;
-		let n = to(t.type);
+		let n = no(t.type);
 		return g`
       <div class="mhead"><h2>${n?.emoji ?? "◻️"} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? g`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : y}
@@ -15106,7 +15142,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
       <div class="mhead"><h2>🖥️ This board</h2></div>
       <div class="field">
         <label for="bname">Name</label>
-        <input id="bname" maxlength=${jo} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${Mo} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", "Columns", e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -15121,13 +15157,13 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
       <div class="field">
         <label for="bnight">At night</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${No.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${Po.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
-      <p class="small">Link for the tablet's start page: <code>${ao(e)}</code> (after you save)</p>
+      <p class="small">Link for the tablet's start page: <code>${oo(e)}</code> (after you save)</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= ko} @click=${() => this._newBoard()}>+ New board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= Ao} @click=${() => this._newBoard()}>+ New board</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>Done</button>
@@ -15138,7 +15174,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
 		return g`
       <div class="mhead"><h2>＋ Add a tile</h2></div>
       <div class="adds" role="group" aria-label="Add a tile">
-        ${eo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${e.emoji}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+        ${to.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${e.emoji}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>Cancel</button></div>
     `;
@@ -15161,7 +15197,7 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
           <button @click=${() => this._modal = "board"}>⚙ Board</button>
           <button @click=${() => this._modal = "add"}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
-            ${Po.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${Fo.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
           <span class="spacer"></span>
@@ -15426,14 +15462,14 @@ var ko = 10, Ao = 30, jo = 40, Mo = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", Io);
+customElements.define("boopli-wall-edit", Lo);
 // src/boopli-panel.ts
-var Lo = {
+var Ro = {
 	today: "Today",
 	chores: "Chores",
 	home: "My home",
 	settings: "Settings"
-}, Ro = class extends S {
+}, zo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15639,16 +15675,16 @@ var Lo = {
         ${this.narrow ? g`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>` : y}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(Lo).map((t) => g`<button
+          ${Object.keys(Ro).map((t) => g`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${Lo[t]}
+              ${Ro[t]}
               ${e[t] ? g`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : y}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(io(this._snapshot?.settings?.boards, "")?.name ?? "")}>🖥 Wall view</button>
+        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(ao(this._snapshot?.settings?.boards, "")?.name ?? "")}>🖥 Wall view</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -15839,5 +15875,5 @@ var Lo = {
     `];
 	}
 };
-customElements.define("boopli-panel", Ro);
-export { Ro as BoopliPanel };
+customElements.define("boopli-panel", zo);
+export { zo as BoopliPanel };

@@ -1,9 +1,10 @@
 import type { QuietHours } from "./types";
 
-/** "9:30" or "09:30" as minutes since midnight (NaN when it is not a time). */
+/** "9:30", "09:30" or "09:5" (the backend reads all of them) as minutes since midnight (NaN when it is not a time). */
 function minutes(time: string): number {
-  const m = /^(\d{1,2}):(\d{2})$/.exec(String(time).trim());
-  return m ? Number(m[1]) * 60 + Number(m[2]) : Number.NaN;
+  const m = /^(\d{1,2}):(\d{1,2})$/.exec(String(time).trim());
+  if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) return Number.NaN;
+  return Number(m[1]) * 60 + Number(m[2]);
 }
 
 /**

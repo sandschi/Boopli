@@ -8,9 +8,18 @@ interface CalendarEvent {
 
 interface Line {
   title: string;
-  at: number; // when it starts (for an all-day event: local midnight of its date, only used for the order)
+  at: number; // when it starts (not used for an all-day event)
   allDay: boolean;
-  date: string; // an all-day event keeps its calendar date as it is (YYYY-MM-DD)
+  day: string; // the calendar day in Home Assistant's time zone (YYYY-MM-DD); an all-day event keeps its own date as it is
+  key: string; // day and time of day as text, so events sort and compare without any time zone arithmetic
+}
+
+/** The calendar day (YYYY-MM-DD) and the time of day (HH:MM) of a moment in a time zone, built from the parts (the order of a formatted date is up to the browser). */
+function dayAndTime(ms: number, tz: string | undefined): { day: string; time: string } {
+  const p = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+    .formatToParts(new Date(ms))
+    .reduce<Record<string, string>>((o, x) => ((o[x.type] = x.value), o), {});
+  return { day: `${p.year}-${p.month}-${p.day}`, time: `${p.hour}:${p.minute}` };
 }
 
 const REFRESH_MS = 10 * 60 * 1000;
@@ -73,15 +82,21 @@ export class WallTileCalendar extends WallTile {
         `calendars/${id}?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`
       );
       if (seq !== this._seq) return; // a newer request has been made since
+      const tz = this.snapshot?.time_zone;
       this._events = events
-        .map((e): Line => {
-          const allDay = !e.start.dateTime;
-          const date = allDay ? String(e.start.date ?? "") : "";
-          const at = Date.parse(e.start.dateTime ?? `${date}T00:00:00`);
-          return { title: e.summary ?? "(no title)", at, allDay, date };
+        .map((e): Line | null => {
+          const title = e.summary ?? "(no title)";
+          if (!e.start.dateTime) {
+            const date = String(e.start.date ?? "");
+            return /^\d{4}-\d{2}-\d{2}$/.test(date) ? { title, at: 0, allDay: true, day: date, key: `${date}T00:00` } : null;
+          }
+          const at = Date.parse(e.start.dateTime);
+          if (Number.isNaN(at)) return null;
+          const { day, time } = dayAndTime(at, tz);
+          return { title, at, allDay: false, day, key: `${day}T${time}` };
         })
-        .filter((l) => !Number.isNaN(l.at))
-        .sort((a, b) => a.at - b.at);
+        .filter((l): l is Line => l !== null)
+        .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
       this._error = "";
     } catch {
       if (seq === this._seq) this._error = "Could not read the calendar.";
@@ -91,14 +106,13 @@ export class WallTileCalendar extends WallTile {
   /** The words for when an event is, worked out from the time now (so "Tomorrow" turns into "Today" at midnight). */
   private _when(line: Line): string {
     const tz = this.snapshot?.time_zone;
-    const dayOf = (ms: number): string => new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date(ms)); // YYYY-MM-DD in Home Assistant's time zone
     const nextDay = (day: string): string => {
       const d = new Date(`${day}T12:00:00Z`); // a calendar date plus one, not 24 hours (which is wrong around the clock change)
       d.setUTCDate(d.getUTCDate() + 1);
       return d.toISOString().slice(0, 10);
     };
-    const today = dayOf(this.nowMs || Date.now());
-    const day = line.allDay ? line.date : dayOf(line.at);
+    const today = dayAndTime(this.nowMs || Date.now(), tz).day;
+    const day = line.day;
     const name =
       day === today
         ? "Today"
@@ -111,7 +125,8 @@ export class WallTileCalendar extends WallTile {
 
   render() {
     if (!this.text("entity_id")) return html`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
-    const lines = this._events.filter((l) => l.at >= (this.nowMs || Date.now()) - 86_400_000).slice(0, this.num("count", 4));
+    const today = dayAndTime(this.nowMs || Date.now(), this.snapshot?.time_zone).day;
+    const lines = this._events.filter((l) => l.day >= today).slice(0, this.num("count", 4)); // an event stays until its day is over
     return html`<div class="label">Calendar</div>
       ${this._error
         ? html`<div class="error">${this._error}</div>`
