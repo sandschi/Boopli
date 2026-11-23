@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import "./boopli-egg";
 import "./boopli-pet";
+import { petInfo } from "./pets";
 
 const EGG_AFTER_SECONDS = 30; // the Easter egg shows up once a wait has lasted this long
 
@@ -80,8 +81,8 @@ export class BoopliWait extends LitElement {
     return html`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
       <div class="head">
-        ${this.pet === "slime"
-          ? html`<span class="typist"><boopli-pet kind="slime" activity="typing"></boopli-pet></span>`
+        ${petInfo(this.pet).art
+          ? html`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>`
           : html`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>

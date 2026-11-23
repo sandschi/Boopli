@@ -11,7 +11,21 @@ import { css, svg, unsafeCSS, type SVGTemplateResult } from "lit";
  */
 
 const INK = "#101010";
-const ARM = "#4DFF2B";
+/** How a pet's hands look: a colour and a thickness (1 = the slime's thin jelly arm). */
+export interface Hands {
+  color: string;
+  thick: number;
+  /** The outline colour of the hands (a pet with a dark body needs a light one). */
+  ink?: string;
+  /** Real shoulders (animals with arms): where the arms start. Without them the arms come out from behind the body. */
+  shoulders?: { l: [number, number]; r: [number, number] };
+  /** The shape of each arm in the housework routine; it ends where the cloth, sock and bag are. */
+  armD?: { l: string; r: string };
+  /** The typing hands are drawn behind the laptop lid (they tap above its edge), not in front of it. */
+  typingBehind?: boolean;
+  /** Move the symbols that rise while typing (so they do not land on a big head). */
+  codeAt?: [number, number];
+}
 
 export type Activity = "" | "housework" | "typing";
 export type Moment = "" | "levelup" | "wake" | "tap" | "done";
@@ -30,16 +44,23 @@ export const MOMENT_MS: Record<Exclude<Moment, "">, number> = {
 function houseworkBehind(): SVGTemplateResult {
   return svg`
     <ellipse class="smudge" cx="26" cy="191" rx="20" ry="4.5" fill="#6B4A2E" opacity="0.85"/>
-    <g class="tub">
-      <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Z" fill="#5B8DEF" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
-      <path d="M9 184 Q10 192 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-      <ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${INK} stroke-width="3"/>
-      <circle class="suds s1" cx="11" cy="174" r="5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
-      <circle class="suds s2" cx="22" cy="170" r="6.5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
-      <circle class="suds s3" cx="35" cy="173" r="5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
-      <circle class="suds s4" cx="28" cy="176" r="3.6" fill="#fff" stroke=${INK} stroke-width="1.4"/>
-    </g>
+    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${INK} stroke-width="3"/></g>
     <g transform="translate(198 144)"><g class="bagfall">${bag()}</g></g>`;
+}
+
+/**
+ * The front of the tub. It is drawn AFTER the arms, so the sock dips into the water behind the
+ * front rim instead of sitting on top of the tub.
+ */
+function tubFront(): SVGTemplateResult {
+  return svg`<g class="tub">
+    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M9 186 Q10 193 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
+    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
+    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${INK} stroke-width="1.6"/>
+    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${INK} stroke-width="1.4"/>
+  </g>`;
 }
 
 function bag(): SVGTemplateResult {
@@ -49,12 +70,16 @@ function bag(): SVGTemplateResult {
 }
 
 /** The two jelly arms (they come out from behind the body) with what they hold. */
-function houseworkArms(): SVGTemplateResult {
+function houseworkArms(h: Hands): SVGTemplateResult {
+  const sl = h.shoulders?.l ?? [46, 150];
+  const sr = h.shoulders?.r ?? [154, 150];
+  const dl = h.armD?.l ?? "M46 150 Q28 160 22 180";
+  const dr = h.armD?.r ?? "M154 150 Q168 158 170 176";
   return svg`
-    <g class="arm armL">
-      <path d="M46 150 Q28 160 22 180" fill="none" stroke=${INK} stroke-width="13" stroke-linecap="round"/>
-      <path d="M46 150 Q28 160 22 180" fill="none" stroke=${ARM} stroke-width="7" stroke-linecap="round"/>
-      <circle cx="22" cy="180" r="7.5" fill=${ARM} stroke=${INK} stroke-width="3"/>
+    <g class="arm armL" style="transform-origin:${sl[0]}px ${sl[1]}px">
+      <path d=${dl} fill="none" stroke=${h.ink ?? INK} stroke-width=${13 * h.thick} stroke-linecap="round"/>
+      <path d=${dl} fill="none" stroke=${h.color} stroke-width=${7 * h.thick} stroke-linecap="round"/>
+      <circle cx="22" cy="180" r=${7.5 * h.thick} fill=${h.color} stroke=${h.ink ?? INK} stroke-width="3"/>
       <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${INK} stroke-width="2.5"/>
         <path d="M14 184 Q22 181 30 184" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/></g>
       <g class="sock" transform="translate(22 174)">
@@ -66,17 +91,17 @@ function houseworkArms(): SVGTemplateResult {
       <circle class="pop p3" cx="24" cy="164" r="5" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
     </g>
-    <g class="arm armR">
-      <path d="M154 150 Q168 158 170 176" fill="none" stroke=${INK} stroke-width="13" stroke-linecap="round"/>
-      <path d="M154 150 Q168 158 170 176" fill="none" stroke=${ARM} stroke-width="7" stroke-linecap="round"/>
-      <circle cx="170" cy="177" r="7.5" fill=${ARM} stroke=${INK} stroke-width="3"/>
+    <g class="arm armR" style="transform-origin:${sr[0]}px ${sr[1]}px">
+      <path d=${dr} fill="none" stroke=${h.ink ?? INK} stroke-width=${13 * h.thick} stroke-linecap="round"/>
+      <path d=${dr} fill="none" stroke=${h.color} stroke-width=${7 * h.thick} stroke-linecap="round"/>
+      <circle cx="170" cy="177" r=${7.5 * h.thick} fill=${h.color} stroke=${h.ink ?? INK} stroke-width="3"/>
       <g class="bagarm" transform="translate(170 176)">${bag()}</g>
     </g>`;
 }
 
 /** In front of the slime: the bin the trash goes into. */
 function houseworkFront(): SVGTemplateResult {
-  return svg`<g class="bin" transform="translate(184 160)">
+  return svg`${tubFront()}<g class="bin" transform="translate(184 160)">
     <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
     <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${INK} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
     <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${INK} stroke-width="2.5"/></g>
@@ -84,16 +109,18 @@ function houseworkFront(): SVGTemplateResult {
 }
 
 /** Typing: a laptop in front, two hands that tap, and little symbols rising from it. */
-function typingFront(): SVGTemplateResult {
+function typingFront(h: Hands): SVGTemplateResult {
+  const paws = svg`<circle class="hand h1" cx="68" cy="152" r=${7 * h.thick} fill=${h.color} stroke=${h.ink ?? INK} stroke-width="3"/>
+    <circle class="hand h2" cx="132" cy="152" r=${7 * h.thick} fill=${h.color} stroke=${h.ink ?? INK} stroke-width="3"/>`;
   return svg`
+    ${h.typingBehind ? paws : svg``}
     <g class="laptop">
       <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${INK} stroke-width="2.5"/>
       <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${INK} stroke-width="3"/>
       <path d="M100 160 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#8FA3BF" opacity="0.9"/>
     </g>
-    <circle class="hand h1" cx="68" cy="152" r="7" fill=${ARM} stroke=${INK} stroke-width="3"/>
-    <circle class="hand h2" cx="132" cy="152" r="7" fill=${ARM} stroke=${INK} stroke-width="3"/>
-    <g class="code">
+    ${h.typingBehind ? svg`` : paws}
+    <g class="code" transform="translate(${h.codeAt?.[0] ?? 0} ${h.codeAt?.[1] ?? 0})">
       <text class="c1" x="84" y="60">&lt;/&gt;</text>
       <text class="c2" x="104" y="52">{ }</text>
       <text class="c3" x="122" y="62">01</text>
@@ -103,19 +130,28 @@ function typingFront(): SVGTemplateResult {
 export function workBehind(activity: Activity): SVGTemplateResult {
   return activity === "housework" ? houseworkBehind() : svg``;
 }
-export function workArms(activity: Activity): SVGTemplateResult {
-  return activity === "housework" ? houseworkArms() : svg``;
+export function workArms(activity: Activity, hands: Hands): SVGTemplateResult {
+  return activity === "housework" ? houseworkArms(hands) : svg``;
 }
-export function workFront(activity: Activity): SVGTemplateResult {
+export function workFront(activity: Activity, hands: Hands): SVGTemplateResult {
   if (activity === "housework") return houseworkFront();
-  if (activity === "typing") return typingFront();
+  if (activity === "typing") return typingFront(hands);
   return svg``;
 }
 
 const STAR = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
 
 /** The extras of a one-shot moment (stars, a badge, text, a heart, a yawn). */
-export function momentArt(moment: Moment, text: string): SVGTemplateResult {
+/** Where an animal has its mouth, and how far to lift the words and the heart above the slime's head. */
+export interface MomentAt {
+  mouth?: [number, number];
+  badgeDy?: number;
+  xpDy?: number;
+  heartDy?: number;
+}
+
+export function momentArt(moment: Moment, text: string, at: MomentAt = {}): SVGTemplateResult {
+  const mouthAt = at.mouth ?? [100, 153];
   switch (moment) {
     case "levelup": {
       const burst = [
@@ -131,18 +167,18 @@ export function momentArt(moment: Moment, text: string): SVGTemplateResult {
         ([dx, dy, color], i) =>
           svg`<g transform="translate(100 110)"><g class="burst" style="--dx:${dx}px;--dy:${dy}px;animation-delay:${0.45 + i * 0.04}s"><path d=${STAR} fill=${color} stroke=${INK} stroke-width="1.6" stroke-linejoin="round"/></g></g>`
       )}
-      <g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${INK} stroke-width="3"/>
-        <text x="148" y="35" text-anchor="middle">${text || "Level up!"}</text></g>`;
+      <g transform="translate(0 ${at.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${INK} stroke-width="3"/>
+        <text x="148" y="35" text-anchor="middle">${text || "Level up!"}</text></g></g>`;
     }
     case "done":
       return svg`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark d2" d="M170 80 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
-        <text class="xp" x="100" y="70" text-anchor="middle">${text}</text>`;
+        <g transform="translate(0 ${at.xpDy ?? 0})"><text class="xp" x="100" y="70" text-anchor="middle">${text}</text></g>`;
     case "tap":
-      return svg`<path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${INK} stroke-width="2" stroke-linejoin="round"/>`;
+      return svg`<g transform="translate(0 ${at.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${INK} stroke-width="2" stroke-linejoin="round"/></g>`;
     case "wake":
-      return svg`<ellipse class="yawn" cx="100" cy="153" rx="9" ry="11" fill=${INK}/>
-        <path class="yawn tongue" d="M93 160 Q100 152 107 160 Q100 168 93 160 Z" fill="#FF6B8A"/>`;
+      return svg`<ellipse class="yawn" cx=${mouthAt[0]} cy=${mouthAt[1]} rx="9" ry="11" fill=${INK}/>
+        <g transform="translate(${mouthAt[0] - 100} ${mouthAt[1] - 153})"><path class="yawn tongue" d="M93 160 Q100 152 107 160 Q100 168 93 160 Z" fill="#FF6B8A"/></g>`;
     default:
       return svg``;
   }
@@ -270,16 +306,16 @@ const generated = [
     [100, "transform:translateX(-4px)"],
   ]),
   keyframes("work-bounce", [
-    [0, "transform:scale(1,1)"],
-    [31, "transform:scale(1,1)"],
-    [33, "transform:scale(0.95,1.07)"],
-    [35, "transform:scale(1,1)"],
-    [63, "transform:scale(1,1)"],
-    [65, "transform:scale(0.95,1.07)"],
-    [67, "transform:scale(1,1)"],
-    [97, "transform:scale(1,1)"],
-    [99, "transform:scale(0.95,1.07)"],
-    [100, "transform:scale(1,1)"],
+    [0, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [31, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [33, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
+    [35, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [63, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [65, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
+    [67, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [97, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
+    [99, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
+    [100, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
   ]),
 ].join("\n");
 
@@ -408,10 +444,10 @@ export const workCss = css`
   @keyframes type-bob {
     0%,
     100% {
-      transform: scale(1, 1);
+      transform: scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
     50% {
-      transform: scale(1.01, 0.985);
+      transform: scale(calc(1 + 0.01 * var(--k, 1)), calc(1 + -0.015 * var(--k, 1)));
     }
   }
   .hand {
@@ -458,30 +494,30 @@ export const workCss = css`
   }
 
   /* The one-shot moments. They play once and win over the mood's own motion. */
-  .slime.levelup .jelly {
+  .pet-art.levelup .jelly {
     animation: lv-jump 2.6s ease-out 1 both;
   }
   @keyframes lv-jump {
     0% {
-      transform: translateY(0) scale(1, 1);
+      transform: translateY(0) scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
     14% {
-      transform: translateY(0) scale(1.16, 0.8);
+      transform: translateY(0) scale(calc(1 + 0.16 * var(--k, 1)), calc(1 + -0.2 * var(--k, 1)));
     }
     38% {
-      transform: translateY(-46px) scale(0.86, 1.2);
+      transform: translateY(-46px) scale(calc(1 + -0.14 * var(--k, 1)), calc(1 + 0.2 * var(--k, 1)));
     }
     56% {
-      transform: translateY(0) scale(1.18, 0.82);
+      transform: translateY(0) scale(calc(1 + 0.18 * var(--k, 1)), calc(1 + -0.18 * var(--k, 1)));
     }
     70% {
-      transform: translateY(-14px) scale(0.95, 1.07);
+      transform: translateY(-14px) scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)));
     }
     84% {
-      transform: translateY(0) scale(1.06, 0.94);
+      transform: translateY(0) scale(calc(1 + 0.06 * var(--k, 1)), calc(1 + -0.06 * var(--k, 1)));
     }
     100% {
-      transform: translateY(0) scale(1, 1);
+      transform: translateY(0) scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
   }
   .burst {
@@ -532,24 +568,24 @@ export const workCss = css`
     }
   }
 
-  .slime.done .jelly {
+  .pet-art.done .jelly {
     animation: done-hop 1.4s ease-out 1 both;
   }
   @keyframes done-hop {
     0% {
-      transform: translateY(0) scale(1.1, 0.88);
+      transform: translateY(0) scale(calc(1 + 0.1 * var(--k, 1)), calc(1 + -0.12 * var(--k, 1)));
     }
     25% {
-      transform: translateY(-30px) scale(0.92, 1.12);
+      transform: translateY(-30px) scale(calc(1 + -0.08 * var(--k, 1)), calc(1 + 0.12 * var(--k, 1)));
     }
     50% {
-      transform: translateY(0) scale(1.12, 0.86);
+      transform: translateY(0) scale(calc(1 + 0.12 * var(--k, 1)), calc(1 + -0.14 * var(--k, 1)));
     }
     70% {
-      transform: translateY(-8px) scale(0.98, 1.03);
+      transform: translateY(-8px) scale(calc(1 + -0.02 * var(--k, 1)), calc(1 + 0.03 * var(--k, 1)));
     }
     100% {
-      transform: translateY(0) scale(1, 1);
+      transform: translateY(0) scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
   }
   .xp {
@@ -577,24 +613,24 @@ export const workCss = css`
     }
   }
 
-  .slime.tap .jelly {
+  .pet-art.tap .jelly {
     animation: tap-squish 0.6s ease-out 1 both;
   }
   @keyframes tap-squish {
     0% {
-      transform: scale(1, 1);
+      transform: scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
     22% {
-      transform: scale(1.2, 0.78);
+      transform: scale(calc(1 + 0.2 * var(--k, 1)), calc(1 + -0.22 * var(--k, 1)));
     }
     50% {
-      transform: scale(0.9, 1.14);
+      transform: scale(calc(1 + -0.1 * var(--k, 1)), calc(1 + 0.14 * var(--k, 1)));
     }
     75% {
-      transform: scale(1.05, 0.96);
+      transform: scale(calc(1 + 0.05 * var(--k, 1)), calc(1 + -0.04 * var(--k, 1)));
     }
     100% {
-      transform: scale(1, 1);
+      transform: scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
   }
   .heart {
@@ -617,24 +653,24 @@ export const workCss = css`
     }
   }
 
-  .slime.wake .jelly {
+  .pet-art.wake .jelly {
     animation: wake-stretch 2.4s ease-in-out 1 both;
   }
   @keyframes wake-stretch {
     0% {
-      transform: scale(1.12, 0.82);
+      transform: scale(calc(1 + 0.12 * var(--k, 1)), calc(1 + -0.18 * var(--k, 1)));
     }
     30% {
-      transform: scale(0.92, 1.2);
+      transform: scale(calc(1 + -0.08 * var(--k, 1)), calc(1 + 0.2 * var(--k, 1)));
     }
     55% {
-      transform: scale(0.96, 1.14);
+      transform: scale(calc(1 + -0.04 * var(--k, 1)), calc(1 + 0.14 * var(--k, 1)));
     }
     80% {
-      transform: scale(1.04, 0.97);
+      transform: scale(calc(1 + 0.04 * var(--k, 1)), calc(1 + -0.03 * var(--k, 1)));
     }
     100% {
-      transform: scale(1, 1);
+      transform: scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)));
     }
   }
   .yawn {

@@ -1,8 +1,7 @@
-import { css, svg, type SVGTemplateResult } from "lit";
-import { momentArt, workArms, workBehind, workCss, workFront, type Activity, type Moment } from "./pet-slime-work";
+import { svg, type SVGTemplateResult } from "lit";
+import { extras } from "./pet-kit";
+import { momentArt, workArms, workBehind, workFront, type Activity, type Hands, type Moment } from "./pet-work";
 import type { Mood } from "./types";
-
-export { workCss };
 
 /**
  * The slime: a round, glossy neon green jelly with a thick outline, drawn in code and animated
@@ -13,6 +12,8 @@ export { workCss };
  */
 
 const INK = "#101010";
+/** The slime has no limbs: its "hands" are small jelly arms in the same green. */
+const SLIME_HANDS: Hands = { color: "#4DFF2B", thick: 1, typingBehind: true };
 
 // A round jelly: wide, with a soft little tip on top and a short flat bottom to sit on.
 const BODY =
@@ -74,23 +75,6 @@ function mouth(mood: Mood): SVGTemplateResult {
   }
 }
 
-/** Things next to the slime that go with the mood: sleeping z's, a sleep bubble, a tear, sparkles. */
-function extras(mood: Mood): SVGTemplateResult {
-  switch (mood) {
-    case "sleepy":
-      return svg`<g class="zzz"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text></g>`;
-    case "hibernating":
-      return svg`<g class="zzz slow"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text><text class="z z3" x="170" y="42">Z</text></g>`;
-    case "sad":
-      return svg`<path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${INK} stroke-width="2" stroke-linejoin="round"/>`;
-    case "happy":
-      return svg`<path class="spark s1" d="M26 84 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5 z" fill="#FFE45C"/>
-        <path class="spark s2" d="M176 70 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
-        <path class="spark s3" d="M168 118 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2 z" fill="#fff"/>`;
-    default:
-      return svg``;
-  }
-}
 
 /** The little bubble a sleeping slime blows. */
 function sleepBubble(mood: Mood): SVGTemplateResult {
@@ -112,7 +96,7 @@ export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateRes
   const moment = options.moment ?? "";
   const face: Mood = activity ? "content" : mood; // busy: no sleepy or sad face
   mood = face;
-  return svg`<svg class="slime ${mood} ${activity ? `work ${activity}` : ""} ${moment}" viewBox="0 0 200 200" aria-hidden="true">
+  return svg`<svg class="pet-art slime ${mood} ${activity ? `work ${activity}` : ""} ${moment}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <radialGradient id="slime-fill" cx="0.36" cy="0.3" r="0.9">
         <stop offset="0" stop-color="#D4FFC2"/>
@@ -124,7 +108,7 @@ export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateRes
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
     <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
-    ${workBehind(activity)} ${workArms(activity)}
+    ${workBehind(activity)} ${workArms(activity, SLIME_HANDS)}
     <g class="jelly">
       <path class="body" d=${BODY} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
@@ -141,309 +125,8 @@ export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateRes
       ${cheeks(mood)} ${eyes(mood)}
       ${moment === "wake" ? svg`` : mouth(mood)} ${sleepBubble(mood)}
     </g>
-    ${workFront(activity)}
+    ${workFront(activity, SLIME_HANDS)}
     ${activity ? svg`` : extras(mood)}
     ${momentArt(moment, options.text ?? "")}
   </svg>`;
 }
-
-export const slimeCss = css`
-  .slime {
-    width: 100%;
-    height: 100%;
-    display: block;
-    overflow: visible;
-  }
-  .jelly,
-  .shadow,
-  .puddle,
-  .eye,
-  .eyes,
-  .z,
-  .tear,
-  .spark,
-  .bubble,
-  .snore {
-    transform-box: fill-box;
-  }
-  .jelly {
-    transform-origin: 50% 100%;
-  }
-  .shadow,
-  .puddle {
-    transform-origin: 50% 50%;
-  }
-  .eye {
-    transform-origin: 50% 50%;
-    animation: blink 4.6s infinite;
-  }
-  @keyframes blink {
-    0%,
-    93%,
-    100% {
-      transform: scaleY(1);
-    }
-    96% {
-      transform: scaleY(0.1);
-    }
-  }
-  /* content: the eyes drift to one side and the other, as if it is looking around. */
-  .look {
-    animation: look 9s ease-in-out infinite;
-  }
-  @keyframes look {
-    0%,
-    30%,
-    100% {
-      transform: translateX(0);
-    }
-    40%,
-    55% {
-      transform: translateX(-4px);
-    }
-    68%,
-    82% {
-      transform: translateX(4px);
-    }
-  }
-  /* The bubbles inside rise a little and settle again. */
-  .bubble {
-    animation: bubble 6s ease-in-out infinite;
-  }
-  .bubble.b2 {
-    animation-delay: 2s;
-  }
-  .bubble.b3 {
-    animation-delay: 4s;
-  }
-  @keyframes bubble {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-9px);
-    }
-  }
-
-  /* happy: it is the mood for most of a good day, so it stays calm: a slow breath, and one small
-     hop every 8 seconds or so. The big hops are for the moments that earn them (level up, step done). */
-  .happy .jelly {
-    animation: happy-idle 8s ease-in-out infinite;
-  }
-  .happy .shadow {
-    animation: happy-shadow 8s ease-in-out infinite;
-  }
-  .happy .puddle {
-    animation: happy-ripple 8s ease-in-out infinite;
-  }
-  @keyframes happy-idle {
-    0%,
-    78%,
-    100% {
-      transform: translateY(0) scale(1, 1);
-    }
-    22% {
-      transform: translateY(0) scale(0.985, 1.04);
-    }
-    44% {
-      transform: translateY(0) scale(1.01, 0.99);
-    }
-    62% {
-      transform: translateY(0) scale(0.985, 1.04);
-    }
-    84% {
-      transform: translateY(0) scale(1.08, 0.92);
-    }
-    90% {
-      transform: translateY(-14px) scale(0.95, 1.08);
-    }
-    95% {
-      transform: translateY(0) scale(1.07, 0.93);
-    }
-  }
-  @keyframes happy-shadow {
-    0%,
-    84%,
-    100% {
-      transform: scale(1);
-      opacity: 0.22;
-    }
-    90% {
-      transform: scale(0.85);
-      opacity: 0.14;
-    }
-  }
-  @keyframes happy-ripple {
-    0%,
-    88%,
-    100% {
-      transform: scale(1);
-      opacity: 0.35;
-    }
-    95% {
-      transform: scale(1.12);
-      opacity: 0.45;
-    }
-  }
-  .spark {
-    transform-origin: 50% 50%;
-    animation: twinkle 1.6s infinite;
-  }
-  .spark.s2 {
-    animation-delay: 0.5s;
-  }
-  .spark.s3 {
-    animation-delay: 1s;
-  }
-  @keyframes twinkle {
-    0%,
-    100% {
-      transform: scale(0.4) rotate(0deg);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1) rotate(20deg);
-      opacity: 1;
-    }
-  }
-
-  /* content: it breathes, with a tiny sway. */
-  .content .jelly {
-    animation: breathe 3.6s ease-in-out infinite;
-  }
-  @keyframes breathe {
-    0%,
-    100% {
-      transform: scale(1, 1) skewX(0deg);
-    }
-    35% {
-      transform: scale(0.985, 1.04) skewX(0.8deg);
-    }
-    70% {
-      transform: scale(1.01, 0.99) skewX(-0.8deg);
-    }
-  }
-
-  /* sleepy: slower and lower, a little tilted, with z's. */
-  .sleepy .jelly {
-    transform: rotate(-3deg);
-    animation: breathe-slow 5.2s ease-in-out infinite;
-  }
-  @keyframes breathe-slow {
-    0%,
-    100% {
-      transform: rotate(-3deg) scale(1.04, 0.95);
-    }
-    50% {
-      transform: rotate(-3deg) scale(0.99, 1.02);
-    }
-  }
-
-  /* sad: it sags, and a tear rolls. */
-  .sad .jelly {
-    transform: scale(1.06, 0.92);
-    animation: sag 5.5s ease-in-out infinite;
-  }
-  @keyframes sag {
-    0%,
-    100% {
-      transform: scale(1.06, 0.92);
-    }
-    50% {
-      transform: scale(1.04, 0.94);
-    }
-  }
-  .tear {
-    transform-origin: 50% 0%;
-    animation: tear 2.8s infinite;
-  }
-  @keyframes tear {
-    0% {
-      opacity: 0;
-      transform: translateY(0);
-    }
-    20% {
-      opacity: 1;
-    }
-    80% {
-      opacity: 1;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-  }
-
-  /* hibernating: flat and dim, a very slow breath, a sleep bubble, z's. Never gone, just asleep. */
-  .hibernating .jelly {
-    transform: scale(1.12, 0.8);
-    animation: deep 7s ease-in-out infinite;
-  }
-  .hibernating .body {
-    filter: saturate(0.7) brightness(0.9);
-  }
-  @keyframes deep {
-    0%,
-    100% {
-      transform: scale(1.12, 0.8);
-    }
-    50% {
-      transform: scale(1.09, 0.85);
-    }
-  }
-  .snore {
-    transform-origin: 0% 100%;
-    animation: snore 7s ease-in-out infinite;
-  }
-  @keyframes snore {
-    0%,
-    100% {
-      transform: scale(0.35);
-      opacity: 0.4;
-    }
-    45% {
-      transform: scale(1.25);
-      opacity: 1;
-    }
-    55% {
-      transform: scale(1.3);
-      opacity: 1;
-    }
-    60% {
-      transform: scale(0.2);
-      opacity: 0;
-    }
-  }
-
-  .z {
-    font: 700 22px system-ui, sans-serif;
-    fill: var(--primary-text-color, #fff);
-    transform-origin: 50% 50%;
-    animation: zfloat 3s infinite;
-    opacity: 0;
-  }
-  .z.z2 {
-    animation-delay: 1s;
-  }
-  .z.z3 {
-    animation-delay: 2s;
-  }
-  .slow .z {
-    animation-duration: 5s;
-  }
-  @keyframes zfloat {
-    0% {
-      opacity: 0;
-      transform: translate(0, 8px) scale(0.7);
-    }
-    25% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: translate(8px, -16px) scale(1.1);
-    }
-  }
-`;

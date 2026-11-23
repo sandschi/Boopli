@@ -1,14 +1,18 @@
 import { LitElement, html, css, type PropertyValues } from "lit";
-import { slimeCss, slimeSvg, workCss } from "./pet-slime";
-import { MOMENT_MS, type Activity, type Moment } from "./pet-slime-work";
+import { bearCss, bearSvg } from "./pet-bear";
+import { catCss, catSvg } from "./pet-cat";
+import { dogCss, dogSvg } from "./pet-dog";
+import { foxCss, foxSvg } from "./pet-fox";
+import { kitCss, workCss } from "./pet-kit";
+import { slimeSvg } from "./pet-slime";
+import { MOMENT_MS, type Activity, type Moment } from "./pet-work";
 import { petInfo, type PetKind } from "./pets";
 import type { Mood } from "./types";
 
 export type { Activity, Moment };
 
 /**
- * The pet's picture, and the ONLY place that draws it. A pet with its own animated art (the
- * slime so far) is drawn in code; the others show their emoji until their art is ready.
+ * The pet's picture, and the ONLY place that draws it. A pet with its own animated art (all five pets) is drawn in code.
  * It fills the box it is put in, so the same pet works small (a picker) and big (the stage).
  *
  * Besides its mood it can be busy (`activity`: housework or typing) and it can play a one-shot
@@ -104,9 +108,12 @@ export class BoopliPet extends LitElement {
 
   private _art() {
     const info = petInfo(this.kind);
-    if (info.art && info.kind === "slime") {
-      return slimeSvg(this.mood, { activity: this.activity, moment: this._playing, text: this._text });
-    }
+    const options = { activity: this.activity, moment: this._playing, text: this._text };
+    if (info.art && info.kind === "slime") return slimeSvg(this.mood, options);
+    if (info.art && info.kind === "bear") return bearSvg(this.mood, options);
+    if (info.art && info.kind === "dog") return dogSvg(this.mood, options);
+    if (info.art && info.kind === "cat") return catSvg(this.mood, options);
+    if (info.art && info.kind === "fox") return foxSvg(this.mood, options);
     return html`<span class="emoji" aria-hidden="true">${info.emoji}</span>
       <span class="badge" aria-hidden="true">${this.away ? "🧳" : BADGE[this.mood]}</span>`;
   }
@@ -136,7 +143,11 @@ export class BoopliPet extends LitElement {
   }
 
   static styles = [
-    slimeCss,
+    kitCss,
+    bearCss,
+    catCss,
+    dogCss,
+    foxCss,
     workCss,
     css`
       :host {

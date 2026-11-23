@@ -14,10 +14,10 @@ export interface PetInfo {
 
 export const PETS: PetInfo[] = [
   { kind: "slime", label: "Slime", emoji: "🟢", art: true },
-  { kind: "bear", label: "Bear", emoji: "🐻", art: false },
-  { kind: "cat", label: "Cat", emoji: "🐱", art: false },
-  { kind: "dog", label: "Dog", emoji: "🐶", art: false },
-  { kind: "fox", label: "Fox", emoji: "🦊", art: false },
+  { kind: "bear", label: "Bear", emoji: "🐻", art: true },
+  { kind: "cat", label: "Cat", emoji: "🐱", art: true },
+  { kind: "dog", label: "Dog", emoji: "🐶", art: true },
+  { kind: "fox", label: "Fox", emoji: "🦊", art: true },
 ];
 
 export const DEFAULT_PET: PetKind = "slime";
