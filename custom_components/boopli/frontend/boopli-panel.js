@@ -8620,8 +8620,13 @@ var ia = class extends w {
 		});
 	}
 	_setGap(e) {
-		let t = Math.round(Number(e));
-		e.trim() === "" || Number.isNaN(t) || this._change((e) => e.gap = Math.min(ta, Math.max(ea, t)));
+		let t = Math.round(Number(e.value));
+		if (e.value.trim() === "" || Number.isNaN(t)) {
+			e.value = String(this.rung?.gap ?? ea);
+			return;
+		}
+		let n = Math.min(ta, Math.max(ea, t));
+		e.value = String(n), this._change((e) => e.gap = n);
 	}
 	render() {
 		let e = this.settings, t = this.rung;
@@ -8636,7 +8641,7 @@ var ia = class extends w {
               max=${ta}
               .value=${String(t.gap)}
               aria-label="Minutes before nudge ${n}"
-              @change=${(e) => this._setGap(e.target.value)}
+              @change=${(e) => this._setGap(e.target)}
             />
             minutes after the previous nudge
           </label>` : x}
@@ -8910,7 +8915,10 @@ var fa = class extends w {
 		if (n.value.trim() === "" || Number.isNaN(r)) {
 			let r = this._ladders.find((t) => t.id === e)?.rungs[t];
 			r && (n.value = String(r.gap));
-		} else this._editRung(e, t, (e) => e.gap = Math.min(ca, Math.max(sa, r)));
+			return;
+		}
+		let i = Math.min(ca, Math.max(sa, r));
+		n.value = String(i), this._editRung(e, t, (e) => e.gap = i);
 	}
 	_who(e) {
 		let t = [];
@@ -9614,7 +9622,13 @@ var _a = {
 	}
 	willUpdate() {
 		let e = this.snapshot?.settings;
-		e && (!this._draft || !this._base ? (this._base = structuredClone(e), this._draft = structuredClone(e)) : this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base) && (this._base = structuredClone(e), this._draft = structuredClone(e), this._modal && (this._modalBase = structuredClone(e)), this._justSaved = !1));
+		if (e) {
+			if (!this._draft || !this._base) this._base = structuredClone(e), this._draft = structuredClone(e);
+			else if (this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base)) {
+				let t = JSON.stringify(this._draft) === JSON.stringify(this._base);
+				this._base = structuredClone(e), t && (this._draft = structuredClone(e), this._modal && (this._modalBase = structuredClone(e))), this._justSaved = !1;
+			}
+		}
 	}
 	updated() {
 		let e = this.renderRoot.querySelector("dialog");

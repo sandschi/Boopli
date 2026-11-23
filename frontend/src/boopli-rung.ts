@@ -99,10 +99,15 @@ export class BoopliRung extends LitElement {
     });
   }
 
-  private _setGap(raw: string): void {
-    const n = Math.round(Number(raw));
-    if (raw.trim() === "" || Number.isNaN(n)) return;
-    this._change((r) => (r.gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n))));
+  private _setGap(input: HTMLInputElement): void {
+    const n = Math.round(Number(input.value));
+    if (input.value.trim() === "" || Number.isNaN(n)) {
+      input.value = String(this.rung?.gap ?? GAP_MIN); // blank is not a number: show the wait that is kept
+      return;
+    }
+    const gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n));
+    input.value = String(gap); // show the number that is kept
+    this._change((r) => (r.gap = gap));
   }
 
   render() {
@@ -121,7 +126,7 @@ export class BoopliRung extends LitElement {
               max=${GAP_MAX}
               .value=${String(r.gap)}
               aria-label="Minutes before nudge ${n}"
-              @change=${(e: Event) => this._setGap((e.target as HTMLInputElement).value)}
+              @change=${(e: Event) => this._setGap(e.target as HTMLInputElement)}
             />
             minutes after the previous nudge
           </label>`

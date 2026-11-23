@@ -141,9 +141,13 @@ export class BoopliSettings extends LitElement {
     // Just saved: take the settings as the integration stored them, so what it
     // tidied up (trimmed names and so on) does not count as an unsaved change.
     if (this._justSaved && JSON.stringify(saved) !== JSON.stringify(this._base)) {
+      // Edits made while the save was on its way stay (as unsaved); only an untouched draft takes the tidied values.
+      const untouched = JSON.stringify(this._draft) === JSON.stringify(this._base);
       this._base = structuredClone(saved);
-      this._draft = structuredClone(saved);
-      if (this._modal) this._modalBase = structuredClone(saved); // "Discard" must not bring back the values before the save tidied them
+      if (untouched) {
+        this._draft = structuredClone(saved);
+        if (this._modal) this._modalBase = structuredClone(saved); // "Discard" must not bring back the values before the save tidied them
+      }
       this._justSaved = false;
     }
   }

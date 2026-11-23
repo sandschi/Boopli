@@ -161,7 +161,9 @@ export class BoopliLadders extends LitElement {
       if (r) input.value = String(r.gap);
       return;
     }
-    this._editRung(id, index, (r) => (r.gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n))));
+    const gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n));
+    input.value = String(gap); // show the number that is kept (the field does not redraw when it is the same as before)
+    this._editRung(id, index, (r) => (r.gap = gap));
   }
 
   // --- words ------------------------------------------------------------
