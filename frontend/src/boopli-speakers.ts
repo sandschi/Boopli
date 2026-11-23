@@ -521,6 +521,16 @@ export class BoopliSpeakers extends LitElement {
       :host([show]) section.card {
         margin: 0;
       }
+      :host([plain]) section.card {
+        border: 0;
+        box-shadow: none;
+        background: none;
+        padding: 0;
+        margin: 0;
+      }
+      :host([plain]) h2 {
+        display: none;
+      }
       h2 {
         font-size: 18px;
         margin-bottom: 6px;

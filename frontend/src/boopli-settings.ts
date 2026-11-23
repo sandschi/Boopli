@@ -9,37 +9,63 @@ import {
   lightKind,
   phoneName,
   PHONE_LEVEL_LABEL,
-  STYLE_LABEL,
+  styleLabel,
 } from "./helpers";
 import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
+import "./boopli-ladders";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
 import { petInfo } from "./pets";
 
-type Mode = "simple" | "advanced";
-const MODE_KEY = "boopli.settings_mode";
-
-function loadMode(): Mode {
-  try {
-    return localStorage.getItem(MODE_KEY) === "advanced" ? "advanced" : "simple";
-  } catch {
-    return "simple";
-  }
-}
 import type {
   Hass,
   LightCfg,
   LightMode,
-  NudgeStyle,
   PhoneLevel,
   PromptDefaults,
   QuietDay,
   Settings,
   Snapshot,
 } from "./types";
+
+/** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "ai";
+
+interface AreaDef {
+  emoji: string;
+  title: string;
+  wizard: WizardId; // what "Guide me" opens
+  keys: (keyof Settings)[]; // the settings that belong to it (to see what has unsaved changes)
+}
+
+const AREAS: Record<Area, AreaDef> = {
+  phone: { emoji: "📱", title: "Phone", wizard: "phone", keys: ["phones"] },
+  lights: { emoji: "💡", title: "Reminder lights", wizard: "lights", keys: ["lights"] },
+  speakers: { emoji: "🔊", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template"] },
+  alarms: { emoji: "🚨", title: "Alarm devices", wizard: "alarms", keys: ["alarm_devices"] },
+  quiet: { emoji: "🌙", title: "Quiet hours", wizard: "quiet", keys: ["quiet_hours"] },
+  timing: {
+    emoji: "⏰",
+    title: "Snooze and timing",
+    wizard: "nudging",
+    keys: ["snooze_minutes", "question_wait_minutes", "check_in_minutes"],
+  },
+  ladders: { emoji: "🪜", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
+  presence: { emoji: "📍", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
+  pet: { emoji: "🐾", title: "Your pet", wizard: "pet", keys: ["pet_name", "pet_kind"] },
+  ai: { emoji: "🤖", title: "AI help", wizard: "ai", keys: ["ai"] },
+};
+
+/** The groups on the page, and the cards in each. */
+const GROUPS: { title: string; areas: Area[] }[] = [
+  { title: "Devices", areas: ["phone", "lights", "speakers", "alarms"] },
+  { title: "Timing", areas: ["quiet", "timing", "ladders", "presence"] },
+  { title: "Extras", areas: ["pet", "ai"] },
+];
+const AREA_ORDER: Area[] = GROUPS.flatMap((g) => g.areas);
 
 const LEVELS: { value: PhoneLevel; label: string }[] = [
   { value: "normal", label: "Normal notification" },
@@ -51,13 +77,6 @@ const LEVELS: { value: PhoneLevel; label: string }[] = [
 const LIGHT_MODES: { value: LightMode; label: string }[] = [
   { value: "blink", label: "Blink" },
   { value: "indicator", label: "Indicator lamp (on until done)" },
-];
-
-const STYLES: { value: NudgeStyle; label: string }[] = [
-  { value: "quiet", label: "Quiet (no nudges)" },
-  { value: "one", label: "One nudge" },
-  { value: "escalating", label: "Escalating" },
-  { value: "persistent", label: "Persistent" },
 ];
 
 const DEFAULT_DAY: QuietDay = { start: "07:00", stop: "22:00" };
@@ -73,7 +92,8 @@ export class BoopliSettings extends LitElement {
     _message: { state: true },
     _error: { state: true },
     _notes: { state: true },
-    _mode: { state: true },
+    _modal: { state: true },
+    _flash: { state: true },
     _defaults: { state: true },
     _aiNote: { state: true },
   };
@@ -86,12 +106,15 @@ export class BoopliSettings extends LitElement {
   declare _message: string;
   declare _error: string;
   declare _notes: Record<string, string>;
-  declare _mode: Mode;
+  declare _modal: Area | ""; // the advanced window that is open
+  declare _flash: Area | ""; // the card that is lit up ("look here")
   declare _defaults: PromptDefaults | null;
   declare _aiNote: string;
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
   private _lastDirty = false;
+  private _modalBase?: Settings; // the draft as it was when the window opened (what "Discard and close" goes back to)
+  private _flashTimer = 0;
 
   constructor() {
     super();
@@ -100,7 +123,8 @@ export class BoopliSettings extends LitElement {
     this._message = "";
     this._error = "";
     this._notes = {};
-    this._mode = loadMode();
+    this._modal = "";
+    this._flash = "";
     this._defaults = null;
     this._aiNote = "";
   }
@@ -123,6 +147,11 @@ export class BoopliSettings extends LitElement {
   }
 
   protected updated(): void {
+    const dialog = this.renderRoot.querySelector("dialog");
+    if (dialog) {
+      if (this._modal && !dialog.open) dialog.showModal();
+      if (!this._modal && dialog.open) dialog.close();
+    }
     const dirty = this._isDirty();
     if (dirty !== this._lastDirty) {
       this._lastDirty = dirty;
@@ -184,15 +213,6 @@ export class BoopliSettings extends LitElement {
     if (this._base) this._draft = structuredClone(this._base);
     this._message = "";
     this._error = "";
-  }
-
-  private _setMode(mode: Mode): void {
-    this._mode = mode;
-    try {
-      localStorage.setItem(MODE_KEY, mode);
-    } catch {
-      /* the choice just is not remembered */
-    }
   }
 
   private _openWizard(wizard?: WizardId): void {
@@ -627,10 +647,9 @@ export class BoopliSettings extends LitElement {
     `;
   }
 
-  private _renderOther(d: Settings) {
+  private _renderPresence(d: Settings) {
     return html`
-      <section class=${this._cardClass("presence_entity", "pet_name", "pet_kind", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}>
-        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "pet_kind", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}</h2>
+      <section class=${this._cardClass("presence_entity")}>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -649,6 +668,13 @@ export class BoopliSettings extends LitElement {
             ${this.snapshot ? (this.snapshot.is_home ? "Right now: home." : "Right now: away.") : nothing}
           </div>
         </div>
+      </section>
+    `;
+  }
+
+  private _renderPet(d: Settings) {
+    return html`
+      <section class=${this._cardClass("pet_name", "pet_kind")}>
         <div class="field">
           <label for="petname">Your pet's name</label>
           <input
@@ -667,6 +693,13 @@ export class BoopliSettings extends LitElement {
           ></boopli-pet-picker>
           <boopli-pet-preview .kind=${d.pet_kind ?? "slime"}></boopli-pet-preview>
         </div>
+      </section>
+    `;
+  }
+
+  private _renderTiming(d: Settings) {
+    return html`
+      <section class=${this._cardClass("snooze_minutes", "question_wait_minutes", "check_in_minutes")}>
         <div class="field">
           <label for="snooze">Snooze length (minutes)</label>
           <input
@@ -706,18 +739,6 @@ export class BoopliSettings extends LitElement {
           <div class="muted small">
             When you press "On it" on a nudge, Boopli stays quiet while you work and checks in once after this time.
           </div>
-        </div>
-        <div class="field">
-          <label for="style">Default nudge style for new chores</label>
-          <select
-            id="style"
-            .value=${d.default_style}
-            @change=${(e: Event) => this._set({ default_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
-          >
-            ${STYLES.map(
-              (s) => html`<option value=${s.value} ?selected=${s.value === d.default_style}>${s.label}</option>`
-            )}
-          </select>
         </div>
       </section>
     `;
@@ -849,154 +870,208 @@ export class BoopliSettings extends LitElement {
     `;
   }
 
-  // --- the simple view: what is set, with a step-by-step button per area ---------
+  // --- the page: cards in groups. "Guide me" opens the wizard, "Advanced" opens a window ----------
 
-  private _overviewCard(
-    emoji: string,
-    title: string,
-    wizard: WizardId,
-    lines: string[],
-    empty: string,
-    button = "Set up step by step"
-  ) {
-    return html`<section class="card overview">
-      <h2><span class="emoji" aria-hidden="true">${emoji}</span> ${title}</h2>
+  /** A few short lines of what is set (from the draft, so unsaved edits show too). */
+  private _summary(area: Area, d: Settings): string[] {
+    const fn = (id: string) => friendlyName(this.hass, id);
+    switch (area) {
+      case "phone":
+        return d.phones.length
+          ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}, from nudge ${p.start_at}`)
+          : ["No phone set up yet."];
+      case "lights":
+        return d.lights.length ? d.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`) : ["No reminder lights yet."];
+      case "speakers":
+        return d.speakers.length
+          ? d.speakers.map((sp) => `${fn(sp.entity_id)}: ${describeSpeaker(sp)}`)
+          : ["No speakers yet."];
+      case "alarms":
+        return d.alarm_devices.length
+          ? d.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s, from nudge ${a.start_at}`)
+          : ["No alarm devices yet."];
+      case "quiet":
+        return [describeQuiet(d.quiet_hours)];
+      case "timing":
+        return [
+          `Snooze ${d.snooze_minutes} minutes`,
+          `"Still on it?" after ${d.check_in_minutes ?? 30} minutes`,
+          `First nudge waits ${d.question_wait_minutes ?? 30} minutes for your answers`,
+        ];
+      case "ladders": {
+        const ladders = d.ladders ?? [];
+        return [
+          `New chores: ${styleLabel(d.default_style, ladders)}`,
+          ...ladders.map((l) => `${l.name}: ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}`),
+          ...(ladders.length ? [] : ["No ladders of your own yet."]),
+        ];
+      }
+      case "presence":
+        return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
+      case "pet":
+        return [`${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`];
+      case "ai":
+        return [
+          d.ai?.enabled
+            ? `On, using ${d.ai.entity_id ? fn(d.ai.entity_id) : "the Home Assistant default agent"}`
+            : "Off. Splits big tasks into tiny steps with your own AI agent.",
+        ];
+    }
+  }
+
+  private _card(area: Area, d: Settings) {
+    const a = AREAS[area];
+    const changed = this._changed(...a.keys);
+    return html`<section id="card-${area}" class="card area ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
+      <h3>
+        <span class="emoji" aria-hidden="true">${a.emoji}</span> ${a.title}
+        ${changed ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+      </h3>
       <div class="summary">
-        ${lines.length
-          ? lines.map((l) => html`<div>${l}</div>`)
-          : html`<div class="muted">${empty}</div>`}
+        ${this._summary(area, d).map((line) => html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith("Off") ? "muted" : ""}>${line}</div>`)}
       </div>
-      <button type="button" class="primary" @click=${() => this._openWizard(wizard)}>${button}</button>
+      <div class="buttons">
+        <button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>
+        <button type="button" aria-label="Advanced: ${a.title}" @click=${() => this._openArea(area)}>Advanced</button>
+      </div>
     </section>`;
   }
 
-  private _renderSimple() {
-    // Always what is saved, so this view never shows half-finished edits.
-    const s = this.snapshot?.settings;
-    if (!s) return nothing;
-    const fn = (id: string) => friendlyName(this.hass, id);
-    return html`
-      <div class="cards simple">
-        ${this._overviewCard("🐾", "Your pet", "pet", [`${s.pet_name} the ${petInfo(s.pet_kind).label.toLowerCase()}`], "", "Change")}
-        ${this._overviewCard(
-          "📱",
-          "Phone",
-          "phone",
-          s.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}, from nudge ${p.start_at}`),
-          "No phone set up yet."
-        )}
-        ${this._overviewCard("🌙", "Quiet hours", "quiet", [describeQuiet(s.quiet_hours)], "")}
-        ${this._overviewCard(
-          "⏰",
-          "Snooze and style",
-          "nudging",
-          [`Snooze ${s.snooze_minutes} minutes`, `New chores: ${STYLE_LABEL[s.default_style] ?? s.default_style}`],
-          ""
-        )}
-        ${this._overviewCard(
-          "💡",
-          "Reminder lights",
-          "lights",
-          s.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`),
-          "No reminder lights yet."
-        )}
-        ${this._overviewCard(
-          "🔊",
-          "Speakers",
-          "speakers",
-          s.speakers.map((sp) => `${fn(sp.entity_id)}: ${describeSpeaker(sp)}`),
-          "No speakers yet."
-        )}
-        ${this._overviewCard(
-          "🚨",
-          "Alarm devices",
-          "alarms",
-          s.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s, from nudge ${a.start_at}`),
-          "No alarm devices yet."
-        )}
-        ${this._overviewCard(
-          "🤖",
-          "AI help",
-          "ai",
-          s.ai?.enabled
-            ? [`On, using ${s.ai.entity_id ? fn(s.ai.entity_id) : "the Home Assistant default agent"}`]
-            : [],
-          "Off. Splits big tasks into tiny steps with your own AI agent."
-        )}
-        ${this._overviewCard(
-          "📍",
-          "Where you are",
-          "presence",
-          s.presence_entity ? [fn(s.presence_entity)] : [],
-          "Not set. Boopli assumes you are home."
-        )}
-      </div>
-      <p class="muted small">
-        Want to do all of it again from the start?
-        <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
-      </p>
-    `;
+  // --- the advanced window ---------------------------------------------------------
+
+  private _openArea(area: Area): void {
+    this._modalBase = this._draft ? structuredClone(this._draft) : undefined;
+    this._error = "";
+    this._message = "";
+    this._modal = area;
+  }
+
+  /** Close the window and keep the edits as an unsaved draft. */
+  private _keep(): void {
+    this._modal = "";
+  }
+
+  /** Close the window and throw away what was changed since it opened. */
+  private _discardClose(): void {
+    if (this._modalBase) this._draft = structuredClone(this._modalBase);
+    this._error = "";
+    this._modal = "";
+  }
+
+  private async _saveClose(): Promise<void> {
+    if (await this.save()) this._modal = "";
+  }
+
+  private _areaContent(area: Area, d: Settings) {
+    const patch = (e: CustomEvent<Partial<Settings>>) => this._set(e.detail);
+    switch (area) {
+      case "phone":
+        return this._renderPhones(d);
+      case "lights":
+        return this._renderLights(d);
+      case "speakers":
+        return html`<boopli-speakers plain show="speakers" .hass=${this.hass} .settings=${d} @settings-patch=${patch}></boopli-speakers>`;
+      case "alarms":
+        return html`<boopli-speakers plain show="devices" .hass=${this.hass} .settings=${d} @settings-patch=${patch}></boopli-speakers>`;
+      case "quiet":
+        return this._renderQuiet(d);
+      case "timing":
+        return this._renderTiming(d);
+      case "ladders":
+        return html`<boopli-ladders
+          plain
+          .hass=${this.hass}
+          .settings=${d}
+          .snapshot=${this.snapshot}
+          @settings-patch=${patch}
+        ></boopli-ladders>`;
+      case "presence":
+        return this._renderPresence(d);
+      case "pet":
+        return this._renderPet(d);
+      case "ai":
+        return this._renderAi(d);
+    }
+  }
+
+  private _renderModal(d: Settings) {
+    const area = this._modal ? AREAS[this._modal] : null;
+    return html`<dialog
+      aria-labelledby="win-title"
+      @cancel=${(e: Event) => {
+        e.preventDefault(); // Esc keeps the edits, like "Keep for later"
+        this._keep();
+      }}
+      @click=${(e: MouseEvent) => {
+        if (e.target === e.currentTarget) this._keep(); // a click on the dark area around the window
+      }}
+    >
+      ${area && this._modal
+        ? html`<div class="win">
+            <div class="win-head">
+              <h2 id="win-title"><span aria-hidden="true">${area.emoji}</span> ${area.title}</h2>
+              <button type="button" class="close" aria-label="Keep for later and close" @click=${() => this._keep()}>✕</button>
+            </div>
+            <div class="win-body plain">${this._areaContent(this._modal, d)}</div>
+            ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
+            <div class="win-foot">
+              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>Save and close</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>Discard and close</button>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>Keep for later</button>
+              <p class="muted small hint-line">
+                "Keep for later" closes this window and keeps your changes. The card shows an orange "Unsaved" tag.
+              </p>
+            </div>
+          </div>`
+        : nothing}
+    </dialog>`;
+  }
+
+  // --- where the unsaved changes are -----------------------------------------------
+
+  /** Scroll to a card and light it up, so you can see what has not been saved. */
+  private _show(area: Area): void {
+    this._flash = area;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    this.renderRoot.querySelector(`#card-${area}`)?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+    window.clearTimeout(this._flashTimer);
+    this._flashTimer = window.setTimeout(() => (this._flash = ""), 2600);
   }
 
   private _renderSaveBar() {
     if (!this._isDirty()) return nothing;
-    return html`<div class="savebar" role="status">
-      <span><b>●</b> You have unsaved changes</span>
-      <span class="spacer"></span>
-      <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-      <button ?disabled=${this._busy} @click=${() => this.discard()}>Discard</button>
-    </div>`;
+    const where = AREA_ORDER.filter((a) => this._changed(...AREAS[a].keys));
+    return html`${this._error && !this._modal ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
+      <div class="savebar" role="status">
+        <div class="where">
+          <b aria-hidden="true">●</b> Unsaved changes in:
+          ${where.map(
+            (a) => html`<button type="button" class="chip where-chip" @click=${() => this._show(a)}>${AREAS[a].title}</button>`
+          )}
+        </div>
+        <span class="spacer"></span>
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
+        <button ?disabled=${this._busy} @click=${() => this.discard()}>Discard all</button>
+      </div>`;
   }
 
   render() {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
-    const simple = this._mode === "simple";
     return html`
-      <div class="toolbar">
-        <h2 class="page-title">${simple ? "Settings" : "Settings: advanced"}</h2>
-        <button type="button" @click=${() => this._setMode(simple ? "advanced" : "simple")}>
-          ${simple ? "Advanced settings" : "Back to the simple view"}
-        </button>
-      </div>
+      <div class="toolbar"><h2 class="page-title">Settings</h2></div>
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${simple
-        ? this._renderSimple()
-        : html`
-            <div class="cards advanced">
-              <div class="slot s-speakers">
-                <boopli-speakers
-                  show="speakers"
-                  class=${this._changed("speakers", "speech_template") ? "changed" : ""}
-                  .hass=${this.hass}
-                  .settings=${d}
-                  @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
-                ></boopli-speakers>
-              </div>
-              <div class="slot s-general">${this._renderOther(d)}</div>
-              <div class="slot s-quiet">${this._renderQuiet(d)}</div>
-              <div class="slot s-phones">${this._renderPhones(d)}</div>
-              <div class="slot s-lights">${this._renderLights(d)}</div>
-              <div class="slot s-alarms">
-                <boopli-speakers
-                  show="devices"
-                  class=${this._changed("alarm_devices") ? "changed" : ""}
-                  .hass=${this.hass}
-                  .settings=${d}
-                  @settings-patch=${(e: CustomEvent<Partial<Settings>>) => this._set(e.detail)}
-                ></boopli-speakers>
-              </div>
-              <div class="slot s-ai">${this._renderAi(d)}</div>
-            </div>
-            ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
-            <div class="save">
-              <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save settings</button>
-              ${this._message ? html`<span class="muted">${this._message}</span>` : nothing}
-            </div>
-          `}
-      ${this._renderSaveBar()}
+      ${GROUPS.map(
+        (g) => html`<h2 class="group">${g.title}</h2>
+          <div class="cards">${g.areas.map((a) => this._card(a, d))}</div>`
+      )}
+      <p class="muted small">
+        Want to do all of it again from the start?
+        <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
+      </p>
+      ${this._renderModal(d)} ${this._renderSaveBar()}
     `;
   }
 
@@ -1015,92 +1090,172 @@ export class BoopliSettings extends LitElement {
         margin-bottom: 6px;
       }
       .toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
       }
       .page-title {
         font-size: 22px;
         margin: 0;
       }
-      .away-card {
-        margin-bottom: 16px;
+      h2.group {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--secondary-text-color);
+        margin: 26px 0 10px;
+      }
+      section.card.away-card {
+        margin: 0 0 6px;
         padding-top: 8px;
         padding-bottom: 8px;
       }
-      .away-card.on {
+      section.card.away-card.on {
         border: 2px solid var(--warning-color, #ffa600);
       }
       .cards {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
-        gap: 16px;
-        align-items: start;
-      }
-      .cards.advanced {
-        /* The browser balances the columns, so they end at about the same height
-           and a short card is never pushed far down. */
-        display: block;
-        column-count: 3;
-        column-gap: 16px;
-      }
-      .slot {
-        break-inside: avoid;
-        margin: 0 0 16px;
-      }
-      /* Narrow screens: one column, the most used cards first. */
-      @media (max-width: 1100px) {
-        .cards.advanced {
-          display: flex;
-          flex-direction: column;
-          column-count: auto;
-          gap: 16px;
-        }
-        .slot {
-          margin: 0;
-        }
-        .s-general { order: 1; }
-        .s-quiet { order: 2; }
-        .s-phones { order: 3; }
-        .s-lights { order: 4; }
-        .s-speakers { order: 5; }
-        .s-alarms { order: 6; }
-        .s-ai { order: 7; }
-      }
-      .cards.simple {
-        /* Cards in a row are the same height, and none is smaller than this. */
         grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-        grid-auto-rows: minmax(200px, auto);
+        gap: 16px;
         align-items: stretch;
       }
-      .overview {
+      section.card.area {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        height: 100%;
+        gap: 10px;
+        min-height: 150px;
       }
-      .overview h2 {
+      section.card.area h3 {
         margin: 0;
-        font-size: 20px;
+        font-size: 18px;
       }
       .emoji {
         display: inline-block;
         margin-right: 6px;
-        font-size: 24px;
+        font-size: 22px;
         vertical-align: -2px;
       }
       .summary {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 3px;
         flex: 1;
         font-size: 15px;
+        overflow-wrap: anywhere;
       }
-      .overview button {
-        align-self: flex-start;
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
+      /* The card with unsaved changes, and the one the bar points to. */
+      section.card.area.flash {
+        outline: 3px solid var(--warning-color, #ffa600);
+        outline-offset: 2px;
+        animation: look-here 0.7s ease-in-out 3;
+      }
+      @keyframes look-here {
+        50% {
+          transform: scale(1.025);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        section.card.area.flash {
+          animation: none;
+        }
+      }
+
+      /* The advanced window. */
+      dialog {
+        border: 0;
+        padding: 0;
+        border-radius: 16px;
+        color: var(--primary-text-color);
+        background: var(--card-background-color, var(--primary-background-color));
+        width: min(760px, calc(100vw - 24px));
+        max-width: none;
+        max-height: calc(100vh - 24px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      }
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.6);
+      }
+      .win {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 24px);
+      }
+      .win-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .win-head h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .close {
+        padding: 4px 10px;
+        min-height: 36px;
+      }
+      .win-body {
+        padding: 14px 18px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .win > .error {
+        margin: 0;
+        padding: 8px 18px 0;
+      }
+      .win-foot {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 12px 18px 14px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .hint-line {
+        flex: 1 1 100%;
+        margin: 2px 0 0;
+      }
+      /* Inside the window the cards lose their frame and heading: the window has its own. */
+      .plain section.card {
+        border: 0;
+        box-shadow: none;
+        background: none;
+        padding: 0;
+        margin: 0;
+      }
+      .plain section.card > h2 {
+        display: none;
+      }
+      @media (max-width: 600px) {
+        dialog {
+          width: 100vw;
+          max-width: 100vw;
+          height: 100vh;
+          max-height: 100vh;
+          border-radius: 0;
+        }
+        .win {
+          height: 100vh;
+          max-height: 100vh;
+        }
+        /* Save on its own line, the other two side by side; the hint goes (the orange tag says it). */
+        .win-foot button.primary {
+          flex: 1 1 100%;
+        }
+        .win-foot button:not(.primary) {
+          flex: 1 1 calc(50% - 4px);
+        }
+        .hint-line {
+          display: none;
+        }
+      }
+
       .spacer {
         flex: 1;
       }
@@ -1153,8 +1308,21 @@ export class BoopliSettings extends LitElement {
         background: var(--card-background-color, var(--primary-background-color));
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
       }
+      .savebar {
+        flex-wrap: wrap;
+      }
       .savebar b {
         color: var(--warning-color, #ffa600);
+      }
+      .where {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 8px;
+        flex: 1 1 260px;
+      }
+      .where-chip {
+        border-color: var(--warning-color, #ffa600);
       }
       h2 {
         font-size: 18px;
@@ -1243,12 +1411,6 @@ export class BoopliSettings extends LitElement {
       }
       .add {
         border-top: 1px solid var(--divider-color);
-      }
-      .save {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin: 8px 0 24px;
       }
     `,
   ];

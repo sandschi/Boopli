@@ -19,7 +19,9 @@ If you skip or leave it unfinished, Today shows a **Finish setting up** banner t
 
 Every wizard ends with **All set**, which lists exactly what changed compared with before that wizard (for example "Snooze: 15 to 10 min" or "Mon: 07:00 to 22:00 to 07:30 to 22:00").
 
-**Unsaved changes are always visible.** In Advanced settings and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything ("You have unsaved changes", with Save and Discard). The cards you changed are marked, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) asks **Save / Discard / Stay**.
+**Unsaved changes are always visible.** On the Settings page and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything. On Settings it lists which cards have unsaved changes: press a name and the page scrolls to that card and lights it up. The changed cards carry an orange "Unsaved" tag, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) asks **Save / Discard / Stay**.
+
+**Settings are one calm page.** Cards in three groups: Devices (phone, lights, speakers, alarm devices), Timing (quiet hours, snooze and timing, Nudge it your way, where you are) and Extras (your pet, AI help). Each card shows what is set in a few lines and has two buttons: **Guide me** (a step-by-step guide) and **Advanced** (a window with every detail). The window has **Save and close**, **Discard and close** (throws away what you changed in that window) and **Keep for later** (closes it and keeps your changes as an unsaved draft).
 
 ## Chore schedules
 
@@ -55,7 +57,7 @@ Boopli can split a big task, such as "clean my room", into very small steps with
 - **Waiting for the AI is never a guess.** While the agent works, Boopli shows an animation, the time so far, the longest it will wait (3 minutes) and a bar for the time used, with a calm sentence that says it is slow but not stuck. **Stop waiting** goes back and keeps everything you typed; a late answer is ignored.
 - **Talk it out in your own AI chat.** **In my own chat** (per room) and **Talk through my whole home** give you a ready-made prompt to copy into any chat, for example one you can talk to by voice. When you say you are done, the chat answers with plain notes. Paste them back: Boopli strips bullets, markdown and code fences, splits a whole-home answer into rooms by their `## Room` headings, and shows everything for a last look before you save. Boopli sends nothing here, so it works with AI help switched off.
 - **Service.** `boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) returns the steps, for your own automations and voice assistants. Without `rooms`, the rooms are guessed from the task, like in the panel.
-- **The prompts are yours.** Under Advanced settings you can read, change and reset the two prompts Boopli sends (questions and steps) and the two texts you copy into your own AI chat (one room, whole home). The built-in ones ask for one JSON object, which works with any model.
+- **The prompts are yours.** Under **Advanced** on the AI help card you can read, change and reset the two prompts Boopli sends (questions and steps) and the two texts you copy into your own AI chat (one room, whole home). The built-in ones ask for one JSON object, which works with any model.
 
 **Privacy.** Boopli sends nothing by itself. When you use AI help, the text of the task, your answers, the notes saved for that chore and the notes of the rooms the task is about go to the agent you chose, and nothing else: no device names, history or location. A cloud agent receives that text, and free models may keep or learn from what they get, so do not type private details. A local agent keeps everything at home. Photos of a room are sent only when you pick them for that one request and are never stored. If the agent fails (empty account, model gone, timeout), Boopli shows the agent's own reason.
 
@@ -81,6 +83,7 @@ When a step becomes your turn, Boopli nudges you through the channels you turn o
 - **Levels.** Every channel has a "starts at nudge #" number: lights 1, phones 1, speaker ding 1, speech 2, alarm 4 by default. So a chore climbs from a light and a ding to speech and finally an alarm, as far as its style takes it.
 - **Phones.** A notification from the Home Assistant app with **Done** and **Snooze** buttons, at a level you choose: normal, high priority, alarm volume, or max volume (not every phone honours it).
 - **Styles, per chore:** quiet (panel only), one nudge, escalating (30, 15, 10, then every 5 minutes, then it stops), or persistent (every 5 minutes until done).
+- **Nudge it your way.** Build ladders of your own in Settings. A ladder is a list of nudges (up to 12). For each nudge you choose how long Boopli waits for it, and exactly which phone (and how loud), light, speaker (ding, speech or alarm) and alarm device acts. So you can leave the lights out of nudge 2, or send only the phone at first. After the last nudge the ladder stops or repeats the last one. A chore picks a ladder like any other style, and you can make a ladder the style for new chores. A ladder replaces the "starts at nudge #" numbers for the chores that use it, and a ladder that chores use cannot be deleted.
 - **Quiet hours,** off by default, with different start and stop times for each weekday. A chore can opt out (for example pills).
 - **Presence (optional).** At home, every channel you turned on is used. Away, only your phone is used, and only for chores marked "anywhere". Without a presence source, Boopli assumes you are home.
 - **Snooze** delays the next nudge (15 minutes by default). The step stays open. There is no dismiss.
@@ -99,7 +102,7 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 - **Away / vacation mode:** plan time away so home-only chores pause and home-only nudges (lights, speakers) stay quiet, while "anywhere" chores such as medication keep going through your phone. Possibly mark a trip location too.
 - **Richer notifications:** attach a picture to phone notifications, for example the pet looking happy or sad depending on how things are going, together with the Done and Snooze buttons.
 - **"Skip this round"** for a chore, as a deliberate action in the panel (never on a notification).
-- Custom nudge escalation, presence conditions, a wall-display view, Zigbee button support, and more pets.
+- Presence conditions, a wall-display view, Zigbee button support, and more pets.
 
 ## Your data
 

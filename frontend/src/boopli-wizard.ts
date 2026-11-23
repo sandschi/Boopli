@@ -18,6 +18,7 @@ import {
   entityIds,
   friendlyName,
   hexToRgb,
+  newLadderId,
   newAlarmDevice,
   newLight,
   newSpeaker,
@@ -26,14 +27,17 @@ import {
   speechTargets,
 } from "./helpers";
 import "./boopli-pet-picker";
+import "./boopli-rung";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
 import type {
   AlarmDeviceCfg,
   Hass,
+  Ladder,
   LightCfg,
   NudgeStyle,
+  Rung,
   PhoneCfg,
   PhoneLevel,
   QuietDay,
@@ -57,7 +61,8 @@ export type WizardId =
   | "presence"
   | "nudging"
   | "pet"
-  | "ai";
+  | "ai"
+  | "ladders";
 
 type StepId =
   | "welcome"
@@ -80,6 +85,10 @@ type StepId =
   | "ai_intro"
   | "ai_agent"
   | "chores"
+  | "lad_name"
+  | "lad_nudge"
+  | "lad_more"
+  | "lad_end"
   | "done";
 
 const SEQUENCES: Record<WizardId, StepId[]> = {
@@ -93,6 +102,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   nudging: ["nudging", "done"],
   pet: ["pet", "done"],
   ai: ["ai_intro", "ai_agent", "done"],
+  ladders: ["lad_name", "lad_nudge", "lad_more", "lad_end", "done"],
 };
 
 /** What "Set up speakers" adds to the first-run setup. */
@@ -109,6 +119,7 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
   nudging: "Snooze and style",
   pet: "Your pet",
   ai: "AI help setup",
+  ladders: "Nudge it your way",
 };
 
 const TITLES: Record<StepId, string> = {
@@ -132,6 +143,10 @@ const TITLES: Record<StepId, string> = {
   ai_intro: "AI help",
   ai_agent: "Your AI agent",
   chores: "First chores",
+  lad_name: "Name your ladder",
+  lad_nudge: "A nudge",
+  lad_more: "Another nudge?",
+  lad_end: "How it ends",
   done: "All set",
 };
 
@@ -186,6 +201,8 @@ export class BoopliWizard extends LitElement {
     _picked: { state: true },
     _speaker: { state: true },
     _addDevice: { state: true },
+    _ladderId: { state: true },
+    _ladderName: { state: true },
   };
 
   declare hass?: Hass;
@@ -201,6 +218,8 @@ export class BoopliWizard extends LitElement {
   declare _picked: string[]; // labels of the starter chores to add
   declare _speaker: string; // entity id of the speaker being set up
   declare _addDevice: string;
+  declare _ladderId: string; // the ladder this wizard is building
+  declare _ladderName: string;
   private _started = false;
   private _saved?: Settings; // what is saved right now
   private _baseline?: Settings; // what it was when this wizard opened
@@ -217,6 +236,8 @@ export class BoopliWizard extends LitElement {
     this._picked = [];
     this._speaker = "";
     this._addDevice = "";
+    this._ladderId = "";
+    this._ladderName = "";
   }
 
   private get _first(): boolean {
@@ -333,7 +354,7 @@ export class BoopliWizard extends LitElement {
 
   // --- navigation ----------------------------------------------------------
 
-  private async _go(delta: 1 | -1, mode: "next" | "skip" | "gate" = "next"): Promise<void> {
+  private async _go(delta: 1 | -1, mode: "next" | "skip" | "gate" | "more" = "next"): Promise<void> {
     if (!this.hass || !this._draft || this._busy) return;
     this._busy = true;
     this._error = "";
@@ -342,6 +363,7 @@ export class BoopliWizard extends LitElement {
         if (this._step === "spk_pick" && !this._speaker) {
           throw new Error("Pick a speaker, or press Skip.");
         }
+        if (this._step === "lad_name") this._ensureLadder();
         const sent = structuredClone(this._draft);
         await saveSettings(this.hass, sent);
         this._saved = sent;
@@ -351,6 +373,18 @@ export class BoopliWizard extends LitElement {
         this._draft = structuredClone(this._saved!);
         if (this._step === "chores") this._picked = [];
       }
+      if (mode === "more") {
+        // "Add another nudge": one more screen for it, unless it is already there (after going back).
+        if (this._steps[this._index + 1] !== "lad_nudge") {
+          this._steps = [
+            ...this._steps.slice(0, this._index + 1),
+            "lad_nudge",
+            "lad_more",
+            ...this._steps.slice(this._index + 1),
+          ];
+        }
+        this._rungAt(this._nudgesBefore(this._index + 1));
+      }
       if (mode === "gate") {
         this._steps = [
           ...this._steps.slice(0, this._index + 1),
@@ -359,6 +393,7 @@ export class BoopliWizard extends LitElement {
         ];
       }
       const target = Math.max(0, Math.min(this._index + delta, this._steps.length - 1));
+      if (this._steps[target] === "lad_nudge") this._rungAt(this._nudgesBefore(target));
       if (this._first) await saveSetup(this.hass, "in_progress", this._steps[target]);
       this._index = target;
       this._enter();
@@ -414,6 +449,152 @@ export class BoopliWizard extends LitElement {
     } finally {
       this._busy = false;
     }
+  }
+
+  // --- a ladder of your own -------------------------------------------------------
+
+  private _ladder(): Ladder | undefined {
+    return this._draft?.ladders?.find((l) => l.id === this._ladderId);
+  }
+
+  /** How many nudge screens come before step `index` (so which nudge a screen is for). */
+  private _nudgesBefore(index: number): number {
+    return this._steps.slice(0, index).filter((s) => s === "lad_nudge").length;
+  }
+
+  private _newRung(): Rung {
+    return {
+      gap: 5,
+      phones: Object.fromEntries((this._draft?.phones ?? []).map((p) => [p.service, p.level])),
+      lights: [],
+      speakers: {},
+      alarms: [],
+    };
+  }
+
+  private _patchLadder(fn: (l: Ladder) => Ladder): void {
+    const d = this._draft;
+    if (!d) return;
+    this._set({ ladders: (d.ladders ?? []).map((l) => (l.id === this._ladderId ? fn(l) : l)) });
+  }
+
+  /** Called when leaving the name screen: make the ladder (or rename it). */
+  private _ensureLadder(): void {
+    const d = this._draft;
+    if (!d) return;
+    const name = this._ladderName.trim();
+    if (!name) throw new Error("Give the ladder a name.");
+    if (this._ladder()) {
+      this._patchLadder((l) => ({ ...l, name }));
+      return;
+    }
+    const id = newLadderId();
+    this._ladderId = id;
+    this._set({ ladders: [...(d.ladders ?? []), { id, name, rungs: [this._newRung()], repeat_last: false }] });
+  }
+
+  /** Make sure the ladder has a nudge number `n` (a copy of the last one). */
+  private _rungAt(n: number): void {
+    const l = this._ladder();
+    if (!l || n < l.rungs.length) return;
+    this._patchLadder((x) => {
+      const rungs = [...x.rungs];
+      while (rungs.length <= n) rungs.push(structuredClone(rungs[rungs.length - 1] ?? this._newRung()));
+      return { ...x, rungs };
+    });
+  }
+
+  private _setRung(index: number, rung: Rung): void {
+    this._patchLadder((l) => ({ ...l, rungs: l.rungs.map((r, i) => (i === index ? rung : r)) }));
+  }
+
+  private _title(id: StepId, index: number): string {
+    return id === "lad_nudge" ? `Nudge ${this._nudgesBefore(index) + 1}` : TITLES[id];
+  }
+
+  private _renderLadName() {
+    return html`
+      <p>
+        A ladder is a list of nudges. For each nudge you choose how long Boopli waits, and exactly which devices act
+        and how loud. Start by giving it a name.
+      </p>
+      <div class="field">
+        <label for="ladname">Name</label>
+        <input
+          id="ladname"
+          maxlength="40"
+          placeholder="For example: Pills"
+          .value=${this._ladderName}
+          @input=${(e: Event) => (this._ladderName = (e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
+  }
+
+  private _renderLadNudge(d: Settings) {
+    const i = this._nudgesBefore(this._index);
+    const rung = this._ladder()?.rungs[i];
+    if (!rung) return html`<p class="muted">Give the ladder a name first.</p>`;
+    return html`
+      <p>
+        ${i === 0
+          ? "The first nudge goes out right away. Which devices should act?"
+          : "How long should Boopli wait for this nudge, and which devices should act?"}
+      </p>
+      <boopli-rung
+        gap
+        .hass=${this.hass}
+        .settings=${d}
+        .rung=${rung}
+        .index=${i}
+        @rung-change=${(e: CustomEvent<Rung>) => this._setRung(i, e.detail)}
+      ></boopli-rung>
+    `;
+  }
+
+  private _renderLadMore() {
+    const n = this._ladder()?.rungs.length ?? 0;
+    return html`
+      <p>This ladder has ${n} ${n === 1 ? "nudge" : "nudges"} so far. Add another one, or are you done?</p>
+      <div class="gate">
+        <button type="button" class="primary big" ?disabled=${this._busy || n >= 12} @click=${() => this._go(1, "more")}>
+          Add another nudge
+        </button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>That's all</button>
+      </div>
+      ${n >= 12 ? html`<p class="muted small">12 nudges is the most.</p>` : nothing}
+    `;
+  }
+
+  private _renderLadEnd(d: Settings) {
+    const l = this._ladder();
+    if (!l) return html`<p class="muted">Give the ladder a name first.</p>`;
+    const style = `ladder:${l.id}` as NudgeStyle;
+    return html`
+      <p>What should happen after the last nudge?</p>
+      <label class="inline option">
+        <input type="radio" name="end" .checked=${!l.repeat_last} @change=${() => this._patchLadder((x) => ({ ...x, repeat_last: false }))} />
+        <span><b>Stop</b> <span class="muted small">No more nudges after the last one.</span></span>
+      </label>
+      <label class="inline option">
+        <input type="radio" name="end" .checked=${l.repeat_last} @change=${() => this._patchLadder((x) => ({ ...x, repeat_last: true }))} />
+        <span><b>Repeat the last nudge</b> <span class="muted small">Until you answer.</span></span>
+      </label>
+      <p>
+        <label class="inline option">
+          <input
+            type="checkbox"
+            .checked=${d.default_style === style}
+            @change=${(e: Event) =>
+              this._set({
+                default_style: (e.target as HTMLInputElement).checked ? style : (this._baseline?.default_style ?? "one"),
+              })}
+          />
+          <span><b>Use it for new chores</b></span>
+        </label>
+      </p>
+      <p class="muted small">You pick a ladder for a chore in the chore's nudge style.</p>
+    `;
   }
 
   // --- quiet hours (one row per day, never grouped) -----------------------------
@@ -654,7 +835,14 @@ export class BoopliWizard extends LitElement {
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
-      ${STYLE_CHOICES.map(
+      ${[
+        ...STYLE_CHOICES,
+        ...(d.ladders ?? []).map((l) => ({
+          value: `ladder:${l.id}` as NudgeStyle,
+          label: l.name,
+          text: `Your own ladder, ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
+        })),
+      ].map(
         (s) => html`<label class="inline option">
           <input type="radio" name="style" .checked=${d.default_style === s.value} @change=${() => this._set({ default_style: s.value })} />
           <span><b>${s.label}</b> <span class="muted small">${s.text}</span></span>
@@ -1145,6 +1333,14 @@ export class BoopliWizard extends LitElement {
         return this._renderPresence(d);
       case "chores":
         return this._renderChores();
+      case "lad_name":
+        return this._renderLadName();
+      case "lad_nudge":
+        return this._renderLadNudge(d);
+      case "lad_more":
+        return this._renderLadMore();
+      case "lad_end":
+        return this._renderLadEnd(d);
       default:
         return this._renderDone(d);
     }
@@ -1155,7 +1351,7 @@ export class BoopliWizard extends LitElement {
     if (!d) return html`<p class="muted">Loading…</p>`;
     const step = this._step;
     const isDone = step === "done";
-    const isGate = step === "speaker_gate";
+    const isGate = step === "speaker_gate" || step === "lad_more"; // these screens have their own buttons
     const last = this._steps.length - 1;
     return html`
       <div class="shell">
@@ -1169,7 +1365,7 @@ export class BoopliWizard extends LitElement {
               @click=${() => this._jump(i)}
             >
               <span class="mark">${i < this._index ? "✓" : i + 1}</span>
-              <span>${TITLES[id]}</span>
+              <span>${this._title(id, i)}</span>
             </button>`
           )}
         </nav>
@@ -1183,7 +1379,7 @@ export class BoopliWizard extends LitElement {
                 </button>`}
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / this._steps.length) * 100}%"></div></div>
-          <h2>${TITLES[step]}</h2>
+          <h2>${this._title(step, this._index)}</h2>
           ${OPTIONAL_STEPS.includes(step)
             ? html`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>`
             : nothing}
@@ -1200,7 +1396,7 @@ export class BoopliWizard extends LitElement {
                 </button>`
               : isGate
                 ? nothing
-                : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>
+                : html`${step === "lad_name" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
                     <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>Next</button>`}
           </div>
         </section>
