@@ -7,6 +7,7 @@ import "./boopli-home";
 import "./boopli-wizard";
 import "./boopli-breakdown";
 import "./boopli-wall";
+import "./boopli-wall-edit";
 import { pickBoard } from "./wall-tiles";
 import { awayWhen } from "./boopli-away";
 import type { BreakdownResult } from "./boopli-breakdown";
@@ -60,6 +61,7 @@ export class BoopliPanel extends LitElement {
     _dirty: { state: true },
     _confirm: { state: true },
     _wall: { state: true },
+    _wallEdit: { state: true },
   };
 
   declare hass?: Hass;
@@ -75,6 +77,7 @@ export class BoopliPanel extends LitElement {
   private _requestId = 0;
   declare _dirty: { settings: boolean; chore: boolean; home: boolean };
   declare _confirm: ((choice: Choice) => void) | null;
+  declare _wallEdit: boolean; // the wall view is in edit mode (the pencil)
   declare _wall: string | null; // the wall view is open: the name of the board (empty: the first one), or null
 
   private _unsub?: () => void;
@@ -94,6 +97,7 @@ export class BoopliPanel extends LitElement {
     this._choresRequest = null;
     this._dirty = { settings: false, chore: false, home: false };
     this._confirm = null;
+    this._wallEdit = false;
     const params = new URLSearchParams(location.search);
     this._wall = params.has("wall") ? (params.get("wall") ?? "") : null;
   }
@@ -317,9 +321,10 @@ export class BoopliPanel extends LitElement {
   }
 
   /** Open the wall view: a board over the whole screen. */
-  private async _openWall(name = ""): Promise<void> {
+  private async _openWall(name = "", edit = false): Promise<void> {
     if (!(await this._guard())) return;
     this._wall = name;
+    this._wallEdit = edit;
     const url = new URL(location.href);
     url.searchParams.set("wall", name);
     history.replaceState(null, "", url);
@@ -327,6 +332,7 @@ export class BoopliPanel extends LitElement {
 
   private _closeWall = (): void => {
     this._wall = null;
+    this._wallEdit = false;
     const url = new URL(location.href);
     url.searchParams.delete("wall");
     history.replaceState(null, "", url);
@@ -334,6 +340,21 @@ export class BoopliPanel extends LitElement {
   };
 
   render() {
+    if (this._wall !== null && this._wallEdit) {
+      return html`<boopli-wall-edit
+        .hass=${this.hass}
+        .snapshot=${this._snapshot}
+        .nowMs=${this._nowMs}
+        .boardName=${this._wall}
+        @wall-edit-exit=${(e: Event) => {
+          this._wall = (e as CustomEvent<string>).detail ?? "";
+          this._wallEdit = false;
+          const url = new URL(location.href);
+          url.searchParams.set("wall", this._wall);
+          history.replaceState(null, "", url);
+        }}
+      ></boopli-wall-edit>`;
+    }
     if (this._wall !== null) {
       return html`<boopli-wall
         .hass=${this.hass}
@@ -341,6 +362,7 @@ export class BoopliPanel extends LitElement {
         .nowMs=${this._nowMs}
         .boardName=${this._wall}
         @wall-exit=${this._closeWall}
+        @wall-edit=${() => (this._wallEdit = true)}
       ></boopli-wall>`;
     }
     const unsaved: Record<Tab, boolean> = {
@@ -375,7 +397,10 @@ export class BoopliPanel extends LitElement {
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
         @open-home=${() => this._selectTab("home")}
-        @open-wall=${(e: Event) => this._openWall((e as CustomEvent<string>).detail ?? "")}
+        @open-wall=${(e: Event) => {
+          const d = (e as CustomEvent<{ name?: string; edit?: boolean }>).detail ?? {};
+          void this._openWall(d.name ?? "", !!d.edit);
+        }}
         @egg-started=${() => this.hass && void eggFound(this.hass).catch(() => undefined)}
         @dirty-change=${this._onDirty}
       >

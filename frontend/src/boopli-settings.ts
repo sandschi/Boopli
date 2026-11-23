@@ -17,7 +17,6 @@ import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
 import "./boopli-ladders";
-import "./boopli-boards";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
 import { petInfo } from "./pets";
@@ -946,12 +945,19 @@ export class BoopliSettings extends LitElement {
       </div>
       <div class="buttons">
         <button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>
-        <button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>
+        ${area === "wall"
+          ? html`<button type="button" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
+          : html`<button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
       </div>
     </section>`;
   }
 
   // --- the advanced window ---------------------------------------------------------
+
+  /** The wall board is edited on the board itself: open the wall in edit mode. */
+  private _editWall(): void {
+    this.dispatchEvent(new CustomEvent("open-wall", { detail: { name: this._draft?.boards?.[0]?.name ?? "", edit: true }, bubbles: true, composed: true }));
+  }
 
   private _openArea(area: Area): void {
     if (this._busy) return; // a save is on its way: wait for it
@@ -995,12 +1001,7 @@ export class BoopliSettings extends LitElement {
       case "timing":
         return this._renderTiming(d);
       case "wall":
-        return html`<boopli-boards
-          .hass=${this.hass}
-          .settings=${d}
-          .snapshot=${this.snapshot}
-          @settings-patch=${patch}
-        ></boopli-boards>`;
+        return nothing; // the wall board is edited on the wall itself (see _editWall)
       case "ladders":
         return html`<boopli-ladders
           plain

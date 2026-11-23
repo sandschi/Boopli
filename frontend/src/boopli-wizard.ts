@@ -29,7 +29,7 @@ import {
 } from "./helpers";
 import "./boopli-pet-picker";
 import "./boopli-rung";
-import { TILE_DEFS, boardLink, newTile } from "./wall-tiles";
+import { boardLink, newTile } from "./wall-tiles";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
@@ -51,7 +51,6 @@ import type {
   SpeakerLevel,
   SpeechRoute,
   Board,
-  NightMode,
 } from "./types";
 
 /** The wizards. "first" is the first-run setup; the others each set up one area. */
@@ -97,8 +96,6 @@ type StepId =
   | "lad_end"
   | "lad_delete"
   | "wall_start"
-  | "wall_tiles"
-  | "wall_night"
   | "done";
 
 const SEQUENCES: Record<WizardId, StepId[]> = {
@@ -113,7 +110,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   pet: ["pet", "done"],
   ai: ["ai_intro", "ai_agent", "done"],
   ladders: ["lad_start", "done"], // the rest depends on what you want to do (see _startLadderWork)
-  wall: ["wall_start", "wall_tiles", "wall_night", "done"],
+  wall: ["wall_start", "done"],
 };
 
 /** What "Set up speakers" adds to the first-run setup. */
@@ -165,8 +162,6 @@ const TITLES: Record<StepId, string> = {
   lad_end: "How it ends",
   lad_delete: "Delete a ladder",
   wall_start: "Which board?",
-  wall_tiles: "What is on it?",
-  wall_night: "Columns and night",
   done: "All set",
 };
 
@@ -523,16 +518,6 @@ export class BoopliWizard extends LitElement {
     return this._draft?.boards?.find((b) => b.id === this._boardId);
   }
 
-  private _patchBoard(change: (b: Board) => void): void {
-    const d = this._draft;
-    if (!d) return;
-    const boards = structuredClone(d.boards ?? []);
-    const b = boards.find((x) => x.id === this._boardId);
-    if (!b) return;
-    change(b);
-    this._set({ boards });
-  }
-
   /** Called when leaving the first screen of the wall guide: pick the board, or make a new one. */
   private _startBoardWork(): void {
     const d = this._draft;
@@ -571,70 +556,6 @@ export class BoopliWizard extends LitElement {
             <label for="boardname">Name of the new board</label>
             <input id="boardname" maxlength="40" .value=${this._boardName} @input=${(e: Event) => (this._boardName = (e.target as HTMLInputElement).value)} />
           </div>`}
-    `;
-  }
-
-  private _renderWallTiles() {
-    const b = this._board();
-    if (!b) return html`<p class="muted">Pick a board first.</p>`;
-    return html`
-      <p>Tick what should be on <b>${b.name}</b>. You can change the sizes and the order later in Advanced.</p>
-      ${TILE_DEFS.map((def) => {
-        const tile = b.tiles.find((t) => t.type === def.type);
-        const entity = def.options.find((o) => o.kind === "entity");
-        return html`<div class="wallopt">
-          <label class="inline option">
-            <input
-              type="checkbox"
-              .checked=${!!tile}
-              @change=${(e: Event) =>
-                this._patchBoard((x) => {
-                  if ((e.target as HTMLInputElement).checked) x.tiles.push(newTile(def.type));
-                  else x.tiles = x.tiles.filter((t) => t.type !== def.type);
-                })}
-            />
-            <span><b>${def.emoji} ${def.label}</b> <span class="muted small">${def.blurb}</span></span>
-          </label>
-          ${tile && entity
-            ? html`<div class="field">
-                <label for=${"w-" + def.type}>${entity.label}</label>
-                <input
-                  id=${"w-" + def.type}
-                  list=${"wl-" + def.type}
-                  placeholder="Start typing a name…"
-                  .value=${String(tile.options[entity.key] ?? "")}
-                  @change=${(e: Event) => this._patchBoard((x) => {
-                    const t = x.tiles.find((y) => y.type === def.type);
-                    if (t) t.options[entity.key] = (e.target as HTMLInputElement).value.trim();
-                  })}
-                />
-                <datalist id=${"wl-" + def.type}>
-                  ${entityIds(this.hass, entity.domains ?? ["sensor", "binary_sensor", "light", "switch", "input_boolean", "fan", "cover", "lock", "climate", "script", "scene", "button", "person"]).map(
-                    (id) => html`<option value=${id}>${friendlyName(this.hass, id)}</option>`
-                  )}
-                </datalist>
-              </div>`
-            : nothing}
-        </div>`;
-      })}
-    `;
-  }
-
-  private _renderWallNight() {
-    const b = this._board();
-    if (!b) return html`<p class="muted">Pick a board first.</p>`;
-    return html`
-      ${this._numField("Columns", b.columns, 2, 8, (n) => this._patchBoard((x) => (x.columns = n)))}
-      <div class="field">
-        <label for="wnight">At night</label>
-        <select id="wnight" @change=${(e: Event) => this._patchBoard((x) => (x.night = (e.target as HTMLSelectElement).value as NightMode))}>
-          <option value="dim" ?selected=${b.night === "dim"}>Dim the screen</option>
-          <option value="black" ?selected=${b.night === "black"}>Black, with a small clock</option>
-          <option value="off" ?selected=${b.night === "off"}>Keep as it is</option>
-        </select>
-      </div>
-      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds.</p>
-      <p>Open it with the 🖥 Wall view button, or put this link on the tablet's start page:<br /><code>${boardLink(b)}</code></p>
     `;
   }
 
@@ -1556,6 +1477,14 @@ export class BoopliWizard extends LitElement {
     }
   }
 
+  /** The last screen of the wall guide: leave the guide and open the board in edit mode. */
+  private _editOnWall(): void {
+    const b = this._board();
+    if (!b) return;
+    this._close();
+    this.dispatchEvent(new CustomEvent("open-wall", { detail: { name: b.name, edit: true }, bubbles: true, composed: true }));
+  }
+
   private _renderDone(d: Settings) {
     const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
     const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
@@ -1565,6 +1494,11 @@ export class BoopliWizard extends LitElement {
       ${changes.length === 0
         ? html`<p class="muted">Nothing changed.</p>`
         : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
+      ${this.wizard === "wall" && this._board()
+        ? html`<p>Next: put the tiles where you want them, on the board itself.</p>
+            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>Edit it on the wall</button></p>
+            <p class="small">Link for the tablet's start page: <code>${boardLink(this._board()!)}</code></p>`
+        : nothing}
       <p class="muted small">
         Everything can be changed again in Settings, step by step or in the full forms.
       </p>
@@ -1618,10 +1552,6 @@ export class BoopliWizard extends LitElement {
         return this._renderChores();
       case "wall_start":
         return this._renderWallStart(d);
-      case "wall_tiles":
-        return this._renderWallTiles();
-      case "wall_night":
-        return this._renderWallNight();
       case "lad_start":
         return this._renderLadStart(d);
       case "lad_name":

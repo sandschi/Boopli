@@ -22,6 +22,8 @@ export class BoopliWall extends LitElement {
     boardName: { type: String },
     board: { attribute: false },
     preview: { type: Boolean, reflect: true },
+    pickable: { type: Boolean }, // in the editor: a tap on a tile picks it instead of using it
+    selectedId: { type: String },
     _awakeUntil: { state: true },
   };
 
@@ -31,6 +33,8 @@ export class BoopliWall extends LitElement {
   declare boardName: string;
   declare board?: Board; // a board to show as it is being edited (the preview)
   declare preview: boolean;
+  declare pickable: boolean;
+  declare selectedId: string;
   declare _awakeUntil: number;
 
   private _lock?: { release(): Promise<void> };
@@ -41,6 +45,8 @@ export class BoopliWall extends LitElement {
     this.nowMs = Date.now();
     this.boardName = "";
     this.preview = false;
+    this.pickable = false;
+    this.selectedId = "";
     this._awakeUntil = 0;
   }
 
@@ -100,15 +106,16 @@ export class BoopliWall extends LitElement {
       <div class="grid">
         ${board.tiles.map(
           (t) =>
-            shtml`<${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}
-              class="size-${t.size}"
+            html`<div class="cell size-${t.size} ${this.selectedId === t.id ? "selected" : ""}">${shtml`<${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${t.options}
               .size=${t.size}
               .preview=${this.preview}
-            ></${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}>`
+            ></${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}>`}${this.pickable
+              ? html`<button type="button" class="shield" aria-label="Edit this tile: ${t.type.replace(/_/g, " ")}" @click=${() => this.dispatchEvent(new CustomEvent("tile-pick", { detail: t.id, bubbles: true, composed: true }))}></button>`
+              : nothing}</div>`
         )}
       </div>
       ${night && board.night === "black" ? html`<div class="black">${this._time(tz)}</div>` : nothing}
@@ -116,6 +123,7 @@ export class BoopliWall extends LitElement {
       ${this.preview
         ? nothing
         : html`<div class="controls">
+            <button type="button" aria-label="Edit this board" title="Edit this board" @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>✎</button>
             <button type="button" aria-label="Full screen" @click=${this._fullscreen}>⛶</button>
             <button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button>
           </div>`}
@@ -145,6 +153,14 @@ export class BoopliWall extends LitElement {
       padding: 12px;
       background: var(--primary-background-color);
       min-height: 100%;
+      container: wall / inline-size; /* the columns follow the width of the board, so a phone frame in the editor looks like a phone */
+    }
+    :host([preview]) .wall {
+      height: 100%;
+      overflow: auto;
+    }
+    :host([preview]) {
+      height: 100%;
     }
     :host(:not([preview])) .wall {
       position: fixed;
@@ -165,9 +181,36 @@ export class BoopliWall extends LitElement {
       min-height: calc(100vh - 24px);
     }
     /* A tile never makes its row taller: the rows share the screen, and a tile's content has to fit. */
-    .grid > * {
+    .cell {
+      position: relative;
       contain: size;
       min-height: 0;
+    }
+    .cell > :first-child {
+      height: 100%;
+    }
+    .shield {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      border: 2px dashed var(--primary-color);
+      border-radius: 18px;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.55;
+      padding: 0;
+    }
+    .shield:hover,
+    .shield:focus-visible {
+      opacity: 1;
+      background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    }
+    .selected .shield {
+      opacity: 1;
+      border-style: solid;
+      border-width: 4px;
+      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
     }
     .size-wide {
       grid-column: span 2;
@@ -179,7 +222,7 @@ export class BoopliWall extends LitElement {
       grid-column: span 2;
       grid-row: span 2;
     }
-    @media (max-width: 600px) {
+    @container wall (max-width: 600px) {
       .grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
