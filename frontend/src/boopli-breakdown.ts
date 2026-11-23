@@ -342,6 +342,7 @@ export class BoopliBreakdown extends LitElement {
       ${this._sending
         ? html`<boopli-wait
             .label=${"The AI is looking at your photos…"}
+            .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${this.snapshot?.ai_timeout ?? 180}
             @stop-waiting=${() => this._stopLooking()}
           ></boopli-wait>`
@@ -655,6 +656,7 @@ export class BoopliBreakdown extends LitElement {
   private _renderWorking() {
     return html`<boopli-wait
       .label=${this._answers.length || this._steps.length ? "Writing the steps…" : "Thinking…"}
+      .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
       .max=${this.snapshot?.ai_timeout ?? 180}
       @stop-waiting=${() => this._stopWaiting()}
     ></boopli-wait>`;

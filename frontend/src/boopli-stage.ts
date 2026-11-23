@@ -3,32 +3,67 @@ import "./boopli-pet";
 import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
+import type { Activity, Moment } from "./boopli-pet";
 
 const INK = "#101010";
 
-/** A water bowl: always there from level 1. */
-const WATER_BOWL = svg`<svg viewBox="0 0 60 40" aria-hidden="true">
-  <path d="M5 14 H55 Q55 36 30 36 Q5 36 5 14 Z" fill="#5B8DEF" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <ellipse cx="30" cy="14" rx="25" ry="6" fill="#8ADFFF" stroke=${INK} stroke-width="2.5"/>
-  <path d="M18 14 Q24 11 30 14" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+/** A water bowl on a mat: white ceramic with a blue paw band. Always there from level 1. */
+const WATER_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${INK} stroke-width="2.5"/>
+  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#5B8DEF"/>
+  <circle cx="36" cy="34" r="2.8" fill="#fff"/>
+  <circle cx="31.5" cy="30.6" r="1.5" fill="#fff"/><circle cx="36" cy="29.3" r="1.5" fill="#fff"/><circle cx="40.5" cy="30.6" r="1.5" fill="#fff"/>
+  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#E6E0FF" stroke=${INK} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19.5" rx="22" ry="5" fill="#7FD8FF"/>
+  <ellipse class="ripple" cx="36" cy="19.5" rx="7" ry="1.8" fill="none" stroke="#fff" stroke-width="1.4"/>
+  <path d="M20 18.5 Q26 16.5 32 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
 </svg>`;
 
-/** A food bowl: from level 2. */
-const FOOD_BOWL = svg`<svg viewBox="0 0 60 40" aria-hidden="true">
-  <path d="M5 14 H55 Q55 36 30 36 Q5 36 5 14 Z" fill="#FF9F5A" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <ellipse cx="30" cy="14" rx="25" ry="6" fill="#8A5A3A" stroke=${INK} stroke-width="2.5"/>
-  <circle cx="20" cy="11" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="30" cy="9" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="40" cy="11" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="26" cy="14" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="35" cy="14" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+/** A food bowl on a mat: warm ceramic with kibble and a bone biscuit. From level 2. */
+const FOOD_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${INK} stroke-width="2.5"/>
+  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#FF9F5A"/>
+  <path d="M30 31.5 a3 3 0 1 1 6 0 a3 3 0 1 1 6 0 q0 4 -6 7 q-6 -3 -6 -7 z" fill="#fff"/>
+  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#FFE3C7" stroke=${INK} stroke-width="2.5"/>
+  <ellipse cx="36" cy="18" rx="22" ry="5" fill="#8A5A3A"/>
+  <circle cx="22" cy="15.5" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+  <circle cx="29" cy="12.5" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+  <circle cx="44" cy="12.8" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+  <circle cx="50" cy="16" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+  <circle cx="36" cy="15" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+  <g transform="translate(36 8) rotate(-12)">
+    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
+    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
+    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
+  </g>
 </svg>`;
 
-/** A bed: from level 3. */
-const BED = svg`<svg viewBox="0 0 100 50" aria-hidden="true">
-  <ellipse cx="50" cy="33" rx="46" ry="15" fill="#9B6CF0" stroke=${INK} stroke-width="3"/>
-  <ellipse cx="50" cy="28" rx="34" ry="9" fill="#CDB0FF" stroke=${INK} stroke-width="2.5"/>
-  <path d="M30 27 Q50 20 70 27" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+/** The bed, in two layers: the back (the soft arch, the cushion and a pillow) goes behind the pet... */
+const BED_BACK = svg`<svg viewBox="0 0 120 64" aria-hidden="true">
+  <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
+  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${INK} stroke-width="2.5"/>
+  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${INK} stroke-width="2.5"/>
+  <path d="M18 34 H37" stroke=${INK} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
+</svg>`;
+
+/** ...and the front (the soft lip at the bottom and the blanket) in front of it, so the pet is IN the bed. */
+const BED_FRONT = svg`<svg viewBox="0 0 120 64" aria-hidden="true">
+  <g class="blanket">
+    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <path d="M28 49 Q60 57 92 49" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+  </g>
+  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
 </svg>`;
 
 /** A little suitcase: it stands next to the pet while away mode is on. */
@@ -42,6 +77,7 @@ const SUITCASE = svg`<svg viewBox="0 0 50 50" aria-hidden="true">
 /**
  * The scene the pet lives in: a calm room with a floor. What stands in it grows with the level
  * (water bowl at 1, food bowl at 2, a bed at 3), and a suitcase appears while away mode is on.
+ * A sleepy or hibernating pet sleeps in the bed, with the blanket pulled over it.
  * The pet itself is `boopli-pet`; this card only arranges the scene around it.
  */
 export class BoopliStage extends LitElement {
@@ -50,12 +86,20 @@ export class BoopliStage extends LitElement {
     mood: { type: String },
     level: { type: Number },
     away: { type: Boolean },
+    activity: { type: String },
+    moment: { type: String },
+    momentSeq: { type: Number },
+    momentText: { type: String },
   };
 
   declare kind: PetKind;
   declare mood: Mood;
   declare level: number;
   declare away: boolean;
+  declare activity: Activity;
+  declare moment: Moment;
+  declare momentSeq: number;
+  declare momentText: string;
 
   constructor() {
     super();
@@ -63,17 +107,37 @@ export class BoopliStage extends LitElement {
     this.mood = "content";
     this.level = 1;
     this.away = false;
+    this.activity = "";
+    this.moment = "";
+    this.momentSeq = 0;
+    this.momentText = "";
   }
 
   render() {
-    return html`<div class="scene" role="group" aria-label="Your pet's room">
+    const hasBed = this.level >= 3;
+    // While you are away the pet always hibernates, whatever its mood was.
+    const mood: Mood = this.away ? "hibernating" : this.mood;
+    // Asleep in the bed, unless it is busy with something.
+    const sleeping = hasBed && !this.activity && (mood === "sleepy" || mood === "hibernating");
+    const deep = sleeping && mood === "hibernating";
+    return html`<div class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}" role="group" aria-label="Your pet's room">
       <div class="floor"></div>
-      ${this.level >= 3 ? html`<div class="prop bed">${BED}</div>` : nothing}
       <div class="prop water">${WATER_BOWL}</div>
       ${this.level >= 2 ? html`<div class="prop food">${FOOD_BOWL}</div>` : nothing}
+      ${hasBed ? html`<div class="prop bed">${BED_BACK}</div>` : nothing}
       <div class="actor">
-        <boopli-pet .kind=${this.kind} .mood=${this.mood} .level=${this.level} .away=${this.away}></boopli-pet>
+        <boopli-pet
+          .kind=${this.kind}
+          .mood=${mood}
+          .level=${this.level}
+          .away=${this.away}
+          .activity=${this.activity}
+          .moment=${this.moment}
+          .momentSeq=${this.momentSeq}
+          .momentText=${this.momentText}
+        ></boopli-pet>
       </div>
+      ${hasBed ? html`<div class="prop bed front">${BED_FRONT}</div>` : nothing}
       ${this.away ? html`<div class="prop suitcase">${SUITCASE}</div>` : nothing}
     </div>`;
   }
@@ -110,25 +174,26 @@ export class BoopliStage extends LitElement {
         display: block;
         width: 100%;
         height: auto;
+        overflow: visible;
       }
       /* Everything in the room is sized by the room's height, so the card can be as low as you want. */
       .water {
-        left: 9%;
-        bottom: 6cqh;
-        width: 34cqh;
+        left: 7%;
+        bottom: 3cqh;
+        width: 36cqh;
       }
       .food {
-        left: calc(9% + 38cqh);
-        bottom: 5cqh;
-        width: 34cqh;
+        left: calc(7% + 40cqh);
+        bottom: 3cqh;
+        width: 36cqh;
       }
       .bed {
-        right: 5%;
-        bottom: 6cqh;
-        width: 64cqh;
+        right: 3%;
+        bottom: 3cqh;
+        width: 80cqh;
       }
       .suitcase {
-        left: calc(50% + 30cqh);
+        left: calc(50% + 24cqh);
         bottom: 4cqh;
         width: 26cqh;
       }
@@ -139,6 +204,53 @@ export class BoopliStage extends LitElement {
         height: 86cqh;
         aspect-ratio: 1;
         transform: translateX(-50%);
+        transform-origin: 50% 100%;
+        transition: left 0.9s ease, bottom 0.9s ease, transform 0.9s ease;
+      }
+      /* Asleep: the pet is in the bed, a little smaller, with the blanket over part of it. */
+      .sleeping .actor {
+        left: calc(100% - 3% - 40cqh);
+        bottom: 7cqh;
+        transform: translateX(-50%) scale(0.82);
+      }
+      .blanket {
+        transform-box: view-box;
+        transform-origin: 60px 50px;
+        transition: transform 0.9s ease;
+        /* Awake: the blanket lies folded at the end of the bed. */
+        transform: translate(34px, 2px) scale(0.5, 0.6);
+      }
+      .sleeping .blanket {
+        transform: translate(0, 4px) scale(0.95, 0.85);
+      }
+      .deep .blanket {
+        transform: translate(0, -1px) scale(0.95, 1);
+      }
+      /* The water in the bowl ripples. */
+      .ripple {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation: ripple 3.4s ease-out infinite;
+      }
+      @keyframes ripple {
+        0% {
+          transform: scale(0.3);
+          opacity: 0.9;
+        }
+        100% {
+          transform: scale(2.4);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ripple {
+          animation: none;
+          opacity: 0.6;
+        }
+        .actor,
+        .blanket {
+          transition: none;
+        }
       }
       /* A phone is narrower, so the room is a little taller there (still a third lower than before). */
       @media (max-width: 760px) {
@@ -150,18 +262,21 @@ export class BoopliStage extends LitElement {
         }
         .water {
           left: 3%;
-          width: 26cqh;
+          width: 30cqh;
         }
         .food {
-          left: calc(3% + 30cqh);
-          width: 26cqh;
+          left: calc(3% + 33cqh);
+          width: 30cqh;
         }
         .bed {
           right: 3%;
-          width: 50cqh;
+          width: 62cqh;
+        }
+        .sleeping .actor {
+          left: calc(100% - 3% - 31cqh);
         }
         .suitcase {
-          left: calc(50% + 24cqh);
+          left: calc(50% + 22cqh);
           width: 20cqh;
         }
       }

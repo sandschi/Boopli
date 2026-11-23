@@ -1,5 +1,8 @@
 import { css, svg, type SVGTemplateResult } from "lit";
+import { momentArt, workArms, workBehind, workCss, workFront, type Activity, type Moment } from "./pet-slime-work";
 import type { Mood } from "./types";
+
+export { workCss };
 
 /**
  * The slime: a round, glossy neon green jelly with a thick outline, drawn in code and animated
@@ -95,8 +98,21 @@ function sleepBubble(mood: Mood): SVGTemplateResult {
   return svg`<g class="snore"><circle cx="113" cy="152" r="7" fill="#D8FFE2" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="149.5" r="1.8" fill="#fff"/></g>`;
 }
 
-export function slimeSvg(mood: Mood): SVGTemplateResult {
-  return svg`<svg class="slime ${mood}" viewBox="0 0 200 200" aria-hidden="true">
+export interface SlimeOptions {
+  /** What it is busy with: the housework routine or typing. Then it shows its content face. */
+  activity?: Activity;
+  /** A one-shot moment that is playing now. */
+  moment?: Moment;
+  /** The words of a moment: "Level 6!" or "+10 XP". */
+  text?: string;
+}
+
+export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateResult {
+  const activity = options.activity ?? "";
+  const moment = options.moment ?? "";
+  const face: Mood = activity ? "content" : mood; // busy: no sleepy or sad face
+  mood = face;
+  return svg`<svg class="slime ${mood} ${activity ? `work ${activity}` : ""} ${moment}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <radialGradient id="slime-fill" cx="0.36" cy="0.3" r="0.9">
         <stop offset="0" stop-color="#D4FFC2"/>
@@ -108,6 +124,7 @@ export function slimeSvg(mood: Mood): SVGTemplateResult {
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
     <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
+    ${workBehind(activity)} ${workArms(activity)}
     <g class="jelly">
       <path class="body" d=${BODY} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
@@ -121,9 +138,12 @@ export function slimeSvg(mood: Mood): SVGTemplateResult {
       <ellipse cx="76" cy="100" rx="17" ry="9" transform="rotate(-32 76 100)" fill="#fff" opacity="0.4"/>
       <path d="M50 128 C49 108 60 92 78 86" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
       <circle cx="49" cy="143" r="3.6" fill="#fff" opacity="0.65"/>
-      ${cheeks(mood)} ${eyes(mood)} ${mouth(mood)} ${sleepBubble(mood)}
+      ${cheeks(mood)} ${eyes(mood)}
+      ${moment === "wake" ? svg`` : mouth(mood)} ${sleepBubble(mood)}
     </g>
-    ${extras(mood)}
+    ${workFront(activity)}
+    ${activity ? svg`` : extras(mood)}
+    ${momentArt(moment, options.text ?? "")}
   </svg>`;
 }
 
@@ -206,63 +226,63 @@ export const slimeCss = css`
     }
   }
 
-  /* happy: it hops, squashing on landing, and the puddle under it ripples. */
+  /* happy: it is the mood for most of a good day, so it stays calm: a slow breath, and one small
+     hop every 8 seconds or so. The big hops are for the moments that earn them (level up, step done). */
   .happy .jelly {
-    animation: hop 1.2s infinite;
+    animation: happy-idle 8s ease-in-out infinite;
   }
   .happy .shadow {
-    animation: hop-shadow 1.2s infinite;
+    animation: happy-shadow 8s ease-in-out infinite;
   }
   .happy .puddle {
-    animation: ripple 1.2s infinite;
+    animation: happy-ripple 8s ease-in-out infinite;
   }
-  @keyframes hop {
-    0% {
-      transform: translateY(0) scale(1.12, 0.86);
-    }
-    16% {
-      transform: translateY(0) scale(0.93, 1.1);
-      animation-timing-function: ease-out;
-    }
-    50% {
-      transform: translateY(-26px) scale(0.92, 1.12);
-      animation-timing-function: ease-in;
-    }
-    78% {
-      transform: translateY(0) scale(1.03, 0.97);
-    }
-    88% {
-      transform: translateY(0) scale(1.14, 0.84);
-    }
-    100% {
-      transform: translateY(0) scale(1.12, 0.86);
-    }
-  }
-  @keyframes hop-shadow {
+  @keyframes happy-idle {
     0%,
     78%,
     100% {
-      transform: scale(1.08);
+      transform: translateY(0) scale(1, 1);
+    }
+    22% {
+      transform: translateY(0) scale(0.985, 1.04);
+    }
+    44% {
+      transform: translateY(0) scale(1.01, 0.99);
+    }
+    62% {
+      transform: translateY(0) scale(0.985, 1.04);
+    }
+    84% {
+      transform: translateY(0) scale(1.08, 0.92);
+    }
+    90% {
+      transform: translateY(-14px) scale(0.95, 1.08);
+    }
+    95% {
+      transform: translateY(0) scale(1.07, 0.93);
+    }
+  }
+  @keyframes happy-shadow {
+    0%,
+    84%,
+    100% {
+      transform: scale(1);
       opacity: 0.22;
     }
-    50% {
-      transform: scale(0.75);
-      opacity: 0.1;
+    90% {
+      transform: scale(0.85);
+      opacity: 0.14;
     }
   }
-  @keyframes ripple {
+  @keyframes happy-ripple {
     0%,
-    78%,
+    88%,
     100% {
       transform: scale(1);
       opacity: 0.35;
     }
-    50% {
-      transform: scale(0.8);
-      opacity: 0.12;
-    }
-    88% {
-      transform: scale(1.14);
+    95% {
+      transform: scale(1.12);
       opacity: 0.45;
     }
   }

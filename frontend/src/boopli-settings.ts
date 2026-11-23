@@ -16,6 +16,7 @@ import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
 import "./boopli-pet-picker";
+import "./boopli-pet-preview";
 import { petInfo } from "./pets";
 
 type Mode = "simple" | "advanced";
@@ -664,6 +665,7 @@ export class BoopliSettings extends LitElement {
             .value=${d.pet_kind ?? "slime"}
             @pet-kind-change=${(e: CustomEvent<string>) => this._set({ pet_kind: e.detail })}
           ></boopli-pet-picker>
+          <boopli-pet-preview .kind=${d.pet_kind ?? "slime"}></boopli-pet-preview>
         </div>
         <div class="field">
           <label for="snooze">Snooze length (minutes)</label>

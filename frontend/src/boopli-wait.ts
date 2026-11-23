@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import "./boopli-egg";
+import "./boopli-pet";
 
 const EGG_AFTER_SECONDS = 30; // the Easter egg shows up once a wait has lasted this long
 
@@ -20,6 +21,7 @@ function mmss(seconds: number): string {
 export class BoopliWait extends LitElement {
   static properties = {
     label: { type: String },
+    pet: { type: String },
     max: { type: Number },
     stoppable: { type: Boolean },
     _elapsed: { state: true },
@@ -27,6 +29,7 @@ export class BoopliWait extends LitElement {
   };
 
   declare label: string;
+  declare pet: string; // the pet's kind: "slime" types on a laptop while you wait; empty = just the dots
   declare max: number; // seconds Boopli waits at most
   declare stoppable: boolean;
   declare _elapsed: number;
@@ -38,6 +41,7 @@ export class BoopliWait extends LitElement {
   constructor() {
     super();
     this.label = "Thinking…";
+    this.pet = "";
     this.max = 180;
     this.stoppable = true;
     this._elapsed = 0;
@@ -76,7 +80,9 @@ export class BoopliWait extends LitElement {
     return html`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
       <div class="head">
-        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        ${this.pet === "slime"
+          ? html`<span class="typist"><boopli-pet kind="slime" activity="typing"></boopli-pet></span>`
+          : html`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>
       <div
@@ -120,6 +126,13 @@ export class BoopliWait extends LitElement {
     .dots {
       display: inline-flex;
       gap: 6px;
+    }
+    .typist {
+      display: block;
+      flex: none;
+      width: 92px;
+      height: 92px;
+      margin: -6px 0 -10px;
     }
     .dots i {
       width: 10px;
