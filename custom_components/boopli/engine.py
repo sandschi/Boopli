@@ -928,6 +928,12 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
         ladder_style(i) for i in ladder_ids
     }:
         return "Unknown nudge style."
+    if chore.next_due not in (None, ""):
+        try:
+            if parse_ts(chore.next_due).tzinfo is None:
+                return "The next due time needs a time zone."
+        except (TypeError, ValueError):
+            return "The next due time cannot be read."
     return validate_repeat(chore.repeat)
 
 

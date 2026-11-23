@@ -43,6 +43,8 @@ export interface BackupPreview {
   missing_entities_total: number;
   missing_services: string[];
   runs_ended: number;
+  selection_error: string; // the parts picked do not fit together (empty: they do)
+  settings: Settings | null; // the settings as an import would apply them
 }
 
 export function exportBackup(hass: Hass, parts: BackupPart[]): Promise<Record<string, unknown>> {

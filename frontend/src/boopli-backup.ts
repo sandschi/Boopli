@@ -69,11 +69,17 @@ export class BoopliBackup extends LitElement {
   }
 
   protected firstUpdated(): void {
-    (this.renderRoot.querySelector(".modal") as HTMLElement | null)?.focus();
+    // a native modal dialog keeps the keyboard inside, makes the page behind inert, closes on Escape and
+    // gives the focus back to the button that opened it
+    (this.renderRoot.querySelector("dialog") as HTMLDialogElement | null)?.showModal();
   }
 
   private _close = (): void => {
     if (this._busy) return;
+    (this.renderRoot.querySelector("dialog") as HTMLDialogElement | null)?.close(); // its "close" event tells the page
+  };
+
+  private _closed = (): void => {
     this.dispatchEvent(new CustomEvent("backup-close", { bubbles: true, composed: true }));
   };
 
@@ -172,7 +178,7 @@ export class BoopliBackup extends LitElement {
       const preview = await previewBackup(this.hass, this._file.data, parts);
       this._preview = preview;
       if (first) this._parts = [...preview.parts];
-      this._error = "";
+      this._error = preview.selection_error; // the parts picked may not fit: the list stays, Import stays off
     } catch (err) {
       this._error = errorMessage(err);
       if (first) {
@@ -224,14 +230,15 @@ export class BoopliBackup extends LitElement {
     </div>`;
   }
 
-  private _changes(): string[] {
+  /** The changes to the settings, from the settings as an import would apply them. Null: they could not be listed. */
+  private _changes(): string[] | null {
     const before = this.snapshot?.settings;
-    const after = (this._file?.data.settings ?? null) as Settings | null;
+    const after: Settings | null | undefined = this._preview?.settings;
     if (!before || !after || !this._parts.includes("settings")) return [];
     try {
       return diffSettings(before, after, this.hass);
     } catch {
-      return [];
+      return null;
     }
   }
 
@@ -267,11 +274,13 @@ export class BoopliBackup extends LitElement {
             </p>
             <p>Pick what to bring in:</p>
             ${this._renderParts(pre.parts, pre.counts)}
-            ${changes.length
-              ? html`<div class="changes"><b>The settings would change like this:</b>
-                  <ul>${changes.slice(0, 12).map((c) => html`<li>${c}</li>`)}</ul>
-                  ${changes.length > 12 ? html`<span class="muted small">and ${changes.length - 12} more.</span>` : nothing}</div>`
-              : nothing}
+            ${changes === null
+              ? html`<div class="warn" role="status">The list of changes to the settings could not be made. Importing still replaces the settings.</div>`
+              : changes.length
+                ? html`<div class="changes"><b>The settings would change like this:</b>
+                    <ul>${changes.slice(0, 12).map((c) => html`<li>${c}</li>`)}</ul>
+                    ${changes.length > 12 ? html`<span class="muted small">and ${changes.length - 12} more.</span>` : nothing}</div>`
+                : nothing}
             ${pre.missing_entities_total || pre.missing_services.length
               ? html`<div class="warn" role="status">
                   <b>This install does not have everything the file points to.</b>
@@ -300,8 +309,14 @@ export class BoopliBackup extends LitElement {
   }
 
   render() {
-    return html`<div class="backdrop" @click=${(e: Event) => e.target === e.currentTarget && this._close()}>
-      <section class="modal" role="dialog" aria-modal="true" aria-label="Backup" tabindex="-1" @keydown=${(e: KeyboardEvent) => e.key === "Escape" && this._close()}>
+    return html`<dialog
+      class="modal"
+      aria-label="Backup"
+      @close=${this._closed}
+      @cancel=${(e: Event) => this._busy && e.preventDefault()}
+      @click=${(e: Event) => e.target === e.currentTarget && this._close()}
+    >
+      <div class="box">
         ${this._done.length
           ? html`<h2>💾 Done</h2>
               ${this._done.map((l) => html`<p>${l}</p>`)}
@@ -310,40 +325,34 @@ export class BoopliBackup extends LitElement {
             ? this._renderExport()
             : this._renderImport()}
         ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
-      </section>
-    </div>`;
+      </div>
+    </dialog>`;
   }
 
   static styles = [
     sharedStyles,
     css`
       :host {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: block;
+        display: contents;
       }
       * {
         box-sizing: border-box;
       }
-      .backdrop {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        background: rgba(0, 0, 0, 0.55);
-        padding: 12px;
-      }
-      .modal {
-        width: min(600px, 100%);
+      dialog.modal {
+        width: min(600px, calc(100vw - 24px));
         max-height: 92vh;
+        padding: 0;
         overflow: auto;
-        padding: 16px 18px;
         border-radius: 16px;
         background: var(--card-background-color, var(--primary-background-color));
         color: var(--primary-text-color);
         border: 1px solid var(--divider-color);
-        outline: none;
+      }
+      dialog.modal::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .box {
+        padding: 16px 18px;
       }
       h2 {
         margin: 0 0 10px;

@@ -1345,21 +1345,30 @@ class BoopliManager:
         except engine.BackupError as err:
             raise BoopliError(str(err)) from err
 
-    def _read_backup(self, data: Any, parts: list[str]) -> engine.Backup:
-        """Read and check a backup file, and that the parts picked fit together. Changes nothing."""
+    def _parse_backup(self, data: Any) -> engine.Backup:
+        """Read a backup file and check what is in it. Changes nothing."""
         try:
-            backup = engine.parse_backup(data, [lad.id for lad in self.settings.ladders])
+            return engine.parse_backup(data, [lad.id for lad in self.settings.ladders])
         except engine.BackupError as err:
             raise BoopliError(str(err)) from err
-        error = engine.check_backup_selection(backup, parts or backup.parts, self.settings, self.chores.values())
+
+    def _read_backup(self, data: Any, parts: list[str]) -> engine.Backup:
+        """Read a backup file, and check that the parts picked fit together. Changes nothing."""
+        backup = self._parse_backup(data)
+        error = engine.check_backup_selection(backup, parts, self.settings, self.chores.values())
         if error:
             raise BoopliError(error)
         return backup
 
     def preview_backup(self, data: Any, parts: list[str]) -> dict[str, Any]:
-        """What importing would do: what is in the file, what this install lacks, what would end."""
-        backup = self._read_backup(data, parts)
+        """What importing would do: what is in the file, what this install lacks, what would end.
+
+        No parts picked means "show me what is in the file": all of them are looked at. A pick that does not
+        fit together is not an error here, it is reported (`selection_error`) so the window can keep the list.
+        """
+        backup = self._parse_backup(data)
         chosen = parts or backup.parts
+        selection_error = engine.check_backup_selection(backup, chosen, self.settings, self.chores.values())
         entities, services = engine.backup_references(
             backup.settings if "settings" in chosen else None,
             backup.chores if "chores" in chosen else None,
@@ -1386,12 +1395,17 @@ class BoopliManager:
             "missing_entities_total": len(missing_entities),
             "missing_services": missing_services[:20],
             "runs_ended": runs_ended,
+            "selection_error": selection_error or "",
+            # the settings as an import would apply them (missing keys filled in), for the list of changes
+            "settings": engine.to_dict(backup.settings) if backup.settings else None,
         }
 
     def import_backup(self, data: Any, parts: list[str]) -> dict[str, Any]:
         """Replace the parts picked with what the backup file holds. All or nothing."""
+        if not parts:
+            raise BoopliError("Pick at least one part to import.")
         backup = self._read_backup(data, parts)
-        chosen = parts or backup.parts
+        chosen = parts
         now = dt_util.utcnow()
         runs_ended = 0
         if "settings" in chosen and backup.settings is not None:

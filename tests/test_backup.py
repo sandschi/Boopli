@@ -299,3 +299,27 @@ def test_a_backup_at_the_limit_comes_back_and_one_past_it_cannot_be_made():
     with pytest.raises(engine.BackupError, match="more than"):
         make(["chores"], chores=chores + [a_chore("extra", "One too many")])
     make(["settings"], chores=chores + [a_chore("extra", "One too many")])  # chores not asked for: no problem
+
+
+# --- a return time that cannot be read ----------------------------------------------------------
+
+
+@pytest.mark.parametrize("bad", [5, "garbage", "2026-11-24T09:00:00", {"x": 1}, ["a"]])
+def test_a_next_due_time_that_cannot_be_read_is_refused(bad):
+    parked = a_chore()
+    parked.parked = True
+    assert engine.validate_chore(parked) is None
+    parked.next_due = bad
+    assert engine.validate_chore(parked) is not None
+    data = make(["chores"], chores=[a_chore()])
+    data["chores"][0]["parked"] = True
+    data["chores"][0]["next_due"] = bad
+    with pytest.raises(engine.BackupError, match="is not valid"):
+        engine.parse_backup(data)
+
+
+def test_a_next_due_time_that_can_be_read_is_accepted():
+    for good in (None, "", "2026-11-24T09:00:00Z", "2026-11-24T09:00:00+01:00", "2026-11-24T09:00:00+00:00"):
+        chore = a_chore()
+        chore.next_due = good
+        assert engine.validate_chore(chore) is None

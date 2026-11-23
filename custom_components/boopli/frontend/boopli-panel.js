@@ -9653,14 +9653,16 @@ var Ma = class extends x {
 	}
 	constructor() {
 		super(), this._close = () => {
-			this._busy || this.dispatchEvent(new CustomEvent("backup-close", {
+			this._busy || this.renderRoot.querySelector("dialog")?.close();
+		}, this._closed = () => {
+			this.dispatchEvent(new CustomEvent("backup-close", {
 				bubbles: !0,
 				composed: !0
 			}));
 		}, this._copyName = "", this.mode = "export", this._parts = [...C], this._file = null, this._preview = null, this._busy = !1, this._error = "", this._done = [];
 	}
 	firstUpdated() {
-		this.renderRoot.querySelector(".modal")?.focus();
+		this.renderRoot.querySelector("dialog")?.showModal();
 	}
 	_toggle(e, t) {
 		this._parts = C.filter((n) => n === e ? t : this._parts.includes(n)), this._error = "", this.mode === "import" && this._file && this._look();
@@ -9720,7 +9722,7 @@ var Ma = class extends x {
 			this._busy = !0;
 			try {
 				let t = e ? [] : this._parts, n = await qe(this.hass, this._file.data, t);
-				this._preview = n, e && (this._parts = [...n.parts]), this._error = "";
+				this._preview = n, e && (this._parts = [...n.parts]), this._error = n.selection_error;
 			} catch (t) {
 				this._error = w(t), e && (this._preview = null, this._file = null);
 			} finally {
@@ -9755,12 +9757,12 @@ var Ma = class extends x {
     </div>`;
 	}
 	_changes() {
-		let e = this.snapshot?.settings, t = this._file?.data.settings ?? null;
+		let e = this.snapshot?.settings, t = this._preview?.settings;
 		if (!e || !t || !this._parts.includes("settings")) return [];
 		try {
 			return Da(e, t, this.hass);
 		} catch {
-			return [];
+			return null;
 		}
 	}
 	_renderExport() {
@@ -9792,9 +9794,9 @@ var Ma = class extends x {
             </p>
             <p>Pick what to bring in:</p>
             ${this._renderParts(e.parts, e.counts)}
-            ${t.length ? g`<div class="changes"><b>The settings would change like this:</b>
-                  <ul>${t.slice(0, 12).map((e) => g`<li>${e}</li>`)}</ul>
-                  ${t.length > 12 ? g`<span class="muted small">and ${t.length - 12} more.</span>` : y}</div>` : y}
+            ${t === null ? g`<div class="warn" role="status">The list of changes to the settings could not be made. Importing still replaces the settings.</div>` : t.length ? g`<div class="changes"><b>The settings would change like this:</b>
+                    <ul>${t.slice(0, 12).map((e) => g`<li>${e}</li>`)}</ul>
+                    ${t.length > 12 ? g`<span class="muted small">and ${t.length - 12} more.</span>` : y}</div>` : y}
             ${e.missing_entities_total || e.missing_services.length ? g`<div class="warn" role="status">
                   <b>This install does not have everything the file points to.</b>
                   ${e.missing_entities_total ? g`<div class="small">Not found: ${e.missing_entities.join(", ")}${e.missing_entities_total > e.missing_entities.length ? ` and ${e.missing_entities_total - e.missing_entities.length} more` : ""}.</div>` : y}
@@ -9815,44 +9817,44 @@ var Ma = class extends x {
     `;
 	}
 	render() {
-		return g`<div class="backdrop" @click=${(e) => e.target === e.currentTarget && this._close()}>
-      <section class="modal" role="dialog" aria-modal="true" aria-label="Backup" tabindex="-1" @keydown=${(e) => e.key === "Escape" && this._close()}>
+		return g`<dialog
+      class="modal"
+      aria-label="Backup"
+      @close=${this._closed}
+      @cancel=${(e) => this._busy && e.preventDefault()}
+      @click=${(e) => e.target === e.currentTarget && this._close()}
+    >
+      <div class="box">
         ${this._done.length ? g`<h2>💾 Done</h2>
               ${this._done.map((e) => g`<p>${e}</p>`)}
               <div class="foot"><button class="primary" @click=${this._close}>Close</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
         ${this._error ? g`<div class="error" role="alert">${this._error}</div>` : y}
-      </section>
-    </div>`;
+      </div>
+    </dialog>`;
 	}
 	static {
 		this.styles = [T, o`
       :host {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: block;
+        display: contents;
       }
       * {
         box-sizing: border-box;
       }
-      .backdrop {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        background: rgba(0, 0, 0, 0.55);
-        padding: 12px;
-      }
-      .modal {
-        width: min(600px, 100%);
+      dialog.modal {
+        width: min(600px, calc(100vw - 24px));
         max-height: 92vh;
+        padding: 0;
         overflow: auto;
-        padding: 16px 18px;
         border-radius: 16px;
         background: var(--card-background-color, var(--primary-background-color));
         color: var(--primary-text-color);
         border: 1px solid var(--divider-color);
-        outline: none;
+      }
+      dialog.modal::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .box {
+        padding: 16px 18px;
       }
       h2 {
         margin: 0 0 10px;
@@ -15306,8 +15308,10 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		for (let n of t) !e.some((e) => e.id === n.id) && !r.has(n.id) && a.push(n);
 		return structuredClone(a);
 	}
-	updated(e) {
-		this._ro || this._watchStage(), e.has("_modal") && this._modal && this.renderRoot.querySelector(".modal")?.focus();
+	updated() {
+		this._ro || this._watchStage();
+		let e = this.renderRoot.querySelector("dialog.modal");
+		e && (this._modal && !e.open ? e.showModal() : !this._modal && e.open && e.close());
 	}
 	_watchStage() {
 		let e = this.renderRoot.querySelector(".stage");
@@ -15592,12 +15596,21 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
             </div>
           </div>
         </div>
-        ${this._error ? g`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>OK</button></div>` : y}
-        ${this._modal ? g`<div class="backdrop" @click=${(e) => e.target === e.currentTarget && (this._modal = "")}>
-              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" ?inert=${this._busy} @keydown=${(e) => e.key === "Escape" && (this._modal = "")}>
-                ${this._modal === "tile" ? this._renderTileModal(e) : this._modal === "board" ? this._renderBoardModal(e) : this._renderAddModal()}
-              </section>
-            </div>` : y}
+        ${this._error && !this._modal ? g`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>OK</button></div>` : y}
+        <dialog
+          class="modal"
+          aria-label="Edit the board"
+          ?inert=${this._busy}
+          @close=${() => {
+			this._modal &&= "";
+		}}
+          @click=${(e) => e.target === e.currentTarget && (this._modal = "")}
+        >
+          <div class="box">
+            ${this._modal === "tile" ? this._renderTileModal(e) : this._modal === "board" ? this._renderBoardModal(e) : this._modal === "add" ? this._renderAddModal() : y}
+            ${this._error && this._modal ? g`<div class="error" role="alert">${this._error}</div>` : y}
+          </div>
+        </dialog>
       </div>
     `;
 	}
@@ -15712,24 +15725,21 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
       transform-origin: 0 0;
       overflow: hidden;
     }
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 5;
-      display: grid;
-      place-items: center;
-      background: rgba(0, 0, 0, 0.55);
-      padding: 12px;
-    }
-    .modal {
-      width: min(600px, 100%);
+    dialog.modal {
+      width: min(600px, calc(100vw - 24px));
       max-height: 90vh;
+      padding: 0;
       overflow: auto;
-      padding: 16px 18px;
       border-radius: 16px;
       background: var(--card-background-color, var(--primary-background-color));
+      color: var(--primary-text-color);
       border: 1px solid var(--divider-color);
-      outline: none;
+    }
+    dialog.modal::backdrop {
+      background: rgba(0, 0, 0, 0.55);
+    }
+    .box {
+      padding: 16px 18px;
     }
     .mhead h2 {
       margin: 0 0 10px;
