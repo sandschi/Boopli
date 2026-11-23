@@ -153,9 +153,15 @@ export class BoopliWallEdit extends LitElement {
     return structuredClone(out);
   }
 
-  protected updated(changed: Map<string, unknown>): void {
+  protected updated(): void {
     if (!this._ro) this._watchStage(); // the stage is there once the boards are loaded
-    if (changed.has("_modal") && this._modal) (this.renderRoot.querySelector(".modal") as HTMLElement | null)?.focus();
+    // the windows are native modal dialogs: they keep the keyboard inside, make the board behind inert,
+    // close on Escape and give the focus back to the button that opened them
+    const dialog = this.renderRoot.querySelector("dialog.modal") as HTMLDialogElement | null;
+    if (dialog) {
+      if (this._modal && !dialog.open) dialog.showModal();
+      else if (!this._modal && dialog.open) dialog.close();
+    }
   }
 
   private _watchStage(): void {
@@ -542,14 +548,21 @@ export class BoopliWallEdit extends LitElement {
             </div>
           </div>
         </div>
-        ${this._error ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
-        ${this._modal
-          ? html`<div class="backdrop" @click=${(e: Event) => e.target === e.currentTarget && (this._modal = "")}>
-              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" ?inert=${this._busy} @keydown=${(e: KeyboardEvent) => e.key === "Escape" && (this._modal = "")}>
-                ${this._modal === "tile" ? this._renderTileModal(cur) : this._modal === "board" ? this._renderBoardModal(cur) : this._renderAddModal()}
-              </section>
-            </div>`
-          : nothing}
+        ${this._error && !this._modal ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
+        <dialog
+          class="modal"
+          aria-label="Edit the board"
+          ?inert=${this._busy}
+          @close=${() => {
+            if (this._modal) this._modal = ""; // closed with Escape
+          }}
+          @click=${(e: Event) => e.target === e.currentTarget && (this._modal = "")}
+        >
+          <div class="box">
+            ${this._modal === "tile" ? this._renderTileModal(cur) : this._modal === "board" ? this._renderBoardModal(cur) : this._modal === "add" ? this._renderAddModal() : nothing}
+            ${this._error && this._modal ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
+          </div>
+        </dialog>
       </div>
     `;
   }
@@ -664,24 +677,21 @@ export class BoopliWallEdit extends LitElement {
       transform-origin: 0 0;
       overflow: hidden;
     }
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 5;
-      display: grid;
-      place-items: center;
-      background: rgba(0, 0, 0, 0.55);
-      padding: 12px;
-    }
-    .modal {
-      width: min(600px, 100%);
+    dialog.modal {
+      width: min(600px, calc(100vw - 24px));
       max-height: 90vh;
+      padding: 0;
       overflow: auto;
-      padding: 16px 18px;
       border-radius: 16px;
       background: var(--card-background-color, var(--primary-background-color));
+      color: var(--primary-text-color);
       border: 1px solid var(--divider-color);
-      outline: none;
+    }
+    dialog.modal::backdrop {
+      background: rgba(0, 0, 0, 0.55);
+    }
+    .box {
+      padding: 16px 18px;
     }
     .mhead h2 {
       margin: 0 0 10px;

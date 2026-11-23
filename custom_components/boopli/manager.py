@@ -1324,6 +1324,122 @@ class BoopliManager:
         self._save()
         self._notify()
 
+    # --- backup of the setup -----------------------------------------------------------
+
+    def export_backup(self, parts: list[str], boopli_version: str) -> dict[str, Any]:
+        """The backup file (as plain data) with the parts that were asked for."""
+        wanted = [p for p in engine.BACKUP_PARTS if p in parts]
+        if not wanted:
+            raise BoopliError("Pick at least one part to back up.")
+        try:
+            return engine.build_backup(
+                wanted,
+                settings=self.settings,
+                chores=self.chores.values(),
+                home=self.home,
+                progress=self.progress,
+                history=self.history,
+                boopli_version=boopli_version,
+                exported_at=engine.fmt_ts(dt_util.utcnow()),
+            )
+        except engine.BackupError as err:
+            raise BoopliError(str(err)) from err
+
+    def _parse_backup(self, data: Any) -> engine.Backup:
+        """Read a backup file and check what is in it. Changes nothing."""
+        try:
+            return engine.parse_backup(data, [lad.id for lad in self.settings.ladders])
+        except engine.BackupError as err:
+            raise BoopliError(str(err)) from err
+
+    def _read_backup(self, data: Any, parts: list[str]) -> engine.Backup:
+        """Read a backup file, and check that the parts picked fit together. Changes nothing."""
+        backup = self._parse_backup(data)
+        error = engine.check_backup_selection(backup, parts, self.settings, self.chores.values())
+        if error:
+            raise BoopliError(error)
+        return backup
+
+    def preview_backup(self, data: Any, parts: list[str]) -> dict[str, Any]:
+        """What importing would do: what is in the file, what this install lacks, what would end.
+
+        No parts picked means "show me what is in the file": all of them are looked at. A pick that does not
+        fit together is not an error here, it is reported (`selection_error`) so the window can keep the list.
+        """
+        backup = self._parse_backup(data)
+        chosen = parts or backup.parts
+        selection_error = engine.check_backup_selection(backup, chosen, self.settings, self.chores.values())
+        entities, services = engine.backup_references(
+            backup.settings if "settings" in chosen else None,
+            backup.chores if "chores" in chosen else None,
+        )
+        missing_entities = [e for e in entities if self.hass.states.get(e) is None]
+        missing_services = [s for s in services if not self.hass.services.has_service("notify", s)]
+        runs_ended = 0
+        if "chores" in chosen and backup.chores is not None:
+            kept = {c.id for c in backup.chores}
+            runs_ended = sum(1 for r in self.runs.values() if r.chore_id not in kept)
+        level = engine.level_for(backup.progress.total_xp)[0] if backup.progress else 0
+        return {
+            "parts": backup.parts,
+            "exported_at": backup.exported_at,
+            "boopli_version": backup.boopli_version,
+            "counts": {
+                "chores": len(backup.chores or []),
+                "rooms": len(backup.home.rooms) if backup.home else 0,
+                "boards": len(backup.settings.boards) if backup.settings else 0,
+                "history": len(backup.history or []),
+                "level": level,
+            },
+            "missing_entities": missing_entities[:20],
+            "missing_entities_total": len(missing_entities),
+            "missing_services": missing_services[:20],
+            "runs_ended": runs_ended,
+            "selection_error": selection_error or "",
+            # the settings as an import would apply them (missing keys filled in), for the list of changes
+            "settings": engine.to_dict(backup.settings) if backup.settings else None,
+        }
+
+    def import_backup(self, data: Any, parts: list[str]) -> dict[str, Any]:
+        """Replace the parts picked with what the backup file holds. All or nothing."""
+        if not parts:
+            raise BoopliError("Pick at least one part to import.")
+        backup = self._read_backup(data, parts)
+        chosen = parts
+        now = dt_util.utcnow()
+        runs_ended = 0
+        if "settings" in chosen and backup.settings is not None:
+            self.settings = backup.settings
+            if self.setup.status != engine.SETUP_DONE:
+                self.setup = engine.Setup(status=engine.SETUP_DONE)  # no first-run guide for someone who just moved in
+        if "chores" in chosen and backup.chores is not None:
+            new: dict[str, engine.Chore] = {}
+            for chore in backup.chores:
+                engine.settle_imported_chore(chore, now, self.tz)
+                new[chore.id] = chore
+            # A run that was going on for a chore that is not in the backup ends with it.
+            for run in [r for r in self.runs.values() if r.chore_id not in new]:
+                self._clear_notifications_for(run)
+                del self.runs[run.id]
+                runs_ended += 1
+            self.chores = new
+        if "home" in chosen and backup.home is not None:
+            self.home = backup.home
+            self.sync_areas()
+        if "pet" in chosen and backup.progress is not None:
+            self.progress = backup.progress
+            if not self.progress.started_at:
+                self.progress.started_at = engine.fmt_ts(now)
+            self.history = backup.history or []
+        self._watch_presence()
+        self._tick()
+        self._store.async_delay_save(self._data_to_save, 0)
+        return {
+            "imported": [p for p in engine.BACKUP_PARTS if p in chosen],
+            "chores": len(self.chores),
+            "runs_ended": runs_ended,
+        }
+
     def _rooms_for(self, task: str, rooms: list[str] | None) -> list[engine.Room]:
         """The rooms whose notes go with a request. None = guess from the task text.
 
