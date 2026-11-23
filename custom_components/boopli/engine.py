@@ -2074,6 +2074,230 @@ def rung_for(ladder: Ladder, number: int) -> Rung | None:
     return ladder.rungs[-1] if ladder.repeat_last else None
 
 
+# --- the wall board --------------------------------------------------------------
+#
+# A board is a grid of tiles for a screen on the wall. You can have several (a "wall" one and a
+# "desk" one). A board is a fixed grid of square cells (16 by 9 by default, the shape of a screen) that is
+# scaled to fit the display. Each tile has a type (clock, pet, ...), a place and size on the grid (column x,
+# row y, w columns wide, h rows tall, counted from 0) and a few options. The options of
+# every type are listed in TILE_OPTIONS, which is what checks them (and what the editor shows).
+
+BOARD_MAX = 10
+BOARD_TILES_MAX = 30
+BOARD_NAME_MAX = 40
+BOARD_COLUMNS_MIN, BOARD_COLUMNS_MAX, BOARD_COLUMNS_DEFAULT = 2, 32, 16
+BOARD_ROWS_MIN, BOARD_ROWS_MAX, BOARD_ROWS_DEFAULT = 2, 18, 9
+BOARD_NAME_DEFAULT = "Wall"
+NIGHT_DIM, NIGHT_BLACK, NIGHT_OFF = "dim", "black", "off"  # at night: dim, fully black, or change nothing
+NIGHT_VALUES = (NIGHT_DIM, NIGHT_BLACK, NIGHT_OFF)
+# Boards saved before tiles had a place had a named size; these become the size on the grid.
+LEGACY_TILE_SIZES = {"small": (1, 1), "wide": (2, 1), "tall": (1, 2), "big": (2, 2)}
+TILE_TEXT_MAX = 300
+RETIRED_TILE_TYPES = ("away",)  # tiles that no longer exist; boards that still have one lose it (away mode is a bar now)
+
+# type -> option -> (kind, default, extra). Kinds: choice (extra: the choices), int (extra: min, max),
+# bool, text (extra: the longest), entity (extra: the allowed domains, or None for any).
+TILE_OPTIONS: dict[str, dict[str, tuple[str, Any, Any]]] = {
+    "clock": {"format": ("choice", "24h", ("24h", "12h")), "date": ("bool", True, None)},
+    "pet": {},
+    "due_now": {},
+    "coming_up": {"count": ("int", 3, (1, 10))},
+    "entity": {
+        "entity_id": ("entity", "", None),
+        "name": ("text", "", BOARD_NAME_MAX),
+        "tap": ("choice", "toggle", ("toggle", "none")),
+    },
+    "weather": {"entity_id": ("entity", "", ("weather",))},
+    "calendar": {"entity_id": ("entity", "", ("calendar",)), "count": ("int", 4, (1, 10))},
+    "camera": {"entity_id": ("entity", "", ("camera",)), "refresh_s": ("int", 10, (5, 300))},
+    "note": {"text": ("text", "", TILE_TEXT_MAX), "big": ("bool", False, None)},
+}
+
+
+def _tile_option(kind: str, default: Any, value: Any) -> Any:
+    if kind == "int":
+        return _int(value, default)
+    if kind == "bool":
+        return bool(value) if value is not None else default
+    if value is None:
+        return default
+    return str(value).strip() if kind in ("text", "entity") else str(value)
+
+
+@dataclass
+class Tile:
+    """One tile of a board."""
+
+    id: str = ""
+    type: str = ""
+    x: int = -1  # -1: not placed yet (see place_tiles)
+    y: int = -1
+    w: int = 1
+    h: int = 1
+    options: dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Tile:
+        tile_type = str(d.get("type") or "")
+        spec = TILE_OPTIONS.get(tile_type, {})
+        given = d.get("options") if isinstance(d.get("options"), dict) else {}
+        legacy_w, legacy_h = LEGACY_TILE_SIZES.get(str(d.get("size") or ""), (1, 1))
+        placed = d.get("x") is not None and d.get("y") is not None
+        return cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            type=tile_type,
+            x=_int(d.get("x"), -1) if placed else -1,
+            y=_int(d.get("y"), -1) if placed else -1,
+            w=_int(d.get("w"), legacy_w),
+            h=_int(d.get("h"), legacy_h),
+            options={key: _tile_option(kind, default, given.get(key)) for key, (kind, default, _) in spec.items()},
+        )
+
+
+def tiles_overlap(a: Tile, b: Tile) -> bool:
+    return a.x < b.x + b.w and b.x < a.x + a.w and a.y < b.y + b.h and b.y < a.y + a.h
+
+
+def place_tiles(tiles: list[Tile], columns: int) -> None:
+    """Give a place to every tile that has none (boards from before tiles had a place): the first free
+    spot reading left to right, top to bottom, in the order of the list."""
+    placed = [t for t in tiles if t.x >= 0 and t.y >= 0]
+    for tile in tiles:
+        if tile.x >= 0 and tile.y >= 0:
+            continue
+        tile.w = max(1, min(tile.w, columns))
+        tile.h = max(1, min(tile.h, BOARD_ROWS_MAX))
+        tile.x, tile.y = 0, BOARD_ROWS_MAX  # no room: the check reports it
+        for y in range(BOARD_ROWS_MAX):
+            spot = next(
+                (
+                    x
+                    for x in range(columns - tile.w + 1)
+                    if not any(tiles_overlap(Tile(x=x, y=y, w=tile.w, h=tile.h), p) for p in placed)
+                ),
+                None,
+            )
+            if spot is not None:
+                tile.x, tile.y = spot, y
+                break
+        placed.append(tile)
+
+
+@dataclass
+class Board:
+    """A named wall board."""
+
+    id: str = ""
+    name: str = ""
+    columns: int = BOARD_COLUMNS_DEFAULT
+    rows: int = BOARD_ROWS_DEFAULT
+    night: str = NIGHT_DIM
+    tiles: list[Tile] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Board:
+        tiles = d.get("tiles")
+        board = cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            name=str(d.get("name") or "").strip(),
+            columns=_int(d.get("columns"), BOARD_COLUMNS_DEFAULT),
+            rows=_int(d.get("rows"), 0),
+            night=str(d.get("night") or NIGHT_DIM),
+            tiles=[
+                Tile.from_dict(t)
+                for t in tiles
+                if isinstance(t, dict) and t.get("type") not in RETIRED_TILE_TYPES
+            ]
+            if isinstance(tiles, list)
+            else [],
+        )
+        if BOARD_COLUMNS_MIN <= board.columns <= BOARD_COLUMNS_MAX:
+            place_tiles(board.tiles, board.columns)
+        if board.rows <= 0:  # a board from before rows: as many as its tiles reach
+            board.rows = max(BOARD_ROWS_MIN, max((t.y + t.h for t in board.tiles), default=0))
+        return board
+
+
+def default_board() -> Board:
+    """The board everybody starts with: the clock, the pet, what is due now and what is coming."""
+    places = (
+        ("due_now", 0, 0, 8, 5),
+        ("pet", 8, 0, 8, 5),
+        ("clock", 0, 5, 5, 4),
+        ("coming_up", 5, 5, 11, 4),
+    )
+    return Board(
+        id=new_id(),
+        name=BOARD_NAME_DEFAULT,
+        columns=BOARD_COLUMNS_DEFAULT,
+        rows=BOARD_ROWS_DEFAULT,
+        tiles=[Tile.from_dict({"type": t, "x": x, "y": y, "w": w, "h": h}) for t, x, y, w, h in places],
+    )
+
+
+def validate_boards(boards: list[Board]) -> str | None:
+    """Check the boards: how many, the names, the tiles, their sizes and their options."""
+    if not 1 <= len(boards) <= BOARD_MAX:
+        return f"You need 1 to {BOARD_MAX} boards."
+    ids: set[str] = set()
+    names: set[str] = set()
+    for board in boards:
+        if board.id in ids:
+            return "Two boards have the same id."
+        ids.add(board.id)
+        if not board.name:
+            return "Every board needs a name."
+        if len(board.name) > BOARD_NAME_MAX:
+            return f"A board name can have at most {BOARD_NAME_MAX} letters."
+        if board.name.casefold() in names:
+            return f"There are two boards called '{board.name}'."
+        names.add(board.name.casefold())
+        if not BOARD_COLUMNS_MIN <= board.columns <= BOARD_COLUMNS_MAX:
+            return f"'{board.name}': the columns must be {BOARD_COLUMNS_MIN} to {BOARD_COLUMNS_MAX}."
+        if not BOARD_ROWS_MIN <= board.rows <= BOARD_ROWS_MAX:
+            return f"'{board.name}': the rows must be {BOARD_ROWS_MIN} to {BOARD_ROWS_MAX}."
+        if board.night not in NIGHT_VALUES:
+            return f"'{board.name}': unknown night setting."
+        if len(board.tiles) > BOARD_TILES_MAX:
+            return f"'{board.name}' can have at most {BOARD_TILES_MAX} tiles."
+        tile_ids: set[str] = set()
+        for i, tile in enumerate(board.tiles):
+            if tile.id in tile_ids:
+                return f"'{board.name}' has two tiles with the same id."
+            tile_ids.add(tile.id)
+            if tile.x >= 0 and any(tiles_overlap(tile, other) for other in board.tiles[:i]):
+                return f"'{board.name}': two tiles are on the same spot."
+            spec = TILE_OPTIONS.get(tile.type)
+            if spec is None:
+                return f"'{board.name}': unknown tile type '{tile.type}'."
+            if not 1 <= tile.w <= board.columns or not 1 <= tile.h <= board.rows:
+                return f"'{board.name}': a {tile.type} tile has a size that does not fit the board."
+            if tile.x < 0 or tile.y < 0 or tile.x + tile.w > board.columns or tile.y + tile.h > board.rows:
+                return f"'{board.name}': a {tile.type} tile is outside the board."
+            for key, (kind, _default, extra) in spec.items():
+                value = tile.options.get(key)
+                if kind == "choice" and value not in extra:
+                    return f"'{board.name}': a {tile.type} tile has an unknown {key}."
+                if kind == "int" and not extra[0] <= value <= extra[1]:
+                    return f"'{board.name}': a {tile.type} tile's {key} must be {extra[0]} to {extra[1]}."
+                if kind == "text" and len(value) > extra:
+                    return f"'{board.name}': a {tile.type} tile's {key} can have at most {extra} letters."
+                if kind == "entity":
+                    domain, _, rest = value.partition(".")
+                    if tile.type != "entity" and not value:
+                        return f"'{board.name}': pick the {domain_label(extra)} for the {tile.type} tile."
+                    if tile.type == "entity" and not value:
+                        return f"'{board.name}': pick an entity for the entity tile."
+                    if not rest or (extra and domain not in extra):
+                        return f"'{board.name}': a {tile.type} tile needs a {domain_label(extra)}."
+    return None
+
+
+def domain_label(domains: tuple[str, ...] | None) -> str:
+    """Words for the entity a tile needs, for error messages."""
+    return " or ".join(domains) + " entity" if domains else "entity"
+
+
 @dataclass
 class Settings:
     """Boopli's global settings."""
@@ -2093,12 +2317,16 @@ class Settings:
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
     ladders: list[Ladder] = field(default_factory=list)  # "Nudge it your way"
+    boards: list[Board] = field(default_factory=lambda: [default_board()])  # wall boards
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
         ladders = d.get("ladders")
+        boards = d.get("boards")
+        board_list = [Board.from_dict(x) for x in boards if isinstance(x, dict)] if isinstance(boards, list) else []
         return cls(
+            boards=board_list or [default_board()],
             ladders=[Ladder.from_dict(x) for x in ladders if isinstance(x, dict)] if isinstance(ladders, list) else [],
             check_in_minutes=int(d.get("check_in_minutes", CHECK_IN_DEFAULT) or CHECK_IN_DEFAULT),
             question_wait_minutes=int(d.get("question_wait_minutes", QUESTION_WAIT_DEFAULT) or QUESTION_WAIT_DEFAULT),
@@ -2264,7 +2492,7 @@ def validate_settings(settings: Settings) -> str | None:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
-    error = validate_ladders(settings.ladders)
+    error = validate_ladders(settings.ladders) or validate_boards(settings.boards)
     if error:
         return error
     if not style_known(settings.default_style, settings.ladders):

@@ -33,7 +33,7 @@ import type {
 } from "./types";
 
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
-type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "ai";
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai";
 
 interface AreaDef {
   emoji: string;
@@ -57,6 +57,7 @@ const AREAS: Record<Area, AreaDef> = {
   ladders: { emoji: "🪜", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
   presence: { emoji: "📍", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
   pet: { emoji: "🐾", title: "Your pet", wizard: "pet", keys: ["pet_name", "pet_kind"] },
+  wall: { emoji: "🖥️", title: "Wall board", wizard: "wall", keys: ["boards"] },
   ai: { emoji: "🤖", title: "AI help", wizard: "ai", keys: ["ai"] },
 };
 
@@ -64,7 +65,7 @@ const AREAS: Record<Area, AreaDef> = {
 const GROUPS: { title: string; areas: Area[] }[] = [
   { title: "Devices", areas: ["phone", "lights", "speakers", "alarms"] },
   { title: "Timing", areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: "Extras", areas: ["pet", "ai"] },
+  { title: "Extras", areas: ["pet", "wall", "ai"] },
 ];
 const AREA_ORDER: Area[] = GROUPS.flatMap((g) => g.areas);
 
@@ -914,6 +915,10 @@ export class BoopliSettings extends LitElement {
           ...(ladders.length ? [] : ["No ladders of your own yet."]),
         ];
       }
+      case "wall": {
+        const night: Record<string, string> = { dim: "dims", black: "goes black", off: "stays on" };
+        return (d.boards ?? []).map((b) => `${b.name}: ${b.tiles.length} ${b.tiles.length === 1 ? "tile" : "tiles"}, ${night[b.night] ?? b.night} at night`);
+      }
       case "presence":
         return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
       case "pet":
@@ -940,12 +945,19 @@ export class BoopliSettings extends LitElement {
       </div>
       <div class="buttons">
         <button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>
-        <button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>
+        ${area === "wall"
+          ? html`<button type="button" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
+          : html`<button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
       </div>
     </section>`;
   }
 
   // --- the advanced window ---------------------------------------------------------
+
+  /** The wall board is edited on the board itself: open the wall in edit mode. */
+  private _editWall(): void {
+    this.dispatchEvent(new CustomEvent("open-wall", { detail: { name: this._draft?.boards?.[0]?.name ?? "", edit: true }, bubbles: true, composed: true }));
+  }
 
   private _openArea(area: Area): void {
     if (this._busy) return; // a save is on its way: wait for it
@@ -988,6 +1000,8 @@ export class BoopliSettings extends LitElement {
         return this._renderQuiet(d);
       case "timing":
         return this._renderTiming(d);
+      case "wall":
+        return nothing; // the wall board is edited on the wall itself (see _editWall)
       case "ladders":
         return html`<boopli-ladders
           plain

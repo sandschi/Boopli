@@ -29,6 +29,7 @@ import {
 } from "./helpers";
 import "./boopli-pet-picker";
 import "./boopli-rung";
+import { boardLink, starterTiles } from "./wall-tiles";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
@@ -49,6 +50,7 @@ import type {
   SpeakerCfg,
   SpeakerLevel,
   SpeechRoute,
+  Board,
 } from "./types";
 
 /** The wizards. "first" is the first-run setup; the others each set up one area. */
@@ -63,7 +65,8 @@ export type WizardId =
   | "nudging"
   | "pet"
   | "ai"
-  | "ladders";
+  | "ladders"
+  | "wall";
 
 type StepId =
   | "welcome"
@@ -92,6 +95,7 @@ type StepId =
   | "lad_more"
   | "lad_end"
   | "lad_delete"
+  | "wall_start"
   | "done";
 
 const SEQUENCES: Record<WizardId, StepId[]> = {
@@ -106,6 +110,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   pet: ["pet", "done"],
   ai: ["ai_intro", "ai_agent", "done"],
   ladders: ["lad_start", "done"], // the rest depends on what you want to do (see _startLadderWork)
+  wall: ["wall_start", "done"],
 };
 
 /** What "Set up speakers" adds to the first-run setup. */
@@ -123,8 +128,10 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
   pet: "Your pet",
   ai: "AI help setup",
   ladders: "Nudge it your way",
+  wall: "Wall board",
 };
 
+const MAX_BOARDS = 10; // the most boards (the same as in the board editor)
 const MAX_LADDERS = 20; // the most ladders (the same as in the ladder editor)
 
 const TITLES: Record<StepId, string> = {
@@ -154,6 +161,7 @@ const TITLES: Record<StepId, string> = {
   lad_more: "Another nudge?",
   lad_end: "How it ends",
   lad_delete: "Delete a ladder",
+  wall_start: "Which board?",
   done: "All set",
 };
 
@@ -212,6 +220,9 @@ export class BoopliWizard extends LitElement {
     _ladderName: { state: true },
     _ladderAction: { state: true },
     _ladderPick: { state: true },
+    _boardId: { state: true },
+    _boardName: { state: true },
+    _boardPick: { state: true },
   };
 
   declare hass?: Hass;
@@ -231,6 +242,9 @@ export class BoopliWizard extends LitElement {
   declare _ladderName: string;
   declare _ladderAction: "create" | "edit" | "delete";
   declare _ladderPick: string; // the ladder to edit or delete
+  declare _boardId: string; // the board this guide works on
+  declare _boardName: string; // the name for a new board
+  declare _boardPick: string; // the board to work on, empty = a new one
   declare _createdId: string; // the ladder this guide made (going back must not make a second one)
   private _started = false;
   private _saved?: Settings; // what is saved right now
@@ -253,6 +267,9 @@ export class BoopliWizard extends LitElement {
     this._ladderAction = "create";
     this._ladderPick = "";
     this._createdId = "";
+    this._boardId = "";
+    this._boardName = "";
+    this._boardPick = "";
   }
 
   private get _first(): boolean {
@@ -379,6 +396,7 @@ export class BoopliWizard extends LitElement {
           throw new Error("Pick a speaker, or press Skip.");
         }
         if (this._step === "lad_start") this._startLadderWork();
+        if (this._step === "wall_start") this._startBoardWork();
         if (this._step === "lad_name") this._ensureLadder();
         const sent = structuredClone(this._draft);
         await saveSettings(this.hass, sent);
@@ -492,6 +510,53 @@ export class BoopliWizard extends LitElement {
     const d = this._draft;
     if (!d) return;
     this._set({ ladders: (d.ladders ?? []).map((l) => (l.id === this._ladderId ? fn(l) : l)) });
+  }
+
+  // --- the wall board -------------------------------------------------------------------
+
+  private _board(): Board | undefined {
+    return this._draft?.boards?.find((b) => b.id === this._boardId);
+  }
+
+  /** Called when leaving the first screen of the wall guide: pick the board, or make a new one. */
+  private _startBoardWork(): void {
+    const d = this._draft;
+    if (!d) return;
+    const boards = d.boards ?? [];
+    if (this._boardPick) {
+      const b = boards.find((x) => x.id === this._boardPick);
+      if (!b) throw new Error("Pick a board first.");
+      this._boardId = b.id;
+      return;
+    }
+    const name = this._boardName.trim();
+    if (!name) throw new Error("Give the new board a name.");
+    if (boards.length >= MAX_BOARDS) throw new Error(`You have ${MAX_BOARDS} boards, the most. Edit or delete one.`);
+    if (boards.some((b) => b.name.toLowerCase() === name.toLowerCase())) throw new Error(`There is already a board called "${name}".`);
+    const board: Board = { id: newLadderId(), name, columns: 16, rows: 9, night: "dim", tiles: starterTiles(16, 9) };
+    this._boardId = board.id;
+    this._boardPick = board.id; // going back and forward again goes on with this board, not a second one
+    this._set({ boards: [...boards, board] });
+  }
+
+  private _renderWallStart(d: Settings) {
+    const boards = d.boards ?? [];
+    return html`
+      <p>A board is a grid of tiles for a screen on the wall: the clock, the pet, what is due, the weather and more.</p>
+      <div class="field">
+        <label for="boardpick">Which board?</label>
+        <select id="boardpick" @change=${(e: Event) => (this._boardPick = (e.target as HTMLSelectElement).value)}>
+          <option value="" ?selected=${!this._boardPick}>A new board</option>
+          ${boards.map((b) => html`<option value=${b.id} ?selected=${this._boardPick === b.id}>${b.name}</option>`)}
+        </select>
+      </div>
+      ${this._boardPick
+        ? nothing
+        : html`<div class="field">
+            <label for="boardname">Name of the new board</label>
+            <input id="boardname" maxlength="40" .value=${this._boardName} @input=${(e: Event) => (this._boardName = (e.target as HTMLInputElement).value)} />
+          </div>`}
+    `;
   }
 
   /** Called when leaving the first screen: the rest of the guide depends on what you want to do. */
@@ -1412,6 +1477,14 @@ export class BoopliWizard extends LitElement {
     }
   }
 
+  /** The last screen of the wall guide: leave the guide and open the board in edit mode. */
+  private _editOnWall(): void {
+    const b = this._board();
+    if (!b) return;
+    this._close();
+    this.dispatchEvent(new CustomEvent("open-wall", { detail: { name: b.name, edit: true }, bubbles: true, composed: true }));
+  }
+
   private _renderDone(d: Settings) {
     const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
     const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
@@ -1421,6 +1494,11 @@ export class BoopliWizard extends LitElement {
       ${changes.length === 0
         ? html`<p class="muted">Nothing changed.</p>`
         : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
+      ${this.wizard === "wall" && this._board()
+        ? html`<p>Next: put the tiles where you want them, on the board itself.</p>
+            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>Edit it on the wall</button></p>
+            <p class="small">Link for the tablet's start page: <code>${boardLink(this._board()!)}</code></p>`
+        : nothing}
       <p class="muted small">
         Everything can be changed again in Settings, step by step or in the full forms.
       </p>
@@ -1472,6 +1550,8 @@ export class BoopliWizard extends LitElement {
         return this._renderPresence(d);
       case "chores":
         return this._renderChores();
+      case "wall_start":
+        return this._renderWallStart(d);
       case "lad_start":
         return this._renderLadStart(d);
       case "lad_name":
