@@ -17,6 +17,7 @@ import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
 import "./boopli-ladders";
+import "./boopli-boards";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
 import { petInfo } from "./pets";
@@ -33,7 +34,7 @@ import type {
 } from "./types";
 
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
-type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "ai";
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai";
 
 interface AreaDef {
   emoji: string;
@@ -57,6 +58,7 @@ const AREAS: Record<Area, AreaDef> = {
   ladders: { emoji: "🪜", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
   presence: { emoji: "📍", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
   pet: { emoji: "🐾", title: "Your pet", wizard: "pet", keys: ["pet_name", "pet_kind"] },
+  wall: { emoji: "🖥️", title: "Wall board", wizard: "wall", keys: ["boards"] },
   ai: { emoji: "🤖", title: "AI help", wizard: "ai", keys: ["ai"] },
 };
 
@@ -64,7 +66,7 @@ const AREAS: Record<Area, AreaDef> = {
 const GROUPS: { title: string; areas: Area[] }[] = [
   { title: "Devices", areas: ["phone", "lights", "speakers", "alarms"] },
   { title: "Timing", areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: "Extras", areas: ["pet", "ai"] },
+  { title: "Extras", areas: ["pet", "wall", "ai"] },
 ];
 const AREA_ORDER: Area[] = GROUPS.flatMap((g) => g.areas);
 
@@ -914,6 +916,10 @@ export class BoopliSettings extends LitElement {
           ...(ladders.length ? [] : ["No ladders of your own yet."]),
         ];
       }
+      case "wall": {
+        const night: Record<string, string> = { dim: "dims", black: "goes black", off: "stays on" };
+        return (d.boards ?? []).map((b) => `${b.name}: ${b.tiles.length} ${b.tiles.length === 1 ? "tile" : "tiles"}, ${night[b.night] ?? b.night} at night`);
+      }
       case "presence":
         return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
       case "pet":
@@ -988,6 +994,13 @@ export class BoopliSettings extends LitElement {
         return this._renderQuiet(d);
       case "timing":
         return this._renderTiming(d);
+      case "wall":
+        return html`<boopli-boards
+          .hass=${this.hass}
+          .settings=${d}
+          .snapshot=${this.snapshot}
+          @settings-patch=${patch}
+        ></boopli-boards>`;
       case "ladders":
         return html`<boopli-ladders
           plain

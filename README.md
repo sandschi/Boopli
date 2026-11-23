@@ -21,7 +21,7 @@ Every wizard ends with **All set**, which lists exactly what changed compared wi
 
 **Unsaved changes are always visible.** On the Settings page and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything. On Settings it lists which cards have unsaved changes: press a name and the page scrolls to that card and lights it up. The changed cards carry an orange "Unsaved" tag, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) asks **Save / Discard / Stay**.
 
-**Settings are one calm page.** Cards in three groups: Devices (phone, lights, speakers, alarm devices), Timing (quiet hours, snooze and timing, Nudge it your way, where you are) and Extras (your pet, AI help). Each card shows what is set in a few lines and has two buttons: **Guide me** (a step-by-step guide) and **Advanced** (a window with every detail). The window has **Save and close**, **Discard and close** (throws away what you changed in that window) and **Keep for later** (closes it and keeps your changes as an unsaved draft).
+**Settings are one calm page.** Cards in three groups: Devices (phone, lights, speakers, alarm devices), Timing (quiet hours, snooze and timing, Nudge it your way, where you are) and Extras (your pet, wall board, AI help). Each card shows what is set in a few lines and has two buttons: **Guide me** (a step-by-step guide) and **Advanced** (a window with every detail). The window has **Save and close**, **Discard and close** (throws away what you changed in that window) and **Keep for later** (closes it and keeps your changes as an unsaved draft).
 
 ## Chore schedules
 
@@ -84,6 +84,7 @@ When a step becomes your turn, Boopli nudges you through the channels you turn o
 - **Phones.** A notification from the Home Assistant app with **Done** and **Snooze** buttons, at a level you choose: normal, high priority, alarm volume, or max volume (not every phone honours it).
 - **Styles, per chore:** quiet (panel only), one nudge, escalating (30, 15, 10, then every 5 minutes, then it stops), or persistent (every 5 minutes until done).
 - **Nudge it your way.** Build ladders of your own in Settings. A ladder is a list of nudges (up to 12). For each nudge you choose how long Boopli waits for it, and exactly which phone (and how loud), light, speaker and alarm device acts. So you can leave the lights out of nudge 2, or send only the phone at first. A light can **blink** or be a **status light** that stays on until you answer, in the light's own color or one you pick for that nudge. A speaker plays one thing per nudge, picked from a list: a ding, any of the **extra sounds** you add to that speaker (as many as you like, each with a name), speech, **speech with chime** (an Alexa announcement, which starts with a chime) or the alarm. The guide asks whether you want to create, edit or delete a ladder.
+- **Wall board.** A view for a tablet or screen on the wall. Open it with the 🖥 **Wall view** button, or put its link (`/boopli?wall`, or `/boopli?wall=desk` for a board named "desk") on the tablet's start page. A board is a grid of **tiles** you choose in Settings, with a live preview: clock, your pet in its room, what is due now (with Done, On it and Snooze), what is coming up, an away-mode banner, any Home Assistant entity (a tap switches it), the weather, the next calendar events, a camera picture and a note. Each tile can be small, wide, tall or big and you can move it up and down. You can have several boards (a "wall" one and a "desk" one). The board keeps the screen awake where the browser allows it, and at night (outside the hours of nudging) it dims, goes black with a small clock, or stays as it is, as you choose; a tap wakes it for 30 seconds, and something being due keeps it awake. Every tile is its own small file, so adding your own is easy (see below).
 - **A color per chore.** In the chore editor you can give a chore its own light color (pills red, laundry blue), so a status light means something. The chore's color wins, then a color picked for a nudge of a ladder, then the light's own. A light only shows a color picker when it can show colors; every light can blink, because Boopli blinks the light itself. After the last nudge the ladder stops or repeats the last one. A chore picks a ladder like any other style, and you can make a ladder the style for new chores. A ladder replaces the "starts at nudge #" numbers for the chores that use it, and a ladder that chores use cannot be deleted.
 - **Quiet hours,** off by default, with different start and stop times for each weekday. A chore can opt out (for example pills).
 - **Presence (optional).** At home, every channel you turned on is used. Away, only your phone is used, and only for chores marked "anywhere". Without a presence source, Boopli assumes you are home.
@@ -98,12 +99,16 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 - Optional light, speaker and loud-alarm nudges, quiet hours, and presence conditions.
 - Services and events so your own automations can build on Boopli.
 
+## Make your own wall tile
+
+A tile is one small element in `frontend/src`. Copy `wall-tile-note.ts` (the smallest one), draw what you want from `this.hass`, `this.snapshot` and `this.options`, and give it the name `wall-tile-<type>` (underscores in the type become dashes). Then import it and add one entry to the list in `wall-tiles.ts` (its name, size and the options the board settings should show), and list the same options in `TILE_OPTIONS` in `engine.py` so the integration can check them. Run `npm run build` in `frontend`.
+
 ## Later ideas
 
 - **Away / vacation mode:** plan time away so home-only chores pause and home-only nudges (lights, speakers) stay quiet, while "anywhere" chores such as medication keep going through your phone. Possibly mark a trip location too.
 - **Richer notifications:** attach a picture to phone notifications, for example the pet looking happy or sad depending on how things are going, together with the Done and Snooze buttons.
 - **"Skip this round"** for a chore, as a deliberate action in the panel (never on a notification).
-- Presence conditions, a wall-display view, Zigbee button support, and more pets.
+- Presence conditions, Zigbee button support, and more pets.
 
 ## Your data
 

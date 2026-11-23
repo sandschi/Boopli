@@ -6,6 +6,8 @@ import "./boopli-settings";
 import "./boopli-home";
 import "./boopli-wizard";
 import "./boopli-breakdown";
+import "./boopli-wall";
+import { pickBoard } from "./wall-tiles";
 import { awayWhen } from "./boopli-away";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { WizardId } from "./boopli-wizard";
@@ -57,6 +59,7 @@ export class BoopliPanel extends LitElement {
     _choresRequest: { state: true },
     _dirty: { state: true },
     _confirm: { state: true },
+    _wall: { state: true },
   };
 
   declare hass?: Hass;
@@ -72,6 +75,7 @@ export class BoopliPanel extends LitElement {
   private _requestId = 0;
   declare _dirty: { settings: boolean; chore: boolean; home: boolean };
   declare _confirm: ((choice: Choice) => void) | null;
+  declare _wall: string | null; // the wall view is open: the name of the board (empty: the first one), or null
 
   private _unsub?: () => void;
   private _subscribing = false;
@@ -90,6 +94,8 @@ export class BoopliPanel extends LitElement {
     this._choresRequest = null;
     this._dirty = { settings: false, chore: false, home: false };
     this._confirm = null;
+    const params = new URLSearchParams(location.search);
+    this._wall = params.has("wall") ? (params.get("wall") ?? "") : null;
   }
 
   // --- unsaved changes ---------------------------------------------------------
@@ -310,7 +316,33 @@ export class BoopliPanel extends LitElement {
     </div>`;
   }
 
+  /** Open the wall view: a board over the whole screen. */
+  private async _openWall(name = ""): Promise<void> {
+    if (!(await this._guard())) return;
+    this._wall = name;
+    const url = new URL(location.href);
+    url.searchParams.set("wall", name);
+    history.replaceState(null, "", url);
+  }
+
+  private _closeWall = (): void => {
+    this._wall = null;
+    const url = new URL(location.href);
+    url.searchParams.delete("wall");
+    history.replaceState(null, "", url);
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+  };
+
   render() {
+    if (this._wall !== null) {
+      return html`<boopli-wall
+        .hass=${this.hass}
+        .snapshot=${this._snapshot}
+        .nowMs=${this._nowMs}
+        .boardName=${this._wall}
+        @wall-exit=${this._closeWall}
+      ></boopli-wall>`;
+    }
     const unsaved: Record<Tab, boolean> = {
       today: false,
       chores: this._dirty.chore,
@@ -334,6 +366,8 @@ export class BoopliPanel extends LitElement {
             </button>`
           )}
         </nav>
+        <span class="grow"></span>
+        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>🖥 Wall view</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -341,6 +375,7 @@ export class BoopliPanel extends LitElement {
         @open-wizard=${this._onOpenWizard}
         @open-breakdown=${this._onOpenBreakdown}
         @open-home=${() => this._selectTab("home")}
+        @open-wall=${(e: Event) => this._openWall((e as CustomEvent<string>).detail ?? "")}
         @egg-started=${() => this.hass && void eggFound(this.hass).catch(() => undefined)}
         @dirty-change=${this._onDirty}
       >
@@ -403,6 +438,17 @@ export class BoopliPanel extends LitElement {
         font-size: 20px;
         font-weight: 500;
         margin-right: 8px;
+      }
+      header .grow {
+        flex: 1;
+      }
+      header .wallbtn {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        color: inherit;
+        min-height: 36px;
+        padding: 4px 12px;
+        white-space: nowrap;
       }
       header .menu {
         background: none;

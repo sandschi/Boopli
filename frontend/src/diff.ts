@@ -105,6 +105,15 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
     }
   }
 
+  const boards = byKey(before.boards ?? [], after.boards ?? [], (b) => b.id);
+  boards.added.forEach((b) => out.push(`Wall board added: ${b.name} (${b.tiles.length} tiles)`));
+  boards.removed.forEach((b) => out.push(`Wall board removed: ${b.name}`));
+  boards.kept.forEach(({ before: b, after: a }) => {
+    if (b.name !== a.name) out.push(`Wall board renamed: ${b.name} → ${a.name}`);
+    if (JSON.stringify({ c: b.columns, n: b.night, t: b.tiles }) !== JSON.stringify({ c: a.columns, n: a.night, t: a.tiles }))
+      out.push(`Wall board changed: ${a.name}`);
+  });
+
   const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);
   ladders.added.forEach((l) => out.push(`Nudge ladder added: ${l.name} (${l.rungs.length} nudges)`));
   ladders.removed.forEach((l) => out.push(`Nudge ladder removed: ${l.name}`));

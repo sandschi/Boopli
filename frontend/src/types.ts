@@ -203,6 +203,29 @@ export interface Ladder {
   repeat_last: boolean;
 }
 
+/** What a tile can be told (its options differ by type, see wall-tiles.ts). */
+export type TileOptions = Record<string, string | number | boolean>;
+
+export type TileSize = "small" | "wide" | "tall" | "big";
+export type NightMode = "dim" | "black" | "off";
+
+/** One tile of a wall board. */
+export interface Tile {
+  id: string;
+  type: string;
+  size: TileSize;
+  options: TileOptions;
+}
+
+/** A wall board: a grid of tiles for a screen on the wall. */
+export interface Board {
+  id: string;
+  name: string;
+  columns: number;
+  night: NightMode;
+  tiles: Tile[];
+}
+
 export interface QuietDay {
   start: string; // HH:MM
   stop: string;
@@ -225,6 +248,7 @@ export interface Settings {
   snooze_minutes: number;
   default_style: NudgeStyle;
   ladders?: Ladder[]; // "Nudge it your way"
+  boards?: Board[]; // wall boards
   pet_name: string;
   pet_kind?: string; // which pet: bear, cat, dog, fox or slime
   ai: AiSettings;
@@ -370,6 +394,9 @@ export interface Hass {
   states: Record<string, HassState>;
   services: Record<string, Record<string, unknown>>;
   callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;
+  connected?: boolean; // false while the connection to Home Assistant is down
+  callService?(domain: string, service: string, data?: Record<string, unknown>, target?: Record<string, unknown>): Promise<unknown>;
+  callApi?<T = unknown>(method: string, path: string, data?: Record<string, unknown>): Promise<T>;
   connection: {
     subscribeMessage<T>(
       callback: (message: T) => void,
