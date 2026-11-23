@@ -153,9 +153,14 @@ export class BoopliLadders extends LitElement {
     });
   }
 
-  private _setGap(id: string, index: number, raw: string): void {
-    const n = Math.round(Number(raw));
-    if (Number.isNaN(n)) return;
+  private _setGap(id: string, index: number, input: HTMLInputElement): void {
+    const n = Math.round(Number(input.value));
+    if (input.value.trim() === "" || Number.isNaN(n)) {
+      // Blank is not a number: put the wait that is saved back, do not turn it into one minute.
+      const r = this._ladders.find((l) => l.id === id)?.rungs[index];
+      if (r) input.value = String(r.gap);
+      return;
+    }
     this._editRung(id, index, (r) => (r.gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n))));
   }
 
@@ -201,17 +206,17 @@ export class BoopliLadders extends LitElement {
     return html`<div class="rung">
       <div class="rung-head">
         <b>Nudge ${index + 1}</b>
-        ${index === 0
+        ${index === 0 && !(l.rungs.length === 1 && l.repeat_last)
           ? html`<span class="muted small">right away</span>`
           : html`<label class="gap">
-              Wait
+              ${index === 0 ? "Right away, then repeats every" : "Wait"}
               <input
                 type="number"
                 min=${GAP_MIN}
                 max=${GAP_MAX}
                 .value=${String(r.gap)}
                 aria-label="Minutes before nudge ${index + 1}"
-                @change=${(e: Event) => this._setGap(l.id, index, (e.target as HTMLInputElement).value)}
+                @change=${(e: Event) => this._setGap(l.id, index, e.target as HTMLInputElement)}
               />
               min
             </label>`}

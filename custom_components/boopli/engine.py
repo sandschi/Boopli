@@ -1986,7 +1986,8 @@ class RungLight:
     @classmethod
     def from_dict(cls, d: Any) -> RungLight:
         if isinstance(d, dict):
-            return cls(mode=str(d.get("mode") or LIGHT_BLINK), color=_color(d.get("color")))
+            mode = d.get("mode")
+            return cls(mode=mode if mode in (LIGHT_OWN_MODE, LIGHT_BLINK, LIGHT_INDICATOR) else LIGHT_BLINK, color=_color(d.get("color")))
         return cls(mode=str(d) if isinstance(d, str) else LIGHT_BLINK)
 
 

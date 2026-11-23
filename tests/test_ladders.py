@@ -326,3 +326,13 @@ def test_a_chore_can_have_a_light_color():
     assert saved.light_color == [1, 2, 3]
     assert engine.Chore.from_dict({"name": "x", "light_color": "red"}).light_color is None
     assert engine.Chore.from_dict({"name": "x"}).light_color is None  # older chores
+
+
+def test_a_lights_own_mode_survives_saving_and_loading():
+    light = engine.RungLight(mode=engine.LIGHT_OWN_MODE)
+    again = engine.RungLight.from_dict(
+        {"mode": light.mode, "color": light.color}
+    )
+    assert again.mode == engine.LIGHT_OWN_MODE
+    assert engine.RungLight.from_dict({}).mode == engine.LIGHT_BLINK  # no mode at all: blink
+    assert engine.RungLight.from_dict({"mode": "junk"}).mode == engine.LIGHT_BLINK

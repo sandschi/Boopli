@@ -143,6 +143,7 @@ export class BoopliSettings extends LitElement {
     if (this._justSaved && JSON.stringify(saved) !== JSON.stringify(this._base)) {
       this._base = structuredClone(saved);
       this._draft = structuredClone(saved);
+      if (this._modal) this._modalBase = structuredClone(saved); // "Discard" must not bring back the values before the save tidied them
       this._justSaved = false;
     }
   }
@@ -926,7 +927,7 @@ export class BoopliSettings extends LitElement {
     const a = AREAS[area];
     const changed = this._changed(...a.keys);
     return html`<section id="card-${area}" class="card area ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
-      <h3>
+      <h3 tabindex="-1">
         <span class="emoji" aria-hidden="true">${a.emoji}</span> ${a.title}
         ${changed ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
       </h3>
@@ -935,7 +936,7 @@ export class BoopliSettings extends LitElement {
       </div>
       <div class="buttons">
         <button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>
-        <button type="button" aria-label="Advanced: ${a.title}" @click=${() => this._openArea(area)}>Advanced</button>
+        <button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>
       </div>
     </section>`;
   }
@@ -943,6 +944,7 @@ export class BoopliSettings extends LitElement {
   // --- the advanced window ---------------------------------------------------------
 
   private _openArea(area: Area): void {
+    if (this._busy) return; // a save is on its way: wait for it
     this._modalBase = this._draft ? structuredClone(this._draft) : undefined;
     this._error = "";
     this._message = "";
@@ -951,6 +953,7 @@ export class BoopliSettings extends LitElement {
 
   /** Close the window and keep the edits as an unsaved draft. */
   private _keep(): void {
+    if (this._busy) return; // a save is on its way: the window stays until it is done
     this._modal = "";
   }
 
@@ -962,7 +965,8 @@ export class BoopliSettings extends LitElement {
   }
 
   private async _saveClose(): Promise<void> {
-    if (await this.save()) this._modal = "";
+    const area = this._modal;
+    if ((await this.save()) && this._modal === area) this._modal = "";
   }
 
   private _areaContent(area: Area, d: Settings) {
@@ -1013,7 +1017,7 @@ export class BoopliSettings extends LitElement {
         ? html`<div class="win">
             <div class="win-head">
               <h2 id="win-title"><span aria-hidden="true">${area.emoji}</span> ${area.title}</h2>
-              <button type="button" class="close" aria-label="Keep for later and close" @click=${() => this._keep()}>✕</button>
+              <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, d)}</div>
             ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
@@ -1036,7 +1040,9 @@ export class BoopliSettings extends LitElement {
   private _show(area: Area): void {
     this._flash = area;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    this.renderRoot.querySelector(`#card-${area}`)?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+    const card = this.renderRoot.querySelector(`#card-${area}`);
+    card?.querySelector<HTMLElement>("h3")?.focus({ preventScroll: true }); // the next Tab starts inside this card
+    card?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
     window.clearTimeout(this._flashTimer);
     this._flashTimer = window.setTimeout(() => (this._flash = ""), 2600);
   }
@@ -1240,12 +1246,16 @@ export class BoopliSettings extends LitElement {
           width: 100vw;
           max-width: 100vw;
           height: 100vh;
+          height: 100dvh;
           max-height: 100vh;
+          max-height: 100dvh;
           border-radius: 0;
         }
         .win {
           height: 100vh;
+          height: 100dvh;
           max-height: 100vh;
+          max-height: 100dvh;
         }
         /* Save on its own line, the other two side by side; the hint goes (the orange tag says it). */
         .win-foot button.primary {

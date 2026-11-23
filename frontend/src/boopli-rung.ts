@@ -159,7 +159,7 @@ export class BoopliRung extends LitElement {
                 <option value="" ?selected=${!use}>Off</option>
                 <option value="blink" ?selected=${use?.mode === "blink"}>Blink</option>
                 <option value="indicator" ?selected=${use?.mode === "indicator"}>Status light (stays on until you answer)</option>
-                ${use && use.mode === "" ? html`<option value="own" selected>As set for the light</option>` : nothing}
+                <option value="own" ?selected=${use?.mode === ""}>As set for the light</option>
               </select>
             </label>
             ${use && lightHasColor(this.hass, light.entity_id)
@@ -187,7 +187,7 @@ export class BoopliRung extends LitElement {
             <span>🔊 ${name}</span>
             <select
               aria-label="${name} at nudge ${n}"
-              ?disabled=${!choices.length}
+              ?disabled=${!choices.length && !current}
               @change=${(e: Event) => this._setSpeaker(sp.entity_id, (e.target as HTMLSelectElement).value)}
             >
               <option value="" ?selected=${!current}>${choices.length ? "Off" : "No sound set up"}</option>

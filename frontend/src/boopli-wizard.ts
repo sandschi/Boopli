@@ -125,6 +125,8 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
   ladders: "Nudge it your way",
 };
 
+const MAX_LADDERS = 20; // the most ladders (the same as in the ladder editor)
+
 const TITLES: Record<StepId, string> = {
   welcome: "Welcome",
   phone: "Your phone",
@@ -229,6 +231,7 @@ export class BoopliWizard extends LitElement {
   declare _ladderName: string;
   declare _ladderAction: "create" | "edit" | "delete";
   declare _ladderPick: string; // the ladder to edit or delete
+  declare _createdId: string; // the ladder this guide made (going back must not make a second one)
   private _started = false;
   private _saved?: Settings; // what is saved right now
   private _baseline?: Settings; // what it was when this wizard opened
@@ -249,6 +252,7 @@ export class BoopliWizard extends LitElement {
     this._ladderName = "";
     this._ladderAction = "create";
     this._ladderPick = "";
+    this._createdId = "";
   }
 
   private get _first(): boolean {
@@ -494,6 +498,15 @@ export class BoopliWizard extends LitElement {
   private _startLadderWork(): void {
     const ladders = this._draft?.ladders ?? [];
     if (this._ladderAction === "create") {
+      const made = ladders.find((l) => l.id === this._createdId);
+      if (made) {
+        // Back to the first screen and forward again: go on with the ladder made here, not a second one.
+        this._ladderId = made.id;
+        this._ladderName = made.name;
+        this._steps = ["lad_start", "lad_name", ...made.rungs.map((): StepId => "lad_nudge"), "lad_more", "lad_end", "done"];
+        return;
+      }
+      if (ladders.length >= MAX_LADDERS) throw new Error(`You have ${MAX_LADDERS} ladders, the most. Edit or delete one.`);
       this._ladderId = "";
       this._ladderName = "";
       this._steps = ["lad_start", "lad_name", "lad_nudge", "lad_more", "lad_end", "done"];
@@ -535,8 +548,10 @@ export class BoopliWizard extends LitElement {
       this._error = `"${l.name}" is the style for new chores. Choose another one for new chores first.`;
       return;
     }
+    const before = d;
     this._set({ ladders: (d.ladders ?? []).filter((x) => x.id !== l.id) });
     await this._go(1);
+    if (this._error) this._draft = before; // not saved: keep the ladder, so you can try again
   }
 
   /** Called when leaving the name screen: make the ladder (or rename it). */
@@ -549,8 +564,10 @@ export class BoopliWizard extends LitElement {
       this._patchLadder((l) => ({ ...l, name }));
       return;
     }
+    if ((d.ladders ?? []).length >= MAX_LADDERS) throw new Error(`You have ${MAX_LADDERS} ladders, the most. Edit or delete one.`);
     const id = newLadderId();
     this._ladderId = id;
+    this._createdId = id;
     this._set({ ladders: [...(d.ladders ?? []), { id, name, rungs: [this._newRung()], repeat_last: false }] });
   }
 
@@ -587,7 +604,7 @@ export class BoopliWizard extends LitElement {
       <span><b>${label}</b> <span class="muted small">${text}</span></span>
     </label>`;
     return html`
-      ${choice("create", "Create a ladder", "A new list of nudges.")}
+      ${choice("create", "Create a ladder", ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : "A new list of nudges.", ladders.length >= MAX_LADDERS)}
       ${choice("edit", "Edit a ladder", none ? "You have no ladders yet." : "Change its name, its nudges or how it ends.", none)}
       ${choice("delete", "Delete a ladder", none ? "You have no ladders yet." : "Remove one you do not need any more.", none)}
       ${this._ladderAction !== "create" && !none
@@ -695,6 +712,9 @@ export class BoopliWizard extends LitElement {
         <input type="radio" name="end" .checked=${l.repeat_last} @change=${() => this._patchLadder((x) => ({ ...x, repeat_last: true }))} />
         <span><b>Repeat the last nudge</b> <span class="muted small">Until you answer.</span></span>
       </label>
+      ${l.repeat_last && l.rungs.length === 1
+        ? this._numField("Repeat every (minutes)", l.rungs[0].gap, 1, 720, (n) => this._setRung(0, { ...l.rungs[0], gap: n }))
+        : nothing}
       <p>
         <label class="inline option">
           <input
@@ -702,7 +722,9 @@ export class BoopliWizard extends LitElement {
             .checked=${d.default_style === style}
             @change=${(e: Event) =>
               this._set({
-                default_style: (e.target as HTMLInputElement).checked ? style : (this._baseline?.default_style ?? "one"),
+                default_style: (e.target as HTMLInputElement).checked ? style : this._baseline?.default_style && this._baseline.default_style !== style
+                    ? this._baseline.default_style
+                    : "escalating",
               })}
           />
           <span><b>Use it for new chores</b></span>
@@ -1517,7 +1539,7 @@ export class BoopliWizard extends LitElement {
                 </button>`
               : isGate
                 ? nothing
-                : html`${step === "lad_name" || step === "lad_start" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
+                : html`${step === "lad_name" || step === "lad_start" || step === "lad_nudge" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
                     <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>Next</button>`}
           </div>
         </section>

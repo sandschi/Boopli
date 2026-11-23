@@ -98,6 +98,11 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
     const now = new Map((after_sp.sounds ?? []).map((s) => [s.id, s.name]));
     for (const [id, label] of now) if (!was.has(id)) out.push(`${name(after_sp.entity_id)}: sound added (${label})`);
     for (const [id, label] of was) if (!now.has(id)) out.push(`${name(after_sp.entity_id)}: sound removed (${label})`);
+    for (const s of after_sp.sounds ?? []) {
+      const o = (before_sp?.sounds ?? []).find((x) => x.id === s.id);
+      if (o && (o.name !== s.name || o.kind !== s.kind || o.sound !== s.sound))
+        out.push(`${name(after_sp.entity_id)}: sound changed (${s.name})`);
+    }
   }
 
   const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);

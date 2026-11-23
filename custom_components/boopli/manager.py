@@ -751,7 +751,15 @@ class BoopliManager:
                     step.on_it_until = None  # asked now: back to the normal look
                     ladder = engine.find_ladder(style, self.settings.ladders)
                     rung = engine.rung_for(ladder, number) if ladder else None
-                    engine.record_nudge(step, style, now, self.settings.ladders)
+                    if ladder and rung is None and ladder.rungs and not check_in:
+                        rung = ladder.rungs[-1]  # a snooze after the last nudge: same as that nudge, nothing else
+                    if ladder and check_in:
+                        # The check-in is not a nudge of the ladder: the next nudge stays available.
+                        number = max(step.nudge_count, 1)
+                        gap = engine.next_gap(style, step.nudge_count, self.settings.ladders)
+                        step.next_nudge_at = engine.fmt_ts(now + timedelta(minutes=gap)) if gap else None
+                    else:
+                        engine.record_nudge(step, style, now, self.settings.ladders)
                     if step.next_nudge_at:
                         wakeups.append(engine.parse_ts(step.next_nudge_at))
                     if check_in:
