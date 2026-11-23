@@ -206,14 +206,16 @@ export interface Ladder {
 /** What a tile can be told (its options differ by type, see wall-tiles.ts). */
 export type TileOptions = Record<string, string | number | boolean>;
 
-export type TileSize = "small" | "wide" | "tall" | "big";
 export type NightMode = "dim" | "black" | "off";
 
 /** One tile of a wall board. */
 export interface Tile {
   id: string;
   type: string;
-  size: TileSize;
+  x: number; // column and row on the grid, counted from 0
+  y: number;
+  w: number; // how many columns wide and rows tall
+  h: number;
   options: TileOptions;
 }
 
@@ -221,7 +223,8 @@ export interface Tile {
 export interface Board {
   id: string;
   name: string;
-  columns: number;
+  columns: number; // the board is a grid of square cells, this many wide and
+  rows: number; // this many tall
   night: NightMode;
   tiles: Tile[];
 }

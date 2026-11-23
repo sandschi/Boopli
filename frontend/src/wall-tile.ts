@@ -1,5 +1,5 @@
 import { LitElement, css } from "lit";
-import type { Hass, Snapshot, TileOptions, TileSize } from "./types";
+import type { Hass, Snapshot, TileOptions } from "./types";
 
 /**
  * What every tile of the wall board has in common. A tile is one small element that draws one thing
@@ -15,7 +15,6 @@ export class WallTile extends LitElement {
     snapshot: { attribute: false },
     nowMs: { type: Number },
     options: { attribute: false },
-    size: { type: String },
     preview: { type: Boolean },
   };
 
@@ -23,14 +22,12 @@ export class WallTile extends LitElement {
   declare snapshot?: Snapshot;
   declare nowMs: number;
   declare options: TileOptions;
-  declare size: TileSize;
   declare preview: boolean;
 
   constructor() {
     super();
     this.nowMs = Date.now();
     this.options = {};
-    this.size = "small";
     this.preview = false;
   }
 

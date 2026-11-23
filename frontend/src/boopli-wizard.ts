@@ -29,7 +29,7 @@ import {
 } from "./helpers";
 import "./boopli-pet-picker";
 import "./boopli-rung";
-import { boardLink, newTile } from "./wall-tiles";
+import { boardLink, starterTiles } from "./wall-tiles";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
@@ -533,7 +533,7 @@ export class BoopliWizard extends LitElement {
     if (!name) throw new Error("Give the new board a name.");
     if (boards.length >= MAX_BOARDS) throw new Error(`You have ${MAX_BOARDS} boards, the most. Edit or delete one.`);
     if (boards.some((b) => b.name.toLowerCase() === name.toLowerCase())) throw new Error(`There is already a board called "${name}".`);
-    const board: Board = { id: newLadderId(), name, columns: 4, night: "dim", tiles: [newTile("clock"), newTile("due_now")] };
+    const board: Board = { id: newLadderId(), name, columns: 16, rows: 9, night: "dim", tiles: starterTiles(16, 9) };
     this._boardId = board.id;
     this._boardPick = board.id; // going back and forward again goes on with this board, not a second one
     this._set({ boards: [...boards, board] });

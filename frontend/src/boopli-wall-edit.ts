@@ -2,8 +2,9 @@ import { LitElement, css, html, nothing } from "lit";
 import { errorMessage, saveSettings } from "./api";
 import "./boopli-wall";
 import { entityIds, friendlyName, newLadderId } from "./helpers";
-import { TILE_DEFS, TILE_SIZE_LABEL, boardLink, newTile, pickBoard, tileDef, type OptionField } from "./wall-tiles";
-import type { Board, Hass, NightMode, Snapshot, Tile, TileSize } from "./types";
+import { COLUMNS_MAX, COLUMNS_MIN, ROWS_MAX, ROWS_MIN, bottom, right, scaleTiles, settle } from "./wall-layout";
+import { TILE_DEFS, boardLink, newTile, pickBoard, starterTiles, tileDef, type OptionField } from "./wall-tiles";
+import type { Board, Hass, NightMode, Snapshot, Tile } from "./types";
 
 const MAX_BOARDS = 10;
 const MAX_TILES = 30;
@@ -21,24 +22,25 @@ const NIGHT_CHOICES: [NightMode, string][] = [
   ["off", "Keep as it is"],
 ];
 
-type View = "wall" | "tablet" | "phone";
+type View = "window" | "wide" | "tall";
 const VIEWS: [View, string, string][] = [
-  ["wall", "Wall", "The whole screen"],
-  ["tablet", "Tablet", "A tablet held upright (768 wide)"],
-  ["phone", "Phone", "A phone (375 wide)"],
+  ["window", "This window", "Show the board in the shape of this window"],
+  ["wide", "16:9", "A TV or a tablet lying down"],
+  ["tall", "Upright", "A tablet hung upright (9:16)"],
 ];
-const FRAME: Record<View, { w: string; h: string }> = {
-  wall: { w: "100%", h: "100%" },
-  tablet: { w: "768px", h: "1024px" },
-  phone: { w: "375px", h: "812px" },
+/** The size of the screen each view stands for. The board is drawn at that size and then scaled down to fit, so it looks exactly as it will. */
+const SCREEN: Record<Exclude<View, "window">, [number, number]> = {
+  wide: [1280, 720],
+  tall: [720, 1280],
 };
 
-type Sheet = "" | "tile" | "board" | "add";
+type Modal = "" | "tile" | "board" | "add";
 
 /**
  * Edit mode of the wall board, like the pencil on a Home Assistant dashboard. The real board is shown
- * as it will look; a tap on a tile picks it and a sheet at the bottom changes its size, place and
- * settings. Nothing is saved until Save. What each type of tile can be set to comes from wall-tiles.ts.
+ * as it will look (the same grid of square cells, scaled to fit); drag a tile to move it, drag its corner
+ * to resize it, tap it to change its settings in a window. Nothing is saved until Save. What each type
+ * of tile can be set to comes from wall-tiles.ts.
  */
 export class BoopliWallEdit extends LitElement {
   static properties = {
@@ -49,11 +51,13 @@ export class BoopliWallEdit extends LitElement {
     _boards: { state: true },
     _id: { state: true },
     _sel: { state: true },
-    _sheet: { state: true },
+    _modal: { state: true },
     _view: { state: true },
     _busy: { state: true },
     _error: { state: true },
     _askDiscard: { state: true },
+    _stage: { state: true },
+    _win: { state: true },
   };
 
   declare hass?: Hass;
@@ -63,13 +67,16 @@ export class BoopliWallEdit extends LitElement {
   declare _boards: Board[] | null; // the boards as they are being edited (null until loaded)
   declare _id: string; // the board being edited
   declare _sel: string; // the picked tile
-  declare _sheet: Sheet;
+  declare _modal: Modal;
   declare _view: View;
   declare _busy: boolean;
   declare _error: string;
   declare _askDiscard: boolean;
+  declare _stage: [number, number]; // the room the board has, in pixels
+  declare _win: [number, number]; // the size of this window: what the real wall screen is
 
   private _base = "";
+  private _ro?: ResizeObserver;
 
   constructor() {
     super();
@@ -78,12 +85,30 @@ export class BoopliWallEdit extends LitElement {
     this._boards = null;
     this._id = "";
     this._sel = "";
-    this._sheet = "";
-    this._view = "wall";
+    this._modal = "";
+    this._view = "window";
     this._busy = false;
     this._error = "";
     this._askDiscard = false;
+    this._stage = [0, 0];
+    this._win = [window.innerWidth, window.innerHeight];
   }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("resize", this._onResize);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("resize", this._onResize);
+    this._ro?.disconnect();
+    this._ro = undefined;
+  }
+
+  private _onResize = (): void => {
+    this._win = [window.innerWidth, window.innerHeight];
+  };
 
   protected willUpdate(): void {
     if (this._boards || !this.snapshot?.settings) return;
@@ -91,6 +116,22 @@ export class BoopliWallEdit extends LitElement {
     this._base = JSON.stringify(boards);
     this._boards = boards;
     this._id = pickBoard(boards, this.boardName)?.id ?? boards[0]?.id ?? "";
+  }
+
+  protected updated(changed: Map<string, unknown>): void {
+    if (!this._ro) this._watchStage(); // the stage is there once the boards are loaded
+    if (changed.has("_modal") && this._modal) (this.renderRoot.querySelector(".modal") as HTMLElement | null)?.focus();
+  }
+
+  private _watchStage(): void {
+    const stage = this.renderRoot.querySelector(".stage") as HTMLElement | null;
+    if (!stage) return;
+    this._ro = new ResizeObserver(() => {
+      const w = Math.max(0, stage.clientWidth - 24);
+      const h = Math.max(0, stage.clientHeight - 24);
+      if (w !== this._stage[0] || h !== this._stage[1]) this._stage = [w, h];
+    });
+    this._ro.observe(stage);
   }
 
   private get _cur(): Board | undefined {
@@ -103,6 +144,11 @@ export class BoopliWallEdit extends LitElement {
 
   private get _tile(): Tile | undefined {
     return this._cur?.tiles.find((t) => t.id === this._sel);
+  }
+
+  /** The size of the screen the board is shown for. */
+  private _screen(): [number, number] {
+    return this._view === "window" ? this._win : SCREEN[this._view];
   }
 
   /** Change the board being edited. */
@@ -125,9 +171,11 @@ export class BoopliWallEdit extends LitElement {
 
   // --- the board ---------------------------------------------------------------------
 
+  /** A tap on a tile: tiles with settings open them in a window, the others are just picked. */
   private _pick(e: CustomEvent<string>): void {
     this._sel = e.detail;
-    this._sheet = "tile";
+    const type = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
+    this._modal = tileDef(type)?.options.length ? "tile" : "";
   }
 
   private _uniqueName(base: string): string {
@@ -143,14 +191,14 @@ export class BoopliWallEdit extends LitElement {
     const board: Board = {
       id: newLadderId(),
       name: this._uniqueName("My board"),
-      columns: 4,
+      columns: 16,
+      rows: 9,
       night: "dim",
-      tiles: [newTile("clock"), newTile("due_now")],
+      tiles: starterTiles(16, 9),
     };
     this._boards = [...this._boards, board];
     this._id = board.id;
     this._sel = "";
-    this._sheet = "board";
   }
 
   private _deleteBoard(): void {
@@ -159,7 +207,7 @@ export class BoopliWallEdit extends LitElement {
     this._boards = this._boards.filter((b) => b.id !== cur.id);
     this._id = this._boards[0].id;
     this._sel = "";
-    this._sheet = "";
+    this._modal = "";
   }
 
   private _addTile(type: string): void {
@@ -167,30 +215,97 @@ export class BoopliWallEdit extends LitElement {
     if (!cur) return;
     if (cur.tiles.length >= MAX_TILES) {
       this._error = `A board can have ${MAX_TILES} tiles at most.`;
+      this._modal = "";
       return;
     }
-    const tile = newTile(type);
+    const tile = newTile(type, cur.tiles, cur.columns, cur.rows);
+    if (!tile) {
+      this._error = "There is no room left on this board. Make the grid bigger or remove a tile.";
+      this._modal = "";
+      return;
+    }
     this._edit((b) => b.tiles.push(tile));
     this._sel = tile.id;
-    this._sheet = "tile"; // straight to its settings
+    this._modal = tileDef(type)?.options.length ? "tile" : ""; // straight to its settings
   }
 
-  private _move(by: -1 | 1): void {
-    this._editTile((_t, b, i) => {
-      const to = i + by;
-      if (to < 0 || to >= b.tiles.length) return;
-      [b.tiles[i], b.tiles[to]] = [b.tiles[to], b.tiles[i]];
-    });
-  }
-
-  private _remove(): void {
-    this._edit((b) => (b.tiles = b.tiles.filter((t) => t.id !== this._sel)));
-    this._sel = "";
-    this._sheet = "";
+  private _remove(id = this._sel): void {
+    this._edit((b) => (b.tiles = b.tiles.filter((t) => t.id !== id)));
+    if (id === this._sel) this._sel = "";
+    this._modal = "";
   }
 
   private _setOption(key: string, value: string | number | boolean): void {
     this._editTile((t) => (t.options[key] = value));
+  }
+
+  /** Set the width or height of the picked tile; the tiles in the way are pushed down. Returns what it is now. */
+  private _resize(w: number, h: number): void {
+    const cur = this._cur;
+    const tile = this._tile;
+    if (!cur || !tile) return;
+    const next = settle(
+      cur.tiles.map((t) => (t.id === tile.id ? { ...t, w: Math.max(1, Math.min(w, cur.columns - t.x)), h: Math.max(1, Math.min(h, cur.rows - t.y)) } : t)),
+      cur.rows,
+      tile.id
+    );
+    if (!next) {
+      this._error = "There is no room for that.";
+      return;
+    }
+    this._edit((b) => (b.tiles = next));
+  }
+
+  // --- the grid of the board ----------------------------------------------------------
+
+  /** Set how many cells wide and tall the board is. Refused while a tile reaches further. Returns what is set. */
+  private _setGrid(columns: number, rows: number): { columns: number; rows: number } {
+    const cur = this._cur;
+    if (!cur) return { columns, rows };
+    const c = Math.max(COLUMNS_MIN, Math.min(COLUMNS_MAX, columns));
+    const r = Math.max(ROWS_MIN, Math.min(ROWS_MAX, rows));
+    const needC = right(cur.tiles);
+    const needR = bottom(cur.tiles);
+    if (c < needC || r < needR) {
+      this._error = `Some tiles reach to column ${needC} and row ${needR}. Move or shrink them first.`;
+      return { columns: cur.columns, rows: cur.rows };
+    }
+    this._edit((b) => {
+      b.columns = c;
+      b.rows = r;
+    });
+    return { columns: c, rows: r };
+  }
+
+  /** Cells twice as small (finer) or twice as big (coarser), keeping the look of the board. */
+  private _scaleGrid(finer: boolean): void {
+    const cur = this._cur;
+    if (!cur) return;
+    const f = finer ? 2 : 0.5;
+    const columns = cur.columns * f;
+    const rows = cur.rows * f;
+    const tiles = scaleTiles(cur.tiles, f);
+    if (!Number.isInteger(columns) || !Number.isInteger(rows) || columns < COLUMNS_MIN || rows < ROWS_MIN || columns > COLUMNS_MAX || rows > ROWS_MAX) {
+      this._error = finer ? `${COLUMNS_MAX} by ${ROWS_MAX} is the finest grid.` : "This grid cannot be made coarser evenly.";
+      return;
+    }
+    if (!tiles) {
+      this._error = "Some tiles do not line up with a coarser grid. Move or resize them first.";
+      return;
+    }
+    this._edit((b) => {
+      b.columns = columns;
+      b.rows = rows;
+      b.tiles = tiles;
+    });
+  }
+
+  /** Rows that make the cells square on the screen shown (for the columns the board has). */
+  private _matchScreen(): void {
+    const cur = this._cur;
+    if (!cur) return;
+    const [sw, sh] = this._screen();
+    this._setGrid(cur.columns, Math.round((cur.columns * sh) / sw));
   }
 
   // --- leave ---------------------------------------------------------------------------
@@ -225,6 +340,20 @@ export class BoopliWallEdit extends LitElement {
 
   // --- the pieces ---------------------------------------------------------------------
 
+  /** A number field; `set` returns the value that was really set, which is shown. */
+  private _numField(id: string, label: string, value: number, min: number, max: number, set: (n: number) => number | void) {
+    return html`<div class="field">
+      <label for=${id}>${label}</label>
+      <input id=${id} type="number" min=${min} max=${max} .value=${String(value)} @change=${(e: Event) => {
+        const input = e.target as HTMLInputElement;
+        const n = Math.round(Number(input.value));
+        const kept = input.value.trim() === "" || Number.isNaN(n) ? value : Math.min(max, Math.max(min, n));
+        const applied = set(kept);
+        input.value = String(applied ?? kept);
+      }} />
+    </div>`;
+  }
+
   private _renderField(tile: Tile, f: OptionField) {
     const value = tile.options[f.key] ?? f.default;
     const id = `f-${tile.id}-${f.key}`;
@@ -237,15 +366,9 @@ export class BoopliWallEdit extends LitElement {
             ${(f.choices ?? []).map(([v, l]) => html`<option value=${v} ?selected=${value === v}>${l}</option>`)}
           </select></div>`;
       case "int":
-        return html`<div class="field"><label for=${id}>${f.label}</label>
-          <input id=${id} type="number" min=${f.min ?? 0} max=${f.max ?? 999} .value=${String(value)}
-            @change=${(e: Event) => {
-              const input = e.target as HTMLInputElement;
-              const n = Math.round(Number(input.value));
-              const kept = input.value.trim() === "" || Number.isNaN(n) ? Number(value) : Math.min(f.max ?? 999, Math.max(f.min ?? 0, n));
-              input.value = String(kept);
-              this._setOption(f.key, kept);
-            }} /></div>`;
+        return this._numField(id, f.label, Number(value), f.min ?? 0, f.max ?? 999, (n) => {
+          this._setOption(f.key, n);
+        });
       case "entity": {
         const ids = entityIds(this.hass, f.domains ?? ANY_DOMAINS);
         const list = `dl-${tile.id}-${f.key}`;
@@ -263,102 +386,93 @@ export class BoopliWallEdit extends LitElement {
     }
   }
 
-  private _renderTileSheet(cur: Board) {
+  private _renderTileModal(cur: Board) {
     const tile = this._tile;
-    if (!tile) return html`<p class="muted">Tap a tile on the board to change it.</p>`;
+    if (!tile) return nothing;
     const def = tileDef(tile.type);
-    const index = cur.tiles.findIndex((t) => t.id === tile.id);
     return html`
-      <div class="shead">
-        <b>${def?.emoji ?? "◻️"} ${def?.label ?? tile.type}</b>
-        <span class="spacer"></span>
-        <button class="chip" aria-label="Close" @click=${() => { this._sheet = ""; this._sel = ""; }}>Done</button>
-      </div>
+      <div class="mhead"><h2>${def?.emoji ?? "◻️"} ${def?.label ?? tile.type}</h2></div>
+      ${def?.options.length ? html`<div class="opts">${def.options.map((f) => this._renderField(tile, f))}</div>` : nothing}
       <div class="srow">
-        <div class="field">
-          <label for="tsize">Size</label>
-          <select id="tsize" @change=${(e: Event) => this._editTile((t) => (t.size = (e.target as HTMLSelectElement).value as TileSize))}>
-            ${(Object.keys(TILE_SIZE_LABEL) as TileSize[]).map((s) => html`<option value=${s} ?selected=${tile.size === s}>${TILE_SIZE_LABEL[s]}</option>`)}
-          </select>
-        </div>
-        <button ?disabled=${index === 0} @click=${() => this._move(-1)}>← Earlier</button>
-        <button ?disabled=${index === cur.tiles.length - 1} @click=${() => this._move(1)}>Later →</button>
-        <button class="danger" @click=${() => this._remove()}>Remove</button>
+        ${this._numField("tw", "Cells wide", tile.w, 1, cur.columns - tile.x, (n) => {
+          this._resize(n, tile.h);
+        })}
+        ${this._numField("th", "Cells tall", tile.h, 1, cur.rows - tile.y, (n) => {
+          this._resize(tile.w, n);
+        })}
       </div>
-      ${def?.options.length ? html`<div class="opts">${def.options.map((f) => this._renderField(tile, f))}</div>` : html`<p class="muted small">This tile has nothing more to set.</p>`}
+      <div class="mfoot">
+        <button class="danger" @click=${() => this._remove()}>Remove this tile</button>
+        <span class="spacer"></span>
+        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
+      </div>
     `;
   }
 
-  private _renderBoardSheet(cur: Board) {
+  private _renderBoardModal(cur: Board) {
     return html`
-      <div class="shead">
-        <b>🖥️ This board</b>
-        <span class="spacer"></span>
-        <button class="chip" @click=${() => (this._sheet = "")}>Done</button>
+      <div class="mhead"><h2>🖥️ This board</h2></div>
+      <div class="field">
+        <label for="bname">Name</label>
+        <input id="bname" maxlength=${NAME_MAX} .value=${cur.name} @change=${(e: Event) => this._edit((b) => (b.name = (e.target as HTMLInputElement).value.trim()))} />
       </div>
       <div class="srow">
-        <div class="field grow">
-          <label for="bname">Name</label>
-          <input id="bname" maxlength=${NAME_MAX} .value=${cur.name} @change=${(e: Event) => this._edit((b) => (b.name = (e.target as HTMLInputElement).value.trim()))} />
-        </div>
-        <div class="field">
-          <label for="bcols">Columns</label>
-          <input id="bcols" type="number" min="2" max="8" .value=${String(cur.columns)}
-            @change=${(e: Event) => {
-              const input = e.target as HTMLInputElement;
-              const n = Math.round(Number(input.value));
-              const kept = input.value.trim() === "" || Number.isNaN(n) ? cur.columns : Math.min(8, Math.max(2, n));
-              input.value = String(kept);
-              this._edit((b) => (b.columns = kept));
-            }} />
-        </div>
-        <div class="field">
-          <label for="bnight">At night</label>
-          <select id="bnight" @change=${(e: Event) => this._edit((b) => (b.night = (e.target as HTMLSelectElement).value as NightMode))}>
-            ${NIGHT_CHOICES.map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
-          </select>
-        </div>
+        ${this._numField("bcols", "Columns", cur.columns, COLUMNS_MIN, COLUMNS_MAX, (n) => this._setGrid(n, cur.rows).columns)}
+        ${this._numField("brows", "Rows", cur.rows, ROWS_MIN, ROWS_MAX, (n) => this._setGrid(cur.columns, n).rows)}
+        <button title="Choose the rows that make the cells square on the screen shown" @click=${() => this._matchScreen()}>Match this screen</button>
       </div>
-      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds.</p>
+      <div class="srow">
+        <button @click=${() => this._scaleGrid(true)}>Finer grid (cells half as big)</button>
+        <button @click=${() => this._scaleGrid(false)}>Coarser grid (cells twice as big)</button>
+      </div>
+      <p class="muted small">The board is a grid of square cells, scaled to fit the screen. 16 by 9 fits a TV or a tablet lying down.</p>
+      <div class="field">
+        <label for="bnight">At night</label>
+        <select id="bnight" @change=${(e: Event) => this._edit((b) => (b.night = (e.target as HTMLSelectElement).value as NightMode))}>
+          ${NIGHT_CHOICES.map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
+        </select>
+      </div>
+      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
       <p class="small">Link for the tablet's start page: <code>${boardLink(cur)}</code> (after you save)</p>
-      <div class="srow">
+      <div class="mfoot">
         <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>+ New board</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
+        <span class="spacer"></span>
+        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
       </div>
     `;
   }
 
-  private _renderAddSheet() {
+  private _renderAddModal() {
     return html`
-      <div class="shead">
-        <b>＋ Add a tile</b>
-        <span class="spacer"></span>
-        <button class="chip" @click=${() => (this._sheet = "")}>Cancel</button>
-      </div>
+      <div class="mhead"><h2>＋ Add a tile</h2></div>
       <div class="adds" role="group" aria-label="Add a tile">
         ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${d.emoji}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
       </div>
+      <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>Cancel</button></div>
     `;
   }
 
   render() {
     const cur = this._cur;
     if (!this._boards || !cur) return html`<div class="load">Loading…</div>`;
-    const frame = FRAME[this._view];
+    const [sw, sh] = this._screen();
+    const scale = this._stage[0] > 0 && this._stage[1] > 0 ? Math.min(1, this._stage[0] / sw, this._stage[1] / sh) : 1;
     return html`
       <div class="edit">
         <div class="bar" role="toolbar" aria-label="Edit the wall board">
           <label class="pick">
             <span class="muted small">Board</span>
-            <select aria-label="Board" @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._sheet = ""; }}>
+            <select aria-label="Board" @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._modal = ""; }}>
               ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || "(no name)"}</option>`)}
             </select>
           </label>
-          <button class=${this._sheet === "board" ? "on" : ""} @click=${() => (this._sheet = this._sheet === "board" ? "" : "board")}>⚙ Board</button>
-          <button class=${this._sheet === "add" ? "on" : ""} @click=${() => (this._sheet = this._sheet === "add" ? "" : "add")}>＋ Add tile</button>
+          <button @click=${() => (this._modal = "board")}>⚙ Board</button>
+          <button @click=${() => (this._modal = "add")}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
             ${VIEWS.map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
           </div>
+          <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
           <span class="spacer"></span>
           ${this._askDiscard
             ? html`<span class="small">Throw away your changes?</span>
@@ -367,28 +481,32 @@ export class BoopliWallEdit extends LitElement {
             : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
                 <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
         </div>
-        ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
         <div class="stage">
-          <div class="frame ${this._view}" style="width:${frame.w};height:${frame.h}">
-            <boopli-wall
-              preview
-              pickable
-              .board=${cur}
-              .selectedId=${this._sel}
-              .hass=${this.hass}
-              .snapshot=${this.snapshot}
-              .nowMs=${this.nowMs}
-              @tile-pick=${(e: Event) => this._pick(e as CustomEvent<string>)}
-            ></boopli-wall>
+          <div class="slot" style="width:${sw * scale}px;height:${sh * scale}px">
+            <div class="frame" style="width:${sw}px;height:${sh}px;transform:scale(${scale})">
+              <boopli-wall
+                preview
+                pickable
+                .board=${cur}
+                .selectedId=${this._sel}
+                .hass=${this.hass}
+                .snapshot=${this.snapshot}
+                .nowMs=${this.nowMs}
+                @tile-pick=${(e: Event) => this._pick(e as CustomEvent<string>)}
+                @tile-remove=${(e: Event) => this._remove((e as CustomEvent<string>).detail)}
+                @tiles-change=${(e: Event) => this._edit((b) => (b.tiles = (e as CustomEvent<Tile[]>).detail))}
+              ></boopli-wall>
+            </div>
           </div>
         </div>
-        ${this._sheet
-          ? html`<section class="sheet" aria-label="Settings">
-              ${this._sheet === "tile" ? this._renderTileSheet(cur) : this._sheet === "board" ? this._renderBoardSheet(cur) : this._renderAddSheet()}
-            </section>`
-          : cur.tiles.length === 0
-            ? html`<section class="sheet"><p class="muted">This board is empty. Press <b>＋ Add tile</b>.</p></section>`
-            : html`<div class="hint muted small">Tap a tile to change it.</div>`}
+        ${this._error ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
+        ${this._modal
+          ? html`<div class="backdrop" @click=${(e: Event) => e.target === e.currentTarget && (this._modal = "")}>
+              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" @keydown=${(e: KeyboardEvent) => e.key === "Escape" && (this._modal = "")}>
+                ${this._modal === "tile" ? this._renderTileModal(cur) : this._modal === "board" ? this._renderBoardModal(cur) : this._renderAddModal()}
+              </section>
+            </div>`
+          : nothing}
       </div>
     `;
   }
@@ -444,6 +562,14 @@ export class BoopliWallEdit extends LitElement {
     .views button:last-child {
       border-radius: 0 8px 8px 0;
     }
+    .hint {
+      align-self: center;
+    }
+    @media (max-width: 1100px) {
+      .hint {
+        display: none;
+      }
+    }
     .spacer {
       flex: 1;
     }
@@ -476,52 +602,55 @@ export class BoopliWallEdit extends LitElement {
     .stage {
       flex: 1;
       min-height: 0;
-      overflow: auto;
+      overflow: hidden;
       padding: 12px;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
     }
-    .frame {
+    .slot {
       flex: none;
-      max-width: none;
-      border: 1px solid var(--divider-color);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .frame.wall {
-      flex: 1;
-    }
-    .frame.tablet,
-    .frame.phone {
+      position: relative;
+      outline: 1px solid var(--divider-color);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
     }
-    .sheet {
-      flex: none;
-      max-height: 45vh;
+    .frame {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform-origin: 0 0;
+      overflow: hidden;
+    }
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 12px;
+    }
+    .modal {
+      width: min(600px, 100%);
+      max-height: 90vh;
       overflow: auto;
-      padding: 10px 14px 14px;
-      border-top: 1px solid var(--divider-color);
+      padding: 16px 18px;
+      border-radius: 16px;
       background: var(--card-background-color, var(--primary-background-color));
+      border: 1px solid var(--divider-color);
+      outline: none;
     }
-    .hint {
-      flex: none;
-      text-align: center;
-      padding: 6px;
+    .mhead h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
     }
-    .shead,
+    .mfoot,
     .srow {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       gap: 8px;
-      margin-bottom: 8px;
-    }
-    .shead {
-      align-items: center;
-    }
-    .grow {
-      flex: 1 1 180px;
+      margin: 10px 0 0;
     }
     .field {
       display: flex;
@@ -559,7 +688,7 @@ export class BoopliWallEdit extends LitElement {
     }
     .adds {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
       gap: 8px;
     }
     .addtile {
@@ -581,7 +710,28 @@ export class BoopliWallEdit extends LitElement {
     }
     .error {
       color: var(--error-color, #db4437);
-      padding: 6px 12px;
+    }
+    /* A notice that floats over everything, so the board does not move when it appears. */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 7;
+      max-width: min(640px, calc(100vw - 24px));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 8px 8px 16px;
+      border-radius: 12px;
+      background: var(--error-color, #db4437);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+    .toast button {
+      color: #fff;
+      border-color: #fff;
+      min-height: 34px;
     }
     code {
       word-break: break-all;

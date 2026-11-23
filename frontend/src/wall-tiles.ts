@@ -2,14 +2,14 @@ import "./wall-tile-clock";
 import "./wall-tile-pet";
 import "./wall-tile-due";
 import "./wall-tile-next";
-import "./wall-tile-away";
 import "./wall-tile-entity";
 import "./wall-tile-weather";
 import "./wall-tile-calendar";
 import "./wall-tile-camera";
 import "./wall-tile-note";
 import { newLadderId } from "./helpers";
-import type { Board, Tile, TileOptions, TileSize } from "./types";
+import { firstFit } from "./wall-layout";
+import type { Board, Tile, TileOptions } from "./types";
 
 /**
  * The list of tiles. A tile of type `due_now` is the element `wall-tile-due-now` (underscores become dashes).
@@ -35,16 +35,10 @@ export interface TileDef {
   label: string;
   emoji: string;
   blurb: string;
-  defaultSize: TileSize;
+  defaultW: number; // the size a new tile starts with on a 16 x 9 grid (it grows with a finer grid)
+  defaultH: number;
   options: OptionField[];
 }
-
-export const TILE_SIZE_LABEL: Record<TileSize, string> = {
-  small: "Small",
-  wide: "Wide",
-  tall: "Tall",
-  big: "Big",
-};
 
 export const TILE_DEFS: TileDef[] = [
   {
@@ -52,29 +46,31 @@ export const TILE_DEFS: TileDef[] = [
     label: "Clock",
     emoji: "🕒",
     blurb: "The time and the date.",
-    defaultSize: "wide",
+    defaultW: 4,
+    defaultH: 2,
     options: [
       { key: "format", label: "Clock", kind: "choice", default: "24h", choices: [["24h", "24 hours"], ["12h", "12 hours (AM/PM)"]] },
       { key: "date", label: "Show the date", kind: "bool", default: true },
     ],
   },
-  { type: "pet", label: "Pet", emoji: "🐾", blurb: "Your pet in its room.", defaultSize: "big", options: [] },
-  { type: "due_now", label: "Due now", emoji: "✅", blurb: "What is due now, with Done, On it and Snooze.", defaultSize: "big", options: [] },
+  { type: "pet", label: "Pet", emoji: "🐾", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "due_now", label: "Due now", emoji: "✅", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
   {
     type: "coming_up",
     label: "Coming up",
     emoji: "📅",
     blurb: "What comes next.",
-    defaultSize: "wide",
+    defaultW: 6,
+    defaultH: 3,
     options: [{ key: "count", label: "How many to show", kind: "int", default: 3, min: 1, max: 10 }],
   },
-  { type: "away", label: "Away banner", emoji: "🧳", blurb: "Only there while away mode is on.", defaultSize: "wide", options: [] },
   {
     type: "entity",
     label: "Entity",
     emoji: "🔘",
     blurb: "Any sensor or switch. A tap switches it.",
-    defaultSize: "small",
+    defaultW: 2,
+    defaultH: 2,
     options: [
       { key: "entity_id", label: "Entity", kind: "entity", default: "" },
       { key: "name", label: "Name (optional)", kind: "text", default: "" },
@@ -86,7 +82,8 @@ export const TILE_DEFS: TileDef[] = [
     label: "Weather",
     emoji: "⛅",
     blurb: "The weather now.",
-    defaultSize: "wide",
+    defaultW: 4,
+    defaultH: 2,
     options: [{ key: "entity_id", label: "Weather", kind: "entity", default: "", domains: ["weather"] }],
   },
   {
@@ -94,7 +91,8 @@ export const TILE_DEFS: TileDef[] = [
     label: "Calendar",
     emoji: "🗓️",
     blurb: "The next events.",
-    defaultSize: "wide",
+    defaultW: 6,
+    defaultH: 4,
     options: [
       { key: "entity_id", label: "Calendar", kind: "entity", default: "", domains: ["calendar"] },
       { key: "count", label: "How many to show", kind: "int", default: 4, min: 1, max: 10 },
@@ -105,7 +103,8 @@ export const TILE_DEFS: TileDef[] = [
     label: "Camera",
     emoji: "📷",
     blurb: "A picture from a camera.",
-    defaultSize: "wide",
+    defaultW: 6,
+    defaultH: 4,
     options: [
       { key: "entity_id", label: "Camera", kind: "entity", default: "", domains: ["camera"] },
       { key: "refresh_s", label: "New picture every (seconds)", kind: "int", default: 10, min: 5, max: 300 },
@@ -116,7 +115,8 @@ export const TILE_DEFS: TileDef[] = [
     label: "Note",
     emoji: "📝",
     blurb: "Some words you write.",
-    defaultSize: "small",
+    defaultW: 4,
+    defaultH: 2,
     options: [
       { key: "text", label: "Text", kind: "text", default: "", long: true },
       { key: "big", label: "Big letters", kind: "bool", default: false },
@@ -128,12 +128,21 @@ export function tileDef(type: string): TileDef | undefined {
   return TILE_DEFS.find((d) => d.type === type);
 }
 
-/** A new tile of a type, with its default size and options. */
-export function newTile(type: string): Tile {
+/** A new tile of a type, with its default size and options, at the first free spot (null: no room). */
+export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 9): Tile | null {
   const def = tileDef(type);
   const options: TileOptions = {};
   for (const f of def?.options ?? []) options[f.key] = f.default;
-  return { id: newLadderId(), type, size: def?.defaultSize ?? "small", options };
+  const w = Math.max(1, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
+  const h = Math.max(1, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
+  const spot = firstFit(others, columns, rows, w, h);
+  return spot ? { id: newLadderId(), type, ...spot, w, h, options } : null;
+}
+
+/** The tiles a new board starts with. */
+export function starterTiles(columns = 16, rows = 9): Tile[] {
+  const clock = newTile("clock", [], columns, rows)!;
+  return [clock, newTile("due_now", [clock], columns, rows)!];
 }
 
 /** The board a screen shows: the one named (or with that id), else the first. */

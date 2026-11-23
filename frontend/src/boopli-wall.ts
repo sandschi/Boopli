@@ -1,11 +1,13 @@
 import { LitElement, css, nothing } from "lit";
 import { html as shtml, unsafeStatic } from "lit/static-html.js";
 import { html } from "lit";
+import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
 import { isNight } from "./wall-night";
+import { settle } from "./wall-layout";
 import { pickBoard } from "./wall-tiles";
 import "./wall-tiles";
-import type { Board, Hass, Snapshot } from "./types";
+import type { Board, Hass, Snapshot, Tile } from "./types";
 
 const AWAKE_MS = 30_000; // how long a tap keeps a dimmed board awake
 
@@ -25,6 +27,7 @@ export class BoopliWall extends LitElement {
     pickable: { type: Boolean }, // in the editor: a tap on a tile picks it instead of using it
     selectedId: { type: String },
     _awakeUntil: { state: true },
+    _live: { state: true },
   };
 
   declare hass?: Hass;
@@ -36,6 +39,9 @@ export class BoopliWall extends LitElement {
   declare pickable: boolean;
   declare selectedId: string;
   declare _awakeUntil: number;
+  declare _live: Tile[] | null; // the tiles as they are while one is being dragged or resized
+
+  private _drag?: { id: string; mode: "move" | "resize"; gx: number; gy: number; x0: number; y0: number; moved: boolean };
 
   private _lock?: { release(): Promise<void> };
   private _awakeTimer?: number;
@@ -48,6 +54,7 @@ export class BoopliWall extends LitElement {
     this.pickable = false;
     this.selectedId = "";
     this._awakeUntil = 0;
+    this._live = null;
   }
 
   connectedCallback(): void {
@@ -102,21 +109,33 @@ export class BoopliWall extends LitElement {
       !dueNow &&
       Date.now() >= this._awakeUntil;
     const down = !this.preview && this.hass?.connected === false;
-    return html`<div class="wall ${night ? `night-${board.night}` : ""}" style="--cols:${board.columns}" @pointerdown=${this._wake}>
-      <div class="grid">
-        ${board.tiles.map(
+    const away = this.snapshot.settings && !this.preview && this.snapshot.away?.active ? this.snapshot.away : null;
+    const onNow = !!this.snapshot.away_now;
+    return html`<div class="wall ${night ? `night-${board.night}` : ""}" @pointerdown=${this._wake}>
+      ${away
+        ? html`<div class="away" role="status">🧳 <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> <span>${awayWhen(away, this.nowMs, tz, onNow)}</span></div>`
+        : nothing}
+      <div class="stage">
+      <div class="grid" style="--cols:${board.columns};--rows:${board.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
+        ${this.pickable ? this._ghosts(board) : nothing}
+        ${(this._live ?? board.tiles).map(
           (t) =>
-            html`<div class="cell size-${t.size} ${this.selectedId === t.id ? "selected" : ""}">${shtml`<${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}
+            html`<div
+              class="cell ${this.selectedId === t.id ? "selected" : ""} ${this._drag?.id === t.id ? "dragging" : ""}"
+              style="--x:${t.x};--y:${t.y};--w:${t.w};--h:${t.h}"
+            >${shtml`<${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${t.options}
-              .size=${t.size}
               .preview=${this.preview}
             ></${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}>`}${this.pickable
-              ? html`<button type="button" class="shield" aria-label="Edit this tile: ${t.type.replace(/_/g, " ")}" @click=${() => this.dispatchEvent(new CustomEvent("tile-pick", { detail: t.id, bubbles: true, composed: true }))}></button>`
+              ? html`<button type="button" class="shield" data-id=${t.id} aria-label="Edit this tile: ${t.type.replace(/_/g, " ")}" @click=${(e: MouseEvent) => e.detail === 0 && this._pick(t.id)}></button>
+                  <span class="handle" data-id=${t.id} data-resize title="Drag to resize"></span>
+                  <button type="button" class="del" aria-label="Remove this tile" title="Remove this tile" @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", { detail: t.id, bubbles: true, composed: true }))}>✕</button>`
               : nothing}</div>`
         )}
+      </div>
       </div>
       ${night && board.night === "black" ? html`<div class="black">${this._time(tz)}</div>` : nothing}
       ${down ? html`<div class="down" role="status">Reconnecting to Home Assistant…</div>` : nothing}
@@ -129,6 +148,94 @@ export class BoopliWall extends LitElement {
           </div>`}
     </div>`;
   }
+
+  // --- the grid in the editor: a visible grid, dragging and resizing ----------------------------------
+
+  /** Faint empty cells behind the tiles, so you can see where things snap. */
+  private _ghosts(board: Board) {
+    const cells = [];
+    for (let y = 0; y < board.rows; y++) {
+      for (let x = 0; x < board.columns; x++) {
+        cells.push(html`<div class="ghost" style="grid-column:${x + 1};grid-row:${y + 1}"></div>`);
+      }
+    }
+    return cells;
+  }
+
+  private _pick(id: string): void {
+    this.dispatchEvent(new CustomEvent("tile-pick", { detail: id, bubbles: true, composed: true }));
+  }
+
+  private _cellAt(clientX: number, clientY: number): { cx: number; cy: number; cols: number; rows: number } | null {
+    const grid = this.renderRoot.querySelector(".grid") as HTMLElement | null;
+    const board = this._board();
+    if (!grid || !board) return null;
+    const cs = getComputedStyle(grid);
+    const cols = cs.gridTemplateColumns.split(" ").map(parseFloat);
+    const rows = cs.gridTemplateRows.split(" ").map(parseFloat);
+    const gapX = parseFloat(cs.columnGap) || 0;
+    const gapY = parseFloat(cs.rowGap) || 0;
+    const r = grid.getBoundingClientRect();
+    const scale = grid.offsetWidth ? r.width / grid.offsetWidth : 1; // the editor shows the board scaled down
+    const find = (offset: number, tracks: number[], gap: number): number => {
+      let start = 0;
+      for (let i = 0; i < tracks.length; i++) {
+        if (offset < start + tracks[i] + gap / 2) return i;
+        start += tracks[i] + gap;
+      }
+      return tracks.length - 1;
+    };
+    return { cx: find((clientX - r.left) / scale, cols, gapX), cy: find((clientY - r.top) / scale, rows, gapY), cols: board.columns, rows: board.rows };
+  }
+
+  private _down = (e: PointerEvent): void => {
+    if (!this.pickable || e.button > 0) return;
+    const el = e.target as HTMLElement;
+    const id = el.dataset?.id;
+    const board = this._board();
+    if (!id || !board) return;
+    const tile = board.tiles.find((t) => t.id === id);
+    const at = this._cellAt(e.clientX, e.clientY);
+    if (!tile || !at) return;
+    this._drag = { id, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    e.preventDefault();
+  };
+
+  private _move = (e: PointerEvent): void => {
+    const d = this._drag;
+    const board = this._board();
+    if (!d || !board) return;
+    if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 6) return; // still a tap
+    d.moved = true;
+    const at = this._cellAt(e.clientX, e.clientY);
+    const orig = board.tiles.find((t) => t.id === d.id);
+    if (!at || !orig) return;
+    const moved: Tile =
+      d.mode === "move"
+        ? { ...orig, x: Math.max(0, Math.min(at.cx - d.gx, at.cols - orig.w)), y: Math.max(0, Math.min(at.cy - d.gy, at.rows - orig.h)) }
+        : { ...orig, w: Math.max(1, Math.min(at.cx - orig.x + 1, at.cols - orig.x)), h: Math.max(1, Math.min(at.cy - orig.y + 1, at.rows - orig.y)) };
+    const next = settle(board.tiles.map((t) => (t.id === d.id ? moved : t)), board.rows, d.id);
+    if (next) this._live = next; // null: it would not fit on the board, keep what was shown
+  };
+
+  private _up = (): void => {
+    const d = this._drag;
+    this._drag = undefined;
+    if (!d) return;
+    if (!d.moved) {
+      this._pick(d.id);
+      return;
+    }
+    const tiles = this._live;
+    this._live = null;
+    if (tiles) this.dispatchEvent(new CustomEvent("tiles-change", { detail: tiles, bubbles: true, composed: true }));
+  };
+
+  private _cancel = (): void => {
+    this._drag = undefined;
+    this._live = null;
+  };
 
   private _time(tz: string): string {
     return new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(this.nowMs || Date.now()));
@@ -150,14 +257,11 @@ export class BoopliWall extends LitElement {
     }
     .wall {
       position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       padding: 12px;
       background: var(--primary-background-color);
-      min-height: 100%;
-      container: wall / inline-size; /* the columns follow the width of the board, so a phone frame in the editor looks like a phone */
-    }
-    :host([preview]) .wall {
-      height: 100%;
-      overflow: auto;
     }
     :host([preview]) {
       height: 100%;
@@ -166,25 +270,83 @@ export class BoopliWall extends LitElement {
       position: fixed;
       inset: 0;
       z-index: 99999;
-      overflow: auto;
+    }
+    .away {
+      flex: none;
+      margin-bottom: 12px;
+      padding: 6px 16px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--warning-color, #ffa600) 25%, var(--card-background-color, transparent));
+      border: 1px solid var(--warning-color, #ffa600);
+      font-size: 16px;
+    }
+    .away span {
+      color: var(--secondary-text-color);
+      margin-left: 8px;
+    }
+    /* The board is a fixed grid of square cells (columns by rows). It is as big as fits the screen, with
+       nothing to scroll, so it looks the same on every display. */
+    .stage {
+      flex: 1;
+      min-height: 0;
+      container: stage / size;
+      display: grid;
+      place-items: center;
     }
     .grid {
+      --gw: min(100cqw, calc(100cqh * var(--cols) / var(--rows)));
+      width: var(--gw);
+      aspect-ratio: var(--cols) / var(--rows);
       display: grid;
       grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-      grid-auto-rows: minmax(150px, 1fr);
-      grid-auto-flow: dense;
-      gap: 12px;
-      min-height: 100%;
+      grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+      gap: calc(var(--gw) / var(--cols) / 10);
       transition: filter 0.6s;
     }
-    :host(:not([preview])) .grid {
-      min-height: calc(100vh - 24px);
-    }
-    /* A tile never makes its row taller: the rows share the screen, and a tile's content has to fit. */
     .cell {
       position: relative;
       contain: size;
       min-height: 0;
+      grid-column: calc(var(--x) + 1) / span var(--w);
+      grid-row: calc(var(--y) + 1) / span var(--h);
+    }
+    .ghost {
+      border: 1px dashed color-mix(in srgb, var(--divider-color) 70%, transparent);
+      border-radius: 10%;
+      min-height: 0;
+    }
+    .cell.dragging {
+      z-index: 3;
+      opacity: 0.9;
+    }
+    .handle {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      z-index: 2;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: var(--primary-color);
+      opacity: 0.8;
+      cursor: nwse-resize;
+      touch-action: none;
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+    .del {
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid var(--divider-color);
+      background: var(--card-background-color, #222);
+      color: var(--error-color, #db4437);
+      font-size: 14px;
+      cursor: pointer;
     }
     .cell > :first-child {
       height: 100%;
@@ -200,6 +362,7 @@ export class BoopliWall extends LitElement {
       cursor: pointer;
       opacity: 0.55;
       padding: 0;
+      touch-action: none;
     }
     .shield:hover,
     .shield:focus-visible {
@@ -211,21 +374,6 @@ export class BoopliWall extends LitElement {
       border-style: solid;
       border-width: 4px;
       background: color-mix(in srgb, var(--primary-color) 15%, transparent);
-    }
-    .size-wide {
-      grid-column: span 2;
-    }
-    .size-tall {
-      grid-row: span 2;
-    }
-    .size-big {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-    @container wall (max-width: 600px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
     }
     .night-dim .grid {
       filter: brightness(0.3);

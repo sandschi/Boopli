@@ -24,7 +24,7 @@ def board(**kw):
 def test_a_new_install_starts_with_one_board_and_its_tiles():
     s = engine.Settings.from_dict({})
     assert [b.name for b in s.boards] == ["Wall"]
-    assert [t.type for t in s.boards[0].tiles] == ["due_now", "pet", "clock", "coming_up", "away"]
+    assert [t.type for t in s.boards[0].tiles] == ["due_now", "pet", "clock", "coming_up"]
     assert engine.validate_settings(s) is None
 
 
@@ -74,11 +74,12 @@ def test_the_most_boards_and_tiles():
     assert "at most" in engine.validate_boards([board(tiles=tiles)])
 
 
-def test_columns_night_and_sizes_are_checked():
+def test_columns_night_and_types_are_checked():
     assert "columns" in engine.validate_boards([board(columns=1)])
-    assert "columns" in engine.validate_boards([board(columns=9)])
+    assert "columns" in engine.validate_boards([board(columns=33)])
+    assert "rows" in engine.validate_boards([board(rows=1)])
+    assert "rows" in engine.validate_boards([board(rows=19)])
     assert "night" in engine.validate_boards([board(night="purple")])
-    assert "size" in engine.validate_boards([board(tiles=[{"type": "pet", "size": "huge"}])])
     assert "unknown tile type" in engine.validate_boards([board(tiles=[{"type": "toaster"}])])
 
 
@@ -107,3 +108,73 @@ def test_entity_tiles_need_the_right_kind_of_entity():
 def test_a_board_is_part_of_the_settings_check():
     s = settings_with([board(night="purple")])
     assert "night" in engine.validate_settings(s)
+
+
+def places(b):
+    return [(t.x, t.y, t.w, t.h) for t in b.tiles]
+
+
+def one(**kw):
+    return {"type": "pet", **kw}
+
+
+def test_the_default_board_has_places_that_fit():
+    b = engine.default_board()
+    assert (b.columns, b.rows) == (16, 9)
+    assert places(b) == [(0, 0, 8, 5), (8, 0, 8, 5), (0, 5, 5, 4), (5, 5, 11, 4)]
+    assert engine.validate_boards([b]) is None
+
+
+def test_places_and_sizes_survive_saving_and_loading():
+    b = board(columns=4, tiles=[one(x=1, y=2, w=3, h=2)])
+    again = engine.Board.from_dict(engine.to_dict(b))
+    assert places(again) == [(1, 2, 3, 2)]
+    assert engine.validate_boards([again]) is None
+
+
+def test_boards_from_before_places_are_laid_out_by_their_old_sizes():
+    old = engine.Board.from_dict(
+        {
+            "name": "Old",
+            "columns": 4,
+            "tiles": [
+                {"type": "due_now", "size": "big"},
+                {"type": "pet", "size": "big"},
+                {"type": "clock", "size": "wide"},
+                {"type": "note", "size": "small"},
+                {"type": "note", "size": "tall"},
+            ],
+        }
+    )
+    assert places(old) == [(0, 0, 2, 2), (2, 0, 2, 2), (0, 2, 2, 1), (2, 2, 1, 1), (3, 2, 1, 2)]
+    assert engine.validate_boards([old]) is None
+
+
+def test_a_tile_cannot_leave_the_board_or_sit_on_another():
+    check = engine.validate_boards
+    assert "outside" in check([board(columns=4, tiles=[one(x=3, y=0, w=2, h=1)])])
+    assert "outside" in check([board(rows=9, tiles=[one(x=0, y=9, w=1, h=1)])])
+    assert "fit" in check([board(rows=9, tiles=[one(x=0, y=0, w=1, h=10)])])
+    assert "fit" in check([board(columns=3, tiles=[one(x=0, y=0, w=4, h=1)])])
+    assert "same spot" in check([board(tiles=[one(x=0, y=0, w=2, h=2), {"type": "due_now", "x": 1, "y": 1, "w": 1, "h": 1}])])
+    assert check([board(tiles=[one(x=0, y=0, w=2, h=2), {"type": "due_now", "x": 2, "y": 0, "w": 1, "h": 1}])]) is None
+
+
+def test_the_old_away_tile_is_dropped_from_saved_boards():
+    b = engine.Board.from_dict(
+        {"name": "Old", "tiles": [{"type": "clock", "x": 0, "y": 0, "w": 2, "h": 1}, {"type": "away", "x": 0, "y": 1, "w": 4, "h": 1}]}
+    )
+    assert [t.type for t in b.tiles] == ["clock"]
+    assert engine.validate_boards([b]) is None
+
+
+def test_old_boards_get_their_rows_from_how_far_down_their_tiles_reach():
+    old = engine.Board.from_dict({"name": "Old", "columns": 4, "tiles": [one(x=0, y=0, w=2, h=2), one(x=0, y=2, w=2, h=1)]})
+    assert old.rows == 3
+    assert engine.validate_boards([old]) is None
+
+
+def test_rows_are_kept_when_given():
+    b = engine.Board.from_dict({"name": "Tall", "columns": 9, "rows": 16, "tiles": [one(x=0, y=0, w=3, h=3)]})
+    assert (b.columns, b.rows) == (9, 16)
+    assert engine.validate_boards([engine.Board.from_dict(engine.to_dict(b))]) is None
