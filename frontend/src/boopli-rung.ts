@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
-import { friendlyName, phoneName } from "./helpers";
+import { friendlyName, hexToRgb, lightHasColor, phoneName, rgbToHex } from "./helpers";
 import { sharedStyles } from "./styles";
-import type { Hass, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerLevel } from "./types";
+import type { Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
 
 const GAP_MIN = 1;
 const GAP_MAX = 720;
@@ -13,12 +13,17 @@ const PHONE_CHOICES: { value: PhoneLevel; label: string }[] = [
   { value: "alarm_max", label: "Max volume" },
 ];
 
-/** The speaker levels that are switched on, quiet to loud. A ladder can only use those. */
-export function speakerLevels(sp: SpeakerCfg): SpeakerLevel[] {
-  const out: SpeakerLevel[] = [];
-  if (sp.cue?.enabled) out.push("cue");
-  if (sp.speech?.enabled) out.push("speech");
-  if (sp.alarm?.enabled) out.push("alarm");
+/** What a ladder can pick for a speaker: only what is set up (levels that are switched on, its extra sounds). */
+export function speakerChoices(sp: SpeakerCfg): { value: string; label: string }[] {
+  const out: { value: string; label: string }[] = [];
+  if (sp.cue?.enabled) out.push({ value: "cue", label: "A ding" });
+  for (const x of sp.sounds ?? []) out.push({ value: `sound:${x.id}`, label: `🔔 ${x.name}` });
+  if (sp.speech?.enabled) {
+    out.push({ value: "speech", label: "Speaks" });
+    // An announcement (starts with a chime) is something Alexa Media Player does.
+    if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: "Speaks with chime" });
+  }
+  if (sp.alarm?.enabled) out.push({ value: "alarm", label: "Alarm" });
   return out;
 }
 
@@ -55,10 +60,10 @@ export class BoopliRung extends LitElement {
     this.dispatchEvent(new CustomEvent("rung-change", { detail: next, bubbles: true, composed: true }));
   }
 
-  private _toggle(list: "lights" | "alarms", device: string, on: boolean): void {
+  private _toggle(device: string, on: boolean): void {
     this._change((r) => {
-      const rest = r[list].filter((d) => d !== device);
-      r[list] = on ? [...rest, device] : rest;
+      const rest = r.alarms.filter((d) => d !== device);
+      r.alarms = on ? [...rest, device] : rest;
     });
   }
 
@@ -69,10 +74,28 @@ export class BoopliRung extends LitElement {
     });
   }
 
-  private _setSpeaker(entity: string, level: string): void {
+  private _setSpeaker(entity: string, choice: string): void {
     this._change((r) => {
-      if (level) r.speakers[entity] = level as SpeakerLevel;
+      if (choice) r.speakers[entity] = choice as SpeakerChoice;
       else delete r.speakers[entity];
+    });
+  }
+
+  /** A light at this nudge: "" off, "blink", "indicator" (a status light) or "own" (as set for the light). */
+  private _setLight(entity: string, value: string): void {
+    this._change((r) => {
+      if (!value) {
+        delete r.lights[entity];
+        return;
+      }
+      const keep = r.lights[entity];
+      r.lights[entity] = { mode: value === "own" ? "" : (value as LightMode), color: keep?.color ?? null };
+    });
+  }
+
+  private _setLightColor(entity: string, color: number[] | null): void {
+    this._change((r) => {
+      if (r.lights[entity]) r.lights[entity].color = color;
     });
   }
 
@@ -123,31 +146,55 @@ export class BoopliRung extends LitElement {
             </select>
           </label>`
         )}
-        ${s.lights.map(
-          (light) => html`<label class="dev check">
-            <input
-              type="checkbox"
-              .checked=${r.lights.includes(light.entity_id)}
-              @change=${(e: Event) => this._toggle("lights", light.entity_id, (e.target as HTMLInputElement).checked)}
-            />
-            <span>💡 ${friendlyName(this.hass, light.entity_id)}</span>
-          </label>`
-        )}
+        ${s.lights.map((light) => {
+          const use = r.lights[light.entity_id];
+          const name = friendlyName(this.hass, light.entity_id);
+          return html`<div class="devblock">
+            <label class="dev">
+              <span>💡 ${name}</span>
+              <select
+                aria-label="${name} at nudge ${n}"
+                @change=${(e: Event) => this._setLight(light.entity_id, (e.target as HTMLSelectElement).value)}
+              >
+                <option value="" ?selected=${!use}>Off</option>
+                <option value="blink" ?selected=${use?.mode === "blink"}>Blink</option>
+                <option value="indicator" ?selected=${use?.mode === "indicator"}>Status light (stays on until you answer)</option>
+                ${use && use.mode === "" ? html`<option value="own" selected>As set for the light</option>` : nothing}
+              </select>
+            </label>
+            ${use && lightHasColor(this.hass, light.entity_id)
+              ? html`<div class="dev colorrow">
+                  <span>Color</span>
+                  <input
+                    type="color"
+                    class="swatch"
+                    aria-label="${name} color at nudge ${n}"
+                    .value=${rgbToHex(use.color ?? light.color)}
+                    @input=${(e: Event) => this._setLightColor(light.entity_id, hexToRgb((e.target as HTMLInputElement).value))}
+                  />
+                  <button type="button" class="chip" ?disabled=${!use.color} @click=${() => this._setLightColor(light.entity_id, null)}>
+                    Use the normal color
+                  </button>
+                </div>`
+              : nothing}
+          </div>`;
+        })}
         ${s.speakers.map((sp) => {
-          const levels = speakerLevels(sp);
+          const choices = speakerChoices(sp);
+          const current = r.speakers[sp.entity_id];
+          const name = friendlyName(this.hass, sp.entity_id);
           return html`<label class="dev">
-            <span>🔊 ${friendlyName(this.hass, sp.entity_id)}</span>
+            <span>🔊 ${name}</span>
             <select
-              aria-label="${friendlyName(this.hass, sp.entity_id)} at nudge ${n}"
-              ?disabled=${!levels.length}
+              aria-label="${name} at nudge ${n}"
+              ?disabled=${!choices.length}
               @change=${(e: Event) => this._setSpeaker(sp.entity_id, (e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!r.speakers[sp.entity_id]}>${levels.length ? "Off" : "No sound set up"}</option>
-              ${levels.map(
-                (lv) => html`<option value=${lv} ?selected=${r.speakers[sp.entity_id] === lv}>
-                  ${lv === "cue" ? "A ding" : lv === "speech" ? "Speaks" : "Alarm"}
-                </option>`
-              )}
+              <option value="" ?selected=${!current}>${choices.length ? "Off" : "No sound set up"}</option>
+              ${choices.map((c) => html`<option value=${c.value} ?selected=${current === c.value}>${c.label}</option>`)}
+              ${current && !choices.some((c) => c.value === current)
+                ? html`<option value=${current} selected>(not available any more)</option>`
+                : nothing}
             </select>
           </label>`;
         })}
@@ -156,7 +203,7 @@ export class BoopliRung extends LitElement {
             <input
               type="checkbox"
               .checked=${r.alarms.includes(device.entity_id)}
-              @change=${(e: Event) => this._toggle("alarms", device.entity_id, (e.target as HTMLInputElement).checked)}
+              @change=${(e: Event) => this._toggle(device.entity_id, (e.target as HTMLInputElement).checked)}
             />
             <span>🚨 ${friendlyName(this.hass, device.entity_id)}</span>
           </label>`
@@ -211,6 +258,25 @@ export class BoopliRung extends LitElement {
         flex: 1 1 170px;
         width: auto;
         min-width: 0;
+      }
+      .devblock {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .colorrow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+        padding-left: 4px;
+        font-size: 13px;
+        color: var(--secondary-text-color);
+      }
+      .colorrow .swatch {
+        width: 44px;
+        min-height: 34px;
+        padding: 2px;
       }
       label.dev.check {
         justify-content: flex-start;

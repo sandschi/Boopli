@@ -11,6 +11,8 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
+from dataclasses import replace
+
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 
 from homeassistant.util import dt as dt_util
@@ -93,6 +95,7 @@ class BoopliNudger:
         number: int = 1,
         image: str = "",
         rung: engine.Rung | None = None,
+        light_color: list[int] | None = None,
     ) -> None:
         """Send nudge number `number` on every channel that has reached it.
 
@@ -102,12 +105,13 @@ class BoopliNudger:
         settings = self.manager.settings
         key = f"{run_id}:{step_id}"
         if rung is not None:
-            await self._send_rung(rung, run_id, chore_name, step_id, step_title, channels, image, key)
+            await self._send_rung(rung, run_id, chore_name, step_id, step_title, channels, image, key, light_color)
             return
         if channels == engine.CHANNELS_ALL:
             for light in settings.lights:
                 if engine.reached(light.start_at, number):
-                    await self._nudge_light(light, key)
+                    # The chore may have a color of its own (so a status light can mean something).
+                    await self._nudge_light(replace(light, color=light_color) if light_color else light, key)
             for speaker in settings.speakers:
                 level = engine.speaker_level(speaker, number)
                 if level:
@@ -140,6 +144,7 @@ class BoopliNudger:
         channels: str,
         image: str,
         key: str,
+        light_color: list[int] | None = None,
     ) -> None:
         """One nudge of a ladder of the user's own: only the devices ticked on this rung act.
 
@@ -148,12 +153,20 @@ class BoopliNudger:
         settings = self.manager.settings
         if channels == engine.CHANNELS_ALL:
             for light in settings.lights:
-                if light.entity_id in rung.lights:
-                    await self._nudge_light(light, key)
+                use = rung.lights.get(light.entity_id)
+                if use is None:
+                    continue
+                # Mode: this nudge's choice. Color: the chore's if it has one (it says what the chore means),
+                # else this nudge's, else the light's own.
+                await self._nudge_light(
+                    replace(light, mode=use.mode or light.mode, color=light_color or use.color or light.color), key
+                )
             for speaker in settings.speakers:
-                level = rung.speakers.get(speaker.entity_id)
-                if level in engine.SPEAKER_LEVELS and engine.speaker_has_level(speaker, level):
-                    await self._play_speaker(speaker, level, chore_name, step_title, key)
+                choice = rung.speakers.get(speaker.entity_id)
+                if choice and engine.speaker_choice_ok(speaker, choice):
+                    # "Speaks" is plain speech; "Speaks with chime" is an announcement.
+                    announce = {engine.SPEAKER_SPEECH: False, engine.SPEAKER_SPEECH_CHIME: True}.get(choice)
+                    await self._play_speaker(speaker, choice, chore_name, step_title, key, announce)
             for device in settings.alarm_devices:
                 if device.entity_id in rung.alarms:
                     self._start_device_alarm(device, key)
@@ -362,10 +375,21 @@ class BoopliNudger:
         chore_name: str,
         step_title: str,
         key: str,
+        announce: bool | None = None,
     ) -> bool:
-        """Play one level on a speaker. Returns whether something was sent."""
+        """Play one level on a speaker (or one of its extra sounds). Returns whether something was sent.
+
+        `announce` is for speech: None follows the speaker's own setting.
+        """
         if not self._speaker_available(speaker.entity_id):
             return False
+        extra = engine.find_extra_sound(speaker, level)
+        if extra is not None:
+            return await self._call(
+                "media_player",
+                "play_media",
+                {"entity_id": speaker.entity_id, **engine.sound_play_data(extra.kind, extra.sound)},
+            )
         if level == engine.SPEAKER_CUE:
             return await self._call(
                 "media_player",
@@ -375,11 +399,11 @@ class BoopliNudger:
                     **engine.sound_play_data(speaker.cue.kind, speaker.cue.sound),
                 },
             )
-        if level == engine.SPEAKER_SPEECH:
+        if level in (engine.SPEAKER_SPEECH, engine.SPEAKER_SPEECH_CHIME):
             text = engine.speech_text(
                 self.manager.settings.speech_template, chore_name, step_title
             )
-            domain, service, data = engine.speech_call(speaker, text)
+            domain, service, data = engine.speech_call(speaker, text, announce)
             return await self._call(domain, service, data)
         return self._start_speaker_alarm(speaker, key)
 
@@ -514,7 +538,8 @@ class BoopliNudger:
         self, speaker: engine.SpeakerCfg, level: str
     ) -> dict[str, Any]:
         """Play one level of a speaker once so the user hears it."""
-        if level not in engine.SPEAKER_LEVELS:
+        extra = engine.find_extra_sound(speaker, level)
+        if extra is None and level not in engine.SPEAKER_LEVELS and level != engine.SPEAKER_SPEECH_CHIME:
             return {"ok": False, "note": "Unknown speaker level."}
         if not self._speaker_available(speaker.entity_id):
             return {"ok": False, "note": "That speaker is not available right now."}
@@ -530,10 +555,12 @@ class BoopliNudger:
             )
             note = "Playing the alarm sound once."
         else:
+            announce = True if level == engine.SPEAKER_SPEECH_CHIME else None
             ok = await self._play_speaker(
-                speaker, level, "Boopli test", "Dishwasher: empty it", "test"
+                speaker, level, "Boopli test", "Dishwasher: empty it", "test", announce
             )
-            note = "Playing the sound." if level == engine.SPEAKER_CUE else "Speaking."
+            playing = extra is not None or level == engine.SPEAKER_CUE
+            note = "Playing the sound." if playing else "Speaking."
         return {"ok": ok, "note": note if ok else "Boopli could not send that."}
 
     async def async_test_alarm_device(

@@ -776,6 +776,7 @@ class BoopliManager:
                                 number,
                                 step.image,
                                 rung,
+                                chore.light_color if chore else None,
                             )
                         )
                     events.append(

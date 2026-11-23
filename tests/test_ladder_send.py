@@ -31,14 +31,14 @@ def make(rung, phones=None):
     return n
 
 
-def send(n, rung, channels=engine.CHANNELS_ALL):
-    asyncio.run(n.async_send("run", "Pills", "s1", "Take one", channels, 2, "", rung))
+def send(n, rung, channels=engine.CHANNELS_ALL, light_color=None):
+    asyncio.run(n.async_send("run", "Pills", "s1", "Take one", channels, 2, "", rung, light_color))
 
 
 def test_only_the_ticked_devices_act_at_their_levels():
     rung = engine.Rung(
         phones={"pixel": "alarm"},
-        lights=["light.desk"],
+        lights={"light.desk": engine.RungLight()},
         speakers={"media_player.kitchen": engine.SPEAKER_CUE},
         alarms=["siren.hall"],
     )
@@ -65,7 +65,7 @@ def test_an_empty_rung_sends_nothing():
 
 
 def test_a_light_can_be_left_out_of_a_later_nudge():
-    first = engine.Rung(phones={"pixel": "normal"}, lights=["light.hall"])
+    first = engine.Rung(phones={"pixel": "normal"}, lights={"light.hall": engine.RungLight()})
     second = engine.Rung(phones={"pixel": "high"})  # no light now
     n = make(first)
     send(n, first)
@@ -85,7 +85,7 @@ def test_a_speaker_level_that_is_not_set_up_is_skipped():
 def test_devices_that_are_not_set_up_any_more_are_skipped():
     rung = engine.Rung(
         phones={"gone": "normal", "pixel": "normal"},
-        lights=["light.gone"],
+        lights={"light.gone": engine.RungLight()},
         speakers={"media_player.gone": engine.SPEAKER_CUE},
         alarms=["siren.gone"],
     )
@@ -98,7 +98,7 @@ def test_devices_that_are_not_set_up_any_more_are_skipped():
 
 
 def test_away_from_home_only_the_phones_act():
-    rung = engine.Rung(phones={"pixel": "normal"}, lights=["light.hall"], alarms=["siren.hall"])
+    rung = engine.Rung(phones={"pixel": "normal"}, lights={"light.hall": engine.RungLight()}, alarms=["siren.hall"])
     n = make(rung)
     send(n, rung, engine.CHANNELS_PHONE_ONLY)
     assert [c.args[0] for c in n._notify.await_args_list] == ["pixel"]
@@ -112,3 +112,84 @@ def test_without_a_rung_the_old_start_at_rules_still_apply():
     asyncio.run(n.async_send("run", "Laundry", "s1", "Fold", engine.CHANNELS_ALL, 2, ""))
     assert [c.args[0] for c in n._notify.await_args_list] == ["pixel"]
     assert n._nudge_light.await_count == 2  # both lights start at nudge 1
+
+
+# --- lights: mode and color of one nudge ---------------------------------------------------------
+
+
+def lights_sent(n):
+    return {c.args[0].entity_id: (c.args[0].mode, c.args[0].color) for c in n._nudge_light.await_args_list}
+
+
+def test_a_nudge_can_make_a_light_blink_or_a_status_light_in_its_own_color():
+    n = make(None)
+    n.manager.settings.lights[0].mode = engine.LIGHT_INDICATOR  # the hall light is a status light by default
+    n.manager.settings.lights[0].color = [0, 0, 255]
+    rung = engine.Rung(
+        lights={
+            "light.hall": engine.RungLight(engine.LIGHT_BLINK),  # this nudge: blink (not its own mode), its own color
+            "light.desk": engine.RungLight(engine.LIGHT_INDICATOR, [255, 0, 0]),
+        }
+    )
+    send(n, rung)
+    sent = lights_sent(n)
+    assert sent["light.hall"] == (engine.LIGHT_BLINK, [0, 0, 255])
+    assert sent["light.desk"] == (engine.LIGHT_INDICATOR, [255, 0, 0])
+
+
+def test_the_color_is_the_chores_then_the_nudges_then_the_lights_own():
+    own = engine.LightCfg(entity_id="light.hall").color
+    rung = engine.Rung(lights={"light.hall": engine.RungLight(), "light.desk": engine.RungLight(color=[1, 1, 1])})
+    n = make(None)
+    send(n, rung)
+    assert lights_sent(n)["light.hall"][1] == own  # nothing set: the light's own
+    assert lights_sent(n)["light.desk"][1] == [1, 1, 1]  # the nudge's color
+    n = make(None)
+    send(n, rung, light_color=[9, 9, 9])  # the chore has a color: it wins over the nudge's
+    assert lights_sent(n)["light.hall"][1] == [9, 9, 9]
+    assert lights_sent(n)["light.desk"][1] == [9, 9, 9]
+
+
+def test_the_lights_own_mode_is_used_for_an_older_ladder():
+    n = make(None)
+    n.manager.settings.lights[0].mode = engine.LIGHT_INDICATOR
+    rung = engine.Rung(lights={"light.hall": engine.RungLight(mode=engine.LIGHT_OWN_MODE)})
+    send(n, rung)
+    assert lights_sent(n)["light.hall"][0] == engine.LIGHT_INDICATOR
+
+
+def test_the_color_of_a_chore_also_colors_the_lights_of_a_built_in_style():
+    n = make(None)
+    asyncio.run(n.async_send("run", "Laundry", "s1", "Fold", engine.CHANNELS_ALL, 1, "", None, [5, 6, 7]))
+    assert len(lights_sent(n)) == 2
+    assert all(v[1] == [5, 6, 7] for v in lights_sent(n).values())
+
+
+# --- speakers: one pick per nudge, from the speaker's sounds ----------------------------------------
+
+
+def speaker_calls(n):
+    return [(c.args[0].entity_id, c.args[1], c.args[5]) for c in n._play_speaker.await_args_list]
+
+
+def test_speaks_and_speaks_with_chime_are_two_choices():
+    n = make(None)
+    n.manager.settings.speakers[0].speech.enabled = True
+    plain = engine.Rung(speakers={"media_player.kitchen": engine.SPEAKER_SPEECH})
+    chime = engine.Rung(speakers={"media_player.kitchen": engine.SPEAKER_SPEECH_CHIME})
+    send(n, plain)
+    send(n, chime)
+    assert speaker_calls(n) == [
+        ("media_player.kitchen", engine.SPEAKER_SPEECH, False),
+        ("media_player.kitchen", engine.SPEAKER_SPEECH_CHIME, True),
+    ]
+
+
+def test_a_speaker_can_play_one_of_its_extra_sounds():
+    n = make(None)
+    n.manager.settings.speakers[0].sounds = [engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "x")]
+    send(n, engine.Rung(speakers={"media_player.kitchen": "sound:f1"}))
+    assert speaker_calls(n) == [("media_player.kitchen", "sound:f1", None)]
+    n._play_speaker.reset_mock()
+    send(n, engine.Rung(speakers={"media_player.kitchen": "sound:gone"}))  # a sound that was removed
+    n._play_speaker.assert_not_awaited()

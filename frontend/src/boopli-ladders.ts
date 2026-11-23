@@ -1,8 +1,8 @@
 import { LitElement, html, css, nothing } from "lit";
 import { friendlyName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
-import "./boopli-rung";
+import { speakerChoices } from "./boopli-rung";
 import { sharedStyles } from "./styles";
-import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot, SpeakerLevel } from "./types";
+import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot, SpeakerCfg } from "./types";
 
 // The same limits as in the integration.
 const MAX_LADDERS = 20;
@@ -17,8 +17,6 @@ const BUILT_IN: { value: NudgeStyle; label: string }[] = [
   { value: "escalating", label: "Escalating" },
   { value: "persistent", label: "Persistent" },
 ];
-
-const SPEAKER_LABEL: Record<SpeakerLevel, string> = { cue: "a ding", speech: "speaks", alarm: "an alarm" };
 
 function copyRung(r: Rung): Rung {
   return structuredClone(r);
@@ -100,7 +98,7 @@ export class BoopliLadders extends LitElement {
     const first: Rung = {
       gap: 5,
       phones: Object.fromEntries(s.phones.map((p) => [p.service, p.level])),
-      lights: [],
+      lights: {},
       speakers: {},
       alarms: [],
     };
@@ -130,7 +128,7 @@ export class BoopliLadders extends LitElement {
     this._edit(id, (l) => {
       if (l.rungs.length >= MAX_NUDGES) return;
       const last = l.rungs[l.rungs.length - 1];
-      l.rungs.push(last ? copyRung(last) : { gap: 5, phones: {}, lights: [], speakers: {}, alarms: [] });
+      l.rungs.push(last ? copyRung(last) : { gap: 5, phones: {}, lights: {}, speakers: {}, alarms: [] });
     });
   }
 
@@ -169,9 +167,14 @@ export class BoopliLadders extends LitElement {
     for (const [service, level] of Object.entries(r.phones)) {
       parts.push(`${phoneName(service)} (${PHONE_LEVEL_LABEL[level] ?? level})`);
     }
-    for (const id of r.lights) parts.push(friendlyName(this.hass, id));
-    for (const [id, level] of Object.entries(r.speakers)) {
-      parts.push(`${friendlyName(this.hass, id)} (${SPEAKER_LABEL[level] ?? level})`);
+    for (const [id, use] of Object.entries(r.lights)) {
+      const how = use.mode === "indicator" ? "status light" : use.mode === "blink" ? "blink" : "";
+      parts.push(`${friendlyName(this.hass, id)}${how ? ` (${how}${use.color ? ", own color" : ""})` : ""}`);
+    }
+    for (const [id, choice] of Object.entries(r.speakers)) {
+      const sp = this.settings?.speakers.find((x) => x.entity_id === id);
+      const label = speakerChoices(sp ?? ({ entity_id: id } as SpeakerCfg)).find((c) => c.value === choice)?.label ?? choice;
+      parts.push(`${friendlyName(this.hass, id)} (${label.replace("🔔 ", "").toLowerCase()})`);
     }
     for (const id of r.alarms) parts.push(`${friendlyName(this.hass, id)} (alarm)`);
     return parts.length ? parts.join(", ") : "nothing";

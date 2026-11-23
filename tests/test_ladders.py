@@ -43,7 +43,7 @@ def settings(*ladders, **kw):
 def test_a_ladder_survives_saving_and_loading():
     lad = ladder(
         [
-            rung(5, phones={"pixel": "normal"}, lights=["light.hall"]),
+            rung(5, phones={"pixel": "normal"}, lights={"light.hall": engine.RungLight("blink", [255, 0, 0])}),
             rung(10, phones={"pixel": "alarm"}, speakers={"media_player.kitchen": "alarm"}, alarms=["siren.hall"]),
         ],
         repeat_last=True,
@@ -73,7 +73,8 @@ def test_junk_in_a_ladder_is_ignored_not_a_crash():
     )
     (lad,) = s.ladders
     assert [r.gap for r in lad.rungs] == [7]
-    assert lad.rungs[0].phones == {} and lad.rungs[0].lights == []
+    assert lad.rungs[0].phones == {}
+    assert lad.rungs[0].lights == {"a": engine.RungLight()}  # a value that is not a mode: a blink
 
 
 # --- checks ---------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ def phones_setup():
         ladder(
             [
                 rung(5, phones={"pixel": "normal"}),
-                rung(5, lights=["light.hall"]),  # nudge 2: no phone at all
+                rung(5, lights={"light.hall": engine.RungLight()}),  # nudge 2: no phone at all
                 rung(5, phones={"ipad": "alarm"}),
             ]
         ),
@@ -210,10 +211,118 @@ def test_a_phone_listed_twice_counts_once():
     assert names(engine.phones_reached(s, "ladder:p1", 1)) == ["pixel"]
 
 
-def test_a_ladder_can_only_use_a_speaker_level_that_is_switched_on():
+def test_a_ladder_can_only_use_a_speaker_choice_that_is_set_up():
     speaker = engine.SpeakerCfg(entity_id="media_player.kitchen")
-    assert not engine.speaker_has_level(speaker, engine.SPEAKER_CUE)  # off by default
+    assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_CUE)  # off by default
     speaker.cue.enabled = True
-    assert engine.speaker_has_level(speaker, engine.SPEAKER_CUE)
-    assert not engine.speaker_has_level(speaker, engine.SPEAKER_ALARM)
-    assert not engine.speaker_has_level(speaker, "opera")
+    assert engine.speaker_choice_ok(speaker, engine.SPEAKER_CUE)
+    assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_ALARM)
+    assert not engine.speaker_choice_ok(speaker, "opera")
+    # speech, with or without the chime, needs the speech level switched on
+    assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH_CHIME)
+    speaker.speech.enabled = True
+    assert engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH)
+    assert engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH_CHIME)
+
+
+def test_a_speaker_can_have_many_extra_sounds_and_a_ladder_can_pick_one():
+    speaker = engine.SpeakerCfg(
+        entity_id="media_player.kitchen",
+        sounds=[engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "amzn_sfx_trumpet_bugle_01")],
+    )
+    assert engine.speaker_choice_ok(speaker, "sound:f1")
+    assert not engine.speaker_choice_ok(speaker, "sound:gone")
+    assert engine.find_extra_sound(speaker, "sound:f1").name == "Fanfare"
+    assert engine.find_extra_sound(speaker, "cue") is None
+
+
+def test_extra_sounds_are_saved_and_checked():
+    spk = {
+        "entity_id": "media_player.kitchen",
+        "sounds": [{"id": "f1", "name": "Fanfare", "kind": "alexa", "sound": "amzn_sfx_x"}, "junk"],
+    }
+    s = engine.Settings.from_dict({"speakers": [spk]})
+    assert [x.name for x in s.speakers[0].sounds] == ["Fanfare"]
+    assert engine.validate_settings(s) is None
+    again = engine.Settings.from_dict(engine.to_dict(s))
+    assert again.speakers[0].sounds == s.speakers[0].sounds
+
+    def with_sounds(*sounds):
+        return engine.Settings(speakers=[engine.SpeakerCfg(entity_id="media_player.k", sounds=list(sounds))])
+
+    ok = engine.ExtraSound("a", "Ding", engine.SOUND_ALEXA, "x")
+    assert engine.validate_settings(with_sounds(ok)) is None
+    assert "name" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "", engine.SOUND_ALEXA, "x")))
+    assert "same name" in engine.validate_settings(with_sounds(ok, engine.ExtraSound("b", "ding", engine.SOUND_ALEXA, "y")))
+    assert "Choose the sound" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "Ding", engine.SOUND_ALEXA, "")))
+    assert "Unknown" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "Ding", "radio", "x")))
+    many = [engine.ExtraSound(str(i), f"S{i}", engine.SOUND_ALEXA, "x") for i in range(31)]
+    assert "at most" in engine.validate_settings(with_sounds(*many))
+    assert engine.validate_settings(with_sounds(*many[:30])) is None
+
+
+def test_ladder_speaker_choices_are_checked():
+    for choice in ("cue", "speech", "speech_chime", "alarm", "sound:abc"):
+        assert engine.validate_ladders([ladder([rung(speakers={"media_player.k": choice})])]) is None, choice
+    assert "speaker" in engine.validate_ladders([ladder([rung(speakers={"media_player.k": "opera"})])])
+
+
+def test_speech_with_the_chime_is_an_alexa_announcement():
+    speaker = engine.SpeakerCfg(entity_id="media_player.k")
+    speaker.speech.enabled = True
+    speaker.speech.target = "notify.alexa_media_kitchen"
+    assert engine.speech_call(speaker, "hi")[2]["data"]["type"] == "tts"  # the speaker's own setting: plain
+    assert engine.speech_call(speaker, "hi", True)[2]["data"]["type"] == "announce"
+    speaker.speech.announce = True
+    assert engine.speech_call(speaker, "hi")[2]["data"]["type"] == "announce"
+    assert engine.speech_call(speaker, "hi", False)[2]["data"]["type"] == "tts"  # a nudge can say plain
+
+
+# --- the lights of a nudge -------------------------------------------------------------------
+
+
+def test_a_light_of_a_nudge_can_blink_or_stay_on_as_a_status_light_in_a_color():
+    lights = {
+        "light.hall": engine.RungLight("blink"),
+        "light.desk": engine.RungLight("indicator", [255, 0, 0]),
+    }
+    assert engine.validate_ladders([ladder([rung(lights=lights)])]) is None
+    again = engine.Ladder.from_dict(engine.to_dict(ladder([rung(lights=lights)])))
+    assert again.rungs[0].lights == lights
+
+
+def test_an_older_list_of_lights_means_the_lights_own_mode():
+    r = engine.Rung.from_dict({"lights": ["light.hall"]})
+    assert r.lights == {"light.hall": engine.RungLight(mode=engine.LIGHT_OWN_MODE)}
+    assert engine.validate_ladders([ladder([r])]) is None
+
+
+def test_light_modes_and_colors_of_a_nudge_are_checked():
+    assert "light mode" in engine.validate_ladders([ladder([rung(lights={"light.a": engine.RungLight("strobe")})])])
+    assert "color" in engine.validate_ladders([ladder([rung(lights={"light.a": engine.RungLight("blink", [1, 2])})])])
+    assert "color" in engine.validate_ladders([ladder([rung(lights={"light.a": engine.RungLight("blink", [1, 2, 300])})])])
+    assert engine.validate_ladders([ladder([rung(lights={"light.a": engine.RungLight("blink", None)})])]) is None
+
+
+def test_a_color_that_is_not_three_numbers_is_dropped():
+    assert engine.RungLight.from_dict({"mode": "blink", "color": "red"}).color is None
+    assert engine.RungLight.from_dict({"mode": "blink", "color": [1, 2]}).color is None
+    assert engine.RungLight.from_dict({"mode": "blink", "color": [1, 2, 3]}).color == [1, 2, 3]
+
+
+# --- a color for a chore -----------------------------------------------------------------------
+
+
+def chore_with_color(color):
+    return engine.Chore(id="c", name="Pills", steps=[engine.Step("a", "Take one")], light_color=color)
+
+
+def test_a_chore_can_have_a_light_color():
+    assert engine.validate_chore(chore_with_color(None)) is None
+    assert engine.validate_chore(chore_with_color([255, 0, 0])) is None
+    assert engine.validate_chore(chore_with_color([255, 0]))
+    assert engine.validate_chore(chore_with_color([255, 0, 256]))
+    saved = engine.Chore.from_dict(engine.to_dict(chore_with_color([1, 2, 3])))
+    assert saved.light_color == [1, 2, 3]
+    assert engine.Chore.from_dict({"name": "x", "light_color": "red"}).light_color is None
+    assert engine.Chore.from_dict({"name": "x"}).light_color is None  # older chores

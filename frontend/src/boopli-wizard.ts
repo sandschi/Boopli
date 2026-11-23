@@ -18,6 +18,7 @@ import {
   entityIds,
   friendlyName,
   hexToRgb,
+  lightHasColor,
   newLadderId,
   newAlarmDevice,
   newLight,
@@ -85,10 +86,12 @@ type StepId =
   | "ai_intro"
   | "ai_agent"
   | "chores"
+  | "lad_start"
   | "lad_name"
   | "lad_nudge"
   | "lad_more"
   | "lad_end"
+  | "lad_delete"
   | "done";
 
 const SEQUENCES: Record<WizardId, StepId[]> = {
@@ -102,7 +105,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   nudging: ["nudging", "done"],
   pet: ["pet", "done"],
   ai: ["ai_intro", "ai_agent", "done"],
-  ladders: ["lad_name", "lad_nudge", "lad_more", "lad_end", "done"],
+  ladders: ["lad_start", "done"], // the rest depends on what you want to do (see _startLadderWork)
 };
 
 /** What "Set up speakers" adds to the first-run setup. */
@@ -143,10 +146,12 @@ const TITLES: Record<StepId, string> = {
   ai_intro: "AI help",
   ai_agent: "Your AI agent",
   chores: "First chores",
+  lad_start: "What do you want to do?",
   lad_name: "Name your ladder",
   lad_nudge: "A nudge",
   lad_more: "Another nudge?",
   lad_end: "How it ends",
+  lad_delete: "Delete a ladder",
   done: "All set",
 };
 
@@ -203,6 +208,8 @@ export class BoopliWizard extends LitElement {
     _addDevice: { state: true },
     _ladderId: { state: true },
     _ladderName: { state: true },
+    _ladderAction: { state: true },
+    _ladderPick: { state: true },
   };
 
   declare hass?: Hass;
@@ -220,6 +227,8 @@ export class BoopliWizard extends LitElement {
   declare _addDevice: string;
   declare _ladderId: string; // the ladder this wizard is building
   declare _ladderName: string;
+  declare _ladderAction: "create" | "edit" | "delete";
+  declare _ladderPick: string; // the ladder to edit or delete
   private _started = false;
   private _saved?: Settings; // what is saved right now
   private _baseline?: Settings; // what it was when this wizard opened
@@ -238,6 +247,8 @@ export class BoopliWizard extends LitElement {
     this._addDevice = "";
     this._ladderId = "";
     this._ladderName = "";
+    this._ladderAction = "create";
+    this._ladderPick = "";
   }
 
   private get _first(): boolean {
@@ -363,6 +374,7 @@ export class BoopliWizard extends LitElement {
         if (this._step === "spk_pick" && !this._speaker) {
           throw new Error("Pick a speaker, or press Skip.");
         }
+        if (this._step === "lad_start") this._startLadderWork();
         if (this._step === "lad_name") this._ensureLadder();
         const sent = structuredClone(this._draft);
         await saveSettings(this.hass, sent);
@@ -466,7 +478,7 @@ export class BoopliWizard extends LitElement {
     return {
       gap: 5,
       phones: Object.fromEntries((this._draft?.phones ?? []).map((p) => [p.service, p.level])),
-      lights: [],
+      lights: {},
       speakers: {},
       alarms: [],
     };
@@ -476,6 +488,55 @@ export class BoopliWizard extends LitElement {
     const d = this._draft;
     if (!d) return;
     this._set({ ladders: (d.ladders ?? []).map((l) => (l.id === this._ladderId ? fn(l) : l)) });
+  }
+
+  /** Called when leaving the first screen: the rest of the guide depends on what you want to do. */
+  private _startLadderWork(): void {
+    const ladders = this._draft?.ladders ?? [];
+    if (this._ladderAction === "create") {
+      this._ladderId = "";
+      this._ladderName = "";
+      this._steps = ["lad_start", "lad_name", "lad_nudge", "lad_more", "lad_end", "done"];
+      return;
+    }
+    const pick = this._ladderPick || (ladders.length === 1 ? ladders[0].id : "");
+    const ladder = ladders.find((l) => l.id === pick);
+    if (!ladder) throw new Error("Pick a ladder first.");
+    this._ladderPick = ladder.id;
+    this._ladderId = ladder.id;
+    this._ladderName = ladder.name;
+    this._steps =
+      this._ladderAction === "edit"
+        ? ["lad_start", "lad_name", ...ladder.rungs.map((): StepId => "lad_nudge"), "lad_more", "lad_end", "done"]
+        : ["lad_start", "lad_delete", "done"];
+  }
+
+  /** Take the nudge of this screen out of the ladder (and the screen out of the guide). */
+  private _removeNudge(index: number): void {
+    const l = this._ladder();
+    if (!l || l.rungs.length < 2) return;
+    this._patchLadder((x) => ({ ...x, rungs: x.rungs.filter((_, i) => i !== index) }));
+    this._steps = this._steps.filter((_, i) => i !== this._index);
+    this._index = Math.min(this._index, this._steps.length - 1);
+  }
+
+  /** Delete the picked ladder, unless chores use it or it is the style for new chores. */
+  private async _deleteLadder(): Promise<void> {
+    const l = this._ladder();
+    const d = this._draft;
+    if (!l || !d) return;
+    const style = `ladder:${l.id}`;
+    const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
+    if (users.length) {
+      this._error = `"${l.name}" is used by ${users.join(", ")}. Pick another nudge style for them first.`;
+      return;
+    }
+    if (d.default_style === style) {
+      this._error = `"${l.name}" is the style for new chores. Choose another one for new chores first.`;
+      return;
+    }
+    this._set({ ladders: (d.ladders ?? []).filter((x) => x.id !== l.id) });
+    await this._go(1);
   }
 
   /** Called when leaving the name screen: make the ladder (or rename it). */
@@ -510,6 +571,57 @@ export class BoopliWizard extends LitElement {
 
   private _title(id: StepId, index: number): string {
     return id === "lad_nudge" ? `Nudge ${this._nudgesBefore(index) + 1}` : TITLES[id];
+  }
+
+  private _renderLadStart(d: Settings) {
+    const ladders = d.ladders ?? [];
+    const none = ladders.length === 0;
+    const choice = (value: "create" | "edit" | "delete", label: string, text: string, disabled = false) => html`<label class="inline option">
+      <input
+        type="radio"
+        name="ladact"
+        .checked=${this._ladderAction === value}
+        ?disabled=${disabled}
+        @change=${() => (this._ladderAction = value)}
+      />
+      <span><b>${label}</b> <span class="muted small">${text}</span></span>
+    </label>`;
+    return html`
+      ${choice("create", "Create a ladder", "A new list of nudges.")}
+      ${choice("edit", "Edit a ladder", none ? "You have no ladders yet." : "Change its name, its nudges or how it ends.", none)}
+      ${choice("delete", "Delete a ladder", none ? "You have no ladders yet." : "Remove one you do not need any more.", none)}
+      ${this._ladderAction !== "create" && !none
+        ? html`<div class="field">
+            <label for="ladpick">Which ladder?</label>
+            <select id="ladpick" .value=${this._ladderPick} @change=${(e: Event) => (this._ladderPick = (e.target as HTMLSelectElement).value)}>
+              <option value="" ?selected=${!this._ladderPick}>Pick a ladder…</option>
+              ${ladders.map(
+                (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
+                  ${l.name} (${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"})
+                </option>`
+              )}
+            </select>
+          </div>`
+        : nothing}
+    `;
+  }
+
+  private _renderLadDelete() {
+    const l = this._ladder();
+    if (!l) return html`<p class="muted">Pick a ladder first.</p>`;
+    const style = `ladder:${l.id}`;
+    const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
+    return html`
+      <p>Delete the ladder <b>${l.name}</b>? This cannot be undone.</p>
+      ${users.length
+        ? html`<p class="muted">It is used by ${users.join(", ")}. Pick another nudge style for them first, then come back.</p>`
+        : nothing}
+      <div class="gate">
+        <button type="button" class="danger big" ?disabled=${this._busy || users.length > 0} @click=${() => this._deleteLadder()}>
+          Delete this ladder
+        </button>
+      </div>
+    `;
   }
 
   private _renderLadName() {
@@ -549,6 +661,9 @@ export class BoopliWizard extends LitElement {
         .index=${i}
         @rung-change=${(e: CustomEvent<Rung>) => this._setRung(i, e.detail)}
       ></boopli-rung>
+      ${(this._ladder()?.rungs.length ?? 0) > 1
+        ? html`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(i)}>Remove this nudge</button></p>`
+        : nothing}
     `;
   }
 
@@ -912,10 +1027,12 @@ export class BoopliWizard extends LitElement {
             this._set({ lights: d.lights.map((x) => (x.entity_id === l.entity_id ? { ...x, ...p } : x)) });
           return html`<div class="choice col">
             <b>${this._fn(l.entity_id)}</b>
-            <label class="num">
-              Color
-              <input type="color" class="swatch" .value=${rgbToHex(l.color)} @input=${(e: Event) => patch({ color: hexToRgb((e.target as HTMLInputElement).value) })} />
-            </label>
+            ${lightHasColor(this.hass, l.entity_id)
+              ? html`<label class="num">
+                  Color
+                  <input type="color" class="swatch" .value=${rgbToHex(l.color)} @input=${(e: Event) => patch({ color: hexToRgb((e.target as HTMLInputElement).value) })} />
+                </label>`
+              : html`<span class="muted small">This light only goes on and off, so it has no color.</span>`}
             ${l.mode === "blink"
               ? html`${this._numField("Blink length (ms)", l.blink_ms, 100, 30000, (n) => patch({ blink_ms: n }), 100)}
                 ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
@@ -1333,8 +1450,12 @@ export class BoopliWizard extends LitElement {
         return this._renderPresence(d);
       case "chores":
         return this._renderChores();
+      case "lad_start":
+        return this._renderLadStart(d);
       case "lad_name":
         return this._renderLadName();
+      case "lad_delete":
+        return this._renderLadDelete();
       case "lad_nudge":
         return this._renderLadNudge(d);
       case "lad_more":
@@ -1351,7 +1472,7 @@ export class BoopliWizard extends LitElement {
     if (!d) return html`<p class="muted">Loading…</p>`;
     const step = this._step;
     const isDone = step === "done";
-    const isGate = step === "speaker_gate" || step === "lad_more"; // these screens have their own buttons
+    const isGate = step === "speaker_gate" || step === "lad_more" || step === "lad_delete"; // these screens have their own buttons
     const last = this._steps.length - 1;
     return html`
       <div class="shell">
@@ -1396,7 +1517,7 @@ export class BoopliWizard extends LitElement {
                 </button>`
               : isGate
                 ? nothing
-                : html`${step === "lad_name" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
+                : html`${step === "lad_name" || step === "lad_start" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
                     <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>Next</button>`}
           </div>
         </section>

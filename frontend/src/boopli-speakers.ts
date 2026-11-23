@@ -1,14 +1,16 @@
 import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, testAlarmDevice, testSpeaker } from "./api";
+import { newLadderId } from "./helpers";
 import { sharedStyles } from "./styles";
 import type {
   AlarmDeviceCfg,
+  ExtraSound,
   Hass,
   Settings,
   SoundCfg,
   SoundKind,
   SpeakerCfg,
-  SpeakerLevel,
+  SpeakerChoice,
   SpeechCfg,
   SpeechRoute,
 } from "./types";
@@ -158,7 +160,7 @@ export class BoopliSpeakers extends LitElement {
     this._updateSpeaker(entityId, (s) => ({ ...s, speech: { ...s.speech, ...patch } }));
   }
 
-  private async _test(speaker: SpeakerCfg, level: SpeakerLevel): Promise<void> {
+  private async _test(speaker: SpeakerCfg, level: SpeakerChoice): Promise<void> {
     if (!this.hass) return;
     const key = `speaker:${speaker.entity_id}:${level}`;
     this._note(key, "Sending…");
@@ -167,6 +169,81 @@ export class BoopliSpeakers extends LitElement {
     } catch (err) {
       this._note(key, errorMessage(err));
     }
+  }
+
+  // --- more sounds (for ladders) ---
+
+  private _setExtra(entityId: string, soundId: string, patch: Partial<ExtraSound>): void {
+    this._updateSpeaker(entityId, (s) => ({
+      ...s,
+      sounds: (s.sounds ?? []).map((x) => (x.id === soundId ? { ...x, ...patch } : x)),
+    }));
+  }
+
+  private _addExtra(entityId: string): void {
+    this._updateSpeaker(entityId, (s) => {
+      const taken = new Set((s.sounds ?? []).map((x) => x.name.toLowerCase()));
+      let n = (s.sounds ?? []).length + 1;
+      while (taken.has(`sound ${n}`)) n++;
+      return { ...s, sounds: [...(s.sounds ?? []), { id: newLadderId(), name: `Sound ${n}`, kind: "alexa", sound: "" }] };
+    });
+  }
+
+  private _removeExtra(entityId: string, soundId: string): void {
+    this._updateSpeaker(entityId, (s) => ({ ...s, sounds: (s.sounds ?? []).filter((x) => x.id !== soundId) }));
+  }
+
+  private _moreSounds(speaker: SpeakerCfg) {
+    const id = speaker.entity_id;
+    const sounds = speaker.sounds ?? [];
+    return html`
+      <div class="level">
+        <strong>More sounds</strong>
+        <span class="muted small">
+          For your ladders (Nudge it your way): as many as you like, each with a name. Not part of the built-in styles.
+        </span>
+        ${sounds.map((x) => {
+          const key = `speaker:${id}:sound:${x.id}`;
+          return html`
+            <div class="fields">
+              <label class="num wide">
+                Name
+                <input
+                  type="text"
+                  maxlength="30"
+                  .value=${x.name}
+                  @change=${(e: Event) => this._setExtra(id, x.id, { name: (e.target as HTMLInputElement).value.trim() })}
+                />
+              </label>
+              <label class="num wide">
+                Sound type
+                <select
+                  .value=${x.kind}
+                  @change=${(e: Event) => this._setExtra(id, x.id, { kind: (e.target as HTMLSelectElement).value as SoundKind })}
+                >
+                  ${SOUND_KINDS.map((k) => html`<option value=${k.value} ?selected=${k.value === x.kind}>${k.label}</option>`)}
+                </select>
+              </label>
+              <label class="num wide">
+                ${x.kind === "alexa" ? "Alexa sound id" : "File (for example boopli/fanfare.mp3)"}
+                <input
+                  type="text"
+                  .value=${x.sound}
+                  placeholder=${x.kind === "alexa" ? "amzn_sfx_…" : "boopli/fanfare.mp3"}
+                  @change=${(e: Event) => this._setExtra(id, x.id, { sound: (e.target as HTMLInputElement).value.trim() })}
+                />
+              </label>
+              <button @click=${() => this._test(speaker, `sound:${x.id}`)}>Test</button>
+              <button aria-label="Remove the sound ${x.name}" @click=${() => this._removeExtra(id, x.id)}>✕</button>
+              ${this._notes[key] ? html`<div class="note muted small">${this._notes[key]}</div>` : nothing}
+            </div>
+          `;
+        })}
+        <div class="row">
+          <button type="button" class="chip" ?disabled=${sounds.length >= 30} @click=${() => this._addExtra(id)}>+ Add a sound</button>
+        </div>
+      </div>
+    `;
   }
 
   private _startAt(value: number, onChange: (n: number) => void, label = "Starts at nudge #") {
@@ -356,8 +433,9 @@ export class BoopliSpeakers extends LitElement {
         <h2>🔊 Speakers</h2>
         <p class="muted small">
           Each speaker can play a small ding, speak a sentence, and sound an
-          alarm. A speaker plays the highest level that has been reached. Press
-          Test on each one to hear it.
+          alarm. In the built-in styles a speaker plays the highest level that has
+          been reached. Your ladders can also use more sounds you add here, and
+          "Speaks with chime" (an Alexa announcement). Press Test to hear each one.
         </p>
         ${d.speakers.map(
           (speaker) => html`
@@ -373,7 +451,7 @@ export class BoopliSpeakers extends LitElement {
                 </button>
               </div>
               ${this._soundRow(speaker, "cue")} ${this._speechRow(speaker)}
-              ${this._soundRow(speaker, "alarm")}
+              ${this._soundRow(speaker, "alarm")} ${this._moreSounds(speaker)}
             </div>
           `
         )}

@@ -69,6 +69,7 @@ export interface Chore {
   parked: boolean; // a part of a task that was set aside to do later
   questions?: ChoreQuestion[]; // asked every time it starts
   keeps_going?: boolean; // runs as usual while away mode is on
+  light_color?: number[] | null; // the lights' color for this chore; none: the lights' own
 }
 
 export interface StepRun {
@@ -137,6 +138,16 @@ export interface PhoneCfg {
 export type SoundKind = "alexa" | "file";
 export type SpeechRoute = "alexa_media" | "alexa_devices" | "tts";
 export type SpeakerLevel = "cue" | "speech" | "alarm";
+/** What a ladder can pick for a speaker at one nudge: a level, speech with the Alexa chime, or one of its extra sounds. */
+export type SpeakerChoice = SpeakerLevel | "speech_chime" | `sound:${string}`;
+
+/** A named sound effect of a speaker, for ladders. */
+export interface ExtraSound {
+  id: string;
+  name: string;
+  kind: SoundKind;
+  sound: string; // an Alexa sound id, or a file path / media-source id / URL
+}
 
 export interface SoundCfg {
   enabled: boolean;
@@ -160,6 +171,7 @@ export interface SpeakerCfg {
   cue: SoundCfg;
   speech: SpeechCfg;
   alarm: SoundCfg;
+  sounds?: ExtraSound[]; // more sound effects, for ladders
 }
 
 export interface AlarmDeviceCfg {
@@ -168,12 +180,18 @@ export interface AlarmDeviceCfg {
   start_at: number;
 }
 
+/** What one light does at one nudge: blink or stay on as a status light, maybe in another color. */
+export interface RungLight {
+  mode: "" | LightMode; // "": as set for the light (older ladders)
+  color?: number[] | null; // [r, g, b]; none: the chore's color, else the light's own
+}
+
 /** One nudge of a ladder: how long to wait for it, and exactly which devices act (and how loud). */
 export interface Rung {
   gap: number; // minutes after the previous nudge (the first one goes out at once)
   phones: Record<string, PhoneLevel>; // phone service -> notification level
-  lights: string[]; // light entity ids
-  speakers: Record<string, SpeakerLevel>; // speaker entity id -> what it plays
+  lights: Record<string, RungLight>; // light entity id -> what it does at this nudge
+  speakers: Record<string, SpeakerChoice>; // speaker entity id -> what it plays
   alarms: string[]; // alarm device entity ids
 }
 
@@ -305,6 +323,7 @@ export interface ChoreDraft {
   notes?: string;
   questions?: ChoreQuestion[];
   keeps_going?: boolean;
+  light_color?: number[] | null;
   steps: {
     id?: string;
     title: string;

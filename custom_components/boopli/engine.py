@@ -135,6 +135,11 @@ SPEAKER_CUE = "cue"  # a small ding
 SPEAKER_SPEECH = "speech"  # a spoken sentence
 SPEAKER_ALARM = "alarm"  # a loud sound, repeated for a while
 SPEAKER_LEVELS = (SPEAKER_CUE, SPEAKER_SPEECH, SPEAKER_ALARM)  # low to high
+# What a ladder can pick for a speaker at one nudge, besides the three levels above:
+SPEAKER_SPEECH_CHIME = "speech_chime"  # speech as an Alexa announcement, which starts with a chime
+SPEAKER_SOUND_PREFIX = "sound:"  # "sound:<id>": one of the extra sounds of that speaker
+EXTRA_SOUNDS_MAX = 30  # extra sounds per speaker
+EXTRA_SOUND_NAME_MAX = 30
 
 SOUND_ALEXA = "alexa"  # one of Amazon's built-in sounds, by id
 SOUND_FILE = "file"  # a file in Home Assistant's media folder, or a URL
@@ -382,10 +387,12 @@ class Chore:
     parked: bool = False  # a part of a task that was set aside to do later
     questions: list[Question] = field(default_factory=list)  # asked every time it starts
     keeps_going: bool = False  # runs as usual while away mode is on (pills, feeding a cat)
+    light_color: list[int] | None = None  # the color of the lights for this chore (None: the lights' own)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            light_color=_color(d.get("light_color")),
             keeps_going=bool(d.get("keeps_going", False)),
             questions=[Question.from_dict(q) for q in d.get("questions") or []],
             parked=bool(d.get("parked", False)),
@@ -915,6 +922,8 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
                 return f"Step '{step.title}': {error}"
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
+    if chore.light_color is not None and (len(chore.light_color) != 3 or any(not 0 <= c <= 255 for c in chore.light_color)):
+        return "A light color needs three values from 0 to 255."
     if chore.nudge_style not in STYLE_VALUES and chore.nudge_style not in {
         ladder_style(i) for i in ladder_ids
     }:
@@ -1348,6 +1357,7 @@ def parked_chore(
         created_at=fmt_ts(now),
         nudge_style=parent.nudge_style if parent else STYLE_ONE,
         ignore_quiet_hours=parent.ignore_quiet_hours if parent else False,
+        light_color=parent.light_color if parent else None,
     )
 
 
@@ -1796,6 +1806,25 @@ class SpeechCfg:
 
 
 @dataclass
+class ExtraSound:
+    """A named sound effect of a speaker, for ladders (the speaker's ding and alarm stay as they are)."""
+
+    id: str = ""
+    name: str = ""
+    kind: str = SOUND_ALEXA
+    sound: str = ""  # an Alexa sound id, or a file path / media-source id / URL
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> ExtraSound:
+        return cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            name=str(d.get("name") or "").strip(),
+            kind=str(d.get("kind", SOUND_ALEXA)),
+            sound=str(d.get("sound") or "").strip(),
+        )
+
+
+@dataclass
 class SpeakerCfg:
     """A speaker (a media player) that can play a cue, speak, and sound an alarm."""
 
@@ -1809,10 +1838,13 @@ class SpeakerCfg:
             sound=ALEXA_ALARM_SOUND, start_at=4, kind=SOUND_ALEXA
         )
     )
+    sounds: list[ExtraSound] = field(default_factory=list)  # more sound effects, for ladders
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
+        extra = d.get("sounds")
         return cls(
+            sounds=[ExtraSound.from_dict(x) for x in extra if isinstance(x, dict)] if isinstance(extra, list) else [],
             entity_id=str(d.get("entity_id", "")).strip(),
             cue=SoundCfg.from_dict(d.get("cue") or {"sound": ALEXA_DING_SOUND}, 1),
             speech=SpeechCfg.from_dict(d.get("speech")),
@@ -1931,14 +1963,50 @@ def _text_map(value: Any) -> dict[str, str]:
     return {str(k).strip(): str(v).strip() for k, v in value.items() if str(k).strip()}
 
 
+def _color(value: Any) -> list[int] | None:
+    """An [r, g, b] list, or None when it is missing or not three numbers."""
+    if not isinstance(value, (list, tuple)) or len(value) != 3:
+        return None
+    try:
+        return [int(c) for c in value]
+    except (TypeError, ValueError):
+        return None
+
+
+LIGHT_OWN_MODE = ""  # the light's own mode (blink or indicator), as set in its settings
+
+
+@dataclass
+class RungLight:
+    """What one light does at one nudge: blink, or stay on as a status light; maybe another color."""
+
+    mode: str = LIGHT_BLINK
+    color: list[int] | None = None  # used when the chore has no color of its own; none: the light's own
+
+    @classmethod
+    def from_dict(cls, d: Any) -> RungLight:
+        if isinstance(d, dict):
+            return cls(mode=str(d.get("mode") or LIGHT_BLINK), color=_color(d.get("color")))
+        return cls(mode=str(d) if isinstance(d, str) else LIGHT_BLINK)
+
+
+def _rung_lights(value: Any) -> dict[str, RungLight]:
+    """The lights of a nudge. An older list of entity ids means "the light's own mode"."""
+    if isinstance(value, list):
+        return {e: RungLight(mode=LIGHT_OWN_MODE) for e in _text_list(value)}
+    if isinstance(value, dict):
+        return {str(k).strip(): RungLight.from_dict(v) for k, v in value.items() if str(k).strip()}
+    return {}
+
+
 @dataclass
 class Rung:
     """One nudge of a ladder."""
 
     gap: int = LADDER_GAP_DEFAULT  # minutes after the previous nudge (the first goes out at once)
     phones: dict[str, str] = field(default_factory=dict)  # phone service -> notification level
-    lights: list[str] = field(default_factory=list)  # light entity ids
-    speakers: dict[str, str] = field(default_factory=dict)  # speaker entity id -> speaker level
+    lights: dict[str, RungLight] = field(default_factory=dict)  # light entity id -> what it does
+    speakers: dict[str, str] = field(default_factory=dict)  # speaker entity id -> level, speech_chime or sound:<id>
     alarms: list[str] = field(default_factory=list)  # alarm device entity ids
 
     @classmethod
@@ -1946,7 +2014,7 @@ class Rung:
         return cls(
             gap=_int(d.get("gap"), LADDER_GAP_DEFAULT),
             phones=_text_map(d.get("phones")),
-            lights=_text_list(d.get("lights")),
+            lights=_rung_lights(d.get("lights")),
             speakers=_text_map(d.get("speakers")),
             alarms=_text_list(d.get("alarms")),
         )
@@ -2074,6 +2142,23 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
         return f"Alarm repeat must be 0 to {ALARM_REPEAT_MAX} seconds."
+    if len(speaker.sounds) > EXTRA_SOUNDS_MAX:
+        return f"A speaker can have at most {EXTRA_SOUNDS_MAX} extra sounds."
+    sound_ids: set[str] = set()
+    sound_names: set[str] = set()
+    for extra in speaker.sounds:
+        if not extra.name:
+            return f"Every extra sound of {speaker.entity_id} needs a name."
+        if len(extra.name) > EXTRA_SOUND_NAME_MAX:
+            return f"A sound name can have at most {EXTRA_SOUND_NAME_MAX} letters."
+        if extra.id in sound_ids or extra.name.casefold() in sound_names:
+            return f"{speaker.entity_id} has two sounds with the same name."
+        sound_ids.add(extra.id)
+        sound_names.add(extra.name.casefold())
+        if extra.kind not in SOUND_KINDS:
+            return f"Unknown type for the sound '{extra.name}'."
+        if not extra.sound:
+            return f"Choose the sound for '{extra.name}'."
     speech = speaker.speech
     if not START_AT_MIN <= speech.start_at <= START_AT_MAX:
         return _START_AT_ERROR
@@ -2091,12 +2176,14 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
 
 def validate_speaker_test(speaker: SpeakerCfg, level: str) -> str | None:
     """Check a speaker before testing one level (which need not be switched on)."""
-    if level not in SPEAKER_LEVELS:
+    if find_extra_sound(speaker, level) is not None:
+        return _validate_speaker(speaker)  # one of the speaker's extra sounds
+    if level not in SPEAKER_LEVELS and level != SPEAKER_SPEECH_CHIME:
         return "Unknown speaker level."
     probe = speaker
     if level == SPEAKER_CUE:
         probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
-    elif level == SPEAKER_SPEECH:
+    elif level in (SPEAKER_SPEECH, SPEAKER_SPEECH_CHIME):
         probe = replace(speaker, speech=replace(speaker.speech, enabled=True))
     else:
         probe = replace(speaker, alarm=replace(speaker.alarm, enabled=True))
@@ -2184,6 +2271,10 @@ def validate_settings(settings: Settings) -> str | None:
     return None
 
 
+def _speaker_choice_known(choice: str) -> bool:
+    return choice in SPEAKER_LEVELS or choice == SPEAKER_SPEECH_CHIME or choice.startswith(SPEAKER_SOUND_PREFIX)
+
+
 def validate_ladders(ladders: list[Ladder]) -> str | None:
     """Check "Nudge it your way": names, the number of nudges, the waits and the device levels."""
     if len(ladders) > LADDER_MAX:
@@ -2208,8 +2299,13 @@ def validate_ladders(ladders: list[Ladder]) -> str | None:
                 return f"'{ladder.name}', nudge {number}: the wait must be {LADDER_GAP_MIN} to {LADDER_GAP_MAX} minutes."
             if any(level not in LEVEL_VALUES for level in rung.phones.values()):
                 return f"'{ladder.name}', nudge {number}: unknown phone notification level."
-            if any(level not in SPEAKER_LEVELS for level in rung.speakers.values()):
-                return f"'{ladder.name}', nudge {number}: unknown speaker level."
+            if any(not _speaker_choice_known(choice) for choice in rung.speakers.values()):
+                return f"'{ladder.name}', nudge {number}: unknown speaker choice."
+            for light in rung.lights.values():
+                if light.mode not in (LIGHT_OWN_MODE, *LIGHT_MODE_VALUES):
+                    return f"'{ladder.name}', nudge {number}: unknown light mode."
+                if light.color is not None and (len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color)):
+                    return f"'{ladder.name}', nudge {number}: a light color needs three values from 0 to 255."
     return None
 
 
@@ -2601,9 +2697,24 @@ def phones_reached(settings: Settings, style: str, number: int) -> list[PhoneCfg
     return out
 
 
-def speaker_has_level(speaker: SpeakerCfg, level: str) -> bool:
-    """Whether a speaker has this level switched on (a ladder can only use levels that are set up)."""
-    cfg = {SPEAKER_CUE: speaker.cue, SPEAKER_SPEECH: speaker.speech, SPEAKER_ALARM: speaker.alarm}.get(level)
+def find_extra_sound(speaker: SpeakerCfg, choice: str) -> ExtraSound | None:
+    """The extra sound a "sound:<id>" choice points at."""
+    if not choice.startswith(SPEAKER_SOUND_PREFIX):
+        return None
+    wanted = choice[len(SPEAKER_SOUND_PREFIX):]
+    return next((s for s in speaker.sounds if s.id == wanted), None)
+
+
+def speaker_choice_ok(speaker: SpeakerCfg, choice: str) -> bool:
+    """Whether a speaker can do what a ladder asks of it (a level that is switched on, or a sound it has)."""
+    if choice.startswith(SPEAKER_SOUND_PREFIX):
+        return find_extra_sound(speaker, choice) is not None
+    cfg = {
+        SPEAKER_CUE: speaker.cue,
+        SPEAKER_SPEECH: speaker.speech,
+        SPEAKER_SPEECH_CHIME: speaker.speech,
+        SPEAKER_ALARM: speaker.alarm,
+    }.get(choice)
     return bool(cfg and cfg.enabled)
 
 
@@ -2642,16 +2753,21 @@ def sound_play_data(kind: str, sound: str) -> dict[str, str]:
 
 
 def speech_call(
-    speaker: SpeakerCfg, text: str
+    speaker: SpeakerCfg, text: str, announce: bool | None = None
 ) -> tuple[str, str, dict[str, Any]]:
-    """How to speak `text` on a speaker: (domain, service, data)."""
+    """How to speak `text` on a speaker: (domain, service, data).
+
+    `announce` (Alexa Media Player only) picks an announcement, which starts with a chime, or plain
+    speech; left out, the speaker's own setting decides.
+    """
     cfg = speaker.speech
     if cfg.route == SPEECH_ALEXA_MEDIA:
         service = cfg.target.removeprefix("notify.")
+        chime = cfg.announce if announce is None else announce
         return (
             "notify",
             service,
-            {"message": text, "data": {"type": "announce" if cfg.announce else "tts"}},
+            {"message": text, "data": {"type": "announce" if chime else "tts"}},
         )
     if cfg.route == SPEECH_ALEXA_DEVICES:
         return "notify", "send_message", {"entity_id": cfg.target, "message": text}

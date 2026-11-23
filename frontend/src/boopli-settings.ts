@@ -6,6 +6,7 @@ import {
   describeSpeaker,
   entityIds,
   friendlyName,
+  lightHasColor,
   lightKind,
   phoneName,
   PHONE_LEVEL_LABEL,
@@ -506,14 +507,16 @@ export class BoopliSettings extends LitElement {
                   (m) => html`<option value=${m.value} ?selected=${m.value === light.mode}>${m.label}</option>`
                 )}
               </select>
-              <input
-                type="color"
-                class="swatch"
-                aria-label="Color"
-                .value=${this._rgbToHex(light.color)}
-                @input=${(e: Event) =>
-                  this._patchLight(id, { color: this._hexToRgb((e.target as HTMLInputElement).value) })}
-              />
+              ${lightHasColor(this.hass, id)
+                ? html`<input
+                    type="color"
+                    class="swatch"
+                    aria-label="Color"
+                    .value=${this._rgbToHex(light.color)}
+                    @input=${(e: Event) =>
+                      this._patchLight(id, { color: this._hexToRgb((e.target as HTMLInputElement).value) })}
+                  />`
+                : nothing}
               <button @click=${() => this._testLight(light)}>Test</button>
               <button aria-label="Remove light" @click=${() => this._removeLight(id)}>✕</button>
             </div>

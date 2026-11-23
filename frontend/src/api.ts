@@ -14,7 +14,7 @@ import type {
   Repeat,
   Settings,
   SpeakerCfg,
-  SpeakerLevel,
+  SpeakerChoice,
   Snapshot,
 } from "./types";
 
@@ -165,7 +165,7 @@ export function testPhone(hass: Hass, phone: PhoneCfg): Promise<TestResult> {
 export function testSpeaker(
   hass: Hass,
   speaker: SpeakerCfg,
-  level: SpeakerLevel
+  level: SpeakerChoice
 ): Promise<TestResult> {
   return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level });
 }

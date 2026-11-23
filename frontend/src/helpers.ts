@@ -105,6 +105,16 @@ export const STYLE_LABEL: Record<string, string> = {
   persistent: "Persistent",
 };
 
+/**
+ * Whether a light can show a color (the same test Boopli uses when it sends one). A light that cannot, only
+ * goes on and off, so there is no color to pick. When the light's state is not known, say yes.
+ */
+export function lightHasColor(hass: Hass | undefined, entityId: string): boolean {
+  const modes = hass?.states[entityId]?.attributes?.supported_color_modes;
+  if (!Array.isArray(modes)) return true;
+  return modes.some((m) => ["rgb", "rgbw", "rgbww", "xy", "hs"].includes(String(m)));
+}
+
 /** A short unique id for a new ladder. */
 export function newLadderId(): string {
   try {

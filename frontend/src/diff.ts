@@ -91,6 +91,15 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   if (before.default_style !== after.default_style)
     out.push(`Default style: ${styleLabel(before.default_style, before.ladders)} → ${styleLabel(after.default_style, after.ladders)}`);
 
+  // Extra sounds of the speakers (for ladders).
+  for (const after_sp of after.speakers) {
+    const before_sp = before.speakers.find((x) => x.entity_id === after_sp.entity_id);
+    const was = new Map((before_sp?.sounds ?? []).map((s) => [s.id, s.name]));
+    const now = new Map((after_sp.sounds ?? []).map((s) => [s.id, s.name]));
+    for (const [id, label] of now) if (!was.has(id)) out.push(`${name(after_sp.entity_id)}: sound added (${label})`);
+    for (const [id, label] of was) if (!now.has(id)) out.push(`${name(after_sp.entity_id)}: sound removed (${label})`);
+  }
+
   const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);
   ladders.added.forEach((l) => out.push(`Nudge ladder added: ${l.name} (${l.rungs.length} nudges)`));
   ladders.removed.forEach((l) => out.push(`Nudge ladder removed: ${l.name}`));
