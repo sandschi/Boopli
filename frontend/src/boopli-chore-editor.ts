@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { deleteChore, errorMessage, saveChore } from "./api";
+import { hexToRgb, lightHasColor, rgbToHex } from "./helpers";
 import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
@@ -534,7 +535,13 @@ export class BoopliChoreEditor extends LitElement {
             @change=${(e: Event) =>
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
-            ${STYLE_OPTIONS.map(
+            ${[
+              ...STYLE_OPTIONS,
+              ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
+                value: `ladder:${l.id}` as NudgeStyle,
+                label: `${l.name}: my own ladder`,
+              })),
+            ].map(
               (o) => html`<option
                 value=${o.value}
                 ?selected=${o.value === (d.nudge_style ?? this.defaultStyle)}
@@ -542,8 +549,33 @@ export class BoopliChoreEditor extends LitElement {
                 ${o.label}
               </option>`
             )}
+            ${(d.nudge_style ?? this.defaultStyle).startsWith("ladder:") &&
+            !(this.snapshot?.settings?.ladders ?? []).some((l) => `ladder:${l.id}` === (d.nudge_style ?? this.defaultStyle))
+              ? html`<option value=${d.nudge_style ?? this.defaultStyle} selected>A ladder that is gone</option>`
+              : nothing}
           </select>
         </div>
+        ${(this.snapshot?.settings?.lights ?? []).some((l) => lightHasColor(this.hass, l.entity_id))
+          ? html`<div class="field">
+          <label for="lightcolor">Light color for this chore (optional)</label>
+          <div class="colorrow">
+            <input
+              id="lightcolor"
+              type="color"
+              class="swatch"
+              .value=${d.light_color ? rgbToHex(d.light_color) : rgbToHex(this.snapshot?.settings?.lights?.[0]?.color ?? [255, 90, 0])}
+              @input=${(e: Event) => this._update({ light_color: hexToRgb((e.target as HTMLInputElement).value) })}
+            />
+            <button type="button" class="chip" ?disabled=${!d.light_color} @click=${() => this._update({ light_color: undefined })}>
+              Use the lights' own color
+            </button>
+          </div>
+          <div class="muted small">
+            A status light can mean something: pills red, laundry blue. This color wins over the colors set in ladders.
+            Without one, the nudge's or the light's own color is used. Lights that cannot show colors ignore it.
+          </div>
+        </div>`
+          : nothing}
         <div class="field check">
           <label class="inline">
             <input
@@ -637,6 +669,18 @@ export class BoopliChoreEditor extends LitElement {
   static styles = [
     sharedStyles,
     css`
+      .colorrow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .colorrow .swatch {
+        width: 56px;
+        min-height: 36px;
+        padding: 2px;
+        flex: 0 0 auto;
+      }
       .editor-grid {
         display: grid;
         grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);

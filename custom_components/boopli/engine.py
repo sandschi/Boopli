@@ -23,6 +23,7 @@ import re
 import uuid
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
+from collections.abc import Iterable
 from typing import Any
 from urllib.parse import quote
 
@@ -134,6 +135,11 @@ SPEAKER_CUE = "cue"  # a small ding
 SPEAKER_SPEECH = "speech"  # a spoken sentence
 SPEAKER_ALARM = "alarm"  # a loud sound, repeated for a while
 SPEAKER_LEVELS = (SPEAKER_CUE, SPEAKER_SPEECH, SPEAKER_ALARM)  # low to high
+# What a ladder can pick for a speaker at one nudge, besides the three levels above:
+SPEAKER_SPEECH_CHIME = "speech_chime"  # speech as an Alexa announcement, which starts with a chime
+SPEAKER_SOUND_PREFIX = "sound:"  # "sound:<id>": one of the extra sounds of that speaker
+EXTRA_SOUNDS_MAX = 30  # extra sounds per speaker
+EXTRA_SOUND_NAME_MAX = 30
 
 SOUND_ALEXA = "alexa"  # one of Amazon's built-in sounds, by id
 SOUND_FILE = "file"  # a file in Home Assistant's media folder, or a URL
@@ -381,10 +387,12 @@ class Chore:
     parked: bool = False  # a part of a task that was set aside to do later
     questions: list[Question] = field(default_factory=list)  # asked every time it starts
     keeps_going: bool = False  # runs as usual while away mode is on (pills, feeding a cat)
+    light_color: list[int] | None = None  # the color of the lights for this chore (None: the lights' own)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Chore:
         return cls(
+            light_color=_color(d.get("light_color")),
             keeps_going=bool(d.get("keeps_going", False)),
             questions=[Question.from_dict(q) for q in d.get("questions") or []],
             parked=bool(d.get("parked", False)),
@@ -863,7 +871,7 @@ def picture_data(image: str, media_id: str = "local") -> dict[str, Any]:
     return {"image": f"/media/{media_id}/{quote(image)}"}
 
 
-def validate_chore(chore: Chore) -> str | None:
+def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
     """Return an error message, or None when the chore is valid."""
     if not chore.name:
         return "A chore needs a name."
@@ -914,7 +922,11 @@ def validate_chore(chore: Chore) -> str | None:
                 return f"Step '{step.title}': {error}"
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
-    if chore.nudge_style not in STYLE_VALUES:
+    if chore.light_color is not None and (len(chore.light_color) != 3 or any(not 0 <= c <= 255 for c in chore.light_color)):
+        return "A light color needs three values from 0 to 255."
+    if chore.nudge_style not in STYLE_VALUES and chore.nudge_style not in {
+        ladder_style(i) for i in ladder_ids
+    }:
         return "Unknown nudge style."
     return validate_repeat(chore.repeat)
 
@@ -1345,6 +1357,7 @@ def parked_chore(
         created_at=fmt_ts(now),
         nudge_style=parent.nudge_style if parent else STYLE_ONE,
         ignore_quiet_hours=parent.ignore_quiet_hours if parent else False,
+        light_color=parent.light_color if parent else None,
     )
 
 
@@ -1793,6 +1806,25 @@ class SpeechCfg:
 
 
 @dataclass
+class ExtraSound:
+    """A named sound effect of a speaker, for ladders (the speaker's ding and alarm stay as they are)."""
+
+    id: str = ""
+    name: str = ""
+    kind: str = SOUND_ALEXA
+    sound: str = ""  # an Alexa sound id, or a file path / media-source id / URL
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> ExtraSound:
+        return cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            name=str(d.get("name") or "").strip(),
+            kind=str(d.get("kind", SOUND_ALEXA)),
+            sound=str(d.get("sound") or "").strip(),
+        )
+
+
+@dataclass
 class SpeakerCfg:
     """A speaker (a media player) that can play a cue, speak, and sound an alarm."""
 
@@ -1806,10 +1838,13 @@ class SpeakerCfg:
             sound=ALEXA_ALARM_SOUND, start_at=4, kind=SOUND_ALEXA
         )
     )
+    sounds: list[ExtraSound] = field(default_factory=list)  # more sound effects, for ladders
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
+        extra = d.get("sounds")
         return cls(
+            sounds=[ExtraSound.from_dict(x) for x in extra if isinstance(x, dict)] if isinstance(extra, list) else [],
             entity_id=str(d.get("entity_id", "")).strip(),
             cue=SoundCfg.from_dict(d.get("cue") or {"sound": ALEXA_DING_SOUND}, 1),
             speech=SpeechCfg.from_dict(d.get("speech")),
@@ -1902,6 +1937,143 @@ class AiSettings:
         )
 
 
+# --- your own nudge ladders ("Nudge it your way") -------------------------------
+#
+# A built-in style sends every device from the nudge number the device is set to start at.
+# A ladder of your own says it per nudge instead: how long to wait for each nudge, and
+# exactly which devices act (and how loud), so "no lights at nudge 2" is possible.
+
+LADDER_PREFIX = "ladder:"  # a chore's nudge style "ladder:<id>" points at one of your ladders
+LADDER_MAX = 20
+LADDER_MAX_NUDGES = 12
+LADDER_GAP_MIN, LADDER_GAP_MAX = 1, 720  # minutes
+LADDER_GAP_DEFAULT = 5
+LADDER_NAME_MAX = 40
+
+
+def _text_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(x).strip() for x in value if str(x).strip()]
+
+
+def _text_map(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    return {str(k).strip(): str(v).strip() for k, v in value.items() if str(k).strip()}
+
+
+def _color(value: Any) -> list[int] | None:
+    """An [r, g, b] list, or None when it is missing or not three numbers."""
+    if not isinstance(value, (list, tuple)) or len(value) != 3:
+        return None
+    try:
+        return [int(c) for c in value]
+    except (TypeError, ValueError):
+        return None
+
+
+LIGHT_OWN_MODE = ""  # the light's own mode (blink or indicator), as set in its settings
+
+
+@dataclass
+class RungLight:
+    """What one light does at one nudge: blink, or stay on as a status light; maybe another color."""
+
+    mode: str = LIGHT_BLINK
+    color: list[int] | None = None  # used when the chore has no color of its own; none: the light's own
+
+    @classmethod
+    def from_dict(cls, d: Any) -> RungLight:
+        if isinstance(d, dict):
+            mode = d.get("mode")
+            return cls(mode=mode if mode in (LIGHT_OWN_MODE, LIGHT_BLINK, LIGHT_INDICATOR) else LIGHT_BLINK, color=_color(d.get("color")))
+        return cls(mode=str(d) if isinstance(d, str) else LIGHT_BLINK)
+
+
+def _rung_lights(value: Any) -> dict[str, RungLight]:
+    """The lights of a nudge. An older list of entity ids means "the light's own mode"."""
+    if isinstance(value, list):
+        return {e: RungLight(mode=LIGHT_OWN_MODE) for e in _text_list(value)}
+    if isinstance(value, dict):
+        return {str(k).strip(): RungLight.from_dict(v) for k, v in value.items() if str(k).strip()}
+    return {}
+
+
+@dataclass
+class Rung:
+    """One nudge of a ladder."""
+
+    gap: int = LADDER_GAP_DEFAULT  # minutes after the previous nudge (the first goes out at once)
+    phones: dict[str, str] = field(default_factory=dict)  # phone service -> notification level
+    lights: dict[str, RungLight] = field(default_factory=dict)  # light entity id -> what it does
+    speakers: dict[str, str] = field(default_factory=dict)  # speaker entity id -> level, speech_chime or sound:<id>
+    alarms: list[str] = field(default_factory=list)  # alarm device entity ids
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Rung:
+        return cls(
+            gap=_int(d.get("gap"), LADDER_GAP_DEFAULT),
+            phones=_text_map(d.get("phones")),
+            lights=_rung_lights(d.get("lights")),
+            speakers=_text_map(d.get("speakers")),
+            alarms=_text_list(d.get("alarms")),
+        )
+
+
+@dataclass
+class Ladder:
+    """A named list of nudges. After the last one it stops, or repeats the last one."""
+
+    id: str = ""
+    name: str = ""
+    rungs: list[Rung] = field(default_factory=list)
+    repeat_last: bool = False
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Ladder:
+        rungs = d.get("rungs")
+        return cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            name=str(d.get("name") or "").strip(),
+            rungs=[Rung.from_dict(r) for r in rungs if isinstance(r, dict)] if isinstance(rungs, list) else [],
+            repeat_last=bool(d.get("repeat_last", False)),
+        )
+
+
+def ladder_style(ladder_id: str) -> str:
+    """The nudge style value that points at a ladder."""
+    return f"{LADDER_PREFIX}{ladder_id}"
+
+
+def find_ladder(style: str, ladders: list[Ladder]) -> Ladder | None:
+    """The ladder a style points at, or None (a built-in style, or a ladder that is gone)."""
+    if not style.startswith(LADDER_PREFIX):
+        return None
+    wanted = style[len(LADDER_PREFIX):]
+    return next((ladder for ladder in ladders if ladder.id == wanted), None)
+
+
+def style_known(style: str, ladders: list[Ladder]) -> bool:
+    """Whether a nudge style is a built-in one or one of your ladders."""
+    return style in STYLE_VALUES or find_ladder(style, ladders) is not None
+
+
+def chores_using(ladder_id: str, chores: Iterable[Chore]) -> list[str]:
+    """The names of the chores that use a ladder, in alphabetical order."""
+    style = ladder_style(ladder_id)
+    return sorted(chore.name for chore in chores if chore.nudge_style == style)
+
+
+def rung_for(ladder: Ladder, number: int) -> Rung | None:
+    """The rung that nudge number `number` (1, 2, 3, ...) uses, or None when the ladder is over."""
+    if number < 1 or not ladder.rungs:
+        return None
+    if number <= len(ladder.rungs):
+        return ladder.rungs[number - 1]
+    return ladder.rungs[-1] if ladder.repeat_last else None
+
+
 @dataclass
 class Settings:
     """Boopli's global settings."""
@@ -1920,11 +2092,14 @@ class Settings:
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
+    ladders: list[Ladder] = field(default_factory=list)  # "Nudge it your way"
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
+        ladders = d.get("ladders")
         return cls(
+            ladders=[Ladder.from_dict(x) for x in ladders if isinstance(x, dict)] if isinstance(ladders, list) else [],
             check_in_minutes=int(d.get("check_in_minutes", CHECK_IN_DEFAULT) or CHECK_IN_DEFAULT),
             question_wait_minutes=int(d.get("question_wait_minutes", QUESTION_WAIT_DEFAULT) or QUESTION_WAIT_DEFAULT),
             ai=AiSettings.from_dict(d.get("ai")),
@@ -1968,6 +2143,23 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
         return f"Alarm repeat must be 0 to {ALARM_REPEAT_MAX} seconds."
+    if len(speaker.sounds) > EXTRA_SOUNDS_MAX:
+        return f"A speaker can have at most {EXTRA_SOUNDS_MAX} extra sounds."
+    sound_ids: set[str] = set()
+    sound_names: set[str] = set()
+    for extra in speaker.sounds:
+        if not extra.name:
+            return f"Every extra sound of {speaker.entity_id} needs a name."
+        if len(extra.name) > EXTRA_SOUND_NAME_MAX:
+            return f"A sound name can have at most {EXTRA_SOUND_NAME_MAX} letters."
+        if extra.id in sound_ids or extra.name.casefold() in sound_names:
+            return f"{speaker.entity_id} has two sounds with the same name."
+        sound_ids.add(extra.id)
+        sound_names.add(extra.name.casefold())
+        if extra.kind not in SOUND_KINDS:
+            return f"Unknown type for the sound '{extra.name}'."
+        if not extra.sound:
+            return f"Choose the sound for '{extra.name}'."
     speech = speaker.speech
     if not START_AT_MIN <= speech.start_at <= START_AT_MAX:
         return _START_AT_ERROR
@@ -1985,12 +2177,14 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
 
 def validate_speaker_test(speaker: SpeakerCfg, level: str) -> str | None:
     """Check a speaker before testing one level (which need not be switched on)."""
-    if level not in SPEAKER_LEVELS:
+    if find_extra_sound(speaker, level) is not None:
+        return _validate_speaker(speaker)  # one of the speaker's extra sounds
+    if level not in SPEAKER_LEVELS and level != SPEAKER_SPEECH_CHIME:
         return "Unknown speaker level."
     probe = speaker
     if level == SPEAKER_CUE:
         probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
-    elif level == SPEAKER_SPEECH:
+    elif level in (SPEAKER_SPEECH, SPEAKER_SPEECH_CHIME):
         probe = replace(speaker, speech=replace(speaker.speech, enabled=True))
     else:
         probe = replace(speaker, alarm=replace(speaker.alarm, enabled=True))
@@ -2070,8 +2264,49 @@ def validate_settings(settings: Settings) -> str | None:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
-    if settings.default_style not in STYLE_VALUES:
+    error = validate_ladders(settings.ladders)
+    if error:
+        return error
+    if not style_known(settings.default_style, settings.ladders):
         return "Unknown default nudge style."
+    return None
+
+
+def _speaker_choice_known(choice: str) -> bool:
+    return choice in SPEAKER_LEVELS or choice == SPEAKER_SPEECH_CHIME or choice.startswith(SPEAKER_SOUND_PREFIX)
+
+
+def validate_ladders(ladders: list[Ladder]) -> str | None:
+    """Check "Nudge it your way": names, the number of nudges, the waits and the device levels."""
+    if len(ladders) > LADDER_MAX:
+        return f"You can have at most {LADDER_MAX} ladders."
+    ids: set[str] = set()
+    names: set[str] = set()
+    for ladder in ladders:
+        if ladder.id in ids:
+            return "Two ladders have the same id."
+        ids.add(ladder.id)
+        if not ladder.name:
+            return "Every ladder needs a name."
+        if len(ladder.name) > LADDER_NAME_MAX:
+            return f"A ladder name can have at most {LADDER_NAME_MAX} letters."
+        if ladder.name.casefold() in names:
+            return f"There are two ladders called '{ladder.name}'."
+        names.add(ladder.name.casefold())
+        if not 1 <= len(ladder.rungs) <= LADDER_MAX_NUDGES:
+            return f"'{ladder.name}' needs 1 to {LADDER_MAX_NUDGES} nudges."
+        for number, rung in enumerate(ladder.rungs, start=1):
+            if not LADDER_GAP_MIN <= rung.gap <= LADDER_GAP_MAX:
+                return f"'{ladder.name}', nudge {number}: the wait must be {LADDER_GAP_MIN} to {LADDER_GAP_MAX} minutes."
+            if any(level not in LEVEL_VALUES for level in rung.phones.values()):
+                return f"'{ladder.name}', nudge {number}: unknown phone notification level."
+            if any(not _speaker_choice_known(choice) for choice in rung.speakers.values()):
+                return f"'{ladder.name}', nudge {number}: unknown speaker choice."
+            for light in rung.lights.values():
+                if light.mode not in (LIGHT_OWN_MODE, *LIGHT_MODE_VALUES):
+                    return f"'{ladder.name}', nudge {number}: unknown light mode."
+                if light.color is not None and (len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color)):
+                    return f"'{ladder.name}', nudge {number}: a light color needs three values from 0 to 255."
     return None
 
 
@@ -2110,8 +2345,16 @@ def quiet_ends(now: datetime, quiet: QuietHours, tz: tzinfo) -> datetime | None:
 # --- nudges --------------------------------------------------------------
 
 
-def next_gap(style: str, sent: int) -> int | None:
-    """Minutes until the next nudge after `sent` nudges, or None for no more."""
+def next_gap(style: str, sent: int, ladders: list[Ladder] | None = None) -> int | None:
+    """Minutes until the next nudge after `sent` nudges, or None for no more.
+
+    A style that points at one of your ladders takes the wait from the ladder's next nudge.
+    A ladder that has been removed behaves like "one nudge".
+    """
+    if style.startswith(LADDER_PREFIX):
+        ladder = find_ladder(style, ladders or [])
+        rung = rung_for(ladder, sent + 1) if ladder else None
+        return rung.gap if rung else None
     if style == STYLE_ESCALATING:
         index = sent - 1
         return ESCALATING_GAPS[index] if 0 <= index < len(ESCALATING_GAPS) else None
@@ -2164,11 +2407,13 @@ def decide_nudge(
     return NudgeDecision("send", channels)
 
 
-def record_nudge(step: StepRun, style: str, now: datetime) -> None:
+def record_nudge(
+    step: StepRun, style: str, now: datetime, ladders: list[Ladder] | None = None
+) -> None:
     """Remember that a nudge went out and schedule the next one."""
     step.nudge_count += 1
     step.snoozed_until = None
-    gap = next_gap(style, step.nudge_count)
+    gap = next_gap(style, step.nudge_count, ladders)
     step.next_nudge_at = fmt_ts(now + timedelta(minutes=gap)) if gap else None
 
 
@@ -2430,6 +2675,50 @@ def reached(start_at: int, number: int) -> bool:
     return start_at <= number
 
 
+def phones_reached(settings: Settings, style: str, number: int) -> list[PhoneCfg]:
+    """The phones that have been nudged by now (up to and including nudge `number`).
+
+    Built-in styles: the phones whose "starts at nudge" has been reached. A ladder of your own:
+    every phone that is on any of its nudges up to `number`. These are the phones that have a
+    notification to turn green ("On it"), to replace ("Still on it?") or that hear about questions.
+    """
+    ladder = find_ladder(style, settings.ladders)
+    if ladder is None:
+        return [p for p in settings.phones if reached(p.start_at, number)]
+    services: set[str] = set()
+    for n in range(1, max(number, 0) + 1):
+        rung = rung_for(ladder, n)
+        if rung is None:
+            break
+        services.update(rung.phones)
+    out: list[PhoneCfg] = []
+    for phone in settings.phones:
+        if phone.service in services and all(o.service != phone.service for o in out):
+            out.append(phone)  # a phone listed twice is still one phone
+    return out
+
+
+def find_extra_sound(speaker: SpeakerCfg, choice: str) -> ExtraSound | None:
+    """The extra sound a "sound:<id>" choice points at."""
+    if not choice.startswith(SPEAKER_SOUND_PREFIX):
+        return None
+    wanted = choice[len(SPEAKER_SOUND_PREFIX):]
+    return next((s for s in speaker.sounds if s.id == wanted), None)
+
+
+def speaker_choice_ok(speaker: SpeakerCfg, choice: str) -> bool:
+    """Whether a speaker can do what a ladder asks of it (a level that is switched on, or a sound it has)."""
+    if choice.startswith(SPEAKER_SOUND_PREFIX):
+        return find_extra_sound(speaker, choice) is not None
+    cfg = {
+        SPEAKER_CUE: speaker.cue,
+        SPEAKER_SPEECH: speaker.speech,
+        SPEAKER_SPEECH_CHIME: speaker.speech,
+        SPEAKER_ALARM: speaker.alarm,
+    }.get(choice)
+    return bool(cfg and cfg.enabled)
+
+
 def speaker_level(speaker: SpeakerCfg, number: int) -> str | None:
     """The one level a speaker plays at this nudge: the highest enabled one reached."""
     level = None
@@ -2465,16 +2754,21 @@ def sound_play_data(kind: str, sound: str) -> dict[str, str]:
 
 
 def speech_call(
-    speaker: SpeakerCfg, text: str
+    speaker: SpeakerCfg, text: str, announce: bool | None = None
 ) -> tuple[str, str, dict[str, Any]]:
-    """How to speak `text` on a speaker: (domain, service, data)."""
+    """How to speak `text` on a speaker: (domain, service, data).
+
+    `announce` (Alexa Media Player only) picks an announcement, which starts with a chime, or plain
+    speech; left out, the speaker's own setting decides.
+    """
     cfg = speaker.speech
     if cfg.route == SPEECH_ALEXA_MEDIA:
         service = cfg.target.removeprefix("notify.")
+        chime = cfg.announce if announce is None else announce
         return (
             "notify",
             service,
-            {"message": text, "data": {"type": "announce" if cfg.announce else "tts"}},
+            {"message": text, "data": {"type": "announce" if chime else "tts"}},
         )
     if cfg.route == SPEECH_ALEXA_DEVICES:
         return "notify", "send_message", {"entity_id": cfg.target, "message": text}

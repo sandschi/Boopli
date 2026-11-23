@@ -711,6 +711,11 @@ class BoopliManager:
             self._announce(events)
             self._tick()
 
+    def style_for(self, run: engine.Run) -> str:
+        """The nudge style of the chore a run belongs to (the default when the chore is gone)."""
+        chore = self.chores.get(run.chore_id)
+        return chore.nudge_style if chore else self.settings.default_style
+
     def _nudge_due_steps(
         self, now: datetime, wakeups: list[datetime]
     ) -> list[engine.Event]:
@@ -744,7 +749,17 @@ class BoopliManager:
                     number = step.nudge_count + 1
                     check_in = engine.in_progress(step)  # the "still on it?" after "On it"
                     step.on_it_until = None  # asked now: back to the normal look
-                    engine.record_nudge(step, style, now)
+                    ladder = engine.find_ladder(style, self.settings.ladders)
+                    rung = engine.rung_for(ladder, number) if ladder else None
+                    if ladder and rung is None and ladder.rungs and not check_in:
+                        rung = ladder.rungs[-1]  # a snooze after the last nudge: same as that nudge, nothing else
+                    if ladder and check_in:
+                        # The check-in is not a nudge of the ladder: the next nudge stays available.
+                        number = max(step.nudge_count, 1)
+                        gap = engine.next_gap(style, step.nudge_count, self.settings.ladders)
+                        step.next_nudge_at = engine.fmt_ts(now + timedelta(minutes=gap)) if gap else None
+                    else:
+                        engine.record_nudge(step, style, now, self.settings.ladders)
                     if step.next_nudge_at:
                         wakeups.append(engine.parse_ts(step.next_nudge_at))
                     if check_in:
@@ -768,6 +783,8 @@ class BoopliManager:
                                 decision.channels,
                                 number,
                                 step.image,
+                                rung,
+                                chore.light_color if chore else None,
                             )
                         )
                     events.append(
@@ -905,6 +922,17 @@ class BoopliManager:
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
+        # A ladder that chores use cannot be deleted: say which chores, and leave everything as it was.
+        kept = {ladder.id for ladder in settings.ladders}
+        for ladder in self.settings.ladders:
+            if ladder.id in kept:
+                continue
+            users = engine.chores_using(ladder.id, self.chores.values())
+            if users:
+                raise BoopliError(
+                    f"The ladder '{ladder.name}' is used by {', '.join(users)}. "
+                    "Pick another nudge style for them first."
+                )
         self.settings = settings
         self._watch_presence()
         self._tick()
@@ -938,7 +966,7 @@ class BoopliManager:
             chore.nudge_style = (
                 existing.nudge_style if existing else self.settings.default_style
             )
-        error = engine.validate_chore(chore)
+        error = engine.validate_chore(chore, [lad.id for lad in self.settings.ladders])
         if error:
             raise BoopliError(error)
 
@@ -1212,7 +1240,7 @@ class BoopliManager:
             created_at=engine.fmt_ts(dt_util.utcnow()),
             nudge_style=self.settings.default_style,
         )
-        error = engine.validate_chore(chore)
+        error = engine.validate_chore(chore, [lad.id for lad in self.settings.ladders])
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
@@ -1684,7 +1712,7 @@ class BoopliManager:
             nudge_style=self.settings.default_style,
             notes=notes.strip()[: engine.NOTES_MAX],
         )
-        error = engine.validate_chore(chore)
+        error = engine.validate_chore(chore, [lad.id for lad in self.settings.ladders])
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
