@@ -128,15 +128,24 @@ export function tileDef(type: string): TileDef | undefined {
   return TILE_DEFS.find((d) => d.type === type);
 }
 
-/** A new tile of a type, with its default size and options, at the first free spot (null: no room). */
+/**
+ * A new tile of a type, with its default options, at the first free spot. It starts at its default size;
+ * when that does not fit anywhere it is made smaller, a step at a time (down to one cell), until it does.
+ * Null: not even one cell is free.
+ */
 export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 9): Tile | null {
   const def = tileDef(type);
   const options: TileOptions = {};
   for (const f of def?.options ?? []) options[f.key] = f.default;
-  const w = Math.max(1, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
-  const h = Math.max(1, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
-  const spot = firstFit(others, columns, rows, w, h);
-  return spot ? { id: newLadderId(), type, ...spot, w, h, options } : null;
+  let w = Math.max(1, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
+  let h = Math.max(1, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
+  for (;;) {
+    const spot = firstFit(others, columns, rows, w, h);
+    if (spot) return { id: newLadderId(), type, ...spot, w, h, options };
+    if (w === 1 && h === 1) return null;
+    if (w >= h) w -= 1; // shrink the longer side first, so the shape stays about the same
+    else h -= 1;
+  }
 }
 
 /** The tiles a new board starts with. */

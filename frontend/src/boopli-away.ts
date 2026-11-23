@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { awayEnd, awaySet, errorMessage } from "./api";
 import { sharedStyles } from "./styles";
+import { icon } from "./icon";
 import { dayKey, describeWhen } from "./time";
 import type { Away, Hass, Snapshot } from "./types";
 
@@ -260,7 +261,7 @@ export class BoopliAway extends LitElement {
     return html`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${open} @click=${() => this._toggle()}>
-          <span class="title">🧳 Away mode</span>
+          <span class="title">${icon("bag-suitcase")} Away mode</span>
           <span class="status ${away?.active ? "on" : ""}">${status}</span>
           <span class="chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
         </button>
@@ -303,14 +304,14 @@ export class BoopliAway extends LitElement {
         cursor: pointer;
       }
       .title {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 500;
         white-space: nowrap;
       }
       .status {
         flex: 1;
         min-width: 0;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--secondary-text-color);
         overflow: hidden;
         text-overflow: ellipsis;
@@ -365,7 +366,7 @@ export class BoopliAway extends LitElement {
         margin-top: 16px;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
     `,
   ];

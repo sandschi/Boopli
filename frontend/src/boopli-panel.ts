@@ -13,6 +13,9 @@ import { awayWhen } from "./boopli-away";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
+import { applyAccent } from "./accent";
+import { loadFonts } from "./fonts";
+import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
 
 type Tab = "today" | "chores" | "home" | "settings";
@@ -243,6 +246,7 @@ export class BoopliPanel extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    loadFonts();
     // Keep relative times ("in 2h") fresh.
     this._timer = window.setInterval(() => (this._nowMs = Date.now()), 30_000);
     window.addEventListener("beforeunload", this._beforeUnload);
@@ -255,6 +259,14 @@ export class BoopliPanel extends LitElement {
     this._unsub?.();
     this._unsub = undefined;
     this._subscribing = false;
+  }
+
+  protected willUpdate(changed: Map<string, unknown>): void {
+    // The accent colour (the pet's own, or the one picked in Settings) for everything inside the panel.
+    if (changed.has("_snapshot")) {
+      const s = this._snapshot?.settings;
+      applyAccent(this, s?.pet_kind, s?.accent);
+    }
   }
 
   protected updated(): void {
@@ -315,7 +327,7 @@ export class BoopliPanel extends LitElement {
     const onNow = !!this._snapshot?.away_now;
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
-      <span>🧳 <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
+      <span>${icon("bag-suitcase")} <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
       <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? "Back now…" : "Change"}</button>
     </div>`;
   }
@@ -374,7 +386,7 @@ export class BoopliPanel extends LitElement {
     return html`
       <header>
         ${this.narrow
-          ? html`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>`
+          ? html`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>${icon("menu")}</button>`
           : nothing}
         <h1>Boopli</h1>
         <nav>
@@ -389,7 +401,7 @@ export class BoopliPanel extends LitElement {
           )}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>🖥 Wall view</button>
+        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>${icon("monitor-dashboard")} Wall view</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -460,7 +472,7 @@ export class BoopliPanel extends LitElement {
       }
       header h1 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 500;
         margin-right: 8px;
       }
@@ -520,7 +532,7 @@ export class BoopliPanel extends LitElement {
         box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
       }
       main {
-        padding: 20px 24px 64px;
+        padding: 14px 24px 20px;
       }
       .backdrop {
         position: fixed;
@@ -552,7 +564,7 @@ export class BoopliPanel extends LitElement {
         padding: 8px 16px;
         background: var(--warning-color, #ffa600);
         color: #1a1200;
-        font-size: 15px;
+        font-size: 17px;
       }
       .away-bar button {
         min-height: 0;
@@ -569,12 +581,12 @@ export class BoopliPanel extends LitElement {
           gap: 6px;
         }
         header h1 {
-          font-size: 18px;
+          font-size: 20px;
           margin-right: 0;
         }
         .tab {
           padding: 8px 9px;
-          font-size: 14px;
+          font-size: 16px;
         }
         main {
           padding: 12px 12px 64px;

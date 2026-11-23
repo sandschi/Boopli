@@ -289,7 +289,7 @@ var Me = (e, t) => {
 						index: a,
 						name: r[2],
 						strings: n,
-						ctor: r[1] === "." ? Re : r[1] === "?" ? ze : r[1] === "@" ? Be : Le
+						ctor: r[1] === "." ? Le : r[1] === "?" ? Re : r[1] === "@" ? ze : Ie
 					}), i.removeAttribute(e);
 				} else e.startsWith(p) && (c.push({
 					type: 6,
@@ -327,12 +327,12 @@ var Me = (e, t) => {
 		return n.innerHTML = e, n;
 	}
 };
-function Pe(e, t, n = e, r) {
+function x(e, t, n = e, r) {
 	if (t === v) return t;
 	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = ye(t) ? void 0 : t._$litDirective$;
-	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = Pe(e, i._$AS(e, t.values), i, r)), t;
+	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = x(e, i._$AS(e, t.values), i, r)), t;
 }
-var Fe = class {
+var Pe = class {
 	constructor(e, t) {
 		this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = t;
 	}
@@ -349,7 +349,7 @@ var Fe = class {
 		for (; s !== void 0;) {
 			if (a === s.index) {
 				let t;
-				s.type === 2 ? t = new Ie(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Ve(i, this, e)), this._$AV.push(t), s = n[++o];
+				s.type === 2 ? t = new Fe(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Be(i, this, e)), this._$AV.push(t), s = n[++o];
 			}
 			a !== s?.index && (i = b.nextNode(), a++);
 		}
@@ -359,7 +359,7 @@ var Fe = class {
 		let t = 0;
 		for (let n of this._$AV) n !== void 0 && (n.strings === void 0 ? n._$AI(e[t]) : (n._$AI(e, n, t), t += n.strings.length - 2)), t++;
 	}
-}, Ie = class e {
+}, Fe = class e {
 	get _$AU() {
 		return this._$AM?._$AU ?? this._$Cv;
 	}
@@ -377,7 +377,7 @@ var Fe = class {
 		return this._$AB;
 	}
 	_$AI(e, t = this) {
-		e = Pe(this, e, t), ye(e) ? e === y || e == null || e === "" ? (this._$AH !== y && this._$AR(), this._$AH = y) : e !== this._$AH && e !== v && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? xe(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+		e = x(this, e, t), ye(e) ? e === y || e == null || e === "" ? (this._$AH !== y && this._$AR(), this._$AH = y) : e !== this._$AH && e !== v && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? xe(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 	}
 	O(e) {
 		return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -392,7 +392,7 @@ var Fe = class {
 		let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = Ne.createElement(je(n.h, n.h[0]), this.options)), n);
 		if (this._$AH?._$AD === r) this._$AH.p(t);
 		else {
-			let e = new Fe(r, this), n = e.u(this.options);
+			let e = new Pe(r, this), n = e.u(this.options);
 			e.p(t), this.T(n), this._$AH = e;
 		}
 	}
@@ -415,7 +415,7 @@ var Fe = class {
 	setConnected(e) {
 		this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
 	}
-}, Le = class {
+}, Ie = class {
 	get tagName() {
 		return this.element.tagName;
 	}
@@ -427,43 +427,43 @@ var Fe = class {
 	}
 	_$AI(e, t = this, n, r) {
 		let i = this.strings, a = !1;
-		if (i === void 0) e = Pe(this, e, t, 0), a = !ye(e) || e !== this._$AH && e !== v, a && (this._$AH = e);
+		if (i === void 0) e = x(this, e, t, 0), a = !ye(e) || e !== this._$AH && e !== v, a && (this._$AH = e);
 		else {
 			let r = e, o, s;
-			for (e = i[0], o = 0; o < i.length - 1; o++) s = Pe(this, r[n + o], t, o), s === v && (s = this._$AH[o]), a ||= !ye(s) || s !== this._$AH[o], s === y ? e = y : e !== y && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
+			for (e = i[0], o = 0; o < i.length - 1; o++) s = x(this, r[n + o], t, o), s === v && (s = this._$AH[o]), a ||= !ye(s) || s !== this._$AH[o], s === y ? e = y : e !== y && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
 		}
 		a && !r && this.j(e);
 	}
 	j(e) {
 		e === y ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
 	}
-}, Re = class extends Le {
+}, Le = class extends Ie {
 	constructor() {
 		super(...arguments), this.type = 3;
 	}
 	j(e) {
 		this.element[this.name] = e === y ? void 0 : e;
 	}
-}, ze = class extends Le {
+}, Re = class extends Ie {
 	constructor() {
 		super(...arguments), this.type = 4;
 	}
 	j(e) {
 		this.element.toggleAttribute(this.name, !!e && e !== y);
 	}
-}, Be = class extends Le {
+}, ze = class extends Ie {
 	constructor(e, t, n, r, i) {
 		super(e, t, n, r, i), this.type = 5;
 	}
 	_$AI(e, t = this) {
-		if ((e = Pe(this, e, t, 0) ?? y) === v) return;
+		if ((e = x(this, e, t, 0) ?? y) === v) return;
 		let n = this._$AH, r = e === y && n !== y || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== y && (n === y || r);
 		r && this.element.removeEventListener(this.name, this, n), i && this.element.addEventListener(this.name, this, e), this._$AH = e;
 	}
 	handleEvent(e) {
 		typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
 	}
-}, Ve = class {
+}, Be = class {
 	constructor(e, t, n) {
 		this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
 	}
@@ -471,18 +471,18 @@ var Fe = class {
 		return this._$AM._$AU;
 	}
 	_$AI(e) {
-		Pe(this, e);
+		x(this, e);
 	}
-}, He = de.litHtmlPolyfillSupport;
-He?.(Ne, Ie), (de.litHtmlVersions ??= []).push("3.3.3");
-var Ue = (e, t, n) => {
+}, Ve = de.litHtmlPolyfillSupport;
+Ve?.(Ne, Fe), (de.litHtmlVersions ??= []).push("3.3.3");
+var He = (e, t, n) => {
 	let r = n?.renderBefore ?? t, i = r._$litPart$;
 	if (i === void 0) {
 		let e = n?.renderBefore ?? null;
-		r._$litPart$ = i = new Ie(t.insertBefore(ve(), e), e, void 0, n ?? {});
+		r._$litPart$ = i = new Fe(t.insertBefore(ve(), e), e, void 0, n ?? {});
 	}
 	return i._$AI(e), i;
-}, We = globalThis, x = class extends f {
+}, Ue = globalThis, S = class extends f {
 	constructor() {
 		super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
 	}
@@ -492,7 +492,7 @@ var Ue = (e, t, n) => {
 	}
 	update(e) {
 		let t = this.render();
-		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = Ue(t, this.renderRoot, this.renderOptions);
+		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = He(t, this.renderRoot, this.renderOptions);
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -504,11 +504,11 @@ var Ue = (e, t, n) => {
 		return v;
 	}
 };
-x._$litElement$ = !0, x.finalized = !0, We.litElementHydrateSupport?.({ LitElement: x });
-var Ge = We.litElementPolyfillSupport;
-Ge?.({ LitElement: x }), (We.litElementVersions ??= []).push("4.2.2");
+S._$litElement$ = !0, S.finalized = !0, Ue.litElementHydrateSupport?.({ LitElement: S });
+var We = Ue.litElementPolyfillSupport;
+We?.({ LitElement: S }), (Ue.litElementVersions ??= []).push("4.2.2");
 // src/api.ts
-function S(e, t) {
+function Ge(e, t) {
 	return e.callWS({
 		type: "boopli/settings_save",
 		settings: t
@@ -788,12 +788,38 @@ function Ot(e, t, n, r) {
 function kt(e) {
 	return e.callWS({ type: "boopli/egg_found" });
 }
+// src/fonts.ts
+var At = [{
+	file: "Itim-latin.woff2",
+	range: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
+}, {
+	file: "Itim-latin-ext.woff2",
+	range: "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF"
+}], jt = "\"Itim\", var(--paper-font-body1_-_font-family, Roboto, sans-serif)", Mt = !1;
+function Nt() {
+	if (Mt || typeof FontFace > "u" || !document.fonts) return;
+	Mt = !0;
+	let e = import.meta.url.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+	for (let { file: t, range: n } of At) new FontFace("Itim", `url(${e}fonts/${t}) format("woff2")`, {
+		style: "normal",
+		weight: "400",
+		unicodeRange: n,
+		display: "swap"
+	}).load().then((e) => document.fonts.add(e)).catch(() => void 0);
+}
 // src/styles.ts
 var T = o`
   :host {
     display: block;
     color: var(--primary-text-color);
-    font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+    font-family: ${a(jt)};
+    font-size: 16px; /* Itim reads small, and Home Assistant's own 14px is too little for it */
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
   }
   * {
     box-sizing: border-box;
@@ -829,10 +855,50 @@ var T = o`
     background: var(--secondary-background-color);
   }
   button.primary {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--text-primary-color, #fff);
+    background: var(--boopli-accent, var(--primary-color));
+    border-color: var(--boopli-accent, var(--primary-color));
+    color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
     font-weight: 500;
+  }
+  /* The big, chunky button: a thick darker edge underneath that sinks when it is pressed. */
+  button.press {
+    background: var(--boopli-accent, var(--primary-color));
+    color: var(--boopli-accent-ink, #fff);
+    border: 0;
+    border-bottom: 6px solid var(--boopli-accent-deep, #2a6e8a);
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    min-height: 60px;
+    padding: 14px 48px 10px;
+    transition: transform 0.08s, border-bottom-width 0.08s;
+  }
+  button.press:hover {
+    background: var(--boopli-accent, var(--primary-color));
+    filter: brightness(1.06);
+  }
+  button.press:active:not(:disabled) {
+    transform: translateY(4px);
+    border-bottom-width: 2px;
+  }
+  .ico {
+    --mdc-icon-size: 1.1em;
+    display: inline-flex;
+    vertical-align: middle;
+    margin-top: -0.12em; /* centred on the letters, not sunk below them */
+  }
+  /* A text link in the accent colour. */
+  button.textlink {
+    border: 0;
+    background: none;
+    min-height: 0;
+    padding: 6px 2px;
+    color: var(--boopli-accent, var(--primary-color));
+  }
+  button.textlink:hover {
+    background: none;
+    text-decoration: underline;
   }
   button.primary:hover {
     filter: brightness(1.08);
@@ -845,12 +911,12 @@ var T = o`
     border-radius: 999px;
     padding: 6px 12px;
     min-height: 34px;
-    font-size: 14px;
+    font-size: 17px;
   }
   button.chip.on {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--text-primary-color, #fff);
+    background: var(--boopli-accent, var(--primary-color));
+    border-color: var(--boopli-accent, var(--primary-color));
+    color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
   }
   button:disabled {
     opacity: 0.5;
@@ -869,16 +935,16 @@ var T = o`
   }
   label {
     display: block;
-    font-size: 13px;
+    font-size: 16px;
     color: var(--secondary-text-color);
     margin-bottom: 4px;
   }
   .error {
     color: var(--error-color, #db4437);
-    font-size: 14px;
+    font-size: 17px;
     margin: 8px 0;
   }
-`, At = class extends x {
+`, Pt = class extends S {
 	static {
 		this.properties = {
 			questions: { attribute: !1 },
@@ -1003,9 +1069,13 @@ var T = o`
     `];
 	}
 };
-customElements.define("boopli-questions", At);
+customElements.define("boopli-questions", Pt);
+// src/icon.ts
+function E(e) {
+	return g`<ha-icon class="ico" icon="mdi:${e}" aria-hidden="true"></ha-icon>`;
+}
 // src/time.ts
-var E = [
+var D = [
 	"Mon",
 	"Tue",
 	"Wed",
@@ -1013,8 +1083,8 @@ var E = [
 	"Fri",
 	"Sat",
 	"Sun"
-], D = E;
-function O(e, t) {
+], O = D;
+function k(e, t) {
 	return new Intl.DateTimeFormat("en-GB", {
 		timeZone: t,
 		hour: "2-digit",
@@ -1022,7 +1092,7 @@ function O(e, t) {
 		hourCycle: "h23"
 	}).format(new Date(e));
 }
-function jt(e, t) {
+function Ft(e, t) {
 	return new Intl.DateTimeFormat("en-CA", {
 		timeZone: t,
 		year: "numeric",
@@ -1030,12 +1100,12 @@ function jt(e, t) {
 		day: "2-digit"
 	}).format(e);
 }
-function Mt(e) {
+function It(e) {
 	let [t, n, r] = e.split("-").map(Number);
 	return Math.round(Date.UTC(t, n - 1, r) / 864e5);
 }
-function k(e, t, n) {
-	let r = new Date(e), i = Mt(jt(r, n)) - Mt(jt(new Date(t), n)), a = O(e, n);
+function A(e, t, n) {
+	let r = new Date(e), i = It(Ft(r, n)) - It(Ft(new Date(t), n)), a = k(e, n);
 	return i === 0 ? `today ${a}` : i === 1 ? `tomorrow ${a}` : `${new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
 		weekday: "short",
@@ -1043,27 +1113,27 @@ function k(e, t, n) {
 		month: "short"
 	}).format(r)}, ${a}`;
 }
-function Nt(e, t, n) {
-	return jt(new Date(e), n) === jt(new Date(t), n);
+function Lt(e, t, n) {
+	return Ft(new Date(e), n) === Ft(new Date(t), n);
 }
-function Pt(e) {
+function Rt(e) {
 	let t = Math.max(0, Math.round(e));
 	if (t < 1) return "less than a minute";
 	if (t < 60) return `${t} min`;
 	let n = Math.floor(t / 60), r = t % 60;
 	return r === 0 ? `${n}h` : `${n}h ${r}m`;
 }
-function Ft(e, t) {
+function zt(e, t) {
 	let n = (new Date(e).getTime() - t) / 6e4;
-	return n <= .5 ? "any moment now" : `in ${Pt(n)}`;
+	return n <= .5 ? "any moment now" : `in ${Rt(n)}`;
 }
-function It(e, t) {
-	return `since ${O(e, t)}`;
+function Bt(e, t) {
+	return `since ${k(e, t)}`;
 }
-function Lt(e) {
+function Vt(e) {
 	return e.length <= 2 ? e.join(" and ") : `${e.slice(0, -1).join(", ")} and ${e[e.length - 1]}`;
 }
-function Rt(e) {
+function Ht(e) {
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e[String(n)] ?? [];
@@ -1073,24 +1143,24 @@ function Rt(e) {
 		}
 		let i = n;
 		for (; i + 1 < 7 && (e[String(i + 1)] ?? []).join() === r.join();) i++;
-		let a = n === i ? E[n] : i === n + 1 ? `${E[n]} and ${E[i]}` : `${E[n]} to ${E[i]}`;
-		t.push(`${a} ${Lt(r)}`), n = i + 1;
+		let a = n === i ? D[n] : i === n + 1 ? `${D[n]} and ${D[i]}` : `${D[n]} to ${D[i]}`;
+		t.push(`${a} ${Vt(r)}`), n = i + 1;
 	}
 	return t.length ? t.join(", ") : "No days yet";
 }
-function zt(e) {
+function Ut(e) {
 	switch (e.type) {
 		case "none": return "On demand";
-		case "schedule": return Rt(e.days);
+		case "schedule": return Ht(e.days);
 		case "every_n_days": return e.every_n_days === 1 ? `Every day after you finish, at ${e.time}` : `${e.every_n_days} days after you finish, at ${e.time}`;
 	}
 }
 // src/boopli-away.ts
-function Bt(e, t, n) {
-	let [r, i, a] = jt(/* @__PURE__ */ new Date(), n).split("-").map(Number);
+function Wt(e, t, n) {
+	let [r, i, a] = Ft(/* @__PURE__ */ new Date(), n).split("-").map(Number);
 	return `${new Date(Date.UTC(r, i - 1, a + e)).toISOString().slice(0, 10)}T${String(t).padStart(2, "0")}:00`;
 }
-function Vt(e, t) {
+function Gt(e, t) {
 	let n = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
 		timeZone: t,
 		year: "numeric",
@@ -1102,11 +1172,11 @@ function Vt(e, t) {
 	}).formatToParts(new Date(e)).map((e) => [e.type, e.value]));
 	return `${n.year}-${n.month}-${n.day}T${n.hour}:${n.minute}`;
 }
-function Ht(e, t, n, r) {
-	let i = e.until ? `until ${k(e.until, t, n)}` : "until you turn it off";
-	return r || !e.start ? i : `from ${k(e.start, t, n)} ${i}`;
+function Kt(e, t, n, r) {
+	let i = e.until ? `until ${A(e.until, t, n)}` : "until you turn it off";
+	return r || !e.start ? i : `from ${A(e.start, t, n)} ${i}`;
 }
-var Ut = class extends x {
+var qt = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -1124,10 +1194,10 @@ var Ut = class extends x {
 		};
 	}
 	constructor() {
-		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Bt(1, 8, "UTC"), this._open = !1, this._until = Bt(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
+		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Wt(1, 8, "UTC"), this._open = !1, this._until = Wt(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
 	}
 	willUpdate() {
-		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Bt(1, 8, this.snapshot.time_zone), this._until = Bt(7, 18, this.snapshot.time_zone), this._seedKeep());
+		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Wt(1, 8, this.snapshot.time_zone), this._until = Wt(7, 18, this.snapshot.time_zone), this._seedKeep());
 	}
 	_seedKeep() {
 		this._keep = Object.fromEntries(this._chores().map((e) => [e.id, e.keeps_going ?? !1]));
@@ -1137,7 +1207,7 @@ var Ut = class extends x {
 	}
 	_change(e) {
 		let t = this.snapshot?.time_zone ?? "UTC";
-		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Vt(e.start, t)), this._open = !e.until, e.until && (this._until = Vt(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
+		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Gt(e.start, t)), this._open = !e.until, e.until && (this._until = Gt(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
 	}
 	_toggle() {
 		let e = this._expanded || this._changing;
@@ -1170,7 +1240,7 @@ var Ut = class extends x {
 	_renderOn(e) {
 		let t = !!this.snapshot?.away_now, n = this.snapshot?.time_zone ?? "UTC";
 		return g`
-      <p>${Ht(e, this.nowMs, n, t)}</p>
+      <p>${Kt(e, this.nowMs, n, t)}</p>
       <p class="muted small">
         ${t ? "Nothing starts and nothing nudges you, except the chores that keep going." : "Boopli carries on as usual until then."}
       </p>
@@ -1249,11 +1319,11 @@ var Ut = class extends x {
     `;
 	}
 	render() {
-		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${n ? "On" : "Planned"}: ${Ht(e, this.nowMs, t, n)}` : "Off";
+		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${n ? "On" : "Planned"}: ${Kt(e, this.nowMs, t, n)}` : "Off";
 		return g`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${r} @click=${() => this._toggle()}>
-          <span class="title">🧳 Away mode</span>
+          <span class="title">${E("bag-suitcase")} Away mode</span>
           <span class="status ${e?.active ? "on" : ""}">${i}</span>
           <span class="chev" aria-hidden="true">${r ? "▾" : "▸"}</span>
         </button>
@@ -1290,14 +1360,14 @@ var Ut = class extends x {
         cursor: pointer;
       }
       .title {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 500;
         white-space: nowrap;
       }
       .status {
         flex: 1;
         min-width: 0;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--secondary-text-color);
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1352,14 +1422,14 @@ var Ut = class extends x {
         margin-top: 16px;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
     `];
 	}
 };
-customElements.define("boopli-away", Ut);
+customElements.define("boopli-away", qt);
 // src/today.ts
-function Wt(e, t) {
+function Jt(e, t) {
 	let n = e.time_zone, r = e.runs.flatMap((e) => e.steps.filter((e) => e.status === "active").map((t) => ({
 		run: e,
 		step: t,
@@ -1367,7 +1437,7 @@ function Wt(e, t) {
 		total: e.steps.length
 	}))).sort((e, t) => (e.step.active_at ? Date.parse(e.step.active_at) : Infinity) - (t.step.active_at ? Date.parse(t.step.active_at) : Infinity))[0] ?? null, i = [...e.runs].sort((e, t) => Date.parse(e.started_at) - Date.parse(t.started_at)), a = (e, t) => !(r && r.run.id === e.id && r.step.step_id === t.step_id), o = (e) => {
 		let n = "";
-		return e.status === "active" ? n = "ready now" : e.status === "waiting" && e.active_at ? n = Ft(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = "waits for something to happen" : e.wait_minutes > 0 && (n = `${Pt(e.wait_minutes)} after the step before`), {
+		return e.status === "active" ? n = "ready now" : e.status === "waiting" && e.active_at ? n = zt(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = "waits for something to happen" : e.wait_minutes > 0 && (n = `${Rt(e.wait_minutes)} after the step before`), {
 			title: e.title,
 			status: e.status,
 			hint: n
@@ -1386,78 +1456,78 @@ function Wt(e, t) {
 		now: r,
 		ready: s,
 		groups: c,
-		dueToday: u.filter((e) => Nt(e.at, t, n)),
-		upcoming: u.filter((e) => !Nt(e.at, t, n) && Date.parse(e.at) > t)
+		dueToday: u.filter((e) => Lt(e.at, t, n)),
+		upcoming: u.filter((e) => !Lt(e.at, t, n) && Date.parse(e.at) > t)
 	};
 }
 // src/pet-work.ts
-var A = "#101010", Gt = {
+var j = "#101010", Yt = {
 	levelup: 2800,
 	wake: 2600,
 	tap: 700,
 	done: 1700
 };
-function Kt() {
+function Xt() {
 	return _`
     <ellipse class="smudge" cx="26" cy="191" rx="20" ry="4.5" fill="#6B4A2E" opacity="0.85"/>
-    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${A} stroke-width="3"/></g>
-    <g transform="translate(198 144)"><g class="bagfall">${Jt()}</g></g>`;
+    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${j} stroke-width="3"/></g>
+    <g transform="translate(198 144)"><g class="bagfall">${Qt()}</g></g>`;
 }
-function qt() {
+function Zt() {
 	return _`<g class="tub">
-    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${A} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${j} stroke-width="3" stroke-linejoin="round"/>
     <path d="M9 186 Q10 193 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${A} stroke-width="1.4"/>
+    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${j} stroke-width="1.6"/>
+    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${j} stroke-width="1.6"/>
+    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${j} stroke-width="1.6"/>
+    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${j} stroke-width="1.4"/>
   </g>`;
 }
-function Jt() {
-	return _`<circle r="9" fill="#3F4A5A" stroke=${A} stroke-width="2.5"/>
-    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${A} stroke-width="2.2" stroke-linejoin="round"/>
+function Qt() {
+	return _`<circle r="9" fill="#3F4A5A" stroke=${j} stroke-width="2.5"/>
+    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${j} stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M-5 -2 Q-3 2 -5 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>`;
 }
-function Yt(e) {
+function $t(e) {
 	let t = e.shoulders?.l ?? [46, 150], n = e.shoulders?.r ?? [154, 150], r = e.armD?.l ?? "M46 150 Q28 160 22 180", i = e.armD?.r ?? "M154 150 Q168 158 170 176";
 	return _`
     <g class="arm armL" style="transform-origin:${t[0]}px ${t[1]}px">
-      <path d=${r} fill="none" stroke=${e.ink ?? A} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${r} fill="none" stroke=${e.ink ?? j} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${r} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${A} stroke-width="2.5"/>
+      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? j} stroke-width="3"/>
+      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${j} stroke-width="2.5"/>
         <path d="M14 184 Q22 181 30 184" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/></g>
       <g class="sock" transform="translate(22 174)">
-        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${A} stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${j} stroke-width="2.2" stroke-linejoin="round"/>
         <path d="M-5 -9 h10 M-5 -5 h10" stroke="#E5484D" stroke-width="2"/>
       </g>
       <circle class="pop p1" cx="8" cy="172" r="4" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p2" cx="36" cy="170" r="3" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p3" cx="24" cy="164" r="5" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
-      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${A} stroke-width="1.2" stroke-linejoin="round"/>
+      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${j} stroke-width="1.2" stroke-linejoin="round"/>
     </g>
     <g class="arm armR" style="transform-origin:${n[0]}px ${n[1]}px">
-      <path d=${i} fill="none" stroke=${e.ink ?? A} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${i} fill="none" stroke=${e.ink ?? j} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${i} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-      <g class="bagarm" transform="translate(170 176)">${Jt()}</g>
+      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? j} stroke-width="3"/>
+      <g class="bagarm" transform="translate(170 176)">${Qt()}</g>
     </g>`;
 }
-function Xt() {
-	return _`${qt()}<g class="bin" transform="translate(184 160)">
-    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${A} stroke-width="3" stroke-linejoin="round"/>
-    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${A} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
-    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${A} stroke-width="2.5"/></g>
+function en() {
+	return _`${Zt()}<g class="bin" transform="translate(184 160)">
+    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${j} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${j} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
+    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${j} stroke-width="2.5"/></g>
   </g>`;
 }
-function Zt(e) {
-	let t = _`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>`;
+function tn(e) {
+	let t = _`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? j} stroke-width="3"/>
+    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? j} stroke-width="3"/>`;
 	return _`
     ${e.typingBehind ? t : _``}
     <g class="laptop">
-      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${A} stroke-width="2.5"/>
-      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${A} stroke-width="3"/>
+      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${j} stroke-width="2.5"/>
+      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${j} stroke-width="3"/>
       <path d="M100 160 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#8FA3BF" opacity="0.9"/>
     </g>
     ${e.typingBehind ? _`` : t}
@@ -1467,17 +1537,17 @@ function Zt(e) {
       <text class="c3" x="122" y="62">01</text>
     </g>`;
 }
-function Qt(e) {
-	return e === "housework" ? Kt() : _``;
+function nn(e) {
+	return e === "housework" ? Xt() : _``;
 }
-function $t(e, t) {
-	return e === "housework" ? Yt(t) : _``;
+function rn(e, t) {
+	return e === "housework" ? $t(t) : _``;
 }
-function en(e, t) {
-	return e === "housework" ? Xt() : e === "typing" ? Zt(t) : _``;
+function an(e, t) {
+	return e === "housework" ? en() : e === "typing" ? tn(t) : _``;
 }
-var tn = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
-function nn(e, t, n = {}) {
+var on = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
+function sn(e, t, n = {}) {
 	let r = n.mouth ?? [100, 153];
 	switch (e) {
 		case "levelup": return _`${[
@@ -1516,47 +1586,47 @@ function nn(e, t, n = {}) {
 				-84,
 				"#7CFF5B"
 			]
-		].map(([e, t, n], r) => _`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${tn} fill=${n} stroke=${A} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
-      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${A} stroke-width="3"/>
+		].map(([e, t, n], r) => _`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${on} fill=${n} stroke=${j} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
+      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${j} stroke-width="3"/>
         <text x="148" y="35" text-anchor="middle">${t || "Level up!"}</text></g></g>`;
 		case "done": return _`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark d2" d="M170 80 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <g transform="translate(0 ${n.xpDy ?? 0})"><text class="xp" x="100" y="70" text-anchor="middle">${t}</text></g>`;
-		case "tap": return _`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${A} stroke-width="2" stroke-linejoin="round"/></g>`;
-		case "wake": return _`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${A}/>
+		case "tap": return _`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${j} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "wake": return _`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${j}/>
         <g transform="translate(${r[0] - 100} ${r[1] - 153})"><path class="yawn tongue" d="M93 160 Q100 152 107 160 Q100 168 93 160 Z" fill="#FF6B8A"/></g>`;
 		default: return _``;
 	}
 }
-var j = 12;
-function M(e, t) {
+var M = 12;
+function N(e, t) {
 	return `@keyframes ${e}{${t.map(([e, t]) => `${e}%{${t}}`).join("")}}`;
 }
-function rn(e, t, n, r, i) {
+function cn(e, t, n, r, i) {
 	let a = [], o = 0;
 	for (let s = e; s <= t + .001; s += n) a.push([Math.round(s * 100) / 100, o++ % 2 ? i : r]);
 	return a;
 }
-var N = "transform:translate(0px,0px) rotate(0deg)", an = [
-	[0, N],
-	...rn(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
-	[32, N],
-	[34, N],
-	...rn(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
-	[64, N],
-	[100, N]
-], on = [
-	[0, `${N};opacity:0`],
-	[64, `${N};opacity:0`],
-	[66, `${N};opacity:1`],
-	[72, `${N};opacity:1`],
+var P = "transform:translate(0px,0px) rotate(0deg)", ln = [
+	[0, P],
+	...cn(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
+	[32, P],
+	[34, P],
+	...cn(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
+	[64, P],
+	[100, P]
+], un = [
+	[0, `${P};opacity:0`],
+	[64, `${P};opacity:0`],
+	[66, `${P};opacity:1`],
+	[72, `${P};opacity:1`],
 	[78, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
 	[84, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
-	[90, `${N};opacity:1`],
-	[98, `${N};opacity:1`],
-	[100, `${N};opacity:0`]
+	[90, `${P};opacity:1`],
+	[98, `${P};opacity:1`],
+	[100, `${P};opacity:0`]
 ];
-function sn(e, t) {
+function dn(e, t) {
 	return [
 		[0, "opacity:0"],
 		[Math.max(.1, e - 1), "opacity:0"],
@@ -1566,7 +1636,7 @@ function sn(e, t) {
 		[100, "opacity:0"]
 	];
 }
-function cn(e) {
+function fn(e) {
 	return [
 		[0, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
 		[e, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
@@ -1575,15 +1645,15 @@ function cn(e) {
 		[100, "opacity:0;transform:scale(1.5) translate(0px,-9px)"]
 	];
 }
-var ln = o`
+var pn = o`
   ${a([
-	M("arm-l", an),
-	M("arm-r", on),
-	M("vis-cloth", sn(1, 31)),
-	M("vis-sock", sn(35, 63)),
-	M("vis-bagarm", sn(66, 79.5)),
-	M("vis-bin", sn(63, 98)),
-	M("vis-tub", [
+	N("arm-l", ln),
+	N("arm-r", un),
+	N("vis-cloth", dn(1, 31)),
+	N("vis-sock", dn(35, 63)),
+	N("vis-bagarm", dn(66, 79.5)),
+	N("vis-bin", dn(63, 98)),
+	N("vis-tub", [
 		[0, "opacity:0;transform:scale(0.6)"],
 		[32, "opacity:0;transform:scale(0.6)"],
 		[34, "opacity:1;transform:scale(1)"],
@@ -1591,7 +1661,7 @@ var ln = o`
 		[66, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.6)"]
 	]),
-	M("vis-smudge", [
+	N("vis-smudge", [
 		[0, "opacity:0.85"],
 		[8, "opacity:0.85"],
 		[30, "opacity:0"],
@@ -1599,17 +1669,17 @@ var ln = o`
 		[99, "opacity:0.85"],
 		[100, "opacity:0.85"]
 	]),
-	M("pop-1", cn(4)),
-	M("pop-2", cn(12)),
-	M("pop-3", cn(20)),
-	M("clean-star", [
+	N("pop-1", fn(4)),
+	N("pop-2", fn(12)),
+	N("pop-3", fn(20)),
+	N("clean-star", [
 		[0, "opacity:0;transform:scale(0.2)"],
 		[59, "opacity:0;transform:scale(0.2)"],
 		[61, "opacity:1;transform:scale(1.1)"],
 		[64, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.2)"]
 	]),
-	M("bag-fall", [
+	N("bag-fall", [
 		[0, "opacity:0;transform:translateY(0px)"],
 		[79.4, "opacity:0;transform:translateY(0px)"],
 		[79.5, "opacity:1;transform:translateY(0px)"],
@@ -1617,7 +1687,7 @@ var ln = o`
 		[84, "opacity:0;transform:translateY(24px)"],
 		[100, "opacity:0;transform:translateY(24px)"]
 	]),
-	M("lid", [
+	N("lid", [
 		[0, "transform:rotate(0deg)"],
 		[76, "transform:rotate(0deg)"],
 		[79, "transform:rotate(-38deg)"],
@@ -1625,14 +1695,14 @@ var ln = o`
 		[89, "transform:rotate(0deg)"],
 		[100, "transform:rotate(0deg)"]
 	]),
-	M("look-work", [
+	N("look-work", [
 		[0, "transform:translateX(-4px)"],
 		[64, "transform:translateX(-4px)"],
 		[67, "transform:translateX(4px)"],
 		[98, "transform:translateX(4px)"],
 		[100, "transform:translateX(-4px)"]
 	]),
-	M("work-bounce", [
+	N("work-bounce", [
 		[0, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[31, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[33, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
@@ -1686,52 +1756,52 @@ var ln = o`
 
   /* The housework routine: every part runs on the same 12 second loop. */
   .housework .armL {
-    animation: arm-l ${a(String(j))}s ease-in-out infinite;
+    animation: arm-l ${a(String(M))}s ease-in-out infinite;
   }
   .housework .armR {
-    animation: arm-r ${a(String(j))}s ease-in-out infinite;
+    animation: arm-r ${a(String(M))}s ease-in-out infinite;
   }
   .housework .cloth {
-    animation: vis-cloth ${a(String(j))}s linear infinite;
+    animation: vis-cloth ${a(String(M))}s linear infinite;
   }
   .housework .sock {
-    animation: vis-sock ${a(String(j))}s linear infinite;
+    animation: vis-sock ${a(String(M))}s linear infinite;
   }
   .housework .bagarm {
-    animation: vis-bagarm ${a(String(j))}s linear infinite;
+    animation: vis-bagarm ${a(String(M))}s linear infinite;
   }
   .housework .bin {
-    animation: vis-bin ${a(String(j))}s linear infinite;
+    animation: vis-bin ${a(String(M))}s linear infinite;
   }
   .housework .tub {
-    animation: vis-tub ${a(String(j))}s ease-out infinite;
+    animation: vis-tub ${a(String(M))}s ease-out infinite;
   }
   .housework .smudge {
-    animation: vis-smudge ${a(String(j))}s linear infinite;
+    animation: vis-smudge ${a(String(M))}s linear infinite;
   }
   .housework .pop.p1 {
-    animation: pop-1 ${a(String(j))}s linear infinite;
+    animation: pop-1 ${a(String(M))}s linear infinite;
   }
   .housework .pop.p2 {
-    animation: pop-2 ${a(String(j))}s linear infinite;
+    animation: pop-2 ${a(String(M))}s linear infinite;
   }
   .housework .pop.p3 {
-    animation: pop-3 ${a(String(j))}s linear infinite;
+    animation: pop-3 ${a(String(M))}s linear infinite;
   }
   .housework .clean {
-    animation: clean-star ${a(String(j))}s linear infinite;
+    animation: clean-star ${a(String(M))}s linear infinite;
   }
   .housework .bagfall {
-    animation: bag-fall ${a(String(j))}s linear infinite;
+    animation: bag-fall ${a(String(M))}s linear infinite;
   }
   .housework .lid {
-    animation: lid ${a(String(j))}s ease-in-out infinite;
+    animation: lid ${a(String(M))}s ease-in-out infinite;
   }
   .housework .eyes {
-    animation: look-work ${a(String(j))}s ease-in-out infinite;
+    animation: look-work ${a(String(M))}s ease-in-out infinite;
   }
   .housework .jelly {
-    animation: work-bounce ${a(String(j))}s ease-in-out infinite;
+    animation: work-bounce ${a(String(M))}s ease-in-out infinite;
   }
   .suds {
     transform-box: fill-box;
@@ -1870,7 +1940,7 @@ var ln = o`
   }
   .badge text {
     font: 800 17px system-ui, sans-serif;
-    fill: ${a(A)};
+    fill: ${a(j)};
   }
   @keyframes badge {
     0% {
@@ -1915,7 +1985,7 @@ var ln = o`
   .xp {
     font: 800 19px system-ui, sans-serif;
     fill: #fff;
-    stroke: ${a(A)};
+    stroke: ${a(j)};
     stroke-width: 4px;
     paint-order: stroke;
     animation: xp-rise 1.6s ease-out 1 both;
@@ -2023,20 +2093,20 @@ var ln = o`
   .d2 {
     animation-delay: 0.2s;
   }
-`, un = "#101010";
-function dn(e, t = {}) {
+`, mn = "#101010";
+function hn(e, t = {}) {
 	let n = t.z ?? [0, 0], r = t.tear ?? [0, 0];
 	switch (e) {
 		case "sleepy": return _`<g class="zzz" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text></g>`;
 		case "hibernating": return _`<g class="zzz slow" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text><text class="z z3" x="170" y="42">Z</text></g>`;
-		case "sad": return _`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${un} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "sad": return _`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${mn} stroke-width="2" stroke-linejoin="round"/></g>`;
 		case "happy": return _`<path class="spark s1" d="M26 84 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5 z" fill="#FFE45C"/>
         <path class="spark s2" d="M176 70 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark s3" d="M168 118 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2 z" fill="#fff"/>`;
 		default: return _``;
 	}
 }
-var fn = o`
+var gn = o`
   .pet-art {
     width: 100%;
     height: 100%;
@@ -2335,16 +2405,16 @@ var fn = o`
       transform: translate(8px, -16px) scale(1.1);
     }
   }
-`, P = "#3A1204", F = "#8A2A0B", pn = "#6E1F07", I = "#D79563", L = "#190703", mn = {
+`, F = "#3A1204", I = "#8A2A0B", _n = "#6E1F07", L = "#D79563", R = "#190703", vn = {
 	l: "M54 130 C40 138 38 158 46 170",
 	r: "M146 130 C160 138 162 158 154 170"
 };
-function hn(e) {
-	return _`<path d=${e} fill="none" stroke=${P} stroke-width="19.5" stroke-linecap="round"/>
-    <path d=${e} fill="none" stroke=${F} stroke-width="10.5" stroke-linecap="round"/>`;
+function yn(e) {
+	return _`<path d=${e} fill="none" stroke=${F} stroke-width="19.5" stroke-linecap="round"/>
+    <path d=${e} fill="none" stroke=${I} stroke-width="10.5" stroke-linecap="round"/>`;
 }
-var gn = {
-	color: F,
+var bn = {
+	color: I,
 	thick: 1.5,
 	shoulders: {
 		l: [54, 130],
@@ -2356,81 +2426,81 @@ var gn = {
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, _n = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", vn = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
-function yn(e) {
+}, xn = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", Sn = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
+function Cn(e) {
 	switch (e) {
-		case "happy": return _`<path d="M72 72 Q80 61 88 72" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 72 Q120 61 128 72" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return _`<path d="M73 70 Q80 74 87 70" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M113 70 Q120 74 127 70" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M73 68 Q80 76 87 68" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M113 68 Q120 76 127 68" fill="none" stroke=${L} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "happy": return _`<path d="M72 72 Q80 61 88 72" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 72 Q120 61 128 72" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<path d="M73 70 Q80 74 87 70" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M113 70 Q120 74 127 70" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M73 68 Q80 76 87 68" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M113 68 Q120 76 127 68" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
 		case "sad": return _`<g class="eyes">
-          <g class="eye"><ellipse cx="80" cy="72" rx="5.6" ry="7" fill=${L}/><circle cx="78.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="82" cy="75" r="1" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="120" cy="72" rx="5.6" ry="7" fill=${L}/><circle cx="118.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="122" cy="75" r="1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="80" cy="72" rx="5.6" ry="7" fill=${R}/><circle cx="78.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="82" cy="75" r="1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="120" cy="72" rx="5.6" ry="7" fill=${R}/><circle cx="118.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="122" cy="75" r="1" fill="#fff"/></g>
         </g>
-        <path d="M71 61 L88 55" stroke=${L} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M129 61 L112 55" stroke=${L} stroke-width="3.4" stroke-linecap="round"/>`;
+        <path d="M71 61 L88 55" stroke=${R} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M129 61 L112 55" stroke=${R} stroke-width="3.4" stroke-linecap="round"/>`;
 		default: return _`<g class="eyes look">
-        <g class="eye"><circle cx="80" cy="70" r="5.6" fill=${L}/><circle cx="78.2" cy="67.8" r="1.9" fill="#fff"/></g>
-        <g class="eye"><circle cx="120" cy="70" r="5.6" fill=${L}/><circle cx="118.2" cy="67.8" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="80" cy="70" r="5.6" fill=${R}/><circle cx="78.2" cy="67.8" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="120" cy="70" r="5.6" fill=${R}/><circle cx="118.2" cy="67.8" r="1.9" fill="#fff"/></g>
       </g>`;
 	}
 }
-function bn(e) {
+function wn(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .75;
 	return _`<ellipse cx="66" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>
     <ellipse cx="134" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>`;
 }
-function xn(e) {
-	let t = _`<path d="M100 93 V98" stroke=${L} stroke-width="3.2" stroke-linecap="round"/>`;
+function Tn(e) {
+	let t = _`<path d="M100 93 V98" stroke=${R} stroke-width="3.2" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return _`${t}<path d="M90 98 Q100 118 110 98 Z" fill=${L} stroke=${L} stroke-width="3.2" stroke-linejoin="round"/>
+		case "happy": return _`${t}<path d="M90 98 Q100 118 110 98 Z" fill=${R} stroke=${R} stroke-width="3.2" stroke-linejoin="round"/>
         <path d="M95 108 Q100 102 105 108 Q100 113 95 108 Z" fill="#FF6B8A"/>`;
-		case "sleepy": return _`${t}<ellipse cx="100" cy="104" rx="3.8" ry="3.2" fill=${L}/>`;
-		case "sad": return _`${t}<path d="M92 107 Q100 98 108 107" fill="none" stroke=${L} stroke-width="3.6" stroke-linecap="round"/>`;
-		case "hibernating": return _`${t}<path d="M94 101 Q100 105 106 101" fill="none" stroke=${L} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return _`${t}<path d="M91 98 Q100 108 109 98" fill="none" stroke=${L} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "sleepy": return _`${t}<ellipse cx="100" cy="104" rx="3.8" ry="3.2" fill=${R}/>`;
+		case "sad": return _`${t}<path d="M92 107 Q100 98 108 107" fill="none" stroke=${R} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "hibernating": return _`${t}<path d="M94 101 Q100 105 106 101" fill="none" stroke=${R} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return _`${t}<path d="M91 98 Q100 108 109 98" fill="none" stroke=${R} stroke-width="3.6" stroke-linecap="round"/>`;
 	}
 }
-function Sn(e) {
+function En(e) {
 	return e === "hibernating" ? _`<g class="snore"><circle cx="112" cy="94" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="91.5" r="1.8" fill="#fff"/></g>` : _``;
 }
-function Cn(e, t = {}) {
+function Dn(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, _`<svg class="pet-art bear ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="bear-body-clip"><path d=${_n}/></clipPath>
+      <clipPath id="bear-body-clip"><path d=${xn}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="62" ry="8" fill="#000" opacity="0.22"/>
-    ${Qt(n)} ${$t(n, gn)}
+    ${nn(n)} ${rn(n, bn)}
     <g class="jelly">
-      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${F} stroke=${P} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${I}/></g>
-      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${F} stroke=${P} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${I}/></g>
-      ${n ? _`` : _`${hn(mn.l)}${hn(mn.r)}`}
-      <path d=${_n} fill=${F}/>
+      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${I} stroke=${F} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${L}/></g>
+      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${I} stroke=${F} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${L}/></g>
+      ${n ? _`` : _`${yn(vn.l)}${yn(vn.r)}`}
+      <path d=${xn} fill=${I}/>
       <g clip-path="url(#bear-body-clip)">
-        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${pn} opacity="0.55"/>
-        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${I}/>
+        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${_n} opacity="0.55"/>
+        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${L}/>
       </g>
-      <path d=${_n} fill="none" stroke=${P} stroke-width="4" stroke-linejoin="round"/>
-      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${F} stroke=${P} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${I}/></g>
-      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${F} stroke=${P} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${I}/></g>
-      <path d=${vn} fill=${F} stroke=${P} stroke-width="4" stroke-linejoin="round"/>
+      <path d=${xn} fill="none" stroke=${F} stroke-width="4" stroke-linejoin="round"/>
+      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${I} stroke=${F} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${L}/></g>
+      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${I} stroke=${F} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${L}/></g>
+      <path d=${Sn} fill=${I} stroke=${F} stroke-width="4" stroke-linejoin="round"/>
       <path d="M60 70 C60 58 70 50 82 48" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.16"/>
-      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${I}/>
-      ${bn(e)} ${yn(e)}
-      <rect x="88" y="80" width="24" height="14" rx="7" fill=${L}/>
+      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${L}/>
+      ${wn(e)} ${Cn(e)}
+      <rect x="88" y="80" width="24" height="14" rx="7" fill=${R}/>
       <ellipse cx="94" cy="84" rx="4.5" ry="2" fill="#fff" opacity="0.8"/>
-      ${r === "wake" ? _`<path d="M100 93 V98" stroke=${L} stroke-width="3.2" stroke-linecap="round"/>` : xn(e)}
-      ${Sn(e)}
+      ${r === "wake" ? _`<path d="M100 93 V98" stroke=${R} stroke-width="3.2" stroke-linecap="round"/>` : Tn(e)}
+      ${En(e)}
     </g>
-    ${en(n, gn)}
-    ${n ? _`` : dn(e, {
+    ${an(n, bn)}
+    ${n ? _`` : hn(e, {
 		z: [10, -30],
 		tear: [-8, -68]
 	})}
-    ${nn(r, t.text ?? "", {
+    ${sn(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -16,
 		xpDy: -42,
@@ -2438,7 +2508,7 @@ function Cn(e, t = {}) {
 	})}
   </svg>`;
 }
-var wn = o`
+var On = o`
   /* A bear is heavy: it only squashes a third as much as the slime. */
   .bear {
     --k: 0.3;
@@ -2471,9 +2541,9 @@ var wn = o`
   .bear.sad .ear {
     animation: none;
   }
-`, R = "#8C78CC", z = "#1B1133", Tn = "#2F2054", En = "#170E2E", Dn = "#3C2C70", B = "#C4B6F0", On = "#D69AE8", kn = "#1F9C7C", An = "#0E5C48", jn = {
+`, z = "#8C78CC", B = "#1B1133", kn = "#2F2054", An = "#170E2E", jn = "#3C2C70", V = "#C4B6F0", Mn = "#D69AE8", Nn = "#1F9C7C", Pn = "#0E5C48", Fn = {
 	color: "#2A1B4A",
-	ink: R,
+	ink: z,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -2485,93 +2555,93 @@ var wn = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Mn = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", Nn = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", Pn = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
-function Fn(e) {
+}, In = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", Ln = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", Rn = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
+function zn(e) {
 	switch (e) {
-		case "happy": return _`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return _`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "happy": return _`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
 		case "sad": return _`<g class="eyes">
-          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${B}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${z}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
-          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${B}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${z}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
+          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${V}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${B}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
+          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${V}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${B}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
         </g>
-        <path d="M69 69 L90 63" stroke=${B} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M131 69 L110 63" stroke=${B} stroke-width="3.4" stroke-linecap="round"/>`;
+        <path d="M69 69 L90 63" stroke=${V} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M131 69 L110 63" stroke=${V} stroke-width="3.4" stroke-linecap="round"/>`;
 		default: return _`<g class="eyes look">
-        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${B}/><circle cx="80" cy="80" r="5" fill=${z}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
-        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${B}/><circle cx="120" cy="80" r="5" fill=${z}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${V}/><circle cx="80" cy="80" r="5" fill=${B}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${V}/><circle cx="120" cy="80" r="5" fill=${B}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
       </g>`;
 	}
 }
-function In(e) {
-	let t = _`<path d="M100 95 V98" stroke=${B} stroke-width="2.8" stroke-linecap="round"/>`;
+function Bn(e) {
+	let t = _`<path d="M100 95 V98" stroke=${V} stroke-width="2.8" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return _`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${z} stroke=${B} stroke-width="2.8" stroke-linejoin="round"/>
+		case "happy": return _`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${B} stroke=${V} stroke-width="2.8" stroke-linejoin="round"/>
         <path d="M95 106 Q100 101 105 106 Q100 111 95 106 Z" fill="#FF7FA3"/>`;
-		case "sleepy": return _`${t}<ellipse cx="100" cy="104" rx="3.2" ry="2.6" fill=${B}/>`;
-		case "sad": return _`${t}<path d="M92 107 Q100 99 108 107" fill="none" stroke=${B} stroke-width="3" stroke-linecap="round"/>`;
-		case "hibernating": return _`${t}<path d="M95 101 Q100 105 105 101" fill="none" stroke=${B} stroke-width="3" stroke-linecap="round"/>`;
-		default: return _`${t}<path d="M92 100 Q96 106 100 98 Q104 106 108 100" fill="none" stroke=${B} stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "sleepy": return _`${t}<ellipse cx="100" cy="104" rx="3.2" ry="2.6" fill=${V}/>`;
+		case "sad": return _`${t}<path d="M92 107 Q100 99 108 107" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round"/>`;
+		case "hibernating": return _`${t}<path d="M95 101 Q100 105 105 101" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round"/>`;
+		default: return _`${t}<path d="M92 100 Q96 106 100 98 Q104 106 108 100" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function Ln() {
-	return _`<g class="whiskers" fill="none" stroke=${B} stroke-width="2" stroke-linecap="round" opacity="0.85">
+function Vn() {
+	return _`<g class="whiskers" fill="none" stroke=${V} stroke-width="2" stroke-linecap="round" opacity="0.85">
     <path d="M68 92 L34 84"/><path d="M68 97 L32 98"/><path d="M70 102 L38 112"/>
     <path d="M132 92 L166 84"/><path d="M132 97 L168 98"/><path d="M130 102 L162 112"/>
   </g>`;
 }
-function Rn(e) {
+function Hn(e) {
 	return e === "hibernating" ? _`<g class="snore"><circle cx="113" cy="98" r="7" fill="#E9E0FF" fill-opacity="0.45" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="95.5" r="1.8" fill="#fff"/></g>` : _``;
 }
-function zn(e, t = {}) {
+function Un(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, _`<svg class="pet-art cat ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <linearGradient id="cat-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color=${Tn}/>
-        <stop offset="1" stop-color=${En}/>
+        <stop offset="0" stop-color=${kn}/>
+        <stop offset="1" stop-color=${An}/>
       </linearGradient>
-      <clipPath id="cat-body-clip"><path d=${Mn}/></clipPath>
+      <clipPath id="cat-body-clip"><path d=${In}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.3"/>
-    ${Qt(n)} ${$t(n, jn)}
+    ${nn(n)} ${rn(n, Fn)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Pn} fill="none" stroke=${R} stroke-width="17" stroke-linecap="round"/>
-        <path d=${Pn} fill="none" stroke=${z} stroke-width="10.5" stroke-linecap="round"/>
+        <path d=${Rn} fill="none" stroke=${z} stroke-width="17" stroke-linecap="round"/>
+        <path d=${Rn} fill="none" stroke=${B} stroke-width="10.5" stroke-linecap="round"/>
       </g>
-      <g class="ear earL"><path d="M56 72 C52 52 52 36 56 22 C70 28 84 38 92 50 Z" fill="url(#cat-fill)" stroke=${R} stroke-width="3.5" stroke-linejoin="round"/>
+      <g class="ear earL"><path d="M56 72 C52 52 52 36 56 22 C70 28 84 38 92 50 Z" fill="url(#cat-fill)" stroke=${z} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M63 58 C61 48 61 40 63 33 C70 37 77 42 81 48 Z" fill="#6E5AA8"/></g>
-      <g class="ear earR"><path d="M144 72 C148 52 148 36 144 22 C130 28 116 38 108 50 Z" fill="url(#cat-fill)" stroke=${R} stroke-width="3.5" stroke-linejoin="round"/>
+      <g class="ear earR"><path d="M144 72 C148 52 148 36 144 22 C130 28 116 38 108 50 Z" fill="url(#cat-fill)" stroke=${z} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M137 58 C139 48 139 40 137 33 C130 37 123 42 119 48 Z" fill="#6E5AA8"/></g>
-      <path d=${Mn} fill="url(#cat-fill)"/>
+      <path d=${In} fill="url(#cat-fill)"/>
       <g clip-path="url(#cat-body-clip)">
-        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${Dn}/>
+        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${jn}/>
         <path d="M100 128 V176" stroke="#2A1C52" stroke-width="2.4"/>
         <ellipse cx="100" cy="198" rx="70" ry="22" fill="#000" opacity="0.25"/>
       </g>
-      <path d=${Mn} fill="none" stroke=${R} stroke-width="3.5" stroke-linejoin="round"/>
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${Dn} stroke=${R} stroke-width="3.5"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${Dn} stroke=${R} stroke-width="3.5"/>
-      <path d=${Nn} fill="url(#cat-fill)" stroke=${R} stroke-width="3.5" stroke-linejoin="round"/>
+      <path d=${In} fill="none" stroke=${z} stroke-width="3.5" stroke-linejoin="round"/>
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${jn} stroke=${z} stroke-width="3.5"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${jn} stroke=${z} stroke-width="3.5"/>
+      <path d=${Ln} fill="url(#cat-fill)" stroke=${z} stroke-width="3.5" stroke-linejoin="round"/>
       <path d="M62 70 C62 60 70 54 82 52" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.14"/>
-      ${Ln()} ${Fn(e)}
-      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${On} stroke=${On} stroke-width="2" stroke-linejoin="round"/>
-      ${r === "wake" ? _`<path d="M100 95 V98" stroke=${B} stroke-width="2.8" stroke-linecap="round"/>` : In(e)}
-      ${Rn(e)}
-      <g><path d="M100 121 L80 112 L80 130 Z" fill=${kn} stroke=${An} stroke-width="2.4" stroke-linejoin="round"/>
-        <path d="M100 121 L120 112 L120 130 Z" fill=${kn} stroke=${An} stroke-width="2.4" stroke-linejoin="round"/>
-        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${An} stroke-width="2.4"/></g>
+      ${Vn()} ${zn(e)}
+      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${Mn} stroke=${Mn} stroke-width="2" stroke-linejoin="round"/>
+      ${r === "wake" ? _`<path d="M100 95 V98" stroke=${V} stroke-width="2.8" stroke-linecap="round"/>` : Bn(e)}
+      ${Hn(e)}
+      <g><path d="M100 121 L80 112 L80 130 Z" fill=${Nn} stroke=${Pn} stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M100 121 L120 112 L120 130 Z" fill=${Nn} stroke=${Pn} stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${Pn} stroke-width="2.4"/></g>
     </g>
-    ${en(n, jn)}
-    ${n ? _`` : dn(e, {
+    ${an(n, Fn)}
+    ${n ? _`` : hn(e, {
 		z: [10, -30],
 		tear: [-10, -62]
 	})}
-    ${nn(r, t.text ?? "", {
+    ${sn(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -18,
 		xpDy: -46,
@@ -2579,7 +2649,7 @@ function zn(e, t = {}) {
 	})}
   </svg>`;
 }
-var Bn = o`
+var Wn = o`
   /* A cat is graceful: it squashes a bit less than the slime. */
   .cat {
     --k: 0.4;
@@ -2657,8 +2727,8 @@ var Bn = o`
       transform: scaleY(1.12);
     }
   }
-`, V = "#2F2E5C", Vn = "#F9A03B", Hn = "#E0821F", Un = "#FFF4E2", Wn = "#9C6A57", Gn = "#B8826C", Kn = "#FF8FA3", qn = "#FF6B8A", Jn = {
-	color: Vn,
+`, H = "#2F2E5C", Gn = "#F9A03B", Kn = "#E0821F", qn = "#FFF4E2", Jn = "#9C6A57", Yn = "#B8826C", Xn = "#FF8FA3", Zn = "#FF6B8A", Qn = {
+	color: Gn,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -2670,96 +2740,96 @@ var Bn = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Yn = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", Xn = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", Zn = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", Qn = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
-function $n(e) {
+}, $n = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", er = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", tr = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", nr = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
+function rr(e) {
 	switch (e) {
-		case "happy": return _`<path d="M73 85 Q82 72 91 85" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M109 85 Q118 72 127 85" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return _`<path d="M74 82 Q82 87 90 82" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M110 82 Q118 87 126 82" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M74 80 Q82 89 90 80" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M110 80 Q118 89 126 80" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "happy": return _`<path d="M73 85 Q82 72 91 85" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M109 85 Q118 72 127 85" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<path d="M74 82 Q82 87 90 82" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M110 82 Q118 87 126 82" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M74 80 Q82 89 90 80" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M110 80 Q118 89 126 80" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
 		case "sad": return _`<g class="eyes">
-          <g class="eye"><ellipse cx="82" cy="83" rx="6.6" ry="8.2" fill=${V}/><circle cx="79.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="84.4" cy="86.5" r="1.2" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="118" cy="83" rx="6.6" ry="8.2" fill=${V}/><circle cx="115.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="120.4" cy="86.5" r="1.2" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="82" cy="83" rx="6.6" ry="8.2" fill=${H}/><circle cx="79.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="84.4" cy="86.5" r="1.2" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="118" cy="83" rx="6.6" ry="8.2" fill=${H}/><circle cx="115.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="120.4" cy="86.5" r="1.2" fill="#fff"/></g>
         </g>
-        <path d="M72 71 L91 65" stroke=${V} stroke-width="3.6" stroke-linecap="round"/>
-        <path d="M128 71 L109 65" stroke=${V} stroke-width="3.6" stroke-linecap="round"/>`;
+        <path d="M72 71 L91 65" stroke=${H} stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M128 71 L109 65" stroke=${H} stroke-width="3.6" stroke-linecap="round"/>`;
 		default: return _`<g class="eyes look">
-        <g class="eye"><circle cx="82" cy="82" r="7.4" fill=${V}/><circle cx="84.6" cy="79" r="2.7" fill="#fff"/><circle cx="79.6" cy="85" r="1.3" fill="#fff"/></g>
-        <g class="eye"><circle cx="118" cy="82" r="7.4" fill=${V}/><circle cx="120.6" cy="79" r="2.7" fill="#fff"/><circle cx="115.6" cy="85" r="1.3" fill="#fff"/></g>
+        <g class="eye"><circle cx="82" cy="82" r="7.4" fill=${H}/><circle cx="84.6" cy="79" r="2.7" fill="#fff"/><circle cx="79.6" cy="85" r="1.3" fill="#fff"/></g>
+        <g class="eye"><circle cx="118" cy="82" r="7.4" fill=${H}/><circle cx="120.6" cy="79" r="2.7" fill="#fff"/><circle cx="115.6" cy="85" r="1.3" fill="#fff"/></g>
       </g>`;
 	}
 }
-function er(e) {
+function ir(e) {
 	let t = e === "sad" || e === "hibernating" ? .55 : .9;
-	return _`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${Kn} opacity=${t}/>
-    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${Kn} opacity=${t}/>`;
+	return _`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${Xn} opacity=${t}/>
+    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${Xn} opacity=${t}/>`;
 }
-function tr(e) {
-	let t = _`<path d="M100 97 V101" stroke=${V} stroke-width="3" stroke-linecap="round"/>`;
+function ar(e) {
+	let t = _`<path d="M100 97 V101" stroke=${H} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return _`${t}<path d="M88 101 Q100 122 112 101 Z" fill=${V} stroke=${V} stroke-width="3.2" stroke-linejoin="round"/>
-        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${qn}/>`;
-		case "sleepy": return _`${t}<ellipse cx="100" cy="106" rx="3.6" ry="3" fill=${V}/>`;
-		case "sad": return _`${t}<path d="M91 110 Q100 101 109 110" fill="none" stroke=${V} stroke-width="3.6" stroke-linecap="round"/>`;
-		case "hibernating": return _`${t}<path d="M94 104 Q100 108 106 104" fill="none" stroke=${V} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return _`${t}<path d="M90 102 Q95 109 100 101 Q105 109 110 102" fill="none" stroke=${V} stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "happy": return _`${t}<path d="M88 101 Q100 122 112 101 Z" fill=${H} stroke=${H} stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${Zn}/>`;
+		case "sleepy": return _`${t}<ellipse cx="100" cy="106" rx="3.6" ry="3" fill=${H}/>`;
+		case "sad": return _`${t}<path d="M91 110 Q100 101 109 110" fill="none" stroke=${H} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "hibernating": return _`${t}<path d="M94 104 Q100 108 106 104" fill="none" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return _`${t}<path d="M90 102 Q95 109 100 101 Q105 109 110 102" fill="none" stroke=${H} stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function nr(e) {
+function or(e) {
 	return e === "hibernating" ? _`<g class="snore"><circle cx="112" cy="97" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="94.5" r="1.8" fill="#fff"/></g>` : _``;
 }
-function rr(e, t = {}) {
+function sr(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, _`<svg class="pet-art dog ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="dog-body-clip"><path d=${Xn}/></clipPath>
-      <clipPath id="dog-tail-clip"><path d=${Yn}/></clipPath>
-      <clipPath id="dog-head-clip"><path d=${Zn}/></clipPath>
+      <clipPath id="dog-body-clip"><path d=${er}/></clipPath>
+      <clipPath id="dog-tail-clip"><path d=${$n}/></clipPath>
+      <clipPath id="dog-head-clip"><path d=${tr}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${Qt(n)} ${$t(n, Jn)}
+    ${nn(n)} ${rn(n, Qn)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Yn} fill=${Vn}/>
+        <path d=${$n} fill=${Gn}/>
         <g clip-path="url(#dog-tail-clip)">
-          <circle cx="158" cy="118" r="15" fill=${Un}/>
-          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Hn} stroke-width="8" opacity="0.45"/>
+          <circle cx="158" cy="118" r="15" fill=${qn}/>
+          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Kn} stroke-width="8" opacity="0.45"/>
         </g>
-        <path d=${Yn} fill="none" stroke=${V} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${$n} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${Wn} stroke=${V} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${Gn} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${Wn} stroke=${V} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${Gn} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <path d=${Xn} fill=${Vn}/>
+      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${Jn} stroke=${H} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${Yn} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${Jn} stroke=${H} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${Yn} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <path d=${er} fill=${Gn}/>
       <g clip-path="url(#dog-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Hn} opacity="0.5"/>
-        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${Un}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Kn} opacity="0.5"/>
+        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${qn}/>
       </g>
-      <path d=${Xn} fill="none" stroke=${V} stroke-width="4" stroke-linejoin="round"/>
-      ${n ? _`` : _`<path d="M97 140 V178 M103 140 V178" stroke=${V} stroke-width="3" stroke-linecap="round"/>`}
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${V} stroke-width="4"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${V} stroke-width="4"/>
-      <path d=${Zn} fill=${Vn}/>
+      <path d=${er} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
+      ${n ? _`` : _`<path d="M97 140 V178 M103 140 V178" stroke=${H} stroke-width="3" stroke-linecap="round"/>`}
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${H} stroke-width="4"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${H} stroke-width="4"/>
+      <path d=${tr} fill=${Gn}/>
       <g clip-path="url(#dog-head-clip)">
-        <path d=${Qn} fill=${Un}/>
+        <path d=${nr} fill=${qn}/>
         <ellipse cx="100" cy="53" rx="7" ry="4" fill="#FFD9A0"/>
       </g>
-      <path d=${Zn} fill="none" stroke=${V} stroke-width="4" stroke-linejoin="round"/>
-      ${er(e)} ${$n(e)}
-      <ellipse cx="100" cy="93" rx="6" ry="4.4" fill=${V}/>
+      <path d=${tr} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
+      ${ir(e)} ${rr(e)}
+      <ellipse cx="100" cy="93" rx="6" ry="4.4" fill=${H}/>
       <ellipse cx="98" cy="91.6" rx="1.8" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? _`<path d="M100 97 V101" stroke=${V} stroke-width="3" stroke-linecap="round"/>` : tr(e)}
-      ${nr(e)}
+      ${r === "wake" ? _`<path d="M100 97 V101" stroke=${H} stroke-width="3" stroke-linecap="round"/>` : ar(e)}
+      ${or(e)}
     </g>
-    ${en(n, Jn)}
-    ${n ? _`` : dn(e, {
+    ${an(n, Qn)}
+    ${n ? _`` : hn(e, {
 		z: [10, -30],
 		tear: [-8, -58]
 	})}
-    ${nn(r, t.text ?? "", {
+    ${sn(r, t.text ?? "", {
 		mouth: [100, 110],
 		badgeDy: -14,
 		xpDy: -42,
@@ -2767,7 +2837,7 @@ function rr(e, t = {}) {
 	})}
   </svg>`;
 }
-var ir = o`
+var cr = o`
   /* A puppy is lively: it squashes about half as much as the slime. */
   .dog {
     --k: 0.5;
@@ -2847,8 +2917,8 @@ var ir = o`
       transform: rotate(9deg);
     }
   }
-`, H = "#3B2A3F", U = "#F28A30", ar = "#D96E1B", or = "#F6EDD6", sr = "#4B2E3A", cr = "#FF6B8A", lr = {
-	color: U,
+`, U = "#3B2A3F", W = "#F28A30", lr = "#D96E1B", ur = "#F6EDD6", dr = "#4B2E3A", fr = "#FF6B8A", pr = {
+	color: W,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -2860,95 +2930,95 @@ var ir = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, ur = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", dr = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", fr = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", pr = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
-function mr(e) {
+}, mr = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", hr = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", gr = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", _r = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
+function vr(e) {
 	switch (e) {
-		case "happy": return _`<path d="M70 84 Q78 72 86 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M114 84 Q122 72 130 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return _`<path d="M71 81 Q78 86 85 81" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M115 81 Q122 86 129 81" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M71 79 Q78 88 85 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M115 79 Q122 88 129 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "happy": return _`<path d="M70 84 Q78 72 86 84" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M114 84 Q122 72 130 84" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<path d="M71 81 Q78 86 85 81" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M115 81 Q122 86 129 81" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M71 79 Q78 88 85 79" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M115 79 Q122 88 129 79" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
 		case "sad": return _`<g class="eyes">
-          <g class="eye"><ellipse cx="78" cy="82" rx="6" ry="7.6" fill=${H}/><circle cx="76" cy="78.8" r="2.3" fill="#fff"/><circle cx="80.2" cy="85.4" r="1.1" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="122" cy="82" rx="6" ry="7.6" fill=${H}/><circle cx="120" cy="78.8" r="2.3" fill="#fff"/><circle cx="124.2" cy="85.4" r="1.1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="78" cy="82" rx="6" ry="7.6" fill=${U}/><circle cx="76" cy="78.8" r="2.3" fill="#fff"/><circle cx="80.2" cy="85.4" r="1.1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="122" cy="82" rx="6" ry="7.6" fill=${U}/><circle cx="120" cy="78.8" r="2.3" fill="#fff"/><circle cx="124.2" cy="85.4" r="1.1" fill="#fff"/></g>
         </g>
-        <path d="M68 70 L87 64" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M132 70 L113 64" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>`;
+        <path d="M68 70 L87 64" stroke=${U} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M132 70 L113 64" stroke=${U} stroke-width="3.4" stroke-linecap="round"/>`;
 		default: return _`<g class="eyes look">
-        <g class="eye"><circle cx="78" cy="80" r="6.6" fill=${H}/><circle cx="80.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="75.8" cy="83" r="1.2" fill="#fff"/></g>
-        <g class="eye"><circle cx="122" cy="80" r="6.6" fill=${H}/><circle cx="124.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="119.8" cy="83" r="1.2" fill="#fff"/></g>
+        <g class="eye"><circle cx="78" cy="80" r="6.6" fill=${U}/><circle cx="80.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="75.8" cy="83" r="1.2" fill="#fff"/></g>
+        <g class="eye"><circle cx="122" cy="80" r="6.6" fill=${U}/><circle cx="124.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="119.8" cy="83" r="1.2" fill="#fff"/></g>
       </g>`;
 	}
 }
-function hr(e) {
+function yr(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .7;
 	return _`<ellipse cx="66" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>
     <ellipse cx="134" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>`;
 }
-function gr(e) {
-	let t = _`<path d="M100 109 V112" stroke=${H} stroke-width="3" stroke-linecap="round"/>`;
+function br(e) {
+	let t = _`<path d="M100 109 V112" stroke=${U} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return _`${t}<path d="M92 112 Q100 126 108 112 Z" fill=${H} stroke=${H} stroke-width="3" stroke-linejoin="round"/>
-        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${cr}/>`;
-		case "sleepy": return _`${t}<ellipse cx="100" cy="117" rx="3.4" ry="2.8" fill=${H}/>`;
-		case "sad": return _`${t}<path d="M93 119 Q100 112 107 119" fill="none" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>`;
-		case "hibernating": return _`${t}<path d="M95 115 Q100 119 105 115" fill="none" stroke=${H} stroke-width="3.2" stroke-linecap="round"/>`;
-		default: return _`${t}<path d="M92 114 Q96 120 100 112 Q104 120 108 114" fill="none" stroke=${H} stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "happy": return _`${t}<path d="M92 112 Q100 126 108 112 Z" fill=${U} stroke=${U} stroke-width="3" stroke-linejoin="round"/>
+        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${fr}/>`;
+		case "sleepy": return _`${t}<ellipse cx="100" cy="117" rx="3.4" ry="2.8" fill=${U}/>`;
+		case "sad": return _`${t}<path d="M93 119 Q100 112 107 119" fill="none" stroke=${U} stroke-width="3.4" stroke-linecap="round"/>`;
+		case "hibernating": return _`${t}<path d="M95 115 Q100 119 105 115" fill="none" stroke=${U} stroke-width="3.2" stroke-linecap="round"/>`;
+		default: return _`${t}<path d="M92 114 Q96 120 100 112 Q104 120 108 114" fill="none" stroke=${U} stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function _r(e) {
+function xr(e) {
 	return e === "hibernating" ? _`<g class="snore"><circle cx="113" cy="108" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="105.5" r="1.8" fill="#fff"/></g>` : _``;
 }
-function vr(e, t = {}) {
+function Sr(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, _`<svg class="pet-art fox ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="fox-body-clip"><path d=${ur}/></clipPath>
-      <clipPath id="fox-head-clip"><path d=${dr}/></clipPath>
-      <clipPath id="fox-tail-clip"><path d=${pr}/></clipPath>
+      <clipPath id="fox-body-clip"><path d=${mr}/></clipPath>
+      <clipPath id="fox-head-clip"><path d=${hr}/></clipPath>
+      <clipPath id="fox-tail-clip"><path d=${_r}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${Qt(n)} ${$t(n, lr)}
+    ${nn(n)} ${rn(n, pr)}
     <g class="jelly">
       <g class="tail">
-        <path d=${pr} fill=${U}/>
+        <path d=${_r} fill=${W}/>
         <g clip-path="url(#fox-tail-clip)">
-          <circle cx="166" cy="86" r="20" fill=${or}/>
-          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${ar} stroke-width="9" opacity="0.5"/>
+          <circle cx="166" cy="86" r="20" fill=${ur}/>
+          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${lr} stroke-width="9" opacity="0.5"/>
         </g>
-        <path d=${pr} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${_r} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${U} stroke=${H} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${sr}/></g>
-      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${U} stroke=${H} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${sr}/></g>
-      <path d=${ur} fill=${U}/>
+      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${W} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${dr}/></g>
+      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${W} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${dr}/></g>
+      <path d=${mr} fill=${W}/>
       <g clip-path="url(#fox-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${ar} opacity="0.5"/>
-        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${or}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${lr} opacity="0.5"/>
+        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${ur}/>
       </g>
-      <path d=${ur} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
-      ${n ? _`` : _`<path d="M97 144 V166 M103 144 V166" stroke=${H} stroke-width="3" stroke-linecap="round"/>`}
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${sr} stroke=${H} stroke-width="4"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${sr} stroke=${H} stroke-width="4"/>
-      <path d=${dr} fill=${U}/>
+      <path d=${mr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      ${n ? _`` : _`<path d="M97 144 V166 M103 144 V166" stroke=${U} stroke-width="3" stroke-linecap="round"/>`}
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${dr} stroke=${U} stroke-width="4"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${dr} stroke=${U} stroke-width="4"/>
+      <path d=${hr} fill=${W}/>
       <g clip-path="url(#fox-head-clip)">
-        <path d=${fr} fill=${or}/>
+        <path d=${gr} fill=${ur}/>
       </g>
-      <path d=${dr} fill="none" stroke=${H} stroke-width="4" stroke-linejoin="round"/>
-      ${hr(e)} ${mr(e)}
-      <ellipse cx="100" cy="105" rx="6.4" ry="4.6" fill=${H}/>
+      <path d=${hr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      ${yr(e)} ${vr(e)}
+      <ellipse cx="100" cy="105" rx="6.4" ry="4.6" fill=${U}/>
       <ellipse cx="98" cy="103.4" rx="1.9" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? _`<path d="M100 109 V112" stroke=${H} stroke-width="3" stroke-linecap="round"/>` : gr(e)}
-      ${_r(e)}
+      ${r === "wake" ? _`<path d="M100 109 V112" stroke=${U} stroke-width="3" stroke-linecap="round"/>` : br(e)}
+      ${xr(e)}
     </g>
-    ${en(n, lr)}
-    ${n ? _`` : dn(e, {
+    ${an(n, pr)}
+    ${n ? _`` : hn(e, {
 		z: [14, -30],
 		tear: [-8, -60]
 	})}
-    ${nn(r, t.text ?? "", {
+    ${sn(r, t.text ?? "", {
 		mouth: [100, 118],
 		badgeDy: -16,
 		xpDy: -46,
@@ -2956,7 +3026,7 @@ function vr(e, t = {}) {
 	})}
   </svg>`;
 }
-var yr = o`
+var Cr = o`
   /* A fox is light and quick: it squashes a bit less than the slime. */
   .fox {
     --k: 0.4;
@@ -3019,50 +3089,50 @@ var yr = o`
       transform: rotate(6deg);
     }
   }
-`, W = "#101010", br = {
+`, G = "#101010", wr = {
 	color: "#4DFF2B",
 	thick: 1,
 	typingBehind: !0
-}, xr = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
-function Sr(e) {
+}, Tr = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
+function Er(e) {
 	switch (e) {
-		case "happy": return _`<path d="M70 137 Q80 119 90 137" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>
-        <path d="M110 137 Q120 119 130 137" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>`;
-		case "sleepy": return _`<path d="M71 134 Q80 138 89 134" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>
-        <path d="M111 134 Q120 138 129 134" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M71 132 Q80 141 89 132" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>
-        <path d="M111 132 Q120 141 129 132" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>`;
+		case "happy": return _`<path d="M70 137 Q80 119 90 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M110 137 Q120 119 130 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<path d="M71 134 Q80 138 89 134" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M111 134 Q120 138 129 134" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M71 132 Q80 141 89 132" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M111 132 Q120 141 129 132" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
 		case "sad": return _`<g class="eyes">
-          <g class="eye"><ellipse cx="80" cy="134" rx="6.5" ry="12.5" fill=${W}/><circle cx="77.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="82" cy="140" r="1.3" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="120" cy="134" rx="6.5" ry="12.5" fill=${W}/><circle cx="117.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="122" cy="140" r="1.3" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="80" cy="134" rx="6.5" ry="12.5" fill=${G}/><circle cx="77.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="82" cy="140" r="1.3" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="120" cy="134" rx="6.5" ry="12.5" fill=${G}/><circle cx="117.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="122" cy="140" r="1.3" fill="#fff"/></g>
         </g>
-        <path d="M68 121 L89 113" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M132 121 L111 113" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
+        <path d="M68 121 L89 113" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M132 121 L111 113" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>`;
 		default: return _`<g class="eyes look">
-        <g class="eye"><ellipse cx="80" cy="132" rx="6.5" ry="12.5" fill=${W}/><circle cx="77.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="82" cy="138" r="1.3" fill="#fff"/></g>
-        <g class="eye"><ellipse cx="120" cy="132" rx="6.5" ry="12.5" fill=${W}/><circle cx="117.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="122" cy="138" r="1.3" fill="#fff"/></g>
+        <g class="eye"><ellipse cx="80" cy="132" rx="6.5" ry="12.5" fill=${G}/><circle cx="77.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="82" cy="138" r="1.3" fill="#fff"/></g>
+        <g class="eye"><ellipse cx="120" cy="132" rx="6.5" ry="12.5" fill=${G}/><circle cx="117.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="122" cy="138" r="1.3" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Cr(e) {
+function Dr(e) {
 	let t = e === "sad" || e === "hibernating" ? .45 : .85;
 	return _`<ellipse cx="61" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>
     <ellipse cx="139" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>`;
 }
-function wr(e) {
+function Or(e) {
 	switch (e) {
-		case "happy": return _`<path d="M87 147 Q100 176 113 147 Z" fill=${W} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+		case "happy": return _`<path d="M87 147 Q100 176 113 147 Z" fill=${G} stroke=${G} stroke-width="4" stroke-linejoin="round"/>
         <path d="M93 162 Q100 154 107 162 Q100 170 93 162 Z" fill="#FF6B8A"/>`;
-		case "sleepy": return _`<ellipse cx="100" cy="155" rx="4.5" ry="3.6" fill=${W}/>`;
-		case "sad": return _`<path d="M91 160 Q100 149 109 160" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>`;
-		case "hibernating": return _`<path d="M93 155 Q100 159 107 155" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
-		default: return _`<path d="M90 150 Q100 161 110 150" fill="none" stroke=${W} stroke-width="5" stroke-linecap="round"/>`;
+		case "sleepy": return _`<ellipse cx="100" cy="155" rx="4.5" ry="3.6" fill=${G}/>`;
+		case "sad": return _`<path d="M91 160 Q100 149 109 160" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "hibernating": return _`<path d="M93 155 Q100 159 107 155" fill="none" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>`;
+		default: return _`<path d="M90 150 Q100 161 110 150" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
 	}
 }
-function Tr(e) {
+function kr(e) {
 	return e === "hibernating" ? _`<g class="snore"><circle cx="113" cy="152" r="7" fill="#D8FFE2" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="149.5" r="1.8" fill="#fff"/></g>` : _``;
 }
-function Er(e, t = {}) {
+function Ar(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, _`<svg class="pet-art slime ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
@@ -3072,13 +3142,13 @@ function Er(e, t = {}) {
         <stop offset="0.62" stop-color="#39FF14"/>
         <stop offset="1" stop-color="#10B83A"/>
       </radialGradient>
-      <clipPath id="slime-clip"><path d=${xr}/></clipPath>
+      <clipPath id="slime-clip"><path d=${Tr}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
     <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
-    ${Qt(n)} ${$t(n, br)}
+    ${nn(n)} ${rn(n, wr)}
     <g class="jelly">
-      <path class="body" d=${xr} fill="url(#slime-fill)"/>
+      <path class="body" d=${Tr} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
         <ellipse cx="100" cy="196" rx="84" ry="34" fill="#047A28" opacity="0.38"/>
         <ellipse cx="160" cy="132" rx="14" ry="48" fill="#fff" opacity="0.13"/>
@@ -3086,20 +3156,20 @@ function Er(e, t = {}) {
         <circle class="bubble b2" cx="132" cy="176" r="3" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.5"/>
         <circle class="bubble b3" cx="54" cy="172" r="4" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.6"/>
       </g>
-      <path class="body-line" d=${xr} fill="none" stroke=${W} stroke-width="5" stroke-linejoin="round"/>
+      <path class="body-line" d=${Tr} fill="none" stroke=${G} stroke-width="5" stroke-linejoin="round"/>
       <ellipse cx="76" cy="100" rx="17" ry="9" transform="rotate(-32 76 100)" fill="#fff" opacity="0.4"/>
       <path d="M50 128 C49 108 60 92 78 86" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
       <circle cx="49" cy="143" r="3.6" fill="#fff" opacity="0.65"/>
-      ${Cr(e)} ${Sr(e)}
-      ${r === "wake" ? _`` : wr(e)} ${Tr(e)}
+      ${Dr(e)} ${Er(e)}
+      ${r === "wake" ? _`` : Or(e)} ${kr(e)}
     </g>
-    ${en(n, br)}
-    ${n ? _`` : dn(e)}
-    ${nn(r, t.text ?? "")}
+    ${an(n, wr)}
+    ${n ? _`` : hn(e)}
+    ${sn(r, t.text ?? "")}
   </svg>`;
 }
 // src/pets.ts
-var Dr = [
+var jr = [
 	{
 		kind: "slime",
 		label: "Slime",
@@ -3130,24 +3200,24 @@ var Dr = [
 		emoji: "🦊",
 		art: !0
 	}
-], Or = [
+], Mr = [
 	"happy",
 	"content",
 	"sleepy",
 	"sad",
 	"hibernating"
 ];
-function kr(e) {
-	return Dr.find((t) => t.kind === e) ?? Dr[0];
+function Nr(e) {
+	return jr.find((t) => t.kind === e) ?? jr[0];
 }
 // src/boopli-pet.ts
-var Ar = {
+var Pr = {
 	happy: "✨",
 	content: "",
 	sleepy: "💤",
 	sad: "💧",
 	hibernating: "🌙💤"
-}, jr = class extends x {
+}, Fr = class extends S {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -3189,16 +3259,16 @@ var Ar = {
 		e.has("momentSeq") && this.moment && this._play(this.moment, this.momentText);
 	}
 	async _play(e, t = "") {
-		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = Gt[e], document.hidden || this._startMomentTimer();
+		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = Yt[e], document.hidden || this._startMomentTimer();
 	}
 	_art() {
-		let e = kr(this.kind), t = {
+		let e = Nr(this.kind), t = {
 			activity: this.activity,
 			moment: this._playing,
 			text: this._text
 		};
-		return e.art && e.kind === "slime" ? Er(this.mood, t) : e.art && e.kind === "bear" ? Cn(this.mood, t) : e.art && e.kind === "dog" ? rr(this.mood, t) : e.art && e.kind === "cat" ? zn(this.mood, t) : e.art && e.kind === "fox" ? vr(this.mood, t) : g`<span class="emoji" aria-hidden="true">${e.emoji}</span>
-      <span class="badge" aria-hidden="true">${this.away ? "🧳" : Ar[this.mood]}</span>`;
+		return e.art && e.kind === "slime" ? Ar(this.mood, t) : e.art && e.kind === "bear" ? Dn(this.mood, t) : e.art && e.kind === "dog" ? sr(this.mood, t) : e.art && e.kind === "cat" ? Un(this.mood, t) : e.art && e.kind === "fox" ? Sr(this.mood, t) : g`<span class="emoji" aria-hidden="true">${e.emoji}</span>
+      <span class="badge" aria-hidden="true">${this.away ? "🧳" : Pr[this.mood]}</span>`;
 	}
 	_tap() {
 		!this._playing && !this.still && this._play("tap");
@@ -3220,12 +3290,12 @@ var Ar = {
 	}
 	static {
 		this.styles = [
-			fn,
-			wn,
-			Bn,
-			ir,
-			yr,
-			ln,
+			gn,
+			On,
+			Wn,
+			cr,
+			Cr,
+			pn,
 			o`
       :host {
         display: block;
@@ -3282,61 +3352,61 @@ var Ar = {
 		];
 	}
 };
-customElements.define("boopli-pet", jr);
+customElements.define("boopli-pet", Fr);
 // src/boopli-stage.ts
-var G = "#101010", Mr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${G} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${G} stroke-width="2.5" stroke-linejoin="round"/>
+var K = "#101010", Ir = _`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${K} stroke-width="2.5"/>
+  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
   <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#5B8DEF"/>
   <circle cx="36" cy="34" r="2.8" fill="#fff"/>
   <circle cx="31.5" cy="30.6" r="1.5" fill="#fff"/><circle cx="36" cy="29.3" r="1.5" fill="#fff"/><circle cx="40.5" cy="30.6" r="1.5" fill="#fff"/>
   <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#E6E0FF" stroke=${G} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#E6E0FF" stroke=${K} stroke-width="2.5"/>
   <ellipse cx="36" cy="19.5" rx="22" ry="5" fill="#7FD8FF"/>
   <ellipse class="ripple" cx="36" cy="19.5" rx="7" ry="1.8" fill="none" stroke="#fff" stroke-width="1.4"/>
   <path d="M20 18.5 Q26 16.5 32 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
-</svg>`, Nr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${G} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${G} stroke-width="2.5" stroke-linejoin="round"/>
+</svg>`, Lr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${K} stroke-width="2.5"/>
+  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
   <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#FF9F5A"/>
   <path d="M30 31.5 a3 3 0 1 1 6 0 a3 3 0 1 1 6 0 q0 4 -6 7 q-6 -3 -6 -7 z" fill="#fff"/>
   <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#FFE3C7" stroke=${G} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#FFE3C7" stroke=${K} stroke-width="2.5"/>
   <ellipse cx="36" cy="18" rx="22" ry="5" fill="#8A5A3A"/>
-  <circle cx="22" cy="15.5" r="3" fill="#C98A5A" stroke=${G} stroke-width="1.5"/>
-  <circle cx="29" cy="12.5" r="3" fill="#B6784A" stroke=${G} stroke-width="1.5"/>
-  <circle cx="44" cy="12.8" r="3" fill="#C98A5A" stroke=${G} stroke-width="1.5"/>
-  <circle cx="50" cy="16" r="3" fill="#B6784A" stroke=${G} stroke-width="1.5"/>
-  <circle cx="36" cy="15" r="3" fill="#B6784A" stroke=${G} stroke-width="1.5"/>
+  <circle cx="22" cy="15.5" r="3" fill="#C98A5A" stroke=${K} stroke-width="1.5"/>
+  <circle cx="29" cy="12.5" r="3" fill="#B6784A" stroke=${K} stroke-width="1.5"/>
+  <circle cx="44" cy="12.8" r="3" fill="#C98A5A" stroke=${K} stroke-width="1.5"/>
+  <circle cx="50" cy="16" r="3" fill="#B6784A" stroke=${K} stroke-width="1.5"/>
+  <circle cx="36" cy="15" r="3" fill="#B6784A" stroke=${K} stroke-width="1.5"/>
   <g transform="translate(36 8) rotate(-12)">
-    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${G} stroke-width="1.6"/>
-    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${G} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${G} stroke-width="1.6"/>
-    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${G} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${G} stroke-width="1.6"/>
+    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/>
+    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/>
+    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/>
   </g>
-</svg>`, Pr = _`<svg viewBox="0 0 120 64" aria-hidden="true">
+</svg>`, Rr = _`<svg viewBox="0 0 120 64" aria-hidden="true">
   <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
-  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${G} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${K} stroke-width="3" stroke-linejoin="round"/>
   <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
-  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${G} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${G} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${G} stroke-width="1.2" stroke-linejoin="round"/>
-  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${G} stroke-width="2.5"/>
-  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${G} stroke-width="2.5"/>
-  <path d="M18 34 H37" stroke=${G} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
-</svg>`, Fr = _`<svg viewBox="0 0 120 64" aria-hidden="true">
+  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${K} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${K} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${K} stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${K} stroke-width="2.5"/>
+  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${K} stroke-width="2.5"/>
+  <path d="M18 34 H37" stroke=${K} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
+</svg>`, zr = _`<svg viewBox="0 0 120 64" aria-hidden="true">
   <g class="blanket">
-    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${G} stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
     <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
     <path d="M28 49 Q60 57 92 49" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
   </g>
-  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${G} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${K} stroke-width="3" stroke-linejoin="round"/>
   <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-</svg>`, Ir = _`<svg viewBox="0 0 50 50" aria-hidden="true">
-  <path d="M17 17 V11 Q17 7 21 7 H29 Q33 7 33 11 V17" fill="none" stroke=${G} stroke-width="3" stroke-linecap="round"/>
-  <rect x="5" y="16" width="40" height="30" rx="6" fill="#FF8A3D" stroke=${G} stroke-width="3"/>
-  <path d="M17 16 V46 M33 16 V46" stroke=${G} stroke-width="2.5" opacity="0.55"/>
-  <rect x="22" y="28" width="6" height="5" rx="1.5" fill="#FFD166" stroke=${G} stroke-width="2"/>
-</svg>`, Lr = class extends x {
+</svg>`, Br = _`<svg viewBox="0 0 50 50" aria-hidden="true">
+  <path d="M17 17 V11 Q17 7 21 7 H29 Q33 7 33 11 V17" fill="none" stroke=${K} stroke-width="3" stroke-linecap="round"/>
+  <rect x="5" y="16" width="40" height="30" rx="6" fill="#FF8A3D" stroke=${K} stroke-width="3"/>
+  <path d="M17 16 V46 M33 16 V46" stroke=${K} stroke-width="2.5" opacity="0.55"/>
+  <rect x="22" y="28" width="6" height="5" rx="1.5" fill="#FFD166" stroke=${K} stroke-width="2"/>
+</svg>`, Vr = class extends S {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -3364,9 +3434,9 @@ var G = "#101010", Mr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
 		let e = this.level >= 3, t = this.away ? "hibernating" : this.mood, n = this.away ? "" : this.activity, r = e && !n && (t === "sleepy" || t === "hibernating");
 		return g`<div class="scene ${r ? "sleeping" : ""} ${r && t === "hibernating" ? "deep" : ""}" role="group" aria-label="Your pet's room">
       <div class="floor"></div>
-      <div class="prop water">${Mr}</div>
-      ${this.level >= 2 ? g`<div class="prop food">${Nr}</div>` : y}
-      ${e ? g`<div class="prop bed">${Pr}</div>` : y}
+      <div class="prop water">${Ir}</div>
+      ${this.level >= 2 ? g`<div class="prop food">${Lr}</div>` : y}
+      ${e ? g`<div class="prop bed">${Rr}</div>` : y}
       <div class="actor">
         <boopli-pet
           .kind=${this.kind}
@@ -3379,8 +3449,8 @@ var G = "#101010", Mr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
           .momentText=${this.momentText}
         ></boopli-pet>
       </div>
-      ${e ? g`<div class="prop bed front">${Fr}</div>` : y}
-      ${this.away ? g`<div class="prop suitcase">${Ir}</div>` : y}
+      ${e ? g`<div class="prop bed front">${zr}</div>` : y}
+      ${this.away ? g`<div class="prop suitcase">${Br}</div>` : y}
     </div>`;
 	}
 	static {
@@ -3391,7 +3461,7 @@ var G = "#101010", Mr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
       .scene {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 6; /* a third lower than 16:9 */
+        aspect-ratio: 16 / 5; /* low, so Today fits on one screen */
         container-type: size;
         border-radius: 14px;
         overflow: hidden;
@@ -3526,14 +3596,14 @@ var G = "#101010", Mr = _`<svg viewBox="0 0 72 48" aria-hidden="true">
     `];
 	}
 };
-customElements.define("boopli-stage", Lr);
+customElements.define("boopli-stage", Vr);
 // src/boopli-egg.ts
-var Rr = 30, zr = 1.5, Br = .55, Vr = 6.1, Hr = 60 / 140, Ur = 260, Wr = 227, Gr = new URL("./easter-egg.mp3", "" + import.meta.url).href, Kr = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, qr = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Jr = 12;
-function Yr() {
+var Hr = 30, Ur = 1.5, Wr = .55, Gr = 6.1, Kr = 60 / 140, qr = 260, Jr = 227, Yr = new URL("./easter-egg.mp3", "" + import.meta.url).href, Xr = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, Zr = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Qr = 12;
+function $r() {
 	let e = navigator.userAgent, t = /iPhone|iPad|iPod/.test(e) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1, n = /safari/i.test(e) && !/chrome|chromium|crios|fxios|edg|android/i.test(e);
 	return t || n;
 }
-var Xr = class extends x {
+var ei = class extends S {
 	static {
 		this.properties = {
 			_muted: { state: !0 },
@@ -3545,15 +3615,15 @@ var Xr = class extends x {
 		super(), this._started = 0, this._lastHop = -1, this._hasSound = !1, this._over = !1, this._muted = !1, this._cat = !1, this._note = !1;
 	}
 	connectedCallback() {
-		if (super.connectedCallback(), Yr()) {
-			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Jr * 1e3);
+		if (super.connectedCallback(), $r()) {
+			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Qr * 1e3);
 			return;
 		}
 		let e = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? !1;
 		this._cat = !e && document.createElement("video").canPlayType("video/webm; codecs=\"vp9\"") !== "", this._started = performance.now();
 		try {
-			let e = new Audio(Gr);
-			e.volume = Br, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
+			let e = new Audio(Yr);
+			e.volume = Wr, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
 		} catch {}
 		this.dispatchEvent(new CustomEvent("egg-started", {
 			bubbles: !0,
@@ -3571,18 +3641,18 @@ var Xr = class extends x {
 		e && e.play().catch(() => void 0);
 		let i = !1;
 		if (n) {
-			let e = (window.innerWidth - Ur) / 2, t = (window.innerHeight - Wr) / 2;
+			let e = (window.innerWidth - qr) / 2, t = (window.innerHeight - Jr) / 2;
 			n.style.transform = `translate(${e}px, ${t}px) scale(1)`;
 		}
 		let a = () => {
-			let o = this._time(), s = Rr - o, c = Math.max(0, Math.min(1, s / zr));
-			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Br * c), s <= 0) this._stop(!0);
+			let o = this._time(), s = Hr - o, c = Math.max(0, Math.min(1, s / Ur));
+			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Wr * c), s <= 0) this._stop(!0);
 			else {
-				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Vr) {
-					let e = Math.floor((o - Vr) / Hr);
+				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Gr) {
+					let e = Math.floor((o - Gr) / Kr);
 					if (e !== this._lastHop) {
 						this._lastHop = e;
-						let t = .75 + Math.random() * .7, r = Ur * t, i = Wr * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
+						let t = .75 + Math.random() * .7, r = qr * t, i = Jr * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
 						n.style.transform = `translate(${a}px, ${o}px) scale(${t})`;
 					}
 				}
@@ -3610,8 +3680,8 @@ var Xr = class extends x {
         <button type="button" class="ctl" aria-label="Close" @click=${() => this._stop(!0)}>✕</button>
       </div>` : g`${this._cat ? g`<div class="egg-layer" aria-hidden="true">
             <div class="egg-cat">
-              <video class="intro" src=${Kr} muted playsinline preload="auto"></video>
-              <video class="loop" src=${qr} muted playsinline loop preload="auto" hidden></video>
+              <video class="intro" src=${Xr} muted playsinline preload="auto"></video>
+              <video class="loop" src=${Zr} muted playsinline loop preload="auto" hidden></video>
             </div>
           </div>` : ""}
       <div class="controls">
@@ -3698,9 +3768,9 @@ var Xr = class extends x {
   `;
 	}
 };
-customElements.define("boopli-egg", Xr);
+customElements.define("boopli-egg", ei);
 // src/boopli-today.ts
-function Zr(e, t) {
+function ti(e, t) {
 	if (!t.group) return null;
 	let n = e.steps.filter((e) => e.group === t.group), r = e.steps.some((e) => e.group !== t.group && e.status !== "done");
 	return {
@@ -3709,7 +3779,7 @@ function Zr(e, t) {
 		canPark: r
 	};
 }
-function Qr(e) {
+function ni(e) {
 	return e.away ? `${e.name} is resting while you are away.` : {
 		happy: "Nice, you got things done today.",
 		content: "Ready when you are.",
@@ -3718,7 +3788,7 @@ function Qr(e) {
 		hibernating: `${e.name} is curled up, resting until you are back. One step wakes it.`
 	}[e.mood];
 }
-var $r = class extends x {
+var ri = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -3750,7 +3820,7 @@ var $r = class extends x {
 		if (this._lastRunIds = r, !n || t.total_xp <= n.total_xp) return;
 		this._moment = "done", this._momentText = `+${t.total_xp - n.total_xp} XP`, (n.mood === "sleepy" || n.mood === "hibernating") && (this._moment = "wake", this._momentText = ""), t.level > n.level && (this._moment = "levelup", this._momentText = `Level ${t.level}!`), this._momentSeq += 1;
 		let a = [`+${t.total_xp - n.total_xp} XP`];
-		i.length && a.unshift(`🎉 ${i[0]} is done!`), t.level > n.level && a.push(`Level ${t.level}!`), (n.mood === "sad" || n.mood === "hibernating") && a.push(`${t.name} is awake. Welcome back!`), this._toast = a.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
+		i.length && a.unshift(`${i[0]} is done!`), t.level > n.level && a.push(`Level ${t.level}!`), (n.mood === "sad" || n.mood === "hibernating") && a.push(`${t.name} is awake. Welcome back!`), this._toast = a.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
 	}
 	_openBreakdown(e) {
 		this.dispatchEvent(new CustomEvent("open-breakdown", {
@@ -3774,8 +3844,8 @@ var $r = class extends x {
                 @input=${(e) => this._quick = e.target.value}
               ></textarea>
               <div class="quick-actions">
-                <button class="primary" @click=${() => this._openBreakdown("now")}>✨ Break it down now</button>
-                <button @click=${() => this._openBreakdown("recurring")}>🔁 Break down a recurring chore</button>
+                <button class="primary" @click=${() => this._openBreakdown("now")}>${E("auto-fix")} Break it down now</button>
+                <button @click=${() => this._openBreakdown("recurring")}>${E("repeat")} Break down a recurring chore</button>
               </div>
             ` : g`
               <p class="muted small">
@@ -3788,7 +3858,7 @@ var $r = class extends x {
 			composed: !0
 		}))}
               >
-                🤖 Set up AI help
+                ${E("robot-outline")} Set up AI help
               </button>
             `}
       </section>
@@ -3818,11 +3888,39 @@ var $r = class extends x {
             <div class="fill" style="width:${t}%"></div>
           </div>
           <div class="muted small">${e.xp_in_level} / ${e.xp_for_level} XP to the next level</div>
-          <div class="small">${Qr(e)}</div>
+          <div class="small">${ni(e)}</div>
         </div>
       </section>
       ${this._toast ? g`<div class="toast" role="status">${this._toast}</div>` : y}
     `;
+	}
+	_renderTrail(e) {
+		let t = e.done / e.total * 100, n = Math.min(94, Math.max(6, t)), r = e.total <= 6;
+		return g`<div class="trail">
+      <div
+        class="track"
+        role="progressbar"
+        aria-label="Steps done"
+        aria-valuenow=${e.done}
+        aria-valuemin="0"
+        aria-valuemax=${e.total}
+      >
+        <div class="trail-fill" style="width:${t}%"></div>
+        <boopli-pet
+          class="rider"
+          style="left:${n}%"
+          still
+          .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
+          .mood=${"happy"}
+        ></boopli-pet>
+        <span class="flag">${E("flag-checkered")}</span>
+      </div>
+      ${r ? g`<ol class="trail-steps">
+            ${e.run.steps.map((t) => g`<li class=${t.status === "done" ? "ok" : t.step_id === e.step.step_id ? "here" : ""}>
+                  ${t.status === "done" ? E("check") : y}${t.title}
+                </li>`)}
+          </ol>` : g`<div class="muted small">Step ${e.done + 1} of ${e.total}</div>`}
+    </div>`;
 	}
 	async _done(e, t) {
 		if (this.hass && !this._busy) {
@@ -3908,10 +4006,10 @@ var $r = class extends x {
 		if (!t?.active) return y;
 		let n = !!this.snapshot?.away_now;
 		return g`<section class="away-banner ${n ? "on" : "planned"}" role="status">
-      <div class="away-icon" aria-hidden="true">🧳</div>
+      <div class="away-icon" aria-hidden="true">${E("bag-suitcase")}</div>
       <div class="away-text">
         <div class="away-title">${n ? "AWAY MODE IS ON" : "AWAY MODE IS PLANNED"}</div>
-        <div class="away-when">${Ht(t, this.nowMs, e, n)}</div>
+        <div class="away-when">${Kt(t, this.nowMs, e, n)}</div>
         <div class="away-note">
           ${n ? "Nothing starts and nothing nudges you, except the chores that keep going." : "Boopli carries on as usual until then."}
         </div>
@@ -3990,7 +4088,7 @@ var $r = class extends x {
       ${e.dueToday.map((e) => g`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
-            <span class="hint">at ${O(e.at, t)}</span>
+            <span class="hint">at ${k(e.at, t)}</span>
           </div>
         </div>`)}
     </section>`;
@@ -4003,7 +4101,7 @@ var $r = class extends x {
       ${n.map((e) => g`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
-            <span class="hint">${k(e.at, this.nowMs, t)}</span>
+            <span class="hint">${A(e.at, this.nowMs, t)}</span>
           </div>
         </div>`)}
       ${e.upcoming.length > n.length ? g`<div class="muted small more">and ${e.upcoming.length - n.length} more in the Chores tab</div>` : y}
@@ -4019,7 +4117,7 @@ var $r = class extends x {
           <div class="part-name">${e.name}</div>
           <div class="muted small">
             ${e.steps.length} ${e.steps.length === 1 ? "step" : "steps"} ·
-            ${e.next_due ? `comes back ${k(e.next_due, this.nowMs, t)}` : "waiting until you start it"}
+            ${e.next_due ? `comes back ${A(e.next_due, this.nowMs, t)}` : "waiting until you start it"}
           </div>
           ${this._park?.choreId === e.id ? this._renderParkAsk() : g`<div class="part-actions">
                 <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => _t(this.hass, e.id))}>
@@ -4048,15 +4146,15 @@ var $r = class extends x {
       <section class="sec auto soft">
         ${this._heading("Done by itself", n.length)}
         ${n.map((t) => g`<div class="row">
-            <span>✓ ${t.chore_name}: ${t.step_title}</span>
-            <span class="hint">${t.reason ? `${t.reason}, ` : ""}${O(t.ts, e.time_zone)}</span>
+            <span>${E("check")} ${t.chore_name}: ${t.step_title}</span>
+            <span class="hint">${t.reason ? `${t.reason}, ` : ""}${k(t.ts, e.time_zone)}</span>
           </div>`)}
       </section>
     `;
 	}
 	render() {
 		if (!this.snapshot) return g`<p class="muted">Loading…</p>`;
-		let e = this.snapshot.time_zone, t = Wt(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
+		let e = this.snapshot.time_zone, t = Jt(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
 		return g`
       ${this._renderAway(e)}
       <div class="cols"><div class="col">
@@ -4080,33 +4178,28 @@ var $r = class extends x {
                 ${t.now.step.group ? g`<span class="tag">${t.now.step.group}</span>` : y}
               </div>
               <h2>${t.now.step.title}</h2>
-              ${t.now.total > 1 ? g`<div class="progress">
-                    <div class="bar" role="progressbar" aria-valuenow=${t.now.done} aria-valuemin="0" aria-valuemax=${t.now.total}>
-                      <div class="fill" style="width:${t.now.done / t.now.total * 100}%"></div>
-                    </div>
-                    <div class="muted small">Step ${t.now.done + 1} of ${t.now.total}</div>
-                  </div>` : y}
+              ${t.now.total > 1 ? this._renderTrail(t.now) : y}
               ${(() => {
-			let e = Zr(t.now.run, t.now.step);
+			let e = ti(t.now.run, t.now.step);
 			return e && e.total > 1 ? g`<div class="muted small">${t.now.step.group}: step ${Math.min(e.done + 1, e.total)} of ${e.total}</div>` : y;
 		})()}
               ${t.now.step.active_at ? g`<div class="muted small">
-                    ${It(t.now.step.active_at, e)}
+                    ${Bt(t.now.step.active_at, e)}
                   </div>` : y}
               ${t.now.step.snoozed_until && Date.parse(t.now.step.snoozed_until) > this.nowMs ? g`<div class="muted small">
-                    Snoozed until ${O(t.now.step.snoozed_until, e)}
+                    Snoozed until ${k(t.now.step.snoozed_until, e)}
                   </div>` : y}
               ${t.now.step.on_it_until ? g`<div class="in-progress">
-                    ✅ In progress${t.now.step.on_it_since ? g` since ${O(t.now.step.on_it_since, e)}` : y}
-                    <span class="muted small">· Boopli checks in at ${O(t.now.step.on_it_until, e)}</span>
+                    ${E("check-circle")} In progress${t.now.step.on_it_since ? g` since ${k(t.now.step.on_it_since, e)}` : y}
+                    <span class="muted small">· Boopli checks in at ${k(t.now.step.on_it_until, e)}</span>
                   </div>` : y}
               <div class="now-buttons">
                 <button
-                  class="primary done"
+                  class="press done"
                   ?disabled=${this._busy}
                   @click=${() => this._done(t.now.run.id, t.now.step.step_id)}
                 >
-                  Done
+                  ${E("check-bold")} Done
                 </button>
                 ${t.now.step.on_it_until ? g`<button
                       class="link"
@@ -4122,7 +4215,7 @@ var $r = class extends x {
                       On it
                     </button>`}
               </div>
-              ${Zr(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : g`<button
+              ${ti(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : g`<button
                   class="link later-btn"
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({
@@ -4156,10 +4249,10 @@ var $r = class extends x {
 	static {
 		this.styles = [T, o`
       .small {
-        font-size: 14px;
+        font-size: 17px;
       }
       .quick h3 {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 500;
         margin-bottom: 10px;
       }
@@ -4183,15 +4276,66 @@ var $r = class extends x {
         margin-left: 6px;
         padding: 2px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         background: var(--secondary-background-color);
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
-      .progress {
-        margin: 6px 0 0;
+      /* No boxes on this screen: type, space and thin lines do the grouping. */
+      .card {
+        background: none;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
       }
-      .progress .bar {
-        margin: 4px 0;
+      .trail {
+        margin: 22px 0 6px;
+      }
+      .track {
+        position: relative;
+        height: 20px;
+        border-radius: 10px;
+        background: var(--secondary-background-color);
+        margin: 26px 0 12px;
+      }
+      .trail-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: var(--boopli-accent, var(--primary-color));
+        transition: width 0.5s ease;
+      }
+      .rider {
+        position: absolute;
+        top: -30px;
+        width: 60px;
+        height: 60px;
+        transform: translateX(-50%);
+        transition: left 0.5s ease;
+        pointer-events: none;
+      }
+      .flag {
+        position: absolute;
+        right: 6px;
+        top: -1px;
+        font-size: 20px;
+        line-height: 20px;
+        color: var(--secondary-text-color);
+      }
+      .trail-steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 18px;
+        font-size: 17px;
+        color: var(--secondary-text-color);
+      }
+      .trail-steps li.ok {
+        color: var(--boopli-accent, var(--primary-color));
+      }
+      .trail-steps li.here {
+        color: var(--primary-text-color);
+        font-weight: 500;
       }
       .banner {
         display: flex;
@@ -4227,18 +4371,18 @@ var $r = class extends x {
         min-width: 0;
       }
       .away-title {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         letter-spacing: 0.04em;
       }
       .away-when {
-        font-size: 17px;
+        font-size: 19px;
         font-weight: 500;
         margin-top: 2px;
       }
       .away-note {
         margin-top: 4px;
-        font-size: 14px;
+        font-size: 17px;
         opacity: 0.85;
       }
       .away-actions {
@@ -4256,8 +4400,8 @@ var $r = class extends x {
         color: #1a1200;
       }
       .pet-card {
-        margin-bottom: 16px;
-        padding: 12px;
+        margin-bottom: 8px;
+        padding: 0;
       }
       .pet-info {
         margin-top: 12px;
@@ -4265,20 +4409,19 @@ var $r = class extends x {
         min-width: 0;
       }
       .pet-name {
-        font-size: 17px;
+        font-size: 19px;
         font-weight: 500;
       }
       .bar {
-        height: 8px;
+        height: 16px;
         border-radius: 999px;
         background: var(--secondary-background-color);
-        border: 1px solid var(--divider-color);
         overflow: hidden;
-        margin: 6px 0 4px;
+        margin: 10px 0 6px;
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         border-radius: 999px;
         transition: width 0.4s ease;
       }
@@ -4287,8 +4430,8 @@ var $r = class extends x {
         left: 50%;
         bottom: 28px;
         transform: translateX(-50%);
-        background: var(--primary-color);
-        color: var(--text-primary-color, #fff);
+        background: var(--boopli-accent, var(--primary-color));
+        color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
         padding: 10px 18px;
         border-radius: 999px;
         font-weight: 500;
@@ -4308,7 +4451,7 @@ var $r = class extends x {
       }
       .now,
       .empty {
-        padding: 24px 20px;
+        padding: 4px 0 12px;
       }
       /* The cards in a column stand apart from each other, and from the list under them. */
       .now,
@@ -4320,14 +4463,12 @@ var $r = class extends x {
         margin-top: 24px;
       }
       .now h2 {
-        font-size: 28px;
+        font-size: 34px;
+        line-height: 1.15;
         margin: 8px 0;
       }
       .done {
-        min-width: 180px;
-        min-height: 56px;
-        font-size: 20px;
-        border-radius: 14px;
+        min-width: 200px;
       }
       .now-buttons {
         display: flex;
@@ -4339,10 +4480,10 @@ var $r = class extends x {
       .on-it {
         min-height: 56px;
         padding: 0 22px;
-        font-size: 18px;
+        font-size: 20px;
         border-radius: 14px;
-        border: 2px solid var(--success-color, #2e7d32);
-        color: var(--success-color, #2e7d32);
+        border: 2px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent, var(--primary-color));
         background: transparent;
         cursor: pointer;
       }
@@ -4358,11 +4499,11 @@ var $r = class extends x {
       }
       /* The lists next to the big step: a clear heading, a visible line, calm rows. */
       .sec {
-        margin-bottom: 24px;
+        margin-bottom: 14px;
         --line: color-mix(in srgb, var(--primary-text-color) 20%, transparent);
       }
       .sec-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 500;
         color: var(--primary-text-color);
         margin: 0 0 6px;
@@ -4371,7 +4512,7 @@ var $r = class extends x {
       }
       .count {
         margin-left: 8px;
-        font-size: 14px;
+        font-size: 17px;
         font-weight: 400;
         color: var(--secondary-text-color);
       }
@@ -4393,7 +4534,7 @@ var $r = class extends x {
         border-top: 0;
       }
       .part-name {
-        font-size: 16px;
+        font-size: 18px;
       }
       .part-actions,
       .park-buttons,
@@ -4418,7 +4559,7 @@ var $r = class extends x {
         text-decoration: underline;
         min-height: 0;
         padding: 8px 4px;
-        font-size: 15px;
+        font-size: 17px;
       }
       .later-btn {
         display: block;
@@ -4432,20 +4573,20 @@ var $r = class extends x {
         text-align: right;
       }
       .group {
-        padding: 9px 0;
+        padding: 6px 0;
         border-top: 1px solid var(--line);
       }
       .group:first-of-type {
         border-top: 0;
       }
       .group-name {
-        font-size: 15px;
+        font-size: 17px;
       }
       .row {
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        font-size: 14px;
+        font-size: 17px;
         padding: 2px 0 2px 12px;
       }
       .group > .row:only-child {
@@ -4473,41 +4614,41 @@ var $r = class extends x {
     `];
 	}
 };
-customElements.define("boopli-today", $r);
+customElements.define("boopli-today", ri);
 // src/helpers.ts
-var ei = "amzn_sfx_scifi_alarm_01", ti = "amzn_sfx_doorbell_chime_01", ni = [
+var ii = "amzn_sfx_scifi_alarm_01", ai = "amzn_sfx_doorbell_chime_01", oi = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], ri = {
+], si = {
 	start: "07:00",
 	stop: "22:00"
 };
-function K(e, t) {
+function q(e, t) {
 	let n = e?.states[t]?.attributes?.friendly_name;
 	return typeof n == "string" && n ? n : t;
 }
-function q(e, t, n = []) {
-	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => K(e, t).localeCompare(K(e, n)));
+function J(e, t, n = []) {
+	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => q(e, t).localeCompare(q(e, n)));
 }
-function ii(e, t, n) {
+function ci(e, t, n) {
 	let r;
 	return r = t === "alexa_media" ? Object.keys(e?.services?.notify ?? {}).filter((e) => e.startsWith("alexa_media_") && e !== "alexa_media").sort().map((e) => ({
 		value: e,
 		label: e.replace("alexa_media_", "")
 	})) : t === "alexa_devices" ? Object.keys(e?.states ?? {}).filter((e) => e.startsWith("notify.") && /_(speak|announce)$/.test(e)).sort().map((t) => ({
 		value: t,
-		label: K(e, t)
-	})) : q(e, ["tts"]).map((t) => ({
+		label: q(e, t)
+	})) : J(e, ["tts"]).map((t) => ({
 		value: t,
-		label: K(e, t)
+		label: q(e, t)
 	})), n && !r.some((e) => e.value === n) && r.unshift({
 		value: n,
 		label: `${n} (not found)`
 	}), r;
 }
-function ai(e) {
+function li(e) {
 	return {
 		entity_id: e,
 		mode: "blink",
@@ -4522,13 +4663,13 @@ function ai(e) {
 		start_at: 1
 	};
 }
-function oi(e) {
+function ui(e) {
 	return {
 		entity_id: e,
 		cue: {
 			enabled: !1,
 			kind: "alexa",
-			sound: ti,
+			sound: ai,
 			start_at: 1,
 			seconds: 30,
 			repeat_s: 5
@@ -4543,21 +4684,21 @@ function oi(e) {
 		alarm: {
 			enabled: !1,
 			kind: "alexa",
-			sound: ei,
+			sound: ii,
 			start_at: 4,
 			seconds: 30,
 			repeat_s: 5
 		}
 	};
 }
-function si(e) {
+function di(e) {
 	return {
 		entity_id: e,
 		seconds: 30,
 		start_at: 4
 	};
 }
-function ci(e) {
+function fi(e) {
 	let t = parseInt(e.replace("#", ""), 16);
 	return [
 		t >> 16 & 255,
@@ -4565,24 +4706,24 @@ function ci(e) {
 		t & 255
 	];
 }
-function li(e) {
+function pi(e) {
 	return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-function J(e) {
+function Y(e) {
 	return e.replace("mobile_app_", "");
 }
-var ui = {
+var mi = {
 	normal: "normal",
 	high: "high priority",
 	alarm: "alarm volume",
 	alarm_max: "max volume"
-}, di = {
+}, hi = {
 	quiet: "Quiet",
 	one: "One nudge",
 	escalating: "Escalating",
 	persistent: "Persistent"
 };
-function fi(e, t) {
+function gi(e, t) {
 	let n = e?.states[t]?.attributes?.supported_color_modes;
 	return !Array.isArray(n) || n.some((e) => [
 		"rgb",
@@ -4592,28 +4733,28 @@ function fi(e, t) {
 		"hs"
 	].includes(String(e)));
 }
-function Y() {
+function X() {
 	try {
 		return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 	} catch {
 		return Math.random().toString(16).slice(2, 14).padEnd(12, "0");
 	}
 }
-function pi(e, t) {
-	return e.startsWith("ladder:") ? t?.find((t) => `ladder:${t.id}` === e)?.name ?? "A ladder that is gone" : di[e] ?? e;
+function _i(e, t) {
+	return e.startsWith("ladder:") ? t?.find((t) => `ladder:${t.id}` === e)?.name ?? "A ladder that is gone" : hi[e] ?? e;
 }
-function mi(e) {
+function vi(e) {
 	if (!e.enabled) return "Off: Boopli nudges at any time";
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e.days[String(n)] ?? null, i = n;
 		for (; i + 1 < 7 && (e.days[String(i + 1)] ?? null)?.start === r?.start && (e.days[String(i + 1)] ?? null)?.stop === r?.stop;) i++;
-		let a = n === i ? D[n] : `${D[n]} to ${D[i]}`;
+		let a = n === i ? O[n] : `${O[n]} to ${O[i]}`;
 		t.push(r ? `${a} ${r.start} to ${r.stop}` : `${a} no limit`), n = i + 1;
 	}
 	return "Nudges allowed " + t.join(", ");
 }
-function hi(e) {
+function yi(e) {
 	let t = [
 		e.cue.enabled ? `ding (from nudge ${e.cue.start_at})` : "",
 		e.speech.enabled ? `speech (from nudge ${e.speech.start_at})` : "",
@@ -4621,11 +4762,11 @@ function hi(e) {
 	].filter(Boolean);
 	return t.length ? t.join(", ") : "nothing switched on yet";
 }
-function gi(e) {
+function bi(e) {
 	return e.mode === "indicator" ? "status light (stays on until done)" : "blinks";
 }
 // src/boopli-triggers.ts
-var _i = {
+var xi = {
 	binary_sensor: ["on", "off"],
 	switch: ["on", "off"],
 	input_boolean: ["on", "off"],
@@ -4634,15 +4775,15 @@ var _i = {
 	lock: ["locked", "unlocked"],
 	person: ["home", "not_home"],
 	device_tracker: ["home", "not_home"]
-}, vi = [
+}, Si = [
 	"event",
 	"input_button",
 	"button"
 ];
-function yi(e) {
+function Ci(e) {
 	return e.state ? "state" : e.above !== null && e.below !== null ? "between" : e.below === null ? e.above === null ? "state" : "above" : "below";
 }
-function bi(e) {
+function wi(e) {
 	return {
 		kind: e,
 		entity_id: "",
@@ -4655,7 +4796,7 @@ function bi(e) {
 		press: ""
 	};
 }
-var xi = class extends x {
+var Ti = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -4696,7 +4837,7 @@ var xi = class extends x {
 		} : n));
 	}
 	_add(e) {
-		this._emit([...this.triggers, bi(e)]);
+		this._emit([...this.triggers, wi(e)]);
 	}
 	_remove(e) {
 		this._cancelScan(), this._emit(this.triggers.filter((t, n) => n !== e));
@@ -4751,7 +4892,7 @@ var xi = class extends x {
 		}
 	}
 	_renderState(e, t) {
-		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = _i[n] ?? [], a = yi(e);
+		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = xi[n] ?? [], a = Ci(e);
 		return g`
       <div class="field">
         <label>Which entity?</label>
@@ -4909,7 +5050,7 @@ var xi = class extends x {
         ${this._entityIds().map((e) => g`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       <datalist id="buttons-list">
-        ${this._entityIds(vi).map((e) => g`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds(Si).map((e) => g`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       ${this.triggers.length === 0 ? g`<div class="muted small">
             Nothing yet: only you finish this step (with Done). Add one below to let it finish by
@@ -5002,13 +5143,13 @@ var xi = class extends x {
     `];
 	}
 };
-customElements.define("boopli-triggers", xi);
+customElements.define("boopli-triggers", Ti);
 // src/boopli-picture.ts
-var Si = /\.(jpe?g|png|gif)$/i, Ci = /^camera\.[a-z0-9_]+$/;
-function wi(e) {
-	return Ci.test(e) && !Si.test(e);
+var Ei = /\.(jpe?g|png|gif)$/i, Di = /^camera\.[a-z0-9_]+$/;
+function Oi(e) {
+	return Di.test(e) && !Ei.test(e);
 }
-var Ti = class extends x {
+var ki = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -5022,7 +5163,7 @@ var Ti = class extends x {
 		super(), this._timer = 0, this._seq = 0, this._seeded = !1, this._emitted = null, this.value = "", this._mode = "none", this._src = "", this._note = "";
 	}
 	willUpdate(e) {
-		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = wi(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? wi(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
+		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = Oi(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? Oi(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
 	}
 	disconnectedCallback() {
 		window.clearTimeout(this._timer), super.disconnectedCallback();
@@ -5045,7 +5186,7 @@ var Ti = class extends x {
 			if (this._mode === "camera") {
 				let e = this.hass?.states[t]?.attributes?.entity_picture;
 				typeof e == "string" && e ? this._src = e : this._note = "This camera gives no picture right now.";
-			} else Si.test(t) ? this._timer = window.setTimeout(async () => {
+			} else Ei.test(t) ? this._timer = window.setTimeout(async () => {
 				try {
 					let n = await this.hass?.callWS({
 						type: "media_source/resolve_media",
@@ -5060,7 +5201,7 @@ var Ti = class extends x {
 		}
 	}
 	render() {
-		let e = q(this.hass, ["camera"]), t = e.length > 0 || wi(this.value);
+		let e = J(this.hass, ["camera"]), t = e.length > 0 || Oi(this.value);
 		return g`
       <div class="row">
         <span class="muted small">Picture in the phone notification (optional):</span>
@@ -5080,7 +5221,7 @@ var Ti = class extends x {
             >
               <option value="" ?selected=${!this.value}>Pick a camera…</option>
               ${this.value && !e.includes(this.value) ? g`<option value=${this.value} selected>${this.value} (not found)</option>` : y}
-              ${e.map((e) => g`<option value=${e} ?selected=${this.value === e}>${K(this.hass, e)}</option>`)}
+              ${e.map((e) => g`<option value=${e} ?selected=${this.value === e}>${q(this.hass, e)}</option>`)}
             </select>
             <span class="muted small">The phone shows a fresh snapshot when the nudge arrives.</span>
           </div>` : y}
@@ -5143,9 +5284,9 @@ var Ti = class extends x {
     `];
 	}
 };
-customElements.define("boopli-picture", Ti);
+customElements.define("boopli-picture", ki);
 // src/boopli-schedule-days.ts
-var Ei = [
+var Ai = [
 	0,
 	1,
 	2,
@@ -5153,13 +5294,13 @@ var Ei = [
 	4,
 	5,
 	6
-], Di = 6;
-function Oi(e) {
+], ji = 6;
+function Mi(e) {
 	if (e.length === 0) return "09:00";
 	let [t, n] = e[e.length - 1].split(":").map(Number);
 	return `${String(Math.min(23, (t || 0) + 4)).padStart(2, "0")}:${String(n || 0).padStart(2, "0")}`;
 }
-var ki = class extends x {
+var Ni = class extends S {
 	static {
 		this.properties = {
 			days: { attribute: !1 },
@@ -5190,7 +5331,7 @@ var ki = class extends x {
 		n && this._setDay(e, this._times(e).map((e, r) => r === t ? n : e));
 	}
 	_shownDays() {
-		return this.onlyActive ? Ei.filter((e) => this._times(e).length > 0) : Ei;
+		return this.onlyActive ? Ai.filter((e) => this._times(e).length > 0) : Ai;
 	}
 	render() {
 		let e = this._shownDays();
@@ -5199,12 +5340,12 @@ var ki = class extends x {
         ${e.map((t, n) => {
 			let r = this._times(t), i = n > 0 ? e[n - 1] : null, a = r.length > 0;
 			return g`<div class="row ${a ? "" : "off"}">
-            <span class="dayname">${D[t]}</span>
+            <span class="dayname">${O[t]}</span>
             ${this.onlyActive ? y : g`<label class="inline small">
                   <input
                     type="checkbox"
                     .checked=${a}
-                    @change=${(e) => this._setDay(t, e.target.checked ? [Oi([])] : [])}
+                    @change=${(e) => this._setDay(t, e.target.checked ? [Mi([])] : [])}
                   />
                   Runs
                 </label>`}
@@ -5212,7 +5353,7 @@ var ki = class extends x {
                   ${r.map((e, n) => g`<span class="time">
                       <input
                         type="time"
-                        aria-label="${D[t]} time ${n + 1}"
+                        aria-label="${O[t]} time ${n + 1}"
                         .value=${e}
                         @change=${(e) => this._setTime(t, n, e.target.value)}
                       />
@@ -5225,14 +5366,14 @@ var ki = class extends x {
                             ✕
                           </button>` : y}
                     </span>`)}
-                  ${r.length < Di ? g`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Oi(r)])}>+ time</button>` : y}
+                  ${r.length < ji ? g`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Mi(r)])}>+ time</button>` : y}
                 </div>` : g`<span class="muted small">No run this day</span>`}
             ${i === null ? y : g`<button
                   type="button"
                   class="chip same"
                   @click=${() => this._setDay(t, [...this._times(i)])}
                 >
-                  Same as ${D[i]}
+                  Same as ${O[i]}
                 </button>`}
           </div>`;
 		})}
@@ -5300,9 +5441,9 @@ var ki = class extends x {
     `];
 	}
 };
-customElements.define("boopli-schedule-days", ki);
+customElements.define("boopli-schedule-days", Ni);
 // src/boopli-schedule-wizard.ts
-var Ai = {
+var Pi = {
 	none: ["how", "done"],
 	schedule: [
 		"how",
@@ -5317,14 +5458,14 @@ var Ai = {
 		"preview",
 		"done"
 	]
-}, ji = {
+}, Fi = {
 	how: "How often",
 	days: "Which days",
 	times: "What time on each day",
 	interval: "Every how many days",
 	preview: "The next runs",
 	done: "All set"
-}, Mi = [
+}, Ii = [
 	{
 		value: "none",
 		label: "On demand",
@@ -5340,7 +5481,7 @@ var Ai = {
 		label: "Every few days, after I finish",
 		text: "It comes back a number of days after you finished it, for example every 90 days for a filter."
 	}
-], Ni = [
+], Li = [
 	0,
 	1,
 	2,
@@ -5348,7 +5489,7 @@ var Ai = {
 	4,
 	5,
 	6
-], Pi = class extends x {
+], Ri = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -5370,7 +5511,7 @@ var Ai = {
 		!this._draft && this.repeat && (this._before = structuredClone(this.repeat), this._draft = structuredClone(this.repeat));
 	}
 	get _steps() {
-		return Ai[this._draft?.type ?? "none"];
+		return Pi[this._draft?.type ?? "none"];
 	}
 	get _step() {
 		return this._steps[Math.min(this._index, this._steps.length - 1)];
@@ -5387,7 +5528,7 @@ var Ai = {
 		(t[String(e)] ?? []).length > 0 ? delete t[String(e)] : t[String(e)] = ["09:00"], this._patch({ days: t });
 	}
 	_activeDays() {
-		return Ni.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
+		return Li.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
 	}
 	async _next() {
 		if (!this.hass || !this._draft || this._busy) return;
@@ -5428,7 +5569,7 @@ var Ai = {
 	_renderHow(e) {
 		return g`
       <p>How often should ${this.choreName ? g`<b>${this.choreName}</b>` : "this chore"} come up?</p>
-      ${Mi.map((t) => g`<label class="inline option">
+      ${Ii.map((t) => g`<label class="inline option">
           <input
             type="radio"
             name="how"
@@ -5444,20 +5585,20 @@ var Ai = {
 		return g`
       <p>Tap the days it should come up. You set the time for each day in the next step.</p>
       <div class="chips">
-        ${Ni.map((e) => g`<button
+        ${Li.map((e) => g`<button
             type="button"
             class="chip big ${t.includes(e) ? "on" : ""}"
             aria-pressed=${t.includes(e)}
             @click=${() => this._toggleDay(e)}
           >
-            ${D[e]}
+            ${O[e]}
           </button>`)}
       </div>
       <div class="chips quick">
         <button
           type="button"
           class="chip"
-          @click=${() => this._patch({ days: Object.fromEntries(Ni.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
+          @click=${() => this._patch({ days: Object.fromEntries(Li.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
         >
           Every day
         </button>
@@ -5516,12 +5657,12 @@ var Ai = {
       <p>
         ${e.type === "every_n_days" ? "The first time, and then every time after you finish:" : "This is when it comes up next:"}
       </p>
-      ${t.length === 0 ? g`<p class="muted">Nothing is scheduled.</p>` : g`<ul>${t.map((e) => g`<li>${k(e, n, this.timeZone)}</li>`)}</ul>`}
+      ${t.length === 0 ? g`<p class="muted">Nothing is scheduled.</p>` : g`<ul>${t.map((e) => g`<li>${A(e, n, this.timeZone)}</li>`)}</ul>`}
       ${e.type === "every_n_days" ? g`<p class="muted small">After that: ${e.every_n_days} days after you finish it, at ${e.time}.</p>` : y}
     `;
 	}
 	_renderDone(e) {
-		let t = this._before ? zt(this._before) : "", n = zt(e), r = JSON.stringify(this._before) === JSON.stringify(e);
+		let t = this._before ? Ut(this._before) : "", n = Ut(e), r = JSON.stringify(this._before) === JSON.stringify(e);
 		return g`
       <p><b>What changed</b> for ${this.choreName ? g`<b>${this.choreName}</b>` : "this chore"}:</p>
       ${r ? g`<p class="muted">Nothing changed. ${n}.</p>` : g`<ul><li>Schedule: ${t} → ${n}</li></ul>`}
@@ -5550,7 +5691,7 @@ var Ai = {
           <div class="rail-title">Schedule${this.choreName ? `: ${this.choreName}` : ""}</div>
           ${t.map((e, t) => g`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${ji[e]}</span>
+              <span>${Fi[e]}</span>
             </div>`)}
         </nav>
         <section class="card main">
@@ -5559,7 +5700,7 @@ var Ai = {
             <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
-          <h2>${ji[n]}</h2>
+          <h2>${Fi[n]}</h2>
           ${this._renderStep(e)}
           ${this._error ? g`<div class="error">${this._error}</div>` : y}
           <div class="actions">
@@ -5740,14 +5881,14 @@ var Ai = {
     `];
 	}
 };
-customElements.define("boopli-schedule-wizard", Pi);
+customElements.define("boopli-schedule-wizard", Ri);
 // src/boopli-wait.ts
-var Fi = 30;
-function Ii(e) {
+var zi = 30;
+function Bi(e) {
 	let t = Math.max(0, Math.round(e));
 	return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 }
-var Li = class extends x {
+var Vi = class extends S {
 	static {
 		this.properties = {
 			label: { type: String },
@@ -5763,7 +5904,7 @@ var Li = class extends x {
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._since = Date.now(), this._elapsed = 0, this._timer = window.setInterval(() => {
-			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Fi && (this._eggShown = !0, this._egg = !0);
+			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= zi && (this._eggShown = !0, this._egg = !0);
 		}, 500);
 	}
 	disconnectedCallback() {
@@ -5778,7 +5919,7 @@ var Li = class extends x {
 		return g`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? g`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : y}
       <div class="head">
-        ${this.pet && kr(this.pet).art ? g`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : g`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
+        ${this.pet && Nr(this.pet).art ? g`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : g`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>
       <div
@@ -5792,8 +5933,8 @@ var Li = class extends x {
         <div class="fill" style="width:${e * 100}%"></div>
       </div>
       <div class="time">
-        <span>${Ii(this._elapsed)} so far</span>
-        <span>gives up after ${Ii(this.max)}</span>
+        <span>${Bi(this._elapsed)} so far</span>
+        <span>gives up after ${Bi(this.max)}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable ? g`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
@@ -5902,10 +6043,10 @@ var Li = class extends x {
   `;
 	}
 };
-customElements.define("boopli-wait", Li);
+customElements.define("boopli-wait", Vi);
 // src/photos.ts
-var Ri = 8e5;
-async function zi(e) {
+var Hi = 8e5;
+async function Ui(e) {
 	let t = URL.createObjectURL(e);
 	try {
 		let e = await new Promise((e, n) => {
@@ -5921,7 +6062,7 @@ async function zi(e) {
 			a.width = Math.max(1, Math.round(e.naturalWidth * i)), a.height = Math.max(1, Math.round(e.naturalHeight * i));
 			let o = a.getContext("2d");
 			if (!o) throw Error("This browser cannot prepare photos.");
-			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Ri) break;
+			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Hi) break;
 		}
 		return n;
 	} finally {
@@ -5929,7 +6070,7 @@ async function zi(e) {
 	}
 }
 // src/boopli-breakdown.ts
-var Bi = [
+var Wi = [
 	{
 		value: "small",
 		letter: "S",
@@ -5948,11 +6089,11 @@ var Bi = [
 		label: "Big: hard or long",
 		xp: 20
 	}
-], Vi = {
+], Gi = {
 	small: 10,
 	medium: 15,
 	big: 20
-}, Hi = 20, Ui = 50, Wi = class extends x {
+}, Ki = 20, qi = 50, Ji = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -6069,7 +6210,7 @@ var Bi = [
 		this._error = "", this._looking = !0;
 		try {
 			let n = [];
-			for (let r of Array.from(e).slice(0, t)) n.push(await zi(r));
+			for (let r of Array.from(e).slice(0, t)) n.push(await Ui(r));
 			this._photos = [...this._photos, ...n], e.length > t && (this._error = "Up to 4 photos. The rest were left out.");
 		} catch (e) {
 			this._error = w(e);
@@ -6213,7 +6354,7 @@ var Bi = [
 		if (!this.hass) return;
 		this._phase = "working", await this._guess();
 		let e = await this._ask(() => Xe(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene), this._questions.length ? "interview" : "task");
-		e && (this._steps = e.steps.slice(0, Ui), this._checks = this.kind === "recurring" ? e.questions ?? [] : [], e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
+		e && (this._steps = e.steps.slice(0, qi), this._checks = this.kind === "recurring" ? e.questions ?? [] : [], e.summary && !this._notes.includes(e.summary) && (this._notes = [this._notes, e.summary].filter(Boolean).join("\n")), this._phase = "review");
 	}
 	_patchStep(e, t) {
 		this._steps = this._steps.map((n, r) => r === e ? {
@@ -6237,7 +6378,7 @@ var Bi = [
 			group: t,
 			size: "small",
 			wait_minutes: 0
-		}), this._steps = n.slice(0, Ui);
+		}), this._steps = n.slice(0, qi);
 	}
 	_finish(e) {
 		let t = this._steps.filter((e) => e.title.trim()).map((e) => ({
@@ -6381,7 +6522,7 @@ var Bi = [
     ></boopli-wait>`;
 	}
 	_xp() {
-		return this._steps.reduce((e, t) => e + Vi[t.size], 0) + Hi;
+		return this._steps.reduce((e, t) => e + Gi[t.size], 0) + Ki;
 	}
 	_renderStep(e, t) {
 		return g`
@@ -6396,7 +6537,7 @@ var Bi = [
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
         <span class="sizes" role="group" aria-label="Size">
-          ${Bi.map((n) => g`<button
+          ${Wi.map((n) => g`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
               title="${n.label} (${n.xp} XP)"
@@ -6810,9 +6951,9 @@ var Bi = [
     `];
 	}
 };
-customElements.define("boopli-breakdown", Wi);
+customElements.define("boopli-breakdown", Ji);
 // src/boopli-chore-editor.ts
-var Gi = 8, Ki = [
+var Yi = 8, Xi = [
 	{
 		value: "quiet",
 		label: "Quiet: only shown in Boopli, no nudges"
@@ -6829,7 +6970,7 @@ var Gi = 8, Ki = [
 		value: "persistent",
 		label: "Persistent: every 5 minutes until done"
 	}
-], qi = [
+], Zi = [
 	{
 		minutes: 0,
 		label: "No wait"
@@ -6850,7 +6991,7 @@ var Gi = 8, Ki = [
 		minutes: 180,
 		label: "3 h"
 	}
-], Ji = [
+], Qi = [
 	{
 		value: "none",
 		label: "On demand (I start it)"
@@ -6863,7 +7004,7 @@ var Gi = 8, Ki = [
 		value: "every_n_days",
 		label: "Every N days after I finish"
 	}
-], Yi = Object.fromEntries([
+], $i = Object.fromEntries([
 	0,
 	1,
 	2,
@@ -6871,7 +7012,7 @@ var Gi = 8, Ki = [
 	4,
 	5,
 	6
-].map((e) => [String(e), ["09:00"]])), Xi = class extends x {
+].map((e) => [String(e), ["09:00"]])), ea = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -6969,7 +7110,7 @@ var Gi = 8, Ki = [
 		})), o = [...n, ...(e.questions ?? []).map((e) => ({
 			...e,
 			id: i.get(e.id) ?? e.id
-		}))].slice(0, Gi), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
+		}))].slice(0, Yi), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
 		this._update({
 			steps: c.slice(0, 50),
 			notes: e.notes,
@@ -6978,7 +7119,7 @@ var Gi = 8, Ki = [
 	}
 	_addQuestion() {
 		let e = [...this.draft.questions ?? []];
-		e.length >= Gi || (e.push({
+		e.length >= Yi || (e.push({
 			id: `q${Math.random().toString(36).slice(2, 8)}`,
 			text: ""
 		}), this._update({ questions: e }));
@@ -7056,14 +7197,14 @@ var Gi = 8, Ki = [
           id="repeat"
           .value=${e.type}
           @change=${(t) => {
-			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? Yi : e.days;
+			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? $i : e.days;
 			this._updateRepeat({
 				type: n,
 				days: r
 			});
 		}}
         >
-          ${Ji.map((t) => g`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
+          ${Qi.map((t) => g`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
         </select>
       </div>
       ${e.type === "schedule" ? g`<div class="field">
@@ -7072,7 +7213,7 @@ var Gi = 8, Ki = [
               .days=${e.days}
               @days-change=${(e) => this._updateRepeat({ days: e.detail })}
             ></boopli-schedule-days>
-            <div class="muted small summary">${zt(e)}</div>
+            <div class="muted small summary">${Ut(e)}</div>
           </div>` : y}
       ${e.type === "every_n_days" ? g`<div class="field">
               <label for="n">Number of days</label>
@@ -7158,7 +7299,7 @@ var Gi = 8, Ki = [
             ${(t.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
           </span>
           <div class="chips">
-            ${qi.map((n) => g`<button
+            ${Zi.map((n) => g`<button
                 type="button"
                 class="chip ${t.wait_minutes === n.minutes ? "on" : ""}"
                 @click=${() => this._updateStep(e, { wait_minutes: n.minutes })}
@@ -7270,7 +7411,7 @@ var Gi = 8, Ki = [
             .value=${e.nudge_style ?? this.defaultStyle}
             @change=${(e) => this._update({ nudge_style: e.target.value })}
           >
-            ${[...Ki, ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
+            ${[...Xi, ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: `${e.name}: my own ladder`
 		}))].map((t) => g`<option
@@ -7282,19 +7423,19 @@ var Gi = 8, Ki = [
             ${(e.nudge_style ?? this.defaultStyle).startsWith("ladder:") && !(this.snapshot?.settings?.ladders ?? []).some((t) => `ladder:${t.id}` === (e.nudge_style ?? this.defaultStyle)) ? g`<option value=${e.nudge_style ?? this.defaultStyle} selected>A ladder that is gone</option>` : y}
           </select>
         </div>
-        ${(this.snapshot?.settings?.lights ?? []).some((e) => fi(this.hass, e.entity_id)) ? g`<div class="field">
+        ${(this.snapshot?.settings?.lights ?? []).some((e) => gi(this.hass, e.entity_id)) ? g`<div class="field">
           <label for="lightcolor">Light color for this chore (optional)</label>
           <div class="colorrow">
             <input
               id="lightcolor"
               type="color"
               class="swatch"
-              .value=${e.light_color ? li(e.light_color) : li(this.snapshot?.settings?.lights?.[0]?.color ?? [
+              .value=${e.light_color ? pi(e.light_color) : pi(this.snapshot?.settings?.lights?.[0]?.color ?? [
 			255,
 			90,
 			0
 		])}
-              @input=${(e) => this._update({ light_color: ci(e.target.value) })}
+              @input=${(e) => this._update({ light_color: fi(e.target.value) })}
             />
             <button type="button" class="chip" ?disabled=${!e.light_color} @click=${() => this._update({ light_color: void 0 })}>
               Use the lights' own color
@@ -7347,7 +7488,7 @@ var Gi = 8, Ki = [
               />
               <button type="button" aria-label="Remove this question" @click=${() => this._removeQuestion(e.id)}>✕</button>
             </div>`)}
-          <button type="button" ?disabled=${(e.questions ?? []).length >= Gi} @click=${() => this._addQuestion()}>
+          <button type="button" ?disabled=${(e.questions ?? []).length >= Yi} @click=${() => this._addQuestion()}>
             + Add a question
           </button>
         </details>
@@ -7584,14 +7725,14 @@ var Gi = 8, Ki = [
     `];
 	}
 };
-customElements.define("boopli-chore-editor", Xi);
+customElements.define("boopli-chore-editor", ea);
 // src/templates.ts
-var Zi = {
+var ta = {
 	type: "none",
 	time: "09:00",
 	every_n_days: 1,
 	days: {}
-}, Qi = [
+}, na = [
 	{
 		label: "Dishwasher",
 		draft: {
@@ -7600,7 +7741,7 @@ var Zi = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Zi,
+				...ta,
 				days: {}
 			},
 			steps: [
@@ -7631,7 +7772,7 @@ var Zi = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Zi,
+				...ta,
 				days: {}
 			},
 			steps: [
@@ -7700,7 +7841,7 @@ var Zi = {
 		}
 	}
 ];
-function $i() {
+function ra() {
 	return {
 		name: "",
 		where: "home",
@@ -7719,7 +7860,7 @@ function $i() {
 	};
 }
 // src/boopli-chores.ts
-var ea = class extends x {
+var ia = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -7834,8 +7975,8 @@ var ea = class extends x {
 		let e = this.snapshot.time_zone, t = new Set(this.snapshot.runs.map((e) => e.chore_id)), n = [...this.snapshot.chores].sort((e, t) => e.name.localeCompare(t.name));
 		return g`
       <div class="toolbar">
-        <button class="primary" @click=${() => this._editing = $i()}>
-          + New chore
+        <button class="primary" @click=${() => this._editing = ra()}>
+          ${E("plus")} New chore
         </button>
         <button
           @click=${() => this.dispatchEvent(new CustomEvent("open-breakdown", {
@@ -7844,13 +7985,13 @@ var ea = class extends x {
 			composed: !0
 		}))}
         >
-          ✨ New chore with AI
+          ${E("auto-fix")} New chore with AI
         </button>
       </div>
 
       <div class="templates">
         <span class="muted small">Start from a template:</span>
-        ${Qi.map((e) => g`<button
+        ${na.map((e) => g`<button
             class="chip"
             @click=${() => this._editing = structuredClone(e.draft)}
           >
@@ -7862,21 +8003,21 @@ var ea = class extends x {
       ${n.length === 0 ? g`<p class="muted empty">
             No chores yet. Pick a template above or create your own.
           </p>` : g`<div class="chore-list">${n.map((n) => g`
-              <section class="card chore">
+              <section class="chore">
                 <div class="chore-main">
                   <div class="name">${n.name}</div>
                   <div class="muted small">
-                    ${zt(n.repeat)} · ${n.where === "home" ? "Home only" : "Anywhere"}
+                    ${Ut(n.repeat)} · ${n.where === "home" ? "Home only" : "Anywhere"}
                     · ${n.steps.length} ${n.steps.length === 1 ? "step" : "steps"}
                   </div>
-                  <div class="muted small">
-                    ${t.has(n.id) ? "In progress" : n.enabled && n.next_due ? `Next: ${k(n.next_due, this.nowMs, e)}` : n.repeat.type === "none" ? "" : "Not scheduled"}
+                  <div class=${t.has(n.id) ? "status live" : "muted small status"}>
+                    ${t.has(n.id) ? g`${E("progress-clock")} In progress` : n.enabled && n.next_due ? `Next: ${A(n.next_due, this.nowMs, e)}` : n.repeat.type === "none" ? "" : "Not scheduled"}
                   </div>
                 </div>
                 <div class="chore-actions">
-                  ${t.has(n.id) ? y : g`<button @click=${() => this._start(n)}>Start now</button>`}
-                  ${n.repeat.type === "none" ? g`<button @click=${() => this._edit(n, !0)}>Set a schedule</button>` : y}
-                  <button @click=${() => this._edit(n)}>Edit</button>
+                  ${t.has(n.id) ? y : g`<button class="textlink" @click=${() => this._start(n)}>Start now</button>`}
+                  ${n.repeat.type === "none" ? g`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>Set a schedule</button>` : y}
+                  <button class="textlink quiet" @click=${() => this._edit(n)}>Edit</button>
                 </div>
               </section>
             `)}</div>`}
@@ -7885,7 +8026,7 @@ var ea = class extends x {
 	static {
 		this.styles = [T, o`
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .toolbar {
         margin-bottom: 12px;
@@ -7903,58 +8044,64 @@ var ea = class extends x {
       .empty {
         padding: 24px 0;
       }
+      /* No boxes: a thin line on top (it turns to the accent colour on hover), the name, what it is, and quiet links. */
       .chore-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+        gap: 18px 32px;
         align-items: start;
       }
       .chore {
         display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
+        transition: border-color 0.15s;
+      }
+      .chore:hover,
+      .chore:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
       }
       .name {
-        font-size: 17px;
+        font-size: 20px;
         font-weight: 500;
         margin-bottom: 2px;
+      }
+      .status.live {
+        font-size: 17px;
+        color: var(--boopli-accent, var(--primary-color));
       }
       .chore-actions {
         display: flex;
         flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 8px;
-        flex-shrink: 0;
+        gap: 4px 16px;
+        margin-top: 2px;
       }
-      /* Phones: last, so it wins over the rules above. */
-      @media (max-width: 520px) {
-        .chore {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .chore-actions {
-          justify-content: flex-start;
-          flex-shrink: 1;
-        }
+      .chore-actions button {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      .chore-actions button.quiet {
+        color: var(--secondary-text-color);
       }
     `];
 	}
 };
-customElements.define("boopli-chores", ea);
+customElements.define("boopli-chores", ia);
 // src/boopli-speakers.ts
-var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", ia = [
+var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", ca = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], aa = [{
+], la = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], oa = [
+}], ua = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -7967,7 +8114,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], sa = class extends x {
+], da = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -8036,7 +8183,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 			cue: {
 				enabled: !1,
 				kind: "alexa",
-				sound: na,
+				sound: oa,
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -8051,7 +8198,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 			alarm: {
 				enabled: !1,
 				kind: "alexa",
-				sound: ta,
+				sound: aa,
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -8105,7 +8252,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 			return {
 				...e,
 				sounds: [...e.sounds ?? [], {
-					id: Y(),
+					id: X(),
 					name: `Sound ${n}`,
 					kind: "alexa",
 					sound: ""
@@ -8146,7 +8293,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
                   .value=${n.kind}
                   @change=${(e) => this._setExtra(t, n.id, { kind: e.target.value })}
                 >
-                  ${aa.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
+                  ${la.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
                 </select>
               </label>
               <label class="num wide">
@@ -8207,7 +8354,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
                     .value=${n.kind}
                     @change=${(e) => this._setSound(r, t, { kind: e.target.value })}
                   >
-                    ${aa.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
+                    ${la.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -8221,7 +8368,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
                 </label>
                 ${n.kind === "alexa" ? g`<div class="muted small libhint">
                       Pick a sound from the
-                      <a href=${ra} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
+                      <a href=${sa} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
                       The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
                       + a two-digit number, for example "Doorbell Chime (1)" is
                       <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
@@ -8285,7 +8432,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 			target: ""
 		})}
                   >
-                    ${oa.map((e) => g`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                    ${ua.map((e) => g`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -8385,7 +8532,7 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(ia, t);
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(ca, t);
 		return g`
       <section class="card">
         <h2>🚨 Alarm devices</h2>
@@ -8555,9 +8702,9 @@ var ta = "amzn_sfx_scifi_alarm_01", na = "amzn_sfx_doorbell_chime_01", ra = "htt
     `];
 	}
 };
-customElements.define("boopli-speakers", sa);
+customElements.define("boopli-speakers", da);
 // src/boopli-rung.ts
-var ca = 1, la = 720, ua = [
+var fa = 1, pa = 720, ma = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -8575,7 +8722,7 @@ var ca = 1, la = 720, ua = [
 		label: "Max volume"
 	}
 ];
-function da(e) {
+function ha(e) {
 	let t = [];
 	e.cue?.enabled && t.push({
 		value: "cue",
@@ -8596,7 +8743,7 @@ function da(e) {
 		label: "Alarm"
 	}), t;
 }
-var fa = class extends x {
+var ga = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -8655,10 +8802,10 @@ var fa = class extends x {
 	_setGap(e) {
 		let t = Math.round(Number(e.value));
 		if (e.value.trim() === "" || Number.isNaN(t)) {
-			e.value = String(this.rung?.gap ?? ca);
+			e.value = String(this.rung?.gap ?? fa);
 			return;
 		}
-		let n = Math.min(la, Math.max(ca, t));
+		let n = Math.min(pa, Math.max(fa, t));
 		e.value = String(n), this._change((e) => e.gap = n);
 	}
 	render() {
@@ -8670,8 +8817,8 @@ var fa = class extends x {
             Wait
             <input
               type="number"
-              min=${ca}
-              max=${la}
+              min=${fa}
+              max=${pa}
               .value=${String(t.gap)}
               aria-label="Minutes before nudge ${n}"
               @change=${(e) => this._setGap(e.target)}
@@ -8683,17 +8830,17 @@ var fa = class extends x {
           </p>` : y}
       <div class="devs">
         ${e.phones.map((e) => g`<label class="dev">
-            <span>📱 ${J(e.service)}</span>
+            <span>📱 ${Y(e.service)}</span>
             <select
-              aria-label="${J(e.service)} at nudge ${n}"
+              aria-label="${Y(e.service)} at nudge ${n}"
               @change=${(t) => this._setPhone(e.service, t.target.value)}
             >
               <option value="" ?selected=${!t.phones[e.service]}>Off</option>
-              ${ua.map((n) => g`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
+              ${ma.map((n) => g`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
             </select>
           </label>`)}
         ${e.lights.map((e) => {
-			let r = t.lights[e.entity_id], i = K(this.hass, e.entity_id);
+			let r = t.lights[e.entity_id], i = q(this.hass, e.entity_id);
 			return g`<div class="devblock">
             <label class="dev">
               <span>💡 ${i}</span>
@@ -8707,14 +8854,14 @@ var fa = class extends x {
                 <option value="own" ?selected=${r?.mode === ""}>As set for the light</option>
               </select>
             </label>
-            ${r && fi(this.hass, e.entity_id) ? g`<div class="dev colorrow">
+            ${r && gi(this.hass, e.entity_id) ? g`<div class="dev colorrow">
                   <span>Color</span>
                   <input
                     type="color"
                     class="swatch"
                     aria-label="${i} color at nudge ${n}"
-                    .value=${li(r.color ?? e.color)}
-                    @input=${(t) => this._setLightColor(e.entity_id, ci(t.target.value))}
+                    .value=${pi(r.color ?? e.color)}
+                    @input=${(t) => this._setLightColor(e.entity_id, fi(t.target.value))}
                   />
                   <button type="button" class="chip" ?disabled=${!r.color} @click=${() => this._setLightColor(e.entity_id, null)}>
                     Use the normal color
@@ -8723,7 +8870,7 @@ var fa = class extends x {
           </div>`;
 		})}
         ${e.speakers.map((e) => {
-			let r = da(e), i = t.speakers[e.entity_id], a = K(this.hass, e.entity_id);
+			let r = ha(e), i = t.speakers[e.entity_id], a = q(this.hass, e.entity_id);
 			return g`<label class="dev">
             <span>🔊 ${a}</span>
             <select
@@ -8743,7 +8890,7 @@ var fa = class extends x {
               .checked=${t.alarms.includes(e.entity_id)}
               @change=${(t) => this._toggle(e.entity_id, t.target.checked)}
             />
-            <span>🚨 ${K(this.hass, e.entity_id)}</span>
+            <span>🚨 ${q(this.hass, e.entity_id)}</span>
           </label>`)}
       </div>
     `;
@@ -8827,9 +8974,9 @@ var fa = class extends x {
     `];
 	}
 };
-customElements.define("boopli-rung", fa);
+customElements.define("boopli-rung", ga);
 // src/boopli-ladders.ts
-var pa = 20, ma = 12, ha = 1, ga = 720, _a = 40, va = [
+var _a = 20, va = 12, ya = 1, ba = 720, xa = 40, Sa = [
 	{
 		value: "quiet",
 		label: "Quiet (no nudges)"
@@ -8847,10 +8994,10 @@ var pa = 20, ma = 12, ha = 1, ga = 720, _a = 40, va = [
 		label: "Persistent"
 	}
 ];
-function ya(e) {
+function Ca(e) {
 	return structuredClone(e);
 }
-var ba = class extends x {
+var wa = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -8895,7 +9042,7 @@ var ba = class extends x {
 	}
 	_add() {
 		let e = this.settings;
-		if (!e || this._ladders.length >= pa) return;
+		if (!e || this._ladders.length >= _a) return;
 		let t = {
 			gap: 5,
 			phones: Object.fromEntries(e.phones.map((e) => [e.service, e.level])),
@@ -8903,7 +9050,7 @@ var ba = class extends x {
 			speakers: {},
 			alarms: []
 		}, n = {
-			id: Y(),
+			id: X(),
 			name: this._uniqueName("My ladder"),
 			rungs: [t],
 			repeat_last: !1
@@ -8916,9 +9063,9 @@ var ba = class extends x {
 	}
 	_addRung(e) {
 		this._edit(e, (e) => {
-			if (e.rungs.length >= ma) return;
+			if (e.rungs.length >= va) return;
 			let t = e.rungs[e.rungs.length - 1];
-			e.rungs.push(t ? ya(t) : {
+			e.rungs.push(t ? Ca(t) : {
 				gap: 5,
 				phones: {},
 				lights: {},
@@ -8929,7 +9076,7 @@ var ba = class extends x {
 	}
 	_duplicateRung(e, t) {
 		this._edit(e, (e) => {
-			e.rungs.length >= ma || e.rungs.splice(t + 1, 0, ya(e.rungs[t]));
+			e.rungs.length >= va || e.rungs.splice(t + 1, 0, Ca(e.rungs[t]));
 		});
 	}
 	_removeRung(e, t) {
@@ -8950,21 +9097,21 @@ var ba = class extends x {
 			r && (n.value = String(r.gap));
 			return;
 		}
-		let i = Math.min(ga, Math.max(ha, r));
+		let i = Math.min(ba, Math.max(ya, r));
 		n.value = String(i), this._editRung(e, t, (e) => e.gap = i);
 	}
 	_who(e) {
 		let t = [];
-		for (let [n, r] of Object.entries(e.phones)) t.push(`${J(n)} (${ui[r] ?? r})`);
+		for (let [n, r] of Object.entries(e.phones)) t.push(`${Y(n)} (${mi[r] ?? r})`);
 		for (let [n, r] of Object.entries(e.lights)) {
 			let e = r.mode === "indicator" ? "status light" : r.mode === "blink" ? "blink" : "";
-			t.push(`${K(this.hass, n)}${e ? ` (${e}${r.color ? ", own color" : ""})` : ""}`);
+			t.push(`${q(this.hass, n)}${e ? ` (${e}${r.color ? ", own color" : ""})` : ""}`);
 		}
 		for (let [n, r] of Object.entries(e.speakers)) {
-			let e = this.settings?.speakers.find((e) => e.entity_id === n), i = da(e ?? { entity_id: n }).find((e) => e.value === r)?.label ?? r;
-			t.push(`${K(this.hass, n)} (${i.replace("🔔 ", "").toLowerCase()})`);
+			let e = this.settings?.speakers.find((e) => e.entity_id === n), i = ha(e ?? { entity_id: n }).find((e) => e.value === r)?.label ?? r;
+			t.push(`${q(this.hass, n)} (${i.replace("🔔 ", "").toLowerCase()})`);
 		}
-		for (let n of e.alarms) t.push(`${K(this.hass, n)} (alarm)`);
+		for (let n of e.alarms) t.push(`${q(this.hass, n)} (alarm)`);
 		return t.length ? t.join(", ") : "nothing";
 	}
 	_lines(e) {
@@ -8980,8 +9127,8 @@ var ba = class extends x {
               ${n === 0 ? "Right away, then repeats every" : "Wait"}
               <input
                 type="number"
-                min=${ha}
-                max=${ga}
+                min=${ya}
+                max=${ba}
                 .value=${String(t.gap)}
                 aria-label="Minutes before nudge ${n + 1}"
                 @change=${(t) => this._setGap(e.id, n, t.target)}
@@ -8993,7 +9140,7 @@ var ba = class extends x {
           @click=${() => this._moveRung(e.id, n, -1)}>↑</button>
         <button class="chip" title="Move down" aria-label="Move nudge ${n + 1} down" ?disabled=${n === e.rungs.length - 1}
           @click=${() => this._moveRung(e.id, n, 1)}>↓</button>
-        <button class="chip" title="Copy this nudge" aria-label="Copy nudge ${n + 1}" ?disabled=${e.rungs.length >= ma}
+        <button class="chip" title="Copy this nudge" aria-label="Copy nudge ${n + 1}" ?disabled=${e.rungs.length >= va}
           @click=${() => this._duplicateRung(e.id, n)}>⧉</button>
         <button class="chip" title="Remove this nudge" aria-label="Remove nudge ${n + 1}" ?disabled=${!r}
           @click=${() => this._removeRung(e.id, n)}>✕</button>
@@ -9013,15 +9160,15 @@ var ba = class extends x {
         <label for="name-${e.id}">Name</label>
         <input
           id="name-${e.id}"
-          maxlength=${_a}
+          maxlength=${xa}
           .value=${e.name}
           @input=${(t) => this._edit(e.id, (e) => e.name = t.target.value)}
         />
       </div>
       ${e.rungs.map((t, n) => this._renderRung(e, t, n))}
       <div class="row">
-        <button ?disabled=${e.rungs.length >= ma} @click=${() => this._addRung(e.id)}>+ Add a nudge</button>
-        <span class="muted small">${e.rungs.length} of ${ma}</span>
+        <button ?disabled=${e.rungs.length >= va} @click=${() => this._addRung(e.id)}>+ Add a nudge</button>
+        <span class="muted small">${e.rungs.length} of ${va}</span>
       </div>
       <div class="field">
         <label for="end-${e.id}">After the last nudge</label>
@@ -9055,11 +9202,11 @@ var ba = class extends x {
           id="default-style"
           @change=${(e) => this._patch(t, { default_style: e.target.value })}
         >
-          ${va.map((t) => g`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+          ${Sa.map((t) => g`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           ${t.map((t) => g`<option value=${`ladder:${t.id}`} ?selected=${`ladder:${t.id}` === e.default_style}>
               ${t.name || "(no name)"}
             </option>`)}
-          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? g`<option value=${e.default_style} selected>${pi(e.default_style, t)}</option>` : y}
+          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? g`<option value=${e.default_style} selected>${_i(e.default_style, t)}</option>` : y}
         </select>
       </div>
       ${t.length === 0 ? g`<p class="muted">No ladders yet. The built-in styles work as before.</p>` : t.map((e) => {
@@ -9079,7 +9226,7 @@ var ba = class extends x {
 		})}
       ${this._note ? g`<div class="error" role="alert">${this._note}</div>` : y}
       <div class="row">
-        <button class="primary" ?disabled=${t.length >= pa} @click=${() => this._add()}>+ New ladder</button>
+        <button class="primary" ?disabled=${t.length >= _a} @click=${() => this._add()}>+ New ladder</button>
       </div>
     </section>`;
 	}
@@ -9176,9 +9323,9 @@ var ba = class extends x {
     `];
 	}
 };
-customElements.define("boopli-ladders", ba);
+customElements.define("boopli-ladders", wa);
 // src/boopli-pet-picker.ts
-var xa = class extends x {
+var Ta = class extends S {
 	static {
 		this.properties = {
 			value: { type: String },
@@ -9196,19 +9343,19 @@ var xa = class extends x {
 		}));
 	}
 	_key(e, t) {
-		let n = Dr.length - 1, r = t;
+		let n = jr.length - 1, r = t;
 		if (e.key === "ArrowRight" || e.key === "ArrowDown") r = t === n ? 0 : t + 1;
 		else if (e.key === "ArrowLeft" || e.key === "ArrowUp") r = t === 0 ? n : t - 1;
 		else if (e.key === "Home") r = 0;
 		else if (e.key === "End") r = n;
 		else return;
-		e.preventDefault(), this._pick(Dr[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
+		e.preventDefault(), this._pick(jr[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
 	}
 	render() {
-		let e = kr(this.value);
+		let e = Nr(this.value);
 		return g`
       <div class="grid" role="radiogroup" aria-label="Your pet">
-        ${Dr.map((t, n) => g`<button
+        ${jr.map((t, n) => g`<button
             type="button"
             role="radio"
             class="choice ${t.kind === e.kind ? "on" : ""}"
@@ -9223,7 +9370,7 @@ var xa = class extends x {
           </button>`)}
       </div>
       ${this.moods ? g`<div class="moods" aria-label="${e.label} in every mood">
-            ${Or.map((t) => g`<div class="mood">
+            ${Mr.map((t) => g`<div class="mood">
                 <span class="pic"><boopli-pet .kind=${e.kind} .mood=${t} still></boopli-pet></span>
                 <span class="small muted">${t}</span>
               </div>`)}
@@ -9291,9 +9438,9 @@ var xa = class extends x {
     `];
 	}
 };
-customElements.define("boopli-pet-picker", xa);
+customElements.define("boopli-pet-picker", Ta);
 // src/boopli-pet-preview.ts
-var Sa = [
+var Ea = [
 	{
 		value: "levelup",
 		label: "Level up"
@@ -9310,7 +9457,7 @@ var Sa = [
 		value: "done",
 		label: "Step done"
 	}
-], Ca = [
+], Da = [
 	{
 		value: "",
 		label: "Nothing"
@@ -9323,7 +9470,7 @@ var Sa = [
 		value: "typing",
 		label: "Typing"
 	}
-], wa = class extends x {
+], Oa = class extends S {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -9355,7 +9502,7 @@ var Sa = [
 		return g`<button type="button" class="chip ${t ? "on" : ""}" aria-pressed=${t} @click=${n}>${e}</button>`;
 	}
 	render() {
-		let e = kr(this.kind);
+		let e = Nr(this.kind);
 		return g`
       <button type="button" class="open" @click=${() => this._open()}>▶ Preview your pet</button>
       <dialog
@@ -9383,18 +9530,18 @@ var Sa = [
 
           <div class="group">
             <div class="label">Mood</div>
-            <div class="chips">${Or.map((e) => this._chip(e, this._mood === e, () => this._mood = e))}</div>
+            <div class="chips">${Mr.map((e) => this._chip(e, this._mood === e, () => this._mood = e))}</div>
           </div>
           <div class="group">
             <div class="label">Busy with</div>
             <div class="chips">
-              ${Ca.map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
+              ${Da.map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
             </div>
           </div>
           <div class="group">
             <div class="label">Moments (they play once)</div>
             <div class="chips">
-              ${Sa.map((e) => g`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
+              ${Ea.map((e) => g`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
             </div>
           </div>
           <div class="group row">
@@ -9517,9 +9664,9 @@ var Sa = [
     `];
 	}
 };
-customElements.define("boopli-pet-preview", wa);
+customElements.define("boopli-pet-preview", Oa);
 // src/diff.ts
-function X(e, t, n) {
+function ka(e, t, n) {
 	let r = new Map(e.map((e) => [n(e), e])), i = new Map(t.map((e) => [n(e), e]));
 	return {
 		added: [...i].filter(([e]) => !r.has(e)).map(([, e]) => e),
@@ -9530,20 +9677,20 @@ function X(e, t, n) {
 		}))
 	};
 }
-function Ta(e, t, n, r) {
+function Aa(e, t, n, r) {
 	let i = [];
 	return t.enabled !== n.enabled && i.push(`${e} ${n.enabled ? "on" : "off"}`), n.enabled && (t.sound !== n.sound && i.push(`${e} sound ${t.sound} → ${n.sound}`), t.start_at !== n.start_at && i.push(`${e} starts at nudge ${t.start_at} → ${n.start_at}`), r && t.seconds !== n.seconds && i.push(`${e} lasts ${t.seconds} → ${n.seconds} s`), r && t.repeat_s !== n.repeat_s && i.push(`${e} repeats every ${t.repeat_s} → ${n.repeat_s} s`)), i;
 }
-function Ea(e, t) {
-	let n = [...Ta("ding", e.cue, t.cue, !1), ...Ta("alarm", e.alarm, t.alarm, !0)];
+function ja(e, t) {
+	let n = [...Aa("ding", e.cue, t.cue, !1), ...Aa("alarm", e.alarm, t.alarm, !0)];
 	return e.speech.enabled !== t.speech.enabled && n.push(`speech ${t.speech.enabled ? "on" : "off"}`), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(`speech goes to ${t.speech.target || "nothing"}`), e.speech.start_at !== t.speech.start_at && n.push(`speech starts at nudge ${e.speech.start_at} → ${t.speech.start_at}`)), n;
 }
-function Da(e, t, n) {
-	let r = (e) => K(n, e), i = [];
-	e.pet_name !== t.pet_name && i.push(`Pet name: ${e.pet_name} → ${t.pet_name}`), (e.pet_kind ?? "slime") !== (t.pet_kind ?? "slime") && i.push(`Pet: ${e.pet_kind ?? "slime"} → ${t.pet_kind ?? "slime"}`);
-	let a = X(e.phones, t.phones, (e) => e.service);
-	a.added.forEach((e) => i.push(`Phone added: ${J(e.service)} (${ui[e.level] ?? e.level})`)), a.removed.forEach((e) => i.push(`Phone removed: ${J(e.service)}`)), a.kept.forEach(({ before: e, after: t }) => {
-		e.level !== t.level && i.push(`${J(t.service)}: level ${ui[e.level]} → ${ui[t.level]}`), e.start_at !== t.start_at && i.push(`${J(t.service)}: starts at nudge ${e.start_at} → ${t.start_at}`);
+function Ma(e, t, n) {
+	let r = (e) => q(n, e), i = [];
+	e.pet_name !== t.pet_name && i.push(`Pet name: ${e.pet_name} → ${t.pet_name}`), (e.pet_kind ?? "slime") !== (t.pet_kind ?? "slime") && i.push(`Pet: ${e.pet_kind ?? "slime"} → ${t.pet_kind ?? "slime"}`), (e.accent ?? "") !== (t.accent ?? "") && i.push(`Accent colour: ${e.accent || "the pet's own"} → ${t.accent || "the pet's own"}`);
+	let a = ka(e.phones, t.phones, (e) => e.service);
+	a.added.forEach((e) => i.push(`Phone added: ${Y(e.service)} (${mi[e.level] ?? e.level})`)), a.removed.forEach((e) => i.push(`Phone removed: ${Y(e.service)}`)), a.kept.forEach(({ before: e, after: t }) => {
+		e.level !== t.level && i.push(`${Y(t.service)}: level ${mi[e.level]} → ${mi[t.level]}`), e.start_at !== t.start_at && i.push(`${Y(t.service)}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	});
 	let o = e.quiet_hours, s = t.quiet_hours;
 	if (o.enabled !== s.enabled && i.push(`Quiet hours: ${o.enabled ? "on" : "off"} → ${s.enabled ? "on" : "off"}`), s.enabled) {
@@ -9551,12 +9698,12 @@ function Da(e, t, n) {
 			let n = e.days[String(t)] ?? null;
 			return n ? `${n.start} to ${n.stop}` : "no limit";
 		};
-		D.forEach((t, n) => {
+		O.forEach((t, n) => {
 			let r = o.enabled ? e(o, n) : "any time", a = e(s, n);
 			r !== a && i.push(`${t}: ${r} → ${a}`);
 		});
 	}
-	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(`Wait for your answers: ${e.question_wait_minutes ?? 30} → ${t.question_wait_minutes ?? 30} min`), (e.check_in_minutes ?? 30) !== (t.check_in_minutes ?? 30) && i.push(`Check-in after "On it": ${e.check_in_minutes ?? 30} → ${t.check_in_minutes ?? 30} min`), e.default_style !== t.default_style && i.push(`Default style: ${pi(e.default_style, e.ladders)} → ${pi(t.default_style, t.ladders)}`);
+	e.snooze_minutes !== t.snooze_minutes && i.push(`Snooze: ${e.snooze_minutes} → ${t.snooze_minutes} min`), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(`Wait for your answers: ${e.question_wait_minutes ?? 30} → ${t.question_wait_minutes ?? 30} min`), (e.check_in_minutes ?? 30) !== (t.check_in_minutes ?? 30) && i.push(`Check-in after "On it": ${e.check_in_minutes ?? 30} → ${t.check_in_minutes ?? 30} min`), e.default_style !== t.default_style && i.push(`Default style: ${_i(e.default_style, e.ladders)} → ${_i(t.default_style, t.ladders)}`);
 	for (let n of t.speakers) {
 		let t = e.speakers.find((e) => e.entity_id === n.entity_id), a = new Map((t?.sounds ?? []).map((e) => [e.id, e.name])), o = new Map((n.sounds ?? []).map((e) => [e.id, e.name]));
 		for (let [e, t] of o) a.has(e) || i.push(`${r(n.entity_id)}: sound added (${t})`);
@@ -9566,7 +9713,7 @@ function Da(e, t, n) {
 			a && (a.name !== e.name || a.kind !== e.kind || a.sound !== e.sound) && i.push(`${r(n.entity_id)}: sound changed (${e.name})`);
 		}
 	}
-	let c = X(e.boards ?? [], t.boards ?? [], (e) => e.id);
+	let c = ka(e.boards ?? [], t.boards ?? [], (e) => e.id);
 	c.added.forEach((e) => i.push(`Wall board added: ${e.name} (${e.tiles.length} tiles)`)), c.removed.forEach((e) => i.push(`Wall board removed: ${e.name}`)), c.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(`Wall board renamed: ${e.name} → ${t.name}`), JSON.stringify({
 			c: e.columns,
@@ -9580,7 +9727,7 @@ function Da(e, t, n) {
 			t: t.tiles
 		}) && i.push(`Wall board changed: ${t.name}`);
 	});
-	let l = X(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
+	let l = ka(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
 	l.added.forEach((e) => i.push(`Nudge ladder added: ${e.name} (${e.rungs.length} nudges)`)), l.removed.forEach((e) => i.push(`Nudge ladder removed: ${e.name}`)), l.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(`Nudge ladder renamed: ${e.name} → ${t.name}`), JSON.stringify({
 			r: e.rungs,
@@ -9590,14 +9737,14 @@ function Da(e, t, n) {
 			x: t.repeat_last
 		}) && i.push(`Nudge ladder changed: ${t.name}`);
 	});
-	let u = X(e.lights, t.lights, (e) => e.entity_id);
-	u.added.forEach((e) => i.push(`Reminder light added: ${r(e.entity_id)} (${gi(e)})`)), u.removed.forEach((e) => i.push(`Reminder light removed: ${r(e.entity_id)}`)), u.kept.forEach(({ before: e, after: t }) => {
+	let u = ka(e.lights, t.lights, (e) => e.entity_id);
+	u.added.forEach((e) => i.push(`Reminder light added: ${r(e.entity_id)} (${bi(e)})`)), u.removed.forEach((e) => i.push(`Reminder light removed: ${r(e.entity_id)}`)), u.kept.forEach(({ before: e, after: t }) => {
 		let n = r(t.entity_id);
-		e.mode !== t.mode && i.push(`${n}: ${gi(e)} → ${gi(t)}`), e.color.join() !== t.color.join() && i.push(`${n}: color changed`), e.blink_ms !== t.blink_ms && i.push(`${n}: blink length ${e.blink_ms} → ${t.blink_ms} ms`), e.repeats !== t.repeats && i.push(`${n}: blinks ${e.repeats} → ${t.repeats}`), e.gap_ms !== t.gap_ms && i.push(`${n}: pause ${e.gap_ms} → ${t.gap_ms} ms`), e.start_at !== t.start_at && i.push(`${n}: starts at nudge ${e.start_at} → ${t.start_at}`);
+		e.mode !== t.mode && i.push(`${n}: ${bi(e)} → ${bi(t)}`), e.color.join() !== t.color.join() && i.push(`${n}: color changed`), e.blink_ms !== t.blink_ms && i.push(`${n}: blink length ${e.blink_ms} → ${t.blink_ms} ms`), e.repeats !== t.repeats && i.push(`${n}: blinks ${e.repeats} → ${t.repeats}`), e.gap_ms !== t.gap_ms && i.push(`${n}: pause ${e.gap_ms} → ${t.gap_ms} ms`), e.start_at !== t.start_at && i.push(`${n}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	});
-	let d = X(e.speakers, t.speakers, (e) => e.entity_id);
-	d.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), d.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), d.kept.forEach(({ before: e, after: t }) => Ea(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
-	let ee = X(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
+	let d = ka(e.speakers, t.speakers, (e) => e.entity_id);
+	d.added.forEach((e) => i.push(`Speaker added: ${r(e.entity_id)}`)), d.removed.forEach((e) => i.push(`Speaker removed: ${r(e.entity_id)}`)), d.kept.forEach(({ before: e, after: t }) => ja(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(`Spoken sentence: ${e.speech_template} → ${t.speech_template}`);
+	let ee = ka(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
 	if (ee.added.forEach((e) => i.push(`Alarm device added: ${r(e.entity_id)}`)), ee.removed.forEach((e) => i.push(`Alarm device removed: ${r(e.entity_id)}`)), ee.kept.forEach(({ before: e, after: t }) => {
 		e.seconds !== t.seconds && i.push(`${r(t.entity_id)}: on for ${e.seconds} → ${t.seconds} s`), e.start_at !== t.start_at && i.push(`${r(t.entity_id)}: starts at nudge ${e.start_at} → ${t.start_at}`);
 	}), e.ai.enabled !== t.ai.enabled && i.push(`AI help: ${e.ai.enabled ? "on" : "off"} → ${t.ai.enabled ? "on" : "off"}`), e.ai.entity_id !== t.ai.entity_id) {
@@ -9615,7 +9762,7 @@ function Da(e, t, n) {
 	return i;
 }
 // src/boopli-backup.ts
-var Oa = 8388608, ka = ".adhd", Aa = {
+var Na = 8388608, Pa = ".adhd", Fa = {
 	settings: {
 		title: "Settings",
 		text: "Devices, timing, nudge ladders, wall boards, your pet's name and kind, AI help."
@@ -9633,11 +9780,11 @@ var Oa = 8388608, ka = ".adhd", Aa = {
 		text: "Your pet's level and XP, and what was done."
 	}
 };
-function ja() {
+function Ia() {
 	let e = /* @__PURE__ */ new Date(), t = (e) => String(e).padStart(2, "0");
 	return `${e.getFullYear()}-${t(e.getMonth() + 1)}-${t(e.getDate())}`;
 }
-var Ma = class extends x {
+var La = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -9669,7 +9816,7 @@ var Ma = class extends x {
 	}
 	async _download(e) {
 		if (!this.hass) return null;
-		let t = await Ke(this.hass, e), n = `boopli-backup-${ja()}${ka}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
+		let t = await Ke(this.hass, e), n = `boopli-backup-${Ia()}${Pa}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
 		return i.href = r, i.download = n, document.body.appendChild(i), i.click(), i.remove(), window.setTimeout(() => URL.revokeObjectURL(r), 1e4), n;
 	}
 	async _export() {
@@ -9701,7 +9848,7 @@ var Ma = class extends x {
 	async _choose(e) {
 		let t = e.target.files?.[0];
 		if (!t || !this.hass) return;
-		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > Oa) {
+		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > Na) {
 			this._error = "This file is too big to be a Boopli backup.";
 			return;
 		}
@@ -9736,7 +9883,7 @@ var Ma = class extends x {
 			try {
 				let e = await Je(this.hass, this._file.data, this._parts);
 				this._done = [
-					`Imported: ${e.imported.map((e) => Aa[e].title.toLowerCase()).join(", ")}.`,
+					`Imported: ${e.imported.map((e) => Fa[e].title.toLowerCase()).join(", ")}.`,
 					...e.imported.includes("chores") ? [`${e.chores} ${e.chores === 1 ? "chore is" : "chores are"} set up now.`] : [],
 					...e.runs_ended ? [`${e.runs_ended} running ${e.runs_ended === 1 ? "chore" : "chores"} ended with the chores that were replaced.`] : []
 				];
@@ -9748,11 +9895,11 @@ var Ma = class extends x {
 		}
 	}
 	_renderParts(e, t) {
-		let n = (e) => t ? e === "settings" ? `${t.boards} wall ${t.boards === 1 ? "board" : "boards"}. ${Aa[e].text}` : e === "chores" ? `${t.chores} ${t.chores === 1 ? "chore" : "chores"}.` : e === "home" ? `${t.rooms} ${t.rooms === 1 ? "room" : "rooms"}.` : `Level ${t.level}, ${t.history} things done on record.` : Aa[e].text;
+		let n = (e) => t ? e === "settings" ? `${t.boards} wall ${t.boards === 1 ? "board" : "boards"}. ${Fa[e].text}` : e === "chores" ? `${t.chores} ${t.chores === 1 ? "chore" : "chores"}.` : e === "home" ? `${t.rooms} ${t.rooms === 1 ? "room" : "rooms"}.` : `Level ${t.level}, ${t.history} things done on record.` : Fa[e].text;
 		return g`<div class="parts" role="group" aria-label="What to include">
       ${C.filter((t) => e.includes(t)).map((e) => g`<label class="part">
           <input type="checkbox" .checked=${this._parts.includes(e)} ?disabled=${this._busy} @change=${(t) => this._toggle(e, t.target.checked)} />
-          <span><b>${Aa[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
+          <span><b>${Fa[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
         </label>`)}
     </div>`;
 	}
@@ -9760,7 +9907,7 @@ var Ma = class extends x {
 		let e = this.snapshot?.settings, t = this._preview?.settings;
 		if (!e || !t || !this._parts.includes("settings")) return [];
 		try {
-			return Da(e, t, this.hass);
+			return Ma(e, t, this.hass);
 		} catch {
 			return null;
 		}
@@ -9771,7 +9918,7 @@ var Ma = class extends x {
       <p>Save your setup to one file. Pick what goes in:</p>
       ${this._renderParts([...C])}
       <p class="muted small">
-        The file ends in <code>${ka}</code> and is plain text inside. It holds the names of your devices and phones and your notes, so keep it private.
+        The file ends in <code>${Pa}</code> and is plain text inside. It holds the names of your devices and phones and your notes, so keep it private.
         Running chores, away mode and picture files are not part of it.
       </p>
       <div class="foot">
@@ -9785,8 +9932,8 @@ var Ma = class extends x {
 		return g`
       <h2>💾 Import a backup</h2>
       <div class="field">
-        <label for="file">Choose a backup file (${ka})</label>
-        <input id="file" type="file" accept="${ka},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
+        <label for="file">Choose a backup file (${Pa})</label>
+        <input id="file" type="file" accept="${Pa},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
       </div>
       ${e && this._file ? g`
             <p class="muted small">
@@ -9942,41 +10089,117 @@ var Ma = class extends x {
     `];
 	}
 };
-customElements.define("boopli-backup", Ma);
+customElements.define("boopli-backup", La);
+// src/accent.ts
+var Ra = {
+	slime: "#5ee05a",
+	bear: "#d79563",
+	dog: "#f5b544",
+	fox: "#f28a30",
+	cat: "#a894e8"
+}, za = [
+	{
+		name: "Green",
+		hex: "#5ee05a"
+	},
+	{
+		name: "Teal",
+		hex: "#3fd1b5"
+	},
+	{
+		name: "Blue",
+		hex: "#4fb3f0"
+	},
+	{
+		name: "Lilac",
+		hex: "#a894e8"
+	},
+	{
+		name: "Pink",
+		hex: "#f07db0"
+	},
+	{
+		name: "Coral",
+		hex: "#f0605d"
+	},
+	{
+		name: "Orange",
+		hex: "#f28a30"
+	},
+	{
+		name: "Gold",
+		hex: "#f5b544"
+	}
+], Ba = /^#[0-9a-f]{6}$/i;
+function Va(e) {
+	return typeof e == "string" && Ba.test(e);
+}
+function Ha(e, t) {
+	return Va(t) ? t.toLowerCase() : Ra[e ?? "slime"] ?? Ra.slime;
+}
+function Ua(e) {
+	return [
+		1,
+		3,
+		5
+	].map((t) => parseInt(e.slice(t, t + 2), 16));
+}
+function Wa(e) {
+	let [t, n, r] = Ua(e).map((e) => {
+		let t = e / 255;
+		return t <= .03928 ? t / 12.92 : ((t + .055) / 1.055) ** 2.4;
+	});
+	return .2126 * t + .7152 * n + .0722 * r;
+}
+function Ga(e) {
+	return Wa(e) > .3 ? "#14210f" : "#ffffff";
+}
+function Ka(e) {
+	let [t, n, r] = Ua(e).map((e) => Math.round(e * .62));
+	return `#${[
+		t,
+		n,
+		r
+	].map((e) => e.toString(16).padStart(2, "0")).join("")}`;
+}
+function qa(e, t, n) {
+	let r = Ha(t, n);
+	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", Ga(r)), e.style.setProperty("--boopli-accent-deep", Ka(r));
+}
 // src/boopli-settings.ts
-var Na = {
+var Ja = {
 	phone: {
-		emoji: "📱",
+		icon: "cellphone",
 		title: "Phone",
 		wizard: "phone",
 		keys: ["phones"]
 	},
 	lights: {
-		emoji: "💡",
+		icon: "lightbulb-outline",
 		title: "Reminder lights",
 		wizard: "lights",
 		keys: ["lights"]
 	},
 	speakers: {
-		emoji: "🔊",
+		icon: "volume-high",
 		title: "Speakers",
 		wizard: "speakers",
 		keys: ["speakers", "speech_template"]
 	},
 	alarms: {
-		emoji: "🚨",
+		icon: "bell-ring-outline",
 		title: "Alarm devices",
 		wizard: "alarms",
 		keys: ["alarm_devices"]
 	},
 	quiet: {
-		emoji: "🌙",
+		icon: "weather-night",
 		title: "Quiet hours",
 		wizard: "quiet",
 		keys: ["quiet_hours"]
 	},
 	timing: {
-		emoji: "⏰",
+		icon: "alarm",
 		title: "Snooze and timing",
 		wizard: "nudging",
 		keys: [
@@ -9986,41 +10209,45 @@ var Na = {
 		]
 	},
 	ladders: {
-		emoji: "🪜",
+		icon: "stairs",
 		title: "Nudge it your way",
 		wizard: "ladders",
 		keys: ["ladders", "default_style"]
 	},
 	presence: {
-		emoji: "📍",
+		icon: "map-marker-outline",
 		title: "Where you are",
 		wizard: "presence",
 		keys: ["presence_entity"]
 	},
 	pet: {
-		emoji: "🐾",
-		title: "Your pet",
+		icon: "paw",
+		title: "Your pet and accent colour",
 		wizard: "pet",
-		keys: ["pet_name", "pet_kind"]
+		keys: [
+			"pet_name",
+			"pet_kind",
+			"accent"
+		]
 	},
 	wall: {
-		emoji: "🖥️",
+		icon: "monitor-dashboard",
 		title: "Wall board",
 		wizard: "wall",
 		keys: ["boards"]
 	},
 	ai: {
-		emoji: "🤖",
+		icon: "robot-outline",
 		title: "AI help",
 		wizard: "ai",
 		keys: ["ai"]
 	},
 	backup: {
-		emoji: "💾",
+		icon: "content-save-outline",
 		title: "Backup",
 		keys: []
 	}
-}, Pa = [
+}, Ya = [
 	{
 		title: "Devices",
 		areas: [
@@ -10048,7 +10275,7 @@ var Na = {
 			"backup"
 		]
 	}
-], Fa = Pa.flatMap((e) => e.areas), Ia = [
+], Xa = Ya.flatMap((e) => e.areas), Za = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -10065,16 +10292,16 @@ var Na = {
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], La = [{
+], Qa = [{
 	value: "blink",
 	label: "Blink"
 }, {
 	value: "indicator",
 	label: "Indicator lamp (on until done)"
-}], Ra = {
+}], $a = {
 	start: "07:00",
 	stop: "22:00"
-}, za = class extends x {
+}, eo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -10096,6 +10323,7 @@ var Na = {
 		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._backup = "";
 	}
 	willUpdate() {
+		this._draft && qa(this, this._draft.pet_kind, this._draft.accent);
 		let e = this.snapshot?.settings;
 		if (e) {
 			if (!this._draft || !this._base) this._base = structuredClone(e), this._draft = structuredClone(e);
@@ -10139,7 +10367,7 @@ var Na = {
 		this._busy = !0, this._error = "", this._message = "";
 		let e = structuredClone(this._draft);
 		try {
-			return await S(this.hass, e), this._justSaved = !0, this._base = e, this._message = "Saved.", !0;
+			return await Ge(this.hass, e), this._justSaved = !0, this._base = e, this._message = "Saved.", !0;
 		} catch (e) {
 			return this._error = w(e), !1;
 		} finally {
@@ -10294,7 +10522,7 @@ var Na = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(D.map((e, t) => [String(t), { ...Ra }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(O.map((e, t) => [String(t), { ...$a }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -10312,7 +10540,7 @@ var Na = {
 	}
 	_copyMondayToAll() {
 		if (!this._draft) return;
-		let e = this._draft.quiet_hours, t = e.days[0], n = Object.fromEntries(D.map((e, n) => [String(n), t ? { ...t } : null]));
+		let e = this._draft.quiet_hours, t = e.days[0], n = Object.fromEntries(O.map((e, n) => [String(n), t ? { ...t } : null]));
 		this._set({ quiet_hours: {
 			...e,
 			days: n
@@ -10325,7 +10553,7 @@ var Na = {
 		let t = this._phoneServices();
 		return g`
       <section class=${this._cardClass("phones")}>
-        <h2>📱 Phones ${this._badge("phones")}</h2>
+        <h2>Phones${this._badge("phones")}</h2>
         <p class="muted small">
           Boopli sends a notification with Done and Snooze buttons through the
           Home Assistant app on the phones you turn on.
@@ -10348,7 +10576,7 @@ var Na = {
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${Ia.map((e) => g`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${Za.map((e) => g`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>Test</button>
                 </div>
@@ -10365,7 +10593,7 @@ var Na = {
 		let t = this._lightChoices();
 		return g`
       <section class=${this._cardClass("lights")}>
-        <h2>💡 Reminder lights ${this._badge("lights")}</h2>
+        <h2>Reminder lights${this._badge("lights")}</h2>
         <p class="muted small">
           Boopli blinks a light itself and puts it back exactly as it was, or
           uses it as an indicator lamp that stays on in a color until you are
@@ -10384,9 +10612,9 @@ var Na = {
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${La.map((t) => g`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${Qa.map((t) => g`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
-              ${fi(this.hass, n) ? g`<input
+              ${gi(this.hass, n) ? g`<input
                     type="color"
                     class="swatch"
                     aria-label="Color"
@@ -10461,7 +10689,7 @@ var Na = {
 		let t = e.quiet_hours;
 		return g`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>🌙 Quiet hours ${this._badge("quiet_hours")}</h2>
+        <h2>Quiet hours${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           Nudges wait outside these times. Set different hours for each day.
           A chore can opt out (for example pills).
@@ -10475,7 +10703,7 @@ var Na = {
           Hold nudges outside these hours
         </label>
         ${t.enabled ? g`
-              ${D.map((e, n) => {
+              ${O.map((e, n) => {
 			let r = t.days[String(n)] ?? null;
 			return g`
                   <div class="row day">
@@ -10484,7 +10712,7 @@ var Na = {
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Ra })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...$a })}
                       />
                       No limit
                     </label>
@@ -10542,7 +10770,7 @@ var Na = {
 	}
 	_renderPet(e) {
 		return g`
-      <section class=${this._cardClass("pet_name", "pet_kind")}>
+      <section class=${this._cardClass("pet_name", "pet_kind", "accent")}>
         <div class="field">
           <label for="petname">Your pet's name</label>
           <input
@@ -10561,8 +10789,45 @@ var Na = {
           ></boopli-pet-picker>
           <boopli-pet-preview .kind=${e.pet_kind ?? "slime"}></boopli-pet-preview>
         </div>
+        ${this._renderAccent(e)}
       </section>
     `;
+	}
+	_renderAccent(e) {
+		let t = Ha(e.pet_kind, ""), n = Va(e.accent) ? e.accent.toLowerCase() : "", r = (e) => this._set({ accent: e });
+		return g`<div class="field">
+      <label id="accent-label">Accent colour</label>
+      <div class="swatches" role="group" aria-labelledby="accent-label">
+        <button
+          type="button"
+          class="acc own ${n ? "" : "on"}"
+          style="--sw:${t}"
+          aria-pressed=${n ? "false" : "true"}
+          title="Your pet's own colour"
+          @click=${() => r("")}
+        >
+          Pet's colour
+        </button>
+        ${za.map((e) => g`<button
+            type="button"
+            class="acc dot ${n === e.hex ? "on" : ""}"
+            style="--sw:${e.hex}"
+            aria-pressed=${n === e.hex ? "true" : "false"}
+            aria-label=${e.name}
+            title=${e.name}
+            @click=${() => r(e.hex)}
+          ></button>`)}
+        <label class="acc custom" title="Pick any colour">
+          Custom
+          <input
+            type="color"
+            .value=${n || t}
+            aria-label="Custom accent colour"
+            @input=${(e) => r(e.target.value)}
+          />
+        </label>
+      </div>
+    </div>`;
 	}
 	_renderTiming(e) {
 		return g`
@@ -10640,7 +10905,7 @@ var Na = {
 		}
 	}
 	_renderAi(e) {
-		let t = q(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => g`
+		let t = J(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => g`
       <div class="field">
         <label for="ai-${e}">${t}</label>
         <textarea
@@ -10659,7 +10924,7 @@ var Na = {
     `;
 		return g`
       <section class=${this._cardClass("ai")}>
-        <h2>🤖 AI help ${this._badge("ai")}</h2>
+        <h2>AI help${this._badge("ai")}</h2>
         <p class="muted small">
           Boopli can split a task into tiny steps with your own Home Assistant AI agent. It is off until you
           switch it on. Boopli sends nothing by itself: when you use it, the text of the task and your answers
@@ -10679,7 +10944,7 @@ var Na = {
           <label for="ai-agent">Which AI agent?</label>
           <select id="ai-agent" @change=${(e) => this._setAi({ entity_id: e.target.value })}>
             <option value="" .selected=${n.entity_id === ""}>Home Assistant default</option>
-            ${t.map((e) => g`<option value=${e} .selected=${e === n.entity_id}>${K(this.hass, e)}</option>`)}
+            ${t.map((e) => g`<option value=${e} .selected=${e === n.entity_id}>${q(this.hass, e)}</option>`)}
             ${n.entity_id && !t.includes(n.entity_id) ? g`<option value=${n.entity_id} selected>${n.entity_id} (not found)</option>` : y}
           </select>
           ${t.length === 0 ? g`<div class="muted small">No AI Task agent found in Home Assistant yet. Add one under Settings, Devices and services.</div>` : y}
@@ -10698,7 +10963,7 @@ var Na = {
               @change=${(e) => this._setAi({ photo_entity_id: e.target.value })}
             >
               <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>The same agent as above</option>
-              ${t.map((e) => g`<option value=${e} .selected=${e === n.photo_entity_id}>${K(this.hass, e)}</option>`)}
+              ${t.map((e) => g`<option value=${e} .selected=${e === n.photo_entity_id}>${q(this.hass, e)}</option>`)}
               ${n.photo_entity_id && !t.includes(n.photo_entity_id) ? g`<option value=${n.photo_entity_id} selected>${n.photo_entity_id} (not found)</option>` : y}
             </select>
             <div class="muted small">
@@ -10724,13 +10989,13 @@ var Na = {
     `;
 	}
 	_summary(e, t) {
-		let n = (e) => K(this.hass, e);
+		let n = (e) => q(this.hass, e);
 		switch (e) {
-			case "phone": return t.phones.length ? t.phones.map((e) => `${J(e.service)}: ${ui[e.level] ?? e.level}, from nudge ${e.start_at}`) : ["No phone set up yet."];
-			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${gi(e)}`) : ["No reminder lights yet."];
-			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${hi(e)}`) : ["No speakers yet."];
+			case "phone": return t.phones.length ? t.phones.map((e) => `${Y(e.service)}: ${mi[e.level] ?? e.level}, from nudge ${e.start_at}`) : ["No phone set up yet."];
+			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${bi(e)}`) : ["No reminder lights yet."];
+			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${yi(e)}`) : ["No speakers yet."];
 			case "alarms": return t.alarm_devices.length ? t.alarm_devices.map((e) => `${n(e.entity_id)}: on for ${e.seconds} s, from nudge ${e.start_at}`) : ["No alarm devices yet."];
-			case "quiet": return [mi(t.quiet_hours)];
+			case "quiet": return [vi(t.quiet_hours)];
 			case "timing": return [
 				`Snooze ${t.snooze_minutes} minutes`,
 				`"Still on it?" after ${t.check_in_minutes ?? 30} minutes`,
@@ -10739,7 +11004,7 @@ var Na = {
 			case "ladders": {
 				let e = t.ladders ?? [];
 				return [
-					`New chores: ${pi(t.default_style, e)}`,
+					`New chores: ${_i(t.default_style, e)}`,
 					...e.map((e) => `${e.name}: ${e.rungs.length} ${e.rungs.length === 1 ? "nudge" : "nudges"}`),
 					...e.length ? [] : ["No ladders of your own yet."]
 				];
@@ -10753,25 +11018,28 @@ var Na = {
 				return (t.boards ?? []).map((t) => `${t.name}: ${t.tiles.length} ${t.tiles.length === 1 ? "tile" : "tiles"}, ${e[t.night] ?? t.night} at night`);
 			}
 			case "presence": return [t.presence_entity ? n(t.presence_entity) : "Not set. Boopli assumes you are home."];
-			case "pet": return [`${t.pet_name} the ${kr(t.pet_kind).label.toLowerCase()}`];
+			case "pet": return [`${t.pet_name} the ${Nr(t.pet_kind).label.toLowerCase()}`, Va(t.accent) ? `Accent colour: ${t.accent.toLowerCase()}` : "Accent colour: your pet's own"];
 			case "backup": return ["Save your whole setup to one file (.adhd), or load one on a new install."];
 			case "ai": return [t.ai?.enabled ? `On, using ${t.ai.entity_id ? n(t.ai.entity_id) : "the Home Assistant default agent"}` : "Off. Splits big tasks into tiny steps with your own AI agent."];
 		}
 	}
 	_card(e, t) {
-		let n = Na[e], r = this._changed(...n.keys);
-		return g`<section id="card-${e}" class="card area ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
-      <h3 tabindex="-1">
-        <span class="emoji" aria-hidden="true">${n.emoji}</span> ${n.title}
-        ${r ? g`<span class="unsaved-badge">Unsaved</span>` : y}
-      </h3>
+		let n = Ja[e], r = this._changed(...n.keys);
+		return g`<section id="card-${e}" class="card area ${e === "pet" ? "accented" : ""} ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
+      <div class="card-head">
+        <span class="card-icon">${E(n.icon)}</span>
+        <h3 tabindex="-1">
+          ${n.title}
+          ${r ? g`<span class="unsaved-badge">Unsaved</span>` : y}
+        </h3>
+      </div>
       <div class="summary">
-        ${this._summary(e, t).map((e) => g`<div class=${e.startsWith("No ") || e.startsWith("Not ") || e.startsWith("Off") ? "muted" : ""}>${e}</div>`)}
+        ${this._summary(e, t).map((t) => g`<div class=${t.startsWith("No ") || t.startsWith("Not ") || t.startsWith("Off") ? "muted" : ""}>${e === "pet" && t.startsWith("Accent colour") ? g`<span class="accent-dot"></span>` : y}${t}</div>`)}
       </div>
       <div class="buttons">
-        ${e === "backup" ? g`<button type="button" class="primary" aria-label="Export a backup" @click=${() => this._backup = "export"}>Export</button>
-              <button type="button" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => this._backup = "import"}>Import</button>` : g`<button type="button" class="primary" aria-label="Guide me: ${n.title}" @click=${() => this._openWizard(n.wizard)}>Guide me</button>`}
-        ${e === "backup" ? y : e === "wall" ? g`<button type="button" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>` : g`<button type="button" aria-label="Advanced: ${n.title}" ?disabled=${this._busy} @click=${() => this._openArea(e)}>Advanced</button>`}
+        ${e === "backup" ? g`<button type="button" class="textlink" aria-label="Export a backup" @click=${() => this._backup = "export"}>Export</button>
+              <button type="button" class="textlink quiet" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => this._backup = "import"}>Import</button>` : g`<button type="button" class="textlink" aria-label="Guide me: ${n.title}" @click=${() => this._openWizard(n.wizard)}>Guide me</button>`}
+        ${e === "backup" ? y : e === "wall" ? g`<button type="button" class="textlink quiet" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>` : g`<button type="button" class="textlink quiet" aria-label="Advanced: ${n.title}" ?disabled=${this._busy} @click=${() => this._openArea(e)}>Advanced</button>`}
       </div>
       ${e === "backup" && this._isDirty() ? g`<p class="muted small">Save or discard your unsaved changes to import.</p>` : y}
     </section>`;
@@ -10823,7 +11091,7 @@ var Na = {
 		}
 	}
 	_renderModal(e) {
-		let t = this._modal ? Na[this._modal] : null;
+		let t = this._modal ? Ja[this._modal] : null;
 		return g`<dialog
       aria-labelledby="win-title"
       @cancel=${(e) => {
@@ -10835,7 +11103,7 @@ var Na = {
     >
       ${t && this._modal ? g`<div class="win">
             <div class="win-head">
-              <h2 id="win-title"><span aria-hidden="true">${t.emoji}</span> ${t.title}</h2>
+              <h2 id="win-title">${E(t.icon)} ${t.title}</h2>
               <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, e)}</div>
@@ -10861,12 +11129,12 @@ var Na = {
 	}
 	_renderSaveBar() {
 		if (!this._isDirty()) return y;
-		let e = Fa.filter((e) => this._changed(...Na[e].keys));
+		let e = Xa.filter((e) => this._changed(...Ja[e].keys));
 		return g`${this._error && !this._modal ? g`<div class="error" role="alert">${this._error}</div>` : y}
       <div class="savebar" role="status">
         <div class="where">
           <b aria-hidden="true">●</b> Unsaved changes in:
-          ${e.map((e) => g`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Na[e].title}</button>`)}
+          ${e.map((e) => g`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Ja[e].title}</button>`)}
         </div>
         <span class="spacer"></span>
         <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
@@ -10876,11 +11144,10 @@ var Na = {
 	render() {
 		let e = this._draft;
 		return e ? g`
-      <div class="toolbar"><h2 class="page-title">Settings</h2></div>
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${Pa.map((t) => g`<h2 class="group">${t.title}</h2>
+      ${Ya.map((t) => g`<h2 class="group">${t.title}</h2>
           <div class="cards">${t.areas.map((t) => this._card(t, e))}</div>`)}
       <p class="muted small">
         Want to do all of it again from the start?
@@ -10910,50 +11177,168 @@ var Na = {
         font-size: 22px;
         margin: 0;
       }
+      /* A section is one tier above a card: bigger than the card names, and the brightest text on the page. */
       h2.group {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--secondary-text-color);
-        margin: 26px 0 10px;
+        font-size: 30px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        color: var(--primary-text-color);
+        margin: 18px 0 8px;
       }
       section.card.away-card {
-        margin: 0 0 6px;
-        padding-top: 8px;
-        padding-bottom: 8px;
+        margin: 0 0 2px;
+        padding: 6px 0 2px;
+        border: 0;
+        border-top: 2px solid var(--divider-color);
+        border-radius: 0;
+        background: none;
       }
       section.card.away-card.on {
         border: 2px solid var(--warning-color, #ffa600);
+        border-radius: 14px;
+        padding: 8px 14px;
       }
       .cards {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+        gap: 14px 32px;
         align-items: stretch;
       }
+      /* "Invisible cards": no box. A thin line on top, an icon, the name, what is set, and two quiet links. */
       section.card.area {
         display: flex;
         flex-direction: column;
+        gap: 4px;
+        min-height: 0;
+        padding: 10px 0 0;
+        border: 0;
+        border-top: 2px solid var(--divider-color);
+        border-radius: 0;
+        background: none;
+        transition: border-color 0.15s;
+      }
+      section.card.area:hover,
+      section.card.area:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
+      }
+      /* A small dot in the accent colour next to "Accent colour: ...". */
+      .accent-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 6px;
+        border-radius: 50%;
+        background: var(--boopli-accent, var(--primary-color));
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
         gap: 10px;
-        min-height: 150px;
+      }
+      /* The name and its icon are white, the biggest thing on the card; what is set under it is grey. */
+      .card-icon {
+        font-size: 26px;
+        line-height: 1;
+        color: var(--primary-text-color);
       }
       section.card.area h3 {
         margin: 0;
-        font-size: 18px;
+        color: var(--primary-text-color);
+        font-size: 23px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
       }
-      .emoji {
-        display: inline-block;
-        margin-right: 6px;
-        font-size: 22px;
-        vertical-align: -2px;
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+      .acc {
+        --sw: var(--primary-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        cursor: pointer;
+        border: 2px solid var(--divider-color);
+        border-radius: 999px;
+        padding: 6px 12px;
+        min-height: 36px;
+        font-size: 17px;
+        color: var(--primary-text-color);
+      }
+      .acc.own::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--sw);
+      }
+      .acc.dot {
+        width: 36px;
+        padding: 0;
+        background: var(--sw);
+        border-color: transparent;
+      }
+      .acc.dot:hover {
+        background: var(--sw);
+        filter: brightness(1.12);
+      }
+      .acc.on {
+        border-color: var(--primary-text-color);
+      }
+      .acc {
+        flex: none;
+        white-space: nowrap;
+        background: transparent;
+      }
+      .acc.custom input {
+        width: 24px;
+        height: 24px;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: none;
+        cursor: pointer;
+      }
+      .acc.custom input::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      .acc.custom input::-webkit-color-swatch {
+        border: 0;
+        border-radius: 50%;
+      }
+      .acc.custom input::-moz-color-swatch {
+        border: 0;
+        border-radius: 50%;
+      }
+      .buttons button {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      @media (max-width: 600px) {
+        .cards {
+          gap: 18px;
+        }
+        section.card.area {
+          min-height: 0;
+        }
+      }
+      .buttons button.quiet {
+        color: var(--secondary-text-color);
+      }
+      .buttons {
+        gap: 4px 16px;
       }
       .summary {
         display: flex;
         flex-direction: column;
         gap: 3px;
         flex: 1;
-        font-size: 15px;
+        font-size: 17px;
+        color: var(--secondary-text-color);
         overflow-wrap: anywhere;
       }
       .buttons {
@@ -11008,7 +11393,7 @@ var Na = {
       }
       .win-head h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
       }
       .close {
         padding: 4px 10px;
@@ -11080,7 +11465,9 @@ var Na = {
       section.card {
         margin: 0;
       }
-      section.card.changed,
+      section.card.changed {
+        border-top-color: var(--warning-color, #ffa600);
+      }
       boopli-speakers.changed {
         border-color: var(--warning-color, #ffa600);
         box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
@@ -11089,7 +11476,7 @@ var Na = {
         content: "● Unsaved changes in speakers";
         display: block;
         color: var(--warning-color, #ffa600);
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         padding: 0 0 6px 4px;
       }
@@ -11097,7 +11484,7 @@ var Na = {
         content: "● Unsaved changes in alarm devices";
         display: block;
         color: var(--warning-color, #ffa600);
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         padding: 0 0 6px 4px;
       }
@@ -11106,7 +11493,7 @@ var Na = {
         margin-left: 8px;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -11143,11 +11530,11 @@ var Na = {
         border-color: var(--warning-color, #ffa600);
       }
       h2 {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 6px;
       }
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .row {
         display: flex;
@@ -11174,7 +11561,7 @@ var Na = {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 13px;
+        font-size: 16px;
         margin: 0;
       }
       label.startat input {
@@ -11190,7 +11577,7 @@ var Na = {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 16px;
         margin: 0;
       }
       .blinkopts input {
@@ -11233,13 +11620,13 @@ var Na = {
     `];
 	}
 };
-customElements.define("boopli-settings", za);
+customElements.define("boopli-settings", eo);
 // src/boopli-home.ts
-var Ba = 2e3;
-function Va() {
+var to = 2e3;
+function no() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var Ha = class extends x {
+var ro = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11311,7 +11698,7 @@ var Ha = class extends x {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: Va(),
+				id: no(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -11383,7 +11770,7 @@ var Ha = class extends x {
 		this._patchTool({ working: !0 });
 		try {
 			let t = [];
-			for (let r of Array.from(e).slice(0, n)) t.push(await zi(r));
+			for (let r of Array.from(e).slice(0, n)) t.push(await Ui(r));
 			let i = this._tool;
 			if (i?.kind !== "photos" || i.roomId !== r) return;
 			this._patchTool({ photos: [...i.photos, ...t] }), e.length > n && (this._error = "Up to 4 photos per room. The rest were left out.");
@@ -11505,12 +11892,12 @@ var Ha = class extends x {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, Ba);
+			let e = r.notes.trim().slice(0, to);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: Va(),
+				id: no(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -11597,7 +11984,7 @@ var Ha = class extends x {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Ba) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, to) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
@@ -11843,7 +12230,7 @@ var Ha = class extends x {
 	}
 	_renderRoom(e) {
 		let t = this._aiOn();
-		return g`<section class="card room ${this._roomChanged(e.id) ? "changed" : ""}">
+		return g`<section class="room ${this._roomChanged(e.id) ? "changed" : ""}">
       <div class="head">
         <input
           class="name"
@@ -11859,23 +12246,23 @@ var Ha = class extends x {
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${Ba}
+        maxlength=${to}
         placeholder="For example: Dishwasher is under the counter. The balcony door sticks."
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
       ></textarea>
       <div class="row-actions">
-        ${t ? g`<button type="button" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e)}>
-                ✨ Let the AI ask me
+        ${t ? g`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e)}>
+                ${E("auto-fix")} Let the AI ask me
               </button>
-              <button type="button" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openPhotos(e)}>
-                📷 From photos
+              <button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openPhotos(e)}>
+                ${E("camera-outline")} From photos
               </button>` : y}
-        <button type="button" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openChat(e)}>
-          💬 In my own chat
+        <button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openChat(e)}>
+          ${E("chat-outline")} In my own chat
         </button>
         <span class="spacer"></span>
-        <button type="button" class="link" @click=${() => this._removeRoom(e)}>${e.area_id ? "Hide" : "Delete"}</button>
+        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(e)}>${e.area_id ? "Hide" : "Delete"}</button>
       </div>
     </section>`;
 	}
@@ -11894,7 +12281,6 @@ var Ha = class extends x {
 		if (this._tool) return g`${this._renderTool(this._tool)}${this._renderSaveBar()}`;
 		let t = e.rooms.filter((e) => !e.hidden), n = e.rooms.filter((e) => e.hidden);
 		return g`
-      <h2>My home</h2>
       <p class="intro">
         Tell Boopli about your rooms, so the AI's small steps fit your home. The notes stay in Boopli on your Home
         Assistant. They only leave inside a request to your own AI agent, and only the notes of the rooms a task is
@@ -11918,13 +12304,13 @@ var Ha = class extends x {
             notes yourself.
           </p>`}
       <div class="whole">
-        <button type="button" @click=${() => this._openChat(null)}>💬 Talk through my whole home in my own chat</button>
+        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${E("chat-outline")} Talk through my whole home in my own chat</button>
         <span class="muted small">Copy a prompt, talk it out by voice or text, paste the result back.</span>
       </div>
       ${this._error ? g`<div class="error">${this._error}</div>` : y}
       ${this._message ? g`<div class="ok">${this._message}</div>` : y}
       <div class="grid">${t.map((e) => this._renderRoom(e))}</div>
-      <div class="add card">
+      <div class="add">
         <label for="newroom">Add a room or place</label>
         <div class="add-row">
           <input
@@ -11961,7 +12347,7 @@ var Ha = class extends x {
         margin: 6px 0 14px;
       }
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .ok {
         color: var(--success-color, #43a047);
@@ -11971,7 +12357,7 @@ var Ha = class extends x {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 8px 0;
         cursor: pointer;
@@ -11981,26 +12367,50 @@ var Ha = class extends x {
         min-height: 20px;
         height: 20px;
       }
+      /* Rooms without boxes: a thin line on top (accent colour on hover or while typing), the name, the notes. */
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: 22px 32px;
         margin: 16px 0;
         align-items: start;
       }
-      .room.changed,
-      .card.changed {
-        border-color: var(--warning-color, #ffa600);
+      .room {
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
+        transition: border-color 0.15s;
+      }
+      .room:hover,
+      .room:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
+      }
+      .room.changed {
+        border-top-color: var(--warning-color, #ffa600);
       }
       .head {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
       }
-      .name {
-        font-size: 17px;
+      /* The room name looks like a heading until you click it. */
+      input.name {
+        font-size: 21px;
         font-weight: 500;
+        background: none;
+        border: 0;
+        border-bottom: 1px solid transparent;
+        border-radius: 0;
+        padding: 4px 0;
+      }
+      input.name:hover,
+      input.name:focus {
+        border-bottom-color: var(--divider-color);
+        outline: none;
+      }
+      .add {
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
       }
       textarea {
         font: inherit;
@@ -12032,6 +12442,13 @@ var Ha = class extends x {
         min-height: 0;
         padding: 4px 6px;
       }
+      .row-actions button.textlink {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      button.textlink.quiet {
+        color: var(--secondary-text-color);
+      }
       .add {
         max-width: 520px;
       }
@@ -12058,7 +12475,7 @@ var Ha = class extends x {
         display: inline-block;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -12123,7 +12540,7 @@ var Ha = class extends x {
       button.big {
         min-height: 48px;
         padding: 0 22px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .whole {
         display: flex;
@@ -12162,7 +12579,7 @@ var Ha = class extends x {
         height: 28px;
         padding: 0;
         border-radius: 50%;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
       }
       .filebtn {
@@ -12212,7 +12629,7 @@ var Ha = class extends x {
         height: 20px;
       }
       .tag {
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 400;
         padding: 1px 8px;
         border-radius: 999px;
@@ -12224,7 +12641,7 @@ var Ha = class extends x {
         align-items: center;
         gap: 14px;
         padding: 28px 4px;
-        font-size: 18px;
+        font-size: 20px;
       }
       .dots {
         display: inline-flex;
@@ -12258,9 +12675,9 @@ var Ha = class extends x {
     `];
 	}
 };
-customElements.define("boopli-home", Ha);
+customElements.define("boopli-home", ro);
 // src/wall-tile.ts
-var Z = class extends x {
+var Z = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -12293,11 +12710,12 @@ var Z = class extends x {
     min-height: 0;
     overflow: hidden;
     color: var(--primary-text-color);
-    background: var(--card-background-color, var(--primary-background-color));
-    border: 1px solid var(--divider-color);
-    border-radius: 18px;
-    padding: 12px 14px;
-    font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+    background: none;
+    border: 0;
+    border-top: 3px solid var(--divider-color);
+    border-radius: 0;
+    padding: 12px 8px 0;
+    font-family: ${a(jt)};
   }
   :host([hidden]) {
     display: none;
@@ -12346,11 +12764,19 @@ var Z = class extends x {
     min-height: 52px;
     font-size: clamp(15px, 4.2cqw, 24px);
   }
+  /* The chunky button, like Done on Today: a thick darker edge that sinks when pressed. */
   button.primary {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--text-primary-color, #fff);
-    font-weight: 500;
+    background: var(--boopli-accent, var(--primary-color));
+    border: 0;
+    border-bottom: 6px solid var(--boopli-accent-deep, #2a6e8a);
+    border-radius: 16px;
+    color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
+    font-weight: 600;
+    transition: transform 0.08s, border-bottom-width 0.08s;
+  }
+  button.primary:active:not(:disabled) {
+    transform: translateY(4px);
+    border-bottom-width: 2px;
   }
   button:disabled {
     opacity: 0.5;
@@ -12359,7 +12785,7 @@ var Z = class extends x {
     color: var(--error-color, #db4437);
     font-size: clamp(12px, 3.2cqw, 18px);
   }
-`, Ua = class extends Z {
+`, io = class extends Z {
 	render() {
 		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(void 0, {
 			timeZone: e,
@@ -12383,9 +12809,9 @@ var Z = class extends x {
 		this.styles = [Q, o``];
 	}
 };
-customElements.define("wall-tile-clock", Ua);
+customElements.define("wall-tile-clock", io);
 // src/wall-tile-pet.ts
-var Wa = class extends Z {
+var ao = class extends Z {
 	render() {
 		let e = this.snapshot?.pet;
 		if (!e) return g`<div class="center muted normal">Loading…</div>`;
@@ -12415,7 +12841,7 @@ var Wa = class extends Z {
       boopli-stage {
         /* the room keeps its shape: as wide as fits, and as tall as the tile leaves room for */
         flex: none;
-        width: min(100cqw - 16px, calc((100cqh - 56px) * 2.667));
+        width: min(100cqw - 16px, calc((100cqh - 56px) * 3.2));
         align-self: center;
       }
       .name {
@@ -12424,9 +12850,9 @@ var Wa = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-pet", Wa);
+customElements.define("wall-tile-pet", ao);
 // src/wall-tile-due.ts
-var Ga = class extends Z {
+var oo = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -12451,7 +12877,7 @@ var Ga = class extends Z {
 	}
 	render() {
 		if (!this.snapshot) return g`<div class="center muted normal">Loading…</div>`;
-		let e = Wt(this.snapshot, this.nowMs).now;
+		let e = Jt(this.snapshot, this.nowMs).now;
 		if (!e) return g`<div class="center"><div><div class="big">All clear</div><div class="normal muted">Nothing is due right now.</div></div></div>`;
 		let { run: t, step: n } = e, r = !!n.on_it_until;
 		return g`<div class="due">
@@ -12517,12 +12943,12 @@ var Ga = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-due-now", Ga);
+customElements.define("wall-tile-due-now", oo);
 // src/wall-tile-next.ts
-var Ka = class extends Z {
+var so = class extends Z {
 	render() {
 		if (!this.snapshot) return g`<div class="center muted normal">Loading…</div>`;
-		let e = this.snapshot.time_zone, t = Wt(this.snapshot, this.nowMs), n = [
+		let e = this.snapshot.time_zone, t = Jt(this.snapshot, this.nowMs), n = [
 			...t.ready.flatMap((e) => e.steps.map((t) => ({
 				title: `${e.run.chore_name}: ${t.title}`,
 				when: "ready now"
@@ -12533,11 +12959,11 @@ var Ka = class extends Z {
 			}))),
 			...t.dueToday.map((t) => ({
 				title: t.chore.name,
-				when: `at ${O(t.at, e)}`
+				when: `at ${k(t.at, e)}`
 			})),
 			...t.upcoming.map((t) => ({
 				title: t.chore.name,
-				when: k(t.at, this.nowMs, e)
+				when: A(t.at, this.nowMs, e)
 			}))
 		].slice(0, this.num("count", 3));
 		return g`<div class="label">Coming up</div>
@@ -12562,9 +12988,9 @@ var Ka = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-coming-up", Ka);
+customElements.define("wall-tile-coming-up", so);
 // src/wall-tile-entity.ts
-var qa = {
+var co = {
 	light: ["homeassistant", "toggle"],
 	switch: ["homeassistant", "toggle"],
 	input_boolean: ["homeassistant", "toggle"],
@@ -12576,7 +13002,7 @@ var qa = {
 	scene: ["scene", "turn_on"],
 	button: ["button", "press"],
 	input_button: ["input_button", "press"]
-}, Ja = {
+}, lo = {
 	light: "💡",
 	switch: "🔌",
 	input_boolean: "🔘",
@@ -12591,9 +13017,9 @@ var qa = {
 	button: "⏺️",
 	person: "🧑",
 	media_player: "🎵"
-}, Ya = class extends Z {
+}, uo = class extends Z {
 	_tap() {
-		let e = this.text("entity_id"), t = qa[e.split(".")[0]];
+		let e = this.text("entity_id"), t = co[e.split(".")[0]];
 		if (this.preview || !this.hass?.callService || !t || this.text("tap", "toggle") !== "toggle") return;
 		let [n, r] = t;
 		this.hass.callService(n, r, { entity_id: e });
@@ -12601,7 +13027,7 @@ var qa = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return g`<div class="center muted normal">Pick an entity in the board settings.</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || K(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!qa[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = g`<div class="icon big">${Ja[n] ?? "◻️"}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!co[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = g`<div class="icon big">${lo[n] ?? "◻️"}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : "not found"}</div>
@@ -12630,12 +13056,12 @@ var qa = {
         cursor: pointer;
       }
       button.ent:focus-visible {
-        outline: 3px solid var(--primary-color);
+        outline: 3px solid var(--boopli-accent, var(--primary-color));
         outline-offset: 4px;
         border-radius: 12px;
       }
       .on .icon {
-        filter: drop-shadow(0 0 8px var(--primary-color));
+        filter: drop-shadow(0 0 8px var(--boopli-accent, var(--primary-color)));
       }
       .big {
         text-transform: capitalize;
@@ -12643,9 +13069,9 @@ var qa = {
     `];
 	}
 };
-customElements.define("wall-tile-entity", Ya);
+customElements.define("wall-tile-entity", uo);
 // src/wall-tile-weather.ts
-var Xa = {
+var fo = {
 	"clear-night": "🌙",
 	cloudy: "☁️",
 	exceptional: "⚠️",
@@ -12661,7 +13087,7 @@ var Xa = {
 	sunny: "☀️",
 	windy: "💨",
 	"windy-variant": "💨"
-}, Za = class extends Z {
+}, po = class extends Z {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return g`<div class="center muted normal">Pick a weather entity in the board settings.</div>`;
@@ -12669,7 +13095,7 @@ var Xa = {
 		if (!t) return g`<div class="center muted normal">Weather not found.</div>`;
 		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : `${n.humidity} % humidity`;
 		return g`<div class="w">
-      <div class="huge sky">${Xa[t.state] ?? "🌡️"}</div>
+      <div class="huge sky">${fo[t.state] ?? "🌡️"}</div>
       <div>
         <div class="big">${r}</div>
         <div class="normal">${t.state.replace(/-/g, " ")}</div>
@@ -12694,9 +13120,9 @@ var Xa = {
     `];
 	}
 };
-customElements.define("wall-tile-weather", Za);
+customElements.define("wall-tile-weather", po);
 // src/wall-tile-calendar.ts
-function Qa(e, t) {
+function mo(e, t) {
 	let n = new Intl.DateTimeFormat("en-US", {
 		timeZone: t,
 		year: "numeric",
@@ -12711,7 +13137,7 @@ function Qa(e, t) {
 		time: `${n.hour}:${n.minute}`
 	};
 }
-var $a = 6e5, eo = 7, to = class extends Z {
+var ho = 6e5, go = 7, _o = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -12723,7 +13149,7 @@ var $a = 6e5, eo = 7, to = class extends Z {
 		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), $a);
+		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), ho);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer);
@@ -12739,7 +13165,7 @@ var $a = 6e5, eo = 7, to = class extends Z {
 		}
 		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
-		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + eo * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + go * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
@@ -12758,7 +13184,7 @@ var $a = 6e5, eo = 7, to = class extends Z {
 				}
 				let n = Date.parse(e.start.dateTime);
 				if (Number.isNaN(n)) return null;
-				let { day: r, time: i } = Qa(n, a);
+				let { day: r, time: i } = mo(n, a);
 				return {
 					title: t,
 					at: n,
@@ -12775,7 +13201,7 @@ var $a = 6e5, eo = 7, to = class extends Z {
 		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, r = Qa(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? "Today" : i === n(r) ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
+		}, r = mo(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? "Today" : i === n(r) ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
@@ -12790,7 +13216,7 @@ var $a = 6e5, eo = 7, to = class extends Z {
 	}
 	render() {
 		if (!this.text("entity_id")) return g`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
-		let e = Qa(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
+		let e = mo(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
 		return g`<div class="label">Calendar</div>
       ${this._error ? g`<div class="error">${this._error}</div>` : t.length ? t.map((e) => g`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : g`<div class="normal muted">Nothing in the next week.</div>`}`;
 	}
@@ -12813,9 +13239,9 @@ var $a = 6e5, eo = 7, to = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-calendar", to);
+customElements.define("wall-tile-calendar", _o);
 // src/wall-tile-camera.ts
-var no = class extends Z {
+var vo = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -12856,9 +13282,9 @@ var no = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-camera", no);
+customElements.define("wall-tile-camera", vo);
 // src/wall-tile-note.ts
-var ro = class extends Z {
+var yo = class extends Z {
 	render() {
 		let e = this.text("text").trim();
 		return e ? g`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : g`<div class="center muted normal">Write a note in the board settings.</div>`;
@@ -12867,18 +13293,18 @@ var ro = class extends Z {
 		this.styles = [Q, o`.center div { white-space: pre-line; }`];
 	}
 };
-customElements.define("wall-tile-note", ro);
+customElements.define("wall-tile-note", yo);
 // src/wall-layout.ts
-function io(e, t) {
+function bo(e, t) {
 	return e.x < t.x + t.w && t.x < e.x + e.w && e.y < t.y + t.h && t.y < e.y + e.h;
 }
-function ao(e) {
+function xo(e) {
 	return e.reduce((e, t) => Math.max(e, t.y + t.h), 0);
 }
-function oo(e) {
+function So(e) {
 	return e.reduce((e, t) => Math.max(e, t.x + t.w), 0);
 }
-function so(e, t, n = "") {
+function Co(e, t, n = "") {
 	let r = e.map((e) => ({
 		...e,
 		options: e.options
@@ -12887,7 +13313,7 @@ function so(e, t, n = "") {
 	let o = r.filter((e) => e !== a).sort((e, t) => e.y - t.y || e.x - t.x);
 	for (let e of o) {
 		for (;;) {
-			let t = i.filter((t) => io(t, e));
+			let t = i.filter((t) => bo(t, e));
 			if (!t.length) break;
 			e.y = Math.max(...t.map((e) => e.y + e.h));
 		}
@@ -12896,9 +13322,9 @@ function so(e, t, n = "") {
 	}
 	return r;
 }
-function co(e, t, n, r, i) {
+function wo(e, t, n, r, i) {
 	r = Math.min(r, t);
-	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => io({
+	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => bo({
 		x: n,
 		y: a,
 		w: r,
@@ -12909,7 +13335,7 @@ function co(e, t, n, r, i) {
 	};
 	return null;
 }
-function lo(e, t) {
+function To(e, t) {
 	return t === 2 ? e.map((e) => ({
 		...e,
 		x: e.x * 2,
@@ -12925,7 +13351,7 @@ function lo(e, t) {
 	}));
 }
 // src/wall-tiles.ts
-var uo = [
+var Eo = [
 	{
 		type: "clock",
 		label: "Clock",
@@ -13089,35 +13515,40 @@ var uo = [
 		}]
 	}
 ];
-function fo(e) {
-	return uo.find((t) => t.type === e);
+function Do(e) {
+	return Eo.find((t) => t.type === e);
 }
-function po(e, t = [], n = 16, r = 9) {
-	let i = fo(e), a = {};
+function Oo(e, t = [], n = 16, r = 9) {
+	let i = Do(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let o = Math.max(1, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), s = Math.max(1, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r)), c = co(t, n, r, o, s);
-	return c ? {
-		id: Y(),
-		type: e,
-		...c,
-		w: o,
-		h: s,
-		options: a
-	} : null;
+	let o = Math.max(1, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), s = Math.max(1, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
+	for (;;) {
+		let i = wo(t, n, r, o, s);
+		if (i) return {
+			id: X(),
+			type: e,
+			...i,
+			w: o,
+			h: s,
+			options: a
+		};
+		if (o === 1 && s === 1) return null;
+		o >= s ? --o : --s;
+	}
 }
-function mo(e = 16, t = 9) {
-	let n = po("clock", [], e, t);
-	return [n, po("due_now", [n], e, t)];
+function ko(e = 16, t = 9) {
+	let n = Oo("clock", [], e, t);
+	return [n, Oo("due_now", [n], e, t)];
 }
-function ho(e, t) {
+function Ao(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
 	return r && n.find((e) => e.name.toLowerCase() === r || e.id === t) || n[0];
 }
-function go(e) {
+function jo(e) {
 	return `${location.origin}${location.pathname}?wall=${encodeURIComponent(e.name)}`;
 }
 // src/boopli-wizard.ts
-var _o = {
+var Mo = {
 	first: [
 		"welcome",
 		"phone",
@@ -13163,13 +13594,13 @@ var _o = {
 	],
 	ladders: ["lad_start", "done"],
 	wall: ["wall_start", "done"]
-}, vo = [
+}, No = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], yo = {
+], Po = {
 	first: "First setup",
 	phone: "Phone setup",
 	quiet: "Quiet hours setup",
@@ -13182,7 +13613,7 @@ var _o = {
 	ai: "AI help setup",
 	ladders: "Nudge it your way",
 	wall: "Wall board"
-}, bo = 10, $ = 20, xo = {
+}, Fo = 10, $ = 20, Io = {
 	welcome: "Welcome",
 	phone: "Your phone",
 	phone_detail: "Phone details",
@@ -13211,12 +13642,12 @@ var _o = {
 	lad_delete: "Delete a ladder",
 	wall_start: "Which board?",
 	done: "All set"
-}, So = [
+}, Lo = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], Co = [
+], Ro = [
 	{
 		value: "one",
 		label: "One nudge",
@@ -13237,7 +13668,7 @@ var _o = {
 		label: "Quiet",
 		text: "Only shown in Boopli, never nudges."
 	}
-], wo = [
+], zo = [
 	{
 		value: "normal",
 		label: "Normal notification"
@@ -13254,7 +13685,7 @@ var _o = {
 		value: "alarm_max",
 		label: "Max volume (not on every phone)"
 	}
-], To = [
+], Bo = [
 	{
 		value: "alexa_media",
 		label: "Alexa Media Player"
@@ -13267,13 +13698,13 @@ var _o = {
 		value: "tts",
 		label: "A TTS voice on this speaker"
 	}
-], Eo = [{
+], Vo = [{
 	value: "alexa",
 	label: "Alexa sound"
 }, {
 	value: "file",
 	label: "File in my media folder"
-}], Do = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Oo = [
+}], Ho = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Uo = [
 	0,
 	1,
 	2,
@@ -13281,7 +13712,7 @@ var _o = {
 	4,
 	5,
 	6
-], ko = class extends x {
+], Wo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13317,14 +13748,14 @@ var _o = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [..._o[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Mo[this.wizard]];
 		let e = this.startAt;
-		if (this._first && vo.includes(e)) {
+		if (this._first && No.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...vo);
+			this._steps.splice(e + 1, 0, ...No);
 		}
 		let t = this._steps.indexOf(e);
-		this._index = t >= 0 ? t : 0, this._picked = Qi.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
+		this._index = t >= 0 ? t : 0, this._picked = na.filter((e) => !this.snapshot.chores.some((t) => t.name === e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
 	}
 	_set(e) {
 		this._draft &&= {
@@ -13339,7 +13770,7 @@ var _o = {
 		};
 	}
 	_fn(e) {
-		return K(this.hass, e);
+		return q(this.hass, e);
 	}
 	_phones() {
 		let e = Object.keys(this.hass?.services?.notify ?? {}).filter((e) => e.startsWith("mobile_app_")), t = this._draft?.phones.map((e) => e.service) ?? [];
@@ -13400,7 +13831,7 @@ var _o = {
 					if (this._step === "spk_pick" && !this._speaker) throw Error("Pick a speaker, or press Skip.");
 					this._step === "lad_start" && this._startLadderWork(), this._step === "wall_start" && this._startBoardWork(), this._step === "lad_name" && this._ensureLadder();
 					let e = structuredClone(this._draft);
-					await S(this.hass, e), this._saved = e;
+					await Ge(this.hass, e), this._saved = e;
 				}
 				e === 1 && t === "skip" && (this._draft = structuredClone(this._saved), this._step === "chores" && (this._picked = [])), t === "more" && (this._steps[this._index + 1] !== "lad_nudge" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
@@ -13409,7 +13840,7 @@ var _o = {
 					...this._steps.slice(this._index + 1)
 				]), this._rungAt(this._nudgesBefore(this._index + 1))), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...vo,
+					...No,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
@@ -13446,8 +13877,8 @@ var _o = {
 		if (this.hass && this._draft && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				if (await S(this.hass, this._draft), this._first) {
-					for (let e of Qi.filter((e) => this._picked.includes(e.label))) await ht(this.hass, {
+				if (await Ge(this.hass, this._draft), this._first) {
+					for (let e of na.filter((e) => this._picked.includes(e.label))) await ht(this.hass, {
 						...e.draft,
 						repeat: {
 							type: "none",
@@ -13500,15 +13931,15 @@ var _o = {
 		}
 		let n = this._boardName.trim();
 		if (!n) throw Error("Give the new board a name.");
-		if (t.length >= bo) throw Error(`You have ${bo} boards, the most. Edit or delete one.`);
+		if (t.length >= Fo) throw Error(`You have ${Fo} boards, the most. Edit or delete one.`);
 		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(`There is already a board called "${n}".`);
 		let r = {
-			id: Y(),
+			id: X(),
 			name: n,
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: mo(16, 9)
+			tiles: ko(16, 9)
 		};
 		this._boardId = r.id, this._boardPick = r.id, this._set({ boards: [...t, r] });
 	}
@@ -13605,7 +14036,7 @@ var _o = {
 			return;
 		}
 		if ((e.ladders ?? []).length >= $) throw Error(`You have ${$} ladders, the most. Edit or delete one.`);
-		let n = Y();
+		let n = X();
 		this._ladderId = n, this._createdId = n, this._set({ ladders: [...e.ladders ?? [], {
 			id: n,
 			name: t,
@@ -13631,7 +14062,7 @@ var _o = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? `Nudge ${this._nudgesBefore(t) + 1}` : xo[e];
+		return e === "lad_nudge" ? `Nudge ${this._nudgesBefore(t) + 1}` : Io[e];
 	}
 	_renderLadStart(e) {
 		let t = e.ladders ?? [], n = t.length === 0, r = (e, t, n, r = !1) => g`<label class="inline option">
@@ -13761,7 +14192,7 @@ var _o = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Oo.map((e) => [String(e), { ...ri }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Uo.map((e) => [String(e), { ...si }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -13787,7 +14218,7 @@ var _o = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(Oo.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(Uo.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -13857,7 +14288,7 @@ var _o = {
 				}] : i });
 			}}
                   />
-                  ${J(t)}
+                  ${Y(t)}
                 </label>
                 <button type="button" @click=${() => this._try(`phone:${t}`, () => dt(this.hass, {
 				service: t,
@@ -13880,7 +14311,7 @@ var _o = {
       </p>
       <div class="list">
         ${e.phones.map((t) => g`<div class="choice col">
-            <b>${J(t.service)}</b>
+            <b>${Y(t.service)}</b>
             <label class="num">
               Notification level
               <select
@@ -13889,7 +14320,7 @@ var _o = {
 			level: n.target.value
 		} : e) })}
               >
-                ${wo.map((e) => g`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${zo.map((e) => g`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             ${this._numField("Starts at nudge #", t.start_at ?? 1, 1, 20, (n) => this._set({ phones: e.phones.map((e) => e.service === t.service ? {
@@ -13920,22 +14351,22 @@ var _o = {
       </label>
       ${t.enabled ? g`
             <div class="days">
-              ${Oo.map((e) => {
+              ${Uo.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return g`<div class="dayrow">
-                  <span class="dayname">${D[e]}</span>
+                  <span class="dayname">${O[e]}</span>
                   <label class="inline small">
                     <input
                       type="checkbox"
                       .checked=${n === null}
-                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...ri })}
+                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...si })}
                     />
                     No limit
                   </label>
                   ${n ? g`<span class="muted small">from</span>
                         <input
                           type="time"
-                          aria-label="${D[e]} from"
+                          aria-label="${O[e]} from"
                           .value=${n.start}
                           @input=${(t) => this._setDay(e, {
 				...n,
@@ -13945,14 +14376,14 @@ var _o = {
                         <span class="muted small">until</span>
                         <input
                           type="time"
-                          aria-label="${D[e]} until"
+                          aria-label="${O[e]} until"
                           .value=${n.stop}
                           @input=${(t) => this._setDay(e, {
 				...n,
 				stop: t.target.value
 			})}
                         />` : y}
-                  ${e > 0 ? g`<button type="button" class="chip" @click=${() => this._copyDayAbove(e)}>Same as ${D[e - 1]}</button>` : y}
+                  ${e > 0 ? g`<button type="button" class="chip" @click=${() => this._copyDayAbove(e)}>Same as ${O[e - 1]}</button>` : y}
                 </div>`;
 		})}
             </div>
@@ -13983,7 +14414,7 @@ var _o = {
         </div>
       </div>
       <p>How should new chores nudge you, unless you say otherwise?</p>
-      ${[...Co, ...(e.ladders ?? []).map((e) => ({
+      ${[...Ro, ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
 			text: `Your own ladder, ${e.rungs.length} ${e.rungs.length === 1 ? "nudge" : "nudges"}.`
@@ -13994,7 +14425,7 @@ var _o = {
     `;
 	}
 	_renderLights(e) {
-		let t = q(this.hass, ["light"]);
+		let t = J(this.hass, ["light"]);
 		return g`
       <p>
         Which lights should remind you? Each one either <b>blinks</b> when a step is your turn, or
@@ -14010,7 +14441,7 @@ var _o = {
                     .checked=${!!n}
                     @change=${(n) => {
 				let r = n.target.checked, i = e.lights.filter((e) => e.entity_id !== t);
-				this._set({ lights: r ? [...i, ai(t)] : i });
+				this._set({ lights: r ? [...i, li(t)] : i });
 			}}
                   />
                   ${this._fn(t)}
@@ -14050,9 +14481,9 @@ var _o = {
 			} : e) });
 			return g`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
-            ${fi(this.hass, t.entity_id) ? g`<label class="num">
+            ${gi(this.hass, t.entity_id) ? g`<label class="num">
                   Color
-                  <input type="color" class="swatch" .value=${li(t.color)} @input=${(e) => n({ color: ci(e.target.value) })} />
+                  <input type="color" class="swatch" .value=${pi(t.color)} @input=${(e) => n({ color: fi(e.target.value) })} />
                 </label>` : g`<span class="muted small">This light only goes on and off, so it has no color.</span>`}
             ${t.mode === "blink" ? g`${this._numField("Blink length (ms)", t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
                 ${this._numField("Number of blinks", t.repeats, 1, 5, (e) => n({ repeats: e }))}
@@ -14079,7 +14510,7 @@ var _o = {
     `;
 	}
 	_renderSpkPick(e) {
-		let t = q(this.hass, ["media_player"]);
+		let t = J(this.hass, ["media_player"]);
 		return g`
       <p>Which speaker do you want to set up? You can add more speakers afterwards.</p>
       ${t.length === 0 ? g`<p class="muted">No speakers (media players) found.</p>` : g`<div class="list grid">
@@ -14091,12 +14522,12 @@ var _o = {
                   name="speaker"
                   .checked=${this._speaker === t}
                   @change=${() => {
-				this._speaker = t, n || this._set({ speakers: [...e.speakers, oi(t)] });
+				this._speaker = t, n || this._set({ speakers: [...e.speakers, ui(t)] });
 			}}
                 />
                 <span>
                   ${this._fn(t)}
-                  ${n ? g`<span class="muted small"><br />set up: ${hi(n)}</span>` : y}
+                  ${n ? g`<span class="muted small"><br />set up: ${yi(n)}</span>` : y}
                 </span>
               </label>`;
 		})}
@@ -14118,7 +14549,7 @@ var _o = {
             <label class="num">
               Sound type
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${Eo.map((e) => g`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${Vo.map((e) => g`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -14126,7 +14557,7 @@ var _o = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? g`<div class="muted small">
-                  Pick a sound from the <a href=${Do} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  Pick a sound from the <a href=${Ho} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
                   <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
                   <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
                 </div>` : g`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
@@ -14144,7 +14575,7 @@ var _o = {
 				...t.speech,
 				...e
 			}
-		})), i = ii(this.hass, n.route, n.target);
+		})), i = ci(this.hass, n.route, n.target);
 		return g`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
       <label class="inline option">
@@ -14158,7 +14589,7 @@ var _o = {
 			route: e.target.value,
 			target: ""
 		})}>
-                ${To.map((e) => g`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${Bo.map((e) => g`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -14224,7 +14655,7 @@ var _o = {
 			this._busy = !0;
 			try {
 				let e = structuredClone(this._draft);
-				await S(this.hass, e), this._saved = e, this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
+				await Ge(this.hass, e), this._saved = e, this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
 			} catch (e) {
 				this._error = w(e);
 			} finally {
@@ -14233,7 +14664,7 @@ var _o = {
 		}
 	}
 	_renderAlarmDevices(e) {
-		let t = q(this.hass, ni, e.alarm_devices.map((e) => e.entity_id));
+		let t = J(this.hass, oi, e.alarm_devices.map((e) => e.entity_id));
 		return g`
       <p>
         Optional: a siren, switch or script that Boopli switches on for a while if you keep ignoring
@@ -14256,7 +14687,7 @@ var _o = {
           type="button"
           ?disabled=${!this._addDevice}
           @click=${() => {
-			this._set({ alarm_devices: [...e.alarm_devices, si(this._addDevice)] }), this._addDevice = "";
+			this._set({ alarm_devices: [...e.alarm_devices, di(this._addDevice)] }), this._addDevice = "";
 		}}
         >
           Add
@@ -14285,7 +14716,7 @@ var _o = {
     `;
 	}
 	_renderPresence(e) {
-		let t = q(this.hass, ["person"]);
+		let t = J(this.hass, ["person"]);
 		return g`
       <p>
         If Boopli knows where you are, it reminds you with lights and speakers only when you are
@@ -14309,7 +14740,7 @@ var _o = {
         so nothing nudges you until you set a time (in the Chores tab) or start one yourself.
       </p>
       <div class="list">
-        ${Qi.map((t) => {
+        ${na.map((t) => {
 			let n = e.has(t.draft.name);
 			return g`<label class="inline option">
             <input
@@ -14356,7 +14787,7 @@ var _o = {
     `;
 	}
 	_renderAiAgent(e) {
-		let t = q(this.hass, ["ai_task"]);
+		let t = J(this.hass, ["ai_task"]);
 		return e.ai.enabled ? g`
       <p>Which AI agent should Boopli use?</p>
       <div class="field">
@@ -14387,7 +14818,7 @@ var _o = {
 			this._note("ai:test", "Saving and asking the agent…");
 			try {
 				let t = structuredClone(e);
-				await S(this.hass, t), this._saved = t;
+				await Ge(this.hass, t), this._saved = t;
 				let n = await Xe(this.hass, "Make a cup of tea", "now", []);
 				this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${n.steps.length} steps, starting with: ${n.steps[0]?.title ?? "(none)"}`);
 			} catch (e) {
@@ -14407,13 +14838,13 @@ var _o = {
 		})));
 	}
 	_renderDone(e) {
-		let t = this._baseline ? Da(this._baseline, e, this.hass) : [], n = Qi.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		let t = this._baseline ? Ma(this._baseline, e, this.hass) : [], n = na.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(`Chores added: ${n.join(", ")}`), g`
       <p><b>What changed</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
       ${t.length === 0 ? g`<p class="muted">Nothing changed.</p>` : g`<ul>${t.map((e) => g`<li>${e}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board() ? g`<p>Next: put the tiles where you want them, on the board itself.</p>
             <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>Edit it on the wall</button></p>
-            <p class="small">Link for the tablet's start page: <code>${go(this._board())}</code></p>` : y}
+            <p class="small">Link for the tablet's start page: <code>${jo(this._board())}</code></p>` : y}
       <p class="muted small">
         Everything can be changed again in Settings, step by step or in the full forms.
       </p>
@@ -14459,7 +14890,7 @@ var _o = {
 		return g`
       <div class="shell">
         <nav class="rail" aria-label="Steps">
-          <div class="rail-title">${yo[this.wizard]}</div>
+          <div class="rail-title">${Po[this.wizard]}</div>
           ${this._steps.map((e, t) => g`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -14479,7 +14910,7 @@ var _o = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${So.includes(t) ? g`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : y}
+          ${Lo.includes(t) ? g`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : y}
           ${this._renderStep(e)}
           ${this._error ? g`<div class="error">${this._error}</div>` : y}
           <div class="actions">
@@ -14787,31 +15218,31 @@ var _o = {
     `];
 	}
 };
-customElements.define("boopli-wizard", ko);
+customElements.define("boopli-wizard", Wo);
 // node_modules/lit-html/static.js
-var Ao = Symbol.for(""), jo = (e) => {
-	if (e?.r === Ao) return e?._$litStatic$;
-}, Mo = (e) => ({
+var Go = Symbol.for(""), Ko = (e) => {
+	if (e?.r === Go) return e?._$litStatic$;
+}, qo = (e) => ({
 	_$litStatic$: e,
-	r: Ao
-}), No = /* @__PURE__ */ new Map(), Po = ((e) => (t, ...n) => {
+	r: Go
+}), Jo = /* @__PURE__ */ new Map(), Yo = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = jo(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = Ko(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = No.get(e)) === void 0 && (o.raw = o, No.set(e, t = o)), n = s;
+		(t = Jo.get(e)) === void 0 && (o.raw = o, Jo.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
 })(g);
 // src/wall-night.ts
-function Fo(e) {
+function Xo(e) {
 	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
 	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function Io(e, t, n) {
+function Zo(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -14829,11 +15260,11 @@ function Io(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = Fo(o.start), l = Fo(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = Xo(o.start), l = Xo(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Lo = 3e4, Ro = class extends x {
+var Qo = 3e4, $o = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14855,7 +15286,7 @@ var Lo = 3e4, Ro = class extends x {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Lo, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Qo, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -14891,7 +15322,7 @@ var Lo = 3e4, Ro = class extends x {
 				...i,
 				w: Math.max(1, Math.min(r.cx - i.x + 1, r.cols - i.x)),
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
-			}, o = so(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
+			}, o = Co(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
 		}, this._up = (e) => {
 			let t = this._drag;
@@ -14934,7 +15365,7 @@ var Lo = 3e4, Ro = class extends x {
 		} catch {}
 	}
 	_board() {
-		return this.board ?? ho(this.snapshot?.settings?.boards, this.boardName);
+		return this.board ?? Ao(this.snapshot?.settings?.boards, this.boardName);
 	}
 	render() {
 		let e = this._board();
@@ -14943,22 +15374,22 @@ var Lo = 3e4, Ro = class extends x {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Wt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Io(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Jt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Zo(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return g`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
-      ${a ? g`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${Ht(a, this.nowMs, t, !0)}</span></div>` : y}
+      ${a ? g`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${Kt(a, this.nowMs, t, !0)}</span></div>` : y}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : y}
-        ${(this._live ?? e.tiles).filter((e) => !!fo(e.type)).map((e) => g`<div
+        ${(this._live ?? e.tiles).filter((e) => !!Do(e.type)).map((e) => g`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${Po`<${Mo(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${Yo`<${qo(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${Mo(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? g`<button type="button" class="shield" data-id=${e.id} aria-label="Edit this tile: ${e.type.replace(/_/g, " ")}" @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+            ></${qo(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? g`<button type="button" class="shield" data-id=${e.id} aria-label="Edit this tile: ${e.type.replace(/_/g, " ")}" @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
                   <span class="handle" data-id=${e.id} data-resize title="Drag to resize"></span>
                   <button type="button" class="del" aria-label="Remove this tile" title="Remove this tile" @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
@@ -15207,9 +15638,9 @@ var Lo = 3e4, Ro = class extends x {
   `;
 	}
 };
-customElements.define("boopli-wall", Ro);
+customElements.define("boopli-wall", $o);
 // src/boopli-wall-edit.ts
-var zo = 10, Bo = 30, Vo = 40, Ho = [
+var es = 10, ts = 30, ns = 40, rs = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -15226,11 +15657,11 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 	"automation",
 	"person",
 	"media_player"
-], Uo = [
+], is = [
 	["dim", "Dim the screen"],
 	["black", "Black, with a small clock"],
 	["off", "Keep as it is"]
-], Wo = [
+], as = [
 	[
 		"window",
 		"This window",
@@ -15246,10 +15677,10 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		"Upright",
 		"A tablet hung upright (9:16)"
 	]
-], Go = {
+], os = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, Ko = class extends x {
+}, ss = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15284,7 +15715,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		let e = this.snapshot.settings.boards ?? [];
 		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
 		let t = structuredClone(e), n = this._boards ? this._id : "";
-		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || ho(t, this.boardName)?.id || t[0]?.id || "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || Ao(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
 		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
@@ -15330,7 +15761,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : Go[this._view];
+		return this._view === "window" ? this._win : os[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -15347,7 +15778,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 	_pick(e) {
 		this._sel = e.detail;
 		let t = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
-		this._modal = fo(t)?.options.length ? "tile" : "";
+		this._modal = Do(t)?.options.length ? "tile" : "";
 	}
 	_uniqueName(e) {
 		let t = new Set((this._boards ?? []).map((e) => e.name.toLowerCase()));
@@ -15357,14 +15788,14 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= zo) return;
+		if (!this._boards || this._boards.length >= es) return;
 		let e = {
-			id: Y(),
+			id: X(),
 			name: this._uniqueName("My board"),
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: mo(16, 9)
+			tiles: ko(16, 9)
 		};
 		this._boards = [...this._boards, e], this._id = e.id, this._sel = "";
 	}
@@ -15375,12 +15806,12 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= Bo) {
-			this._error = `A board can have ${Bo} tiles at most.`, this._modal = "";
+		if (t.tiles.length >= ts) {
+			this._error = `A board can have ${ts} tiles at most.`, this._modal = "";
 			return;
 		}
-		let n = po(e, t.tiles, t.columns, t.rows);
-		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = fo(e)?.options.length ? "tile" : "") : (this._error = "There is no room left on this board. Make the grid bigger or remove a tile.", this._modal = "");
+		let n = Oo(e, t.tiles, t.columns, t.rows);
+		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = Do(e)?.options.length ? "tile" : "") : (this._error = "Every cell of this board is taken. Make the grid bigger or remove a tile.", this._modal = "");
 	}
 	_remove(e = this._sel) {
 		this._edit((t) => t.tiles = t.tiles.filter((t) => t.id !== e)), e === this._sel && (this._sel = ""), this._modal = "";
@@ -15391,7 +15822,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 	_resize(e, t) {
 		let n = this._cur, r = this._tile;
 		if (!n || !r) return;
-		let i = so(n.tiles.map((i) => i.id === r.id ? {
+		let i = Co(n.tiles.map((i) => i.id === r.id ? {
 			...i,
 			w: Math.max(1, Math.min(e, n.columns - i.x)),
 			h: Math.max(1, Math.min(t, n.rows - i.y))
@@ -15404,7 +15835,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 			columns: e,
 			rows: t
 		};
-		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = oo(n.tiles), o = ao(n.tiles);
+		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = So(n.tiles), o = xo(n.tiles);
 		return r < a || i < o ? (this._error = `Some tiles reach to column ${a} and row ${o}. Move or shrink them first.`, {
 			columns: n.columns,
 			rows: n.rows
@@ -15418,7 +15849,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 	_scaleGrid(e) {
 		let t = this._cur;
 		if (!t) return;
-		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = lo(t.tiles, n);
+		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = To(t.tiles, n);
 		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? "32 by 18 is the finest grid." : "This grid cannot be made coarser evenly." : a ? this._edit((e) => {
 			e.columns = r, e.rows = i, e.tiles = a;
 		}) : this._error = "Some tiles do not line up with a coarser grid. Move or resize them first.";
@@ -15448,7 +15879,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		if (this.hass && e && this._boards && !this._busy) {
 			this._busy = !0, this._error = "", this._askDiscard = !1;
 			try {
-				await S(this.hass, {
+				await Ge(this.hass, {
 					...e,
 					boards: this._merged(e.boards ?? [])
 				}), this._exit(this._cur?.name ?? "");
@@ -15480,21 +15911,21 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = q(this.hass, t.domains ?? Ho), a = `dl-${e.id}-${t.key}`;
+				let i = J(this.hass, t.domains ?? rs), a = `dl-${e.id}-${t.key}`;
 				return g`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder="Start typing a name…" .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
-          <datalist id=${a}>${i.map((e) => g`<option value=${e}>${K(this.hass, e)}</option>`)}</datalist>
+          <datalist id=${a}>${i.map((e) => g`<option value=${e}>${q(this.hass, e)}</option>`)}</datalist>
           ${n && !this.hass?.states[String(n)] ? g`<div class="error small">${n} was not found.</div>` : y}</div>`;
 			}
 			default: return g`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${Vo} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${ns} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
 		let t = this._tile;
 		if (!t) return y;
-		let n = fo(t.type);
+		let n = Do(t.type);
 		return g`
       <div class="mhead"><h2>${n?.emoji ?? "◻️"} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? g`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : y}
@@ -15514,7 +15945,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
       <div class="mhead"><h2>🖥️ This board</h2></div>
       <div class="field">
         <label for="bname">Name</label>
-        <input id="bname" maxlength=${Vo} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${ns} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", "Columns", e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -15529,13 +15960,13 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
       <div class="field">
         <label for="bnight">At night</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${Uo.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${is.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
-      <p class="small">Link for the tablet's start page: <code>${go(e)}</code> (after you save)</p>
+      <p class="small">Link for the tablet's start page: <code>${jo(e)}</code> (after you save)</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= zo} @click=${() => this._newBoard()}>+ New board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= es} @click=${() => this._newBoard()}>+ New board</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>Done</button>
@@ -15546,7 +15977,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
 		return g`
       <div class="mhead"><h2>＋ Add a tile</h2></div>
       <div class="adds" role="group" aria-label="Add a tile">
-        ${uo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${e.emoji}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+        ${Eo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${e.emoji}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>Cancel</button></div>
     `;
@@ -15569,7 +16000,7 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
           <button @click=${() => this._modal = "board"}>⚙ Board</button>
           <button @click=${() => this._modal = "add"}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
-            ${Wo.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${as.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
           <span class="spacer"></span>
@@ -15840,14 +16271,14 @@ var zo = 10, Bo = 30, Vo = 40, Ho = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", Ko);
+customElements.define("boopli-wall-edit", ss);
 // src/boopli-panel.ts
-var qo = {
+var cs = {
 	today: "Today",
 	chores: "Chores",
 	home: "My home",
 	settings: "Settings"
-}, Jo = class extends x {
+}, ls = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15967,10 +16398,16 @@ var qo = {
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
+		super.connectedCallback(), Nt(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer), window.removeEventListener("beforeunload", this._beforeUnload), this._unsub?.(), this._unsub = void 0, this._subscribing = !1;
+	}
+	willUpdate(e) {
+		if (e.has("_snapshot")) {
+			let e = this._snapshot?.settings;
+			qa(this, e?.pet_kind, e?.accent);
+		}
 	}
 	updated() {
 		this.hass && !this._unsub && !this._subscribing && (this._subscribing = !0, mt(this.hass, (e) => {
@@ -16012,7 +16449,7 @@ var qo = {
 		if (!e?.active || (this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown) return y;
 		let t = !!this._snapshot?.away_now, n = this._snapshot?.time_zone ?? "UTC";
 		return g`<div class="away-bar" role="status">
-      <span>🧳 <b>${t ? "Away mode is on" : "Away mode is planned"}</b> ${Ht(e, this._nowMs, n, t)}</span>
+      <span>${E("bag-suitcase")} <b>${t ? "Away mode is on" : "Away mode is planned"}</b> ${Kt(e, this._nowMs, n, t)}</span>
       <button type="button" @click=${() => this._selectTab("settings")}>${t ? "Back now…" : "Change"}</button>
     </div>`;
 	}
@@ -16050,19 +16487,19 @@ var qo = {
 		};
 		return g`
       <header>
-        ${this.narrow ? g`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>` : y}
+        ${this.narrow ? g`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>${E("menu")}</button>` : y}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(qo).map((t) => g`<button
+          ${Object.keys(cs).map((t) => g`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${qo[t]}
+              ${cs[t]}
               ${e[t] ? g`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : y}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(ho(this._snapshot?.settings?.boards, "")?.name ?? "")}>🖥 Wall view</button>
+        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(Ao(this._snapshot?.settings?.boards, "")?.name ?? "")}>${E("monitor-dashboard")} Wall view</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -16119,7 +16556,7 @@ var qo = {
       }
       header h1 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 500;
         margin-right: 8px;
       }
@@ -16179,7 +16616,7 @@ var qo = {
         box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
       }
       main {
-        padding: 20px 24px 64px;
+        padding: 14px 24px 20px;
       }
       .backdrop {
         position: fixed;
@@ -16211,7 +16648,7 @@ var qo = {
         padding: 8px 16px;
         background: var(--warning-color, #ffa600);
         color: #1a1200;
-        font-size: 15px;
+        font-size: 17px;
       }
       .away-bar button {
         min-height: 0;
@@ -16228,12 +16665,12 @@ var qo = {
           gap: 6px;
         }
         header h1 {
-          font-size: 18px;
+          font-size: 20px;
           margin-right: 0;
         }
         .tab {
           padding: 8px 9px;
-          font-size: 14px;
+          font-size: 16px;
         }
         main {
           padding: 12px 12px 64px;
@@ -16253,5 +16690,5 @@ var qo = {
     `];
 	}
 };
-customElements.define("boopli-panel", Jo);
-export { Jo as BoopliPanel };
+customElements.define("boopli-panel", ls);
+export { ls as BoopliPanel };

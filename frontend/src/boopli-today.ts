@@ -6,6 +6,9 @@ import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-stage";
+import "./boopli-pet";
+import { icon } from "./icon";
+import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
@@ -130,7 +133,7 @@ export class BoopliToday extends LitElement {
     }
     this._momentSeq += 1;
     const parts = [`+${pet.total_xp - before.total_xp} XP`];
-    if (finished.length) parts.unshift(`🎉 ${finished[0]} is done!`);
+    if (finished.length) parts.unshift(`${finished[0]} is done!`);
     if (pet.level > before.level) parts.push(`Level ${pet.level}!`);
     if (before.mood === "sad" || before.mood === "hibernating")
       parts.push(`${pet.name} is awake. Welcome back!`);
@@ -165,8 +168,8 @@ export class BoopliToday extends LitElement {
                 @input=${(e: Event) => (this._quick = (e.target as HTMLTextAreaElement).value)}
               ></textarea>
               <div class="quick-actions">
-                <button class="primary" @click=${() => this._openBreakdown("now")}>✨ Break it down now</button>
-                <button @click=${() => this._openBreakdown("recurring")}>🔁 Break down a recurring chore</button>
+                <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} Break it down now</button>
+                <button @click=${() => this._openBreakdown("recurring")}>${icon("repeat")} Break down a recurring chore</button>
               </div>
             `
           : html`
@@ -179,7 +182,7 @@ export class BoopliToday extends LitElement {
                     new CustomEvent("open-wizard", { detail: { wizard: "ai" }, bubbles: true, composed: true })
                   )}
               >
-                🤖 Set up AI help
+                ${icon("robot-outline")} Set up AI help
               </button>
             `}
       </section>
@@ -219,6 +222,46 @@ export class BoopliToday extends LitElement {
       </section>
       ${this._toast ? html`<div class="toast" role="status">${this._toast}</div>` : nothing}
     `;
+  }
+
+  /**
+   * How far along this chore is: a fat bar with your pet riding the end of the fill towards the flag,
+   * and the names of the steps underneath (done ones ticked) when there are few enough to read.
+   */
+  private _renderTrail(now: NonNullable<ReturnType<typeof buildToday>["now"]>) {
+    const pct = (now.done / now.total) * 100;
+    const place = Math.min(94, Math.max(6, pct)); // the pet stays inside the bar
+    const names = now.total <= 6;
+    return html`<div class="trail">
+      <div
+        class="track"
+        role="progressbar"
+        aria-label="Steps done"
+        aria-valuenow=${now.done}
+        aria-valuemin="0"
+        aria-valuemax=${now.total}
+      >
+        <div class="trail-fill" style="width:${pct}%"></div>
+        <boopli-pet
+          class="rider"
+          style="left:${place}%"
+          still
+          .kind=${(this.snapshot?.settings?.pet_kind ?? "slime") as PetKind}
+          .mood=${"happy"}
+        ></boopli-pet>
+        <span class="flag">${icon("flag-checkered")}</span>
+      </div>
+      ${names
+        ? html`<ol class="trail-steps">
+            ${now.run.steps.map(
+              (s) =>
+                html`<li class=${s.status === "done" ? "ok" : s.step_id === now.step.step_id ? "here" : ""}>
+                  ${s.status === "done" ? icon("check") : nothing}${s.title}
+                </li>`
+            )}
+          </ol>`
+        : html`<div class="muted small">Step ${now.done + 1} of ${now.total}</div>`}
+    </div>`;
   }
 
   private async _done(runId: string, stepId: string): Promise<void> {
@@ -314,7 +357,7 @@ export class BoopliToday extends LitElement {
     if (!away?.active) return nothing;
     const onNow = !!this.snapshot?.away_now;
     return html`<section class="away-banner ${onNow ? "on" : "planned"}" role="status">
-      <div class="away-icon" aria-hidden="true">🧳</div>
+      <div class="away-icon" aria-hidden="true">${icon("bag-suitcase")}</div>
       <div class="away-text">
         <div class="away-title">${onNow ? "AWAY MODE IS ON" : "AWAY MODE IS PLANNED"}</div>
         <div class="away-when">${awayWhen(away, this.nowMs, tz, onNow)}</div>
@@ -500,7 +543,7 @@ export class BoopliToday extends LitElement {
         ${this._heading("Done by itself", items.length)}
         ${items.map(
           (h) => html`<div class="row">
-            <span>✓ ${h.chore_name}: ${h.step_title}</span>
+            <span>${icon("check")} ${h.chore_name}: ${h.step_title}</span>
             <span class="hint">${h.reason ? `${h.reason}, ` : ""}${fmtTime(h.ts, snapshot.time_zone)}</span>
           </div>`
         )}
@@ -541,14 +584,7 @@ export class BoopliToday extends LitElement {
                 ${model.now.step.group ? html`<span class="tag">${model.now.step.group}</span>` : nothing}
               </div>
               <h2>${model.now.step.title}</h2>
-              ${model.now.total > 1
-                ? html`<div class="progress">
-                    <div class="bar" role="progressbar" aria-valuenow=${model.now.done} aria-valuemin="0" aria-valuemax=${model.now.total}>
-                      <div class="fill" style="width:${(model.now.done / model.now.total) * 100}%"></div>
-                    </div>
-                    <div class="muted small">Step ${model.now.done + 1} of ${model.now.total}</div>
-                  </div>`
-                : nothing}
+              ${model.now.total > 1 ? this._renderTrail(model.now) : nothing}
               ${(() => {
                 const part = partInfo(model.now!.run, model.now!.step);
                 return part && part.total > 1
@@ -568,18 +604,18 @@ export class BoopliToday extends LitElement {
                 : nothing}
               ${model.now.step.on_it_until
                 ? html`<div class="in-progress">
-                    ✅ In progress${model.now.step.on_it_since ? html` since ${fmtTime(model.now.step.on_it_since, tz)}` : nothing}
+                    ${icon("check-circle")} In progress${model.now.step.on_it_since ? html` since ${fmtTime(model.now.step.on_it_since, tz)}` : nothing}
                     <span class="muted small">· Boopli checks in at ${fmtTime(model.now.step.on_it_until, tz)}</span>
                   </div>`
                 : nothing}
               <div class="now-buttons">
                 <button
-                  class="primary done"
+                  class="press done"
                   ?disabled=${this._busy}
                   @click=${() =>
                     this._done(model.now!.run.id, model.now!.step.step_id)}
                 >
-                  Done
+                  ${icon("check-bold")} Done
                 </button>
                 ${model.now.step.on_it_until
                   ? html`<button
@@ -638,10 +674,10 @@ export class BoopliToday extends LitElement {
     sharedStyles,
     css`
       .small {
-        font-size: 14px;
+        font-size: 17px;
       }
       .quick h3 {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 500;
         margin-bottom: 10px;
       }
@@ -665,15 +701,66 @@ export class BoopliToday extends LitElement {
         margin-left: 6px;
         padding: 2px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         background: var(--secondary-background-color);
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
-      .progress {
-        margin: 6px 0 0;
+      /* No boxes on this screen: type, space and thin lines do the grouping. */
+      .card {
+        background: none;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
       }
-      .progress .bar {
-        margin: 4px 0;
+      .trail {
+        margin: 22px 0 6px;
+      }
+      .track {
+        position: relative;
+        height: 20px;
+        border-radius: 10px;
+        background: var(--secondary-background-color);
+        margin: 26px 0 12px;
+      }
+      .trail-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: var(--boopli-accent, var(--primary-color));
+        transition: width 0.5s ease;
+      }
+      .rider {
+        position: absolute;
+        top: -30px;
+        width: 60px;
+        height: 60px;
+        transform: translateX(-50%);
+        transition: left 0.5s ease;
+        pointer-events: none;
+      }
+      .flag {
+        position: absolute;
+        right: 6px;
+        top: -1px;
+        font-size: 20px;
+        line-height: 20px;
+        color: var(--secondary-text-color);
+      }
+      .trail-steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 18px;
+        font-size: 17px;
+        color: var(--secondary-text-color);
+      }
+      .trail-steps li.ok {
+        color: var(--boopli-accent, var(--primary-color));
+      }
+      .trail-steps li.here {
+        color: var(--primary-text-color);
+        font-weight: 500;
       }
       .banner {
         display: flex;
@@ -709,18 +796,18 @@ export class BoopliToday extends LitElement {
         min-width: 0;
       }
       .away-title {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         letter-spacing: 0.04em;
       }
       .away-when {
-        font-size: 17px;
+        font-size: 19px;
         font-weight: 500;
         margin-top: 2px;
       }
       .away-note {
         margin-top: 4px;
-        font-size: 14px;
+        font-size: 17px;
         opacity: 0.85;
       }
       .away-actions {
@@ -738,8 +825,8 @@ export class BoopliToday extends LitElement {
         color: #1a1200;
       }
       .pet-card {
-        margin-bottom: 16px;
-        padding: 12px;
+        margin-bottom: 8px;
+        padding: 0;
       }
       .pet-info {
         margin-top: 12px;
@@ -747,20 +834,19 @@ export class BoopliToday extends LitElement {
         min-width: 0;
       }
       .pet-name {
-        font-size: 17px;
+        font-size: 19px;
         font-weight: 500;
       }
       .bar {
-        height: 8px;
+        height: 16px;
         border-radius: 999px;
         background: var(--secondary-background-color);
-        border: 1px solid var(--divider-color);
         overflow: hidden;
-        margin: 6px 0 4px;
+        margin: 10px 0 6px;
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         border-radius: 999px;
         transition: width 0.4s ease;
       }
@@ -769,8 +855,8 @@ export class BoopliToday extends LitElement {
         left: 50%;
         bottom: 28px;
         transform: translateX(-50%);
-        background: var(--primary-color);
-        color: var(--text-primary-color, #fff);
+        background: var(--boopli-accent, var(--primary-color));
+        color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
         padding: 10px 18px;
         border-radius: 999px;
         font-weight: 500;
@@ -790,7 +876,7 @@ export class BoopliToday extends LitElement {
       }
       .now,
       .empty {
-        padding: 24px 20px;
+        padding: 4px 0 12px;
       }
       /* The cards in a column stand apart from each other, and from the list under them. */
       .now,
@@ -802,14 +888,12 @@ export class BoopliToday extends LitElement {
         margin-top: 24px;
       }
       .now h2 {
-        font-size: 28px;
+        font-size: 34px;
+        line-height: 1.15;
         margin: 8px 0;
       }
       .done {
-        min-width: 180px;
-        min-height: 56px;
-        font-size: 20px;
-        border-radius: 14px;
+        min-width: 200px;
       }
       .now-buttons {
         display: flex;
@@ -821,10 +905,10 @@ export class BoopliToday extends LitElement {
       .on-it {
         min-height: 56px;
         padding: 0 22px;
-        font-size: 18px;
+        font-size: 20px;
         border-radius: 14px;
-        border: 2px solid var(--success-color, #2e7d32);
-        color: var(--success-color, #2e7d32);
+        border: 2px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent, var(--primary-color));
         background: transparent;
         cursor: pointer;
       }
@@ -840,11 +924,11 @@ export class BoopliToday extends LitElement {
       }
       /* The lists next to the big step: a clear heading, a visible line, calm rows. */
       .sec {
-        margin-bottom: 24px;
+        margin-bottom: 14px;
         --line: color-mix(in srgb, var(--primary-text-color) 20%, transparent);
       }
       .sec-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 500;
         color: var(--primary-text-color);
         margin: 0 0 6px;
@@ -853,7 +937,7 @@ export class BoopliToday extends LitElement {
       }
       .count {
         margin-left: 8px;
-        font-size: 14px;
+        font-size: 17px;
         font-weight: 400;
         color: var(--secondary-text-color);
       }
@@ -875,7 +959,7 @@ export class BoopliToday extends LitElement {
         border-top: 0;
       }
       .part-name {
-        font-size: 16px;
+        font-size: 18px;
       }
       .part-actions,
       .park-buttons,
@@ -900,7 +984,7 @@ export class BoopliToday extends LitElement {
         text-decoration: underline;
         min-height: 0;
         padding: 8px 4px;
-        font-size: 15px;
+        font-size: 17px;
       }
       .later-btn {
         display: block;
@@ -914,20 +998,20 @@ export class BoopliToday extends LitElement {
         text-align: right;
       }
       .group {
-        padding: 9px 0;
+        padding: 6px 0;
         border-top: 1px solid var(--line);
       }
       .group:first-of-type {
         border-top: 0;
       }
       .group-name {
-        font-size: 15px;
+        font-size: 17px;
       }
       .row {
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        font-size: 14px;
+        font-size: 17px;
         padding: 2px 0 2px 12px;
       }
       .group > .row:only-child {

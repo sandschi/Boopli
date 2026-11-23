@@ -148,3 +148,5 @@ Events fired on the Home Assistant bus: `boopli_chore_started`, `boopli_step_act
 ## License
 
 [MIT](LICENSE)
+
+The font Itim is included in the integration (`custom_components/boopli/frontend/fonts`) under the SIL Open Font License 1.1, see `OFL.txt` next to it.

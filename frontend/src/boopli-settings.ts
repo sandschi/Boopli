@@ -21,6 +21,8 @@ import "./boopli-pet-picker";
 import "./boopli-pet-preview";
 import "./boopli-backup";
 import { petInfo } from "./pets";
+import { accentFor, applyAccent, isHex, SWATCHES } from "./accent";
+import { icon } from "./icon";
 
 import type {
   Hass,
@@ -37,30 +39,30 @@ import type {
 type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup";
 
 interface AreaDef {
-  emoji: string;
+  icon: string; // a Material Design icon name (mdi:<name>)
   title: string;
   wizard?: WizardId; // what "Guide me" opens (the Backup card has no guide)
   keys: (keyof Settings)[]; // the settings that belong to it (to see what has unsaved changes)
 }
 
 const AREAS: Record<Area, AreaDef> = {
-  phone: { emoji: "📱", title: "Phone", wizard: "phone", keys: ["phones"] },
-  lights: { emoji: "💡", title: "Reminder lights", wizard: "lights", keys: ["lights"] },
-  speakers: { emoji: "🔊", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template"] },
-  alarms: { emoji: "🚨", title: "Alarm devices", wizard: "alarms", keys: ["alarm_devices"] },
-  quiet: { emoji: "🌙", title: "Quiet hours", wizard: "quiet", keys: ["quiet_hours"] },
+  phone: { icon: "cellphone", title: "Phone", wizard: "phone", keys: ["phones"] },
+  lights: { icon: "lightbulb-outline", title: "Reminder lights", wizard: "lights", keys: ["lights"] },
+  speakers: { icon: "volume-high", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template"] },
+  alarms: { icon: "bell-ring-outline", title: "Alarm devices", wizard: "alarms", keys: ["alarm_devices"] },
+  quiet: { icon: "weather-night", title: "Quiet hours", wizard: "quiet", keys: ["quiet_hours"] },
   timing: {
-    emoji: "⏰",
+    icon: "alarm",
     title: "Snooze and timing",
     wizard: "nudging",
     keys: ["snooze_minutes", "question_wait_minutes", "check_in_minutes"],
   },
-  ladders: { emoji: "🪜", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
-  presence: { emoji: "📍", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
-  pet: { emoji: "🐾", title: "Your pet", wizard: "pet", keys: ["pet_name", "pet_kind"] },
-  wall: { emoji: "🖥️", title: "Wall board", wizard: "wall", keys: ["boards"] },
-  ai: { emoji: "🤖", title: "AI help", wizard: "ai", keys: ["ai"] },
-  backup: { emoji: "💾", title: "Backup", keys: [] },
+  ladders: { icon: "stairs", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
+  presence: { icon: "map-marker-outline", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
+  pet: { icon: "paw", title: "Your pet and accent colour", wizard: "pet", keys: ["pet_name", "pet_kind", "accent"] },
+  wall: { icon: "monitor-dashboard", title: "Wall board", wizard: "wall", keys: ["boards"] },
+  ai: { icon: "robot-outline", title: "AI help", wizard: "ai", keys: ["ai"] },
+  backup: { icon: "content-save-outline", title: "Backup", keys: [] },
 };
 
 /** The groups on the page, and the cards in each. */
@@ -137,6 +139,8 @@ export class BoopliSettings extends LitElement {
   }
 
   protected willUpdate(): void {
+    // A colour or pet picked here shows at once, before it is saved (the panel takes over when you leave).
+    if (this._draft) applyAccent(this, this._draft.pet_kind, this._draft.accent);
     const saved = this.snapshot?.settings;
     if (!saved) return;
     if (!this._draft || !this._base) {
@@ -449,7 +453,7 @@ export class BoopliSettings extends LitElement {
     const services = this._phoneServices();
     return html`
       <section class=${this._cardClass("phones")}>
-        <h2>📱 Phones ${this._badge("phones")}</h2>
+        <h2>Phones${this._badge("phones")}</h2>
         <p class="muted small">
           Boopli sends a notification with Done and Snooze buttons through the
           Home Assistant app on the phones you turn on.
@@ -499,7 +503,7 @@ export class BoopliSettings extends LitElement {
     const choices = this._lightChoices();
     return html`
       <section class=${this._cardClass("lights")}>
-        <h2>💡 Reminder lights ${this._badge("lights")}</h2>
+        <h2>Reminder lights${this._badge("lights")}</h2>
         <p class="muted small">
           Boopli blinks a light itself and puts it back exactly as it was, or
           uses it as an indicator lamp that stays on in a color until you are
@@ -611,7 +615,7 @@ export class BoopliSettings extends LitElement {
     const qh = d.quiet_hours;
     return html`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>🌙 Quiet hours ${this._badge("quiet_hours")}</h2>
+        <h2>Quiet hours${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           Nudges wait outside these times. Set different hours for each day.
           A chore can opt out (for example pills).
@@ -695,7 +699,7 @@ export class BoopliSettings extends LitElement {
 
   private _renderPet(d: Settings) {
     return html`
-      <section class=${this._cardClass("pet_name", "pet_kind")}>
+      <section class=${this._cardClass("pet_name", "pet_kind", "accent")}>
         <div class="field">
           <label for="petname">Your pet's name</label>
           <input
@@ -714,8 +718,51 @@ export class BoopliSettings extends LitElement {
           ></boopli-pet-picker>
           <boopli-pet-preview .kind=${d.pet_kind ?? "slime"}></boopli-pet-preview>
         </div>
+        ${this._renderAccent(d)}
       </section>
     `;
+  }
+
+  /** The colour of buttons and bars: the pet's own by default, or one of a few swatches, or any colour. */
+  private _renderAccent(d: Settings) {
+    const own = accentFor(d.pet_kind, "");
+    const picked = isHex(d.accent) ? d.accent.toLowerCase() : "";
+    const set = (hex: string) => this._set({ accent: hex });
+    return html`<div class="field">
+      <label id="accent-label">Accent colour</label>
+      <div class="swatches" role="group" aria-labelledby="accent-label">
+        <button
+          type="button"
+          class="acc own ${picked ? "" : "on"}"
+          style="--sw:${own}"
+          aria-pressed=${picked ? "false" : "true"}
+          title="Your pet's own colour"
+          @click=${() => set("")}
+        >
+          Pet's colour
+        </button>
+        ${SWATCHES.map(
+          (s) => html`<button
+            type="button"
+            class="acc dot ${picked === s.hex ? "on" : ""}"
+            style="--sw:${s.hex}"
+            aria-pressed=${picked === s.hex ? "true" : "false"}
+            aria-label=${s.name}
+            title=${s.name}
+            @click=${() => set(s.hex)}
+          ></button>`
+        )}
+        <label class="acc custom" title="Pick any colour">
+          Custom
+          <input
+            type="color"
+            .value=${picked || own}
+            aria-label="Custom accent colour"
+            @input=${(e: Event) => set((e.target as HTMLInputElement).value)}
+          />
+        </label>
+      </div>
+    </div>`;
   }
 
   private _renderTiming(d: Settings) {
@@ -818,7 +865,7 @@ export class BoopliSettings extends LitElement {
     `;
     return html`
       <section class=${this._cardClass("ai")}>
-        <h2>🤖 AI help ${this._badge("ai")}</h2>
+        <h2>AI help${this._badge("ai")}</h2>
         <p class="muted small">
           Boopli can split a task into tiny steps with your own Home Assistant AI agent. It is off until you
           switch it on. Boopli sends nothing by itself: when you use it, the text of the task and your answers
@@ -934,7 +981,10 @@ export class BoopliSettings extends LitElement {
       case "presence":
         return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
       case "pet":
-        return [`${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`];
+        return [
+          `${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`,
+          isHex(d.accent) ? `Accent colour: ${d.accent.toLowerCase()}` : "Accent colour: your pet's own",
+        ];
       case "backup":
         return ["Save your whole setup to one file (.adhd), or load one on a new install."];
       case "ai":
@@ -949,24 +999,30 @@ export class BoopliSettings extends LitElement {
   private _card(area: Area, d: Settings) {
     const a = AREAS[area];
     const changed = this._changed(...a.keys);
-    return html`<section id="card-${area}" class="card area ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
-      <h3 tabindex="-1">
-        <span class="emoji" aria-hidden="true">${a.emoji}</span> ${a.title}
-        ${changed ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
-      </h3>
+    return html`<section id="card-${area}" class="card area ${area === "pet" ? "accented" : ""} ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
+      <div class="card-head">
+        <span class="card-icon">${icon(a.icon)}</span>
+        <h3 tabindex="-1">
+          ${a.title}
+          ${changed ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+        </h3>
+      </div>
       <div class="summary">
-        ${this._summary(area, d).map((line) => html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith("Off") ? "muted" : ""}>${line}</div>`)}
+        ${this._summary(area, d).map(
+          (line) =>
+            html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith("Off") ? "muted" : ""}>${area === "pet" && line.startsWith("Accent colour") ? html`<span class="accent-dot"></span>` : nothing}${line}</div>`
+        )}
       </div>
       <div class="buttons">
         ${area === "backup"
-          ? html`<button type="button" class="primary" aria-label="Export a backup" @click=${() => (this._backup = "export")}>Export</button>
-              <button type="button" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>Import</button>`
-          : html`<button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>`}
+          ? html`<button type="button" class="textlink" aria-label="Export a backup" @click=${() => (this._backup = "export")}>Export</button>
+              <button type="button" class="textlink quiet" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>Import</button>`
+          : html`<button type="button" class="textlink" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>`}
         ${area === "backup"
           ? nothing
           : area === "wall"
-          ? html`<button type="button" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
-          : html`<button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
+          ? html`<button type="button" class="textlink quiet" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
+          : html`<button type="button" class="textlink quiet" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
       </div>
       ${area === "backup" && this._isDirty() ? html`<p class="muted small">Save or discard your unsaved changes to import.</p>` : nothing}
     </section>`;
@@ -1056,7 +1112,7 @@ export class BoopliSettings extends LitElement {
       ${area && this._modal
         ? html`<div class="win">
             <div class="win-head">
-              <h2 id="win-title"><span aria-hidden="true">${area.emoji}</span> ${area.title}</h2>
+              <h2 id="win-title">${icon(area.icon)} ${area.title}</h2>
               <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, d)}</div>
@@ -1108,7 +1164,6 @@ export class BoopliSettings extends LitElement {
     const d = this._draft;
     if (!d) return html`<p class="muted">Loading…</p>`;
     return html`
-      <div class="toolbar"><h2 class="page-title">Settings</h2></div>
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
@@ -1148,50 +1203,168 @@ export class BoopliSettings extends LitElement {
         font-size: 22px;
         margin: 0;
       }
+      /* A section is one tier above a card: bigger than the card names, and the brightest text on the page. */
       h2.group {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--secondary-text-color);
-        margin: 26px 0 10px;
+        font-size: 30px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        color: var(--primary-text-color);
+        margin: 18px 0 8px;
       }
       section.card.away-card {
-        margin: 0 0 6px;
-        padding-top: 8px;
-        padding-bottom: 8px;
+        margin: 0 0 2px;
+        padding: 6px 0 2px;
+        border: 0;
+        border-top: 2px solid var(--divider-color);
+        border-radius: 0;
+        background: none;
       }
       section.card.away-card.on {
         border: 2px solid var(--warning-color, #ffa600);
+        border-radius: 14px;
+        padding: 8px 14px;
       }
       .cards {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+        gap: 14px 32px;
         align-items: stretch;
       }
+      /* "Invisible cards": no box. A thin line on top, an icon, the name, what is set, and two quiet links. */
       section.card.area {
         display: flex;
         flex-direction: column;
+        gap: 4px;
+        min-height: 0;
+        padding: 10px 0 0;
+        border: 0;
+        border-top: 2px solid var(--divider-color);
+        border-radius: 0;
+        background: none;
+        transition: border-color 0.15s;
+      }
+      section.card.area:hover,
+      section.card.area:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
+      }
+      /* A small dot in the accent colour next to "Accent colour: ...". */
+      .accent-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 6px;
+        border-radius: 50%;
+        background: var(--boopli-accent, var(--primary-color));
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
         gap: 10px;
-        min-height: 150px;
+      }
+      /* The name and its icon are white, the biggest thing on the card; what is set under it is grey. */
+      .card-icon {
+        font-size: 26px;
+        line-height: 1;
+        color: var(--primary-text-color);
       }
       section.card.area h3 {
         margin: 0;
-        font-size: 18px;
+        color: var(--primary-text-color);
+        font-size: 23px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
       }
-      .emoji {
-        display: inline-block;
-        margin-right: 6px;
-        font-size: 22px;
-        vertical-align: -2px;
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+      .acc {
+        --sw: var(--primary-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        cursor: pointer;
+        border: 2px solid var(--divider-color);
+        border-radius: 999px;
+        padding: 6px 12px;
+        min-height: 36px;
+        font-size: 17px;
+        color: var(--primary-text-color);
+      }
+      .acc.own::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--sw);
+      }
+      .acc.dot {
+        width: 36px;
+        padding: 0;
+        background: var(--sw);
+        border-color: transparent;
+      }
+      .acc.dot:hover {
+        background: var(--sw);
+        filter: brightness(1.12);
+      }
+      .acc.on {
+        border-color: var(--primary-text-color);
+      }
+      .acc {
+        flex: none;
+        white-space: nowrap;
+        background: transparent;
+      }
+      .acc.custom input {
+        width: 24px;
+        height: 24px;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: none;
+        cursor: pointer;
+      }
+      .acc.custom input::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      .acc.custom input::-webkit-color-swatch {
+        border: 0;
+        border-radius: 50%;
+      }
+      .acc.custom input::-moz-color-swatch {
+        border: 0;
+        border-radius: 50%;
+      }
+      .buttons button {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      @media (max-width: 600px) {
+        .cards {
+          gap: 18px;
+        }
+        section.card.area {
+          min-height: 0;
+        }
+      }
+      .buttons button.quiet {
+        color: var(--secondary-text-color);
+      }
+      .buttons {
+        gap: 4px 16px;
       }
       .summary {
         display: flex;
         flex-direction: column;
         gap: 3px;
         flex: 1;
-        font-size: 15px;
+        font-size: 17px;
+        color: var(--secondary-text-color);
         overflow-wrap: anywhere;
       }
       .buttons {
@@ -1246,7 +1419,7 @@ export class BoopliSettings extends LitElement {
       }
       .win-head h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
       }
       .close {
         padding: 4px 10px;
@@ -1318,7 +1491,9 @@ export class BoopliSettings extends LitElement {
       section.card {
         margin: 0;
       }
-      section.card.changed,
+      section.card.changed {
+        border-top-color: var(--warning-color, #ffa600);
+      }
       boopli-speakers.changed {
         border-color: var(--warning-color, #ffa600);
         box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
@@ -1327,7 +1502,7 @@ export class BoopliSettings extends LitElement {
         content: "● Unsaved changes in speakers";
         display: block;
         color: var(--warning-color, #ffa600);
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         padding: 0 0 6px 4px;
       }
@@ -1335,7 +1510,7 @@ export class BoopliSettings extends LitElement {
         content: "● Unsaved changes in alarm devices";
         display: block;
         color: var(--warning-color, #ffa600);
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         padding: 0 0 6px 4px;
       }
@@ -1344,7 +1519,7 @@ export class BoopliSettings extends LitElement {
         margin-left: 8px;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -1381,11 +1556,11 @@ export class BoopliSettings extends LitElement {
         border-color: var(--warning-color, #ffa600);
       }
       h2 {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 6px;
       }
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .row {
         display: flex;
@@ -1412,7 +1587,7 @@ export class BoopliSettings extends LitElement {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 13px;
+        font-size: 16px;
         margin: 0;
       }
       label.startat input {
@@ -1428,7 +1603,7 @@ export class BoopliSettings extends LitElement {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 16px;
         margin: 0;
       }
       .blinkopts input {

@@ -45,6 +45,19 @@ def test_settings_saved_before_pets_get_the_default():
     assert old.pet_name == "Rex"
 
 
+def test_the_accent_colour_is_empty_by_default_and_checked():
+    assert engine.Settings.from_dict({}).accent == ""
+    for good in ("", "#5ee05a", "#ABCDEF"):
+        assert engine.validate_settings(engine.Settings.from_dict({"accent": good})) is None, good
+    for bad in ("red", "#fff", "#12345", "#1234567", "5ee05a", "#gggggg", "#5ee05a;x", "url(x)"):
+        assert engine.validate_settings(engine.Settings.from_dict({"accent": bad})), bad
+
+
+def test_the_accent_survives_a_round_trip():
+    s = engine.Settings.from_dict({"accent": "#a894e8"})
+    assert engine.Settings.from_dict(engine.to_dict(s)).accent == "#a894e8"
+
+
 def test_the_choice_survives_a_round_trip():
     s = engine.Settings.from_dict({"pet_kind": "fox", "pet_name": "Foxy"})
     again = engine.Settings.from_dict(engine.to_dict(s))

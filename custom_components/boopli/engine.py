@@ -183,6 +183,7 @@ PROGRESS_DAYS_KEPT = 7  # how long the per-day XP bookkeeping is kept
 PET_NAME_DEFAULT = "Boopli"
 PET_NAME_MAX = 30
 PET_KINDS = ("bear", "cat", "dog", "fox", "slime")  # the pets to choose from
+ACCENT_RE = re.compile(r"^#[0-9a-fA-F]{6}$")  # the panel's accent colour as "#RRGGBB"; empty means the pet's own
 PET_KIND_DEFAULT = "slime"  # the first one with real animated art
 
 MOOD_HAPPY = "happy"  # you finished something today
@@ -2319,6 +2320,7 @@ class Settings:
     default_style: str = STYLE_ONE
     pet_name: str = PET_NAME_DEFAULT
     pet_kind: str = PET_KIND_DEFAULT  # which pet it is (see PET_KINDS)
+    accent: str = ""  # colour of buttons and bars as "#RRGGBB"; empty = the pet's own colour
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
@@ -2352,6 +2354,7 @@ class Settings:
             snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
             default_style=str(d.get("default_style", STYLE_ONE)),
             pet_kind=str(d.get("pet_kind") or PET_KIND_DEFAULT).strip(),
+            accent=str(d.get("accent") or "").strip(),
             pet_name=str(d.get("pet_name") or PET_NAME_DEFAULT).strip()
             or PET_NAME_DEFAULT,
         )
@@ -2498,6 +2501,8 @@ def validate_settings(settings: Settings) -> str | None:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
+    if settings.accent and not ACCENT_RE.fullmatch(settings.accent):
+        return "The accent colour must look like #1A2B3C."
     error = validate_ladders(settings.ladders) or validate_boards(settings.boards)
     if error:
         return error

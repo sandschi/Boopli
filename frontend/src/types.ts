@@ -254,6 +254,7 @@ export interface Settings {
   boards?: Board[]; // wall boards
   pet_name: string;
   pet_kind?: string; // which pet: bear, cat, dog, fox or slime
+  accent?: string; // colour of buttons and bars as "#RRGGBB"; empty = the pet's own colour
   ai: AiSettings;
   question_wait_minutes?: number; // how long the first nudge waits for the questions
   check_in_minutes?: number; // after "On it": when Boopli asks "still on it?"

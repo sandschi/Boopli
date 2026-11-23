@@ -261,7 +261,7 @@ export class BoopliWallEdit extends LitElement {
     }
     const tile = newTile(type, cur.tiles, cur.columns, cur.rows);
     if (!tile) {
-      this._error = "There is no room left on this board. Make the grid bigger or remove a tile.";
+      this._error = "Every cell of this board is taken. Make the grid bigger or remove a tile.";
       this._modal = "";
       return;
     }

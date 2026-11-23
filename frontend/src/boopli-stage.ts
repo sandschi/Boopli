@@ -169,7 +169,7 @@ export class BoopliStage extends LitElement {
       .scene {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 6; /* a third lower than 16:9 */
+        aspect-ratio: 16 / 5; /* low, so Today fits on one screen */
         container-type: size;
         border-radius: 14px;
         overflow: hidden;

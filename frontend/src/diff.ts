@@ -51,6 +51,8 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   if (before.pet_name !== after.pet_name) out.push(`Pet name: ${before.pet_name} → ${after.pet_name}`);
   if ((before.pet_kind ?? "slime") !== (after.pet_kind ?? "slime"))
     out.push(`Pet: ${before.pet_kind ?? "slime"} → ${after.pet_kind ?? "slime"}`);
+  if ((before.accent ?? "") !== (after.accent ?? ""))
+    out.push(`Accent colour: ${before.accent || "the pet's own"} → ${after.accent || "the pet's own"}`);
 
   const phones = byKey(before.phones, after.phones, (p) => p.service);
   phones.added.forEach((p) => out.push(`Phone added: ${phoneName(p.service)} (${PHONE_LEVEL_LABEL[p.level] ?? p.level})`));

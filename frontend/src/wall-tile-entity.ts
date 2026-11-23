@@ -87,12 +87,12 @@ export class WallTileEntity extends WallTile {
         cursor: pointer;
       }
       button.ent:focus-visible {
-        outline: 3px solid var(--primary-color);
+        outline: 3px solid var(--boopli-accent, var(--primary-color));
         outline-offset: 4px;
         border-radius: 12px;
       }
       .on .icon {
-        filter: drop-shadow(0 0 8px var(--primary-color));
+        filter: drop-shadow(0 0 8px var(--boopli-accent, var(--primary-color)));
       }
       .big {
         text-transform: capitalize;

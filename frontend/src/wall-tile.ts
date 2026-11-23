@@ -1,4 +1,5 @@
-import { LitElement, css } from "lit";
+import { LitElement, css, unsafeCSS } from "lit";
+import { BOOPLI_FONT } from "./fonts";
 import type { Hass, Snapshot, TileOptions } from "./types";
 
 /**
@@ -46,7 +47,7 @@ export class WallTile extends LitElement {
   }
 }
 
-/** The look every tile shares: a soft card, text that grows with the tile. */
+/** The look every tile shares: no box, a thin line on top, text that grows with the tile. Same language as Today. */
 export const wallTileStyles = css`
   :host {
     display: block;
@@ -55,11 +56,12 @@ export const wallTileStyles = css`
     min-height: 0;
     overflow: hidden;
     color: var(--primary-text-color);
-    background: var(--card-background-color, var(--primary-background-color));
-    border: 1px solid var(--divider-color);
-    border-radius: 18px;
-    padding: 12px 14px;
-    font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+    background: none;
+    border: 0;
+    border-top: 3px solid var(--divider-color);
+    border-radius: 0;
+    padding: 12px 8px 0;
+    font-family: ${unsafeCSS(BOOPLI_FONT)};
   }
   :host([hidden]) {
     display: none;
@@ -108,11 +110,19 @@ export const wallTileStyles = css`
     min-height: 52px;
     font-size: clamp(15px, 4.2cqw, 24px);
   }
+  /* The chunky button, like Done on Today: a thick darker edge that sinks when pressed. */
   button.primary {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--text-primary-color, #fff);
-    font-weight: 500;
+    background: var(--boopli-accent, var(--primary-color));
+    border: 0;
+    border-bottom: 6px solid var(--boopli-accent-deep, #2a6e8a);
+    border-radius: 16px;
+    color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
+    font-weight: 600;
+    transition: transform 0.08s, border-bottom-width 0.08s;
+  }
+  button.primary:active:not(:disabled) {
+    transform: translateY(4px);
+    border-bottom-width: 2px;
   }
   button:disabled {
     opacity: 0.5;
