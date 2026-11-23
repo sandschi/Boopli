@@ -5,7 +5,8 @@ import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
-import "./boopli-pet";
+import "./boopli-stage";
+import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 
@@ -61,6 +62,9 @@ export class BoopliToday extends LitElement {
     _park: { state: true },
     _removing: { state: true },
     _egg: { state: true },
+    _moment: { state: true },
+    _momentSeq: { state: true },
+    _momentText: { state: true },
   };
 
   declare hass?: Hass;
@@ -73,6 +77,9 @@ export class BoopliToday extends LitElement {
   declare _park: ParkAsk | null;
   declare _removing: string; // the parked part that is asked "really remove?"
   declare _egg: boolean; // the Easter egg is playing (found by tapping the pet)
+  declare _moment: Moment; // what the pet plays once: level up, waking up, a step done
+  declare _momentSeq: number; // counts them, so the same moment can play again
+  declare _momentText: string;
   private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
   private _toastTimer?: number;
@@ -87,6 +94,9 @@ export class BoopliToday extends LitElement {
     this._park = null;
     this._removing = "";
     this._egg = false;
+    this._moment = "";
+    this._momentSeq = 0;
+    this._momentText = "";
   }
 
   disconnectedCallback(): void {
@@ -107,6 +117,18 @@ export class BoopliToday extends LitElement {
       .filter((name): name is string => !!name);
     this._lastRunIds = runIds;
     if (!before || pet.total_xp <= before.total_xp) return; // the first look shows nothing
+    // The pet celebrates: a level up first, then waking up, otherwise a small hop for the step.
+    this._moment = "done";
+    this._momentText = `+${pet.total_xp - before.total_xp} XP`;
+    if (before.mood === "sleepy" || before.mood === "hibernating") {
+      this._moment = "wake";
+      this._momentText = "";
+    }
+    if (pet.level > before.level) {
+      this._moment = "levelup";
+      this._momentText = `Level ${pet.level}!`;
+    }
+    this._momentSeq += 1;
     const parts = [`+${pet.total_xp - before.total_xp} XP`];
     if (finished.length) parts.unshift(`🎉 ${finished[0]} is done!`);
     if (pet.level > before.level) parts.push(`Level ${pet.level}!`);
@@ -168,9 +190,23 @@ export class BoopliToday extends LitElement {
     const pet = this.snapshot?.pet;
     if (!pet) return nothing;
     const pct = pet.xp_for_level > 0 ? Math.round((pet.xp_in_level / pet.xp_for_level) * 100) : 0;
+    // While you are working on a step ("On it"), the pet does housework too.
+    const working = (this.snapshot?.runs ?? []).some((r) =>
+      r.steps.some((s) => s.status === "active" && !!s.on_it_until)
+    );
     return html`
-      <section class="card pet-card">
-        <boopli-pet .mood=${pet.mood} .level=${pet.level} .away=${pet.away ?? false} @egg-found=${() => (this._egg = true)}></boopli-pet>
+      <section class="card pet-card stage-slot">
+        <boopli-stage
+          .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
+          .mood=${pet.mood}
+          .level=${pet.level}
+          .away=${pet.away ?? false}
+          .activity=${working && !pet.away ? "housework" : ""}
+          .moment=${this._moment}
+          .momentSeq=${this._momentSeq}
+          .momentText=${this._momentText}
+          @egg-found=${() => (this._egg = true)}
+        ></boopli-stage>
         ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
         <div class="pet-info">
           <div class="pet-name">${pet.name} <span class="muted">· Level ${pet.level}</span></div>
@@ -496,7 +532,6 @@ export class BoopliToday extends LitElement {
             </button>
           </section>`
         : nothing}
-      ${this._renderPet()}
       ${this._renderQuestions()}
       ${model.now
         ? html`
@@ -588,11 +623,12 @@ export class BoopliToday extends LitElement {
             </section>
           `}
       ${this._renderQuick()}
+      ${this._renderParked()}
       </div><div class="col">
+      ${this._renderPet()}
       ${this._renderReady(model)}
       ${this._renderStill(model, tz)}
       ${this._renderUpcoming(model)}
-      ${this._renderParked()}
       ${this._renderAuto()}
       </div></div>
     `;
@@ -702,14 +738,12 @@ export class BoopliToday extends LitElement {
         color: #1a1200;
       }
       .pet-card {
-        display: flex;
-        gap: 14px;
-        align-items: center;
         margin-bottom: 16px;
-        padding: 12px 16px;
+        padding: 12px;
       }
       .pet-info {
-        flex: 1;
+        margin-top: 12px;
+        padding: 0 4px 2px;
         min-width: 0;
       }
       .pet-name {
@@ -757,6 +791,15 @@ export class BoopliToday extends LitElement {
       .now,
       .empty {
         padding: 24px 20px;
+      }
+      /* The cards in a column stand apart from each other, and from the list under them. */
+      .now,
+      .empty,
+      .quick {
+        margin-bottom: 16px;
+      }
+      .quick + .sec {
+        margin-top: 24px;
       }
       .now h2 {
         font-size: 28px;
@@ -893,6 +936,21 @@ export class BoopliToday extends LitElement {
       .hint {
         color: var(--secondary-text-color);
         white-space: nowrap;
+      }
+      /* One column (a phone): the pet's room comes first, then your step. Last in the sheet, so it wins. */
+      @media (max-width: 760px) {
+        .cols {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0;
+        }
+        .col {
+          display: contents;
+        }
+        .stage-slot {
+          order: -1;
+        }
       }
     `,
   ];

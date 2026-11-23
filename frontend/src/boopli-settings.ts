@@ -15,6 +15,9 @@ import { WEEKDAY_NAMES } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
+import "./boopli-pet-picker";
+import "./boopli-pet-preview";
+import { petInfo } from "./pets";
 
 type Mode = "simple" | "advanced";
 const MODE_KEY = "boopli.settings_mode";
@@ -626,8 +629,8 @@ export class BoopliSettings extends LitElement {
 
   private _renderOther(d: Settings) {
     return html`
-      <section class=${this._cardClass("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}>
-        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}</h2>
+      <section class=${this._cardClass("presence_entity", "pet_name", "pet_kind", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}>
+        <h2>📍 Where you are, snooze and defaults ${this._badge("presence_entity", "pet_name", "pet_kind", "snooze_minutes", "question_wait_minutes", "check_in_minutes", "default_style")}</h2>
         <div class="field">
           <label for="presence">Where you are (optional)</label>
           <select
@@ -654,6 +657,15 @@ export class BoopliSettings extends LitElement {
             .value=${d.pet_name ?? "Boopli"}
             @input=${(e: Event) => this._set({ pet_name: (e.target as HTMLInputElement).value })}
           />
+        </div>
+        <div class="field">
+          <label>Your pet</label>
+          <boopli-pet-picker
+            moods
+            .value=${d.pet_kind ?? "slime"}
+            @pet-kind-change=${(e: CustomEvent<string>) => this._set({ pet_kind: e.detail })}
+          ></boopli-pet-picker>
+          <boopli-pet-preview .kind=${d.pet_kind ?? "slime"}></boopli-pet-preview>
         </div>
         <div class="field">
           <label for="snooze">Snooze length (minutes)</label>
@@ -865,7 +877,7 @@ export class BoopliSettings extends LitElement {
     const fn = (id: string) => friendlyName(this.hass, id);
     return html`
       <div class="cards simple">
-        ${this._overviewCard("🐻", "Your pet", "pet", [s.pet_name], "", "Rename")}
+        ${this._overviewCard("🐾", "Your pet", "pet", [`${s.pet_name} the ${petInfo(s.pet_kind).label.toLowerCase()}`], "", "Change")}
         ${this._overviewCard(
           "📱",
           "Phone",
@@ -1015,6 +1027,8 @@ export class BoopliSettings extends LitElement {
       }
       .away-card {
         margin-bottom: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
       }
       .away-card.on {
         border: 2px solid var(--warning-color, #ffa600);

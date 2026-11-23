@@ -536,6 +536,7 @@ export class BoopliHome extends LitElement {
       ${iv.phase === "working"
         ? html`<boopli-wait
             .label=${iv.answers.length ? "Writing the notes…" : "Thinking…"}
+            .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${this.snapshot?.ai_timeout ?? 180}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`
@@ -620,6 +621,7 @@ export class BoopliHome extends LitElement {
       ${tool.sending
         ? html`<boopli-wait
             .label=${"The AI is looking at your photos…"}
+            .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${this.snapshot?.ai_timeout ?? 180}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`

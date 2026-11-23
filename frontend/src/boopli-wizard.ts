@@ -25,6 +25,7 @@ import {
   rgbToHex,
   speechTargets,
 } from "./helpers";
+import "./boopli-pet-picker";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
@@ -488,6 +489,13 @@ export class BoopliWizard extends LitElement {
         .value=${d.pet_name ?? "Boopli"}
         @input=${(e: Event) => this._set({ pet_name: (e.target as HTMLInputElement).value })}
       />
+    </div>
+    <div class="field">
+      <label>Pick your pet</label>
+      <boopli-pet-picker
+        .value=${d.pet_kind ?? "slime"}
+        @pet-kind-change=${(e: CustomEvent<string>) => this._set({ pet_kind: e.detail })}
+      ></boopli-pet-picker>
     </div>`;
   }
 
