@@ -19,6 +19,7 @@ import "./boopli-away";
 import "./boopli-ladders";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
+import "./boopli-backup";
 import { petInfo } from "./pets";
 
 import type {
@@ -33,12 +34,12 @@ import type {
 } from "./types";
 
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
-type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai";
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup";
 
 interface AreaDef {
   emoji: string;
   title: string;
-  wizard: WizardId; // what "Guide me" opens
+  wizard?: WizardId; // what "Guide me" opens (the Backup card has no guide)
   keys: (keyof Settings)[]; // the settings that belong to it (to see what has unsaved changes)
 }
 
@@ -59,13 +60,14 @@ const AREAS: Record<Area, AreaDef> = {
   pet: { emoji: "🐾", title: "Your pet", wizard: "pet", keys: ["pet_name", "pet_kind"] },
   wall: { emoji: "🖥️", title: "Wall board", wizard: "wall", keys: ["boards"] },
   ai: { emoji: "🤖", title: "AI help", wizard: "ai", keys: ["ai"] },
+  backup: { emoji: "💾", title: "Backup", keys: [] },
 };
 
 /** The groups on the page, and the cards in each. */
 const GROUPS: { title: string; areas: Area[] }[] = [
   { title: "Devices", areas: ["phone", "lights", "speakers", "alarms"] },
   { title: "Timing", areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: "Extras", areas: ["pet", "wall", "ai"] },
+  { title: "Extras", areas: ["pet", "wall", "ai", "backup"] },
 ];
 const AREA_ORDER: Area[] = GROUPS.flatMap((g) => g.areas);
 
@@ -98,6 +100,7 @@ export class BoopliSettings extends LitElement {
     _flash: { state: true },
     _defaults: { state: true },
     _aiNote: { state: true },
+    _backup: { state: true },
   };
 
   declare hass?: Hass;
@@ -112,6 +115,7 @@ export class BoopliSettings extends LitElement {
   declare _flash: Area | ""; // the card that is lit up ("look here")
   declare _defaults: PromptDefaults | null;
   declare _aiNote: string;
+  declare _backup: "" | "export" | "import"; // the backup window that is open
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
   private _lastDirty = false;
@@ -129,6 +133,7 @@ export class BoopliSettings extends LitElement {
     this._flash = "";
     this._defaults = null;
     this._aiNote = "";
+    this._backup = "";
   }
 
   protected willUpdate(): void {
@@ -923,6 +928,8 @@ export class BoopliSettings extends LitElement {
         return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
       case "pet":
         return [`${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`];
+      case "backup":
+        return ["Save your whole setup to one file (.adhd), or load one on a new install."];
       case "ai":
         return [
           d.ai?.enabled
@@ -944,11 +951,17 @@ export class BoopliSettings extends LitElement {
         ${this._summary(area, d).map((line) => html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith("Off") ? "muted" : ""}>${line}</div>`)}
       </div>
       <div class="buttons">
-        <button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>
-        ${area === "wall"
+        ${area === "backup"
+          ? html`<button type="button" class="primary" aria-label="Export a backup" @click=${() => (this._backup = "export")}>Export</button>
+              <button type="button" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>Import</button>`
+          : html`<button type="button" class="primary" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>`}
+        ${area === "backup"
+          ? nothing
+          : area === "wall"
           ? html`<button type="button" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
           : html`<button type="button" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
       </div>
+      ${area === "backup" && this._isDirty() ? html`<p class="muted small">Save or discard your unsaved changes to import.</p>` : nothing}
     </section>`;
   }
 
@@ -1010,6 +1023,8 @@ export class BoopliSettings extends LitElement {
           .snapshot=${this.snapshot}
           @settings-patch=${patch}
         ></boopli-ladders>`;
+      case "backup":
+        return nothing; // the Backup card has its own windows (see boopli-backup.ts)
       case "presence":
         return this._renderPresence(d);
       case "pet":
@@ -1099,6 +1114,9 @@ export class BoopliSettings extends LitElement {
         <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
       </p>
       ${this._renderModal(d)} ${this._renderSaveBar()}
+      ${this._backup
+        ? html`<boopli-backup .hass=${this.hass} .snapshot=${this.snapshot} .mode=${this._backup} @backup-close=${() => (this._backup = "")}></boopli-backup>`
+        : nothing}
     `;
   }
 

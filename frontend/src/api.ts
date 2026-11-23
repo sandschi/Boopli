@@ -28,6 +28,39 @@ export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 
+// --- backup of the setup (the file is saved with the extension .adhd; inside it is plain JSON) ---
+
+export type BackupPart = "settings" | "chores" | "home" | "pet";
+export const BACKUP_PARTS: BackupPart[] = ["settings", "chores", "home", "pet"];
+
+/** What importing a backup would do (nothing is changed by asking). */
+export interface BackupPreview {
+  parts: BackupPart[];
+  exported_at: string;
+  boopli_version: string;
+  counts: { chores: number; rooms: number; boards: number; history: number; level: number };
+  missing_entities: string[];
+  missing_entities_total: number;
+  missing_services: string[];
+  runs_ended: number;
+}
+
+export function exportBackup(hass: Hass, parts: BackupPart[]): Promise<Record<string, unknown>> {
+  return hass.callWS({ type: "boopli/backup_export", parts });
+}
+
+export function previewBackup(hass: Hass, backup: Record<string, unknown>, parts: BackupPart[]): Promise<BackupPreview> {
+  return hass.callWS({ type: "boopli/backup_preview", backup, parts });
+}
+
+export function importBackup(
+  hass: Hass,
+  backup: Record<string, unknown>,
+  parts: BackupPart[]
+): Promise<{ imported: BackupPart[]; chores: number; runs_ended: number }> {
+  return hass.callWS({ type: "boopli/backup_import", backup, parts });
+}
+
 /** `rooms` are the ids of the rooms whose notes go along; leave it out to let Boopli guess. */
 export function aiQuestions(
   hass: Hass,

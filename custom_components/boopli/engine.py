@@ -3025,3 +3025,193 @@ def device_alarm_call(entity_id: str, on: bool) -> tuple[str, str, dict[str, Any
     if domain == "script" and not on:
         service = "turn_off"  # stops a running script
     return domain, service, {"entity_id": entity_id}
+
+
+# --- backup of the setup -----------------------------------------------------------
+#
+# A backup is one JSON file (saved with the extension .adhd) with up to four parts: the settings, the
+# chores, the rooms and notes of "My home", and the pet with its history. What is only there for a
+# moment (running chores, away mode, devices that are on) is not part of it, and neither are picture
+# files (a step only holds the path of a picture).
+
+BACKUP_FORMAT = "boopli-backup"
+BACKUP_VERSION = 1
+BACKUP_PARTS = ("settings", "chores", "home", "pet")
+BACKUP_CHORES_MAX = 500
+BACKUP_HISTORY_MAX = 1000
+
+
+class BackupError(ValueError):
+    """A backup file that cannot be used; the message is meant for the user."""
+
+
+@dataclass
+class Backup:
+    """A backup file, read and checked."""
+
+    parts: list[str]  # the parts the file has
+    exported_at: str = ""
+    boopli_version: str = ""
+    settings: Settings | None = None
+    chores: list[Chore] | None = None
+    home: Home | None = None
+    progress: Progress | None = None
+    history: list[HistoryEntry] | None = None
+
+
+def build_backup(
+    parts: Iterable[str],
+    *,
+    settings: Settings,
+    chores: Iterable[Chore],
+    home: Home,
+    progress: Progress,
+    history: Iterable[HistoryEntry],
+    boopli_version: str,
+    exported_at: str,
+) -> dict[str, Any]:
+    """The backup file as plain data, with the parts that were asked for."""
+    asked = set(parts)
+    data: dict[str, Any] = {
+        "format": BACKUP_FORMAT,
+        "version": BACKUP_VERSION,
+        "boopli_version": boopli_version,
+        "exported_at": exported_at,
+    }
+    if "settings" in asked:
+        data["settings"] = to_dict(settings)
+    if "chores" in asked:
+        data["chores"] = [to_dict(c) for c in chores]
+    if "home" in asked:
+        data["home"] = to_dict(home)
+    if "pet" in asked:
+        data["pet"] = {"progress": to_dict(progress), "history": [to_dict(h) for h in history]}
+    return data
+
+
+def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
+    """Read a backup file and check everything in it the way a normal save would.
+
+    Raises BackupError (with words for the user) when the file cannot be used. Nothing is changed here.
+    """
+    if not isinstance(data, dict) or data.get("format") != BACKUP_FORMAT:
+        raise BackupError("This is not a Boopli backup file.")
+    version = data.get("version")
+    if not isinstance(version, int) or isinstance(version, bool) or version < 1:
+        raise BackupError("This backup file has no readable version.")
+    if version > BACKUP_VERSION:
+        raise BackupError("This backup was made by a newer Boopli. Update Boopli first, then import it.")
+    backup = Backup(
+        parts=[],
+        exported_at=str(data.get("exported_at") or "")[:40],
+        boopli_version=str(data.get("boopli_version") or "")[:40],
+    )
+    try:
+        if "settings" in data:
+            if not isinstance(data["settings"], dict):
+                raise BackupError("The settings in this file are damaged.")
+            backup.settings = Settings.from_dict(data["settings"])
+            error = validate_settings(backup.settings)
+            if error:
+                raise BackupError(f"The settings in this file are not valid: {error}")
+            backup.parts.append("settings")
+        if "chores" in data:
+            raw = data["chores"]
+            if not isinstance(raw, list) or any(not isinstance(c, dict) for c in raw):
+                raise BackupError("The chores in this file are damaged.")
+            if len(raw) > BACKUP_CHORES_MAX:
+                raise BackupError(f"A backup can have at most {BACKUP_CHORES_MAX} chores.")
+            backup.chores = [Chore.from_dict(c) for c in raw]
+            ladders = (
+                [lad.id for lad in backup.settings.ladders] if backup.settings else list(current_ladder_ids)
+            )
+            seen: set[str] = set()
+            for chore in backup.chores:
+                if chore.id in seen:
+                    raise BackupError("Two chores in this file share the same id.")
+                seen.add(chore.id)
+                error = validate_chore(chore, ladders)
+                if error:
+                    raise BackupError(f"The chore '{chore.name}' is not valid: {error}")
+            backup.parts.append("chores")
+        if "home" in data:
+            if not isinstance(data["home"], dict):
+                raise BackupError("The rooms in this file are damaged.")
+            backup.home = Home.from_dict(data["home"])
+            error = validate_home(backup.home)
+            if error:
+                raise BackupError(f"The rooms in this file are not valid: {error}")
+            backup.parts.append("home")
+        if "pet" in data:
+            pet = data["pet"]
+            if not isinstance(pet, dict) or not isinstance(pet.get("progress") or {}, dict):
+                raise BackupError("The pet in this file is damaged.")
+            raw_history = pet.get("history") or []
+            if not isinstance(raw_history, list) or any(not isinstance(h, dict) for h in raw_history):
+                raise BackupError("The history in this file is damaged.")
+            backup.progress = Progress.from_dict(pet.get("progress"))
+            backup.history = [HistoryEntry.from_dict(h) for h in raw_history][-BACKUP_HISTORY_MAX:]
+            backup.parts.append("pet")
+    except BackupError:
+        raise
+    except (KeyError, TypeError, ValueError, AttributeError) as err:
+        raise BackupError("This backup file is damaged and cannot be read.") from err
+    if not backup.parts:
+        raise BackupError("This backup file has nothing in it to import.")
+    return backup
+
+
+def check_backup_selection(
+    backup: Backup, chosen: Iterable[str], settings: Settings, chores: Iterable[Chore]
+) -> str | None:
+    """Whether the chosen parts fit together with what stays: chores need their nudge ladders."""
+    wanted = set(chosen)
+    if not wanted:
+        return "Pick at least one part to import."
+    for part in BACKUP_PARTS:
+        if part in wanted and part not in backup.parts:
+            return f"The file has no {part} to import."
+    ladders = backup.settings.ladders if "settings" in wanted and backup.settings else settings.ladders
+    ladder_ids = [lad.id for lad in ladders]
+    if "chores" in wanted and backup.chores is not None:
+        for chore in backup.chores:
+            error = validate_chore(chore, ladder_ids)
+            if error:
+                return f"The chore '{chore.name}' does not fit this setup: {error}"
+    elif "settings" in wanted:
+        # New settings, chores that stay: they must not lose a ladder they use.
+        kept = set(ladder_ids)
+        for ladder in settings.ladders:
+            if ladder.id in kept:
+                continue
+            users = chores_using(ladder.id, chores)
+            if users:
+                return (
+                    f"The ladder '{ladder.name}' is used by {', '.join(users)}, and it is not in the file. "
+                    "Import the chores as well, or pick another nudge style for them first."
+                )
+    return None
+
+
+def backup_references(settings: Settings | None, chores: Iterable[Chore] | None) -> tuple[list[str], list[str]]:
+    """The entities and the notify services a backup points to (to say which ones this install lacks)."""
+    entities: set[str] = set()
+    services: set[str] = set()
+    if settings is not None:
+        entities.update(light.entity_id for light in settings.lights)
+        entities.update(speaker.entity_id for speaker in settings.speakers)
+        entities.update(device.entity_id for device in settings.alarm_devices)
+        entities.update([settings.presence_entity, settings.ai.entity_id, settings.ai.photo_entity_id])
+        for board in settings.boards:
+            for tile in board.tiles:
+                value = tile.options.get("entity_id")
+                if isinstance(value, str):
+                    entities.add(value)
+        services.update(phone.service for phone in settings.phones)
+    for chore in chores or []:
+        for step in chore.steps:
+            for trigger in [*step.triggers, *step.wait_for]:
+                entities.add(trigger.entity_id)
+            if step.image.startswith("camera."):
+                entities.add(step.image)
+    return sorted(e for e in entities if e), sorted(s for s in services if s)

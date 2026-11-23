@@ -8,6 +8,7 @@ import voluptuous as vol
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.loader import async_get_integration
 
 from . import breakdown, engine
 from .const import DOMAIN
@@ -53,6 +54,9 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_paste_notes)
     websocket_api.async_register_command(hass, ws_task_add)
     websocket_api.async_register_command(hass, ws_test_channel)
+    websocket_api.async_register_command(hass, ws_backup_export)
+    websocket_api.async_register_command(hass, ws_backup_preview)
+    websocket_api.async_register_command(hass, ws_backup_import)
 
 
 def _not_loaded(connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
@@ -771,6 +775,84 @@ async def ws_test_channel(
         return
     try:
         result = await manager.async_test_channel(msg)
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+# --- backup of the setup (admins only: a backup holds private data, an import replaces it) ---------
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/backup_export",
+        vol.Required("parts"): [vol.In(engine.BACKUP_PARTS)],
+    }
+)
+@websocket_api.async_response
+async def ws_backup_export(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The backup file, with the parts asked for."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    integration = await async_get_integration(hass, DOMAIN)
+    try:
+        backup = manager.export_backup(msg["parts"], str(integration.version))
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], backup)
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/backup_preview",
+        vol.Required("backup"): dict,
+        vol.Required("parts"): [vol.In(engine.BACKUP_PARTS)],
+    }
+)
+@callback
+def ws_backup_preview(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """What importing a backup file would do. Changes nothing."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = manager.preview_backup(msg["backup"], msg["parts"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/backup_import",
+        vol.Required("backup"): dict,
+        vol.Required("parts"): [vol.In(engine.BACKUP_PARTS)],
+    }
+)
+@callback
+def ws_backup_import(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Replace the parts picked with what the backup file holds."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = manager.import_backup(msg["backup"], msg["parts"])
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
         return
