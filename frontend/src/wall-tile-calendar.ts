@@ -22,6 +22,7 @@ export class WallTileCalendar extends WallTile {
   declare _error: string;
   private _timer?: number;
   private _loadedFor = "";
+  private _seq = 0; // every request gets a number; only the latest one may show its answer
 
   constructor() {
     super();
@@ -48,6 +49,7 @@ export class WallTileCalendar extends WallTile {
     const id = this.text("entity_id");
     if (!id || !this.hass?.callApi || (!force && this._loadedFor === id)) return;
     this._loadedFor = id;
+    const seq = ++this._seq;
     const start = new Date();
     const end = new Date(start.getTime() + DAYS_AHEAD * 86_400_000);
     try {
@@ -55,6 +57,7 @@ export class WallTileCalendar extends WallTile {
         "GET",
         `calendars/${id}?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`
       );
+      if (seq !== this._seq) return; // a newer request has been made since
       this._events = events
         .map((e) => {
           const allDay = !e.start.dateTime;
@@ -65,7 +68,7 @@ export class WallTileCalendar extends WallTile {
         .sort((a, b) => a.at - b.at);
       this._error = "";
     } catch {
-      this._error = "Could not read the calendar.";
+      if (seq === this._seq) this._error = "Could not read the calendar.";
     }
   }
 

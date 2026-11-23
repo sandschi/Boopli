@@ -111,11 +111,35 @@ export class BoopliWallEdit extends LitElement {
   };
 
   protected willUpdate(): void {
-    if (this._boards || !this.snapshot?.settings) return;
-    const boards = structuredClone(this.snapshot.settings.boards ?? []);
+    if (!this.snapshot?.settings) return;
+    const latest = this.snapshot.settings.boards ?? [];
+    if (this._boards && (this._dirty || JSON.stringify(latest) === this._base)) return;
+    // The first load, or the boards changed on the server before anything was edited here (a board that
+    // was only just saved reaches the panel a moment later): start from the latest.
+    const boards = structuredClone(latest);
+    const keep = this._boards ? this._id : "";
     this._base = JSON.stringify(boards);
     this._boards = boards;
-    this._id = pickBoard(boards, this.boardName)?.id ?? boards[0]?.id ?? "";
+    this._id = (keep && boards.find((b) => b.id === keep)?.id) || pickBoard(boards, this.boardName)?.id || boards[0]?.id || "";
+  }
+
+  /**
+   * The boards to save: the latest ones from the server, with only what was changed in this editing
+   * session applied (boards changed, added or deleted here). A board changed somewhere else in the
+   * meantime is kept as it is.
+   */
+  private _merged(latest: Board[]): Board[] {
+    const draft = this._boards ?? [];
+    const base = new Map((JSON.parse(this._base) as Board[]).map((b) => [b.id, JSON.stringify(b)]));
+    const mine = new Map(draft.map((b) => [b.id, b]));
+    const out: Board[] = [];
+    for (const b of latest) {
+      if (!base.has(b.id)) out.push(b); // made elsewhere meanwhile
+      else if (!mine.has(b.id)) continue; // deleted here
+      else out.push(JSON.stringify(mine.get(b.id)) !== base.get(b.id) ? mine.get(b.id)! : b);
+    }
+    for (const b of draft) if (!latest.some((l) => l.id === b.id) && !base.has(b.id)) out.push(b); // added here
+    return structuredClone(out);
   }
 
   protected updated(changed: Map<string, unknown>): void {
@@ -329,7 +353,7 @@ export class BoopliWallEdit extends LitElement {
     this._error = "";
     this._askDiscard = false;
     try {
-      await saveSettings(this.hass, { ...settings, boards: structuredClone(this._boards) });
+      await saveSettings(this.hass, { ...settings, boards: this._merged(settings.boards ?? []) });
       this._exit(this._cur?.name ?? "");
     } catch (err) {
       this._error = errorMessage(err);
@@ -460,7 +484,7 @@ export class BoopliWallEdit extends LitElement {
     const scale = this._stage[0] > 0 && this._stage[1] > 0 ? Math.min(1, this._stage[0] / sw, this._stage[1] / sh) : 1;
     return html`
       <div class="edit">
-        <div class="bar" role="toolbar" aria-label="Edit the wall board">
+        <div class="bar" role="toolbar" aria-label="Edit the wall board" ?inert=${this._busy}>
           <label class="pick">
             <span class="muted small">Board</span>
             <select aria-label="Board" @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._modal = ""; }}>
@@ -481,7 +505,7 @@ export class BoopliWallEdit extends LitElement {
             : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
                 <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
         </div>
-        <div class="stage">
+        <div class="stage" ?inert=${this._busy}>
           <div class="slot" style="width:${sw * scale}px;height:${sh * scale}px">
             <div class="frame" style="width:${sw}px;height:${sh}px;transform:scale(${scale})">
               <boopli-wall
@@ -502,7 +526,7 @@ export class BoopliWallEdit extends LitElement {
         ${this._error ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
         ${this._modal
           ? html`<div class="backdrop" @click=${(e: Event) => e.target === e.currentTarget && (this._modal = "")}>
-              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" @keydown=${(e: KeyboardEvent) => e.key === "Escape" && (this._modal = "")}>
+              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" ?inert=${this._busy} @keydown=${(e: KeyboardEvent) => e.key === "Escape" && (this._modal = "")}>
                 ${this._modal === "tile" ? this._renderTileModal(cur) : this._modal === "board" ? this._renderBoardModal(cur) : this._renderAddModal()}
               </section>
             </div>`

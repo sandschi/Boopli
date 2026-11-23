@@ -5,7 +5,7 @@ import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
 import { isNight } from "./wall-night";
 import { settle } from "./wall-layout";
-import { pickBoard } from "./wall-tiles";
+import { pickBoard, tileDef } from "./wall-tiles";
 import "./wall-tiles";
 import type { Board, Hass, Snapshot, Tile } from "./types";
 
@@ -118,7 +118,7 @@ export class BoopliWall extends LitElement {
       <div class="stage">
       <div class="grid" style="--cols:${board.columns};--rows:${board.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(board) : nothing}
-        ${(this._live ?? board.tiles).map(
+        ${(this._live ?? board.tiles).filter((t) => !!tileDef(t.type)).map(
           (t) =>
             html`<div
               class="cell ${this.selectedId === t.id ? "selected" : ""} ${this._drag?.id === t.id ? "dragging" : ""}"

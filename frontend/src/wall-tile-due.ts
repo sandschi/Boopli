@@ -76,6 +76,28 @@ export class WallTileDue extends WallTile {
       .actions button {
         flex: 1 1 90px;
       }
+      /* a small tile: smaller buttons, so all three stay in reach */
+      @container (max-width: 300px) {
+        .actions {
+          gap: 6px;
+        }
+        .actions button {
+          flex: 1 1 60px;
+          min-height: 38px;
+          padding: 4px 8px;
+          font-size: 14px;
+        }
+      }
+      @container (max-height: 200px) {
+        .actions button {
+          min-height: 34px;
+          padding: 2px 8px;
+          font-size: 14px;
+        }
+        .title {
+          font-size: 16px;
+        }
+      }
     `,
   ];
 }

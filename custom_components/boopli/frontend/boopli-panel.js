@@ -12120,6 +12120,28 @@ var Ia = class extends Z {
       .actions button {
         flex: 1 1 90px;
       }
+      /* a small tile: smaller buttons, so all three stay in reach */
+      @container (max-width: 300px) {
+        .actions {
+          gap: 6px;
+        }
+        .actions button {
+          flex: 1 1 60px;
+          min-height: 38px;
+          padding: 4px 8px;
+          font-size: 14px;
+        }
+      }
+      @container (max-height: 200px) {
+        .actions button {
+          min-height: 34px;
+          padding: 2px 8px;
+          font-size: 14px;
+        }
+        .title {
+          font-size: 16px;
+        }
+      }
     `];
 	}
 };
@@ -12298,7 +12320,7 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 		};
 	}
 	constructor() {
-		super(), this._loadedFor = "", this._events = [], this._error = "";
+		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), Ua);
@@ -12313,9 +12335,10 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 		let t = this.text("entity_id");
 		if (!t || !this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor = t;
-		let n = /* @__PURE__ */ new Date(), r = new Date(n.getTime() + Wa * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + Wa * 864e5);
 		try {
-			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(n.toISOString())}&end=${encodeURIComponent(r.toISOString())}`);
+			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
+			if (n !== this._seq) return;
 			this._events = e.map((e) => {
 				let t = !e.start.dateTime, n = Date.parse(e.start.dateTime ?? `${e.start.date}T00:00:00`);
 				return {
@@ -12325,7 +12348,7 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 				};
 			}).filter((e) => !Number.isNaN(e.at)).sort((e, t) => e.at - t.at), this._error = "";
 		} catch {
-			this._error = "Could not read the calendar.";
+			n === this._seq && (this._error = "Could not read the calendar.");
 		}
 	}
 	_when(e, t) {
@@ -14476,7 +14499,7 @@ var Eo = 3e4, Do = class extends S {
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : y}
-        ${(this._live ?? e.tiles).map((e) => g`<div
+        ${(this._live ?? e.tiles).filter((e) => !!to(e.type)).map((e) => g`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
             >${wo`<${So(`wall-tile-${e.type.replace(/_/g, "-")}`)}
@@ -14807,9 +14830,19 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		super.disconnectedCallback(), window.removeEventListener("resize", this._onResize), this._ro?.disconnect(), this._ro = void 0;
 	}
 	willUpdate() {
-		if (this._boards || !this.snapshot?.settings) return;
-		let e = structuredClone(this.snapshot.settings.boards ?? []);
-		this._base = JSON.stringify(e), this._boards = e, this._id = io(e, this.boardName)?.id ?? e[0]?.id ?? "";
+		if (!this.snapshot?.settings) return;
+		let e = this.snapshot.settings.boards ?? [];
+		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
+		let t = structuredClone(e), n = this._boards ? this._id : "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || io(t, this.boardName)?.id || t[0]?.id || "";
+	}
+	_merged(e) {
+		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, JSON.stringify(e)])), r = new Map(t.map((e) => [e.id, e])), i = [];
+		for (let t of e) if (!n.has(t.id)) i.push(t);
+		else if (r.has(t.id)) i.push(JSON.stringify(r.get(t.id)) === n.get(t.id) ? t : r.get(t.id));
+		else continue;
+		for (let r of t) !e.some((e) => e.id === r.id) && !n.has(r.id) && i.push(r);
+		return structuredClone(i);
 	}
 	updated(e) {
 		this._ro || this._watchStage(), e.has("_modal") && this._modal && this.renderRoot.querySelector(".modal")?.focus();
@@ -14947,7 +14980,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 			try {
 				await C(this.hass, {
 					...e,
-					boards: structuredClone(this._boards)
+					boards: this._merged(e.boards ?? [])
 				}), this._exit(this._cur?.name ?? "");
 			} catch (e) {
 				this._error = w(e);
@@ -15058,7 +15091,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		let [t, n] = this._screen(), r = this._stage[0] > 0 && this._stage[1] > 0 ? Math.min(1, this._stage[0] / t, this._stage[1] / n) : 1;
 		return g`
       <div class="edit">
-        <div class="bar" role="toolbar" aria-label="Edit the wall board">
+        <div class="bar" role="toolbar" aria-label="Edit the wall board" ?inert=${this._busy}>
           <label class="pick">
             <span class="muted small">Board</span>
             <select aria-label="Board" @change=${(e) => {
@@ -15079,7 +15112,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
                 <button @click=${() => this._askDiscard = !1}>Keep editing</button>` : g`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
                 <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
         </div>
-        <div class="stage">
+        <div class="stage" ?inert=${this._busy}>
           <div class="slot" style="width:${t * r}px;height:${n * r}px">
             <div class="frame" style="width:${t}px;height:${n}px;transform:scale(${r})">
               <boopli-wall
@@ -15099,7 +15132,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
         </div>
         ${this._error ? g`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>OK</button></div>` : y}
         ${this._modal ? g`<div class="backdrop" @click=${(e) => e.target === e.currentTarget && (this._modal = "")}>
-              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" @keydown=${(e) => e.key === "Escape" && (this._modal = "")}>
+              <section class="modal" role="dialog" aria-modal="true" tabindex="-1" ?inert=${this._busy} @keydown=${(e) => e.key === "Escape" && (this._modal = "")}>
                 ${this._modal === "tile" ? this._renderTileModal(e) : this._modal === "board" ? this._renderBoardModal(e) : this._renderAddModal()}
               </section>
             </div>` : y}
