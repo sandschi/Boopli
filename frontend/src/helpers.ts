@@ -2,6 +2,7 @@ import { WEEKDAY_NAMES } from "./time";
 import type {
   AlarmDeviceCfg,
   Hass,
+  Ladder,
   LightCfg,
   QuietDay,
   QuietHours,
@@ -103,6 +104,23 @@ export const STYLE_LABEL: Record<string, string> = {
   escalating: "Escalating",
   persistent: "Persistent",
 };
+
+/** A short unique id for a new ladder. */
+export function newLadderId(): string {
+  try {
+    return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  } catch {
+    return Math.random().toString(16).slice(2, 14).padEnd(12, "0");
+  }
+}
+
+/** The name of a nudge style, including one of your own ladders. A ladder that is gone is called that. */
+export function styleLabel(style: string, ladders: Ladder[] | undefined): string {
+  if (style.startsWith("ladder:")) {
+    return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? "A ladder that is gone";
+  }
+  return STYLE_LABEL[style] ?? style;
+}
 
 /**
  * Quiet hours in plain words. Days that share the same hours and sit next to

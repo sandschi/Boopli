@@ -534,7 +534,13 @@ export class BoopliChoreEditor extends LitElement {
             @change=${(e: Event) =>
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
-            ${STYLE_OPTIONS.map(
+            ${[
+              ...STYLE_OPTIONS,
+              ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
+                value: `ladder:${l.id}` as NudgeStyle,
+                label: `${l.name}: my own ladder`,
+              })),
+            ].map(
               (o) => html`<option
                 value=${o.value}
                 ?selected=${o.value === (d.nudge_style ?? this.defaultStyle)}
@@ -542,6 +548,10 @@ export class BoopliChoreEditor extends LitElement {
                 ${o.label}
               </option>`
             )}
+            ${(d.nudge_style ?? this.defaultStyle).startsWith("ladder:") &&
+            !(this.snapshot?.settings?.ladders ?? []).some((l) => `ladder:${l.id}` === (d.nudge_style ?? this.defaultStyle))
+              ? html`<option value=${d.nudge_style ?? this.defaultStyle} selected>A ladder that is gone</option>`
+              : nothing}
           </select>
         </div>
         <div class="field check">

@@ -1,4 +1,4 @@
-import { friendlyName, lightKind, phoneName, PHONE_LEVEL_LABEL, STYLE_LABEL } from "./helpers";
+import { friendlyName, lightKind, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { WEEKDAY_NAMES } from "./time";
 import type { Hass, Settings, SoundCfg, SpeakerCfg } from "./types";
 
@@ -89,7 +89,16 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   if ((before.check_in_minutes ?? 30) !== (after.check_in_minutes ?? 30))
     out.push(`Check-in after "On it": ${before.check_in_minutes ?? 30} → ${after.check_in_minutes ?? 30} min`);
   if (before.default_style !== after.default_style)
-    out.push(`Default style: ${STYLE_LABEL[before.default_style]} → ${STYLE_LABEL[after.default_style]}`);
+    out.push(`Default style: ${styleLabel(before.default_style, before.ladders)} → ${styleLabel(after.default_style, after.ladders)}`);
+
+  const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);
+  ladders.added.forEach((l) => out.push(`Nudge ladder added: ${l.name} (${l.rungs.length} nudges)`));
+  ladders.removed.forEach((l) => out.push(`Nudge ladder removed: ${l.name}`));
+  ladders.kept.forEach(({ before: b, after: a }) => {
+    if (b.name !== a.name) out.push(`Nudge ladder renamed: ${b.name} → ${a.name}`);
+    if (JSON.stringify({ r: b.rungs, x: b.repeat_last }) !== JSON.stringify({ r: a.rungs, x: a.repeat_last }))
+      out.push(`Nudge ladder changed: ${a.name}`);
+  });
 
   const lights = byKey(before.lights, after.lights, (l) => l.entity_id);
   lights.added.forEach((l) => out.push(`Reminder light added: ${name(l.entity_id)} (${lightKind(l)})`));

@@ -1,0 +1,230 @@
+import { LitElement, html, css, nothing } from "lit";
+import { friendlyName, phoneName } from "./helpers";
+import { sharedStyles } from "./styles";
+import type { Hass, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerLevel } from "./types";
+
+const GAP_MIN = 1;
+const GAP_MAX = 720;
+
+const PHONE_CHOICES: { value: PhoneLevel; label: string }[] = [
+  { value: "normal", label: "Normal notification" },
+  { value: "high", label: "High priority (pops up)" },
+  { value: "alarm", label: "Alarm volume" },
+  { value: "alarm_max", label: "Max volume" },
+];
+
+/** The speaker levels that are switched on, quiet to loud. A ladder can only use those. */
+export function speakerLevels(sp: SpeakerCfg): SpeakerLevel[] {
+  const out: SpeakerLevel[] = [];
+  if (sp.cue?.enabled) out.push("cue");
+  if (sp.speech?.enabled) out.push("speech");
+  if (sp.alarm?.enabled) out.push("alarm");
+  return out;
+}
+
+/**
+ * One nudge of a ladder: which phone, light, speaker and alarm device acts, and how loud. With `gap`
+ * (the wizard) it also asks how long to wait for this nudge. The devices come from Settings.
+ * It sends `rung-change` with the whole changed nudge.
+ */
+export class BoopliRung extends LitElement {
+  static properties = {
+    hass: { attribute: false },
+    settings: { attribute: false },
+    rung: { attribute: false },
+    index: { type: Number },
+    gap: { type: Boolean },
+  };
+
+  declare hass?: Hass;
+  declare settings?: Settings;
+  declare rung?: Rung;
+  declare index: number; // 0 for the first nudge (used in the labels)
+  declare gap: boolean; // also show the wait (not for the first nudge)
+
+  constructor() {
+    super();
+    this.index = 0;
+    this.gap = false;
+  }
+
+  private _change(fn: (r: Rung) => void): void {
+    if (!this.rung) return;
+    const next = structuredClone(this.rung);
+    fn(next);
+    this.dispatchEvent(new CustomEvent("rung-change", { detail: next, bubbles: true, composed: true }));
+  }
+
+  private _toggle(list: "lights" | "alarms", device: string, on: boolean): void {
+    this._change((r) => {
+      const rest = r[list].filter((d) => d !== device);
+      r[list] = on ? [...rest, device] : rest;
+    });
+  }
+
+  private _setPhone(service: string, level: string): void {
+    this._change((r) => {
+      if (level) r.phones[service] = level as PhoneLevel;
+      else delete r.phones[service];
+    });
+  }
+
+  private _setSpeaker(entity: string, level: string): void {
+    this._change((r) => {
+      if (level) r.speakers[entity] = level as SpeakerLevel;
+      else delete r.speakers[entity];
+    });
+  }
+
+  private _setGap(raw: string): void {
+    const n = Math.round(Number(raw));
+    if (raw.trim() === "" || Number.isNaN(n)) return;
+    this._change((r) => (r.gap = Math.min(GAP_MAX, Math.max(GAP_MIN, n))));
+  }
+
+  render() {
+    const s = this.settings;
+    const r = this.rung;
+    if (!s || !r) return nothing;
+    const n = this.index + 1;
+    const none = !s.phones.length && !s.lights.length && !s.speakers.length && !s.alarm_devices.length;
+    return html`
+      ${this.gap && this.index > 0
+        ? html`<label class="gap">
+            Wait
+            <input
+              type="number"
+              min=${GAP_MIN}
+              max=${GAP_MAX}
+              .value=${String(r.gap)}
+              aria-label="Minutes before nudge ${n}"
+              @change=${(e: Event) => this._setGap((e.target as HTMLInputElement).value)}
+            />
+            minutes after the previous nudge
+          </label>`
+        : nothing}
+      ${none
+        ? html`<p class="muted small">
+            Set up a phone, light, speaker or alarm device in Settings first. They show up here.
+          </p>`
+        : nothing}
+      <div class="devs">
+        ${s.phones.map(
+          (p) => html`<label class="dev">
+            <span>📱 ${phoneName(p.service)}</span>
+            <select
+              aria-label="${phoneName(p.service)} at nudge ${n}"
+              @change=${(e: Event) => this._setPhone(p.service, (e.target as HTMLSelectElement).value)}
+            >
+              <option value="" ?selected=${!r.phones[p.service]}>Off</option>
+              ${PHONE_CHOICES.map(
+                (c) => html`<option value=${c.value} ?selected=${r.phones[p.service] === c.value}>${c.label}</option>`
+              )}
+            </select>
+          </label>`
+        )}
+        ${s.lights.map(
+          (light) => html`<label class="dev check">
+            <input
+              type="checkbox"
+              .checked=${r.lights.includes(light.entity_id)}
+              @change=${(e: Event) => this._toggle("lights", light.entity_id, (e.target as HTMLInputElement).checked)}
+            />
+            <span>💡 ${friendlyName(this.hass, light.entity_id)}</span>
+          </label>`
+        )}
+        ${s.speakers.map((sp) => {
+          const levels = speakerLevels(sp);
+          return html`<label class="dev">
+            <span>🔊 ${friendlyName(this.hass, sp.entity_id)}</span>
+            <select
+              aria-label="${friendlyName(this.hass, sp.entity_id)} at nudge ${n}"
+              ?disabled=${!levels.length}
+              @change=${(e: Event) => this._setSpeaker(sp.entity_id, (e.target as HTMLSelectElement).value)}
+            >
+              <option value="" ?selected=${!r.speakers[sp.entity_id]}>${levels.length ? "Off" : "No sound set up"}</option>
+              ${levels.map(
+                (lv) => html`<option value=${lv} ?selected=${r.speakers[sp.entity_id] === lv}>
+                  ${lv === "cue" ? "A ding" : lv === "speech" ? "Speaks" : "Alarm"}
+                </option>`
+              )}
+            </select>
+          </label>`;
+        })}
+        ${s.alarm_devices.map(
+          (device) => html`<label class="dev check">
+            <input
+              type="checkbox"
+              .checked=${r.alarms.includes(device.entity_id)}
+              @change=${(e: Event) => this._toggle("alarms", device.entity_id, (e.target as HTMLInputElement).checked)}
+            />
+            <span>🚨 ${friendlyName(this.hass, device.entity_id)}</span>
+          </label>`
+        )}
+      </div>
+    `;
+  }
+
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: block;
+      }
+      .small {
+        font-size: 13px;
+      }
+      label.gap {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--primary-text-color);
+      }
+      label.gap input {
+        width: 84px;
+        min-height: 36px;
+        padding: 4px 8px;
+      }
+      .devs {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      label.dev {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        margin: 0;
+        font-size: 14px;
+        color: var(--primary-text-color);
+      }
+      label.dev > span {
+        flex: 1 1 110px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      label.dev select {
+        flex: 1 1 170px;
+        width: auto;
+        min-width: 0;
+      }
+      label.dev.check {
+        justify-content: flex-start;
+      }
+      label.dev.check input {
+        width: auto;
+        min-height: 0;
+        flex: none;
+      }
+      label.dev.check span {
+        flex: 1;
+      }
+    `,
+  ];
+}
+
+customElements.define("boopli-rung", BoopliRung);

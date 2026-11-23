@@ -3,7 +3,8 @@
 export type StepStatus = "pending" | "waiting" | "active" | "done";
 export type RepeatType = "none" | "schedule" | "every_n_days";
 export type Where = "home" | "anywhere";
-export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent";
+/** A built-in style, or "ladder:<id>", which points at one of your own ladders ("Nudge it your way"). */
+export type NudgeStyle = "quiet" | "one" | "escalating" | "persistent" | `ladder:${string}`;
 export type PhoneLevel = "normal" | "high" | "alarm" | "alarm_max";
 export type LightMode = "blink" | "indicator";
 
@@ -167,6 +168,23 @@ export interface AlarmDeviceCfg {
   start_at: number;
 }
 
+/** One nudge of a ladder: how long to wait for it, and exactly which devices act (and how loud). */
+export interface Rung {
+  gap: number; // minutes after the previous nudge (the first one goes out at once)
+  phones: Record<string, PhoneLevel>; // phone service -> notification level
+  lights: string[]; // light entity ids
+  speakers: Record<string, SpeakerLevel>; // speaker entity id -> what it plays
+  alarms: string[]; // alarm device entity ids
+}
+
+/** A named ladder of your own. After the last nudge it stops, or repeats the last one. */
+export interface Ladder {
+  id: string;
+  name: string;
+  rungs: Rung[];
+  repeat_last: boolean;
+}
+
 export interface QuietDay {
   start: string; // HH:MM
   stop: string;
@@ -188,6 +206,7 @@ export interface Settings {
   presence_entity: string;
   snooze_minutes: number;
   default_style: NudgeStyle;
+  ladders?: Ladder[]; // "Nudge it your way"
   pet_name: string;
   pet_kind?: string; // which pet: bear, cat, dog, fox or slime
   ai: AiSettings;

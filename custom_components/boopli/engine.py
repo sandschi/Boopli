@@ -23,6 +23,7 @@ import re
 import uuid
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
+from collections.abc import Iterable
 from typing import Any
 from urllib.parse import quote
 
@@ -863,7 +864,7 @@ def picture_data(image: str, media_id: str = "local") -> dict[str, Any]:
     return {"image": f"/media/{media_id}/{quote(image)}"}
 
 
-def validate_chore(chore: Chore) -> str | None:
+def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
     """Return an error message, or None when the chore is valid."""
     if not chore.name:
         return "A chore needs a name."
@@ -914,7 +915,9 @@ def validate_chore(chore: Chore) -> str | None:
                 return f"Step '{step.title}': {error}"
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
-    if chore.nudge_style not in STYLE_VALUES:
+    if chore.nudge_style not in STYLE_VALUES and chore.nudge_style not in {
+        ladder_style(i) for i in ladder_ids
+    }:
         return "Unknown nudge style."
     return validate_repeat(chore.repeat)
 
@@ -1902,6 +1905,106 @@ class AiSettings:
         )
 
 
+# --- your own nudge ladders ("Nudge it your way") -------------------------------
+#
+# A built-in style sends every device from the nudge number the device is set to start at.
+# A ladder of your own says it per nudge instead: how long to wait for each nudge, and
+# exactly which devices act (and how loud), so "no lights at nudge 2" is possible.
+
+LADDER_PREFIX = "ladder:"  # a chore's nudge style "ladder:<id>" points at one of your ladders
+LADDER_MAX = 20
+LADDER_MAX_NUDGES = 12
+LADDER_GAP_MIN, LADDER_GAP_MAX = 1, 720  # minutes
+LADDER_GAP_DEFAULT = 5
+LADDER_NAME_MAX = 40
+
+
+def _text_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(x).strip() for x in value if str(x).strip()]
+
+
+def _text_map(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    return {str(k).strip(): str(v).strip() for k, v in value.items() if str(k).strip()}
+
+
+@dataclass
+class Rung:
+    """One nudge of a ladder."""
+
+    gap: int = LADDER_GAP_DEFAULT  # minutes after the previous nudge (the first goes out at once)
+    phones: dict[str, str] = field(default_factory=dict)  # phone service -> notification level
+    lights: list[str] = field(default_factory=list)  # light entity ids
+    speakers: dict[str, str] = field(default_factory=dict)  # speaker entity id -> speaker level
+    alarms: list[str] = field(default_factory=list)  # alarm device entity ids
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Rung:
+        return cls(
+            gap=_int(d.get("gap"), LADDER_GAP_DEFAULT),
+            phones=_text_map(d.get("phones")),
+            lights=_text_list(d.get("lights")),
+            speakers=_text_map(d.get("speakers")),
+            alarms=_text_list(d.get("alarms")),
+        )
+
+
+@dataclass
+class Ladder:
+    """A named list of nudges. After the last one it stops, or repeats the last one."""
+
+    id: str = ""
+    name: str = ""
+    rungs: list[Rung] = field(default_factory=list)
+    repeat_last: bool = False
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Ladder:
+        rungs = d.get("rungs")
+        return cls(
+            id=str(d.get("id") or "").strip() or new_id(),
+            name=str(d.get("name") or "").strip(),
+            rungs=[Rung.from_dict(r) for r in rungs if isinstance(r, dict)] if isinstance(rungs, list) else [],
+            repeat_last=bool(d.get("repeat_last", False)),
+        )
+
+
+def ladder_style(ladder_id: str) -> str:
+    """The nudge style value that points at a ladder."""
+    return f"{LADDER_PREFIX}{ladder_id}"
+
+
+def find_ladder(style: str, ladders: list[Ladder]) -> Ladder | None:
+    """The ladder a style points at, or None (a built-in style, or a ladder that is gone)."""
+    if not style.startswith(LADDER_PREFIX):
+        return None
+    wanted = style[len(LADDER_PREFIX):]
+    return next((ladder for ladder in ladders if ladder.id == wanted), None)
+
+
+def style_known(style: str, ladders: list[Ladder]) -> bool:
+    """Whether a nudge style is a built-in one or one of your ladders."""
+    return style in STYLE_VALUES or find_ladder(style, ladders) is not None
+
+
+def chores_using(ladder_id: str, chores: Iterable[Chore]) -> list[str]:
+    """The names of the chores that use a ladder, in alphabetical order."""
+    style = ladder_style(ladder_id)
+    return sorted(chore.name for chore in chores if chore.nudge_style == style)
+
+
+def rung_for(ladder: Ladder, number: int) -> Rung | None:
+    """The rung that nudge number `number` (1, 2, 3, ...) uses, or None when the ladder is over."""
+    if number < 1 or not ladder.rungs:
+        return None
+    if number <= len(ladder.rungs):
+        return ladder.rungs[number - 1]
+    return ladder.rungs[-1] if ladder.repeat_last else None
+
+
 @dataclass
 class Settings:
     """Boopli's global settings."""
@@ -1920,11 +2023,14 @@ class Settings:
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
+    ladders: list[Ladder] = field(default_factory=list)  # "Nudge it your way"
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
+        ladders = d.get("ladders")
         return cls(
+            ladders=[Ladder.from_dict(x) for x in ladders if isinstance(x, dict)] if isinstance(ladders, list) else [],
             check_in_minutes=int(d.get("check_in_minutes", CHECK_IN_DEFAULT) or CHECK_IN_DEFAULT),
             question_wait_minutes=int(d.get("question_wait_minutes", QUESTION_WAIT_DEFAULT) or QUESTION_WAIT_DEFAULT),
             ai=AiSettings.from_dict(d.get("ai")),
@@ -2070,8 +2176,40 @@ def validate_settings(settings: Settings) -> str | None:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
-    if settings.default_style not in STYLE_VALUES:
+    error = validate_ladders(settings.ladders)
+    if error:
+        return error
+    if not style_known(settings.default_style, settings.ladders):
         return "Unknown default nudge style."
+    return None
+
+
+def validate_ladders(ladders: list[Ladder]) -> str | None:
+    """Check "Nudge it your way": names, the number of nudges, the waits and the device levels."""
+    if len(ladders) > LADDER_MAX:
+        return f"You can have at most {LADDER_MAX} ladders."
+    ids: set[str] = set()
+    names: set[str] = set()
+    for ladder in ladders:
+        if ladder.id in ids:
+            return "Two ladders have the same id."
+        ids.add(ladder.id)
+        if not ladder.name:
+            return "Every ladder needs a name."
+        if len(ladder.name) > LADDER_NAME_MAX:
+            return f"A ladder name can have at most {LADDER_NAME_MAX} letters."
+        if ladder.name.casefold() in names:
+            return f"There are two ladders called '{ladder.name}'."
+        names.add(ladder.name.casefold())
+        if not 1 <= len(ladder.rungs) <= LADDER_MAX_NUDGES:
+            return f"'{ladder.name}' needs 1 to {LADDER_MAX_NUDGES} nudges."
+        for number, rung in enumerate(ladder.rungs, start=1):
+            if not LADDER_GAP_MIN <= rung.gap <= LADDER_GAP_MAX:
+                return f"'{ladder.name}', nudge {number}: the wait must be {LADDER_GAP_MIN} to {LADDER_GAP_MAX} minutes."
+            if any(level not in LEVEL_VALUES for level in rung.phones.values()):
+                return f"'{ladder.name}', nudge {number}: unknown phone notification level."
+            if any(level not in SPEAKER_LEVELS for level in rung.speakers.values()):
+                return f"'{ladder.name}', nudge {number}: unknown speaker level."
     return None
 
 
@@ -2110,8 +2248,16 @@ def quiet_ends(now: datetime, quiet: QuietHours, tz: tzinfo) -> datetime | None:
 # --- nudges --------------------------------------------------------------
 
 
-def next_gap(style: str, sent: int) -> int | None:
-    """Minutes until the next nudge after `sent` nudges, or None for no more."""
+def next_gap(style: str, sent: int, ladders: list[Ladder] | None = None) -> int | None:
+    """Minutes until the next nudge after `sent` nudges, or None for no more.
+
+    A style that points at one of your ladders takes the wait from the ladder's next nudge.
+    A ladder that has been removed behaves like "one nudge".
+    """
+    if style.startswith(LADDER_PREFIX):
+        ladder = find_ladder(style, ladders or [])
+        rung = rung_for(ladder, sent + 1) if ladder else None
+        return rung.gap if rung else None
     if style == STYLE_ESCALATING:
         index = sent - 1
         return ESCALATING_GAPS[index] if 0 <= index < len(ESCALATING_GAPS) else None
@@ -2164,11 +2310,13 @@ def decide_nudge(
     return NudgeDecision("send", channels)
 
 
-def record_nudge(step: StepRun, style: str, now: datetime) -> None:
+def record_nudge(
+    step: StepRun, style: str, now: datetime, ladders: list[Ladder] | None = None
+) -> None:
     """Remember that a nudge went out and schedule the next one."""
     step.nudge_count += 1
     step.snoozed_until = None
-    gap = next_gap(style, step.nudge_count)
+    gap = next_gap(style, step.nudge_count, ladders)
     step.next_nudge_at = fmt_ts(now + timedelta(minutes=gap)) if gap else None
 
 
@@ -2428,6 +2576,35 @@ def restore_plan(state: str, attrs: dict[str, Any]) -> tuple[str, dict[str, Any]
 def reached(start_at: int, number: int) -> bool:
     """Whether a channel set to start at nudge `start_at` is used at nudge `number`."""
     return start_at <= number
+
+
+def phones_reached(settings: Settings, style: str, number: int) -> list[PhoneCfg]:
+    """The phones that have been nudged by now (up to and including nudge `number`).
+
+    Built-in styles: the phones whose "starts at nudge" has been reached. A ladder of your own:
+    every phone that is on any of its nudges up to `number`. These are the phones that have a
+    notification to turn green ("On it"), to replace ("Still on it?") or that hear about questions.
+    """
+    ladder = find_ladder(style, settings.ladders)
+    if ladder is None:
+        return [p for p in settings.phones if reached(p.start_at, number)]
+    services: set[str] = set()
+    for n in range(1, max(number, 0) + 1):
+        rung = rung_for(ladder, n)
+        if rung is None:
+            break
+        services.update(rung.phones)
+    out: list[PhoneCfg] = []
+    for phone in settings.phones:
+        if phone.service in services and all(o.service != phone.service for o in out):
+            out.append(phone)  # a phone listed twice is still one phone
+    return out
+
+
+def speaker_has_level(speaker: SpeakerCfg, level: str) -> bool:
+    """Whether a speaker has this level switched on (a ladder can only use levels that are set up)."""
+    cfg = {SPEAKER_CUE: speaker.cue, SPEAKER_SPEECH: speaker.speech, SPEAKER_ALARM: speaker.alarm}.get(level)
+    return bool(cfg and cfg.enabled)
 
 
 def speaker_level(speaker: SpeakerCfg, number: int) -> str | None:

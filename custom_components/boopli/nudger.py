@@ -92,13 +92,18 @@ class BoopliNudger:
         channels: str,
         number: int = 1,
         image: str = "",
+        rung: engine.Rung | None = None,
     ) -> None:
         """Send nudge number `number` on every channel that has reached it.
 
-        `image` (optional) is the picture the phones show with it.
+        `image` (optional) is the picture the phones show with it. With a `rung` (a nudge of one
+        of the user's own ladders) exactly the devices on that rung act, at the levels it names.
         """
         settings = self.manager.settings
         key = f"{run_id}:{step_id}"
+        if rung is not None:
+            await self._send_rung(rung, run_id, chore_name, step_id, step_title, channels, image, key)
+            return
         if channels == engine.CHANNELS_ALL:
             for light in settings.lights:
                 if engine.reached(light.start_at, number):
@@ -125,6 +130,49 @@ class BoopliNudger:
             )
             await self._notify(phone.service, payload)
 
+    async def _send_rung(
+        self,
+        rung: engine.Rung,
+        run_id: str,
+        chore_name: str,
+        step_id: str,
+        step_title: str,
+        channels: str,
+        image: str,
+        key: str,
+    ) -> None:
+        """One nudge of a ladder of the user's own: only the devices ticked on this rung act.
+
+        A device that is not set up (any more) is skipped. Away from home only the phones act.
+        """
+        settings = self.manager.settings
+        if channels == engine.CHANNELS_ALL:
+            for light in settings.lights:
+                if light.entity_id in rung.lights:
+                    await self._nudge_light(light, key)
+            for speaker in settings.speakers:
+                level = rung.speakers.get(speaker.entity_id)
+                if level in engine.SPEAKER_LEVELS and engine.speaker_has_level(speaker, level):
+                    await self._play_speaker(speaker, level, chore_name, step_title, key)
+            for device in settings.alarm_devices:
+                if device.entity_id in rung.alarms:
+                    self._start_device_alarm(device, key)
+        known = {phone.service for phone in settings.phones}
+        for service, level in rung.phones.items():
+            if service not in known:
+                continue
+            payload = engine.phone_payload(
+                level,
+                run_id,
+                step_id,
+                chore_name,
+                step_title,
+                settings.snooze_minutes,
+                image,
+                self.manager.media_id(),
+            )
+            await self._notify(service, payload)
+
     async def async_show_on_it(self, run: engine.Run, step: engine.StepRun) -> None:
         """"On it": stop the alarms, blinks and speakers of this step, and turn the phone
         notification green in place (same tag), so the person sees it was noticed."""
@@ -135,8 +183,9 @@ class BoopliNudger:
         payload = engine.on_it_payload(
             run.id, step.step_id, run.chore_name, step.title, since, step.image, self.manager.media_id()
         )
-        for phone in self.manager.settings.phones:
-            if step.nudge_count > 0 and engine.reached(phone.start_at, step.nudge_count):
+        if step.nudge_count > 0:
+            manager = self.manager
+            for phone in engine.phones_reached(manager.settings, manager.style_for(run), step.nudge_count):
                 await self._notify(phone.service, payload)
 
     async def async_send_check_in(
@@ -157,9 +206,11 @@ class BoopliNudger:
         payload = engine.check_in_payload(
             run_id, step_id, chore_name, step_title, image, self.manager.media_id()
         )
-        for phone in self.manager.settings.phones:
-            if engine.reached(phone.start_at, number):
-                await self._notify(phone.service, payload)
+        manager = self.manager
+        run = manager.runs.get(run_id)
+        style = manager.style_for(run) if run else manager.settings.default_style
+        for phone in engine.phones_reached(manager.settings, style, number):
+            await self._notify(phone.service, payload)
 
     async def async_send_questions(self, run: engine.Run) -> None:
         """Tell the phones that a chore started and has questions to answer.
@@ -176,9 +227,8 @@ class BoopliNudger:
             if engine.quiet_ends(now, manager.settings.quiet_hours, manager.tz) is not None:
                 return
         payload = engine.questions_payload(run.id, run.chore_name, len(run.questions))
-        for phone in manager.settings.phones:
-            if engine.reached(phone.start_at, 1):
-                await self._notify(phone.service, payload)
+        for phone in engine.phones_reached(manager.settings, manager.style_for(run), 1):
+            await self._notify(phone.service, payload)
 
     async def _notify(self, service: str, payload: dict[str, Any]) -> bool:
         if not self.hass.services.has_service("notify", service):
