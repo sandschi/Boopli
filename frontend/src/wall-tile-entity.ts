@@ -53,13 +53,15 @@ export class WallTileEntity extends WallTile {
     const unit = typeof st?.attributes?.unit_of_measurement === "string" ? ` ${st.attributes.unit_of_measurement}` : "";
     const on = st?.state === "on";
     const tappable = !!TAP[domain] && this.text("tap", "toggle") === "toggle";
-    return html`<div class="ent ${tappable ? "tap" : ""} ${on ? "on" : ""}" @click=${() => this._tap()}>
-      <div class="icon big">${ICON[domain] ?? "◻️"}</div>
+    const inside = html`<div class="icon big">${ICON[domain] ?? "◻️"}</div>
       <div>
         <div class="label">${name}</div>
         <div class="big">${st ? `${st.state}${unit}` : "not found"}</div>
-      </div>
-    </div>`;
+      </div>`;
+    // something a tap switches is a real button, so it can also be reached and used from a keyboard
+    return tappable
+      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label="${name}: ${st?.state ?? "not found"}. Switch" @click=${() => this._tap()}>${inside}</button>`
+      : html`<div class="ent ${on ? "on" : ""}">${inside}</div>`;
   }
 
   static styles = [
@@ -71,8 +73,23 @@ export class WallTileEntity extends WallTile {
         align-items: center;
         gap: 14px;
       }
+      button.ent {
+        all: unset;
+        box-sizing: border-box;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: inherit;
+        font: inherit;
+      }
       .tap {
         cursor: pointer;
+      }
+      button.ent:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 4px;
+        border-radius: 12px;
       }
       .on .icon {
         filter: drop-shadow(0 0 8px var(--primary-color));

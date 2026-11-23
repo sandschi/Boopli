@@ -110,7 +110,7 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   boards.removed.forEach((b) => out.push(`Wall board removed: ${b.name}`));
   boards.kept.forEach(({ before: b, after: a }) => {
     if (b.name !== a.name) out.push(`Wall board renamed: ${b.name} → ${a.name}`);
-    if (JSON.stringify({ c: b.columns, n: b.night, t: b.tiles }) !== JSON.stringify({ c: a.columns, n: a.night, t: a.tiles }))
+    if (JSON.stringify({ c: b.columns, r: b.rows, n: b.night, t: b.tiles }) !== JSON.stringify({ c: a.columns, r: a.rows, n: a.night, t: a.tiles }))
       out.push(`Wall board changed: ${a.name}`);
   });
 

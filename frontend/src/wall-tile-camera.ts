@@ -13,6 +13,11 @@ export class WallTileCamera extends WallTile {
     this._tick = 0;
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.requestUpdate(); // a tile put back starts its refresh again
+  }
+
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.clearInterval(this._timer);
@@ -20,6 +25,7 @@ export class WallTileCamera extends WallTile {
   }
 
   protected updated(): void {
+    if (!this.isConnected) return; // an update that was already waiting when the tile was removed
     const every = this.num("refresh_s", 10);
     if (every === this._every) return;
     this._every = every;

@@ -11845,10 +11845,12 @@ function Na(e, t, n) {
 	c.added.forEach((e) => i.push(`Wall board added: ${e.name} (${e.tiles.length} tiles)`)), c.removed.forEach((e) => i.push(`Wall board removed: ${e.name}`)), c.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(`Wall board renamed: ${e.name} → ${t.name}`), JSON.stringify({
 			c: e.columns,
+			r: e.rows,
 			n: e.night,
 			t: e.tiles
 		}) !== JSON.stringify({
 			c: t.columns,
+			r: t.rows,
 			n: t.night,
 			t: t.tiles
 		}) && i.push(`Wall board changed: ${t.name}`);
@@ -12229,14 +12231,12 @@ var Ra = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return g`<div class="center muted normal">Pick an entity in the board settings.</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || K(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on";
-		return g`<div class="ent ${Ra[n] && this.text("tap", "toggle") === "toggle" ? "tap" : ""} ${a ? "on" : ""}" @click=${() => this._tap()}>
-      <div class="icon big">${za[n] ?? "◻️"}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || K(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!Ra[n] && this.text("tap", "toggle") === "toggle", s = g`<div class="icon big">${za[n] ?? "◻️"}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : "not found"}</div>
-      </div>
-    </div>`;
+      </div>`;
+		return o ? g`<button type="button" class="ent tap ${a ? "on" : ""}" aria-label="${r}: ${t?.state ?? "not found"}. Switch" @click=${() => this._tap()}>${s}</button>` : g`<div class="ent ${a ? "on" : ""}">${s}</div>`;
 	}
 	static {
 		this.styles = [Q, o`
@@ -12246,8 +12246,23 @@ var Ra = {
         align-items: center;
         gap: 14px;
       }
+      button.ent {
+        all: unset;
+        box-sizing: border-box;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: inherit;
+        font: inherit;
+      }
       .tap {
         cursor: pointer;
+      }
+      button.ent:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 4px;
+        border-radius: 12px;
       }
       .on .icon {
         filter: drop-shadow(0 0 8px var(--primary-color));
@@ -12333,43 +12348,51 @@ var Ua = 6e5, Wa = 7, Ga = class extends Z {
 	}
 	async _load(e) {
 		let t = this.text("entity_id");
-		if (!t || !this.hass?.callApi || !e && this._loadedFor === t) return;
-		this._loadedFor = t;
+		if (!t) {
+			(this._loadedFor || this._events.length || this._error) && (this._seq += 1, this._loadedFor = "", this._events = [], this._error = "");
+			return;
+		}
+		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
+		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
 		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + Wa * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
 			this._events = e.map((e) => {
-				let t = !e.start.dateTime, n = Date.parse(e.start.dateTime ?? `${e.start.date}T00:00:00`);
+				let t = !e.start.dateTime, n = t ? String(e.start.date ?? "") : "", r = Date.parse(e.start.dateTime ?? `${n}T00:00:00`);
 				return {
 					title: e.summary ?? "(no title)",
-					at: n,
-					when: this._when(n, t)
+					at: r,
+					allDay: t,
+					date: n
 				};
 			}).filter((e) => !Number.isNaN(e.at)).sort((e, t) => e.at - t.at), this._error = "";
 		} catch {
 			n === this._seq && (this._error = "Could not read the calendar.");
 		}
 	}
-	_when(e, t) {
-		let n = this.snapshot?.time_zone, r = new Date(e), i = new Intl.DateTimeFormat("en-CA", { timeZone: n }).format(r), a = new Intl.DateTimeFormat("en-CA", { timeZone: n }).format(new Date(this.nowMs || Date.now())), o = new Intl.DateTimeFormat("en-CA", { timeZone: n }).format(new Date((this.nowMs || Date.now()) + 864e5)), s = i === a ? "Today" : i === o ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
-			timeZone: n,
+	_when(e) {
+		let t = this.snapshot?.time_zone, n = (e) => new Intl.DateTimeFormat("en-CA", { timeZone: t }).format(new Date(e)), r = (e) => {
+			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
+			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
+		}, i = n(this.nowMs || Date.now()), a = e.allDay ? e.date : n(e.at), o = a === i ? "Today" : a === r(i) ? "Tomorrow" : new Intl.DateTimeFormat(void 0, {
+			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
 			month: "short"
-		}).format(r);
-		return t ? s : `${s} ${new Intl.DateTimeFormat(void 0, {
-			timeZone: n,
+		}).format(/* @__PURE__ */ new Date(`${a}T12:00:00Z`));
+		return e.allDay ? o : `${o} ${new Intl.DateTimeFormat(void 0, {
+			timeZone: t,
 			hour: "2-digit",
 			minute: "2-digit",
 			hourCycle: "h23"
-		}).format(r)}`;
+		}).format(new Date(e.at))}`;
 	}
 	render() {
 		if (!this.text("entity_id")) return g`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
 		let e = this._events.filter((e) => e.at >= (this.nowMs || Date.now()) - 864e5).slice(0, this.num("count", 4));
 		return g`<div class="label">Calendar</div>
-      ${this._error ? g`<div class="error">${this._error}</div>` : e.length ? e.map((e) => g`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${e.when}</span></div>`) : g`<div class="normal muted">Nothing in the next week.</div>`}`;
+      ${this._error ? g`<div class="error">${this._error}</div>` : e.length ? e.map((e) => g`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : g`<div class="normal muted">Nothing in the next week.</div>`}`;
 	}
 	static {
 		this.styles = [Q, o`
@@ -12402,10 +12425,14 @@ var Ka = class extends Z {
 	constructor() {
 		super(), this._every = 0, this._tick = 0;
 	}
+	connectedCallback() {
+		super.connectedCallback(), this.requestUpdate();
+	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer), this._every = 0;
 	}
 	updated() {
+		if (!this.isConnected) return;
 		let e = this.num("refresh_s", 10);
 		e !== this._every && (this._every = e, window.clearInterval(this._timer), this._timer = window.setInterval(() => this._tick += 1, e * 1e3));
 	}
@@ -14380,7 +14407,11 @@ var bo = Symbol.for(""), xo = (e) => {
 	return e(t, ...n);
 })(g);
 // src/wall-night.ts
-function To(e, t, n) {
+function To(e) {
+	let t = /^(\d{1,2}):(\d{2})$/.exec(String(e).trim());
+	return t ? Number(t[1]) * 60 + Number(t[2]) : NaN;
+}
+function Eo(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -14398,11 +14429,11 @@ function To(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = `${i.hour}:${i.minute}`;
-	return s < o.start || s >= o.stop;
+	let s = Number(i.hour) * 60 + Number(i.minute), c = To(o.start), l = To(o.stop);
+	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Eo = 3e4, Do = class extends S {
+var Do = 3e4, Oo = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14424,14 +14455,15 @@ var Eo = 3e4, Do = class extends S {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Eo, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Do, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
-			if (!this.pickable || e.button > 0) return;
+			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
 			if (!n || !r) return;
 			let i = r.tiles.find((e) => e.id === n), a = this._cellAt(e.clientX, e.clientY);
 			i && a && (this._drag = {
 				id: n,
+				pid: e.pointerId,
 				mode: t.hasAttribute("data-resize") ? "resize" : "move",
 				gx: a.cx - i.x,
 				gy: a.cy - i.y,
@@ -14441,7 +14473,7 @@ var Eo = 3e4, Do = class extends S {
 			}, e.currentTarget.setPointerCapture(e.pointerId), e.preventDefault());
 		}, this._move = (e) => {
 			let t = this._drag, n = this._board();
-			if (!t || !n || !t.moved && Math.hypot(e.clientX - t.x0, e.clientY - t.y0) < 6) return;
+			if (!t || !n || e.pointerId !== t.pid || !t.moved && Math.hypot(e.clientX - t.x0, e.clientY - t.y0) < 6) return;
 			t.moved = !0;
 			let r = this._cellAt(e.clientX, e.clientY), i = n.tiles.find((e) => e.id === t.id);
 			if (!r || !i) return;
@@ -14455,21 +14487,21 @@ var Eo = 3e4, Do = class extends S {
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
 			}, o = Za(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
-		}, this._up = () => {
-			let e = this._drag;
-			if (this._drag = void 0, !e) return;
-			if (!e.moved) {
-				this._pick(e.id);
+		}, this._up = (e) => {
+			let t = this._drag;
+			if (!t || e.pointerId !== t.pid) return;
+			if (this._drag = void 0, !t.moved) {
+				this._pick(t.id);
 				return;
 			}
-			let t = this._live;
-			this._live = null, t && this.dispatchEvent(new CustomEvent("tiles-change", {
-				detail: t,
+			let n = this._live;
+			this._live = null, n && this.dispatchEvent(new CustomEvent("tiles-change", {
+				detail: n,
 				bubbles: !0,
 				composed: !0
 			}));
-		}, this._cancel = () => {
-			this._drag = void 0, this._live = null;
+		}, this._cancel = (e) => {
+			this._drag && e.pointerId !== this._drag.pid || (this._drag = void 0, this._live = null);
 		}, this._fullscreen = () => {
 			let e = document.documentElement;
 			document.fullscreenElement ? document.exitFullscreen() : e.requestFullscreen?.().catch(() => void 0);
@@ -14484,7 +14516,15 @@ var Eo = 3e4, Do = class extends S {
 	async _keepAwake() {
 		try {
 			let e = navigator.wakeLock;
-			e && !this._lock && (this._lock = await e.request("screen")), this._lock && this._lock.addEventListener?.("release", () => this._lock = void 0);
+			if (!e || this._lock) return;
+			let t = await e.request("screen");
+			if (!this.isConnected || this._lock) {
+				t.release().catch(() => void 0);
+				return;
+			}
+			this._lock = t, t.addEventListener?.("release", () => {
+				this._lock === t && (this._lock = void 0);
+			});
 		} catch {}
 	}
 	_board() {
@@ -14492,10 +14532,14 @@ var Eo = 3e4, Do = class extends S {
 	}
 	render() {
 		let e = this._board();
-		if (!this.snapshot || !e) return g`<div class="note">${this.snapshot ? "No board yet." : "Loading…"}</div>`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Bt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && To(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = this.snapshot.settings && !this.preview && this.snapshot.away?.active ? this.snapshot.away : null, o = !!this.snapshot.away_now;
+		if (!this.snapshot || !e) return g`<div class="note">${this.snapshot ? "No board yet. Make one in Settings, on the Wall board card." : "Loading…"}</div>
+        ${this.preview ? y : g`<div class="controls"><button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
+			bubbles: !0,
+			composed: !0
+		}))}>✕</button></div>`}`;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Bt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Eo(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return g`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
-      ${a ? g`<div class="away" role="status">🧳 <b>${o ? "Away mode is on" : "Away mode is planned"}</b> <span>${Rt(a, this.nowMs, t, o)}</span></div>` : y}
+      ${a ? g`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${Rt(a, this.nowMs, t, !0)}</span></div>` : y}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : y}
@@ -14757,9 +14801,9 @@ var Eo = 3e4, Do = class extends S {
   `;
 	}
 };
-customElements.define("boopli-wall", Do);
+customElements.define("boopli-wall", Oo);
 // src/boopli-wall-edit.ts
-var Oo = 10, ko = 30, Ao = 40, jo = [
+var ko = 10, Ao = 30, jo = 40, Mo = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -14776,11 +14820,11 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 	"automation",
 	"person",
 	"media_player"
-], Mo = [
+], No = [
 	["dim", "Dim the screen"],
 	["black", "Black, with a small clock"],
 	["off", "Keep as it is"]
-], No = [
+], Po = [
 	[
 		"window",
 		"This window",
@@ -14796,10 +14840,10 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		"Upright",
 		"A tablet hung upright (9:16)"
 	]
-], Po = {
+], Fo = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, Fo = class extends S {
+}, Io = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14837,12 +14881,26 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || io(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
-		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, JSON.stringify(e)])), r = new Map(t.map((e) => [e.id, e])), i = [];
-		for (let t of e) if (!n.has(t.id)) i.push(t);
-		else if (r.has(t.id)) i.push(JSON.stringify(r.get(t.id)) === n.get(t.id) ? t : r.get(t.id));
-		else continue;
-		for (let r of t) !e.some((e) => e.id === r.id) && !n.has(r.id) && i.push(r);
-		return structuredClone(i);
+		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
+		for (let t of e) {
+			let e = i.get(t.id);
+			if (!r.has(t.id)) a.push(t);
+			else if (!e) continue;
+			else if (JSON.stringify(e) === r.get(t.id)) a.push(t);
+			else {
+				let r = n.get(t.id), i = { ...t };
+				for (let t of [
+					"name",
+					"columns",
+					"rows",
+					"night",
+					"tiles"
+				]) JSON.stringify(e[t]) !== JSON.stringify(r[t]) && (i[t] = e[t]);
+				a.push(i);
+			}
+		}
+		for (let n of t) !e.some((e) => e.id === n.id) && !r.has(n.id) && a.push(n);
+		return structuredClone(a);
 	}
 	updated(e) {
 		this._ro || this._watchStage(), e.has("_modal") && this._modal && this.renderRoot.querySelector(".modal")?.focus();
@@ -14864,7 +14922,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : Po[this._view];
+		return this._view === "window" ? this._win : Fo[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -14891,7 +14949,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= Oo) return;
+		if (!this._boards || this._boards.length >= ko) return;
 		let e = {
 			id: Y(),
 			name: this._uniqueName("My board"),
@@ -14909,8 +14967,8 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= ko) {
-			this._error = `A board can have ${ko} tiles at most.`, this._modal = "";
+		if (t.tiles.length >= Ao) {
+			this._error = `A board can have ${Ao} tiles at most.`, this._modal = "";
 			return;
 		}
 		let n = no(e, t.tiles, t.columns, t.rows);
@@ -14970,8 +15028,12 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 			composed: !0
 		}));
 	}
+	_savedName() {
+		let e = JSON.parse(this._base);
+		return (e.find((e) => e.id === this._id) ?? e[0])?.name ?? this.boardName;
+	}
 	_cancel() {
-		this._dirty && !this._askDiscard ? this._askDiscard = !0 : this._exit(this._cur?.name ?? this.boardName);
+		this._dirty && !this._askDiscard ? this._askDiscard = !0 : this._exit(this._savedName());
 	}
 	async _save() {
 		let e = this.snapshot?.settings;
@@ -15010,7 +15072,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = q(this.hass, t.domains ?? jo), a = `dl-${e.id}-${t.key}`;
+				let i = q(this.hass, t.domains ?? Mo), a = `dl-${e.id}-${t.key}`;
 				return g`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder="Start typing a name…" .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
@@ -15018,7 +15080,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
           ${n && !this.hass?.states[String(n)] ? g`<div class="error small">${n} was not found.</div>` : y}</div>`;
 			}
 			default: return g`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${Ao} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? g`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : g`<input id=${r} maxlength=${jo} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
@@ -15029,12 +15091,8 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
       <div class="mhead"><h2>${n?.emoji ?? "◻️"} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? g`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : y}
       <div class="srow">
-        ${this._numField("tw", "Cells wide", t.w, 1, e.columns - t.x, (e) => {
-			this._resize(e, t.h);
-		})}
-        ${this._numField("th", "Cells tall", t.h, 1, e.rows - t.y, (e) => {
-			this._resize(t.w, e);
-		})}
+        ${this._numField("tw", "Cells wide", t.w, 1, e.columns - t.x, (e) => (this._resize(e, t.h), this._tile?.w))}
+        ${this._numField("th", "Cells tall", t.h, 1, e.rows - t.y, (e) => (this._resize(t.w, e), this._tile?.h))}
       </div>
       <div class="mfoot">
         <button class="danger" @click=${() => this._remove()}>Remove this tile</button>
@@ -15048,7 +15106,7 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
       <div class="mhead"><h2>🖥️ This board</h2></div>
       <div class="field">
         <label for="bname">Name</label>
-        <input id="bname" maxlength=${Ao} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${jo} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", "Columns", e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -15063,13 +15121,13 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
       <div class="field">
         <label for="bnight">At night</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${Mo.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${No.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
       <p class="small">Link for the tablet's start page: <code>${ao(e)}</code> (after you save)</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= Oo} @click=${() => this._newBoard()}>+ New board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= ko} @click=${() => this._newBoard()}>+ New board</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>Done</button>
@@ -15103,12 +15161,12 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
           <button @click=${() => this._modal = "board"}>⚙ Board</button>
           <button @click=${() => this._modal = "add"}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
-            ${No.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${Po.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
           <span class="spacer"></span>
           ${this._askDiscard ? g`<span class="small">Throw away your changes?</span>
-                <button class="danger" @click=${() => this._exit(e.name)}>Yes, discard</button>
+                <button class="danger" @click=${() => this._exit(this._savedName())}>Yes, discard</button>
                 <button @click=${() => this._askDiscard = !1}>Keep editing</button>` : g`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
                 <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
         </div>
@@ -15368,14 +15426,14 @@ var Oo = 10, ko = 30, Ao = 40, jo = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", Fo);
+customElements.define("boopli-wall-edit", Io);
 // src/boopli-panel.ts
-var Io = {
+var Lo = {
 	today: "Today",
 	chores: "Chores",
 	home: "My home",
 	settings: "Settings"
-}, Lo = class extends S {
+}, Ro = class extends S {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15581,11 +15639,11 @@ var Io = {
         ${this.narrow ? g`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>☰</button>` : y}
         <h1>Boopli</h1>
         <nav>
-          ${Object.keys(Io).map((t) => g`<button
+          ${Object.keys(Lo).map((t) => g`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${Io[t]}
+              ${Lo[t]}
               ${e[t] ? g`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : y}
             </button>`)}
         </nav>
@@ -15781,5 +15839,5 @@ var Io = {
     `];
 	}
 };
-customElements.define("boopli-panel", Lo);
-export { Lo as BoopliPanel };
+customElements.define("boopli-panel", Ro);
+export { Ro as BoopliPanel };

@@ -41,7 +41,7 @@ export class BoopliWall extends LitElement {
   declare _awakeUntil: number;
   declare _live: Tile[] | null; // the tiles as they are while one is being dragged or resized
 
-  private _drag?: { id: string; mode: "move" | "resize"; gx: number; gy: number; x0: number; y0: number; moved: boolean };
+  private _drag?: { id: string; pid: number; mode: "move" | "resize"; gx: number; gy: number; x0: number; y0: number; moved: boolean };
 
   private _lock?: { release(): Promise<void> };
   private _awakeTimer?: number;
@@ -80,8 +80,17 @@ export class BoopliWall extends LitElement {
   private async _keepAwake(): Promise<void> {
     try {
       const wl = (navigator as Navigator & { wakeLock?: { request(t: "screen"): Promise<{ release(): Promise<void> }> } }).wakeLock;
-      if (wl && !this._lock) this._lock = await wl.request("screen");
-      this._lock && (this._lock as unknown as EventTarget).addEventListener?.("release", () => (this._lock = undefined));
+      if (!wl || this._lock) return;
+      const sentinel = await wl.request("screen");
+      if (!this.isConnected || this._lock) {
+        // the wall was left while the request was on its way (or another one won): do not keep the screen on for nothing
+        void sentinel.release().catch(() => undefined);
+        return;
+      }
+      this._lock = sentinel;
+      (sentinel as unknown as EventTarget).addEventListener?.("release", () => {
+        if (this._lock === sentinel) this._lock = undefined;
+      });
     } catch {
       /* the screen may still stay on by the device's own settings */
     }
@@ -99,7 +108,10 @@ export class BoopliWall extends LitElement {
 
   render() {
     const board = this._board();
-    if (!this.snapshot || !board) return html`<div class="note">${this.snapshot ? "No board yet." : "Loading…"}</div>`;
+    if (!this.snapshot || !board) {
+      return html`<div class="note">${this.snapshot ? "No board yet. Make one in Settings, on the Wall board card." : "Loading…"}</div>
+        ${this.preview ? nothing : html`<div class="controls"><button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button></div>`}`;
+    }
     const tz = this.snapshot.time_zone;
     const dueNow = !this.preview && !!buildToday(this.snapshot, this.nowMs).now;
     const night =
@@ -109,11 +121,10 @@ export class BoopliWall extends LitElement {
       !dueNow &&
       Date.now() >= this._awakeUntil;
     const down = !this.preview && this.hass?.connected === false;
-    const away = this.snapshot.settings && !this.preview && this.snapshot.away?.active ? this.snapshot.away : null;
-    const onNow = !!this.snapshot.away_now;
+    const away = !this.preview && this.snapshot.away_now ? this.snapshot.away : null; // only while it is on, not while it is only planned
     return html`<div class="wall ${night ? `night-${board.night}` : ""}" @pointerdown=${this._wake}>
       ${away
-        ? html`<div class="away" role="status">🧳 <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> <span>${awayWhen(away, this.nowMs, tz, onNow)}</span></div>`
+        ? html`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${awayWhen(away, this.nowMs, tz, true)}</span></div>`
         : nothing}
       <div class="stage">
       <div class="grid" style="--cols:${board.columns};--rows:${board.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
@@ -189,7 +200,7 @@ export class BoopliWall extends LitElement {
   }
 
   private _down = (e: PointerEvent): void => {
-    if (!this.pickable || e.button > 0) return;
+    if (!this.pickable || e.button > 0 || this._drag) return; // a second finger does not start or replace a drag
     const el = e.target as HTMLElement;
     const id = el.dataset?.id;
     const board = this._board();
@@ -197,7 +208,7 @@ export class BoopliWall extends LitElement {
     const tile = board.tiles.find((t) => t.id === id);
     const at = this._cellAt(e.clientX, e.clientY);
     if (!tile || !at) return;
-    this._drag = { id, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
+    this._drag = { id, pid: e.pointerId, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     e.preventDefault();
   };
@@ -205,7 +216,7 @@ export class BoopliWall extends LitElement {
   private _move = (e: PointerEvent): void => {
     const d = this._drag;
     const board = this._board();
-    if (!d || !board) return;
+    if (!d || !board || e.pointerId !== d.pid) return;
     if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 6) return; // still a tap
     d.moved = true;
     const at = this._cellAt(e.clientX, e.clientY);
@@ -219,10 +230,10 @@ export class BoopliWall extends LitElement {
     if (next) this._live = next; // null: it would not fit on the board, keep what was shown
   };
 
-  private _up = (): void => {
+  private _up = (e: PointerEvent): void => {
     const d = this._drag;
+    if (!d || e.pointerId !== d.pid) return; // only the finger that started the drag ends it
     this._drag = undefined;
-    if (!d) return;
     if (!d.moved) {
       this._pick(d.id);
       return;
@@ -232,7 +243,8 @@ export class BoopliWall extends LitElement {
     if (tiles) this.dispatchEvent(new CustomEvent("tiles-change", { detail: tiles, bubbles: true, composed: true }));
   };
 
-  private _cancel = (): void => {
+  private _cancel = (e: PointerEvent): void => {
+    if (this._drag && e.pointerId !== this._drag.pid) return;
     this._drag = undefined;
     this._live = null;
   };

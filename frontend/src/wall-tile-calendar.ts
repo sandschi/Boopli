@@ -8,8 +8,9 @@ interface CalendarEvent {
 
 interface Line {
   title: string;
-  when: string;
-  at: number;
+  at: number; // when it starts (for an all-day event: local midnight of its date, only used for the order)
+  allDay: boolean;
+  date: string; // an all-day event keeps its calendar date as it is (YYYY-MM-DD)
 }
 
 const REFRESH_MS = 10 * 60 * 1000;
@@ -47,7 +48,21 @@ export class WallTileCalendar extends WallTile {
   /** Ask Home Assistant for the next week (when the calendar changed, or on the timer). */
   private async _load(force: boolean): Promise<void> {
     const id = this.text("entity_id");
-    if (!id || !this.hass?.callApi || (!force && this._loadedFor === id)) return;
+    if (!id) {
+      // no calendar picked (or picked away): forget the old one, and what a pending request may still bring
+      if (this._loadedFor || this._events.length || this._error) {
+        this._seq += 1;
+        this._loadedFor = "";
+        this._events = [];
+        this._error = "";
+      }
+      return;
+    }
+    if (!this.hass?.callApi || (!force && this._loadedFor === id)) return;
+    if (this._loadedFor !== id) {
+      this._events = []; // another calendar: do not show the old one's events while this one loads
+      this._error = "";
+    }
     this._loadedFor = id;
     const seq = ++this._seq;
     const start = new Date();
@@ -59,10 +74,11 @@ export class WallTileCalendar extends WallTile {
       );
       if (seq !== this._seq) return; // a newer request has been made since
       this._events = events
-        .map((e) => {
+        .map((e): Line => {
           const allDay = !e.start.dateTime;
-          const at = Date.parse(e.start.dateTime ?? `${e.start.date}T00:00:00`);
-          return { title: e.summary ?? "(no title)", at, when: this._when(at, allDay) };
+          const date = allDay ? String(e.start.date ?? "") : "";
+          const at = Date.parse(e.start.dateTime ?? `${date}T00:00:00`);
+          return { title: e.summary ?? "(no title)", at, allDay, date };
         })
         .filter((l) => !Number.isNaN(l.at))
         .sort((a, b) => a.at - b.at);
@@ -72,15 +88,25 @@ export class WallTileCalendar extends WallTile {
     }
   }
 
-  private _when(at: number, allDay: boolean): string {
+  /** The words for when an event is, worked out from the time now (so "Tomorrow" turns into "Today" at midnight). */
+  private _when(line: Line): string {
     const tz = this.snapshot?.time_zone;
-    const d = new Date(at);
-    const day = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(d);
-    const today = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date(this.nowMs || Date.now()));
-    const tomorrow = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date((this.nowMs || Date.now()) + 86_400_000));
-    const name = day === today ? "Today" : day === tomorrow ? "Tomorrow" : new Intl.DateTimeFormat(undefined, { timeZone: tz, weekday: "short", day: "numeric", month: "short" }).format(d);
-    if (allDay) return name;
-    return `${name} ${new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d)}`;
+    const dayOf = (ms: number): string => new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date(ms)); // YYYY-MM-DD in Home Assistant's time zone
+    const nextDay = (day: string): string => {
+      const d = new Date(`${day}T12:00:00Z`); // a calendar date plus one, not 24 hours (which is wrong around the clock change)
+      d.setUTCDate(d.getUTCDate() + 1);
+      return d.toISOString().slice(0, 10);
+    };
+    const today = dayOf(this.nowMs || Date.now());
+    const day = line.allDay ? line.date : dayOf(line.at);
+    const name =
+      day === today
+        ? "Today"
+        : day === nextDay(today)
+          ? "Tomorrow"
+          : new Intl.DateTimeFormat(undefined, { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
+    if (line.allDay) return name;
+    return `${name} ${new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;
   }
 
   render() {
@@ -90,7 +116,7 @@ export class WallTileCalendar extends WallTile {
       ${this._error
         ? html`<div class="error">${this._error}</div>`
         : lines.length
-          ? lines.map((l) => html`<div class="row normal"><span class="t">${l.title}</span><span class="muted small">${l.when}</span></div>`)
+          ? lines.map((l) => html`<div class="row normal"><span class="t">${l.title}</span><span class="muted small">${this._when(l)}</span></div>`)
           : html`<div class="normal muted">Nothing in the next week.</div>`}`;
   }
 

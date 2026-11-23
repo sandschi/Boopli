@@ -130,13 +130,24 @@ export class BoopliWallEdit extends LitElement {
    */
   private _merged(latest: Board[]): Board[] {
     const draft = this._boards ?? [];
-    const base = new Map((JSON.parse(this._base) as Board[]).map((b) => [b.id, JSON.stringify(b)]));
+    const was = new Map((JSON.parse(this._base) as Board[]).map((b) => [b.id, b]));
+    const base = new Map([...was].map(([id, b]) => [id, JSON.stringify(b)]));
     const mine = new Map(draft.map((b) => [b.id, b]));
     const out: Board[] = [];
     for (const b of latest) {
+      const my = mine.get(b.id);
       if (!base.has(b.id)) out.push(b); // made elsewhere meanwhile
-      else if (!mine.has(b.id)) continue; // deleted here
-      else out.push(JSON.stringify(mine.get(b.id)) !== base.get(b.id) ? mine.get(b.id)! : b);
+      else if (!my) continue; // deleted here
+      else if (JSON.stringify(my) === base.get(b.id)) out.push(b); // not changed here
+      else {
+        // changed here: take what was changed here, and keep what was changed elsewhere in the other parts
+        const was0 = was.get(b.id)!;
+        const merged: Board = { ...b };
+        for (const key of ["name", "columns", "rows", "night", "tiles"] as const) {
+          if (JSON.stringify(my[key]) !== JSON.stringify(was0[key])) (merged as unknown as Record<string, unknown>)[key] = my[key];
+        }
+        out.push(merged);
+      }
     }
     for (const b of draft) if (!latest.some((l) => l.id === b.id) && !base.has(b.id)) out.push(b); // added here
     return structuredClone(out);
@@ -338,12 +349,18 @@ export class BoopliWallEdit extends LitElement {
     this.dispatchEvent(new CustomEvent("wall-edit-exit", { detail: name, bubbles: true, composed: true }));
   }
 
+  /** The name the board being edited has on the server (not a new name typed here, nor a board that was only made here). */
+  private _savedName(): string {
+    const saved = JSON.parse(this._base) as Board[];
+    return (saved.find((b) => b.id === this._id) ?? saved[0])?.name ?? this.boardName;
+  }
+
   private _cancel(): void {
     if (this._dirty && !this._askDiscard) {
       this._askDiscard = true;
       return;
     }
-    this._exit(this._cur?.name ?? this.boardName);
+    this._exit(this._savedName());
   }
 
   private async _save(): Promise<void> {
@@ -420,9 +437,11 @@ export class BoopliWallEdit extends LitElement {
       <div class="srow">
         ${this._numField("tw", "Cells wide", tile.w, 1, cur.columns - tile.x, (n) => {
           this._resize(n, tile.h);
+          return this._tile?.w; // what it is now (the old width when there was no room)
         })}
         ${this._numField("th", "Cells tall", tile.h, 1, cur.rows - tile.y, (n) => {
           this._resize(tile.w, n);
+          return this._tile?.h;
         })}
       </div>
       <div class="mfoot">
@@ -500,7 +519,7 @@ export class BoopliWallEdit extends LitElement {
           <span class="spacer"></span>
           ${this._askDiscard
             ? html`<span class="small">Throw away your changes?</span>
-                <button class="danger" @click=${() => this._exit(cur.name)}>Yes, discard</button>
+                <button class="danger" @click=${() => this._exit(this._savedName())}>Yes, discard</button>
                 <button @click=${() => (this._askDiscard = false)}>Keep editing</button>`
             : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
                 <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
