@@ -1,0 +1,8 @@
+# Documentation and workflow changes do not need a CodeRabbit review (the docs site is
+# generated scaffolding plus prose), so they do not use up the hourly review limit.
+reviews:
+  path_filters:
+    - "!docs-site/**"
+    - "!.github/**"
+    - "!**/*.md"
+    - "!**/*.mdx"
