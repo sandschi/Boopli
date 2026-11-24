@@ -6,6 +6,7 @@ import asyncio
 import json
 import re
 import sys
+import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -66,8 +67,10 @@ class FakeRoutine:
 
 def make_manager() -> manager_module.BoopliManager:
     hass = MagicMock()
+    hass.async_add_executor_job = AsyncMock(side_effect=lambda fn, *args: fn(*args))
     m = manager_module.BoopliManager(hass)
-    m._secret_store = MagicMock(async_save=AsyncMock(), async_load=AsyncMock(return_value={}))
+    path = Path(tempfile.mkdtemp()) / ".storage" / "boopli_claude"
+    m._secret_store = MagicMock(async_save=AsyncMock(), async_load=AsyncMock(return_value={}), path=str(path))
     m._claude_webhook_id = "hook123"
     m._claude_token = TOKEN
     m.settings.ai.claude_enabled = True
@@ -260,10 +263,12 @@ def test_the_counter_forgets_fires_older_than_an_hour():
 def _request(body, length=None):
     request = MagicMock()
     request.content_length = length
-    if isinstance(body, Exception):
-        request.json = AsyncMock(side_effect=body)
-    else:
-        request.json = AsyncMock(return_value=body)
+    raw = body if isinstance(body, bytes) else (b"{not json" if isinstance(body, Exception) else json.dumps(body).encode())
+
+    async def read(n=-1):  # like aiohttp's stream: at most n bytes
+        return raw if n < 0 else raw[:n]
+
+    request.content.read = read
     return request
 
 
@@ -293,6 +298,54 @@ def test_an_unknown_or_broken_post_is_refused():
     run(body)
 
 
+def test_a_streamed_body_over_the_limit_is_refused_and_keeps_the_request_id():
+    async def body(m, fake):
+        request_id, future = m._claude_waiting.new()
+        big = json.dumps({"request_id": request_id, "answer": "x" * (routine.MAX_ANSWER_BYTES + 10)}).encode()
+        # No declared length (chunked): the limit is enforced while reading.
+        refused = await m._handle_claude_webhook(m.hass, "hook123", _request(big, length=None))
+        assert refused.status == 413
+        assert not future.done()  # the id was not used up
+        ok = await m._handle_claude_webhook(m.hass, "hook123", _request({"request_id": request_id, "answer": 1}))
+        assert ok.status == 200
+
+    run(body)
+
+
+def test_a_bad_home_assistant_address_is_refused():
+    for bad in ("https://[home.example.org", "https://ha.example.org/#x", "https://ha.example.org/?a=1",
+                "https://", "https://ha.example.org:99999", "ftp://ha.example.org"):
+        with pytest.raises(routine.RoutineError):
+            routine.clean_ha_url(bad)
+    assert routine.clean_ha_url("") == ""
+    assert routine.clean_ha_url(" https://ha.example.org:8123/ ") == "https://ha.example.org:8123"
+
+
+def test_a_bad_stored_address_does_not_break_the_snapshot():
+    async def body(m, fake):
+        m.settings.ai.claude_ha_url = "https://[home.example.org"  # as if imported
+        assert m.claude_status()["callback_host"] == ""
+        m.snapshot()
+
+    run(body)
+
+
+def test_an_unreadable_secret_file_does_not_stop_the_start_or_get_overwritten():
+    async def body(m, fake):
+        m._secret_store.async_load = AsyncMock(side_effect=RuntimeError("newer version"))
+        m._claude_webhook_id = ""
+        m._claude_token = ""
+        await m._async_load_claude_secrets()  # must not raise
+        assert m._claude_secrets_ok is False
+        assert m._claude_webhook_id == ""
+        with pytest.raises(manager_module.BoopliError):
+            await m.async_set_claude_token("N" * 40)
+        m._secret_store.async_save.assert_not_called()
+        assert not Path(m._secret_store.path).exists()  # nothing was written over it
+
+    run(body)
+
+
 # --- the token is a secret -----------------------------------------------------------------------
 
 
@@ -300,8 +353,9 @@ def test_the_token_is_nowhere_in_what_the_panel_or_a_backup_gets():
     async def body(m, fake):
         await m.async_set_claude_token("  " + TOKEN + "  ")
         assert m._claude_token == TOKEN
-        saved = m._secret_store.async_save.call_args.args[0]
-        assert saved["token"] == TOKEN  # it is kept, in its own place
+        envelope = json.loads(Path(m._secret_store.path).read_text())
+        assert envelope["version"] == 1 and envelope["key"] == manager_module.SECRET_STORAGE_KEY
+        assert envelope["data"]["token"] == TOKEN  # it is kept, in its own place
 
         everything = json.dumps(m.snapshot()) + json.dumps(m._data_to_save())
         everything += json.dumps(m.export_backup(list(engine.BACKUP_PARTS), "0"))
@@ -457,9 +511,10 @@ def test_a_retry_after_an_unreadable_answer_gets_fresh_links():
 
 def test_a_failed_token_save_keeps_the_old_token():
     async def body(m, fake):
-        m._secret_store.async_save = AsyncMock(side_effect=OSError("disk full"))
-        with pytest.raises(manager_module.BoopliError) as err:
-            await m.async_set_claude_token("N" * 40)
+        # The failure is at the file write itself (Home Assistant's Store would hide this one).
+        with patch.object(manager_module, "write_utf8_file_atomic", side_effect=OSError("disk full")):
+            with pytest.raises(manager_module.BoopliError) as err:
+                await m.async_set_claude_token("N" * 40)
         assert "old one is still in use" in str(err.value)
         assert m._claude_token == TOKEN  # nothing changed in the running manager
         assert m.claude_status()["token_set"] is True

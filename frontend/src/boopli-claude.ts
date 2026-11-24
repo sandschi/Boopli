@@ -53,8 +53,9 @@ export class BoopliClaude extends LitElement {
     this._note = "";
   }
 
-  private async _saveToken(): Promise<void> {
-    if (!this.hass) return;
+  /** Saves the typed token (empty = remove). Returns whether it worked. */
+  private async _saveToken(): Promise<boolean> {
+    if (!this.hass) return false;
     this._busy = true;
     this._bad = false;
     try {
@@ -62,9 +63,11 @@ export class BoopliClaude extends LitElement {
       this._token = "";
       this._changing = false;
       this._note = "Token saved. Boopli keeps it out of backups and never shows it again.";
+      return true;
     } catch (err) {
       this._bad = true;
       this._note = errorMessage(err);
+      return false;
     } finally {
       this._busy = false;
     }
@@ -72,8 +75,7 @@ export class BoopliClaude extends LitElement {
 
   private async _removeToken(): Promise<void> {
     this._token = "";
-    await this._saveToken();
-    this._note = "Token removed.";
+    if (await this._saveToken()) this._note = "Token removed.";
   }
 
   private async _test(): Promise<void> {

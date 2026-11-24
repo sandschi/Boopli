@@ -10,7 +10,9 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import json
 import logging
+import os
 import time
 import uuid
 from collections.abc import Callable
@@ -40,6 +42,7 @@ from homeassistant.helpers.event import (
 )
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
+from homeassistant.util.file import write_utf8_file_atomic
 
 from . import breakdown, engine, routine
 from .const import DOMAIN
@@ -116,7 +119,10 @@ class BoopliManager:
         self._alarm_stuck: list[str] = []  # alarm devices that may still be on from before a restart
         self._unsub_alarm_retry: CALLBACK_TYPE | None = None
         # Ask Claude (the optional routine): secret storage, fire counter, waiting requests
-        self._secret_store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, SECRET_STORAGE_KEY)
+        self._secret_store: Store[dict[str, Any]] = Store(
+            hass, STORAGE_VERSION, SECRET_STORAGE_KEY, private=True
+        )
+        self._claude_secrets_ok = True  # False when the secret file could not be read
         self._claude_token = ""
         self._claude_webhook_id = ""
         self._claude_fires = routine.FireCounter()
@@ -1338,12 +1344,25 @@ class BoopliManager:
 
     async def _async_load_claude_secrets(self) -> None:
         """Load the token and webhook id, make the webhook id if there is none, open the webhook."""
-        secrets = await self._secret_store.async_load() or {}
+        try:
+            secrets = await self._secret_store.async_load() or {}
+        except Exception as err:  # noqa: BLE001 - the optional extra must never stop the core
+            # Keep the unreadable file as it is (it may be from a newer version) and run
+            # without Ask Claude.
+            _LOGGER.error("Could not read the Ask Claude secrets, Ask Claude stays off: %s", err)
+            self._claude_secrets_ok = False
+            return
         self._claude_token = str(secrets.get("token") or "")
         self._claude_webhook_id = str(secrets.get("webhook_id") or "")
         if not self._claude_webhook_id:
             self._claude_webhook_id = webhook.async_generate_id()
-            await self._async_save_claude_secrets()
+            try:
+                await self._async_save_claude_secrets()
+            except Exception as err:  # noqa: BLE001
+                _LOGGER.error("Could not save the Ask Claude secrets, Ask Claude stays off: %s", err)
+                self._claude_secrets_ok = False
+                self._claude_webhook_id = ""
+                return
         webhook.async_register(
             self.hass,
             DOMAIN,
@@ -1355,18 +1374,32 @@ class BoopliManager:
         )
 
     async def _async_save_claude_secrets(self, token: str | None = None) -> None:
-        await self._secret_store.async_save(
-            {
+        """Write the secret file. Raises when the write fails.
+
+        Home Assistant's own Store.async_save logs a failed write and carries on, so it cannot
+        tell us the token did not reach the disk. The file is written here instead, in the
+        same format, so the Store still reads it back.
+        """
+        envelope = {
+            "version": STORAGE_VERSION,
+            "minor_version": 1,
+            "key": SECRET_STORAGE_KEY,
+            "data": {
                 "token": self._claude_token if token is None else token,
                 "webhook_id": self._claude_webhook_id,
-            }
-        )
+            },
+        }
+        await self.hass.async_add_executor_job(self._write_secret_file, json.dumps(envelope))
+
+    def _write_secret_file(self, text: str) -> None:
+        os.makedirs(os.path.dirname(self._secret_store.path), exist_ok=True)
+        write_utf8_file_atomic(self._secret_store.path, text, private=True)
 
     def _claude_callback_host(self) -> str:
         """The host name Claude reaches Home Assistant at (what its network settings must allow)."""
         try:
             return urlparse(self._claude_base_url()).hostname or ""
-        except BoopliError:
+        except (BoopliError, ValueError):
             return ""
 
     def claude_status(self) -> dict[str, Any]:
@@ -1385,6 +1418,11 @@ class BoopliManager:
             new = routine.clean_token(token)
         except routine.RoutineError as err:
             raise BoopliError(str(err)) from err
+        if not self._claude_secrets_ok:
+            raise BoopliError(
+                "Boopli could not read its saved Ask Claude settings, so it will not overwrite them. "
+                "Check the Home Assistant log."
+            )
         # The new token only becomes active once it is saved: a failed save changes nothing.
         try:
             await self._async_save_claude_secrets(new)
@@ -1398,7 +1436,11 @@ class BoopliManager:
         """The web address Claude reaches Home Assistant at (no slash at the end)."""
         base = self.settings.ai.claude_ha_url
         if base:
-            return base.rstrip("/")
+            try:
+                # Also checks values that came in from a stored or imported file.
+                return routine.clean_ha_url(base)
+            except routine.RoutineError as err:
+                raise BoopliError(str(err)) from err
         try:
             return get_url(self.hass, allow_internal=False, prefer_external=True).rstrip("/")
         except NoURLAvailableError as err:
@@ -1428,10 +1470,15 @@ class BoopliManager:
         self, hass: HomeAssistant, webhook_id: str, request: web.Request
     ) -> web.Response:
         """The routine posts {request_id, answer} here. Each request id is accepted once."""
-        if request.content_length and request.content_length > routine.MAX_ANSWER_BYTES:
+        limit = routine.MAX_ANSWER_BYTES
+        if request.content_length and request.content_length > limit:
+            return web.Response(status=413)
+        # A chunked body has no declared size: read at most one byte over the limit.
+        raw = await request.content.read(limit + 1)
+        if len(raw) > limit:
             return web.Response(status=413)
         try:
-            body = await request.json()
+            body = json.loads(raw.decode("utf-8"))
         except (ValueError, UnicodeDecodeError):
             return web.Response(status=400, text="Send JSON.")
         if not isinstance(body, dict) or "answer" not in body:

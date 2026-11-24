@@ -5,10 +5,10 @@ export function agentOn(snapshot?: Snapshot): boolean {
   return !!snapshot?.settings.ai?.enabled;
 }
 
-/** Is "Ask Claude" switched on and set up (address and token)? */
+/** Is "Ask Claude" switched on and set up (address, token and an address Claude can answer to)? */
 export function claudeReady(snapshot?: Snapshot): boolean {
   const ai = snapshot?.settings.ai;
-  return !!(ai?.claude_enabled && ai.claude_fire_url && snapshot?.claude?.token_set);
+  return !!(ai?.claude_enabled && ai.claude_fire_url && snapshot?.claude?.token_set && snapshot.claude.callback_host);
 }
 
 /** Is any AI helper available? */

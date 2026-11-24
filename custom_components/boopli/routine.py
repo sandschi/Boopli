@@ -14,6 +14,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
 import aiohttp
 
@@ -70,8 +71,16 @@ def clean_ha_url(value: str) -> str:
     url = (value or "").strip().rstrip("/")
     if not url:
         return ""
-    if not url.startswith(("https://", "http://")) or " " in url or "?" in url:
-        raise RoutineError("The Home Assistant address must start with https:// (or http://).")
+    problem = RoutineError("The Home Assistant address must start with https:// (or http://).")
+    if not url.startswith(("https://", "http://")) or any(c.isspace() for c in url):
+        raise problem
+    try:
+        parts = urlparse(url)
+        parts.port  # noqa: B018 - raises ValueError for a bad port
+    except ValueError as err:
+        raise problem from err
+    if not parts.hostname or parts.query or parts.fragment or "?" in url or "#" in url:
+        raise problem
     return url
 
 

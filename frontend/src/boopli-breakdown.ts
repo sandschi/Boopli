@@ -808,6 +808,11 @@ export class BoopliBreakdown extends LitElement {
       <div class="inline-actions">
         <button type="button" @click=${() => this._add(steps.length - 1)}>+ Add a step</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>Try again</button>
+        ${agentOn(this.snapshot) && claudeReady(this.snapshot)
+          ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
+              ${icon("creation")} Ask Claude instead
+            </button>`
+          : nothing}
         ${this._answers.length || this._questions.length
           ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>Ask me again</button>`
           : nothing}

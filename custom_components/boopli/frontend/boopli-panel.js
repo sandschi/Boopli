@@ -1094,7 +1094,7 @@ function T(e) {
 }
 function E(e) {
 	let t = e?.settings.ai;
-	return !!(t?.claude_enabled && t.claude_fire_url && e?.claude?.token_set);
+	return !!(t?.claude_enabled && t.claude_fire_url && e?.claude?.token_set && e.claude.callback_host);
 }
 function Rt(e) {
 	return T(e) || E(e);
@@ -6667,6 +6667,9 @@ var ea = [
       <div class="inline-actions">
         <button type="button" @click=${() => this._add(e.length - 1)}>+ Add a step</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>Try again</button>
+        ${T(this.snapshot) && E(this.snapshot) ? h`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
+              ${D("creation")} Ask Claude instead
+            </button>` : _}
         ${this._answers.length || this._questions.length ? h`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>Ask me again</button>` : _}
       </div>
       ${this.kind === "recurring" || t ? h`<div class="field">
@@ -10396,19 +10399,18 @@ var qa = class extends b {
 		})), this._note = "";
 	}
 	async _saveToken() {
-		if (this.hass) {
-			this._busy = !0, this._bad = !1;
-			try {
-				await jt(this.hass, this._token), this._token = "", this._changing = !1, this._note = "Token saved. Boopli keeps it out of backups and never shows it again.";
-			} catch (e) {
-				this._bad = !0, this._note = C(e);
-			} finally {
-				this._busy = !1;
-			}
+		if (!this.hass) return !1;
+		this._busy = !0, this._bad = !1;
+		try {
+			return await jt(this.hass, this._token), this._token = "", this._changing = !1, this._note = "Token saved. Boopli keeps it out of backups and never shows it again.", !0;
+		} catch (e) {
+			return this._bad = !0, this._note = C(e), !1;
+		} finally {
+			this._busy = !1;
 		}
 	}
 	async _removeToken() {
-		this._token = "", await this._saveToken(), this._note = "Token removed.";
+		this._token = "", await this._saveToken() && (this._note = "Token removed.");
 	}
 	async _test() {
 		if (this.hass) {
