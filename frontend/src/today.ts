@@ -1,5 +1,6 @@
 import type { Chore, Run, Snapshot, StepRun, StepStatus } from "./types";
 import { fmtMinutes, isToday, untilLabel } from "./time";
+import { t } from "./i18n";
 
 /** The one step shown big on the Today screen. */
 export interface NowItem {
@@ -73,10 +74,10 @@ export function buildToday(snapshot: Snapshot, nowMs: number): TodayModel {
   const notNow = (run: Run, s: StepRun) => !(now && now.run.id === run.id && now.step.step_id === s.step_id);
   const describe = (s: StepRun): UpcomingStep => {
     let hint = "";
-    if (s.status === "active") hint = "ready now";
+    if (s.status === "active") hint = t("common.ready_now_hint");
     else if (s.status === "waiting" && s.active_at) hint = untilLabel(s.active_at, nowMs);
-    else if (s.status === "waiting" && (s.wait_for ?? []).length > 0) hint = "waits for something to happen";
-    else if (s.wait_minutes > 0) hint = `${fmtMinutes(s.wait_minutes)} after the step before`;
+    else if (s.status === "waiting" && (s.wait_for ?? []).length > 0) hint = t("today.waits_for_something_to_happen");
+    else if (s.wait_minutes > 0) hint = t("today.after_the_step_before", { duration: fmtMinutes(s.wait_minutes) });
     return { title: s.title, status: s.status, hint };
   };
 

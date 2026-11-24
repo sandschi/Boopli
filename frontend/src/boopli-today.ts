@@ -38,13 +38,13 @@ function partInfo(run: Run, step: StepRun): { done: number; total: number; canPa
 
 /** One friendly line per mood. Rewards only: nothing here ever scolds. */
 function moodLine(pet: Pet): string {
-  if (pet.away) return `${pet.name} is resting while you are away.`;
+  if (pet.away) return t("today.is_resting_while_you_are_away", { name: pet.name });
   const lines: Record<Mood, string> = {
     happy: t("today.nice_you_got_things_done_today"),
     content: t("today.ready_when_you_are"),
-    sleepy: `${pet.name} is a bit sleepy.`,
-    sad: `${pet.name} misses you. One step is enough.`,
-    hibernating: `${pet.name} is curled up, resting until you are back. One step wakes it.`,
+    sleepy: t("today.is_a_bit_sleepy", { name: pet.name }),
+    sad: t("today.misses_you_one_step_is_enough", { name: pet.name }),
+    hibernating: t("today.is_curled_up_resting_until_you", { name: pet.name }),
   };
   return lines[pet.mood];
 }
@@ -131,14 +131,14 @@ export class BoopliToday extends LitElement {
     }
     if (pet.level > before.level) {
       this._moment = "levelup";
-      this._momentText = `Level ${pet.level}!`;
+      this._momentText = t("today.level_2", { level: pet.level });
     }
     this._momentSeq += 1;
     const parts = [`+${pet.total_xp - before.total_xp} XP`];
-    if (finished.length) parts.unshift(`${finished[0]} is done!`);
-    if (pet.level > before.level) parts.push(`Level ${pet.level}!`);
+    if (finished.length) parts.unshift(t("today.is_done", { value: finished[0] }));
+    if (pet.level > before.level) parts.push(t("today.level_2", { level: pet.level }));
     if (before.mood === "sad" || before.mood === "hibernating")
-      parts.push(`${pet.name} is awake. Welcome back!`);
+      parts.push(t("today.is_awake_welcome_back", { name: pet.name }));
     this._toast = parts.join("  ·  ");
     window.clearTimeout(this._toastTimer);
     this._toastTimer = window.setTimeout(() => (this._toast = ""), 5000);
@@ -218,7 +218,7 @@ export class BoopliToday extends LitElement {
           <div class="bar" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${pct}%"></div>
           </div>
-          <div class="muted small">${t("today.xp_to_the_next_level", { xp_in_level: pet.xp_in_level, xp_for_level: pet.xp_for_level })}</div>
+          <div class="muted small">${t("today.xp_to_the_next_level", { xp: pet.xp_in_level, xp_needed: pet.xp_for_level })}</div>
           <div class="small">${moodLine(pet)}</div>
         </div>
       </section>
@@ -331,7 +331,7 @@ export class BoopliToday extends LitElement {
     const ask = this._park;
     if (!ask) return nothing;
     return html`<div class="park-ask" role="group" aria-label=${t("today.when_should_this_part_come_back")}>
-      <div class="small">${ask.choreId ? t("today.when_should_it_come_back") : `Set “${ask.group}” aside. When should it come back?`}</div>
+      <div class="small">${ask.choreId ? t("today.when_should_it_come_back") : t("today.set_aside_when_should_it_come", { group: ask.group ?? "" })}</div>
       <div class="park-buttons">
         <button ?disabled=${this._busy} @click=${() => this._choose("any")}>${t("today.when_i_want")}</button>
         <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>${t("today.tomorrow_9_00")}</button>
@@ -361,7 +361,7 @@ export class BoopliToday extends LitElement {
     return html`<section class="away-banner ${onNow ? "on" : "planned"}" role="status">
       <div class="away-icon" aria-hidden="true">${icon("bag-suitcase")}</div>
       <div class="away-text">
-        <div class="away-title">${onNow ? "AWAY MODE IS ON" : "AWAY MODE IS PLANNED"}</div>
+        <div class="away-title">${onNow ? t("today.away_mode_is_on") : t("today.away_mode_is_planned")}</div>
         <div class="away-when">${awayWhen(away, this.nowMs, tz, onNow)}</div>
         <div class="away-note">
           ${onNow
@@ -395,7 +395,7 @@ export class BoopliToday extends LitElement {
           .busy=${this._busy}
           .cancelable=${false}
           label=${t("common.done")}
-          allLabel="Keep all steps"
+          allLabel=${t("today.keep_all_steps")}
           @answered=${(e: CustomEvent<{ answers: Record<string, boolean> }>) =>
             this._partAction(() => answerQuestions(this.hass!, run.id, e.detail.answers))}
           @all-steps=${() => this._partAction(() => answerQuestions(this.hass!, run.id, {}))}
@@ -466,7 +466,7 @@ export class BoopliToday extends LitElement {
         (d) => html`<div class="group">
           <div class="row">
             <span class="group-name">${d.chore.name}</span>
-            <span class="hint">${t("today.at", { fmtTime: fmtTime(d.at, tz) })}</span>
+            <span class="hint">${t("today.at", { time: fmtTime(d.at, tz) })}</span>
           </div>
         </div>`
       )}
@@ -489,7 +489,7 @@ export class BoopliToday extends LitElement {
         </div>`
       )}
       ${model.upcoming.length > shown.length
-        ? html`<div class="muted small more">${t("today.and_more_in_the_chores_tab", { length: model.upcoming.length - shown.length })}</div>`
+        ? html`<div class="muted small more">${t("today.and_more_in_the_chores_tab", { count: model.upcoming.length - shown.length })}</div>`
         : nothing}
     </section>`;
   }
@@ -504,8 +504,8 @@ export class BoopliToday extends LitElement {
         (c) => html`<div class="part">
           <div class="part-name">${c.name}</div>
           <div class="muted small">
-            ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"} ·
-            ${c.next_due ? `comes back ${describeWhen(c.next_due, this.nowMs, tz)}` : "waiting until you start it"}
+            ${t("common.steps_count", { count: c.steps.length })} ·
+            ${c.next_due ? t("today.comes_back", { when: describeWhen(c.next_due, this.nowMs, tz) }) : t("today.waiting_until_you_start_it")}
           </div>
           ${this._park?.choreId === c.id
             ? this._renderParkAsk()
@@ -601,13 +601,13 @@ export class BoopliToday extends LitElement {
               ${model.now.step.snoozed_until &&
               Date.parse(model.now.step.snoozed_until) > this.nowMs
                 ? html`<div class="muted small">
-                    ${t("today.snoozed_until", { fmtTime: fmtTime(model.now.step.snoozed_until, tz) })}
+                    ${t("today.snoozed_until", { time: fmtTime(model.now.step.snoozed_until, tz) })}
                   </div>`
                 : nothing}
               ${model.now.step.on_it_until
                 ? html`<div class="in-progress">
                     ${icon("check-circle")} ${t("today.in_progress")}${model.now.step.on_it_since ? html` ${t("today.since", { time: fmtTime(model.now.step.on_it_since, tz) })}` : nothing}
-                    <span class="muted small">${t("today.boopli_checks_in_at", { fmtTime: fmtTime(model.now.step.on_it_until, tz) })}</span>
+                    <span class="muted small">${t("today.boopli_checks_in_at", { time: fmtTime(model.now.step.on_it_until, tz) })}</span>
                   </div>`
                 : nothing}
               <div class="now-buttons">

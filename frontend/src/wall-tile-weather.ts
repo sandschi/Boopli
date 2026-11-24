@@ -30,7 +30,7 @@ export class WallTileWeather extends WallTile {
     if (!st) return html`<div class="center muted normal">${t("wall_tile_weather.weather_not_found")}</div>`;
     const a = st.attributes;
     const temp = a.temperature !== undefined ? `${a.temperature}${a.temperature_unit ?? "°"}` : "";
-    const humidity = a.humidity !== undefined ? `${a.humidity} % humidity` : "";
+    const humidity = a.humidity !== undefined ? t("wall_tile_weather.humidity", { percent: a.humidity }) : "";
     return html`<div class="w">
       <div class="huge sky">${icon(SKY[st.state] ?? "thermometer")}</div>
       <div>

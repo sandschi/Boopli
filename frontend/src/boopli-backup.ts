@@ -18,7 +18,7 @@ const MAX_FILE_BYTES = 8 * 1024 * 1024; // a backup is a few hundred kilobytes a
 const EXTENSION = ".adhd";
 
 const PART_TEXT = (): Record<BackupPart, { title: string; text: string }> => ({
-  settings: { title: t("common.settings"), text: "Devices, timing, nudge ladders, wall boards, your pet's name and kind, AI help." },
+  settings: { title: t("common.settings"), text: t("backup.devices_timing_nudge_ladders_wall_boards") },
   chores: { title: t("common.chores"), text: t("backup.every_chore_with_its_steps_questions") },
   home: { title: t("backup.rooms_and_notes"), text: t("backup.the_rooms_of_my_home_and") },
   pet: { title: t("backup.pet_and_history"), text: t("backup.your_pets_level_and_xp_and") },
@@ -115,7 +115,7 @@ export class BoopliBackup extends LitElement {
     this._error = "";
     try {
       const name = await this._download(this._parts);
-      this._done = [`Saved ${name}.`, t("backup.keep_it_somewhere_private_it_holds")];
+      this._done = [t("backup.saved_3", { name }), t("backup.keep_it_somewhere_private_it_holds")];
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -201,9 +201,9 @@ export class BoopliBackup extends LitElement {
     try {
       const r = await importBackup(this.hass, this._file.data, this._parts);
       this._done = [
-        `Imported: ${r.imported.map((p) => PART_TEXT()[p].title.toLowerCase()).join(", ")}.`,
-        ...(r.imported.includes("chores") ? [`${r.chores} ${r.chores === 1 ? "chore is" : "chores are"} set up now.`] : []),
-        ...(r.runs_ended ? [`${r.runs_ended} running ${r.runs_ended === 1 ? "chore" : "chores"} ended with the chores that were replaced.`] : []),
+        t("backup.imported_list", { list: r.imported.map((p) => PART_TEXT()[p].title.toLowerCase()).join(", ") }),
+        ...(r.imported.includes("chores") ? [t("backup.chores_set_up_now", { count: r.chores })] : []),
+        ...(r.runs_ended ? [t("backup.runs_ended_with_replaced", { count: r.runs_ended })] : []),
       ];
     } catch (err) {
       this._error = errorMessage(err);
@@ -217,10 +217,10 @@ export class BoopliBackup extends LitElement {
   private _renderParts(available: BackupPart[], counts?: BackupPreview["counts"]) {
     const line = (p: BackupPart): string => {
       if (!counts) return PART_TEXT()[p].text;
-      if (p === "settings") return `${counts.boards} wall ${counts.boards === 1 ? "board" : "boards"}. ${PART_TEXT()[p].text}`;
-      if (p === "chores") return `${counts.chores} ${counts.chores === 1 ? "chore" : "chores"}.`;
-      if (p === "home") return `${counts.rooms} ${counts.rooms === 1 ? "room" : "rooms"}.`;
-      return `Level ${counts.level}, ${counts.history} things done on record.`;
+      if (p === "settings") return t("backup.wall_boards_and_text", { count: counts.boards, text: PART_TEXT()[p].text });
+      if (p === "chores") return t("backup.count_chores", { count: counts.chores });
+      if (p === "home") return t("backup.count_rooms", { count: counts.rooms });
+      return t("backup.level_things_done_on_record", { level: counts.level, history: counts.history });
     };
     return html`<div class="parts" role="group" aria-label=${t("backup.what_to_include")}>
       ${BACKUP_PARTS.filter((p) => available.includes(p)).map(
@@ -250,7 +250,7 @@ export class BoopliBackup extends LitElement {
       <p>${t("backup.save_your_setup_to_one_file")}</p>
       ${this._renderParts([...BACKUP_PARTS])}
       <p class="muted small">
-        ${rich("backup.the_file_ends_in_and_is", { EXTENSION })}
+        ${rich("backup.the_file_ends_in_and_is", { extension: EXTENSION  })}
       </p>
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? t("common.saving") : t("backup.download_backup")}</button>
@@ -265,13 +265,13 @@ export class BoopliBackup extends LitElement {
     return html`
       <h2>${icon("content-save-outline")} ${t("common.import_a_backup")}</h2>
       <div class="field">
-        <label for="file">${t("backup.choose_a_backup_file", { EXTENSION })}</label>
+        <label for="file">${t("backup.choose_a_backup_file", { extension: EXTENSION })}</label>
         <input id="file" type="file" accept="${EXTENSION},.json,application/json" ?disabled=${this._busy} @change=${(e: Event) => void this._choose(e)} />
       </div>
       ${pre && this._file
         ? html`
             <p class="muted small">
-              ${this._file.name}${pre.exported_at ? html`${t("backup.saved_2", { toLocaleString: new Date(pre.exported_at).toLocaleString() })}` : nothing}${pre.boopli_version ? html`${t("backup.boopli", { boopli_version: pre.boopli_version })}` : nothing}
+              ${this._file.name}${pre.exported_at ? html`${t("backup.saved_2", { date: new Date(pre.exported_at).toLocaleString() })}` : nothing}${pre.boopli_version ? html`${t("backup.boopli", { version: pre.boopli_version })}` : nothing}
             </p>
             <p>${t("backup.pick_what_to_bring_in")}</p>
             ${this._renderParts(pre.parts, pre.counts)}
@@ -286,7 +286,7 @@ export class BoopliBackup extends LitElement {
               ? html`<div class="warn" role="status">
                   <b>${t("backup.this_install_does_not_have_everything")}</b>
                   ${pre.missing_entities_total
-                    ? html`<div class="small">Not found: ${pre.missing_entities.join(", ")}${pre.missing_entities_total > pre.missing_entities.length ? ` and ${pre.missing_entities_total - pre.missing_entities.length} more` : ""}.</div>`
+                    ? html`<div class="small">${t("backup.not_found_list", { list: pre.missing_entities.join(", ") + (pre.missing_entities_total > pre.missing_entities.length ? " " + t("backup.and_n_more", { n: pre.missing_entities_total - pre.missing_entities.length }) : "") })}</div>`
                     : nothing}
                   ${pre.missing_services.length ? html`<div class="small">${t("backup.phones_not_found", { join: pre.missing_services.join(", ") })}</div>` : nothing}
                   <div class="small muted">${t("backup.they_are_kept_but_do_nothing")}</div>
@@ -298,7 +298,7 @@ export class BoopliBackup extends LitElement {
             <p class="small">
               ${rich("backup.importing_replaces")}
               <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${t("backup.save_a_copy_of_what_i")}</button>
-              ${this._copyName ? html`<span class="muted">${t("backup.saved", { copyName: this._copyName })}</span>` : nothing}
+              ${this._copyName ? html`<span class="muted">${t("backup.saved", { name: this._copyName })}</span>` : nothing}
             </p>
           `
         : nothing}

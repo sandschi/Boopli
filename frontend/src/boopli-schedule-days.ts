@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { sharedStyles } from "./styles";
-import { WEEKDAY_NAMES } from "./time";
+import { weekdayNames } from "./time";
 import { t } from "./i18n";
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -68,7 +68,7 @@ export class BoopliScheduleDays extends LitElement {
           const above = position > 0 ? shown[position - 1] : null;
           const on = times.length > 0;
           return html`<div class="row ${on ? "" : "off"}">
-            <span class="dayname">${WEEKDAY_NAMES[day]}</span>
+            <span class="dayname">${weekdayNames()[day]}</span>
             ${this.onlyActive
               ? nothing
               : html`<label class="inline small">
@@ -86,7 +86,7 @@ export class BoopliScheduleDays extends LitElement {
                     (tm, i) => html`<span class="time">
                       <input
                         type="time"
-                        aria-label=${t("schedule_days.time_2", { value: WEEKDAY_NAMES[day], n: i + 1 })}
+                        aria-label=${t("schedule_days.time_2", { value: weekdayNames()[day], n: i + 1 })}
                         .value=${tm}
                         @change=${(e: Event) => this._setTime(day, i, (e.target as HTMLInputElement).value)}
                       />
@@ -113,7 +113,7 @@ export class BoopliScheduleDays extends LitElement {
                   class="chip same"
                   @click=${() => this._setDay(day, [...this._times(above)])}
                 >
-                  ${t("schedule_days.same_as", { value: WEEKDAY_NAMES[above] })}
+                  ${t("schedule_days.same_as", { value: weekdayNames()[above] })}
                 </button>`
               : nothing}
           </div>`;

@@ -5,7 +5,7 @@
 //  3. every other language file has only keys that en.json has, with the same {places}
 //  4. no visible text is written directly in a template (the "hard-coded" list). Texts that must
 //     stay as they are go in scripts/i18n-allow.txt, one `file: text` per line.
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, existsSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,13 +35,16 @@ const en = flatten(JSON.parse(readFileSync(join(i18nDir, "en.json"), "utf8")));
 const files = walk(src);
 const errors = [];
 const warnings = [];
+const unused = [];
 
 // 1 and 2: keys used in code
 const used = new Set();
 const prefixes = new Set();
 for (const file of files) {
   const text = readFileSync(file, "utf8");
-  for (const m of text.matchAll(/\bt\(\s*(["'`])([\w.]+?)(\$\{|\1)/g)) {
+  // a key written anywhere as a string (t(cond ? "a.b" : "c.d"), a table of keys) counts as used
+  for (const s of scanTemplates(text, true).strings) if (/^[a-z_]+\.[a-z0-9_.]+$/.test(s.text) && s.text in en) used.add(s.text);
+  for (const m of text.matchAll(/\b(?:t|rich|hasText)\(\s*(["'`])([\w.]+?)(\$\{|\1)/g)) {
     if (m[3] === "${") prefixes.add(m[2]); // t(`errors.${code}`): everything under errors. counts as used
     else used.add(m[2]);
   }
@@ -56,7 +59,21 @@ for (const key of Object.keys(en)) {
   const base = baseKey(key);
   if (!used.has(key) && !used.has(base) && ![...prefixes].some((p) => key.startsWith(p))) {
     warnings.push(`never used: ${key}`);
+    unused.push(key);
   }
+}
+if (process.argv.includes("--prune") && unused.length) {
+  // remove the keys nobody uses (and the empty groups they leave)
+  const tree = JSON.parse(readFileSync(join(i18nDir, "en.json"), "utf8"));
+  for (const key of unused) {
+    const parts = key.split(".");
+    const chain = [tree];
+    for (const p of parts.slice(0, -1)) chain.push(chain.at(-1)[p]);
+    delete chain.at(-1)[parts.at(-1)];
+    for (let i = parts.length - 2; i >= 0; i--) if (Object.keys(chain[i + 1]).length === 0) delete chain[i][parts[i]];
+  }
+  writeFileSync(join(i18nDir, "en.json"), JSON.stringify(tree, null, 2) + "\n");
+  console.log(`removed ${unused.length} unused keys from en.json`);
 }
 
 // 3: other languages
@@ -74,6 +91,7 @@ for (const name of readdirSync(i18nDir).filter((n) => n.endsWith(".json") && n !
 
 // 4: text written directly in templates, and sentences written as string literals
 import { scanTemplates, textsOf, BLANK } from "./ts-templates.mjs";
+import { looksTranslatable } from "./text-rule.mjs";
 const allowFile = join(root, "scripts", "i18n-allow.txt");
 const allowed = new Set(existsSync(allowFile) ? readFileSync(allowFile, "utf8").split(/\r?\n/).filter((l) => l && !l.startsWith("#")) : []);
 const looksLikeText = (s) => /[A-Za-z]{2,}/.test(s) && !/^[\s\d.,:;·•/\|()[\]{}%+\-–—×✓✕…]*$/.test(s);
@@ -85,6 +103,14 @@ for (const file of files) {
   const lineOf = (at) => text.slice(0, at).split("\n").length;
   const { templates, strings } = scanTemplates(text, true);
   for (const tpl of templates) {
+    if (!["html", "svg", "shtml"].includes(tpl.tag)) {
+      // an ordinary template string: a sentence with values in it, like `Snooze ${n} minutes`
+      const flat = tpl.body.replaceAll(BLANK, "{}");
+      if (/[A-Za-z]{3,}/.test(flat) && /\s/.test(flat.trim()) && !/^[\w./:@#{}-]+$/.test(flat) && !/^https?:/.test(flat)) {
+        hard.push({ file: rel, line: lineOf(tpl.map[0] ?? 0), text: flat.replace(/\s+/g, " ").trim(), why: "template string" });
+      }
+      continue;
+    }
     for (const f of textsOf(tpl.body)) {
       const real = f.text.replaceAll(BLANK, " ").replace(/\s+/g, " ").trim();
       if (!looksLikeText(real) || identifierish(real) || /^https?:/.test(real)) continue;
@@ -95,7 +121,7 @@ for (const file of files) {
   // a sentence as a string literal: three or more words, starting with a capital letter
   for (const s of strings) {
     const v = s.text;
-    if ((/^[A-Z][a-z'’]*( [\w'’,.!?:;…()-]+){2,}/.test(v) || /^[A-Z][a-z]{2,}[a-z '’,.!?:;…()-]*$/.test(v)) && !/^(Itim|Roboto)/.test(v)) {
+    if (looksTranslatable(v)) {
       hard.push({ file: rel, line: lineOf(s.at), text: v, why: "string" });
     }
   }

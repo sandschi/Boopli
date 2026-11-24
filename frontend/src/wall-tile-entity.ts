@@ -58,7 +58,7 @@ export class WallTileEntity extends WallTile {
     const inside = html`<div class="icon big">${icon(ICON[domain] ?? "shape-outline")}</div>
       <div>
         <div class="label">${name}</div>
-        <div class="big">${st ? `${st.state}${unit}` : "not found"}</div>
+        <div class="big">${st ? `${st.state}${unit}` : t("wall_tile_entity.not_found")}</div>
       </div>`;
     // something a tap switches is a real button, so it can also be reached and used from a keyboard
     return tappable

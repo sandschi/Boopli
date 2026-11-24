@@ -207,13 +207,13 @@ export class BoopliChores extends LitElement {
                   <div class="name">${c.name}</div>
                   <div class="muted small">
                     ${describeRepeat(c.repeat)} · ${c.where === "home" ? t("chore_editor.home_only") : t("chores.anywhere")}
-                    · ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"}
+                    · ${t("common.steps_count", { count: c.steps.length })}
                   </div>
                   <div class=${running.has(c.id) ? "status live" : "muted small status"}>
                     ${running.has(c.id)
                       ? html`${icon("progress-clock")} ${t("chores.in_progress")}`
                       : c.enabled && c.next_due
-                        ? `Next: ${describeWhen(c.next_due, this.nowMs, tz)}`
+                        ? t("chores.next", { when: describeWhen(c.next_due, this.nowMs, tz) })
                         : c.repeat.type === "none"
                           ? ""
                           : t("chores.not_scheduled")}

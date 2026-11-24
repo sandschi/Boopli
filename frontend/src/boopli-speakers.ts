@@ -129,7 +129,7 @@ export class BoopliSpeakers extends LitElement {
       options = this._ids(["tts"]).map((id) => ({ value: id, label: this._friendly(id) }));
     }
     if (current && !options.some((o) => o.value === current)) {
-      options.unshift({ value: current, label: `${current} (not found)` });
+      options.unshift({ value: current, label: t("speakers.not_found", { current }) });
     }
     return options;
   }
@@ -220,8 +220,8 @@ export class BoopliSpeakers extends LitElement {
   private _addExtra(): void {
     const taken = new Set(this._sounds().map((x) => x.name.toLowerCase()));
     let n = this._sounds().length + 1;
-    while (taken.has(`sound ${n}`)) n++;
-    this._patch({ sounds: [...this._sounds(), { id: newLadderId(), name: `Sound ${n}`, kind: "alexa", sound: "" }] });
+    while (taken.has(t("speakers.sound", { n }).toLowerCase())) n++;
+    this._patch({ sounds: [...this._sounds(), { id: newLadderId(), name: t("speakers.sound", { n }), kind: "alexa", sound: "" }] });
   }
 
   private _removeExtra(soundId: string): void {
@@ -256,7 +256,7 @@ export class BoopliSpeakers extends LitElement {
   /** What a sound says about itself in one short line. */
   private _soundSummary(kind: SoundKind, sound: string): string {
     if (!sound) return t("speakers.no_sound_chosen_yet");
-    return kind === "alexa" ? `Alexa sound: ${sound.replace(/^amzn_sfx_/, "")}` : `File: ${sound}`;
+    return kind === "alexa" ? t("speakers.alexa_sound", { replace: sound.replace(/^amzn_sfx_/, "") }) : t("speakers.file", { sound });
   }
 
   /** The two fields that choose a sound: its type and its id (or file). */
@@ -269,7 +269,7 @@ export class BoopliSpeakers extends LitElement {
         </select>
       </label>
       <label class="num wide">
-        ${kind === "alexa" ? t("common.alexa_sound_id") : `File (for example boopli/${example}.mp3)`}
+        ${kind === "alexa" ? t("common.alexa_sound_id") : t("speakers.file_for_example_boopli_mp3", { example })}
         <input
           type="text"
           .value=${sound}
@@ -355,7 +355,7 @@ export class BoopliSpeakers extends LitElement {
     const alexa = cfg.route !== "tts";
     const targets = this._targets(cfg.route, cfg.target);
     const kind = ROUTES().find((r) => r.value === cfg.route)?.label ?? cfg.route;
-    const where = targets.find((x) => x.value === cfg.target)?.label ?? "no device chosen yet";
+    const where = targets.find((x) => x.value === cfg.target)?.label ?? t("speakers.no_device_chosen_yet");
     const open = !!this._open["spk:" + id];
     const tests: { level: SpeakerChoice; label: string }[] = [
       ...(cfg.route === "alexa_media" ? [{ level: "speech_chime" as SpeakerChoice, label: t("speakers.test_announcement") }] : []),
@@ -404,7 +404,7 @@ export class BoopliSpeakers extends LitElement {
                 <button
                   type="button"
                   class="textlink quiet"
-                  aria-label=${t("speakers.remove_speaker_2", { friendly: this._friendly(id) })}
+                  aria-label=${t("speakers.remove_speaker_2", { device: this._friendly(id) })}
                   @click=${() => this._patch({ speakers: this._speakers().filter((s) => s.entity_id !== id) })}
                 >
                   ${t("speakers.remove_speaker")}
@@ -482,7 +482,7 @@ export class BoopliSpeakers extends LitElement {
           onTest: () => void this._testExtra(x),
           details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, { kind: k }), (s) => this._setExtra(x.id, { sound: s })),
           onRemove: () => this._removeExtra(x.id),
-          removeLabel: `Remove the sound ${x.name}`,
+          removeLabel: t("speakers.remove_the_sound", { name: x.name }),
         })
       )}
       <button type="button" class="textlink" ?disabled=${sounds.length >= 60} @click=${() => this._addExtra()}>
@@ -628,11 +628,11 @@ export class BoopliSpeakers extends LitElement {
           this._line({
             key: `device:${device.entity_id}`,
             title: this._friendly(device.entity_id),
-            summary: `On for ${device.seconds} s`,
+            summary: t("speakers.on_for_s", { seconds: device.seconds }),
             onTest: () => void this._testDevice(device),
             details: this._numField(t("common.on_for_seconds"), device.seconds, 3, 600, (n) => this._updateDevice(device.entity_id, { seconds: n })),
             onRemove: () => this._patch({ alarm_devices: d.alarm_devices.filter((a) => a.entity_id !== device.entity_id) }),
-            removeLabel: `Remove alarm device ${this._friendly(device.entity_id)}`,
+            removeLabel: t("speakers.remove_alarm_device", { device: this._friendly(device.entity_id) }),
           })
         )}
         <h3 class="sec">${t("speakers.add_an_alarm_device")}</h3>

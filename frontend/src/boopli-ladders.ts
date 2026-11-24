@@ -101,7 +101,7 @@ export class BoopliLadders extends LitElement {
       speakers: {},
       alarms: [],
     };
-    const ladder: Ladder = { id: newLadderId(), name: this._uniqueName("My ladder"), rungs: [first], repeat_last: false };
+    const ladder: Ladder = { id: newLadderId(), name: this._uniqueName(t("ladders.my_ladder")), rungs: [first], repeat_last: false };
     this._patch([...this._ladders, ladder]);
     this._open = ladder.id;
   }
@@ -110,11 +110,11 @@ export class BoopliLadders extends LitElement {
     const style = `ladder:${ladder.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name);
     if (users.length) {
-      this._note = `"${ladder.name}" is used by ${users.sort().join(", ")}. Pick another nudge style for them first.`;
+      this._note = t("ladders.is_used_by_pick_another_nudge", { name: ladder.name, join: users.sort().join(", ") });
       return;
     }
     if (this.settings?.default_style === style) {
-      this._note = `"${ladder.name}" is the style for new chores. Choose another one for new chores first.`;
+      this._note = t("ladders.is_the_style_for_new_chores", { name: ladder.name });
       return;
     }
     this._patch(this._ladders.filter((l) => l.id !== ladder.id));
@@ -171,34 +171,34 @@ export class BoopliLadders extends LitElement {
   private _who(r: Rung): string {
     const parts: string[] = [];
     for (const [service, level] of Object.entries(r.phones)) {
-      parts.push(`${phoneName(service)} (${PHONE_LEVEL_LABEL[level] ?? level})`);
+      parts.push(`${phoneName(service)} (${PHONE_LEVEL_LABEL()[level] ?? level})`);
     }
     for (const [id, use] of Object.entries(r.lights)) {
-      const how = use.mode === "indicator" ? "status light" : use.mode === "blink" ? "blink" : "";
-      parts.push(`${friendlyName(this.hass, id)}${how ? ` (${how}${use.color ? ", own color" : ""})` : ""}`);
+      const how = use.mode === "indicator" ? t("ladders.how_status_light") : use.mode === "blink" ? t("ladders.how_blink") : "";
+      parts.push(`${friendlyName(this.hass, id)}${how ? ` (${how}${use.color ? t("ladders.how_own_color") : ""})` : ""}`);
     }
     for (const [id, choice] of Object.entries(r.speakers)) {
       const sp = this.settings?.speakers.find((x) => x.entity_id === id);
       if (!sp) {
-        parts.push(`${friendlyName(this.hass, id)} (not set up any more)`);
+        parts.push(t("ladders.not_set_up_any_more", { device: friendlyName(this.hass, id) }));
         continue;
       }
       const label = speakerChoices(sp, this.settings?.sounds).find((c) => c.value === choice)?.label ?? choice;
       parts.push(`${friendlyName(this.hass, id)} (${label.toLowerCase()})`);
     }
-    for (const id of r.alarms) parts.push(`${friendlyName(this.hass, id)} (alarm)`);
+    for (const id of r.alarms) parts.push(t("ladders.alarm", { device: friendlyName(this.hass, id) }));
     return parts.length ? parts.join(", ") : "nothing";
   }
 
   /** One line per nudge, then how the ladder ends. */
   private _lines(l: Ladder): string[] {
     const lines = l.rungs.map((r, i) =>
-      i === 0 ? `Nudge 1, right away: ${this._who(r)}` : `Nudge ${i + 1}, ${r.gap} min later: ${this._who(r)}`
+      i === 0 ? t("ladders.nudge_1_right_away", { who: this._who(r) }) : t("ladders.nudge_min_later", { n: i + 1, gap: r.gap, who: this._who(r) })
     );
     const last = l.rungs[l.rungs.length - 1];
     lines.push(
       l.repeat_last && last
-        ? `Then it repeats the last nudge every ${last.gap} min until you answer.`
+        ? t("ladders.then_it_repeats_the_last_nudge", { gap: last.gap })
         : t("ladders.then_it_stops")
     );
     return lines;
@@ -259,7 +259,7 @@ export class BoopliLadders extends LitElement {
       ${l.rungs.map((r, i) => this._renderRung(l, r, i))}
       <div class="row">
         <button ?disabled=${l.rungs.length >= MAX_NUDGES} @click=${() => this._addRung(l.id)}>${t("ladders.add_a_nudge")}</button>
-        <span class="muted small">${t("ladders.of", { length: l.rungs.length, MAX_NUDGES })}</span>
+        <span class="muted small">${t("ladders.of", { count: l.rungs.length, max_nudges: MAX_NUDGES })}</span>
       </div>
       <div class="field">
         <label for="end-${l.id}">${t("ladders.after_the_last_nudge")}</label>
@@ -299,7 +299,8 @@ export class BoopliLadders extends LitElement {
           )}
           ${ladders.map(
             (l) => html`<option value=${`ladder:${l.id}`} ?selected=${`ladder:${l.id}` === s.default_style}>
-              ${l.name || "(no name)"}
+              ${l.name || t("ladders.no_name")}
+
             </option>`
           )}
           ${s.default_style.startsWith("ladder:") && !ladders.some((l) => `ladder:${l.id}` === s.default_style)
@@ -313,8 +314,8 @@ export class BoopliLadders extends LitElement {
             const open = this._open === l.id;
             return html`<div class="ladder">
               <div class="lhead">
-                <b class="lname">${l.name || "(no name)"}</b>
-                <span class="muted small">${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}</span>
+                <b class="lname">${l.name || t("ladders.no_name")}</b>
+                <span class="muted small">${t("common.nudges_count", { count: l.rungs.length })}</span>
                 <span class="spacer"></span>
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>
                   ${open ? t("common.close") : t("chores.edit")}

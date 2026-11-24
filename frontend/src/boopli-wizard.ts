@@ -34,7 +34,7 @@ import "./boopli-rung";
 import { boardLink, starterTiles } from "./wall-tiles";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
-import { WEEKDAY_NAMES } from "./time";
+import { weekdayNames } from "./time";
 import { t, rich } from "./i18n";
 import type {
   AlarmDeviceCfg,
@@ -132,7 +132,7 @@ export const WIZARD_TITLES = (): Record<WizardId, string> => ({
   presence: t("common.where_you_are"),
   nudging: t("wizard.snooze_and_style"),
   pet: t("common.your_pet"),
-  ai: "AI help setup",
+  ai: t("wizard.ai_help_setup"),
   ladders: t("common.nudge_it_your_way"),
   wall: t("common.wall_board"),
 });
@@ -158,7 +158,7 @@ const TITLES = (): Record<StepId, string> => ({
   alarm_detail: t("wizard.alarm_device_details"),
   presence: t("common.where_you_are"),
   pet: t("common.your_pet"),
-  ai_intro: "AI help",
+  ai_intro: t("settings.ai_help"),
   ai_agent: t("wizard.your_ai_agent"),
   claude_intro: t("settings.ask_claude_extra"),
   claude_make: t("wizard.make_the_routine"),
@@ -166,7 +166,7 @@ const TITLES = (): Record<StepId, string> => ({
   chores: t("wizard.first_chores"),
   lad_start: t("wizard.what_do_you_want_to_do"),
   lad_name: t("wizard.name_your_ladder"),
-  lad_nudge: "A nudge",
+  lad_nudge: t("wizard.a_nudge"),
   lad_more: t("wizard.another_nudge"),
   lad_end: t("wizard.how_it_ends"),
   lad_delete: t("wizard.delete_a_ladder"),
@@ -544,8 +544,8 @@ export class BoopliWizard extends LitElement {
     }
     const name = this._boardName.trim();
     if (!name) throw new Error(t("wizard.give_the_new_board_a_name"));
-    if (boards.length >= MAX_BOARDS) throw new Error(`You have ${MAX_BOARDS} boards, the most. Edit or delete one.`);
-    if (boards.some((b) => b.name.toLowerCase() === name.toLowerCase())) throw new Error(`There is already a board called "${name}".`);
+    if (boards.length >= MAX_BOARDS) throw new Error(t("wizard.you_have_boards_the_most_edit", { max_boards: MAX_BOARDS }));
+    if (boards.some((b) => b.name.toLowerCase() === name.toLowerCase())) throw new Error(t("wizard.there_is_already_a_board_called", { name }));
     const board: Board = { id: newLadderId(), name, columns: 16, rows: 9, night: "dim", tiles: starterTiles(16, 9) };
     this._boardId = board.id;
     this._boardPick = board.id; // going back and forward again goes on with this board, not a second one
@@ -584,7 +584,7 @@ export class BoopliWizard extends LitElement {
         this._steps = ["lad_start", "lad_name", ...made.rungs.map((): StepId => "lad_nudge"), "lad_more", "lad_end", "done"];
         return;
       }
-      if (ladders.length >= MAX_LADDERS) throw new Error(`You have ${MAX_LADDERS} ladders, the most. Edit or delete one.`);
+      if (ladders.length >= MAX_LADDERS) throw new Error(t("wizard.you_have_ladders_the_most_edit", { max_ladders: MAX_LADDERS }));
       this._ladderId = "";
       this._ladderName = "";
       this._steps = ["lad_start", "lad_name", "lad_nudge", "lad_more", "lad_end", "done"];
@@ -619,11 +619,11 @@ export class BoopliWizard extends LitElement {
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     if (users.length) {
-      this._error = `"${l.name}" is used by ${users.join(", ")}. Pick another nudge style for them first.`;
+      this._error = t("ladders.is_used_by_pick_another_nudge", { name: l.name, join: users.join(", ") });
       return;
     }
     if (d.default_style === style) {
-      this._error = `"${l.name}" is the style for new chores. Choose another one for new chores first.`;
+      this._error = t("ladders.is_the_style_for_new_chores", { name: l.name });
       return;
     }
     const before = d;
@@ -642,7 +642,7 @@ export class BoopliWizard extends LitElement {
       this._patchLadder((l) => ({ ...l, name }));
       return;
     }
-    if ((d.ladders ?? []).length >= MAX_LADDERS) throw new Error(`You have ${MAX_LADDERS} ladders, the most. Edit or delete one.`);
+    if ((d.ladders ?? []).length >= MAX_LADDERS) throw new Error(t("wizard.you_have_ladders_the_most_edit", { max_ladders: MAX_LADDERS }));
     const id = newLadderId();
     this._ladderId = id;
     this._createdId = id;
@@ -665,7 +665,7 @@ export class BoopliWizard extends LitElement {
   }
 
   private _title(id: StepId, index: number): string {
-    return id === "lad_nudge" ? `Nudge ${this._nudgesBefore(index) + 1}` : TITLES()[id];
+    return id === "lad_nudge" ? t("wizard.nudge", { n: this._nudgesBefore(index) + 1 }) : TITLES()[id];
   }
 
   private _renderLadStart(d: Settings) {
@@ -683,7 +683,7 @@ export class BoopliWizard extends LitElement {
       <span><b>${label}</b> <span class="muted small">${text}</span></span>
     </label>`;
     return html`
-      ${choice("create", t("wizard.create_a_ladder"), ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : t("wizard.a_new_list_of_nudges"), ladders.length >= MAX_LADDERS)}
+      ${choice("create", t("wizard.create_a_ladder"), ladders.length >= MAX_LADDERS ? t("wizard.you_have_ladders_the_most", { max_ladders: MAX_LADDERS }) : t("wizard.a_new_list_of_nudges"), ladders.length >= MAX_LADDERS)}
       ${choice("edit", t("wizard.edit_a_ladder"), none ? t("wizard.you_have_no_ladders_yet") : t("wizard.change_its_name_its_nudges_or"), none)}
       ${choice("delete", t("wizard.delete_a_ladder"), own.length === 0 ? t("wizard.only_your_own_ladders_can_be") : t("wizard.remove_one_of_your_own_that"), own.length === 0)}
       ${this._ladderAction !== "create" && !none
@@ -693,7 +693,7 @@ export class BoopliWizard extends LitElement {
               <option value="" ?selected=${!this._ladderPick}>${t("wizard.pick_a_ladder")}</option>
               ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
-                  ${l.name} (${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"})
+                  ${l.name} (${t("common.nudges_count", { count: l.rungs.length })})
                 </option>`
               )}
             </select>
@@ -897,7 +897,7 @@ export class BoopliWizard extends LitElement {
     const phones = this._phones();
     return html`
       <p>
-        ${rich("wizard.which_phone_should_get_booplis_notifications", { t: t("common.done"), t2: t("wizard.snooze") })}
+        ${rich("wizard.which_phone_should_get_booplis_notifications", { item: t("common.done"), item2: t("wizard.snooze")  })}
       </p>
       ${phones.length === 0
         ? html`<p class="muted">
@@ -982,7 +982,7 @@ export class BoopliWizard extends LitElement {
               ${DAYS.map((i) => {
                 const day = qh.days[String(i)] ?? null;
                 return html`<div class="dayrow">
-                  <span class="dayname">${WEEKDAY_NAMES[i]}</span>
+                  <span class="dayname">${weekdayNames()[i]}</span>
                   <label class="inline small">
                     <input
                       type="checkbox"
@@ -996,20 +996,20 @@ export class BoopliWizard extends LitElement {
                     ? html`<span class="muted small">${t("common.from")}</span>
                         <input
                           type="time"
-                          aria-label=${t("wizard.from", { value: WEEKDAY_NAMES[i] })}
+                          aria-label=${t("wizard.from", { value: weekdayNames()[i] })}
                           .value=${day.start}
                           @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
                         />
                         <span class="muted small">${t("common.until")}</span>
                         <input
                           type="time"
-                          aria-label=${t("wizard.until", { value: WEEKDAY_NAMES[i] })}
+                          aria-label=${t("wizard.until", { value: weekdayNames()[i] })}
                           .value=${day.stop}
                           @input=${(e: Event) => this._setDay(i, { ...day, stop: (e.target as HTMLInputElement).value })}
                         />`
                     : nothing}
                   ${i > 0
-                    ? html`<button type="button" class="chip" @click=${() => this._copyDayAbove(i)}>${t("schedule_days.same_as", { value: WEEKDAY_NAMES[i - 1] })}</button>`
+                    ? html`<button type="button" class="chip" @click=${() => this._copyDayAbove(i)}>${t("schedule_days.same_as", { value: weekdayNames()[i - 1] })}</button>`
                     : nothing}
                 </div>`;
               })}
@@ -1045,7 +1045,7 @@ export class BoopliWizard extends LitElement {
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
           label: l.name,
-          text: `${l.id.startsWith("standard_") ? "" : t("wizard.your_own_ladder")}${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
+          text: `${l.id.startsWith("standard_") ? "" : t("wizard.your_own_ladder")}${t("wizard.ladder_nudges_sentence", { count: l.rungs.length })}`,
         })),
       ].map(
         (s) => html`<label class="inline option">
@@ -1060,7 +1060,7 @@ export class BoopliWizard extends LitElement {
     const lights = entityIds(this.hass, ["light"]);
     return html`
       <p>
-        ${rich("wizard.which_lights_should_remind_you_each", { t: t("wizard.blinks"), t2: t("wizard.status_light") })}
+        ${rich("wizard.which_lights_should_remind_you_each", { item: t("wizard.blinks"), item2: t("wizard.status_light")  })}
       </p>
       ${lights.length === 0
         ? html`<p class="muted">${t("wizard.no_lights_found")}</p>`
@@ -1167,7 +1167,7 @@ export class BoopliWizard extends LitElement {
                 />
                 <span>
                   ${this._fn(id)}
-                  ${cfg ? html`<span class="muted small">${rich("wizard.set_up", { describeSpeaker: describeSpeaker(cfg) })}</span>` : nothing}
+                  ${cfg ? html`<span class="muted small">${rich("wizard.set_up", { speaker: describeSpeaker(cfg)  })}</span>` : nothing}
                 </span>
               </label>`;
             })}
@@ -1259,7 +1259,7 @@ export class BoopliWizard extends LitElement {
   private _renderSpkWhen(s: SpeakerCfg) {
     return html`
       <p>
-        ${rich("wizard.joins_the_standard_nudges_one_nudge", { fn: this._fn(s.entity_id), t: t("common.nudge_it_your_way") })}
+        ${rich("wizard.joins_the_standard_nudges_one_nudge", { name: this._fn(s.entity_id), item: t("common.nudge_it_your_way")  })}
       </p>
       <div class="actions inline-actions">
         <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>${t("wizard.add_another_speaker")}</button>
@@ -1364,21 +1364,21 @@ export class BoopliWizard extends LitElement {
         ${t("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
-        ${TEMPLATES().map((t) => {
-          const taken = existing.has(t.draft.name);
+        ${TEMPLATES().map((tpl) => {
+          const taken = existing.has(tpl.draft.name);
           return html`<label class="inline option">
             <input
               type="checkbox"
               ?disabled=${taken}
-              .checked=${!taken && this._picked.includes(t.label)}
+              .checked=${!taken && this._picked.includes(tpl.label)}
               @change=${(e: Event) => {
                 const on = (e.target as HTMLInputElement).checked;
-                this._picked = on ? [...this._picked, t.label] : this._picked.filter((l) => l !== t.label);
+                this._picked = on ? [...this._picked, tpl.label] : this._picked.filter((l) => l !== tpl.label);
               }}
             />
             <span>
-              <b>${t.draft.name}</b>
-              <span class="muted small">${taken ? "already added" : t.draft.steps.map((s) => s.title).join(" → ")}</span>
+              <b>${tpl.draft.name}</b>
+              <span class="muted small">${taken ? t("wizard.already_added") : tpl.draft.steps.map((s) => s.title).join(" → ")}</span>
             </span>
           </label>`;
         })}
@@ -1389,7 +1389,7 @@ export class BoopliWizard extends LitElement {
   private _renderAiIntro(d: Settings) {
     return html`
       <p>
-        ${rich("wizard.boopli_can_split_a_big_task", { t: t("wizard.your_own") })}
+        ${rich("wizard.boopli_can_split_a_big_task", { item: t("wizard.your_own")  })}
       </p>
       <p class="muted">
         ${t("wizard.boopli_sends_nothing_by_itself_when")}
@@ -1440,7 +1440,7 @@ export class BoopliWizard extends LitElement {
       const sent = structuredClone(d);
       this._adoptLadders(await saveSettings(this.hass, sent), sent);
       const result = await aiSteps(this.hass, t("common.make_a_cup_of_tea"), "now", []);
-      this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`);
+      this._note("ai:test", t("common.agent_test_works", { count: result.steps.length, first: result.steps[0]?.title ?? t("common.none") }));
     } catch (err) {
       this._note("ai:test", errorMessage(err));
     }
@@ -1449,10 +1449,10 @@ export class BoopliWizard extends LitElement {
   private _renderClaudeIntro(d: Settings) {
     return html`
       <p>
-        ${rich("wizard.is_an_extra_button_next_to", { t: t("common.ask_claude") })}
+        ${rich("wizard.is_an_extra_button_next_to", { item: t("common.ask_claude")  })}
       </p>
       <p class="muted">
-        ${rich("wizard.it_uses_you_make_a_small", { t: t("wizard.your_own_claude_account") })}
+        ${rich("wizard.it_uses_you_make_a_small", { item: t("wizard.your_own_claude_account")  })}
       </p>
       <label class="inline option">
         <input
@@ -1481,7 +1481,7 @@ export class BoopliWizard extends LitElement {
     return html`
       <p>${rich("wizard.do_this_once_on_claude_ai")}</p>
       <ol class="how">
-        <li>${rich("wizard.make_a_new_routine_name_it", { t: t("wizard.boopli") })}</li>
+        <li>${rich("wizard.make_a_new_routine_name_it", { item: t("wizard.boopli")  })}</li>
         <li>
           ${t("wizard.paste_this_as_its_instructions")}
           <textarea class="code" rows="6" readonly aria-label=${t("wizard.routine_instructions")} .value=${ROUTINE_PROMPT}></textarea>
@@ -1496,8 +1496,8 @@ export class BoopliWizard extends LitElement {
             ? html`<code>${host}</code>`
             : html`${rich("wizard.home_assistant_address_unknown")}`}
         </li>
-        <li>${rich("wizard.add_an_to_the_routine_and", { t: t("wizard.api_trigger"), t2: t("wizard.generate_token") })}</li>
-        <li>${rich("wizard.leave_every_connector_gmail_calendar_and", { t: t("wizard.off") })}</li>
+        <li>${rich("wizard.add_an_to_the_routine_and", { item: t("wizard.api_trigger"), item2: t("wizard.generate_token")  })}</li>
+        <li>${rich("wizard.leave_every_connector_gmail_calendar_and", { item: t("wizard.off")  })}</li>
       </ol>
       <p class="muted small">${t("wizard.claudes_screens_change_now_and_then")}</p>
     `;
@@ -1534,9 +1534,9 @@ export class BoopliWizard extends LitElement {
   private _renderDone(d: Settings) {
     const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
     const adding = TEMPLATES().filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
-    if (this._first && adding.length) changes.push(`Chores added: ${adding.join(", ")}`);
+    if (this._first && adding.length) changes.push(t("wizard.chores_added", { join: adding.join(", ") }));
     return html`
-      <p><b>${t("common.what_changed")}</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
+      <p>${rich(this._first ? "wizard.what_changed_before_setup" : "wizard.what_changed_in_setup")}</p>
       ${changes.length === 0
         ? html`<p class="muted">${t("wizard.nothing_changed")}</p>`
         : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
@@ -1646,7 +1646,7 @@ export class BoopliWizard extends LitElement {
         </nav>
         <section class="card main">
           <div class="top">
-            <span class="muted small">${t("schedule_wizard.step_of", { value: this._index + 1, length: this._steps.length })}</span>
+            <span class="muted small">${t("schedule_wizard.step_of", { value: this._index + 1, count: this._steps.length })}</span>
             ${isDone && this._first
               ? nothing
               : html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._leave()}>

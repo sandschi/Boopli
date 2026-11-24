@@ -167,7 +167,7 @@ export class BoopliTriggers extends LitElement {
       else unsubscribe();
     } catch (err) {
       this._scanning = -1;
-      this._note = `Scanning did not start (${errorMessage(err)}). Pick the tag from the list instead.`;
+      this._note = t("triggers.scanning_did_not_start_pick_the", { error: errorMessage(err) });
     }
   }
 
@@ -191,7 +191,7 @@ export class BoopliTriggers extends LitElement {
         ${trig.entity_id
           ? current
             ? html`<div class="muted small">
-                ${rich("triggers.now", { friendly: this._friendly(trig.entity_id), state: current.state })}
+                ${rich("triggers.now", { device: this._friendly(trig.entity_id), state: current.state    })}
               </div>`
             : html`<div class="warn small">${t("triggers.not_found_right_now_check_the")}</div>`
           : nothing}

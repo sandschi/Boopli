@@ -158,7 +158,7 @@ export class BoopliPet extends LitElement {
     return html`<div
       class="pet ${this.mood}"
       role="img"
-      aria-label=${t("pet.your_pet_is", { mood: this.mood })}
+      aria-label=${t("pet.your_pet_is", { mood: t(`pet.mood_${this.mood}`) })}
       @click=${() => this._tap()}
     >
       ${this._art()}

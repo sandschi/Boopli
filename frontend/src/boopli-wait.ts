@@ -98,8 +98,8 @@ export class BoopliWait extends LitElement {
         <div class="fill" style="width:${used * 100}%"></div>
       </div>
       <div class="time">
-        <span>${t("wait.so_far", { mmss: mmss(this._elapsed) })}</span>
-        <span>${t("wait.gives_up_after", { mmss: mmss(this.max) })}</span>
+        <span>${t("wait.so_far", { time: mmss(this._elapsed) })}</span>
+        <span>${t("wait.gives_up_after", { time: mmss(this.max) })}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable

@@ -50,7 +50,7 @@ export const TILE_DEFS = (): TileDef[] => [
     defaultW: 4,
     defaultH: 2,
     options: [
-      { key: "format", label: t("wall_tiles.clock"), kind: "choice", default: "24h", choices: [["24h", "24 hours"], ["12h", "12 hours (AM/PM)"]] },
+      { key: "format", label: t("wall_tiles.clock"), kind: "choice", default: "24h", choices: [["24h", t("wall_tiles.hours_24")], ["12h", t("wall_tiles.hours_12")]] },
       { key: "date", label: t("wall_tiles.show_the_date"), kind: "bool", default: true },
     ],
   },
@@ -75,7 +75,7 @@ export const TILE_DEFS = (): TileDef[] => [
     options: [
       { key: "entity_id", label: t("wall_tiles.entity"), kind: "entity", default: "" },
       { key: "name", label: t("wall_tiles.name_optional"), kind: "text", default: "" },
-      { key: "tap", label: "A tap", kind: "choice", default: "toggle", choices: [["toggle", "switches it"], ["none", "does nothing"]] },
+      { key: "tap", label: t("wall_tiles.a_tap"), kind: "choice", default: "toggle", choices: [["toggle", t("wall_tiles.tap_switches_it")], ["none", t("wall_tiles.tap_does_nothing")]] },
     ],
   },
   {

@@ -87,7 +87,7 @@ export class BoopliClaude extends LitElement {
     try {
       if (this.beforeTest) await this.beforeTest();
       const result = await claudeTest(this.hass);
-      this._note = `It works. Claude answered in ${result.seconds} seconds.`;
+      this._note = t("claude.it_works_claude_answered_in_seconds", { seconds: result.seconds });
     } catch (err) {
       this._bad = true;
       this._note = errorMessage(err);
@@ -107,7 +107,7 @@ export class BoopliClaude extends LitElement {
       ${this.hideIntro
         ? nothing
         : html`<p class="muted small">
-            ${rich("claude.claude_is_an_extra_next_to", { t: t("common.ask_claude") })}
+            ${rich("claude.claude_is_an_extra_next_to", { item: t("common.ask_claude")  })}
           </p>`}
       <label class="inline">
         <input

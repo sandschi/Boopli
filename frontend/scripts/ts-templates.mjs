@@ -69,7 +69,7 @@ export function scanTemplates(src, withStrings = false) {
       }
       i++;
     }
-    if (tag === "html" || tag === "svg" || tag === "shtml") out.push({ tag, quasis });
+    if (tag !== "css" && tag !== "unsafeCSS") out.push({ tag, quasis });
   }
 
   function code(stopAtBrace) {
@@ -170,7 +170,7 @@ export function textsOf(body) {
       if (pending) pending.after = tag;
       pending = null;
       lastTag = tag;
-      for (const m of tag.matchAll(/\b(title|placeholder|aria-label|label|alt)="([^"]*)"/g)) {
+      for (const m of tag.matchAll(/\b(title|placeholder|aria-label|label|alt|allLabel)="([^"]*)"/gi)) {
         found.push({ kind: "attr", attr: m[1], text: m[2], at: tagStart + m.index });
       }
       const name = /^<\/?([a-zA-Z][\w-]*)/.exec(tag)?.[1]?.toLowerCase();

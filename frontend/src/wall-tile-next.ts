@@ -16,7 +16,7 @@ export class WallTileNext extends WallTile {
     const tz = this.snapshot.time_zone;
     const model = buildToday(this.snapshot, this.nowMs);
     const lines: Line[] = [
-      ...model.ready.flatMap((g) => g.steps.map((s) => ({ title: `${g.run.chore_name}: ${s.title}`, when: "ready now" }))),
+      ...model.ready.flatMap((g) => g.steps.map((s) => ({ title: `${g.run.chore_name}: ${s.title}`, when: t("common.ready_now_hint") }))),
       ...model.groups.flatMap((g) => g.steps.map((s) => ({ title: `${g.run.chore_name}: ${s.title}`, when: s.hint }))),
       ...model.dueToday.map((d) => ({ title: d.chore.name, when: `at ${fmtTime(d.at, tz)}` })),
       ...model.upcoming.map((d) => ({ title: d.chore.name, when: describeWhen(d.at, this.nowMs, tz) })),

@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { eggFound, saveChore, saveSetup, subscribe, taskAdd } from "./api";
+import { eggFound, errorMessage, saveChore, saveSetup, subscribe, taskAdd } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
@@ -17,14 +17,14 @@ import { applyAccent } from "./accent";
 import { loadFonts } from "./fonts";
 import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
-import { t } from "./i18n";
+import { setLanguage, t } from "./i18n";
 
 type Tab = "today" | "chores" | "home" | "settings";
 
 const TAB_LABELS = (): Record<Tab, string> => ({
   today: t("wall_tile_calendar.today"),
   chores: t("common.chores"),
-  home: "My home",
+  home: t("panel.my_home"),
   settings: t("common.settings"),
 });
 
@@ -240,8 +240,7 @@ export class BoopliPanel extends LitElement {
         this._tab = "chores";
       }
     } catch (err) {
-      this._breakdownError =
-        err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : t("common.something_went_wrong");
+      this._breakdownError = errorMessage(err);
     }
   };
 
@@ -263,6 +262,10 @@ export class BoopliPanel extends LitElement {
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
+    // The language of the texts: the person's Home Assistant language, or ?lang=xx in the address (to try a translation).
+    if (changed.has("hass") && this.hass) {
+      setLanguage(new URLSearchParams(location.search).get("lang") || this.hass.language);
+    }
     // The accent colour (the pet's own, or the one picked in Settings) for everything inside the panel.
     if (changed.has("_snapshot")) {
       const s = this._snapshot?.settings;

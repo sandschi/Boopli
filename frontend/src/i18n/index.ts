@@ -11,7 +11,7 @@
 import en from "./en.json";
 
 type Tree = { [key: string]: string | Tree };
-export type Params = Record<string, string | number>;
+export type Params = Record<string, string | number | boolean | null | undefined | object>;
 
 function flatten(tree: Tree, prefix = "", out: Record<string, string> = {}): Record<string, string> {
   for (const [key, value] of Object.entries(tree)) {
@@ -68,7 +68,7 @@ export function t(key: string, params?: Params): string {
   const count = typeof params?.count === "number" ? params.count : undefined;
   const text = lookup(key, count) ?? key; // a missing key shows itself, so it is easy to spot
   if (!params) return text;
-  return text.replace(/\{(\w+)\}/g, (whole, name: string) => (name in params ? String(params[name]) : whole));
+  return text.replace(/\{(\w+)\}/g, (whole, name: string) => (name in params ? String(params[name] ?? "") : whole));
 }
 
 // --- sentences with a little markup -----------------------------------------------------
@@ -97,4 +97,9 @@ export function rich(key: string, params?: Record<string, string | number | Temp
   // t() leaves {name} places it was not given, so the templates can be put in now
   const parts = text.split(/\{(\w+)\}/);
   return html`${parts.map((part, i) => (i % 2 ? (slots[part] ?? `{${part}}`) : unsafeHTML(part)))}`;
+}
+
+/** Whether a key has a text in the current language or in English. */
+export function hasText(key: string): boolean {
+  return catalogs[current]?.[key] !== undefined || catalogs.en[key] !== undefined;
 }

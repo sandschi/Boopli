@@ -21,7 +21,7 @@ export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { val
   // A ding and an alarm are always on offer; speaking needs somewhere to speak (set on the speaker).
   const alexa = sp.speech?.route !== "tts";
   const plays = (t?: { sound: string; kind: string }) => !!t?.sound && (t.kind !== "alexa" || alexa); // an Amazon sound needs an Alexa speaker
-  if (plays(sp.cue)) out.push({ value: "cue", label: "A ding" });
+  if (plays(sp.cue)) out.push({ value: "cue", label: t("rung.a_ding") });
   // your own sounds: a file plays on any speaker, an Alexa sound only on an Alexa one
   for (const x of sounds) if (x.sound && (x.kind !== "alexa" || alexa)) out.push({ value: `sound:${x.id}`, label: x.name });
   if (sp.speech?.target) {
@@ -147,7 +147,7 @@ export class BoopliRung extends LitElement {
           (p) => html`<label class="dev">
             <span>${icon("cellphone")} ${phoneName(p.service)}</span>
             <select
-              aria-label=${t("rung.at_nudge", { phoneName: phoneName(p.service), n })}
+              aria-label=${t("rung.at_nudge", { phone: phoneName(p.service), n  })}
               @change=${(e: Event) => this._setPhone(p.service, (e.target as HTMLSelectElement).value)}
             >
               <option value="" ?selected=${!r.phones[p.service]}>${t("rung.off")}</option>

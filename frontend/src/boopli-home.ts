@@ -280,7 +280,7 @@ export class BoopliHome extends LitElement {
       // Only if the person is still looking at the same room's photos.
       if (now?.kind !== "photos" || now.roomId !== roomId) return;
       this._patchTool({ photos: [...now.photos, ...added] });
-      if (files.length > room) this._error = `Up to ${MAX_PHOTOS} photos per room. The rest were left out.`;
+      if (files.length > room) this._error = t("home.up_to_photos_per_room_the", { max_photos: MAX_PHOTOS });
     } catch (err) {
       this._error = errorMessage(err);
     }
@@ -421,7 +421,7 @@ export class BoopliHome extends LitElement {
     this._draft = { ...this._draft, rooms };
     this._tool = null;
     this._message = changed
-      ? `Notes for ${changed} ${changed === 1 ? "room" : "rooms"} are in. Press Save to keep them.`
+      ? t("home.notes_are_in", { count: changed })
       : t("home.nothing_was_used");
   }
 
@@ -624,7 +624,7 @@ export class BoopliHome extends LitElement {
         <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>${t("common.cancel")}</button>
       </div>
       <p class="muted">
-        ${t("home.take_or_pick_up_to_photos", { MAX_PHOTOS })}
+        ${t("home.take_or_pick_up_to_photos", { max_photos: MAX_PHOTOS })}
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${tool.sending
@@ -722,12 +722,12 @@ export class BoopliHome extends LitElement {
           <textarea id="promptbox" class="promptbox" rows="7" readonly .value=${tool.prompt}></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!tool.prompt} @click=${() => this._copyPrompt()}>
-              ${tool.copied ? "Copied ✓" : t("home.copy_the_prompt")}
+              ${tool.copied ? t("home.copied") : t("home.copy_the_prompt")}
             </button>
           </div>
         </li>
         <li>
-          ${rich("home.with_the_chat_when_you_say", { t: t("home.talk_it_through") })}
+          ${rich("home.with_the_chat_when_you_say", { item: t("home.talk_it_through")  })}
         </li>
         <li>
           ${rich("home.copy_the_notes_it_gives_back")}
@@ -735,7 +735,7 @@ export class BoopliHome extends LitElement {
             class="pastebox"
             rows="6"
             aria-label=${t("home.pasted_notes")}
-            placeholder=${whole ? "## Kitchen\nDishwasher is under the counter\n## Bedroom\n…" : "Dishwasher is under the counter\nBalcony door sticks"}
+            placeholder=${whole ? t("home.paste_example_whole") : t("home.paste_example_room")}
             .value=${tool.pasted}
             @input=${(e: Event) => this._patchTool({ pasted: (e.target as HTMLTextAreaElement).value })}
           ></textarea>
@@ -765,7 +765,7 @@ export class BoopliHome extends LitElement {
           <label class="inline qtext">
             <input type="checkbox" .checked=${item.on} @change=${(e: Event) => this._patchFlat(i, { on: (e.target as HTMLInputElement).checked })} />
             ${item.name}
-            <span class="tag">${item.id ? "your room" : "new room"}</span>
+            <span class="tag">${item.id ? t("home.your_room") : t("home.new_room")}</span>
           </label>
           ${existing?.notes.trim() ? html`<div class="muted small">${t("home.it_replaces_the_notes_this_room")}</div>` : nothing}
           <textarea
@@ -830,7 +830,7 @@ export class BoopliHome extends LitElement {
           ${icon("chat-outline")} ${t("home.in_my_own_chat")}
         </button>
         <span class="spacer"></span>
-        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? t("home.hide") : "Delete"}</button>
+        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? t("home.hide") : t("common.delete")}</button>
       </div>
     </section>`;
   }

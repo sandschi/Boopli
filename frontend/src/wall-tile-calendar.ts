@@ -86,7 +86,7 @@ export class WallTileCalendar extends WallTile {
       const tz = this.snapshot?.time_zone;
       this._events = events
         .map((e): Line | null => {
-          const title = e.summary ?? "(no title)";
+          const title = e.summary ?? t("wall_tile_calendar.no_title");
           if (!e.start.dateTime) {
             const date = String(e.start.date ?? "");
             return /^\d{4}-\d{2}-\d{2}$/.test(date) ? { title, at: 0, allDay: true, day: date, key: `${date}T00:00` } : null;

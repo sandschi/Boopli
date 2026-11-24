@@ -234,7 +234,7 @@ export class BoopliWallEdit extends LitElement {
     if (!this._boards || this._boards.length >= MAX_BOARDS) return;
     const board: Board = {
       id: newLadderId(),
-      name: this._uniqueName("My board"),
+      name: this._uniqueName(t("wall_edit.my_board")),
       columns: 16,
       rows: 9,
       night: "dim",
@@ -258,7 +258,7 @@ export class BoopliWallEdit extends LitElement {
     const cur = this._cur;
     if (!cur) return;
     if (cur.tiles.length >= MAX_TILES) {
-      this._error = `A board can have ${MAX_TILES} tiles at most.`;
+      this._error = t("wall_edit.a_board_can_have_tiles_at", { max_tiles: MAX_TILES });
       this._modal = "";
       return;
     }
@@ -311,7 +311,7 @@ export class BoopliWallEdit extends LitElement {
     const needC = right(cur.tiles);
     const needR = bottom(cur.tiles);
     if (c < needC || r < needR) {
-      this._error = `Some tiles reach to column ${needC} and row ${needR}. Move or shrink them first.`;
+      this._error = t("wall_edit.some_tiles_reach_to_column_and", { columns: needC, rows: needR });
       return { columns: cur.columns, rows: cur.rows };
     }
     this._edit((b) => {
@@ -330,7 +330,7 @@ export class BoopliWallEdit extends LitElement {
     const rows = cur.rows * f;
     const tiles = scaleTiles(cur.tiles, f);
     if (!Number.isInteger(columns) || !Number.isInteger(rows) || columns < COLUMNS_MIN || rows < ROWS_MIN || columns > COLUMNS_MAX || rows > ROWS_MAX) {
-      this._error = finer ? `${COLUMNS_MAX} by ${ROWS_MAX} is the finest grid.` : t("wall_edit.this_grid_cannot_be_made_coarser");
+      this._error = finer ? t("wall_edit.by_is_the_finest_grid", { columns_max: COLUMNS_MAX, rows_max: ROWS_MAX }) : t("wall_edit.this_grid_cannot_be_made_coarser");
       return;
     }
     if (!tiles) {
@@ -485,7 +485,7 @@ export class BoopliWallEdit extends LitElement {
         </select>
       </div>
       <p class="muted small">${t("wall_edit.night_is_when_quiet_hours_are")}</p>
-      <p class="small">${rich("wall_edit.link_for_the_tablets_start_page", { boardLink: boardLink(cur) })}</p>
+      <p class="small">${rich("wall_edit.link_for_the_tablets_start_page", { link: boardLink(cur)  })}</p>
       <div class="mfoot">
         <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>${t("wall_edit.new_board")}</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${t("wall_edit.delete_this_board")}</button>
@@ -516,7 +516,7 @@ export class BoopliWallEdit extends LitElement {
           <label class="pick">
             <span class="muted small">${t("wall_edit.board")}</span>
             <select aria-label=${t("wall_edit.board")} @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._modal = ""; }}>
-              ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || "(no name)"}</option>`)}
+              ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || t("ladders.no_name")}</option>`)}
             </select>
           </label>
           <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} ${t("wall_edit.board")}</button>

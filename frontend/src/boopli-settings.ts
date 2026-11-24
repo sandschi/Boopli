@@ -12,7 +12,7 @@ import {
   PHONE_LEVEL_LABEL,
   styleLabel,
 } from "./helpers";
-import { WEEKDAY_NAMES } from "./time";
+import { weekdayNames } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
@@ -63,7 +63,7 @@ const AREAS = (): Record<Area, AreaDef> => ({
   presence: { icon: "map-marker-outline", title: t("common.where_you_are"), wizard: "presence", keys: ["presence_entity"] },
   pet: { icon: "paw", title: t("settings.your_pet_and_accent_colour"), wizard: "pet", keys: ["pet_name", "pet_kind", "accent"] },
   wall: { icon: "monitor-dashboard", title: t("common.wall_board"), wizard: "wall", keys: ["boards"] },
-  ai: { icon: "robot-outline", title: "AI help", wizard: "ai", keys: ["ai"] },
+  ai: { icon: "robot-outline", title: t("settings.ai_help"), wizard: "ai", keys: ["ai"] },
   backup: { icon: "content-save-outline", title: t("backup.backup"), keys: [] },
 });
 
@@ -399,7 +399,7 @@ export class BoopliSettings extends LitElement {
     let days = this._draft.quiet_hours.days;
     if (enabled && Object.keys(days).length === 0) {
       days = Object.fromEntries(
-        WEEKDAY_NAMES.map((_, i) => [String(i), { ...DEFAULT_DAY }])
+        weekdayNames().map((_, i) => [String(i), { ...DEFAULT_DAY }])
       );
     }
     this._set({ quiet_hours: { enabled, days } });
@@ -416,7 +416,7 @@ export class BoopliSettings extends LitElement {
     const qh = this._draft.quiet_hours;
     const monday = qh.days["0"];
     const days = Object.fromEntries(
-      WEEKDAY_NAMES.map((_, i) => [String(i), monday ? { ...monday } : null])
+      weekdayNames().map((_, i) => [String(i), monday ? { ...monday } : null])
     );
     this._set({ quiet_hours: { ...qh, days } });
   }
@@ -596,7 +596,7 @@ export class BoopliSettings extends LitElement {
         </label>
         ${qh.enabled
           ? html`
-              ${WEEKDAY_NAMES.map((name, i) => {
+              ${weekdayNames().map((name, i) => {
                 const day = qh.days[String(i)] ?? null;
                 return html`
                   <div class="row day">
@@ -799,7 +799,7 @@ export class BoopliSettings extends LitElement {
     this._aiNote = t("settings.asking_the_agent");
     try {
       const result = await aiSteps(this.hass, t("common.make_a_cup_of_tea"), "now", []);
-      this._aiNote = `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`;
+      this._aiNote = t("common.agent_test_works", { count: result.steps.length, first: result.steps[0]?.title ?? t("common.none") });
     } catch (err) {
       this._aiNote = errorMessage(err);
     }
@@ -924,12 +924,26 @@ export class BoopliSettings extends LitElement {
   // --- the page: cards in groups. "Guide me" opens the wizard, "Advanced" opens a window ----------
 
   /** A few short lines of what is set (from the draft, so unsaved edits show too). */
+    /** The summary lines that say "nothing yet" and are shown in a quieter colour. */
+  private _dimLines(): string[] {
+    return [
+      t("settings.no_phone_set_up_yet"),
+      t("settings.no_reminder_lights_yet"),
+      t("settings.no_speakers_yet"),
+      t("settings.no_alarm_devices_yet"),
+      t("settings.no_ladders_of_your_own_yet"),
+      t("settings.not_set_boopli_assumes_you_are"),
+      t("settings.off_splits_big_tasks_into_tiny"),
+      t("helpers.off_boopli_nudges_at_any_time"),
+    ];
+  }
+
   private _summary(area: Area, d: Settings): string[] {
     const fn = (id: string) => friendlyName(this.hass, id);
     switch (area) {
       case "phone":
         return d.phones.length
-          ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}`)
+          ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL()[p.level] ?? p.level}`)
           : [t("settings.no_phone_set_up_yet")];
       case "lights":
         return d.lights.length ? d.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`) : [t("settings.no_reminder_lights_yet")];
@@ -939,42 +953,42 @@ export class BoopliSettings extends LitElement {
           : [t("settings.no_speakers_yet")];
       case "alarms":
         return d.alarm_devices.length
-          ? d.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s`)
+          ? d.alarm_devices.map((a) => t("settings.on_for_s", { name: fn(a.entity_id), seconds: a.seconds  }))
           : [t("settings.no_alarm_devices_yet")];
       case "quiet":
         return [describeQuiet(d.quiet_hours)];
       case "timing":
         return [
-          `Snooze ${d.snooze_minutes} minutes`,
-          `"Still on it?" after ${d.check_in_minutes ?? 30} minutes`,
-          `First nudge waits ${d.question_wait_minutes ?? 30} minutes for your answers`,
+          t("settings.snooze_minutes", { snooze_minutes: d.snooze_minutes }),
+          t("settings.still_on_it_after_minutes", { value: d.check_in_minutes ?? 30 }),
+          t("settings.first_nudge_waits_minutes_for_your", { value: d.question_wait_minutes ?? 30 }),
         ];
       case "ladders": {
         const ladders = d.ladders ?? [];
         return [
-          `New chores: ${styleLabel(d.default_style, ladders)}`,
-          ...ladders.map((l) => `${l.name}: ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}`),
+          t("settings.new_chores", { style: styleLabel(d.default_style, ladders) }),
+          ...ladders.map((l) => t("settings.ladder_nudges", { name: l.name, count: l.rungs.length })),
           ...(ladders.length ? [] : [t("settings.no_ladders_of_your_own_yet")]),
         ];
       }
       case "wall": {
-        const night: Record<string, string> = { dim: "dims", black: "goes black", off: "stays on" };
-        return (d.boards ?? []).map((b) => `${b.name}: ${b.tiles.length} ${b.tiles.length === 1 ? "tile" : "tiles"}, ${night[b.night] ?? b.night} at night`);
+        const night: Record<string, string> = { dim: t("settings.night_dims"), black: t("settings.night_goes_black"), off: t("settings.night_stays_on") };
+        return (d.boards ?? []).map((b) => t("settings.board_summary", { name: b.name, count: b.tiles.length, night: night[b.night] ?? b.night }));
       }
       case "presence":
         return [d.presence_entity ? fn(d.presence_entity) : t("settings.not_set_boopli_assumes_you_are")];
       case "pet":
         return [
-          `${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`,
-          isHex(d.accent) ? `Accent colour: ${d.accent.toLowerCase()}` : t("settings.accent_colour_your_pets_own"),
+          t("settings.the", { pet_name: d.pet_name, value: petInfo(d.pet_kind).label.toLowerCase() }),
+          isHex(d.accent) ? t("settings.accent_colour_2", { value: d.accent.toLowerCase() }) : t("settings.accent_colour_your_pets_own"),
         ];
       case "backup":
         return [t("settings.save_your_whole_setup_to_one")];
       case "ai":
         return [
           d.ai?.enabled
-            ? `On, using ${d.ai.entity_id ? fn(d.ai.entity_id) : "the Home Assistant default agent"}`
-            : "Off. Splits big tasks into tiny steps with your own AI agent.",
+            ? t("settings.on_using", { agent: d.ai.entity_id ? fn(d.ai.entity_id) : t("settings.the_home_assistant_default_agent") })
+            : t("settings.off_splits_big_tasks_into_tiny"),
           ...(d.ai?.claude_enabled ? [t("settings.ask_claude_is_on")] : []),
         ];
     }
@@ -994,7 +1008,7 @@ export class BoopliSettings extends LitElement {
       <div class="summary">
         ${this._summary(area, d).map(
           (line) =>
-            html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith(t("rung.off")) ? "muted" : ""}>${area === "pet" && line.startsWith(t("settings.accent_colour")) ? html`<span class="accent-dot"></span>` : nothing}${line}</div>`
+            html`<div class=${this._dimLines().includes(line) ? "muted" : ""}>${area === "pet" && isHex(d.accent) && line === this._summary(area, d)[1] ? html`<span class="accent-dot"></span>` : nothing}${line}</div>`
         )}
       </div>
       <div class="buttons">

@@ -71,7 +71,7 @@ export class BoopliPetPreview extends LitElement {
 
   private _play(moment: Exclude<Moment, "">): void {
     this._moment = moment;
-    this._text = moment === "levelup" ? `Level ${Math.min(this._level + 1, 99)}!` : moment === "done" ? "+10 XP" : "";
+    this._text = moment === "levelup" ? t("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : moment === "done" ? "+10 XP" : "";
     this._seq += 1;
   }
 
@@ -108,7 +108,7 @@ export class BoopliPetPreview extends LitElement {
 
           <div class="group">
             <div class="label">${t("pet_preview.mood")}</div>
-            <div class="chips">${MOODS.map((m) => this._chip(m, this._mood === m, () => (this._mood = m)))}</div>
+            <div class="chips">${MOODS.map((m) => this._chip(t(`pet.mood_${m}`), this._mood === m, () => (this._mood = m)))}</div>
           </div>
           <div class="group">
             <div class="label">${t("pet_preview.busy_with")}</div>

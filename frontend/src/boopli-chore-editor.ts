@@ -15,16 +15,16 @@ import { t, rich } from "./i18n";
 
 const MAX_QUESTIONS = 8; // the same as in the integration
 
-const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
-  { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
+const STYLE_OPTIONS = (): { value: NudgeStyle; label: string }[] => [
+  { value: "quiet", label: t("chore_editor.quiet_only_shown_in_boopli_no") },
 ];
 
-const WAIT_PRESETS: { minutes: number; label: string }[] = [
-  { minutes: 0, label: "No wait" },
-  { minutes: 15, label: "15 min" },
-  { minutes: 30, label: "30 min" },
-  { minutes: 60, label: "1 h" },
-  { minutes: 180, label: "3 h" },
+const WAIT_PRESETS = (): { minutes: number; label: string }[] => [
+  { minutes: 0, label: t("chore_editor.no_wait") },
+  { minutes: 15, label: t("chore_editor.wait_min", { n: 15 }) },
+  { minutes: 30, label: t("chore_editor.wait_min", { n: 30 }) },
+  { minutes: 60, label: t("chore_editor.wait_h", { n: 1 }) },
+  { minutes: 180, label: t("chore_editor.wait_h", { n: 3 }) },
 ];
 
 const REPEAT_OPTIONS = (): { value: RepeatType; label: string }[] => [
@@ -349,7 +349,7 @@ export class BoopliChoreEditor extends LitElement {
               (z) => html`<button
                 type="button"
                 class="chip size ${(step.size ?? "small") === z ? "on" : ""}"
-                title="${z === "small" ? "Small: 10 XP" : z === "medium" ? "Medium: 15 XP" : "Big: 20 XP"}"
+                title="${z === "small" ? t("chore_editor.small_10_xp") : z === "medium" ? t("chore_editor.medium_15_xp") : t("chore_editor.big_20_xp")}"
                 aria-pressed=${(step.size ?? "small") === z}
                 @click=${() => this._updateStep(index, { size: z })}
               >
@@ -383,7 +383,7 @@ export class BoopliChoreEditor extends LitElement {
               >
                 <option value="" ?selected=${!step.only_if}>${t("common.always_there")}</option>
                 ${(this.draft.questions ?? []).map(
-                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${t("chore_editor.yes", { value: q.text || "(question without words)" })}</option>`
+                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${t("chore_editor.yes", { value: q.text || t("chore_editor.question_without_words") })}</option>`
                 )}
               </select>
             </div>`
@@ -393,7 +393,7 @@ export class BoopliChoreEditor extends LitElement {
             ${(step.wait_for ?? []).length > 0 ? t("chore_editor.longest_it_waits_0_as_long") : t("chore_editor.wait_before_this_step")}
           </span>
           <div class="chips">
-            ${WAIT_PRESETS.map(
+            ${WAIT_PRESETS().map(
               (p) => html`<button
                 type="button"
                 class="chip ${step.wait_minutes === p.minutes ? "on" : ""}"
@@ -534,10 +534,10 @@ export class BoopliChoreEditor extends LitElement {
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
             ${[
-              ...STYLE_OPTIONS,
+              ...STYLE_OPTIONS(),
               ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
                 value: `ladder:${l.id}` as NudgeStyle,
-                label: l.id.startsWith("standard_") ? l.name : `${l.name}: my own ladder`,
+                label: l.id.startsWith("standard_") ? l.name : t("chore_editor.my_own_ladder", { name: l.name }),
               })),
             ].map(
               (o) => html`<option

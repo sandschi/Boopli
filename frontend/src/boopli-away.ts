@@ -37,9 +37,9 @@ function pickValue(iso: string, tz: string): string {
 
 /** One line for banners: "until Sun 29 Nov, 18:00", "from Sat 28 Nov, 08:00 until …" or "until you turn it off". */
 export function awayWhen(away: Away, nowMs: number, tz: string, onNow: boolean): string {
-  const until = away.until ? `until ${describeWhen(away.until, nowMs, tz)}` : "until you turn it off";
+  const until = away.until ? t("away.until_2", { when: describeWhen(away.until, nowMs, tz) }) : t("away.until_you_turn_it_off");
   if (onNow || !away.start) return until;
-  return `from ${describeWhen(away.start, nowMs, tz)} ${until}`;
+  return t("away.from_2", { when: describeWhen(away.start, nowMs, tz), until  });
 }
 
 /**

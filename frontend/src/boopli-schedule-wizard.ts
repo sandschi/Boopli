@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, previewSchedule } from "./api";
 import "./boopli-schedule-days";
 import { sharedStyles } from "./styles";
-import { describeRepeat, describeWhen, WEEKDAY_NAMES } from "./time";
+import { describeRepeat, describeWhen, weekdayNames } from "./time";
 import type { Hass, Repeat, RepeatType } from "./types";
 import { t, rich } from "./i18n";
 
@@ -24,7 +24,7 @@ const TITLES = (): Record<Step, string> => ({
 });
 
 const HOW = (): { value: RepeatType; label: string; text: string }[] => [
-  { value: "none", label: "On demand", text: t("schedule_wizard.i_start_it_myself_when_i") },
+  { value: "none", label: t("common.on_demand"), text: t("schedule_wizard.i_start_it_myself_when_i") },
   {
     value: "schedule",
     label: t("common.on_certain_days_and_times"),
@@ -182,7 +182,7 @@ export class BoopliScheduleWizard extends LitElement {
             aria-pressed=${active.includes(day)}
             @click=${() => this._toggleDay(day)}
           >
-            ${WEEKDAY_NAMES[day]}
+            ${weekdayNames()[day]}
           </button>`
         )}
       </div>
@@ -317,7 +317,7 @@ export class BoopliScheduleWizard extends LitElement {
         </nav>
         <section class="card main">
           <div class="top">
-            <span class="muted small">${t("schedule_wizard.step_of", { value: this._index + 1, length: steps.length })}</span>
+            <span class="muted small">${t("schedule_wizard.step_of", { value: this._index + 1, count: steps.length })}</span>
             <button type="button" class="link" @click=${() => this._cancel()}>${t("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / steps.length) * 100}%"></div></div>

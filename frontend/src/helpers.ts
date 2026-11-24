@@ -1,4 +1,4 @@
-import { WEEKDAY_NAMES } from "./time";
+import { weekdayNames } from "./time";
 import { t } from "./i18n";
 import type {
   AlarmDeviceCfg,
@@ -49,7 +49,7 @@ export function speechTargets(
     options = entityIds(hass, ["tts"]).map((id) => ({ value: id, label: friendlyName(hass, id) }));
   }
   if (current && !options.some((o) => o.value === current)) {
-    options.unshift({ value: current, label: `${current} (not found)` });
+    options.unshift({ value: current, label: t("speakers.not_found", { current }) });
   }
   return options;
 }
@@ -92,12 +92,12 @@ export function phoneName(service: string): string {
   return service.replace("mobile_app_", "");
 }
 
-export const PHONE_LEVEL_LABEL: Record<string, string> = {
-  normal: "normal",
-  high: "high priority",
-  alarm: "alarm volume",
-  alarm_max: "max volume",
-};
+export const PHONE_LEVEL_LABEL = (): Record<string, string> => ({
+  normal: t("helpers.level_normal"),
+  high: t("helpers.level_high"),
+  alarm: t("helpers.level_alarm"),
+  alarm_max: t("helpers.level_alarm_max"),
+});
 
 export const STYLE_LABEL = (): Record<string, string> => ({
   quiet: t("common.quiet"),
@@ -145,7 +145,7 @@ export function styleLabel(style: string, ladders: Ladder[] | undefined): string
  * short; each day is still stored on its own.
  */
 export function describeQuiet(qh: QuietHours): string {
-  if (!qh.enabled) return "Off: Boopli nudges at any time";
+  if (!qh.enabled) return t("helpers.off_boopli_nudges_at_any_time");
   const parts: string[] = [];
   let i = 0;
   while (i < 7) {
@@ -157,19 +157,19 @@ export function describeQuiet(qh: QuietHours): string {
       (qh.days[String(j + 1)] ?? null)?.stop === day?.stop
     )
       j++;
-    const name = i === j ? WEEKDAY_NAMES[i] : `${WEEKDAY_NAMES[i]} to ${WEEKDAY_NAMES[j]}`;
-    parts.push(day ? `${name} ${day.start} to ${day.stop}` : `${name} no limit`);
+    const name = i === j ? weekdayNames()[i] : t("helpers.day_range", { from: weekdayNames()[i], to: weekdayNames()[j] });
+    parts.push(day ? t("helpers.day_hours", { name, start: day.start, stop: day.stop }) : t("helpers.no_limit", { name }));
     i = j + 1;
   }
-  return "Nudges allowed " + parts.join(", ");
+  return t("helpers.nudges_allowed", { hours: parts.join(", ") });
 }
 
 /** What a speaker plays, in a few words. */
 export function describeSpeaker(s: SpeakerCfg): string {
-  const kind = s.speech.route === "tts" ? "TTS voice" : s.speech.route === "alexa_devices" ? "Alexa Devices" : t("helpers.alexa_media_player");
-  return s.speech.target && s.speech.enabled ?`${kind}, speaks` : `${kind}, no speaking device yet`;
+  const kind = s.speech.route === "tts" ? t("helpers.tts_voice") : s.speech.route === "alexa_devices" ? t("helpers.alexa_devices") : t("helpers.alexa_media_player");
+  return s.speech.target && s.speech.enabled ?t("helpers.speaks", { kind }) : t("helpers.no_speaking_device_yet", { kind });
 }
 
 export function lightKind(l: LightCfg): string {
-  return l.mode === "indicator" ? "status light (stays on until done)" : "blinks";
+  return l.mode === "indicator" ? t("helpers.status_light_stays_on") : t("helpers.blinks");
 }

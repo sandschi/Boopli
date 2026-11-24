@@ -1,5 +1,6 @@
 
-import { t } from "./i18n";import type {
+import { hasText, t, type Params } from "./i18n";
+import type {
   AiAnswer,
   AiPreview,
   AiQuestion,
@@ -289,8 +290,13 @@ export function completeStep(
 
 /** Turn a failed websocket call into a readable message. */
 export function errorMessage(err: unknown): string {
-  if (err && typeof err === "object" && "message" in err) {
-    return String((err as { message: unknown }).message);
+  if (err && typeof err === "object") {
+    const e = err as { message?: unknown; translation_key?: unknown; translation_placeholders?: Params };
+    // Home Assistant sends the key of the message and its values: show the text in the language of the panel.
+    if (typeof e.translation_key === "string" && hasText(`errors.${e.translation_key}`)) {
+      return t(`errors.${e.translation_key}`, e.translation_placeholders ?? {});
+    }
+    if ("message" in e) return String(e.message);
   }
   return t("common.something_went_wrong");
 }

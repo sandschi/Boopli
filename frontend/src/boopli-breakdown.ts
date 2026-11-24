@@ -209,7 +209,7 @@ export class BoopliBreakdown extends LitElement {
     try {
       this._preview = await aiPreview(
         this.hass,
-        this._task.trim() || "(your task)",
+        this._task.trim() || t("breakdown.your_task"),
         this.kind,
         this._answers,
         this._notes,
@@ -269,7 +269,7 @@ export class BoopliBreakdown extends LitElement {
       const added: string[] = [];
       for (const file of Array.from(files).slice(0, room)) added.push(await shrinkPhoto(file));
       this._photos = [...this._photos, ...added];
-      if (files.length > room) this._error = `Up to ${MAX_PHOTOS} photos. The rest were left out.`;
+      if (files.length > room) this._error = t("breakdown.up_to_photos_the_rest_were", { max_photos: MAX_PHOTOS });
     } catch (err) {
       this._error = errorMessage(err);
     }
@@ -336,7 +336,7 @@ export class BoopliBreakdown extends LitElement {
     const full = this._photos.length >= MAX_PHOTOS;
     return html`<div class="scene">
       <p class="muted small">
-        ${t("breakdown.take_or_pick_up_to_photos", { MAX_PHOTOS })}
+        ${t("breakdown.take_or_pick_up_to_photos", { max_photos: MAX_PHOTOS })}
       </p>
       <div class="thumbs">
         ${this._photos.map(
@@ -680,7 +680,7 @@ export class BoopliBreakdown extends LitElement {
     return html`
       ${this._answers.length
         ? html`<details class="said">
-            <summary>${t("breakdown.what_you_told_me_so_far", { length: this._answers.length })}</summary>
+            <summary>${t("breakdown.what_you_told_me_so_far", { count: this._answers.length })}</summary>
             <ul>
               ${this._answers.map((a) => html`<li><span class="muted">${a.question}</span> ${a.answer}</li>`)}
             </ul>
@@ -797,7 +797,7 @@ export class BoopliBreakdown extends LitElement {
     const editor = this.mode === "editor";
     return html`
       <p>
-        <b>${steps.length} ${steps.length === 1 ? "step" : "steps"}</b>
+        <b>${t("common.steps_count", { count: steps.length })}</b>
         <span class="muted"> ${t("breakdown.worth_about_xp_when_all_are", { xp: this._xp() })}</span>
       </p>
       ${this._renderChecks()}
