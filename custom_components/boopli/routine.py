@@ -133,22 +133,33 @@ class Waiting:
 
 
 def fire_text(instructions: str, request_id: str, answer_url: str, photo_urls: list[str]) -> str:
-    """What the routine is told: the task, where to put the answer, and the pictures to look at."""
-    parts = [instructions.strip()]
+    """What the routine is told: the task, the pictures to look at, and where to put the answer.
+
+    When the text is too long, the task is shortened: the pictures and the answer address
+    always stay whole. Raises when those alone do not fit (nothing has been fired yet).
+    """
+    tail: list[str] = []
     if photo_urls:
         listing = "\n".join(f"- {u}" for u in photo_urls)
-        parts.append(
-            "Pictures to look at (download each one and view it; the links stop working "
-            f"after a few minutes):\n{listing}"
+        tail.append(
+            "Pictures to look at (download and view each one BEFORE you write the answer; "
+            f"the links stop working after a few minutes):\n{listing}"
         )
-    parts.append(
-        "When you have the answer, send it back with ONE web request and then stop:\n"
+    tail.append(
+        "Then, as your very last action, send the answer back with ONE web request and stop:\n"
         f"POST {answer_url}\n"
         "Content-Type: application/json\n"
         f'Body: {{"request_id": "{request_id}", "answer": <your answer>}}\n'
-        'The answer must be the same JSON the task above asks for. Do not do anything else.'
+        "The answer must be the same JSON the task above asks for. Do not do anything else."
     )
-    return "\n\n".join(parts)[:MAX_TEXT]
+    tail_text = "\n\n".join(tail)
+    room = MAX_TEXT - len(tail_text) - 2
+    if room < 200:
+        raise RoutineError("That request is too big for Claude. Use fewer or smaller photos.")
+    task = instructions.strip()
+    if len(task) > room:
+        task = task[: room - 2].rstrip() + " …"
+    return f"{task}\n\n{tail_text}"
 
 
 def _explain(status: int) -> str:

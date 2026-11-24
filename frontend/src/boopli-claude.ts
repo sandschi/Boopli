@@ -107,7 +107,9 @@ export class BoopliClaude extends LitElement {
             Claude is an extra, next to your Home Assistant agent. Press <b>Ask Claude</b> when you do not trust the
             agent's answer, when your free agent is down, or when you have no agent. It uses your own Claude account:
             every ask is one run of your routine. Claude's routines are a research preview, so they can change or stop
-            working. Boopli sends only the task text and your answers, never device names, history or location.
+            working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a
+            task is about go along, and a room interview sends that room's name and its notes. Photos you choose go
+            along too. Never device names, history or location.
           </p>`}
       <label class="inline">
         <input

@@ -248,9 +248,9 @@ export class BoopliHome extends LitElement {
   }
 
   /** Open the review screen with notes that came from somewhere else (photos or a paste). */
-  private _review(roomId: string, source: Interview["source"], notes: string): void {
+  private _review(roomId: string, source: Interview["source"], notes: string, via: Via = "agent"): void {
     this._tool = null;
-    this._iv = { roomId, source, via: "agent", phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
+    this._iv = { roomId, source, via, phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
   }
 
   // --- describing a room from photos (one time, never kept) --------------------------------
@@ -297,7 +297,7 @@ export class BoopliHome extends LitElement {
     try {
       const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos, via);
       if (run !== this._run) return; // the person stopped waiting
-      this._review(room.id, "photos", result.notes); // the photos are gone with the tool
+      this._review(room.id, "photos", result.notes, via); // the photos are gone with the tool
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
@@ -428,13 +428,17 @@ export class BoopliHome extends LitElement {
     const iv = this._iv;
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
+    // If this fails, the screen goes back to what it showed (with the answers typed), so a retry
+    // does not send them twice. The very first request has nothing to go back to.
+    const back = iv.phase === "working" ? null : iv;
+    this._error = "";
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
       const result = await roomQuestions(this.hass, room.name, room.notes, answers, iv.via);
       if (run !== this._run) return; // the person stopped waiting
       if (result.enough || result.questions.length === 0) {
-        await this._writeNotes(answers);
+        await this._writeNotes(answers, back);
         return;
       }
       this._iv = {
@@ -450,14 +454,17 @@ export class BoopliHome extends LitElement {
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
-      this._iv = null;
+      this._iv = back;
     }
   }
 
-  private async _writeNotes(answers: AiAnswer[]): Promise<void> {
+  /** `back` is what to show again if this fails (a screen that was open before); left out = the screen as it is now. */
+  private async _writeNotes(answers: AiAnswer[], back?: Interview | null): Promise<void> {
     const iv = this._iv;
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
+    const restore = back !== undefined ? back : iv.phase === "working" ? null : iv;
+    this._error = "";
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
@@ -467,7 +474,7 @@ export class BoopliHome extends LitElement {
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
-      this._iv = null;
+      this._iv = restore;
     }
   }
 
@@ -537,6 +544,7 @@ export class BoopliHome extends LitElement {
         <h2>${room?.name ?? "Room"}: let me ask</h2>
         <button type="button" class="link" @click=${() => ((this._run += 1), (this._iv = null))}>Cancel</button>
       </div>
+      ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       ${iv.phase === "working"
         ? html`<boopli-wait
             .label=${iv.via === "claude" ? "Asking Claude. This takes a little while…" : iv.answers.length ? "Writing the notes…" : "Thinking…"}

@@ -1477,9 +1477,11 @@ export class BoopliWizard extends LitElement {
       </p>
       <p class="muted">
         It uses <b>your own Claude account</b>: you make a small routine there, and every ask runs it once. Claude
-        calls routines a research preview, so they can change or stop working. Boopli sends only the task text and
-        your answers, never device names, history or location. You need a Claude account on claude.ai, and Home
-        Assistant must be reachable from the internet, so Claude can send the answer back.
+        calls routines a research preview, so they can change or stop working. Boopli sends the task text and your
+        answers. If you turned on room notes, the notes of the rooms a task is about go along, and a room interview
+        sends that room's name and its notes. Photos you choose to send go along too. Never device names, history or
+        location. You need a Claude account on claude.ai, and Home Assistant must be reachable from the internet, so
+        Claude can send the answer back.
       </p>
       <label class="inline option">
         <input
@@ -1504,7 +1506,7 @@ export class BoopliWizard extends LitElement {
 
   private _renderClaudeMake(d: Settings) {
     if (!d.ai.claude_enabled) return html`<p class="muted">Ask Claude is off. Go back to switch it on, or skip this.</p>`;
-    const host = routineHost(d.ai.claude_ha_url);
+    const host = routineHost(d.ai.claude_ha_url, this.snapshot);
     return html`
       <p>Do this once on <b>claude.ai</b>, under Routines:</p>
       <ol class="how">
@@ -1519,7 +1521,10 @@ export class BoopliWizard extends LitElement {
         </li>
         <li>
           Make an <b>environment</b> for it with network access <b>Limited</b>, and allow this address:
-          <code>${host}</code>
+          ${host
+            ? html`<code>${host}</code>`
+            : html`<b>your Home Assistant's address on the internet</b>. Home Assistant does not know it yet: set the
+                external URL in Home Assistant, or fill in the address under Ask Claude in the next screen.`}
         </li>
         <li>Add an <b>API trigger</b> to the routine, and press <b>Generate token</b>. Copy the token now: Claude shows it only once.</li>
         <li>Leave every connector (Gmail, calendar and so on) switched <b>off</b>. The routine does not need them.</li>

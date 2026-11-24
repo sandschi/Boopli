@@ -441,12 +441,16 @@ export class BoopliBreakdown extends LitElement {
   private async _begin(via?: Via): Promise<void> {
     if (!this.hass || !this._task.trim()) return;
     this._choose(via);
+    const asking = this._via; // the helper this round was started with, whatever happens meanwhile
     this._answers = [];
     this._round = 0;
     this._phase = "working";
+    this._backPhase = "task";
+    const owner = ++this._askId; // "Stop waiting" during the guess must stop the request that follows
     await this._guess();
+    if (owner !== this._askId) return;
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, this._via),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, asking),
       "task"
     );
     if (!result) return;
@@ -498,10 +502,14 @@ export class BoopliBreakdown extends LitElement {
   private async _loadSteps(via?: Via): Promise<void> {
     if (!this.hass) return;
     if (via || this._phase === "task") this._choose(via);
+    const asking = this._via;
     this._phase = "working";
+    this._backPhase = this._questions.length ? "interview" : "task";
+    const owner = ++this._askId;
     await this._guess();
+    if (owner !== this._askId) return;
     const result = await this._ask(
-      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, this._via),
+      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, asking),
       this._questions.length ? "interview" : "task"
     );
     if (!result) return;

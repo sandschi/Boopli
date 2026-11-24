@@ -450,3 +450,65 @@ def test_a_retry_after_an_unreadable_answer_gets_fresh_links():
         assert len(fake.fires) == 2 and len(signed) == 2
 
     with_media(body)
+
+
+# --- CodeRabbit round: safer token save, checked fire address, protected callback text -----------
+
+
+def test_a_failed_token_save_keeps_the_old_token():
+    async def body(m, fake):
+        m._secret_store.async_save = AsyncMock(side_effect=OSError("disk full"))
+        with pytest.raises(manager_module.BoopliError) as err:
+            await m.async_set_claude_token("N" * 40)
+        assert "old one is still in use" in str(err.value)
+        assert m._claude_token == TOKEN  # nothing changed in the running manager
+        assert m.claude_status()["token_set"] is True
+
+    run(body)
+
+
+def test_the_token_never_goes_to_an_address_that_is_not_a_routine():
+    async def body(m, fake):
+        # As if an imported backup had brought this address in, without the normal save check.
+        m.settings.ai.claude_fire_url = "https://evil.example.com/collect"
+        message = await _error(m)
+        assert "not a routine fire address" in message
+        assert fake.fires == []
+        assert m.claude_status()["fires_left"] == routine.MAX_FIRES_PER_HOUR  # no fire was counted
+
+    run(body)
+
+
+def test_a_long_task_is_shortened_but_the_answer_address_stays():
+    long_task = "word " * 30_000
+    text = routine.fire_text(long_task, "abc123", "https://ha.example.org/api/webhook/hook", ["https://ha.example.org/p1"])
+    assert len(text) <= routine.MAX_TEXT
+    assert "https://ha.example.org/api/webhook/hook" in text
+    assert '"request_id": "abc123"' in text
+    assert "https://ha.example.org/p1" in text
+    assert text.index("Pictures") < text.index("POST ")  # look first, answer last
+
+
+def test_a_request_that_cannot_fit_is_refused_before_a_fire_is_counted():
+    async def body(m, fake):
+        with pytest.raises(routine.RoutineError):
+            routine.fire_text("x", "id", "https://ha.example.org/h", ["https://ha.example.org/" + "p" * 70_000])
+        m.settings.ai.claude_ha_url = "https://ha.example.org/" + "a" * 70_000
+        message = await _error(m)
+        assert "too big" in message
+        assert fake.fires == []
+        assert m.claude_status()["fires_left"] == routine.MAX_FIRES_PER_HOUR
+
+    run(body)
+
+
+def test_the_panel_is_told_which_host_to_allow():
+    m = make_manager()
+    assert m.claude_status()["callback_host"] == "ha.example.org"
+    m.settings.ai.claude_ha_url = "https://ha.example.org:8443/"
+    assert m.claude_status()["callback_host"] == "ha.example.org"
+    m.settings.ai.claude_ha_url = ""
+    with patch.object(manager_module, "get_url", return_value="https://home.example.net"):
+        assert m.claude_status()["callback_host"] == "home.example.net"
+    with patch.object(manager_module, "get_url", side_effect=manager_module.NoURLAvailableError):
+        assert m.claude_status()["callback_host"] == ""

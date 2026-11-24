@@ -279,6 +279,7 @@ export interface AiSettings {
 /** What the panel may know about the Claude routine: never the token itself. */
 export interface ClaudeStatus {
   token_set: boolean;
+  callback_host: string; // the host name Claude reaches Home Assistant at; empty = no external address known
   fires_left: number;
   fires_per_hour: number;
   wait_seconds: number;

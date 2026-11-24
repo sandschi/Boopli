@@ -18,6 +18,7 @@ from dataclasses import asdict
 from datetime import datetime, time as dtime, timedelta, tzinfo
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from aiohttp import web
 
@@ -1353,15 +1354,26 @@ class BoopliManager:
             allowed_methods=["POST"],
         )
 
-    async def _async_save_claude_secrets(self) -> None:
+    async def _async_save_claude_secrets(self, token: str | None = None) -> None:
         await self._secret_store.async_save(
-            {"token": self._claude_token, "webhook_id": self._claude_webhook_id}
+            {
+                "token": self._claude_token if token is None else token,
+                "webhook_id": self._claude_webhook_id,
+            }
         )
+
+    def _claude_callback_host(self) -> str:
+        """The host name Claude reaches Home Assistant at (what its network settings must allow)."""
+        try:
+            return urlparse(self._claude_base_url()).hostname or ""
+        except BoopliError:
+            return ""
 
     def claude_status(self) -> dict[str, Any]:
         """What the panel may know: whether a token is set and how many asks are left this hour."""
         return {
             "token_set": bool(self._claude_token),
+            "callback_host": self._claude_callback_host(),
             "fires_left": self._claude_fires.left(),
             "fires_per_hour": self._claude_fires.limit,
             "wait_seconds": routine.WAIT_SECONDS,
@@ -1370,10 +1382,16 @@ class BoopliManager:
     async def async_set_claude_token(self, token: str) -> None:
         """Store the routine's token (an empty one removes it)."""
         try:
-            self._claude_token = routine.clean_token(token)
+            new = routine.clean_token(token)
         except routine.RoutineError as err:
             raise BoopliError(str(err)) from err
-        await self._async_save_claude_secrets()
+        # The new token only becomes active once it is saved: a failed save changes nothing.
+        try:
+            await self._async_save_claude_secrets(new)
+        except Exception as err:  # noqa: BLE001 - any storage problem must leave the old token alone
+            _LOGGER.error("Could not save the Claude token: %s", err)
+            raise BoopliError("Boopli could not save the token. The old one is still in use.") from err
+        self._claude_token = new
         self._notify()
 
     def _claude_base_url(self) -> str:
@@ -1433,18 +1451,20 @@ class BoopliManager:
             raise BoopliError(
                 "Ask Claude is not set up yet. Add the routine's address and token in Settings."
             )
-        answer_url = self._claude_answer_url()
         try:
-            self._claude_fires.take()
+            # The token only ever goes to a real routine address, also when the setting came
+            # from an imported backup file instead of the normal save.
+            fire_url = routine.clean_fire_url(ai.claude_fire_url)
         except routine.RoutineError as err:
             raise BoopliError(str(err)) from err
-        self._notify()  # the panel shows how many asks are left this hour
+        answer_url = self._claude_answer_url()
         request_id, future = self._claude_waiting.new()
-        text = routine.fire_text(instructions, request_id, answer_url, photo_urls or [])
         try:
-            await routine.fire(
-                async_get_clientsession(self.hass), ai.claude_fire_url, self._claude_token, text
-            )
+            # Everything that can be refused comes before a fire is counted or sent.
+            text = routine.fire_text(instructions, request_id, answer_url, photo_urls or [])
+            self._claude_fires.take()
+            self._notify()  # the panel shows how many asks are left this hour
+            await routine.fire(async_get_clientsession(self.hass), fire_url, self._claude_token, text)
             return await routine.wait_for_answer(future)
         except routine.RoutineError as err:
             raise BoopliError(str(err)) from err
