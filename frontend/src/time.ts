@@ -33,7 +33,7 @@ function dayNumber(key: string): number {
 }
 
 /** English keeps the day-month order it always had; other languages use their own. */
-function dateLocale(): string {
+export function dateLocale(): string {
   const language = currentLanguage();
   // English keeps day-month order; the two test languages are English with accents
   return language === "en" || language === "fancy" || language === "pseudo" ? "en-GB" : language;

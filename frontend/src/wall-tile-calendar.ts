@@ -1,6 +1,7 @@
 import { css, html } from "lit";
 import { WallTile, wallTileStyles } from "./wall-tile";
 import { t } from "./i18n";
+import { dateLocale } from "./time";
 
 interface CalendarEvent {
   summary?: string;
@@ -119,9 +120,9 @@ export class WallTileCalendar extends WallTile {
         ? t("wall_tile_calendar.today")
         : day === nextDay(today)
           ? t("wall_tile_calendar.tomorrow")
-          : new Intl.DateTimeFormat(undefined, { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
+          : new Intl.DateTimeFormat(dateLocale(), { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
     if (line.allDay) return name;
-    return `${name} ${new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;
+    return `${name} ${new Intl.DateTimeFormat(dateLocale(), { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;
   }
 
   render() {

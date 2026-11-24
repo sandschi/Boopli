@@ -11,6 +11,7 @@ import { pickBoard, tileDef } from "./wall-tiles";
 import "./wall-tiles";
 import type { Board, Hass, Snapshot, Tile } from "./types";
 import { t } from "./i18n";
+import { dateLocale } from "./time";
 
 const AWAKE_MS = 30_000; // how long a tap keeps a dimmed board awake
 
@@ -259,7 +260,7 @@ export class BoopliWall extends LitElement {
   };
 
   private _time(tz: string): string {
-    return new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(this.nowMs || Date.now()));
+    return new Intl.DateTimeFormat(dateLocale(), { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(this.nowMs || Date.now()));
   }
 
   private _fullscreen = (): void => {

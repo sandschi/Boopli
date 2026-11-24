@@ -110,6 +110,7 @@ export class BoopliSettings extends LitElement {
     _aiNote: { state: true },
     _claudeOpen: { state: true },
     _backup: { state: true },
+    _languageNote: { state: true },
   };
 
   declare hass?: Hass;
@@ -126,6 +127,7 @@ export class BoopliSettings extends LitElement {
   declare _aiNote: string;
   declare _claudeOpen: boolean; // the small Ask Claude window on top of the AI help window
   declare _backup: "" | "export" | "import"; // the backup window that is open
+  declare _languageNote: string; // why the language could not be changed (a message under the picker)
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
   private _lastDirty = false;
@@ -137,6 +139,7 @@ export class BoopliSettings extends LitElement {
     this._addLight = "";
     this._busy = false;
     this._message = "";
+    this._languageNote = "";
     this._error = "";
     this._notes = {};
     this._modal = "";
@@ -1020,9 +1023,21 @@ export class BoopliSettings extends LitElement {
           ?disabled=${this._isDirty()}
           .value=${shown}
           @change=${(e: Event) => {
-            const picked = (e.target as HTMLSelectElement).value;
+            const select = e.target as HTMLSelectElement;
+            const picked = select.value;
             if (picked === ADDRESS_CHOICE) return;
-            setLanguageChoice(picked);
+            // the reload would throw away a half-filled Away form too (it keeps its own edits)
+            const away = this.renderRoot.querySelector("boopli-away") as { editing?: boolean } | null;
+            if (away?.editing) {
+              select.value = shown;
+              this._languageNote = t("settings.language_save_first");
+              return;
+            }
+            if (!setLanguageChoice(picked)) {
+              select.value = shown;
+              this._languageNote = t("settings.language_storage_blocked");
+              return;
+            }
             // a ?lang=xx in the address would still win over the choice: take it out
             const address = new URL(location.href);
             address.searchParams.delete("lang");
@@ -1034,7 +1049,7 @@ export class BoopliSettings extends LitElement {
           <option value="" ?selected=${shown === ""}>${t("settings.language_same_as_home_assistant")}</option>
           ${codes.map((code) => html`<option value=${code} ?selected=${shown === code}>${languageName(code)}</option>`)}
         </select>
-        <div class="muted small">${this._isDirty() ? t("settings.language_save_first") : t("settings.language_note")}</div>
+        <div class="muted small">${this._isDirty() ? t("settings.language_save_first") : this._languageNote || t("settings.language_note")}</div>
       </div>
     </section>`;
   }

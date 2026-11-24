@@ -60,12 +60,14 @@ export function languageChoice(): string {
   }
 }
 
-export function setLanguageChoice(code: string): void {
+/** Keep the choice. Returns false when the browser does not let it be kept (blocked storage). */
+export function setLanguageChoice(code: string): boolean {
   try {
     if (code) localStorage.setItem(CHOICE_KEY, code);
     else localStorage.removeItem(CHOICE_KEY);
+    return true;
   } catch {
-    /* nothing to keep it in */
+    return false;
   }
 }
 

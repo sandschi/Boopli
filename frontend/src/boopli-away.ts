@@ -77,6 +77,11 @@ export class BoopliAway extends LitElement {
   declare _error: string;
   private _seeded = false;
 
+  /** The form to change away mode is open: its edits are not saved anywhere else. */
+  get editing(): boolean {
+    return this._changing;
+  }
+
   constructor() {
     super();
     this.nowMs = Date.now();

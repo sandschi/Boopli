@@ -1065,6 +1065,7 @@ var qe = {
 		language_same_as_home_assistant: "Same as Home Assistant",
 		language_save_first: "Save or discard your unsaved changes to change the language.",
 		language_from_address: "From the address: {code}",
+		language_storage_blocked: "Your browser does not let Boopli keep this choice (storage is blocked). Add ?lang=xx to the address instead.",
 		language_note: "Only for this browser. The questions the AI asks follow the language of Home Assistant.",
 		boopli_sends_a_notification_with_done: "Boopli sends a notification with Done and Snooze buttons through the Home Assistant app on the phones you turn on.",
 		notification_level: "Notification level",
@@ -1105,7 +1106,7 @@ var qe = {
 		advanced_agent_for_photos_and_the: "Advanced: agent for photos, and the prompts Boopli sends",
 		agent_for_room_photos: "Agent for room photos",
 		the_same_agent_as_above: "The same agent as above",
-		only_used_when_you_describe_a: "Only used when you describe a room from photos on the My home screen. Pick an agent whose model can read images. Your normal agent stays as it is.",
+		only_used_when_you_describe_a: "Only used when you describe something from photos: a room on the My home screen, or \"Look at the photos\" when you break a task down. Pick an agent whose model can read images. Your normal agent stays as it is.",
 		these_are_the_instructions_given_to: "These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.",
 		prompts_you_copy_into_your_own: "Prompts you copy into your own AI chat",
 		these_are_the_texts_the_in: "These are the texts the \"In my own chat\" buttons on My home give you to copy. Boopli fills in {room} (the room name), {names} (your rooms) and {known} (the notes so far, if you tick that). Keep the part that asks for the answer in the same shape: one short fact per line in one code block, and for the whole home a \"## Room\" heading line before each room. Boopli reads the pasted answer that way.",
@@ -1723,8 +1724,10 @@ function st() {
 }
 function ct(e) {
 	try {
-		e ? localStorage.setItem(ot, e) : localStorage.removeItem(ot);
-	} catch {}
+		return e ? localStorage.setItem(ot, e) : localStorage.removeItem(ot), !0;
+	} catch {
+		return !1;
+	}
 }
 var lt = (e) => Object.prototype.hasOwnProperty.call(x, e);
 function ut(e) {
@@ -2556,6 +2559,9 @@ var jn = class extends b {
 			_busy: { state: !0 },
 			_error: { state: !0 }
 		};
+	}
+	get editing() {
+		return this._changing;
 	}
 	constructor() {
 		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = On(1, 8, "UTC"), this._open = !1, this._until = On(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
@@ -12279,11 +12285,12 @@ var Ro = "@address", zo = () => ({
 			_defaults: { state: !0 },
 			_aiNote: { state: !0 },
 			_claudeOpen: { state: !0 },
-			_backup: { state: !0 }
+			_backup: { state: !0 },
+			_languageNote: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._backup = "";
+		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._languageNote = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._backup = "";
 	}
 	willUpdate() {
 		this._draft && Lo(this, this._draft.pet_kind, this._draft.accent);
@@ -13010,18 +13017,25 @@ var Ro = "@address", zo = () => ({
           ?disabled=${this._isDirty()}
           .value=${i}
           @change=${(e) => {
-			let t = e.target.value;
-			if (t === Ro) return;
-			ct(t);
-			let n = new URL(location.href);
-			n.searchParams.delete("lang"), history.replaceState(null, "", n), location.reload();
+			let t = e.target, n = t.value;
+			if (n === Ro) return;
+			if (this.renderRoot.querySelector("boopli-away")?.editing) {
+				t.value = i, this._languageNote = C("settings.language_save_first");
+				return;
+			}
+			if (!ct(n)) {
+				t.value = i, this._languageNote = C("settings.language_storage_blocked");
+				return;
+			}
+			let r = new URL(location.href);
+			r.searchParams.delete("lang"), history.replaceState(null, "", r), location.reload();
 		}}
         >
           ${r ? h`<option value=${Ro} selected>${C("settings.language_from_address", { code: r })}</option>` : v}
           <option value="" ?selected=${i === ""}>${C("settings.language_same_as_home_assistant")}</option>
           ${n.map((e) => h`<option value=${e} ?selected=${i === e}>${pt(e)}</option>`)}
         </select>
-        <div class="muted small">${this._isDirty() ? C("settings.language_save_first") : C("settings.language_note")}</div>
+        <div class="muted small">${this._isDirty() ? C("settings.language_save_first") : this._languageNote || C("settings.language_note")}</div>
       </div>
     </section>`;
 	}
@@ -15262,13 +15276,13 @@ var as = 6e5, os = 7, ss = class extends Z {
 		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, r = is(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(void 0, {
+		}, r = is(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(bn(), {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
 			month: "short"
 		}).format(/* @__PURE__ */ new Date(`${i}T12:00:00Z`));
-		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(void 0, {
+		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(bn(), {
 			timeZone: t,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -17587,7 +17601,7 @@ var Us = 3e4, Ws = class extends b {
 		};
 	}
 	_time(e) {
-		return new Intl.DateTimeFormat(void 0, {
+		return new Intl.DateTimeFormat(bn(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
