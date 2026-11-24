@@ -80,8 +80,8 @@ const features = [
 
 <div class="landing">
 	<section class="hero">
+		<h1><span class="line">Chores in tiny steps.</span> <span class="line">A pet that cheers you on.</span></h1>
 		<div class="hero-text">
-			<h1>Chores in tiny steps. A pet that cheers you on.</h1>
 			<p class="lead">
 				Boopli is an ADHD-friendly chore and task companion that lives inside <b>Home Assistant</b>. It nudges you with
 				the lights, speakers and phone you already have. No account, no cloud, no server.
@@ -109,6 +109,7 @@ const features = [
 			<div class="buttons">
 				<a class="boopli-btn" href={`${base}/install/`}>Install Boopli</a>
 				<a class="boopli-btn quiet" href={`${base}/setup/`}>Set it up</a>
+				<a class="boopli-btn quiet" href={`${base}/welcome/`}>Open docs</a>
 			</div>
 			<p class="small">Early development: Boopli is not ready for daily use yet. Free and open source (MIT).</p>
 		</div>
@@ -140,7 +141,7 @@ const features = [
 	}
 
 	<section class="map">
-		<h2>Find your way</h2>
+		<h2 id="find-your-way">Find your way</h2>
 		<div class="groups">
 			{
 				groups.map((g) => (
@@ -181,9 +182,13 @@ const features = [
 		margin-top: 1rem;
 	}
 	.landing h1 {
-		font-size: clamp(2.2rem, 5vw, 3.4rem);
+		font-size: clamp(2rem, 4vw, 2.9rem);
 		line-height: 1.1;
 		margin: 0 0 1rem;
+		text-wrap: balance;
+	}
+	.landing h1 .line {
+		display: block;
 	}
 	.landing h2 {
 		font-size: 2rem;
@@ -195,9 +200,13 @@ const features = [
 	}
 	.hero {
 		display: grid;
-		grid-template-columns: 1.1fr 1fr;
+		grid-template-columns: 1.2fr 1fr;
 		gap: 2.5rem;
 		align-items: center;
+	}
+	.hero h1 {
+		grid-column: 1 / -1;
+		margin-bottom: 0;
 	}
 	.lead {
 		font-size: 1.3rem;
