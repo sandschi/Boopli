@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
+import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
@@ -155,7 +156,7 @@ export class BoopliToday extends LitElement {
 
   /** The quick task box: say what you want to get done and let the AI break it down. */
   private _renderQuick() {
-    const aiOn = !!this.snapshot?.settings.ai?.enabled;
+    const aiOn = anyAi(this.snapshot); // the agent, or Ask Claude
     return html`
       <section class="card quick">
         <h3>What do you want to get done?</h3>
@@ -168,7 +169,7 @@ export class BoopliToday extends LitElement {
                 @input=${(e: Event) => (this._quick = (e.target as HTMLTextAreaElement).value)}
               ></textarea>
               <div class="quick-actions">
-                <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} Break it down now</button>
+                <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} ${agentOn(this.snapshot) ? "Break it down now" : "Ask Claude to break it down"}</button>
                 <button @click=${() => this._openBreakdown("recurring")}>${icon("repeat")} Break down a recurring chore</button>
               </div>
             `

@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { agentOn, anyAi, claudeReady, waitSeconds } from "./claude";
 import { icon } from "./icon";
 import {
   chatPrompt,
@@ -15,7 +16,7 @@ import {
 import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
-import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot } from "./types";
+import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot, Via } from "./types";
 
 const NOTES_MAX = 2000;
 
@@ -26,6 +27,7 @@ interface PhotosTool {
   photos: string[]; // shrunk JPEG data URLs
   working: boolean; // preparing or sending
   sending: boolean;
+  via: Via; // who is looking at the photos
 }
 
 /** Talking a room (or the whole home) out in the person's own AI chat. */
@@ -51,6 +53,7 @@ type Tool = PhotosTool | ChatTool | FlatTool;
 interface Interview {
   roomId: string;
   source: "ai" | "photos" | "paste";
+  via: Via; // who answers the questions and writes the notes
   phase: "working" | "questions" | "review";
   questions: AiQuestion[];
   picked: string[][];
@@ -230,24 +233,24 @@ export class BoopliHome extends LitElement {
   // --- the AI interview --------------------------------------------------------------------
 
   private _aiOn(): boolean {
-    return !!this.snapshot?.settings.ai?.enabled;
+    return anyAi(this.snapshot); // the agent, or Ask Claude
   }
 
   private _room(id: string): Room | undefined {
     return this._draft?.rooms.find((r) => r.id === id);
   }
 
-  private async _startInterview(room: Room): Promise<void> {
+  private async _startInterview(room: Room, via: Via = "agent"): Promise<void> {
     if (!this.hass) return;
     this._error = "";
-    this._iv = { roomId: room.id, source: "ai", phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
+    this._iv = { roomId: room.id, source: "ai", via, phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
     await this._askQuestions([]);
   }
 
   /** Open the review screen with notes that came from somewhere else (photos or a paste). */
-  private _review(roomId: string, source: Interview["source"], notes: string): void {
+  private _review(roomId: string, source: Interview["source"], notes: string, via: Via = "agent"): void {
     this._tool = null;
-    this._iv = { roomId, source, phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
+    this._iv = { roomId, source, via, phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
   }
 
   // --- describing a room from photos (one time, never kept) --------------------------------
@@ -255,7 +258,7 @@ export class BoopliHome extends LitElement {
   private _openPhotos(room: Room): void {
     this._error = "";
     this._message = "";
-    this._tool = { kind: "photos", roomId: room.id, photos: [], working: false, sending: false };
+    this._tool = { kind: "photos", roomId: room.id, photos: [], working: false, sending: false, via: "agent" };
   }
 
   private _patchTool(patch: Partial<PhotosTool> | Partial<ChatTool> | Partial<FlatTool>): void {
@@ -284,17 +287,17 @@ export class BoopliHome extends LitElement {
     if (after?.kind === "photos" && after.roomId === roomId) this._patchTool({ working: false });
   }
 
-  private async _sendPhotos(): Promise<void> {
+  private async _sendPhotos(via: Via = "agent"): Promise<void> {
     const tool = this._tool;
     const room = tool?.kind === "photos" ? this._room(tool.roomId) : undefined;
     if (!this.hass || tool?.kind !== "photos" || !room || !tool.photos.length) return;
     this._error = "";
     const run = ++this._run;
-    this._patchTool({ working: true, sending: true });
+    this._patchTool({ working: true, sending: true, via });
     try {
-      const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos);
+      const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos, via);
       if (run !== this._run) return; // the person stopped waiting
-      this._review(room.id, "photos", result.notes); // the photos are gone with the tool
+      this._review(room.id, "photos", result.notes, via); // the photos are gone with the tool
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
@@ -425,13 +428,17 @@ export class BoopliHome extends LitElement {
     const iv = this._iv;
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
+    // If this fails, the screen goes back to what it showed (with the answers typed), so a retry
+    // does not send them twice. The very first request has nothing to go back to.
+    const back = iv.phase === "working" ? null : iv;
+    this._error = "";
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
-      const result = await roomQuestions(this.hass, room.name, room.notes, answers);
+      const result = await roomQuestions(this.hass, room.name, room.notes, answers, iv.via);
       if (run !== this._run) return; // the person stopped waiting
       if (result.enough || result.questions.length === 0) {
-        await this._writeNotes(answers);
+        await this._writeNotes(answers, back);
         return;
       }
       this._iv = {
@@ -447,24 +454,27 @@ export class BoopliHome extends LitElement {
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
-      this._iv = null;
+      this._iv = back;
     }
   }
 
-  private async _writeNotes(answers: AiAnswer[]): Promise<void> {
+  /** `back` is what to show again if this fails (a screen that was open before); left out = the screen as it is now. */
+  private async _writeNotes(answers: AiAnswer[], back?: Interview | null): Promise<void> {
     const iv = this._iv;
     const room = iv && this._room(iv.roomId);
     if (!this.hass || !iv || !room) return;
+    const restore = back !== undefined ? back : iv.phase === "working" ? null : iv;
+    this._error = "";
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
-      const result = await roomNotes(this.hass, room.name, room.notes, answers);
+      const result = await roomNotes(this.hass, room.name, room.notes, answers, iv.via);
       if (run !== this._run) return; // the person stopped waiting
       this._iv = { ...iv, answers, phase: "review", result: result.notes };
     } catch (err) {
       if (run !== this._run) return;
       this._error = errorMessage(err);
-      this._iv = null;
+      this._iv = restore;
     }
   }
 
@@ -534,11 +544,12 @@ export class BoopliHome extends LitElement {
         <h2>${room?.name ?? "Room"}: let me ask</h2>
         <button type="button" class="link" @click=${() => ((this._run += 1), (this._iv = null))}>Cancel</button>
       </div>
+      ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       ${iv.phase === "working"
         ? html`<boopli-wait
-            .label=${iv.answers.length ? "Writing the notes…" : "Thinking…"}
+            .label=${iv.via === "claude" ? "Asking Claude. This takes a little while…" : iv.answers.length ? "Writing the notes…" : "Thinking…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, iv.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`
         : nothing}
@@ -615,15 +626,15 @@ export class BoopliHome extends LitElement {
         <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>Cancel</button>
       </div>
       <p class="muted">
-        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to your AI agent, which writes down what it
+        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to the helper you pick below (your AI agent, or Claude), which writes down what it
         sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${tool.sending
         ? html`<boopli-wait
-            .label=${"The AI is looking at your photos…"}
+            .label=${tool.via === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, tool.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`
         : html`
@@ -656,13 +667,27 @@ export class BoopliHome extends LitElement {
                   }}
                 />
               </label>
-              <button class="primary big" ?disabled=${!tool.photos.length || tool.working} @click=${() => this._sendPhotos()}>
-                Describe the room
-              </button>
+              ${agentOn(this.snapshot)
+                ? html`<button class="primary big" ?disabled=${!tool.photos.length || tool.working} @click=${() => this._sendPhotos("agent")}>
+                    Describe the room
+                  </button>`
+                : nothing}
+              ${claudeReady(this.snapshot)
+                ? html`<button
+                    class="${agentOn(this.snapshot) ? "" : "primary "}big"
+                    ?disabled=${!tool.photos.length || tool.working}
+                    @click=${() => this._sendPhotos("claude")}
+                  >
+                    ${icon("creation")} Ask Claude to describe it
+                  </button>`
+                : nothing}
             </div>
             <p class="muted small">
-              The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings
-              under AI help, Advanced.
+              ${agentOn(this.snapshot)
+                ? "The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings under AI help, Advanced. "
+                : ""}${claudeReady(this.snapshot)
+                ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+                : ""}
             </p>
           `}
     </section>`;
@@ -767,7 +792,8 @@ export class BoopliHome extends LitElement {
   }
 
   private _renderRoom(room: Room) {
-    const aiOn = this._aiOn();
+    const aiOn = agentOn(this.snapshot);
+    const claudeOn = claudeReady(this.snapshot);
     return html`<section class="room ${this._roomChanged(room.id) ? "changed" : ""}">
       <div class="head">
         <input
@@ -792,11 +818,18 @@ export class BoopliHome extends LitElement {
       <div class="row-actions">
         ${aiOn
           ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
-                ${icon("auto-fix")} Let the AI ask me
-              </button>
-              <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
-                ${icon("camera-outline")} From photos
-              </button>`
+              ${icon("auto-fix")} Let the AI ask me
+            </button>`
+          : nothing}
+        ${aiOn || claudeOn
+          ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
+              ${icon("camera-outline")} From photos
+            </button>`
+          : nothing}
+        ${claudeOn
+          ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room, "claude")}>
+              ${icon("creation")} Let Claude ask me
+            </button>`
           : nothing}
         <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
           ${icon("chat-outline")} In my own chat

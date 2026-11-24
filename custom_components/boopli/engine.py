@@ -1931,11 +1931,19 @@ class AiSettings:
     steps_prompt: str = ""  # empty = the built-in prompt
     chat_room_prompt: str = ""  # the text to copy into your own chat, one room; empty = built-in
     chat_home_prompt: str = ""  # the same for the whole home; empty = built-in
+    # "Ask Claude": an extra next to the agent above, through the user's own Claude routine.
+    # The routine's token is a secret and is NOT here (see manager: its own storage key).
+    claude_enabled: bool = False
+    claude_fire_url: str = ""  # https://api.anthropic.com/v1/claude_code/routines/trig_…/fire
+    claude_ha_url: str = ""  # where the routine posts back; empty = Home Assistant's external URL
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> AiSettings:
         d = d or {}
         return cls(
+            claude_enabled=bool(d.get("claude_enabled", False)),
+            claude_fire_url=str(d.get("claude_fire_url") or "").strip(),
+            claude_ha_url=str(d.get("claude_ha_url") or "").strip(),
             enabled=bool(d.get("enabled", False)),
             entity_id=str(d.get("entity_id") or "").strip(),
             photo_entity_id=str(d.get("photo_entity_id") or "").strip(),

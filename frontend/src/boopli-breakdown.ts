@@ -1,10 +1,11 @@
 import { LitElement, html, css, nothing } from "lit";
 import { icon } from "./icon";
 import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess, scenePhotos } from "./api";
+import { agentOn, anyAi, claudeReady, waitSeconds } from "./claude";
 import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
-import type { AiAnswer, AiPreview, AiQuestion, AiStep, ChoreQuestion, Hass, Room, Snapshot, StepSize } from "./types";
+import type { AiAnswer, AiPreview, AiQuestion, AiStep, ChoreQuestion, Hass, Room, Snapshot, StepSize, Via } from "./types";
 
 type Phase = "task" | "interview" | "working" | "review";
 type Kind = "now" | "recurring";
@@ -63,6 +64,7 @@ export class BoopliBreakdown extends LitElement {
     _photosOpen: { state: true },
     _looking: { state: true },
     _sending: { state: true },
+    _via: { state: true },
   };
 
   declare hass?: Hass;
@@ -93,6 +95,7 @@ export class BoopliBreakdown extends LitElement {
   declare _photosOpen: boolean;
   declare _looking: boolean;
   declare _sending: boolean; // the photos are with the agent right now
+  declare _via: Via; // who is answering this round: the agent, or Claude (the extra)
   private _roomsTouched = false; // the user chose the rooms, so stop guessing
   private _guessedFor: string | null = null;
   private _guessing?: Promise<void>;
@@ -101,6 +104,7 @@ export class BoopliBreakdown extends LitElement {
   private _askId = 0; // counts requests, so an answer the person stopped waiting for is dropped
   private _backPhase: Phase = "task";
   private _lookId = 0; // the same for the look at photos
+  private _lookVia: Via = "agent"; // who is looking at the photos right now
 
   constructor() {
     super();
@@ -130,6 +134,7 @@ export class BoopliBreakdown extends LitElement {
     this._photosOpen = false;
     this._looking = false;
     this._sending = false;
+    this._via = "agent";
   }
 
   protected willUpdate(): void {
@@ -271,16 +276,17 @@ export class BoopliBreakdown extends LitElement {
   }
 
   /** Send the photos once, keep only the text the agent writes about them. */
-  private async _look(): Promise<void> {
+  private async _look(via: Via = "agent"): Promise<void> {
     if (!this.hass || !this._photos.length || !this._task.trim()) return;
     this._error = "";
     const id = ++this._lookId;
+    this._lookVia = via;
     this._sending = true;
     this._looking = true;
     try {
       await this._guess();
       if (id !== this._lookId) return; // stopped while the rooms were being guessed: send nothing
-      const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms);
+      const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms, via);
       if (id !== this._lookId) return; // the person stopped waiting
       this._scene = result.scene;
       this._photos = []; // the photos are gone; only the text goes on
@@ -303,7 +309,7 @@ export class BoopliBreakdown extends LitElement {
   }
 
   private _renderScene() {
-    if (!this._aiOn()) return nothing;
+    if (!anyAi(this.snapshot)) return nothing;
     if (this._scene) {
       return html`<div class="scene">
         <label for="scene">What the AI sees today (from your photos). Change anything that is wrong:</label>
@@ -329,7 +335,7 @@ export class BoopliBreakdown extends LitElement {
     const full = this._photos.length >= MAX_PHOTOS;
     return html`<div class="scene">
       <p class="muted small">
-        Take or pick up to ${MAX_PHOTOS} photos. They go once to your AI agent, which writes down what is out of place.
+        Take or pick up to ${MAX_PHOTOS} photos. They go once to the helper you pick below (your AI agent, or Claude), which writes down what is out of place.
         Boopli keeps no photo: you see the text it wrote, and only that text is used.
       </p>
       <div class="thumbs">
@@ -342,9 +348,9 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${this._sending
         ? html`<boopli-wait
-            .label=${"The AI is looking at your photos…"}
+            .label=${this._lookVia === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, this._lookVia)}
             @stop-waiting=${() => this._stopLooking()}
           ></boopli-wait>`
         : this._looking
@@ -363,17 +369,40 @@ export class BoopliBreakdown extends LitElement {
                 }}
               />
             </label>
-            <button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look()}>
-              Look at the photos
-            </button>
+            ${agentOn(this.snapshot)
+              ? html`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
+                  Look at the photos
+                </button>`
+              : nothing}
+            ${claudeReady(this.snapshot)
+              ? html`<button
+                  class=${agentOn(this.snapshot) ? "" : "primary"}
+                  ?disabled=${!this._photos.length || !this._task.trim()}
+                  @click=${() => this._look("claude")}
+                >
+                  ${icon("creation")} Ask Claude to look
+                </button>`
+              : nothing}
             <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>Cancel</button>
           </div>`}
-      <div class="muted small">The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced.</div>
+      <div class="muted small">
+        ${agentOn(this.snapshot)
+          ? "The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced. "
+          : ""}${claudeReady(this.snapshot)
+          ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+          : ""}
+      </div>
     </div>`;
   }
 
+  /** Is any helper available: the Home Assistant agent, or Ask Claude? */
   private _aiOn(): boolean {
-    return !!this.snapshot?.settings.ai?.enabled;
+    return anyAi(this.snapshot);
+  }
+
+  /** Who answers now: the one asked for, else the agent, else Claude when it is the only one. */
+  private _choose(via?: Via): void {
+    this._via = via ?? (agentOn(this.snapshot) ? this._via : "claude");
   }
 
   private _fire(name: string, detail?: unknown): void {
@@ -409,14 +438,19 @@ export class BoopliBreakdown extends LitElement {
     this._error = "You stopped waiting. Your task and answers are still here, so you can try again.";
   }
 
-  private async _begin(): Promise<void> {
+  private async _begin(via?: Via): Promise<void> {
     if (!this.hass || !this._task.trim()) return;
+    this._choose(via);
+    const asking = this._via; // the helper this round was started with, whatever happens meanwhile
     this._answers = [];
     this._round = 0;
     this._phase = "working";
+    this._backPhase = "task";
+    const owner = ++this._askId; // "Stop waiting" during the guess must stop the request that follows
     await this._guess();
+    if (owner !== this._askId) return;
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, asking),
       "task"
     );
     if (!result) return;
@@ -453,7 +487,7 @@ export class BoopliBreakdown extends LitElement {
     this._answers = answers;
     this._phase = "working";
     const result = await this._ask(
-      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes, this._rooms, this._scene),
+      () => aiQuestions(this.hass!, this._task.trim(), this.kind, answers, this._notes, this._rooms, this._scene, this._via),
       "interview"
     );
     if (!result) return;
@@ -465,12 +499,17 @@ export class BoopliBreakdown extends LitElement {
     await this._loadSteps();
   }
 
-  private async _loadSteps(): Promise<void> {
+  private async _loadSteps(via?: Via): Promise<void> {
     if (!this.hass) return;
+    if (via || this._phase === "task") this._choose(via);
+    const asking = this._via;
     this._phase = "working";
+    this._backPhase = this._questions.length ? "interview" : "task";
+    const owner = ++this._askId;
     await this._guess();
+    if (owner !== this._askId) return;
     const result = await this._ask(
-      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene),
+      () => aiSteps(this.hass!, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, asking),
       this._questions.length ? "interview" : "task"
     );
     if (!result) return;
@@ -572,11 +611,30 @@ export class BoopliBreakdown extends LitElement {
       ${this._renderRooms()}
       ${this._renderScene()}
       <div class="actions">
-        <button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin()}>
-          ${this.kind === "recurring" ? "Ask me about it" : "Break it down"}
+        ${agentOn(this.snapshot)
+          ? html`<button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin("agent")}>
+              ${this.kind === "recurring" ? "Ask me about it" : "Break it down"}
+            </button>`
+          : nothing}
+        ${claudeReady(this.snapshot)
+          ? html`<button
+              class="${agentOn(this.snapshot) ? "" : "primary "}big"
+              ?disabled=${!this._task.trim() || this._busy}
+              @click=${() => this._begin("claude")}
+            >
+              ${icon("creation")} Ask Claude
+            </button>`
+          : nothing}
+        <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(agentOn(this.snapshot) ? "agent" : "claude")}>
+          Skip the questions
         </button>
-        <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps()}>Skip the questions</button>
       </div>
+      ${claudeReady(this.snapshot)
+        ? html`<div class="muted small">
+            Ask Claude uses your Claude routine: ${this.snapshot?.claude?.fires_left ?? 0} asks left this hour. Each question
+            round and the steps are one ask each.
+          </div>`
+        : nothing}
     `;
   }
 
@@ -656,9 +714,13 @@ export class BoopliBreakdown extends LitElement {
 
   private _renderWorking() {
     return html`<boopli-wait
-      .label=${this._answers.length || this._steps.length ? "Writing the steps…" : "Thinking…"}
+      .label=${this._via === "claude"
+        ? "Asking Claude. This takes a little while…"
+        : this._answers.length || this._steps.length
+          ? "Writing the steps…"
+          : "Thinking…"}
       .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-      .max=${this.snapshot?.ai_timeout ?? 180}
+      .max=${waitSeconds(this.snapshot, this._via)}
       @stop-waiting=${() => this._stopWaiting()}
     ></boopli-wait>`;
   }
@@ -746,6 +808,11 @@ export class BoopliBreakdown extends LitElement {
       <div class="inline-actions">
         <button type="button" @click=${() => this._add(steps.length - 1)}>+ Add a step</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>Try again</button>
+        ${agentOn(this.snapshot) && claudeReady(this.snapshot)
+          ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
+              ${icon("creation")} Ask Claude instead
+            </button>`
+          : nothing}
         ${this._answers.length || this._questions.length
           ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>Ask me again</button>`
           : nothing}

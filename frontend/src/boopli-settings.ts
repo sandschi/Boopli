@@ -20,6 +20,7 @@ import "./boopli-ladders";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
 import "./boopli-backup";
+import "./boopli-claude";
 import { petInfo } from "./pets";
 import { accentFor, applyAccent, isHex, SWATCHES } from "./accent";
 import { icon } from "./icon";
@@ -102,6 +103,7 @@ export class BoopliSettings extends LitElement {
     _flash: { state: true },
     _defaults: { state: true },
     _aiNote: { state: true },
+    _claudeOpen: { state: true },
     _backup: { state: true },
   };
 
@@ -117,6 +119,7 @@ export class BoopliSettings extends LitElement {
   declare _flash: Area | ""; // the card that is lit up ("look here")
   declare _defaults: PromptDefaults | null;
   declare _aiNote: string;
+  declare _claudeOpen: boolean; // the small Ask Claude window on top of the AI help window
   declare _backup: "" | "export" | "import"; // the backup window that is open
   private _base?: Settings; // the saved settings the draft is compared with
   private _justSaved = false;
@@ -135,6 +138,7 @@ export class BoopliSettings extends LitElement {
     this._flash = "";
     this._defaults = null;
     this._aiNote = "";
+    this._claudeOpen = false;
     this._backup = "";
   }
 
@@ -170,7 +174,9 @@ export class BoopliSettings extends LitElement {
   }
 
   protected updated(): void {
-    const dialog = this.renderRoot.querySelector("dialog");
+    const sub = this.renderRoot.querySelector<HTMLDialogElement>("dialog.sub");
+    if (sub && !sub.open) sub.showModal();
+    const dialog = this.renderRoot.querySelector<HTMLDialogElement>("dialog:not(.sub)");
     if (dialog) {
       if (this._modal && !dialog.open) dialog.showModal();
       if (!this._modal && dialog.open) dialog.close();
@@ -838,14 +844,22 @@ export class BoopliSettings extends LitElement {
           receives that text, and free models may keep or learn from what they get, so do not type private
           details. A local agent keeps everything at home.
         </p>
-        <label class="inline">
-          <input
-            type="checkbox"
-            .checked=${ai.enabled}
-            @change=${(e: Event) => this._setAi({ enabled: (e.target as HTMLInputElement).checked })}
-          />
-          Switch AI help on
-        </label>
+        <div class="aitop">
+          <label class="inline">
+            <input
+              type="checkbox"
+              .checked=${ai.enabled}
+              @change=${(e: Event) => this._setAi({ enabled: (e.target as HTMLInputElement).checked })}
+            />
+            Switch AI help on
+          </label>
+          <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>Test the agent</button>
+          <button type="button" @click=${() => (this._claudeOpen = true)}>
+            ${icon("creation")} Ask Claude (extra)${ai.claude_enabled ? " · on" : ""}
+          </button>
+        </div>
+        ${changed ? html`<div class="muted small">Save first to test.</div>` : nothing}
+        ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
         <div class="field">
           <label for="ai-agent">Which AI agent?</label>
           <select id="ai-agent" @change=${(e: Event) => this._setAi({ entity_id: (e.target as HTMLSelectElement).value })}>
@@ -859,11 +873,31 @@ export class BoopliSettings extends LitElement {
             ? html`<div class="muted small">No AI Task agent found in Home Assistant yet. Add one under Settings, Devices and services.</div>`
             : nothing}
         </div>
-        <div class="row">
-          <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>Test the agent</button>
-          ${changed ? html`<span class="muted small">Save first to test.</span>` : nothing}
-        </div>
-        ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
+        ${this._claudeOpen
+          ? html`<dialog
+              class="sub"
+              aria-label="Ask Claude"
+              @close=${() => (this._claudeOpen = false)}
+              @click=${(e: MouseEvent) => {
+                if (e.target === e.currentTarget) this._claudeOpen = false; // the dark area around the window
+              }}
+            >
+              <div class="cwin">
+                <div class="chead">
+                  <h3>${icon("creation")} Ask Claude (extra)</h3>
+                  <button type="button" class="cclose" aria-label="Close" @click=${() => (this._claudeOpen = false)}>✕</button>
+                </div>
+                <boopli-claude
+                  .hass=${this.hass}
+                  .snapshot=${this.snapshot}
+                  .ai=${ai}
+                  .blocked=${changed ? "Save first to test." : ""}
+                  @ai-patch=${(e: CustomEvent<Partial<Settings["ai"]>>) => this._setAi(e.detail)}
+                ></boopli-claude>
+                <div class="cactions"><button type="button" class="primary" @click=${() => (this._claudeOpen = false)}>Done</button></div>
+              </div>
+            </dialog>`
+          : nothing}
         <details @toggle=${(e: Event) => (e.target as HTMLDetailsElement).open && this._loadDefaults()}>
           <summary class="muted small">Advanced: agent for photos, and the prompts Boopli sends</summary>
           <div class="field">
@@ -957,6 +991,7 @@ export class BoopliSettings extends LitElement {
           d.ai?.enabled
             ? `On, using ${d.ai.entity_id ? fn(d.ai.entity_id) : "the Home Assistant default agent"}`
             : "Off. Splits big tasks into tiny steps with your own AI agent.",
+          ...(d.ai?.claude_enabled ? ["Ask Claude is on"] : []),
         ];
     }
   }
@@ -1076,7 +1111,7 @@ export class BoopliSettings extends LitElement {
     >
       ${area && this._modal
         ? html`<div class="win">
-            <div class="win-head">
+            <div class="win-head ${this._modal === "ai" ? "noline" : ""}">
               <h2 id="win-title">${icon(area.icon)} ${area.title}</h2>
               <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
@@ -1369,6 +1404,34 @@ export class BoopliSettings extends LitElement {
       dialog::backdrop {
         background: rgba(0, 0, 0, 0.6);
       }
+      /* A small window on top of the AI help window. */
+      dialog.sub {
+        width: min(94vw, 640px);
+        overflow: auto;
+      }
+      .cwin {
+        padding: 16px 18px 18px;
+      }
+      .chead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .chead h3 {
+        font-size: 22px;
+      }
+      .cclose {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 22px;
+        cursor: pointer;
+      }
+      .cactions {
+        margin-top: 14px;
+      }
       .win {
         display: flex;
         flex-direction: column;
@@ -1381,6 +1444,19 @@ export class BoopliSettings extends LitElement {
         gap: 12px;
         padding: 14px 18px;
         border-bottom: 1px solid var(--divider-color);
+      }
+      .win-head.noline {
+        border-bottom: 0;
+      }
+      .aitop {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 14px;
+        margin: 6px 0 10px;
+      }
+      .aitop label.inline {
+        margin: 0;
       }
       .win-head h2 {
         margin: 0;

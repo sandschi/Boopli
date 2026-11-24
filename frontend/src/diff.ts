@@ -161,6 +161,10 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
     const label = (id: string) => (id ? name(id) : "the same agent");
     out.push(`Agent for photos: ${label(before.ai.photo_entity_id ?? "")} → ${label(after.ai.photo_entity_id ?? "")}`);
   }
+  if (!!before.ai.claude_enabled !== !!after.ai.claude_enabled)
+    out.push(`Ask Claude: ${before.ai.claude_enabled ? "on" : "off"} → ${after.ai.claude_enabled ? "on" : "off"}`);
+  if ((before.ai.claude_fire_url ?? "") !== (after.ai.claude_fire_url ?? "")) out.push("Claude routine address changed");
+  if ((before.ai.claude_ha_url ?? "") !== (after.ai.claude_ha_url ?? "")) out.push("Home Assistant address for Claude changed");
   if (before.ai.questions_prompt !== after.ai.questions_prompt) out.push("AI questions prompt changed");
   if (before.ai.steps_prompt !== after.ai.steps_prompt) out.push("AI steps prompt changed");
   if ((before.ai.chat_room_prompt ?? "") !== (after.ai.chat_room_prompt ?? "")) out.push("Chat prompt for one room changed");

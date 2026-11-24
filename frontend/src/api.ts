@@ -4,6 +4,7 @@ import type {
   AiQuestion,
   AiStep,
   AlarmDeviceCfg,
+  ClaudeStatus,
   ChoreDraft,
   ChoreQuestion,
   Hass,
@@ -17,6 +18,7 @@ import type {
   SpeakerChoice,
   ExtraSound,
   Snapshot,
+  Via,
 } from "./types";
 
 export interface TestResult {
@@ -72,9 +74,10 @@ export function aiQuestions(
   answers: AiAnswer[],
   notes = "",
   rooms?: string[],
-  scene = ""
+  scene = "",
+  via: Via = "agent"
 ): Promise<{ enough: boolean; questions: AiQuestion[] }> {
-  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes, scene, ...(rooms ? { rooms } : {}) });
+  return hass.callWS({ type: "boopli/ai_questions", task, kind, answers, notes, scene, via, ...(rooms ? { rooms } : {}) });
 }
 
 /** The task split into small steps by the AI. */
@@ -85,9 +88,10 @@ export function aiSteps(
   answers: AiAnswer[],
   notes = "",
   rooms?: string[],
-  scene = ""
+  scene = "",
+  via: Via = "agent"
 ): Promise<{ steps: AiStep[]; summary: string; questions?: ChoreQuestion[] }> {
-  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, scene, ...(rooms ? { rooms } : {}) });
+  return hass.callWS({ type: "boopli/ai_steps", task, kind, answers, notes, scene, via, ...(rooms ? { rooms } : {}) });
 }
 
 /** Exactly what the first request to the AI would contain. */
@@ -122,9 +126,10 @@ export function roomQuestions(
   hass: Hass,
   room: string,
   notes: string,
-  answers: AiAnswer[]
+  answers: AiAnswer[],
+  via: Via = "agent"
 ): Promise<{ enough: boolean; questions: AiQuestion[] }> {
-  return hass.callWS({ type: "boopli/room_questions", room, notes, answers });
+  return hass.callWS({ type: "boopli/room_questions", room, notes, answers, via });
 }
 
 /** The notes the AI wrote about a room. Nothing is saved by this call. */
@@ -132,9 +137,10 @@ export function roomNotes(
   hass: Hass,
   room: string,
   notes: string,
-  answers: AiAnswer[]
+  answers: AiAnswer[],
+  via: Via = "agent"
 ): Promise<{ notes: string }> {
-  return hass.callWS({ type: "boopli/room_notes", room, notes, answers });
+  return hass.callWS({ type: "boopli/room_notes", room, notes, answers, via });
 }
 
 /** The built-in prompts, to show and to reset to. */
@@ -293,9 +299,10 @@ export function roomPhotos(
   hass: Hass,
   room: string,
   notes: string,
-  photos: string[]
+  photos: string[],
+  via: Via = "agent"
 ): Promise<{ notes: string }> {
-  return hass.callWS({ type: "boopli/room_photos", room, notes, photos });
+  return hass.callWS({ type: "boopli/room_photos", room, notes, photos, via });
 }
 
 /** The text to copy into your own AI chat. An empty room means the whole home. */
@@ -357,11 +364,27 @@ export function partTime(hass: Hass, choreId: string, when: ParkWhen, at = ""): 
 }
 
 /** What a place looks like today, from a one-time look at photos. The photos are deleted right after. */
-export function scenePhotos(hass: Hass, task: string, photos: string[], rooms?: string[]): Promise<{ scene: string }> {
-  return hass.callWS({ type: "boopli/scene_photos", task, photos, ...(rooms ? { rooms } : {}) });
+export function scenePhotos(
+  hass: Hass,
+  task: string,
+  photos: string[],
+  rooms?: string[],
+  via: Via = "agent"
+): Promise<{ scene: string }> {
+  return hass.callWS({ type: "boopli/scene_photos", task, photos, via, ...(rooms ? { rooms } : {}) });
 }
 
 /** The Easter egg played. The first time it gives a small gift of XP. */
 export function eggFound(hass: Hass): Promise<{ xp: number }> {
   return hass.callWS({ type: "boopli/egg_found" });
+}
+
+/** Store the Claude routine's token (empty removes it). It is never sent back. */
+export function claudeToken(hass: Hass, token: string): Promise<ClaudeStatus> {
+  return hass.callWS({ type: "boopli/claude_token", token });
+}
+
+/** Ask the routine for a tiny answer; says how many seconds the round trip took. */
+export function claudeTest(hass: Hass): Promise<{ seconds: number }> {
+  return hass.callWS({ type: "boopli/claude_test" });
 }

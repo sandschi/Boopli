@@ -10,14 +10,22 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import json
 import logging
+import os
+import time
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict
 from datetime import datetime, time as dtime, timedelta, tzinfo
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
+from aiohttp import web
+
+from homeassistant.components import webhook
+from homeassistant.components.http.auth import async_sign_path
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
 from homeassistant.exceptions import (
     HomeAssistantError,
@@ -25,6 +33,8 @@ from homeassistant.exceptions import (
     ServiceValidationError,
 )
 from homeassistant.helpers import area_registry as ar
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.helpers.event import (
     async_call_later,
     async_track_point_in_utc_time,
@@ -32,8 +42,9 @@ from homeassistant.helpers.event import (
 )
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
+from homeassistant.util.file import write_utf8_file_atomic
 
-from . import breakdown, engine
+from . import breakdown, engine, routine
 from .const import DOMAIN
 from .nudger import BoopliNudger
 
@@ -41,6 +52,9 @@ _LOGGER = logging.getLogger(__name__)
 
 STORAGE_VERSION = 1
 STORAGE_KEY = DOMAIN
+# The Claude routine's token and webhook id live under their own key, apart from the settings,
+# so they are never part of the panel's data, a backup, an export or a "what changed" summary.
+SECRET_STORAGE_KEY = f"{DOMAIN}_claude"
 SAVE_DELAY = 1  # seconds
 HISTORY_MAX = 1000
 HISTORY_IN_SNAPSHOT = 200
@@ -49,6 +63,9 @@ AI_PHOTO_TIMEOUT = 180  # reading photos: the same limit
 ALARM_RETRY_SECONDS = (30, 120, 600, 3600)  # tries to switch off an alarm device that was left on
 MAX_PHOTOS = 4  # per room, one time
 PHOTO_MAX_BYTES = 2_500_000  # each, after the panel shrank it
+VIA_AGENT = "agent"  # the user's Home Assistant AI agent (the normal way)
+VIA_CLAUDE = "claude"  # the optional Claude routine ("Ask Claude")
+PHOTO_LINK_SECONDS = 600  # how long the signed picture links Claude gets work
 PHOTO_DIR = "boopli_tmp"  # inside the media folder; emptied right after every request
 _PHOTO_KINDS = (  # (magic bytes, extension, mime type)
     (b"\xff\xd8\xff", ".jpg", "image/jpeg"),
@@ -101,6 +118,15 @@ class BoopliManager:
         self._unsub_tags: CALLBACK_TYPE | None = None
         self._alarm_stuck: list[str] = []  # alarm devices that may still be on from before a restart
         self._unsub_alarm_retry: CALLBACK_TYPE | None = None
+        # Ask Claude (the optional routine): secret storage, fire counter, waiting requests
+        self._secret_store: Store[dict[str, Any]] = Store(
+            hass, STORAGE_VERSION, SECRET_STORAGE_KEY, private=True
+        )
+        self._claude_secrets_ok = True  # False when the secret file could not be read
+        self._claude_token = ""
+        self._claude_webhook_id = ""
+        self._claude_fires = routine.FireCounter()
+        self._claude_waiting = routine.Waiting()
 
     # --- lifecycle -------------------------------------------------------
 
@@ -149,6 +175,7 @@ class BoopliManager:
                     and step.next_nudge_at is None
                 ):
                     step.next_nudge_at = step.active_at
+        await self._async_load_claude_secrets()
         self.nudger.async_start()
         if self._alarm_stuck:
             self.hass.async_create_task(self._async_release_stuck_alarms(0))
@@ -175,6 +202,8 @@ class BoopliManager:
             self._unsub_alarm_retry()
             self._unsub_alarm_retry = None
         self.nudger.async_stop()
+        if self._claude_webhook_id:
+            webhook.async_unregister(self.hass, self._claude_webhook_id)
         self._listeners.clear()
 
     # --- persistence and listeners --------------------------------------
@@ -238,6 +267,7 @@ class BoopliManager:
             "now": engine.fmt_ts(now),
             "time_zone": str(self.tz),
             "ai_timeout": AI_TIMEOUT,  # so the panel can show how long it will wait
+            "claude": self.claude_status(),  # never the token itself, only whether one is set
             "is_home": self.is_home(),
             "pet": self.pet(),
             "away": engine.to_dict(self.away),
@@ -927,6 +957,11 @@ class BoopliManager:
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
+        try:
+            settings.ai.claude_fire_url = routine.clean_fire_url(settings.ai.claude_fire_url)
+            settings.ai.claude_ha_url = routine.clean_ha_url(settings.ai.claude_ha_url)
+        except routine.RoutineError as err:
+            raise BoopliError(str(err)) from err
         # A ladder that chores use cannot be deleted: say which chores, and leave everything as it was.
         kept = {ladder.id for ladder in settings.ladders}
         for ladder in self.settings.ladders:
@@ -1305,6 +1340,214 @@ class BoopliManager:
             raise BoopliError(f"The AI agent answered with an error: {err}") from err
         return (response or {}).get("data")
 
+    # --- Ask Claude: the optional extra through the user's own Claude routine ------------
+
+    async def _async_load_claude_secrets(self) -> None:
+        """Load the token and webhook id, make the webhook id if there is none, open the webhook."""
+        try:
+            secrets = await self._secret_store.async_load() or {}
+        except Exception as err:  # noqa: BLE001 - the optional extra must never stop the core
+            # Keep the unreadable file as it is (it may be from a newer version) and run
+            # without Ask Claude.
+            _LOGGER.error("Could not read the Ask Claude secrets, Ask Claude stays off: %s", err)
+            self._claude_secrets_ok = False
+            return
+        self._claude_token = str(secrets.get("token") or "")
+        self._claude_webhook_id = str(secrets.get("webhook_id") or "")
+        if not self._claude_webhook_id:
+            self._claude_webhook_id = webhook.async_generate_id()
+            try:
+                await self._async_save_claude_secrets()
+            except Exception as err:  # noqa: BLE001
+                _LOGGER.error("Could not save the Ask Claude secrets, Ask Claude stays off: %s", err)
+                self._claude_secrets_ok = False
+                self._claude_webhook_id = ""
+                return
+        webhook.async_register(
+            self.hass,
+            DOMAIN,
+            "Boopli: answer from Claude",
+            self._claude_webhook_id,
+            self._handle_claude_webhook,
+            local_only=False,  # the routine runs in Claude's cloud
+            allowed_methods=["POST"],
+        )
+
+    async def _async_save_claude_secrets(self, token: str | None = None) -> None:
+        """Write the secret file. Raises when the write fails.
+
+        Home Assistant's own Store.async_save logs a failed write and carries on, so it cannot
+        tell us the token did not reach the disk. The file is written here instead, in the
+        same format, so the Store still reads it back.
+        """
+        envelope = {
+            "version": STORAGE_VERSION,
+            "minor_version": 1,
+            "key": SECRET_STORAGE_KEY,
+            "data": {
+                "token": self._claude_token if token is None else token,
+                "webhook_id": self._claude_webhook_id,
+            },
+        }
+        await self.hass.async_add_executor_job(self._write_secret_file, json.dumps(envelope))
+
+    def _write_secret_file(self, text: str) -> None:
+        os.makedirs(os.path.dirname(self._secret_store.path), exist_ok=True)
+        write_utf8_file_atomic(self._secret_store.path, text, private=True)
+
+    def _claude_callback_host(self) -> str:
+        """The host name Claude reaches Home Assistant at (what its network settings must allow)."""
+        try:
+            return urlparse(self._claude_base_url()).hostname or ""
+        except (BoopliError, ValueError):
+            return ""
+
+    def claude_status(self) -> dict[str, Any]:
+        """What the panel may know: whether a token is set and how many asks are left this hour."""
+        return {
+            "token_set": bool(self._claude_token),
+            "callback_host": self._claude_callback_host(),
+            "fires_left": self._claude_fires.left(),
+            "fires_per_hour": self._claude_fires.limit,
+            "wait_seconds": routine.WAIT_SECONDS,
+        }
+
+    async def async_set_claude_token(self, token: str) -> None:
+        """Store the routine's token (an empty one removes it)."""
+        try:
+            new = routine.clean_token(token)
+        except routine.RoutineError as err:
+            raise BoopliError(str(err)) from err
+        if not self._claude_secrets_ok:
+            raise BoopliError(
+                "Boopli could not read its saved Ask Claude settings, so it will not overwrite them. "
+                "Check the Home Assistant log."
+            )
+        # The new token only becomes active once it is saved: a failed save changes nothing.
+        try:
+            await self._async_save_claude_secrets(new)
+        except Exception as err:  # noqa: BLE001 - any storage problem must leave the old token alone
+            _LOGGER.error("Could not save the Claude token: %s", err)
+            raise BoopliError("Boopli could not save the token. The old one is still in use.") from err
+        self._claude_token = new
+        self._notify()
+
+    def _claude_base_url(self) -> str:
+        """The web address Claude reaches Home Assistant at (no slash at the end)."""
+        base = self.settings.ai.claude_ha_url
+        if base:
+            try:
+                # Also checks values that came in from a stored or imported file.
+                return routine.clean_ha_url(base)
+            except routine.RoutineError as err:
+                raise BoopliError(str(err)) from err
+        try:
+            return get_url(self.hass, allow_internal=False, prefer_external=True).rstrip("/")
+        except NoURLAvailableError as err:
+            raise BoopliError(
+                "Home Assistant has no web address that Claude can reach. "
+                "Fill in the Home Assistant address under Ask Claude, or set the "
+                "external URL in Home Assistant."
+            ) from err
+
+    def _claude_answer_url(self) -> str:
+        return f"{self._claude_base_url()}/api/webhook/{self._claude_webhook_id}"
+
+    def _signed_photo_urls(self, dir_id: str, names: list[str]) -> list[str]:
+        """Links Claude can fetch the photos from. Each stops working after a few minutes."""
+        base = self._claude_base_url()
+        return [
+            base
+            + async_sign_path(
+                self.hass,
+                f"/media/{dir_id}/{PHOTO_DIR}/{name}",
+                timedelta(seconds=PHOTO_LINK_SECONDS),
+            )
+            for name in names
+        ]
+
+    async def _handle_claude_webhook(
+        self, hass: HomeAssistant, webhook_id: str, request: web.Request
+    ) -> web.Response:
+        """The routine posts {request_id, answer} here. Each request id is accepted once."""
+        limit = routine.MAX_ANSWER_BYTES
+        if request.content_length and request.content_length > limit:
+            return web.Response(status=413)
+        # A chunked body has no declared size: read at most one byte over the limit.
+        raw = await request.content.read(limit + 1)
+        if len(raw) > limit:
+            return web.Response(status=413)
+        try:
+            body = json.loads(raw.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            return web.Response(status=400, text="Send JSON.")
+        if not isinstance(body, dict) or "answer" not in body:
+            return web.Response(status=400, text="Send {request_id, answer}.")
+        if not self._claude_waiting.answer(str(body.get("request_id") or ""), body["answer"]):
+            return web.Response(status=404, text="Nobody is waiting for that answer.")
+        return web.Response(status=200, text="ok")
+
+    async def async_ask_claude(
+        self, instructions: str, photo_urls: list[str] | None = None
+    ) -> Any:
+        """Fire the routine with the task, wait for its answer, return the answer's data."""
+        ai = self.settings.ai
+        if not ai.claude_enabled:
+            raise BoopliError("Ask Claude is switched off. Turn it on in Settings first.")
+        if not ai.claude_fire_url or not self._claude_token:
+            raise BoopliError(
+                "Ask Claude is not set up yet. Add the routine's address and token in Settings."
+            )
+        try:
+            # The token only ever goes to a real routine address, also when the setting came
+            # from an imported backup file instead of the normal save.
+            fire_url = routine.clean_fire_url(ai.claude_fire_url)
+        except routine.RoutineError as err:
+            raise BoopliError(str(err)) from err
+        answer_url = self._claude_answer_url()
+        request_id, future = self._claude_waiting.new()
+        try:
+            # Everything that can be refused comes before a fire is counted or sent.
+            text = routine.fire_text(instructions, request_id, answer_url, photo_urls or [])
+            self._claude_fires.take()
+            self._notify()  # the panel shows how many asks are left this hour
+            await routine.fire(async_get_clientsession(self.hass), fire_url, self._claude_token, text)
+            return await routine.wait_for_answer(future)
+        except routine.RoutineError as err:
+            raise BoopliError(str(err)) from err
+        finally:
+            self._claude_waiting.drop(request_id)
+
+    async def async_test_claude(self) -> dict[str, Any]:
+        """Ask the routine for a tiny answer and say how long the round trip took."""
+        started = time.monotonic()
+        data = await self.async_ask_claude(
+            'This is a connection test from Boopli. Answer with {"ok": true} and nothing else.'
+        )
+        if not data:
+            raise BoopliError("Claude answered, but the answer was empty.")
+        return {"seconds": round(time.monotonic() - started, 1)}
+
+    async def _run(
+        self,
+        via: str,
+        name: str,
+        instructions: str,
+        attachments: list[dict[str, str]] | None = None,
+        entity_id: str = "",
+        timeout: int = AI_TIMEOUT,
+    ) -> Any:
+        """Ask the user's AI agent, or (via "claude") the Claude routine; return the answer's data."""
+        if via == VIA_CLAUDE:
+            return await self.async_ask_claude(instructions)
+        return await self._run_agent(name, instructions, attachments, entity_id, timeout)
+
+    @staticmethod
+    def _check_via(via: str) -> str:
+        if via not in (VIA_AGENT, VIA_CLAUDE):
+            raise BoopliError("Ask the agent or Claude.")
+        return via
+
     @staticmethod
     def _check_kind(kind: str) -> str:
         if kind not in breakdown.KINDS:
@@ -1506,14 +1749,15 @@ class BoopliManager:
         return name
 
     async def async_room_questions(
-        self, room: str, notes: str, answers: Any = None
+        self, room: str, notes: str, answers: Any = None, via: str = VIA_AGENT
     ) -> dict[str, Any]:
         """Ask the agent what it still wants to know about a room (by name, so a new room works)."""
+        via = self._check_via(via)
         instructions = breakdown.room_instructions(
             breakdown.ROOM_QUESTIONS_PROMPT, self._room_name(room), answers, notes
         )
         for attempt in (1, 2):
-            data = await self._run_agent("Boopli: room questions", instructions)
+            data = await self._run(via, "Boopli: room questions", instructions)
             try:
                 enough, questions = breakdown.parse_questions(data)
             except breakdown.BreakdownError as err:
@@ -1523,13 +1767,16 @@ class BoopliManager:
             return {"enough": enough, "questions": [asdict(q) for q in questions]}
         raise BoopliError("The AI agent did not answer.")  # not reached
 
-    async def async_room_notes(self, room: str, notes: str, answers: Any = None) -> dict[str, Any]:
+    async def async_room_notes(
+        self, room: str, notes: str, answers: Any = None, via: str = VIA_AGENT
+    ) -> dict[str, Any]:
         """Ask the agent to write the room's notes. Nothing is saved here."""
+        via = self._check_via(via)
         instructions = breakdown.room_instructions(
             breakdown.ROOM_NOTES_PROMPT, self._room_name(room), answers, notes
         )
         for attempt in (1, 2):
-            data = await self._run_agent("Boopli: room notes", instructions)
+            data = await self._run(via, "Boopli: room notes", instructions)
             try:
                 return {"notes": breakdown.parse_room_notes(data)}
             except breakdown.BreakdownError as err:
@@ -1619,7 +1866,9 @@ class BoopliManager:
             raise
         return [(path, mime) for path, _data, mime in planned]
 
-    async def async_room_photos(self, room: str, notes: str, photos: Any) -> dict[str, Any]:
+    async def async_room_photos(
+        self, room: str, notes: str, photos: Any, via: str = VIA_AGENT
+    ) -> dict[str, Any]:
         """Ask the agent to describe a room from photos. The photos are never kept.
 
         They are written to a temporary file in the media folder only because Home
@@ -1631,12 +1880,12 @@ class BoopliManager:
             breakdown.ROOM_PHOTOS_PROMPT, name, None, notes
         )
         text = await self._ask_with_photos(
-            "Boopli: room photos", instructions, photos, breakdown.parse_room_notes
+            "Boopli: room photos", instructions, photos, breakdown.parse_room_notes, via
         )
         return {"notes": text}
 
     async def async_scene_from_photos(
-        self, task: str, photos: Any, rooms: list[str] | None = None
+        self, task: str, photos: Any, rooms: list[str] | None = None, via: str = VIA_AGENT
     ) -> dict[str, Any]:
         """Describe what a place looks like right now from photos, for one task.
 
@@ -1648,19 +1897,32 @@ class BoopliManager:
             raise BoopliError("Write what you want to get done first.")
         instructions = breakdown.scene_instructions(task, self.rooms_text(task, rooms)[0])
         text = await self._ask_with_photos(
-            "Boopli: what it looks like today", instructions, photos, breakdown.parse_room_notes
+            "Boopli: what it looks like today",
+            instructions,
+            photos,
+            breakdown.parse_room_notes,
+            via,
         )
         return {"scene": text[: breakdown.SCENE_MAX]}
 
     async def _ask_with_photos(
-        self, name: str, instructions: str, photos: Any, parse: Callable[[Any], str]
+        self,
+        name: str,
+        instructions: str,
+        photos: Any,
+        parse: Callable[[Any], str],
+        via: str = VIA_AGENT,
     ) -> str:
-        """Hand photos to the agent through temporary files, read its answer, delete the files.
+        """Hand photos to the agent (or Claude) through temporary files, read the answer, delete the files.
 
-        Home Assistant passes attachments as files in the media folder. Every file is
-        deleted right after the answer, also when the agent fails. Nothing is saved.
+        The agent gets the files as media-folder attachments. Claude gets short-lived signed
+        links to the same files and fetches them itself. Every file is deleted right after
+        the answer, also when the helper fails. Nothing is saved.
         """
+        via = self._check_via(via)
         decoded = self.decode_photos(photos)
+        if via == VIA_CLAUDE:
+            self._claude_base_url()  # fail early, before any file is written, when Claude cannot reach us
         dir_id, base = self._media_dir()
         folder = Path(base) / PHOTO_DIR
         planned = self._plan_photos(folder, decoded)
@@ -1688,13 +1950,19 @@ class BoopliManager:
         agent = self.settings.ai.photo_entity_id
         try:
             for attempt in (1, 2):
-                data = await self._run_agent(
-                    name,
-                    instructions,
-                    attachments=attachments,
-                    entity_id=agent,
-                    timeout=AI_PHOTO_TIMEOUT,
-                )
+                if via == VIA_CLAUDE:
+                    # New links for every try, so a slow first try cannot run them out.
+                    data = await self.async_ask_claude(
+                        instructions, self._signed_photo_urls(dir_id, [p.name for p, _ in written])
+                    )
+                else:
+                    data = await self._run_agent(
+                        name,
+                        instructions,
+                        attachments=attachments,
+                        entity_id=agent,
+                        timeout=AI_PHOTO_TIMEOUT,
+                    )
                 try:
                     return parse(data)
                 except breakdown.BreakdownError as err:
@@ -1750,8 +2018,10 @@ class BoopliManager:
         notes: str = "",
         rooms: list[str] | None = None,
         scene: str = "",
+        via: str = VIA_AGENT,
     ) -> dict[str, Any]:
         """Ask the agent what it still needs to know before splitting the task."""
+        via = self._check_via(via)
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
         if not task:
             raise BoopliError("Write what you want to get done first.")
@@ -1765,7 +2035,7 @@ class BoopliManager:
             scene,
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
-            data = await self._run_agent("Boopli: questions", instructions)
+            data = await self._run(via, "Boopli: questions", instructions)
             try:
                 enough, questions = breakdown.parse_questions(data)
             except breakdown.BreakdownError as err:
@@ -1783,8 +2053,10 @@ class BoopliManager:
         notes: str = "",
         rooms: list[str] | None = None,
         scene: str = "",
+        via: str = VIA_AGENT,
     ) -> dict[str, Any]:
         """Ask the agent to split the task into small steps."""
+        via = self._check_via(via)
         task = breakdown.clean_text(task, breakdown.TITLE_MAX)
         if not task:
             raise BoopliError("Write what you want to get done first.")
@@ -1798,7 +2070,7 @@ class BoopliManager:
             scene,
         )
         for attempt in (1, 2):  # an unreadable answer gets one more try
-            data = await self._run_agent("Boopli: steps", instructions)
+            data = await self._run(via, "Boopli: steps", instructions)
             try:
                 steps, summary, questions = breakdown.parse_steps_and_questions(
                     data, engine.MAX_STEPS

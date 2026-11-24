@@ -54,6 +54,8 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_paste_notes)
     websocket_api.async_register_command(hass, ws_task_add)
     websocket_api.async_register_command(hass, ws_test_channel)
+    websocket_api.async_register_command(hass, ws_claude_token)
+    websocket_api.async_register_command(hass, ws_claude_test)
     websocket_api.async_register_command(hass, ws_backup_export)
     websocket_api.async_register_command(hass, ws_backup_preview)
     websocket_api.async_register_command(hass, ws_backup_import)
@@ -412,6 +414,7 @@ _AI_FIELDS = {
     vol.Optional("rooms"): [str],
     # What the place looks like today, from a one-time look at photos (text only).
     vol.Optional("scene", default=""): str,
+    vol.Optional("via", default="agent"): str,  # "agent" (Home Assistant's) or "claude" (the routine)
 }
 
 
@@ -484,6 +487,7 @@ _ROOM_FIELDS = {
     vol.Required("room"): str,  # the room's name
     vol.Optional("notes", default=""): str,
     vol.Optional("answers", default=[]): list,
+    vol.Optional("via", default="agent"): str,
 }
 
 
@@ -498,7 +502,9 @@ async def ws_room_questions(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_room_questions(msg["room"], msg["notes"], msg["answers"])
+        result = await manager.async_room_questions(
+            msg["room"], msg["notes"], msg["answers"], msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return
@@ -516,7 +522,9 @@ async def ws_room_notes(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_room_notes(msg["room"], msg["notes"], msg["answers"])
+        result = await manager.async_room_notes(
+            msg["room"], msg["notes"], msg["answers"], msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return
@@ -535,7 +543,13 @@ async def ws_ai_questions(
         return
     try:
         result = await manager.async_ai_questions(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
+            msg["task"],
+            msg["kind"],
+            msg["answers"],
+            msg["notes"],
+            msg.get("rooms"),
+            msg["scene"],
+            msg["via"],
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
@@ -555,7 +569,13 @@ async def ws_ai_steps(
         return
     try:
         result = await manager.async_ai_steps(
-            msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
+            msg["task"],
+            msg["kind"],
+            msg["answers"],
+            msg["notes"],
+            msg.get("rooms"),
+            msg["scene"],
+            msg["via"],
         )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
@@ -569,6 +589,7 @@ async def ws_ai_steps(
         vol.Required("room"): str,
         vol.Optional("notes", default=""): str,
         vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
+        vol.Optional("via", default="agent"): str,
     }
 )
 @websocket_api.async_response
@@ -581,7 +602,9 @@ async def ws_room_photos(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_room_photos(msg["room"], msg["notes"], msg["photos"])
+        result = await manager.async_room_photos(
+            msg["room"], msg["notes"], msg["photos"], msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return
@@ -594,6 +617,7 @@ async def ws_room_photos(
         vol.Required("task"): str,
         vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
         vol.Optional("rooms"): [str],  # the rooms whose notes help the agent
+        vol.Optional("via", default="agent"): str,
     }
 )
 @websocket_api.async_response
@@ -606,7 +630,9 @@ async def ws_scene_photos(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_scene_from_photos(msg["task"], msg["photos"], msg.get("rooms"))
+        result = await manager.async_scene_from_photos(
+            msg["task"], msg["photos"], msg.get("rooms"), msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return
@@ -857,5 +883,48 @@ def ws_backup_import(
         result = manager.import_backup(msg["backup"], msg["parts"])
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], result)
+
+
+# --- Ask Claude (the optional routine; admins only: it holds a secret and costs fires) -----------
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command(
+    {vol.Required("type"): "boopli/claude_token", vol.Required("token"): str}
+)
+@websocket_api.async_response
+async def ws_claude_token(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Store the Claude routine's token (empty removes it). The panel never gets it back."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        await manager.async_set_claude_token(msg["token"])
+    except BoopliError as err:
+        connection.send_error(msg["id"], "invalid", str(err))
+        return
+    connection.send_result(msg["id"], manager.claude_status())
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command({vol.Required("type"): "boopli/claude_test"})
+@websocket_api.async_response
+async def ws_claude_test(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Ask the routine for a tiny answer and report the round-trip time."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        result = await manager.async_test_claude()
+    except BoopliError as err:
+        connection.send_error(msg["id"], "ai_failed", str(err))
         return
     connection.send_result(msg["id"], result)
