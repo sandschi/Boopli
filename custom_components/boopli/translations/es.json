@@ -1,0 +1,116 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurar Boopli",
+        "description": "Boopli te acompaña en tus tareas. Lo encuentras en la barra lateral. Todo se queda en tu Home Assistant."
+      }
+    }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Solo en casa",
+        "anywhere": "En cualquier lugar"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Añadir tarea",
+      "description": "Crea una tarea para hacer una sola vez y la inicia enseguida. Desaparece cuando la completas.",
+      "fields": {
+        "title": {
+          "name": "Título",
+          "description": "¿Qué necesitas hacer?"
+        },
+        "steps": {
+          "name": "Pasos",
+          "description": "Puedes dividir la tarea en pasos pequeños. Si dejas el campo vacío, la tarea tendrá un solo paso con el mismo título."
+        },
+        "where": {
+          "name": "¿Dónde?",
+          "description": "Elige si la tarea es solo para hacer en casa o si puedes hacerla en cualquier lugar."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Iniciar tarea",
+      "description": "Inicia una tarea enseguida, por ejemplo, «Lavar la ropa» si la configuraste para hacerla cuando quieras.",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Completar paso",
+      "description": "Marca como completado el paso que tienes pendiente en la tarea.",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "snooze_step": {
+      "name": "Posponer paso",
+      "description": "Pospone el próximo recordatorio del paso actual de la tarea. El paso sigue pendiente.",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "step_on_it": {
+      "name": "Paso: Estoy en ello",
+      "description": "Le dice a Boopli que ya estás haciendo el paso pendiente. Boopli te deja trabajar en calma y, a la hora prevista, te pregunta «¿Sigues en ello?».",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Paso: Ya no estoy en ello",
+      "description": "Desactiva «Estoy en ello». Boopli te vuelve a enviar recordatorios para ese paso como de costumbre.",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Eliminar tarea",
+      "description": "Elimina la tarea y todo lo que esté en curso en ella.",
+      "fields": {
+        "chore": {
+          "name": "Tarea",
+          "description": "El nombre o el ID de la tarea."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Configurar el modo ausencia",
+      "description": "Boopli se toma un descanso. Solo las tareas con la opción «Sigue activa mientras estoy fuera (por ejemplo, para tomar pastillas)» marcada pueden empezar o enviarte recordatorios. Tu mascota se queda tal como está.",
+      "fields": {
+        "start": {
+          "name": "Fuera desde",
+          "description": "Indica la fecha y hora de inicio en tu zona horaria, por ejemplo, 2026-11-28 08:00. Deja el campo vacío para empezar ahora."
+        },
+        "until": {
+          "name": "Fuera hasta",
+          "description": "Indica la fecha y hora en que el modo ausencia termina por sí solo, en tu zona horaria. Si prefieres desactivarlo tú, deja el campo vacío."
+        }
+      }
+    },
+    "end_away": {
+      "name": "Desactivar el modo ausencia",
+      "description": "Con «Ya estoy de vuelta», Boopli sigue como siempre. Las tareas que quedaron en pausa vuelven a enviarte recordatorios, una por una."
+    }
+  }
+}
