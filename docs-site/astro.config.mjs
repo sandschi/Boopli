@@ -19,10 +19,10 @@ export default defineConfig({
 			defaultLocale: 'root',
 			locales: { root: { label: 'English', lang: 'en' } },
 			sidebar: [
-				{ label: 'Start here', items: ['install', 'setup'] },
-				{ label: 'Everyday use', items: ['chores', 'ai-help', 'my-home', 'away-mode', 'pet'] },
+				{ label: 'Start here', items: ['install', 'setup', 'today'] },
+				{ label: 'Everyday use', items: ['chores', 'ai-help', 'ask-claude', 'my-home', 'away-mode', 'pet'] },
 				{ label: 'Nudges and the wall', items: ['nudges', 'wall-board'] },
-				{ label: 'More', items: ['data-and-backups', 'development'] },
+				{ label: 'More', items: ['automations', 'data-and-backups', 'troubleshooting', 'roadmap', 'development'] },
 			],
 		}),
 	],
