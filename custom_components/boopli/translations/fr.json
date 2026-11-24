@@ -1,0 +1,116 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer Boopli",
+        "description": "Boopli t’accompagne dans tes tâches. Tu trouveras Boopli dans le menu latéral. Tout reste dans ton Home Assistant."
+      }
+    }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Chez moi uniquement",
+        "anywhere": "N’importe où"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Ajouter une tâche",
+      "description": "Crée une tâche ponctuelle et la lance tout de suite. Elle disparaît une fois terminée.",
+      "fields": {
+        "title": {
+          "name": "Titre",
+          "description": "Qu’est-ce que tu veux faire ?"
+        },
+        "steps": {
+          "name": "Étapes",
+          "description": "Tu peux découper la tâche en petites étapes. Si tu laisses ce champ vide, Boopli crée une seule étape qui porte le titre de la tâche."
+        },
+        "where": {
+          "name": "Où ?",
+          "description": "Indique si tu fais cette tâche uniquement chez toi ou si tu peux la faire n’importe où."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Lancer une tâche",
+      "description": "Démarre une tâche tout de suite, par exemple une lessive que tu lances à la demande.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Terminer une étape",
+      "description": "Marque comme terminée l’étape de la tâche qui t’attend.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "snooze_step": {
+      "name": "Reporter une étape",
+      "description": "Reporte le prochain rappel pour l’étape de la tâche qui t’attend. L’étape reste à faire.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "step_on_it": {
+      "name": "Étape : Je m’y mets",
+      "description": "Dis à Boopli que tu commences l’étape qui t’attend. Boopli met les rappels en pause. Au bout du délai prévu, Boopli te demande si tu y travailles encore.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Étape : Je m’arrête",
+      "description": "Annule « Je m’y mets ». Boopli reprend les rappels habituels pour cette étape.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Supprimer une tâche",
+      "description": "Supprime la tâche, y compris ce qui est en cours.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Configurer le mode absence",
+      "description": "Boopli fait une pause : seules les tâches pour lesquelles tu as coché « Continuer pendant mon absence (par exemple pour les médicaments) » peuvent démarrer à l’heure prévue ou déclencher un rappel. Ton animal se repose et garde son humeur.",
+      "fields": {
+        "start": {
+          "name": "Début de l’absence",
+          "description": "Date et heure de début dans ton fuseau horaire, par exemple 2026-11-28 08:00. Laisse ce champ vide pour commencer maintenant."
+        },
+        "until": {
+          "name": "Fin de l’absence",
+          "description": "Date et heure dans ton fuseau horaire auxquelles le mode absence s’arrête tout seul. Laisse ce champ vide si tu veux le désactiver toi-même."
+        }
+      }
+    },
+    "end_away": {
+      "name": "Désactiver le mode absence",
+      "description": "Boopli reprend avec « Je suis de retour ». Les rappels des tâches mises en pause reviennent les uns après les autres."
+    }
+  }
+}
