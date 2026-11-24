@@ -386,6 +386,8 @@ class BoopliNudger:
         if not self._speaker_available(speaker.entity_id):
             return False
         extra = engine.find_sound(self.manager.settings.sounds if sounds is None else sounds, level)
+        if extra is None and level.startswith(engine.SPEAKER_SOUND_PREFIX):
+            return False  # one of your own sounds that is not there any more: not the alarm
         if extra is not None:
             return await self._call(
                 "media_player",

@@ -48,7 +48,7 @@ interface AreaDef {
 const AREAS: Record<Area, AreaDef> = {
   phone: { icon: "cellphone", title: "Phone", wizard: "phone", keys: ["phones"] },
   lights: { icon: "lightbulb-outline", title: "Reminder lights", wizard: "lights", keys: ["lights"] },
-  speakers: { icon: "volume-high", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template"] },
+  speakers: { icon: "volume-high", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template", "sounds"] },
   alarms: { icon: "bell-ring-outline", title: "Alarm devices", wizard: "alarms", keys: ["alarm_devices"] },
   quiet: { icon: "weather-night", title: "Quiet hours", wizard: "quiet", keys: ["quiet_hours"] },
   timing: {

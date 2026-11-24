@@ -25,7 +25,7 @@ export interface TestResult {
   note: string;
 }
 
-export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
+export function saveSettings(hass: Hass, settings: Settings): Promise<{ ladders?: Settings["ladders"] } | void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 

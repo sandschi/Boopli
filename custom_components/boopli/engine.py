@@ -2184,6 +2184,12 @@ def add_new_devices_to_standard_ladders(old: Settings, new: Settings) -> None:
         if ladder is None:
             continue
         extra = standard_rungs(style, phones, lights, speakers, alarms)
+        if style == STYLE_PERSISTENT:  # a device with a later "starts at nudge" needs the ladder to be that long
+            while ladder.rungs and len(ladder.rungs) < len(extra):
+                last = ladder.rungs[-1]
+                ladder.rungs.append(
+                    Rung(gap=PERSISTENT_GAP, phones=dict(last.phones), lights=dict(last.lights), speakers=dict(last.speakers), alarms=list(last.alarms))
+                )
         for rung, add in zip(ladder.rungs, extra):
             rung.phones.update(add.phones)
             rung.lights.update(add.lights)
@@ -2452,19 +2458,39 @@ class Settings:
         ids = {s.id for s in self.sounds}
         names = {s.name.casefold() for s in self.sounds}
         for speaker in self.speakers:
+            moved: dict[str, str] = {}  # this speaker's old sound id -> the id it has in the shared list
             for sound in speaker.sounds:
-                if sound.id in ids:
+                same = next(
+                    (
+                        s
+                        for s in self.sounds
+                        if s.kind == sound.kind and s.sound == sound.sound and s.name.casefold() == sound.name.casefold()
+                    ),
+                    None,
+                )
+                if same is not None:  # the same sound on another speaker is the same sound
+                    moved[sound.id] = same.id
                     continue
-                if any(s.kind == sound.kind and s.sound == sound.sound and s.name.casefold() == sound.name.casefold() for s in self.sounds):
-                    continue  # the same sound on another speaker is the same sound
+                keep_id = sound.id
+                while keep_id in ids:  # the same id for another sound on another speaker
+                    keep_id = new_id()
                 name, n = sound.name, 2
                 while name.casefold() in names:
-                    name = f"{sound.name} {n}"[:EXTRA_SOUND_NAME_MAX]
+                    suffix = f" {n}"
+                    name = sound.name[: EXTRA_SOUND_NAME_MAX - len(suffix)] + suffix
                     n += 1
-                self.sounds.append(replace(sound, name=name))
-                ids.add(sound.id)
+                self.sounds.append(replace(sound, id=keep_id, name=name))
+                moved[sound.id] = keep_id
+                ids.add(keep_id)
                 names.add(name.casefold())
             speaker.sounds = []
+            # Ladders that picked one of this speaker's sounds follow it to its new place in the list.
+            for ladder in self.ladders:
+                for rung in ladder.rungs:
+                    choice = rung.speakers.get(speaker.entity_id, "")
+                    old = choice[len(SPEAKER_SOUND_PREFIX):] if choice.startswith(SPEAKER_SOUND_PREFIX) else ""
+                    if old in moved and moved[old] != old:
+                        rung.speakers[speaker.entity_id] = SPEAKER_SOUND_PREFIX + moved[old]
 
     @classmethod
     def _parse(cls, d: dict[str, Any] | None) -> Settings:
@@ -2516,8 +2542,6 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
             return _START_AT_ERROR
         if sound.kind not in SOUND_KINDS:
             return f"Unknown {name} sound type."
-        if sound.enabled and not sound.sound:
-            return f"Choose the {name} sound for {speaker.entity_id}."
     if not ALARM_SECONDS_MIN <= speaker.alarm.seconds <= ALARM_SECONDS_MAX:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
@@ -2566,6 +2590,8 @@ def validate_speaker_test(speaker: SpeakerCfg, level: str, sounds: list[ExtraSou
     if level not in SPEAKER_LEVELS and level != SPEAKER_SPEECH_CHIME:
         return "Unknown speaker level."
     probe = speaker
+    if level in (SPEAKER_CUE, SPEAKER_ALARM) and not (speaker.cue if level == SPEAKER_CUE else speaker.alarm).sound:
+        return f"Choose the {level} sound for {speaker.entity_id} first."  # saving without one is fine; testing it is not
     if level == SPEAKER_CUE:
         probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
     elif level in (SPEAKER_SPEECH, SPEAKER_SPEECH_CHIME):

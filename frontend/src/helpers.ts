@@ -160,7 +160,7 @@ export function describeQuiet(qh: QuietHours): string {
 /** What a speaker plays, in a few words. */
 export function describeSpeaker(s: SpeakerCfg): string {
   const kind = s.speech.route === "tts" ? "TTS voice" : s.speech.route === "alexa_devices" ? "Alexa Devices" : "Alexa Media Player";
-  return s.speech.target ? `${kind}, speaks` : `${kind}, no speaking device yet`;
+  return s.speech.target && s.speech.enabled ?`${kind}, speaks` : `${kind}, no speaking device yet`;
 }
 
 export function lightKind(l: LightCfg): string {

@@ -47,7 +47,11 @@ function luminance(hex: string): number {
 
 /** Text on top of the accent: dark on a light colour, white on a dark one, so it always reads. */
 export function inkFor(hex: string): string {
-  return luminance(hex) > 0.3 ? "#14210f" : "#ffffff";
+  // whichever of the two reads better on this colour (the contrast ratio is the same maths as WCAG)
+  const l = luminance(hex);
+  const dark = (l + 0.05) / (luminance("#14210f") + 0.05);
+  const white = 1.05 / (l + 0.05);
+  return dark >= white ? "#14210f" : "#ffffff";
 }
 
 /** The darker colour of the thick edge under a pressable button. */

@@ -229,6 +229,66 @@ def test_a_ladder_can_only_use_a_speaker_choice_that_is_set_up():
     assert engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH_CHIME)
 
 
+def test_a_dropped_duplicate_sound_keeps_the_ladder_choice_working():
+    data = {
+        "standard_done": True,
+        "speakers": [
+            {"entity_id": "media_player.a", "sounds": [{"id": "x1", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+            {"entity_id": "media_player.b", "sounds": [{"id": "x2", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+        ],
+        "ladders": [{"id": "l1", "name": "L", "rungs": [{"gap": 1, "speakers": {"media_player.b": "sound:x2"}}]}],
+    }
+    settings = engine.Settings.from_dict(data)
+    assert [s.id for s in settings.sounds] == ["x1"]
+    assert settings.ladders[0].rungs[0].speakers["media_player.b"] == "sound:x1"
+
+
+def test_the_same_id_for_two_different_old_sounds_keeps_both():
+    data = {
+        "standard_done": True,
+        "speakers": [
+            {"entity_id": "media_player.a", "sounds": [{"id": "x1", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+            {"entity_id": "media_player.b", "sounds": [{"id": "x1", "name": "Gong", "kind": "alexa", "sound": "t"}]},
+        ],
+        "ladders": [{"id": "l1", "name": "L", "rungs": [{"gap": 1, "speakers": {"media_player.b": "sound:x1"}}]}],
+    }
+    settings = engine.Settings.from_dict(data)
+    assert sorted(s.name for s in settings.sounds) == ["Bell", "Gong"]
+    gong = next(s for s in settings.sounds if s.name == "Gong")
+    assert gong.id != "x1"
+    assert settings.ladders[0].rungs[0].speakers["media_player.b"] == f"sound:{gong.id}"
+
+
+def test_a_clashing_long_name_still_gets_a_new_name():
+    long = "N" * engine.EXTRA_SOUND_NAME_MAX
+    data = {
+        "standard_done": True,
+        "sounds": [{"id": "a", "name": long, "kind": "alexa", "sound": "s"}],
+        "speakers": [{"entity_id": "media_player.a", "sounds": [{"id": "b", "name": long, "kind": "alexa", "sound": "t"}]}],
+    }
+    names = [s.name for s in engine.Settings.from_dict(data).sounds]
+    assert len(set(n.casefold() for n in names)) == 2
+    assert all(len(n) <= engine.EXTRA_SOUND_NAME_MAX for n in names)
+
+
+def test_a_device_with_a_late_start_lengthens_the_persistent_ladder():
+    old = engine.Settings(standard_done=True)
+    engine.seed_standard_ladders(old)
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones.append(engine.PhoneCfg(service="pixel", level="normal", start_at=5))
+    engine.add_new_devices_to_standard_ladders(old, new)
+    persistent = next(l for l in new.ladders if l.id == "standard_persistent")
+    assert len(persistent.rungs) == 5
+    assert "pixel" in persistent.rungs[4].phones
+
+
+def test_a_tts_speaker_can_be_saved_before_it_has_a_ding_file():
+    tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_FILE, sound="")
+    assert engine.validate_settings(engine.Settings(speakers=[tv], standard_done=True)) is None
+    assert not engine.speaker_choice_ok(tv, engine.SPEAKER_CUE)  # and it is not offered until it has a file
+
+
 def test_an_amazon_ding_or_alarm_does_not_play_on_another_media_player():
     tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
     assert not engine.speaker_choice_ok(tv, engine.SPEAKER_CUE)  # still an Alexa sound

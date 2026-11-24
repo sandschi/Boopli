@@ -396,8 +396,7 @@ export class BoopliWizard extends LitElement {
         if (this._step === "wall_start") this._startBoardWork();
         if (this._step === "lad_name") this._ensureLadder();
         const sent = structuredClone(this._draft);
-        await saveSettings(this.hass, sent);
-        this._saved = sent;
+        this._adoptLadders(await saveSettings(this.hass, sent), sent);
       }
       if (delta === 1 && mode === "skip") {
         // Skip: drop what was changed on this screen.
@@ -786,7 +785,7 @@ export class BoopliWizard extends LitElement {
               this._set({
                 default_style: (e.target as HTMLInputElement).checked ? style : this._baseline?.default_style && this._baseline.default_style !== style
                     ? this._baseline.default_style
-                    : "ladder:standard_escalating",
+                    : style === "ladder:standard_escalating" ? "ladder:standard_one" : "ladder:standard_escalating",
               })}
           />
           <span><b>Use it for new chores</b></span>
@@ -1170,6 +1169,13 @@ export class BoopliWizard extends LitElement {
     `;
   }
 
+  /** What was saved is now the base. The server may have added a new device to the standard ladders: keep those too. */
+  private _adoptLadders(result: { ladders?: Settings["ladders"] } | void, sent: Settings): void {
+    const ladders = result && result.ladders ? structuredClone(result.ladders) : sent.ladders;
+    this._saved = { ...sent, ladders };
+    if (this._draft) this._draft = { ...this._draft, ladders: structuredClone(ladders) };
+  }
+
   private _noSpeaker() {
     return html`<p class="muted">Pick a speaker first. Press Back.</p>`;
   }
@@ -1261,8 +1267,7 @@ export class BoopliWizard extends LitElement {
     this._busy = true;
     try {
       const sent = structuredClone(this._draft);
-      await saveSettings(this.hass, sent);
-      this._saved = sent;
+      this._adoptLadders(await saveSettings(this.hass, sent), sent);
       this._speaker = "";
       this._index = this._steps.indexOf("spk_pick");
       this._enter();
@@ -1436,8 +1441,7 @@ export class BoopliWizard extends LitElement {
     this._note("ai:test", "Saving and asking the agent…");
     try {
       const sent = structuredClone(d);
-      await saveSettings(this.hass, sent);
-      this._saved = sent;
+      this._adoptLadders(await saveSettings(this.hass, sent), sent);
       const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
       this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`);
     } catch (err) {
