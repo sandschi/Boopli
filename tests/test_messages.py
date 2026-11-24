@@ -68,6 +68,59 @@ def test_the_panel_gets_the_key_and_the_values():
     assert kwargs["translation_placeholders"] == {"ref": "X"}
 
 
+def test_a_reply_that_carries_another_error_can_be_sent_as_json():
+    from homeassistant.helpers.json import json_encoder_default
+    import orjson
+
+    connection = MagicMock()
+    err = BoopliError("The AI agent answered with an error: {error}", error=RuntimeError("quota used up"))
+    websocket_api._send_error(connection, {"id": 3}, "ai_failed", err)
+    kwargs = connection.send_error.call_args.kwargs
+    sent = orjson.loads(orjson.dumps(kwargs["translation_placeholders"], default=json_encoder_default))
+    assert sent == {"error": "quota used up"}
+    assert connection.send_error.call_args.args[2] == "The AI agent answered with an error: quota used up"
+
+
+def test_a_reason_inside_a_message_is_sent_as_a_message_of_its_own():
+    """"Step 'x': {error}" must reach the panel with the reason's own key, so it is translated too."""
+    reason = Msg("A picture name can have at most {picture_max} letters.", picture_max=120)
+    outer = BoopliError(Msg("Step '{title}': {error}", title="Pills", error=reason))
+    connection = MagicMock()
+    websocket_api._send_error(connection, {"id": 4}, "invalid", outer)
+    values = connection.send_error.call_args.kwargs["translation_placeholders"]
+    assert values["title"] == "Pills"
+    assert values["error"] == {
+        "key": message_key("A picture name can have at most {picture_max} letters."),
+        "params": {"picture_max": 120},
+        "text": "A picture name can have at most 120 letters.",
+    }
+
+
+def test_a_plain_reason_from_a_validator_is_still_translatable():
+    """A picture that is not allowed: the reason is a plain text, and it must keep its own key too."""
+    chore = engine.Chore.from_dict({"name": "Pills", "steps": [{"title": "Look", "image": "http://bad.example/x.jpg"}]})
+    problem = engine.validate_chore(chore, ["standard"])
+    assert problem is not None and problem.template == "Step '{title}': {error}"
+    connection = MagicMock()
+    websocket_api._send_error(connection, {"id": 5}, "invalid", BoopliError(problem))
+    reason = connection.send_error.call_args.kwargs["translation_placeholders"]["error"]
+    assert reason["key"] == message_key(reason["text"])  # a text without values is its own template
+
+
+def test_a_number_stays_a_number_in_the_values():
+    connection = MagicMock()
+    websocket_api._send_error(connection, {"id": 1}, "invalid", BoopliError("At most {max_steps} steps.", max_steps=30))
+    assert connection.send_error.call_args.kwargs["translation_placeholders"] == {"max_steps": 30}
+
+
+def test_the_ai_preview_shows_the_language_line_that_is_sent():
+    manager = make_manager("de")
+    manager.rooms_text = MagicMock(return_value=("", False))
+    manager._check_kind = MagicMock(return_value="chore")
+    preview = manager.ai_preview("Clean the desk", "chore", None, "", None)
+    assert 'the language with the code "de"' in preview["instructions"]
+
+
 def test_a_foreign_error_is_sent_as_text_only():
     connection = MagicMock()
     websocket_api._send_error(connection, {"id": 1}, "ai_failed", RuntimeError("down"))

@@ -12,6 +12,7 @@ from homeassistant.loader import async_get_integration
 
 from . import breakdown, engine
 from .const import DOMAIN
+from .errors import message_key
 from .manager import BoopliError, BoopliManager
 
 
@@ -61,6 +62,21 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_backup_import)
 
 
+def _wire_values(params: dict[str, Any]) -> dict[str, Any]:
+    """The values of a message as JSON. A value that is itself a Boopli message (a reason inside
+    "Step 'x': {error}") goes as {key, params, text} so the panel can translate it too; any other
+    object (an error from outside) becomes its text."""
+    out: dict[str, Any] = {}
+    for name, value in params.items():
+        if getattr(value, "template", None) is not None:
+            out[name] = {"key": message_key(value.template), "params": _wire_values(getattr(value, "params", {})), "text": str(value)}
+        elif isinstance(value, (str, int, float, bool)) or value is None:
+            out[name] = value
+        else:
+            out[name] = str(value)
+    return out
+
+
 def _send_error(
     connection: websocket_api.ActiveConnection, msg: dict[str, Any], code: str, err: Exception
 ) -> None:
@@ -72,7 +88,7 @@ def _send_error(
             str(err),
             translation_key=err.code,
             translation_domain=DOMAIN,
-            translation_placeholders=err.params,
+            translation_placeholders=_wire_values(err.params),
         )
     else:
         connection.send_error(msg["id"], code, str(err))

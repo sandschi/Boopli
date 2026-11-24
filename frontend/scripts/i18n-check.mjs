@@ -40,16 +40,39 @@ const unused = [];
 // 1 and 2: keys used in code
 const used = new Set();
 const prefixes = new Set();
+const baseKey = (k) => k.replace(/_(zero|one|two|few|many|other)$/, "");
+const placesOf = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
+// the same text with every comment blanked out (same length, so positions stay the same)
+const withoutComments = (s, comments) => {
+  let out = s;
+  for (const [from, to] of comments) out = out.slice(0, from) + out.slice(from, to).replace(/[^\n]/g, " ") + out.slice(to);
+  return out;
+};
 for (const file of files) {
-  const text = readFileSync(file, "utf8");
-  // a key written anywhere as a string (t(cond ? "a.b" : "c.d"), a table of keys) counts as used
-  for (const s of scanTemplates(text, true).strings) if (/^[a-z_]+\.[a-z0-9_.]+$/.test(s.text) && s.text in en) used.add(s.text);
+  const original = readFileSync(file, "utf8");
+  const scanned = scanTemplates(original, true);
+  const text = withoutComments(original, scanned.comments); // a key in a comment is not a use
+  // a key written anywhere as a string (t(cond ? "a.b" : "c.d"), a table of keys) counts as used;
+  // the scanner itself skips comments
+  for (const s of scanned.strings) if (/^[a-z_]+\.[a-z0-9_.]+$/.test(s.text) && s.text in en) used.add(s.text);
   for (const m of text.matchAll(/\b(?:t|rich|hasText)\(\s*(["'`])([\w.]+?)(\$\{|\1)/g)) {
     if (m[3] === "${") prefixes.add(m[2]); // t(`errors.${code}`): everything under errors. counts as used
     else used.add(m[2]);
   }
+  // the values given to a text must be the places in it: t("key", { a, b: 2 }) against "... {a} ... {b}"
+  // (only simple objects: no calls inside, as in { when: describeWhen(a, b) })
+  for (const m of text.matchAll(/\b(?:t|rich)\(\s*"([\w.]+)"\s*,\s*\{([^{}()]*)\}\s*\)/g)) {
+    const key = m[1];
+    const texts = Object.keys(en).filter((k) => k === key || baseKey(k) === key).map((k) => en[k]);
+    if (!texts.length) continue;
+    const given = new Set([...m[2].matchAll(/(?:^|,)\s*(\w+)\s*(?::|(?=,|$))/g)].map((x) => x[1]));
+    for (const place of new Set(texts.flatMap(placesOf))) {
+      if (!given.has(place) && !(place === "count" && given.has("count"))) errors.push(`${relative(src, file)}: ${key} needs {${place}} but is not given it`);
+    }
+    const inText = new Set(texts.flatMap(placesOf));
+    for (const name of given) if (!inText.has(name) && name !== "count") errors.push(`${relative(src, file)}: ${key} is given ${name} but has no {${name}}`);
+  }
 }
-const baseKey = (k) => k.replace(/_(zero|one|two|few|many|other)$/, "");
 for (const key of used) {
   if (!(key in en) && !Object.keys(en).some((k) => baseKey(k) === key)) {
     errors.push(`missing in en.json: ${key}`);
@@ -83,8 +106,10 @@ for (const name of readdirSync(i18nDir).filter((n) => n.endsWith(".json") && n !
   for (const [key, value] of Object.entries(other)) {
     if (!(key in en) && !Object.keys(en).some((k) => baseKey(k) === baseKey(key))) {
       errors.push(`${name}: key not in en.json: ${key}`);
-    } else if (key in en && places(value) !== places(en[key])) {
-      errors.push(`${name}: {places} differ from English in ${key}`);
+    } else {
+      // a plural form the language has but English lacks (_few, _many) is compared with English's _other
+      const reference = en[key] ?? en[`${baseKey(key)}_other`] ?? Object.entries(en).find(([k]) => baseKey(k) === baseKey(key))?.[1];
+      if (reference !== undefined && places(value) !== places(reference)) errors.push(`${name}: {places} differ from English in ${key}`);
     }
   }
 }

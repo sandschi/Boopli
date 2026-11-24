@@ -26,6 +26,7 @@ You can translate in several rounds. A key that is missing in your file shows th
 - The texts you type yourself (chore names, steps, notes, room names).
 - The prompts that Boopli sends to your AI agent. They stay in English. When Home Assistant's language is not English, Boopli adds one line that asks the agent to write the questions, the answers to pick from, the step titles and the notes in that language.
 - The names of your devices and entities.
+- Error texts that come from the AI agent or from Home Assistant itself. Every error that Boopli writes is translated, including the reason inside it ("Step 'x': ...").
 - The small texts of Home Assistant's own pages (the setup dialog, the service descriptions): these are in `custom_components/boopli/translations/en.json`. Add `de.json` next to it in the same way.
 
 ## Writing new texts
@@ -41,4 +42,8 @@ rich("backup.importing_replaces")            // a text with <b> in it
 
 `npm run i18n:check` finds texts that were typed directly into the code and keys that are missing, and it runs in the build. Texts that must stay as they are (a keyboard key, a name) go in `frontend/scripts/i18n-allow.txt`.
 
-`npm run i18n:pseudo` makes a test language, `pseudo`, that writes every text with accents, like `[Šàvé]`. Open `?lang=pseudo`: any English you still see did not go through `t()`.
+Two test languages are built in. **Fancy English** (pick it in Settings → Language, or open `?lang=fancy`) writes every text with accents, like `Šàvé`. `?lang=pseudo` does the same inside brackets, like `[Šàvé]`. Any English you still see in either did not go through `t()`.
+
+## Choosing a language
+
+Boopli follows the language of Home Assistant. In Settings → Language a person can pick another one for their own browser; `?lang=xx` in the address wins over both. The list shows every language file that exists, in its own name.

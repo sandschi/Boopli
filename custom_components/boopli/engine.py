@@ -51,6 +51,12 @@ class Msg(str):
         obj.params = params
         return obj
 
+
+def as_msg(text: str) -> Msg:
+    """A reason that is already a Msg stays one; a plain text becomes one, so it can still be looked up by its text."""
+    return text if isinstance(text, Msg) else Msg(text)
+
+
 # --- constants -----------------------------------------------------------
 
 WHERE_HOME = "home"
@@ -926,7 +932,7 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
             return "Every step needs a title."
         error = validate_picture(step.image)
         if error:
-            return Msg("Step '{title}': {error}", title=step.title, error=error)
+            return Msg("Step '{title}': {error}", title=step.title, error=as_msg(error))
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
             return "A wait must be between 0 minutes and 7 days."
         if step.size not in SIZE_VALUES:
@@ -938,13 +944,13 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
         for trigger in step.wait_for:
             error = validate_trigger(trigger)
             if error:
-                return Msg("Step '{title}' (wait until): {error}", title=step.title, error=error)
+                return Msg("Step '{title}' (wait until): {error}", title=step.title, error=as_msg(error))
         if len(step.triggers) > MAX_TRIGGERS:
             return Msg("A step can have at most {max_triggers} ways to finish by itself.", max_triggers=MAX_TRIGGERS)
         for trigger in step.triggers:
             error = validate_trigger(trigger)
             if error:
-                return Msg("Step '{title}': {error}", title=step.title, error=error)
+                return Msg("Step '{title}': {error}", title=step.title, error=as_msg(error))
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
     if chore.light_color is not None and (len(chore.light_color) != 3 or any(not 0 <= c <= 255 for c in chore.light_color)):
@@ -3376,7 +3382,7 @@ def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
             backup.settings = Settings.from_dict(data["settings"])
             error = validate_settings(backup.settings)
             if error:
-                raise BackupError(f"The settings in this file are not valid: {error}")
+                raise BackupError(Msg("The settings in this file are not valid: {error}", error=as_msg(error)))
             backup.parts.append("settings")
         if "chores" in data:
             raw = data["chores"]
@@ -3395,7 +3401,7 @@ def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
                 seen.add(chore.id)
                 error = validate_chore(chore, ladders)
                 if error:
-                    raise BackupError(f"The chore '{chore.name}' is not valid: {error}")
+                    raise BackupError(Msg("The chore '{name}' is not valid: {error}", name=chore.name, error=as_msg(error)))
             backup.parts.append("chores")
         if "home" in data:
             if not isinstance(data["home"], dict):
@@ -3403,7 +3409,7 @@ def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
             backup.home = Home.from_dict(data["home"])
             error = validate_home(backup.home)
             if error:
-                raise BackupError(f"The rooms in this file are not valid: {error}")
+                raise BackupError(Msg("The rooms in this file are not valid: {error}", error=as_msg(error)))
             backup.parts.append("home")
         if "pet" in data:
             pet = data["pet"]
@@ -3448,7 +3454,7 @@ def check_backup_selection(
         for chore in backup.chores:
             error = validate_chore(chore, ladder_ids)
             if error:
-                return Msg("The chore '{name}' does not fit this setup: {error}", name=chore.name, error=error)
+                return Msg("The chore '{name}' does not fit this setup: {error}", name=chore.name, error=as_msg(error))
     elif "settings" in wanted:
         # New settings, chores that stay: they must not lose a ladder they use.
         kept = set(ladder_ids)

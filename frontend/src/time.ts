@@ -3,7 +3,7 @@ import { currentLanguage, t } from "./i18n";
 
 /** The short day names, Monday first, in the language of the panel. */
 export function weekdayNames(): string[] {
-  const fmt = new Intl.DateTimeFormat(currentLanguage(), { weekday: "short", timeZone: "UTC" });
+  const fmt = new Intl.DateTimeFormat(dateLocale(), { weekday: "short", timeZone: "UTC" });
   return [0, 1, 2, 3, 4, 5, 6].map((i) => fmt.format(new Date(Date.UTC(2024, 0, 1 + i)))); // 1 January 2024 was a Monday
 }
 
@@ -35,7 +35,8 @@ function dayNumber(key: string): number {
 /** English keeps the day-month order it always had; other languages use their own. */
 function dateLocale(): string {
   const language = currentLanguage();
-  return language === "en" ? "en-GB" : language;
+  // English keeps day-month order; the two test languages are English with accents
+  return language === "en" || language === "fancy" || language === "pseudo" ? "en-GB" : language;
 }
 
 /** "today 19:00", "tomorrow 09:00" or "Sat 28 Nov, 09:00". */

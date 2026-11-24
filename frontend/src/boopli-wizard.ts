@@ -10,7 +10,7 @@ import {
   testPhone,
   testSpeaker,
 } from "./api";
-import { ROUTINE_PROMPT, routineHost } from "./claude";
+import { routinePrompt, routineHost } from "./claude";
 import { diffSettings } from "./diff";
 import {
   ALARM_DOMAINS,
@@ -1468,7 +1468,7 @@ export class BoopliWizard extends LitElement {
 
   private async _copyRoutinePrompt(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(ROUTINE_PROMPT);
+      await navigator.clipboard.writeText(routinePrompt());
       this._note("claude:copy", t("wizard.copied"));
     } catch {
       this._note("claude:copy", t("wizard.your_browser_did_not_allow_copying"));
@@ -1484,7 +1484,7 @@ export class BoopliWizard extends LitElement {
         <li>${rich("wizard.make_a_new_routine_name_it", { item: t("wizard.boopli")  })}</li>
         <li>
           ${t("wizard.paste_this_as_its_instructions")}
-          <textarea class="code" rows="6" readonly aria-label=${t("wizard.routine_instructions")} .value=${ROUTINE_PROMPT}></textarea>
+          <textarea class="code" rows="6" readonly aria-label=${t("wizard.routine_instructions")} .value=${routinePrompt()}></textarea>
           <div class="actions inline-actions">
             <button type="button" @click=${() => this._copyRoutinePrompt()}>${t("wizard.copy_the_instructions")}</button>
           </div>

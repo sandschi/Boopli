@@ -264,7 +264,7 @@ export class BoopliPanel extends LitElement {
   protected willUpdate(changed: Map<string, unknown>): void {
     // The language of the texts: the person's Home Assistant language, or ?lang=xx in the address (to try a translation).
     if (changed.has("hass") && this.hass) {
-      setLanguage(new URLSearchParams(location.search).get("lang") || this.hass.language);
+      setLanguage(this.hass.language); // ?lang=xx and the choice in Settings come first (see i18n/index.ts)
     }
     // The accent colour (the pet's own, or the one picked in Settings) for everything inside the panel.
     if (changed.has("_snapshot")) {

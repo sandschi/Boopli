@@ -6,6 +6,7 @@ export const BLANK = "\u0000";
 export function scanTemplates(src, withStrings = false) {
   const out = [];
   const strings = [];
+  const comments = []; // [from, to) of every comment
   const n = src.length;
   let i = 0;
 
@@ -38,6 +39,14 @@ export function scanTemplates(src, withStrings = false) {
     let j = at - 1;
     while (j >= 0 && /\s/.test(src[j])) j--;
     return j >= 0 ? src[j] : "";
+  };
+  // the word just before a "/": after `return /x/` or `typeof /x/` it starts a regex, not a division
+  const keywordBefore = (at) => {
+    let j = at - 1;
+    while (j >= 0 && /\s/.test(src[j])) j--;
+    const end = j + 1;
+    while (j >= 0 && /[\w$]/.test(src[j])) j--;
+    return /^(return|typeof|case|in|of|delete|void|throw|yield|await|else|do)$/.test(src.slice(j + 1, end));
   };
   const tagBefore = (at) => {
     let j = at - 1;
@@ -85,16 +94,20 @@ export function scanTemplates(src, withStrings = false) {
         continue;
       }
       if (c === "/" && src[i + 1] === "/") {
+        const from = i;
         while (i < n && src[i] !== "\n") i++;
+        comments.push([from, i]);
         continue;
       }
       if (c === "/" && src[i + 1] === "*") {
+        const from = i;
         i += 2;
         while (i < n && !(src[i] === "*" && src[i + 1] === "/")) i++;
         i += 2;
+        comments.push([from, i]);
         continue;
       }
-      if (c === "/" && "(,=:[!&|?{};".includes(prevSignificant(i)) ) {
+      if (c === "/" && ("(,=:[!&|?{};".includes(prevSignificant(i)) || keywordBefore(i))) {
         skipRegex();
         continue;
       }
@@ -131,7 +144,7 @@ export function scanTemplates(src, withStrings = false) {
     });
     return { tag, body, map, range: [quasis[0][0], quasis[quasis.length - 1][1]] };
   });
-  return withStrings ? { templates, strings } : templates;
+  return withStrings ? { templates, strings, comments } : templates;
 }
 
 /** The text nodes and attribute texts of a template body: [{ kind, text, at }] (at = index in body). */
@@ -170,12 +183,12 @@ export function textsOf(body) {
       if (pending) pending.after = tag;
       pending = null;
       lastTag = tag;
-      for (const m of tag.matchAll(/\b(title|placeholder|aria-label|label|alt|allLabel)="([^"]*)"/gi)) {
-        found.push({ kind: "attr", attr: m[1], text: m[2], at: tagStart + m.index });
+      for (const m of tag.matchAll(/\b(title|placeholder|aria-label|label|alt|allLabel)=(?:"([^"]*)"|'([^']*)')/gi)) {
+        found.push({ kind: "attr", attr: m[1], text: m[2] ?? m[3], at: tagStart + m.index });
       }
       const name = /^<\/?([a-zA-Z][\w-]*)/.exec(tag)?.[1]?.toLowerCase();
       i = j + 1;
-      if (name === "style" || name === "script") {
+      if ((name === "style" || name === "script") && !tag.startsWith("</")) {
         const close = body.indexOf(`</${name}`, i);
         i = close < 0 ? n : close;
       }

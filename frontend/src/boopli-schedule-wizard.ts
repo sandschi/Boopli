@@ -272,7 +272,7 @@ export class BoopliScheduleWizard extends LitElement {
       <p>${this.choreName ? rich("schedule_wizard.what_changed_for_named", { chore: this.choreName }) : rich("schedule_wizard.what_changed_for_this_chore")}</p>
       ${same
         ? html`<p class="muted">${t("schedule_wizard.nothing_changed", { after })}</p>`
-        : html`<ul><li>${t("schedule_wizard.schedule", { before, after })}</li></ul>`}
+        : html`<ul><li>${t("schedule_wizard.schedule_changed", { before, after })}</li></ul>`}
       <p class="muted small">
         ${this.saves
           ? t("schedule_wizard.saving_applies_it_to_the_chore")

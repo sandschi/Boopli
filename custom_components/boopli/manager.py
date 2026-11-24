@@ -1744,7 +1744,7 @@ class BoopliManager:
             scene,
         )
         return {
-            "instructions": instructions,
+            "instructions": self._with_language(instructions),
             "rooms_text": text,
             "shortened": shortened,
             "enabled": self.home.enabled,

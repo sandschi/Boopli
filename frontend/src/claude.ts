@@ -44,4 +44,4 @@ export function routineHost(haUrl: string | undefined, snapshot?: Snapshot): str
 }
 
 /** The text the person pastes into the routine as its instructions. */
-export const ROUTINE_PROMPT = t("claude.you_are_the_answering_side_of");
+export const routinePrompt = (): string => t("claude.you_are_the_answering_side_of");

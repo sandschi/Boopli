@@ -24,7 +24,7 @@ import "./boopli-claude";
 import { petInfo } from "./pets";
 import { accentFor, applyAccent, isHex, SWATCHES } from "./accent";
 import { icon } from "./icon";
-import { t } from "./i18n";
+import { FANCY, languageChoice, languageName, languages, setLanguageChoice, t } from "./i18n";
 
 import type {
   Hass,
@@ -38,7 +38,7 @@ import type {
 } from "./types";
 
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
-type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup";
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup" | "language";
 
 interface AreaDef {
   icon: string; // a Material Design icon name (mdi:<name>)
@@ -65,13 +65,14 @@ const AREAS = (): Record<Area, AreaDef> => ({
   wall: { icon: "monitor-dashboard", title: t("common.wall_board"), wizard: "wall", keys: ["boards"] },
   ai: { icon: "robot-outline", title: t("settings.ai_help"), wizard: "ai", keys: ["ai"] },
   backup: { icon: "content-save-outline", title: t("backup.backup"), keys: [] },
+  language: { icon: "translate", title: t("settings.language"), keys: [] },
 });
 
 /** The groups on the page, and the cards in each. */
 const GROUPS = (): { title: string; areas: Area[] }[] => [
   { title: t("settings.devices"), areas: ["phone", "lights", "speakers", "alarms"] },
   { title: t("settings.timing"), areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: t("settings.extras"), areas: ["pet", "wall", "ai", "backup"] },
+  { title: t("settings.extras"), areas: ["pet", "wall", "ai", "backup", "language"] },
 ];
 const AREA_ORDER: Area[] = GROUPS().flatMap((g) => g.areas);
 
@@ -984,6 +985,8 @@ export class BoopliSettings extends LitElement {
         ];
       case "backup":
         return [t("settings.save_your_whole_setup_to_one")];
+      case "language":
+        return [];
       case "ai":
         return [
           d.ai?.enabled
@@ -994,7 +997,36 @@ export class BoopliSettings extends LitElement {
     }
   }
 
+  /** The language of the panel, kept in this browser. Changing it reloads the panel. */
+  private _renderLanguageCard() {
+    const a = AREAS().language;
+    const choice = languageChoice();
+    const codes = [...languages(), FANCY];
+    return html`<section id="card-language" class="card area">
+      <div class="card-head">
+        <span class="card-icon">${icon(a.icon)}</span>
+        <h3 tabindex="-1">${a.title}</h3>
+      </div>
+      <div class="field">
+        <select
+          aria-label=${a.title}
+          ?disabled=${this._isDirty()}
+          .value=${choice}
+          @change=${(e: Event) => {
+            setLanguageChoice((e.target as HTMLSelectElement).value);
+            location.reload(); // every text is drawn again in the new language
+          }}
+        >
+          <option value="" ?selected=${choice === ""}>${t("settings.language_same_as_home_assistant")}</option>
+          ${codes.map((code) => html`<option value=${code} ?selected=${choice === code}>${languageName(code)}</option>`)}
+        </select>
+        <div class="muted small">${this._isDirty() ? t("settings.save_or_discard_your_unsaved_changes") : t("settings.language_note")}</div>
+      </div>
+    </section>`;
+  }
+
   private _card(area: Area, d: Settings) {
+    if (area === "language") return this._renderLanguageCard();
     const a = AREAS()[area];
     const changed = this._changed(...a.keys);
     return html`<section id="card-${area}" class="card area ${area === "pet" ? "accented" : ""} ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">

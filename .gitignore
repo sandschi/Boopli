@@ -15,5 +15,3 @@ Thumbs.db
 .vscode/
 .idea/
 
-# a test language made by npm run i18n:pseudo
-frontend/src/i18n/pseudo.json
