@@ -7,6 +7,8 @@ If you want a second opinion, or have no agent, see also [Ask Claude](/Boopli/as
 
 Boopli can split a big task, such as "clean my room", into very small steps with **your own Home Assistant AI agent** (the `ai_task` integration: Google, OpenRouter, a local model such as Ollama, and so on). It is **off until you switch it on** in Settings (the 🤖 AI help card, or its step-by-step wizard), where you also choose the agent and press **Test the agent**.
 
+![The AI help window in Settings](/Boopli/img/ai-help.jpg)
+
 ### Two ways in
 
 On Today, write what you want to get done and press **Break it down now** (a one-off task that disappears when done), or **Break down a recurring chore** (it ends in the schedule wizard). The Chores tab has **New chore with AI**, and inside the chore editor **Suggest steps with AI** fills a chore's steps.

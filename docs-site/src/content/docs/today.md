@@ -5,6 +5,8 @@ description: What the Today tab shows and what its buttons do.
 
 Today is where you do things. It shows your pet in its room at the top, and under it what is due now.
 
+![The Today screen: the step waiting for you with Done and On it, the pet in its room, and what is ready now](/Boopli/img/today.jpg)
+
 ## What is on it
 
 - **What to do now.** The step that is waiting for you, with its group, "Step 3 of 8" and a progress bar. A celebration shows when a task is finished.

@@ -15,6 +15,8 @@ It works through a **routine** in your own Claude account. Every ask runs that r
 Claude calls routines a research preview. They can change or stop working, and Boopli cannot promise otherwise. Claude allows 30 runs per hour for one routine. Boopli counts the asks itself and stops at 20 per hour, so you never hit Claude's limit by accident.
 :::
 
+![The Ask Claude window in Settings](/Boopli/img/ask-claude.jpg)
+
 ## What you need
 
 - A Claude account on claude.ai that can make routines.
