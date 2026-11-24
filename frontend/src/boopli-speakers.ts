@@ -232,7 +232,11 @@ export class BoopliSpeakers extends LitElement {
     const key = `own:${sound.id}`;
     const fits = this._speakers().filter((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
     // the first speaker that can play it and is there right now
-    const speaker = fits.find((s) => this.hass?.states[s.entity_id]?.state !== "unavailable") ?? fits[0];
+    const here = (s: SpeakerCfg) => {
+      const state = this.hass?.states[s.entity_id]?.state; // no state at all: it is gone from Home Assistant
+      return state !== undefined && state !== "unavailable";
+    };
+    const speaker = fits.find(here) ?? fits[0];
     if (!speaker) {
       this._note(key, "Add a speaker that can play it first.");
       return;

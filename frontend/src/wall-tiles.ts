@@ -140,13 +140,14 @@ export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 
   const def = tileDef(type);
   const options: TileOptions = {};
   for (const f of def?.options ?? []) options[f.key] = f.default;
-  let w = Math.max(1, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
-  let h = Math.max(1, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
+  // A tile never gets smaller than it can still be used at: "Due now" keeps its three buttons reachable.
+  const [minW, minH] = TILE_MIN_SIZE[type] ?? [1, 1];
+  if (columns < minW || rows < minH) return null; // the board is too small for it
+  let w = Math.max(minW, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
+  let h = Math.max(minH, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
   for (;;) {
     const spot = firstFit(others, columns, rows, w, h);
     if (spot) return { id: newLadderId(), type, ...spot, w, h, options };
-    // A tile never gets smaller than it can still be used at: "Due now" keeps its three buttons reachable.
-    const [minW, minH] = TILE_MIN_SIZE[type] ?? [1, 1];
     if (w <= minW && h <= minH) return null;
     if (w >= h ? w > minW : h <= minH) w -= 1; // shrink the longer side first, so the shape stays about the same
     else h -= 1;
@@ -156,7 +157,8 @@ export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 
 /** The tiles a new board starts with. */
 export function starterTiles(columns = 16, rows = 9): Tile[] {
   const clock = newTile("clock", [], columns, rows)!;
-  return [clock, newTile("due_now", [clock], columns, rows)!];
+  const due = newTile("due_now", [clock], columns, rows); // null when the board is too small for it
+  return due ? [clock, due] : [clock];
 }
 
 /** The board a screen shows: the one named (or with that id), else the first. */

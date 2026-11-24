@@ -6,7 +6,7 @@ import { sharedStyles } from "./styles";
 import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot } from "./types";
 
 // The same limits as in the integration.
-const MAX_LADDERS = 20;
+const MAX_LADDERS = 30; // the same as the backend (the three standard ladders count too)
 const MAX_NUDGES = 12;
 const GAP_MIN = 1;
 const GAP_MAX = 720;

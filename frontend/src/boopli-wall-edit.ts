@@ -648,7 +648,7 @@ export class BoopliWallEdit extends LitElement {
     button.primary {
       background: var(--boopli-accent, var(--primary-color));
       border-color: var(--boopli-accent, var(--primary-color));
-      color: var(--text-primary-color, #fff);
+      color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
     }
     button.danger {
       color: var(--error-color, #db4437);

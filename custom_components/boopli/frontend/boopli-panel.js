@@ -8289,7 +8289,10 @@ var sa = "amzn_sfx_scifi_alarm_01", ca = "amzn_sfx_doorbell_chime_01", la = "htt
 		this._patch({ sounds: this._sounds().filter((t) => t.id !== e) });
 	}
 	async _testExtra(e) {
-		let t = `own:${e.id}`, n = this._speakers().filter((t) => e.kind !== "alexa" || t.speech.route !== "tts"), r = n.find((e) => this.hass?.states[e.entity_id]?.state !== "unavailable") ?? n[0];
+		let t = `own:${e.id}`, n = this._speakers().filter((t) => e.kind !== "alexa" || t.speech.route !== "tts"), r = n.find((e) => {
+			let t = this.hass?.states[e.entity_id]?.state;
+			return t !== void 0 && t !== "unavailable";
+		}) ?? n[0];
 		if (!r) this._note(t, "Add a speaker that can play it first.");
 		else if (this.hass) {
 			this._note(t, "Sending…");
@@ -9192,7 +9195,7 @@ var va = class extends x {
 };
 customElements.define("boopli-rung", va);
 // src/boopli-ladders.ts
-var ya = 20, ba = 12, xa = 1, Sa = 720, Ca = 40, wa = [{
+var ya = 30, ba = 12, xa = 1, Sa = 720, Ca = 40, wa = [{
 	value: "quiet",
 	label: "Quiet (no nudges)"
 }];
@@ -13706,25 +13709,26 @@ function ko(e) {
 function Ao(e, t = [], n = 16, r = 9) {
 	let i = ko(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let o = Math.max(1, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), s = Math.max(1, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
+	let [o, s] = Oo[e] ?? [1, 1];
+	if (n < o || r < s) return null;
+	let c = Math.max(o, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), l = Math.max(s, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
 	for (;;) {
-		let i = To(t, n, r, o, s);
+		let i = To(t, n, r, c, l);
 		if (i) return {
 			id: Y(),
 			type: e,
 			...i,
-			w: o,
-			h: s,
+			w: c,
+			h: l,
 			options: a
 		};
-		let [c, l] = Oo[e] ?? [1, 1];
-		if (o <= c && s <= l) return null;
-		(o >= s ? o > c : s <= l) ? --o : --s;
+		if (c <= o && l <= s) return null;
+		(c >= l ? c > o : l <= s) ? --c : --l;
 	}
 }
 function jo(e = 16, t = 9) {
-	let n = Ao("clock", [], e, t);
-	return [n, Ao("due_now", [n], e, t)];
+	let n = Ao("clock", [], e, t), r = Ao("due_now", [n], e, t);
+	return r ? [n, r] : [n];
 }
 function Mo(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
@@ -13799,7 +13803,7 @@ var Po = {
 	ai: "AI help setup",
 	ladders: "Nudge it your way",
 	wall: "Wall board"
-}, Lo = 10, $ = 20, Ro = {
+}, Lo = 10, $ = 30, Ro = {
 	welcome: "Welcome",
 	phone: "Your phone",
 	phone_detail: "Phone details",
@@ -16289,7 +16293,7 @@ var ns = 10, rs = 30, is = 40, as = [
     button.primary {
       background: var(--boopli-accent, var(--primary-color));
       border-color: var(--boopli-accent, var(--primary-color));
-      color: var(--text-primary-color, #fff);
+      color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
     }
     button.danger {
       color: var(--error-color, #db4437);

@@ -132,7 +132,7 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
 };
 
 const MAX_BOARDS = 10; // the most boards (the same as in the board editor)
-const MAX_LADDERS = 20; // the most ladders (the same as in the ladder editor)
+const MAX_LADDERS = 30; // the most ladders (the same as in the ladder editor and the backend)
 
 const TITLES: Record<StepId, string> = {
   welcome: "Welcome",
