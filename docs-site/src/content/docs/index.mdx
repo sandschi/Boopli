@@ -2,32 +2,8 @@
 title: Boopli
 description: An ADHD-friendly chore and task companion that lives inside Home Assistant.
 template: splash
-hero:
-  tagline: Turns chores into small steps, nudges you with the lights, speakers and phone you already have, and rewards progress with a pet.
-  actions:
-    - text: Install Boopli
-      link: /Boopli/install/
-      icon: right-arrow
-    - text: Set it up
-      link: /Boopli/setup/
-      variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import Landing from '../../components/Landing.astro';
 
-<img src="/Boopli/img/today.jpg" alt="The Boopli Today screen" style="border-radius: 0.5rem; margin-top: 1rem;" />
-
-<CardGrid>
-  <Card title="Tiny steps" icon="list-format">
-    Split a big task into very small steps, by hand or with your own Home Assistant AI agent.
-  </Card>
-  <Card title="Nudges that climb" icon="bell">
-    Lights, speakers, alarm devices and your phone, from a gentle cue up to an alarm.
-  </Card>
-  <Card title="Runs at home" icon="approve-check">
-    No account, no cloud, no server. Everything runs inside your own Home Assistant.
-  </Card>
-  <Card title="A pet that grows" icon="star">
-    Finish steps, earn XP, and watch your pet and its room change.
-  </Card>
-</CardGrid>
+<Landing />

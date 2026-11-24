@@ -3,8 +3,25 @@
 // Issues with the label "roadmap" are listed: open ones as planned (or "in progress" when they
 // also carry that label), closed ones as shipped. The workflow rebuilds the site whenever an
 // issue changes, and once a day.
+interface Props {
+	/** Show only this many cards per column (the landing page uses a short list). */
+	limit?: number;
+	/** Link to the full roadmap under the list. */
+	more?: boolean;
+}
+const { limit, more = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const repo = 'sandschi/Boopli';
-type Issue = { number: number; title: string; html_url: string; state: string; labels: { name: string }[]; closed_at: string | null; pull_request?: unknown };
+type Issue = {
+	number: number;
+	title: string;
+	body: string | null;
+	html_url: string;
+	state: string;
+	labels: { name: string }[];
+	closed_at: string | null;
+	pull_request?: unknown;
+};
 
 let issues: Issue[] = [];
 let failed = false;
@@ -12,7 +29,10 @@ try {
 	const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
 	const token = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
 	if (token) headers.Authorization = `Bearer ${token}`;
-	const res = await fetch(`https://api.github.com/repos/${repo}/issues?labels=roadmap&state=all&sort=created&direction=asc&per_page=100`, { headers });
+	const res = await fetch(
+		`https://api.github.com/repos/${repo}/issues?labels=roadmap&state=all&sort=created&direction=asc&per_page=100`,
+		{ headers }
+	);
 	if (!res.ok) throw new Error(String(res.status));
 	issues = ((await res.json()) as Issue[]).filter((i) => !i.pull_request);
 } catch {
@@ -20,29 +40,140 @@ try {
 }
 
 const has = (i: Issue, label: string) => i.labels.some((l) => l.name === label);
-const inProgress = issues.filter((i) => i.state === 'open' && has(i, 'in progress'));
-const planned = issues.filter((i) => i.state === 'open' && !has(i, 'in progress'));
-const shipped = issues
-	.filter((i) => i.state === 'closed')
-	.sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? ''));
-const groups = [
-	{ title: 'In progress', items: inProgress },
-	{ title: 'Planned', items: planned },
-	{ title: 'Shipped', items: shipped },
-].filter((g) => g.items.length > 0);
+const firstLine = (s: string | null) => (s ?? '').split(/\r?\n/).find((l) => l.trim())?.trim() ?? '';
+const columns = [
+	{ key: 'progress', title: 'In progress', note: 'Being worked on now', items: issues.filter((i) => i.state === 'open' && has(i, 'in progress')) },
+	{ key: 'planned', title: 'Planned', note: 'Next in line, top to bottom', items: issues.filter((i) => i.state === 'open' && !has(i, 'in progress')) },
+	{
+		key: 'shipped',
+		title: 'Shipped',
+		note: 'Done',
+		items: issues.filter((i) => i.state === 'closed').sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? '')),
+	},
+].filter((c) => c.items.length > 0);
 ---
 
 {failed && (
-	<p>The list could not be loaded when this page was built. See the <a href={`https://github.com/${repo}/issues?q=label%3Aroadmap`}>roadmap issues on GitHub</a>.</p>
+	<p>
+		The list could not be loaded when this page was built. See the{' '}
+		<a href={`https://github.com/${repo}/issues?q=label%3Aroadmap`}>roadmap issues on GitHub</a>.
+	</p>
 )}
-{!failed && groups.length === 0 && <p>Nothing is listed yet.</p>}
-{groups.map((g) => (
-	<>
-		<h2>{g.title}</h2>
-		<ul>
-			{g.items.map((i) => (
-				<li><a href={i.html_url}>{i.title}</a></li>
-			))}
-		</ul>
-	</>
-))}
+{!failed && columns.length === 0 && <p>Nothing is listed yet.</p>}
+<div class="board">
+	{columns.map((c) => (
+		<section class={`col ${c.key}`}>
+			<h3>
+				<span class="dot" aria-hidden="true"></span>
+				{c.title}
+				<span class="count">{c.items.length}</span>
+			</h3>
+			<p class="note">{c.note}</p>
+			<ol>
+				{(limit ? c.items.slice(0, limit) : c.items).map((i) => (
+					<li>
+						<a href={i.html_url} class="card">
+							<span class="num">#{i.number}</span>
+							<strong>{i.title}</strong>
+							{firstLine(i.body) && <span class="desc">{firstLine(i.body)}</span>}
+						</a>
+					</li>
+				))}
+			</ol>
+			{limit && c.items.length > limit && <p class="note">and {c.items.length - limit} more</p>}
+		</section>
+	))}
+</div>
+{more && (
+	<p class="more">
+		<a class="boopli-btn quiet" href={`${base}/roadmap/`}>See the whole roadmap</a>
+	</p>
+)}
+
+<style>
+	.board {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+		gap: 1.5rem;
+		align-items: start;
+		margin-top: 1rem;
+	}
+	.col h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin: 0;
+		font-size: 1.4rem;
+		color: var(--sl-color-white) !important;
+		border: 0 !important;
+	}
+	.dot {
+		width: 0.8rem;
+		height: 0.8rem;
+		border-radius: 50%;
+		background: var(--sl-color-gray-4);
+	}
+	.progress .dot {
+		background: var(--boopli-green);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--boopli-green) 30%, transparent);
+	}
+	.planned .dot {
+		background: var(--boopli-lilac);
+	}
+	.shipped .dot {
+		background: var(--sl-color-gray-3);
+	}
+	.count {
+		margin-left: auto;
+		font-size: 1rem;
+		color: var(--sl-color-gray-3);
+	}
+	.note {
+		margin: 0.1rem 0 0.6rem;
+		color: var(--sl-color-gray-3);
+		font-size: 0.95rem;
+	}
+	ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.7rem;
+	}
+	.card {
+		display: grid;
+		gap: 0.15rem;
+		padding: 0.8rem 1rem;
+		border-radius: 14px;
+		border: 2px solid var(--sl-color-hairline-light);
+		border-left-width: 6px;
+		text-decoration: none !important;
+		color: var(--sl-color-white);
+		transition: border-color 0.12s ease, transform 0.12s ease;
+	}
+	.progress .card {
+		border-left-color: var(--boopli-green);
+	}
+	.planned .card {
+		border-left-color: var(--boopli-lilac);
+	}
+	.shipped .card {
+		border-left-color: var(--sl-color-gray-4);
+	}
+	.card:hover {
+		border-color: var(--boopli-green);
+		transform: translateY(-2px);
+	}
+	.num {
+		font-size: 0.85rem;
+		color: var(--sl-color-gray-3);
+	}
+	.desc {
+		font-size: 0.95rem;
+		color: var(--sl-color-gray-2);
+		line-height: 1.35;
+	}
+	.more {
+		margin-top: 1.5rem;
+	}
+</style>
