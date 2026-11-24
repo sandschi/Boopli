@@ -199,7 +199,7 @@ export class BoopliLadders extends LitElement {
     lines.push(
       l.repeat_last && last
         ? `Then it repeats the last nudge every ${last.gap} min until you answer.`
-        : "Then it stops."
+        : t("ladders.then_it_stops")
     );
     return lines;
   }
@@ -210,11 +210,11 @@ export class BoopliLadders extends LitElement {
     const many = l.rungs.length > 1;
     return html`<div class="rung">
       <div class="rung-head">
-        <b>Nudge ${index + 1}</b>
+        <b>${t("ladders.nudge", { value: index + 1 })}</b>
         ${index === 0 && !(l.rungs.length === 1 && l.repeat_last)
           ? html`<span class="muted small">${t("ladders.right_away")}</span>`
           : html`<label class="gap">
-              ${index === 0 ? "Right away, then repeats every" : "Wait"}
+              ${index === 0 ? t("ladders.right_away_then_repeats_every") : "Wait"}
               <input
                 type="number"
                 min=${GAP_MIN}
@@ -259,7 +259,7 @@ export class BoopliLadders extends LitElement {
       ${l.rungs.map((r, i) => this._renderRung(l, r, i))}
       <div class="row">
         <button ?disabled=${l.rungs.length >= MAX_NUDGES} @click=${() => this._addRung(l.id)}>${t("ladders.add_a_nudge")}</button>
-        <span class="muted small">${l.rungs.length} of ${MAX_NUDGES}</span>
+        <span class="muted small">${t("ladders.of", { length: l.rungs.length, MAX_NUDGES })}</span>
       </div>
       <div class="field">
         <label for="end-${l.id}">${t("ladders.after_the_last_nudge")}</label>

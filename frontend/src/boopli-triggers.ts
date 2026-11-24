@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { errorMessage } from "./api";
 import { sharedStyles } from "./styles";
 import type { Hass, Trigger, TriggerKind } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 interface TagInfo {
   tag_id: string;
@@ -191,7 +191,7 @@ export class BoopliTriggers extends LitElement {
         ${trig.entity_id
           ? current
             ? html`<div class="muted small">
-                ${this._friendly(trig.entity_id)}: now <b>${current.state}</b>
+                ${rich("triggers.now", { friendly: this._friendly(trig.entity_id), state: current.state })}
               </div>`
             : html`<div class="warn small">${t("triggers.not_found_right_now_check_the")}</div>`
           : nothing}
@@ -233,7 +233,7 @@ export class BoopliTriggers extends LitElement {
                     class="chip"
                     @click=${() => this._patch(index, { state: current.state })}
                   >
-                    now: ${current.state}
+                    ${t("triggers.now_2", { state: current.state })}
                   </button>`
                 : nothing}
             </div>
@@ -367,9 +367,9 @@ export class BoopliTriggers extends LitElement {
   }
 
   private _title(trig: Trigger): string {
-    if (trig.kind === "tag") return "An NFC tag is scanned";
+    if (trig.kind === "tag") return t("triggers.an_nfc_tag_is_scanned");
     if (trig.kind === "button") return "A button is pressed";
-    return "An entity changes";
+    return t("triggers.an_entity_changes_2");
   }
 
   render() {

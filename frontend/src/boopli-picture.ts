@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing, type PropertyValues } from "lit";
 import { entityIds, friendlyName } from "./helpers";
 import { sharedStyles } from "./styles";
 import type { Hass } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 type Mode = "none" | "camera" | "file";
 
@@ -87,11 +87,11 @@ export class BoopliPicture extends LitElement {
     if (this._mode === "camera") {
       const pic = this.hass?.states[v]?.attributes?.entity_picture;
       if (typeof pic === "string" && pic) this._src = pic;
-      else this._note = "This camera gives no picture right now.";
+      else this._note = t("picture.this_camera_gives_no_picture_right");
       return;
     }
     if (!FILE_OK.test(v)) {
-      this._note = "Use a .jpg, .png or .gif file.";
+      this._note = t("picture.use_a_jpg_png_or_gif");
       return;
     }
     this._timer = window.setTimeout(async () => {
@@ -103,7 +103,7 @@ export class BoopliPicture extends LitElement {
         });
         if (seq === this._seq && r?.url) this._src = r.url;
       } catch {
-        if (seq === this._seq) this._note = "That file is not in the media folder.";
+        if (seq === this._seq) this._note = t("picture.that_file_is_not_in_the");
       }
     }, 500);
   }
@@ -131,7 +131,7 @@ export class BoopliPicture extends LitElement {
             >
               <option value="" ?selected=${!this.value}>${t("picture.pick_a_camera")}</option>
               ${this.value && !cameras.includes(this.value)
-                ? html`<option value=${this.value} selected>${this.value} (not found)</option>`
+                ? html`<option value=${this.value} selected>${t("picture.not_found", { value: this.value })}</option>`
                 : nothing}
               ${cameras.map(
                 (id) => html`<option value=${id} ?selected=${this.value === id}>${friendlyName(this.hass, id)}</option>`
@@ -151,8 +151,7 @@ export class BoopliPicture extends LitElement {
             />
           </div>
           <div class="muted small">
-            A file in Home Assistant's media folder (the one you see as "Media"), not the public www folder. Type its
-            name with the folder, for example <code>boopli/pills.jpg</code>.
+            ${rich("picture.a_file_in_home_assistants_media")}
           </div>`
         : nothing}
       ${this._src
@@ -163,8 +162,8 @@ export class BoopliPicture extends LitElement {
             @error=${() => {
               this._src = "";
               this._note = this._mode === "camera"
-                ? "The picture could not be loaded."
-                : "That file is not in the media folder, or it is not a picture.";
+                ? t("picture.the_picture_could_not_be_loaded")
+                : t("picture.that_file_is_not_in_the_2");
             }}
           />`
         : nothing}

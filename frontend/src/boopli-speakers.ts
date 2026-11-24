@@ -239,7 +239,7 @@ export class BoopliSpeakers extends LitElement {
     };
     const speaker = fits.find(here) ?? fits[0];
     if (!speaker) {
-      this._note(key, "Add a speaker that can play it first.");
+      this._note(key, t("speakers.add_a_speaker_that_can_play"));
       return;
     }
     if (!this.hass) return;
@@ -255,7 +255,7 @@ export class BoopliSpeakers extends LitElement {
 
   /** What a sound says about itself in one short line. */
   private _soundSummary(kind: SoundKind, sound: string): string {
-    if (!sound) return "No sound chosen yet";
+    if (!sound) return t("speakers.no_sound_chosen_yet");
     return kind === "alexa" ? `Alexa sound: ${sound.replace(/^amzn_sfx_/, "")}` : `File: ${sound}`;
   }
 
@@ -269,7 +269,7 @@ export class BoopliSpeakers extends LitElement {
         </select>
       </label>
       <label class="num wide">
-        ${kind === "alexa" ? "Alexa sound id" : `File (for example boopli/${example}.mp3)`}
+        ${kind === "alexa" ? t("common.alexa_sound_id") : `File (for example boopli/${example}.mp3)`}
         <input
           type="text"
           .value=${sound}
@@ -419,7 +419,7 @@ export class BoopliSpeakers extends LitElement {
   /** The ding and the alarm sound, one setting for each kind of speaker (it is written to every speaker of that kind). */
   private _toneGroup(group: "alexa" | "other") {
     const speakers = this._speakers().filter((s) => this._group(s) === group);
-    const title = group === "alexa" ? "Alexa speakers" : "Other media players";
+    const title = group === "alexa" ? "Alexa speakers" : t("speakers.other_media_players");
     if (!speakers.length) {
       return html`<h4>${title}</h4><p class="muted small">${t("speakers.you_have_no_such_speaker_yet")}</p>`;
     }
@@ -436,7 +436,7 @@ export class BoopliSpeakers extends LitElement {
         <div class="line">
           <div class="lmain">
             <span class="ltitle">${name}</span>
-            <span class="lsum muted">${group === "other" && c.kind === "alexa" ? "No file chosen yet" : this._soundSummary(c.kind as SoundKind, c.sound)}</span>
+            <span class="lsum muted">${group === "other" && c.kind === "alexa" ? t("speakers.no_file_chosen_yet") : this._soundSummary(c.kind as SoundKind, c.sound)}</span>
             <span class="lacts">
               <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(key)}>${t("speakers.details")}</button>
             </span>
@@ -451,8 +451,8 @@ export class BoopliSpeakers extends LitElement {
                       <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
                     </label>`}
                 ${which === "alarm"
-                  ? html`${this._numField("Rings for (seconds)", c.seconds, 3, 600, (n) => setAll(which, { seconds: n }))}
-                    ${this._numField("Repeat every (seconds, 0 = once)", c.repeat_s, 0, 60, (n) => setAll(which, { repeat_s: n }))}`
+                  ? html`${this._numField(t("speakers.rings_for_seconds"), c.seconds, 3, 600, (n) => setAll(which, { seconds: n }))}
+                    ${this._numField(t("speakers.repeat_every_seconds_0_once"), c.repeat_s, 0, 60, (n) => setAll(which, { repeat_s: n }))}`
                   : nothing}
               </div>`
             : nothing}
@@ -507,7 +507,7 @@ export class BoopliSpeakers extends LitElement {
           if (found) onPick(found);
         }}
       >
-        <option value="" ?selected=${!chosen}>${chosen ? "Choose…" : "Not one of your sounds"}</option>
+        <option value="" ?selected=${!chosen}>${chosen ? "Choose…" : t("speakers.not_one_of_your_sounds")}</option>
         ${fits.map((x) => html`<option value=${x.id} ?selected=${chosen?.id === x.id}>${x.name}</option>`)}
       </select>
     </label>`;
@@ -540,7 +540,7 @@ export class BoopliSpeakers extends LitElement {
       const used = d.speakers.map((s) => s.entity_id);
       const choices = this._ids(["media_player"], used);
       return this._subWindow(
-        "Add a speaker",
+        t("speakers.add_a_speaker"),
         html`<div class="row">
           <select aria-label=${t("speakers.add_a_speaker")} .value=${this._addSpeaker} @change=${(e: Event) => (this._addSpeaker = (e.target as HTMLSelectElement).value)}>
             <option value="">${t("speakers.choose_a_media_player")}</option>
@@ -552,17 +552,17 @@ export class BoopliSpeakers extends LitElement {
     }
     if (this._sub === "tone") {
       return this._subWindow(
-        "Ding and alarm sound",
+        t("speakers.ding_and_alarm_sound"),
         html`<p class="muted small">
             ${t("speakers.one_setting_for_each_kind_of")}
           </p>
           ${this._toneGroup("alexa")} ${this._toneGroup("other")}`
       );
     }
-    if (this._sub === "own") return this._subWindow("Your own sounds", this._ownSounds());
+    if (this._sub === "own") return this._subWindow(t("speakers.your_own_sounds"), this._ownSounds());
     if (this._sub === "say") {
       return this._subWindow(
-        "What the speakers say",
+        t("speakers.what_the_speakers_say"),
         html`<input
             id="sentence"
             type="text"
@@ -586,8 +586,8 @@ export class BoopliSpeakers extends LitElement {
           ${t("speakers.press_a_test_link_to_hear")}
         </p>
         <div class="topbtns">
-          ${topButton("add", "plus", "Add a speaker")} ${topButton("tone", "music-note", "Ding and alarm sound")}
-          ${topButton("own", "playlist-music", "Your own sounds")} ${topButton("say", "message-text-outline", "What the speakers say")}
+          ${topButton("add", "plus", t("speakers.add_a_speaker"))} ${topButton("tone", "music-note", t("speakers.ding_and_alarm_sound"))}
+          ${topButton("own", "playlist-music", t("speakers.your_own_sounds"))} ${topButton("say", "message-text-outline", t("speakers.what_the_speakers_say"))}
         </div>
         ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">${t("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(d)}
@@ -631,7 +631,7 @@ export class BoopliSpeakers extends LitElement {
             title: this._friendly(device.entity_id),
             summary: `On for ${device.seconds} s`,
             onTest: () => void this._testDevice(device),
-            details: this._numField("On for (seconds)", device.seconds, 3, 600, (n) => this._updateDevice(device.entity_id, { seconds: n })),
+            details: this._numField(t("common.on_for_seconds"), device.seconds, 3, 600, (n) => this._updateDevice(device.entity_id, { seconds: n })),
             onRemove: () => this._patch({ alarm_devices: d.alarm_devices.filter((a) => a.entity_id !== device.entity_id) }),
             removeLabel: `Remove alarm device ${this._friendly(device.entity_id)}`,
           })

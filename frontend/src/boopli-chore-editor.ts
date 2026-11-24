@@ -11,7 +11,7 @@ import "./boopli-schedule-wizard";
 import "./boopli-breakdown";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Snapshot, StepSize, Trigger } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 const MAX_QUESTIONS = 8; // the same as in the integration
 
@@ -213,7 +213,7 @@ export class BoopliChoreEditor extends LitElement {
 
   private _openSuggest(): void {
     if (!this.draft.name.trim()) {
-      this._error = "Give the chore a name first, so the AI knows what to split up.";
+      this._error = t("chore_editor.give_the_chore_a_name_first");
       return;
     }
     this._error = "";
@@ -383,14 +383,14 @@ export class BoopliChoreEditor extends LitElement {
               >
                 <option value="" ?selected=${!step.only_if}>${t("common.always_there")}</option>
                 ${(this.draft.questions ?? []).map(
-                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${q.text || "(question without words)"} → yes</option>`
+                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${t("chore_editor.yes", { value: q.text || "(question without words)" })}</option>`
                 )}
               </select>
             </div>`
           : nothing}
         <div class="wait">
           <span class="muted small">
-            ${(step.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
+            ${(step.wait_for ?? []).length > 0 ? t("chore_editor.longest_it_waits_0_as_long") : t("chore_editor.wait_before_this_step")}
           </span>
           <div class="chips">
             ${WAIT_PRESETS.map(
@@ -653,7 +653,7 @@ export class BoopliChoreEditor extends LitElement {
       </section>
       ${this._isDirty()
         ? html`<div class="savebar" role="status">
-            <span><b>●</b> You have unsaved changes</span>
+            <span>${rich("chore_editor.you_have_unsaved_changes")}</span>
             <span class="spacer"></span>
             <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
             <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.discard")}</button>

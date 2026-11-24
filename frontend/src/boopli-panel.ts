@@ -241,7 +241,7 @@ export class BoopliPanel extends LitElement {
       }
     } catch (err) {
       this._breakdownError =
-        err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : "Something went wrong.";
+        err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : t("common.something_went_wrong");
     }
   };
 
@@ -289,7 +289,7 @@ export class BoopliPanel extends LitElement {
           this._unsub = unsub;
         })
         .catch(() => {
-          this._connectionError = "Could not reach Boopli. Is the integration set up?";
+          this._connectionError = t("panel.could_not_reach_boopli_is_the");
         })
         .finally(() => {
           this._subscribing = false;
@@ -328,7 +328,7 @@ export class BoopliPanel extends LitElement {
     const onNow = !!this._snapshot?.away_now;
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
-      <span>${icon("bag-suitcase")} <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
+      <span>${icon("bag-suitcase")} <b>${onNow ? t("wall.away_mode_is_on") : t("panel.away_mode_is_planned")}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
       <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? "Back now…" : "Change"}</button>
     </div>`;
   }

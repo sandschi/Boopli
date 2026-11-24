@@ -433,7 +433,7 @@ export class BoopliSettings extends LitElement {
     const services = this._phoneServices();
     return html`
       <section class=${this._cardClass("phones")}>
-        <h2>Phones${this._badge("phones")}</h2>
+        <h2>${t("settings.phones")} ${this._badge("phones")}</h2>
         <p class="muted small">
           ${t("settings.boopli_sends_a_notification_with_done")}
         </p>
@@ -477,7 +477,7 @@ export class BoopliSettings extends LitElement {
     const choices = this._lightChoices();
     return html`
       <section class=${this._cardClass("lights")}>
-        <h2>Reminder lights${this._badge("lights")}</h2>
+        <h2>${t("settings.reminder_lights")} ${this._badge("lights")}</h2>
         <p class="muted small">
           ${t("settings.boopli_blinks_a_light_itself_and")}
         </p>
@@ -582,7 +582,7 @@ export class BoopliSettings extends LitElement {
     const qh = d.quiet_hours;
     return html`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>Quiet hours${this._badge("quiet_hours")}</h2>
+        <h2>${t("settings.quiet_hours")} ${this._badge("quiet_hours")}</h2>
         <p class="muted small">
           ${t("settings.nudges_wait_outside_these_times_set")}
         </p>
@@ -656,7 +656,7 @@ export class BoopliSettings extends LitElement {
           <div class="muted small">
             At home Boopli uses everything above. Away, it only uses your phone,
             and only for chores marked "anywhere".
-            ${this.snapshot ? (this.snapshot.is_home ? "Right now: home." : "Right now: away.") : nothing}
+            ${this.snapshot ? (this.snapshot.is_home ? t("settings.right_now_home") : t("settings.right_now_away")) : nothing}
           </div>
         </div>
       </section>
@@ -797,9 +797,9 @@ export class BoopliSettings extends LitElement {
   /** Try the saved AI settings with a harmless sample task. */
   private async _testAi(): Promise<void> {
     if (!this.hass) return;
-    this._aiNote = "Asking the agent…";
+    this._aiNote = t("settings.asking_the_agent");
     try {
-      const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
+      const result = await aiSteps(this.hass, t("common.make_a_cup_of_tea"), "now", []);
       this._aiNote = `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`;
     } catch (err) {
       this._aiNote = errorMessage(err);
@@ -830,7 +830,7 @@ export class BoopliSettings extends LitElement {
     `;
     return html`
       <section class=${this._cardClass("ai")}>
-        <h2>AI help${this._badge("ai")}</h2>
+        <h2>${t("settings.ai_help")} ${this._badge("ai")}</h2>
         <p class="muted small">
           ${t("settings.boopli_can_split_a_task_into")}
         </p>
@@ -856,7 +856,7 @@ export class BoopliSettings extends LitElement {
             <option value="" .selected=${ai.entity_id === ""}>${t("wizard.home_assistant_default")}</option>
             ${agents.map((id) => html`<option value=${id} .selected=${id === ai.entity_id}>${friendlyName(this.hass, id)}</option>`)}
             ${ai.entity_id && !agents.includes(ai.entity_id)
-              ? html`<option value=${ai.entity_id} selected>${ai.entity_id} (not found)</option>`
+              ? html`<option value=${ai.entity_id} selected>${t("settings.not_found", { entity_id: ai.entity_id })}</option>`
               : nothing}
           </select>
           ${agents.length === 0
@@ -881,7 +881,7 @@ export class BoopliSettings extends LitElement {
                   .hass=${this.hass}
                   .snapshot=${this.snapshot}
                   .ai=${ai}
-                  .blocked=${changed ? "Save first to test." : ""}
+                  .blocked=${changed ? t("settings.save_first_to_test") : ""}
                   @ai-patch=${(e: CustomEvent<Partial<Settings["ai"]>>) => this._setAi(e.detail)}
                 ></boopli-claude>
                 <div class="cactions"><button type="button" class="primary" @click=${() => (this._claudeOpen = false)}>${t("common.done")}</button></div>
@@ -901,7 +901,7 @@ export class BoopliSettings extends LitElement {
                 (id) => html`<option value=${id} .selected=${id === ai.photo_entity_id}>${friendlyName(this.hass, id)}</option>`
               )}
               ${ai.photo_entity_id && !agents.includes(ai.photo_entity_id)
-                ? html`<option value=${ai.photo_entity_id} selected>${ai.photo_entity_id} (not found)</option>`
+                ? html`<option value=${ai.photo_entity_id} selected>${t("settings.not_found_2", { photo_entity_id: ai.photo_entity_id })}</option>`
                 : nothing}
             </select>
             <div class="muted small">
@@ -916,7 +916,7 @@ export class BoopliSettings extends LitElement {
           <p class="muted small">
             ${t("settings.these_are_the_texts_the_in")}
           </p>
-          ${prompt("chat_room_prompt", "Chat prompt for one room")} ${prompt("chat_home_prompt", "Chat prompt for the whole home")}
+          ${prompt("chat_room_prompt", t("settings.chat_prompt_for_one_room"))} ${prompt("chat_home_prompt", t("settings.chat_prompt_for_the_whole_home"))}
         </details>
       </section>
     `;
@@ -931,17 +931,17 @@ export class BoopliSettings extends LitElement {
       case "phone":
         return d.phones.length
           ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}`)
-          : ["No phone set up yet."];
+          : [t("settings.no_phone_set_up_yet")];
       case "lights":
-        return d.lights.length ? d.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`) : ["No reminder lights yet."];
+        return d.lights.length ? d.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`) : [t("settings.no_reminder_lights_yet")];
       case "speakers":
         return d.speakers.length
           ? d.speakers.map((sp) => `${fn(sp.entity_id)}: ${describeSpeaker(sp)}`)
-          : ["No speakers yet."];
+          : [t("settings.no_speakers_yet")];
       case "alarms":
         return d.alarm_devices.length
           ? d.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s`)
-          : ["No alarm devices yet."];
+          : [t("settings.no_alarm_devices_yet")];
       case "quiet":
         return [describeQuiet(d.quiet_hours)];
       case "timing":
@@ -955,7 +955,7 @@ export class BoopliSettings extends LitElement {
         return [
           `New chores: ${styleLabel(d.default_style, ladders)}`,
           ...ladders.map((l) => `${l.name}: ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}`),
-          ...(ladders.length ? [] : ["No ladders of your own yet."]),
+          ...(ladders.length ? [] : [t("settings.no_ladders_of_your_own_yet")]),
         ];
       }
       case "wall": {
@@ -963,20 +963,20 @@ export class BoopliSettings extends LitElement {
         return (d.boards ?? []).map((b) => `${b.name}: ${b.tiles.length} ${b.tiles.length === 1 ? "tile" : "tiles"}, ${night[b.night] ?? b.night} at night`);
       }
       case "presence":
-        return [d.presence_entity ? fn(d.presence_entity) : "Not set. Boopli assumes you are home."];
+        return [d.presence_entity ? fn(d.presence_entity) : t("settings.not_set_boopli_assumes_you_are")];
       case "pet":
         return [
           `${d.pet_name} the ${petInfo(d.pet_kind).label.toLowerCase()}`,
-          isHex(d.accent) ? `Accent colour: ${d.accent.toLowerCase()}` : "Accent colour: your pet's own",
+          isHex(d.accent) ? `Accent colour: ${d.accent.toLowerCase()}` : t("settings.accent_colour_your_pets_own"),
         ];
       case "backup":
-        return ["Save your whole setup to one file (.adhd), or load one on a new install."];
+        return [t("settings.save_your_whole_setup_to_one")];
       case "ai":
         return [
           d.ai?.enabled
             ? `On, using ${d.ai.entity_id ? fn(d.ai.entity_id) : "the Home Assistant default agent"}`
             : "Off. Splits big tasks into tiny steps with your own AI agent.",
-          ...(d.ai?.claude_enabled ? ["Ask Claude is on"] : []),
+          ...(d.ai?.claude_enabled ? [t("settings.ask_claude_is_on")] : []),
         ];
     }
   }

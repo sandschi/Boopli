@@ -17,7 +17,7 @@ import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
 import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot, Via } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 const NOTES_MAX = 2000;
 
@@ -311,10 +311,10 @@ export class BoopliHome extends LitElement {
     this._run++;
     if (this._tool?.kind === "photos") {
       this._patchTool({ working: false, sending: false });
-      this._error = "You stopped waiting. Your photos are still here, so you can try again.";
+      this._error = t("common.you_stopped_waiting_your_photos_are");
     } else {
       this._iv = null;
-      this._error = "You stopped waiting. Nothing was changed, so you can try again.";
+      this._error = t("home.you_stopped_waiting_nothing_was_changed");
     }
   }
 
@@ -371,7 +371,7 @@ export class BoopliHome extends LitElement {
       }
     }
     this._patchTool({ copied: ok });
-    if (!ok) this._error = "Copying did not work here. Select the text in the box and copy it yourself.";
+    if (!ok) this._error = t("home.copying_did_not_work_here_select");
   }
 
   private async _readPasted(): Promise<void> {
@@ -422,7 +422,7 @@ export class BoopliHome extends LitElement {
     this._tool = null;
     this._message = changed
       ? `Notes for ${changed} ${changed === 1 ? "room" : "rooms"} are in. Press Save to keep them.`
-      : "Nothing was used.";
+      : t("home.nothing_was_used");
   }
 
   private async _askQuestions(answers: AiAnswer[]): Promise<void> {
@@ -485,7 +485,7 @@ export class BoopliHome extends LitElement {
       const parts = [...iv.picked[i], iv.typed[i].trim()].filter(Boolean);
       if (parts.length) out.push({ question: q.text, answer: parts.join(", ") });
     });
-    if (iv.extra.trim()) out.push({ question: "Anything else about this room?", answer: iv.extra.trim() });
+    if (iv.extra.trim()) out.push({ question: t("home.anything_else_about_this_room"), answer: iv.extra.trim() });
     return out;
   }
 
@@ -548,7 +548,7 @@ export class BoopliHome extends LitElement {
       ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       ${iv.phase === "working"
         ? html`<boopli-wait
-            .label=${iv.via === "claude" ? "Asking Claude. This takes a little while…" : iv.answers.length ? "Writing the notes…" : "Thinking…"}
+            .label=${iv.via === "claude" ? t("common.asking_claude_this_takes_a_little") : iv.answers.length ? t("home.writing_the_notes") : "Thinking…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${waitSeconds(this.snapshot, iv.via)}
             @stop-waiting=${() => this._stopWaiting()}
@@ -585,10 +585,10 @@ export class BoopliHome extends LitElement {
         ? html`
             <p>
               ${iv.source === "paste"
-                ? "This is what I read from what you pasted."
+                ? t("home.this_is_what_i_read_from")
                 : iv.source === "photos"
-                  ? "This is what the AI saw in your photos. The photos are already gone."
-                  : "This is what I would write down."}
+                  ? t("home.this_is_what_the_ai_saw")
+                  : t("home.this_is_what_i_would_write")}
               Change anything that is wrong.
               ${room?.notes ? html`<b>${t("home.it_replaces_the_notes_you_have")}</b>` : nothing}
               Nothing is saved until you press Save afterwards.
@@ -627,13 +627,12 @@ export class BoopliHome extends LitElement {
         <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>${t("common.cancel")}</button>
       </div>
       <p class="muted">
-        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to the helper you pick below (your AI agent, or Claude), which writes down what it
-        sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.
+        ${t("home.take_or_pick_up_to_photos", { MAX_PHOTOS })}
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${tool.sending
         ? html`<boopli-wait
-            .label=${tool.via === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
+            .label=${tool.via === "claude" ? t("common.claude_is_looking_at_your_photos") : t("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${waitSeconds(this.snapshot, tool.via)}
             @stop-waiting=${() => this._stopWaiting()}
@@ -656,7 +655,7 @@ export class BoopliHome extends LitElement {
             </div>
             <div class="actions">
               <label class="filebtn big ${full || tool.working ? "off" : ""}">
-                ${tool.working ? "Preparing…" : tool.photos.length ? "Add another photo" : "Take or pick photos"}
+                ${tool.working ? "Preparing…" : tool.photos.length ? t("common.add_another_photo") : t("common.take_or_pick_photos")}
                 <input
                   type="file"
                   accept="image/*"
@@ -685,9 +684,9 @@ export class BoopliHome extends LitElement {
             </div>
             <p class="muted small">
               ${agentOn(this.snapshot)
-                ? "The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings under AI help, Advanced. "
+                ? t("home.the_agent_has_to_be_able")
                 : ""}${claudeReady(this.snapshot)
-                ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+                ? t("common.claude_gets_each_photo_through_a")
                 : ""}
             </p>
           `}
@@ -699,7 +698,7 @@ export class BoopliHome extends LitElement {
     const whole = !tool.roomId;
     return html`<section class="card interview">
       <div class="top">
-        <h2>${whole ? "My whole home" : room?.name ?? "Room"}: talk it out in your own AI chat</h2>
+        <h2>${whole ? t("home.my_whole_home") : room?.name ?? "Room"}: talk it out in your own AI chat</h2>
         <button type="button" class="link" @click=${() => (this._tool = null)}>${t("common.cancel")}</button>
       </div>
       <p class="muted">
@@ -726,12 +725,12 @@ export class BoopliHome extends LitElement {
           <textarea id="promptbox" class="promptbox" rows="7" readonly .value=${tool.prompt}></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!tool.prompt} @click=${() => this._copyPrompt()}>
-              ${tool.copied ? "Copied ✓" : "Copy the prompt"}
+              ${tool.copied ? "Copied ✓" : t("home.copy_the_prompt")}
             </button>
           </div>
         </li>
         <li>
-          <b>${t("home.talk_it_through")}</b> with the chat. When you say you are done, it answers with the notes.
+          ${rich("home.with_the_chat_when_you_say", { t: t("home.talk_it_through") })}
         </li>
         <li>
           <b>${t("home.copy_the_notes")}</b> it gives back and paste them here.
@@ -745,7 +744,7 @@ export class BoopliHome extends LitElement {
           ></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!tool.pasted.trim() || tool.working} @click=${() => this._readPasted()}>
-              ${tool.working ? "Reading…" : "Read the notes"}
+              ${tool.working ? "Reading…" : t("home.read_the_notes")}
             </button>
           </div>
         </li>
@@ -842,7 +841,7 @@ export class BoopliHome extends LitElement {
   private _renderSaveBar() {
     if (!this._isDirty()) return nothing;
     return html`<div class="savebar" role="status">
-      <span><b>●</b> You have unsaved changes</span>
+      <span>${rich("chore_editor.you_have_unsaved_changes")}</span>
       <span class="spacer"></span>
       <button class="primary" ?disabled=${this._busy} @click=${() => this.save()}>${t("common.save")}</button>
       <button ?disabled=${this._busy} @click=${() => this.discard()}>${t("common.discard")}</button>

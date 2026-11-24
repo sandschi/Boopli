@@ -12,7 +12,7 @@ import {
 import { diffSettings } from "./diff";
 import { sharedStyles } from "./styles";
 import type { Hass, Settings, Snapshot } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // a backup is a few hundred kilobytes at most
 const EXTENSION = ".adhd";
@@ -115,7 +115,7 @@ export class BoopliBackup extends LitElement {
     this._error = "";
     try {
       const name = await this._download(this._parts);
-      this._done = [`Saved ${name}.`, "Keep it somewhere private: it holds the names of your devices and your notes."];
+      this._done = [`Saved ${name}.`, t("backup.keep_it_somewhere_private_it_holds")];
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -152,18 +152,18 @@ export class BoopliBackup extends LitElement {
     this._preview = null;
     this._copyName = "";
     if (file.size > MAX_FILE_BYTES) {
-      this._error = "This file is too big to be a Boopli backup.";
+      this._error = t("backup.this_file_is_too_big_to");
       return;
     }
     let data: unknown;
     try {
       data = JSON.parse(await file.text());
     } catch {
-      this._error = "This is not a Boopli backup file.";
+      this._error = t("backup.this_is_not_a_boopli_backup");
       return;
     }
     if (typeof data !== "object" || data === null || Array.isArray(data)) {
-      this._error = "This is not a Boopli backup file.";
+      this._error = t("backup.this_is_not_a_boopli_backup");
       return;
     }
     this._file = { name: file.name, data: data as Record<string, unknown> };
@@ -250,8 +250,7 @@ export class BoopliBackup extends LitElement {
       <p>${t("backup.save_your_setup_to_one_file")}</p>
       ${this._renderParts([...BACKUP_PARTS])}
       <p class="muted small">
-        The file ends in <code>${EXTENSION}</code> and is plain text inside. It holds the names of your devices and phones and your notes, so keep it private.
-        Running chores, away mode and picture files are not part of it.
+        ${rich("backup.the_file_ends_in_and_is", { EXTENSION })}
       </p>
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? "Saving…" : "Download backup"}</button>
@@ -266,7 +265,7 @@ export class BoopliBackup extends LitElement {
     return html`
       <h2>${icon("content-save-outline")} ${t("common.import_a_backup")}</h2>
       <div class="field">
-        <label for="file">Choose a backup file (${EXTENSION})</label>
+        <label for="file">${t("backup.choose_a_backup_file", { EXTENSION })}</label>
         <input id="file" type="file" accept="${EXTENSION},.json,application/json" ?disabled=${this._busy} @change=${(e: Event) => void this._choose(e)} />
       </div>
       ${pre && this._file
@@ -281,7 +280,7 @@ export class BoopliBackup extends LitElement {
               : changes.length
                 ? html`<div class="changes"><b>${t("backup.the_settings_would_change_like_this")}</b>
                     <ul>${changes.slice(0, 12).map((c) => html`<li>${c}</li>`)}</ul>
-                    ${changes.length > 12 ? html`<span class="muted small">and ${changes.length - 12} more.</span>` : nothing}</div>`
+                    ${changes.length > 12 ? html`<span class="muted small">${t("backup.and_more", { value: changes.length - 12 })}</span>` : nothing}</div>`
                 : nothing}
             ${pre.missing_entities_total || pre.missing_services.length
               ? html`<div class="warn" role="status">
@@ -289,7 +288,7 @@ export class BoopliBackup extends LitElement {
                   ${pre.missing_entities_total
                     ? html`<div class="small">Not found: ${pre.missing_entities.join(", ")}${pre.missing_entities_total > pre.missing_entities.length ? ` and ${pre.missing_entities_total - pre.missing_entities.length} more` : ""}.</div>`
                     : nothing}
-                  ${pre.missing_services.length ? html`<div class="small">Phones not found: ${pre.missing_services.join(", ")}.</div>` : nothing}
+                  ${pre.missing_services.length ? html`<div class="small">${t("backup.phones_not_found", { join: pre.missing_services.join(", ") })}</div>` : nothing}
                   <div class="small muted">${t("backup.they_are_kept_but_do_nothing")}</div>
                 </div>`
               : nothing}
@@ -299,7 +298,7 @@ export class BoopliBackup extends LitElement {
             <p class="small">
               Importing <b>${t("backup.replaces")}</b> the ticked parts on this install, and it cannot be undone.
               <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${t("backup.save_a_copy_of_what_i")}</button>
-              ${this._copyName ? html`<span class="muted">(saved ${this._copyName})</span>` : nothing}
+              ${this._copyName ? html`<span class="muted">${t("backup.saved", { copyName: this._copyName })}</span>` : nothing}
             </p>
           `
         : nothing}

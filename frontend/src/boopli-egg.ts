@@ -190,7 +190,7 @@ export class BoopliEgg extends LitElement {
         <button
           type="button"
           class="ctl"
-          aria-label=${this._muted ? "Turn the sound on" : "Turn the sound off"}
+          aria-label=${this._muted ? t("egg.turn_the_sound_on") : t("egg.turn_the_sound_off")}
           @click=${() => this._toggleMute()}
         >
           ${this._muted ? "🔇" : "🔊"}

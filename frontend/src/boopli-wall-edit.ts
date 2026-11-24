@@ -7,7 +7,7 @@ import { COLUMNS_MAX, COLUMNS_MIN, ROWS_MAX, ROWS_MIN, bottom, right, scaleTiles
 import { TILE_DEFS, boardLink, newTile, pickBoard, starterTiles, tileDef, type OptionField } from "./wall-tiles";
 import { icon } from "./icon";
 import type { Board, Hass, NightMode, Snapshot, Tile } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 const MAX_BOARDS = 10;
 const MAX_TILES = 30;
@@ -264,7 +264,7 @@ export class BoopliWallEdit extends LitElement {
     }
     const tile = newTile(type, cur.tiles, cur.columns, cur.rows);
     if (!tile) {
-      this._error = "Every cell of this board is taken. Make the grid bigger or remove a tile.";
+      this._error = t("wall_edit.every_cell_of_this_board_is");
       this._modal = "";
       return;
     }
@@ -294,7 +294,7 @@ export class BoopliWallEdit extends LitElement {
       tile.id
     );
     if (!next) {
-      this._error = "There is no room for that.";
+      this._error = t("wall_edit.there_is_no_room_for_that");
       return;
     }
     this._edit((b) => (b.tiles = next));
@@ -330,11 +330,11 @@ export class BoopliWallEdit extends LitElement {
     const rows = cur.rows * f;
     const tiles = scaleTiles(cur.tiles, f);
     if (!Number.isInteger(columns) || !Number.isInteger(rows) || columns < COLUMNS_MIN || rows < ROWS_MIN || columns > COLUMNS_MAX || rows > ROWS_MAX) {
-      this._error = finer ? `${COLUMNS_MAX} by ${ROWS_MAX} is the finest grid.` : "This grid cannot be made coarser evenly.";
+      this._error = finer ? `${COLUMNS_MAX} by ${ROWS_MAX} is the finest grid.` : t("wall_edit.this_grid_cannot_be_made_coarser");
       return;
     }
     if (!tiles) {
-      this._error = "Some tiles do not line up with a coarser grid. Move or resize them first.";
+      this._error = t("wall_edit.some_tiles_do_not_line_up");
       return;
     }
     this._edit((b) => {
@@ -426,7 +426,7 @@ export class BoopliWallEdit extends LitElement {
           <input id=${id} list=${list} placeholder=${t("wall_edit.start_typing_a_name")} .value=${String(value)}
             @change=${(e: Event) => this._setOption(f.key, (e.target as HTMLInputElement).value.trim())} />
           <datalist id=${list}>${ids.map((e) => html`<option value=${e}>${friendlyName(this.hass, e)}</option>`)}</datalist>
-          ${value && !this.hass?.states[String(value)] ? html`<div class="error small">${value} was not found.</div>` : nothing}</div>`;
+          ${value && !this.hass?.states[String(value)] ? html`<div class="error small">${t("wall_edit.was_not_found", { value: String(value) })}</div>` : nothing}</div>`;
       }
       default:
         return html`<div class="field"><label for=${id}>${f.label}</label>
@@ -485,7 +485,7 @@ export class BoopliWallEdit extends LitElement {
         </select>
       </div>
       <p class="muted small">${t("wall_edit.night_is_when_quiet_hours_are")}</p>
-      <p class="small">Link for the tablet's start page: <code>${boardLink(cur)}</code> (after you save)</p>
+      <p class="small">${rich("wall_edit.link_for_the_tablets_start_page", { boardLink: boardLink(cur) })}</p>
       <div class="mfoot">
         <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>${t("wall_edit.new_board")}</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${t("wall_edit.delete_this_board")}</button>

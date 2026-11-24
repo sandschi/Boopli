@@ -1,4 +1,5 @@
 import { WEEKDAY_NAMES } from "./time";
+import { t } from "./i18n";
 import type {
   AlarmDeviceCfg,
   Hass,
@@ -165,7 +166,7 @@ export function describeQuiet(qh: QuietHours): string {
 
 /** What a speaker plays, in a few words. */
 export function describeSpeaker(s: SpeakerCfg): string {
-  const kind = s.speech.route === "tts" ? "TTS voice" : s.speech.route === "alexa_devices" ? "Alexa Devices" : "Alexa Media Player";
+  const kind = s.speech.route === "tts" ? "TTS voice" : s.speech.route === "alexa_devices" ? "Alexa Devices" : t("helpers.alexa_media_player");
   return s.speech.target && s.speech.enabled ?`${kind}, speaks` : `${kind}, no speaking device yet`;
 }
 

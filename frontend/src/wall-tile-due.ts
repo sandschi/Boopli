@@ -40,7 +40,7 @@ export class WallTileDue extends WallTile {
     return html`<div class="due">
       <div class="label">${run.chore_name}</div>
       <div class="big title">${step.title}</div>
-      ${item.total > 1 ? html`<div class="small muted">Step ${item.done + 1} of ${item.total}</div>` : nothing}
+      ${item.total > 1 ? html`<div class="small muted">${t("today.step_of", { value: item.done + 1, total: item.total })}</div>` : nothing}
       <div class="actions">
         <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => completeStep(this.hass!, run.id, step.step_id))}>
           ${t("common.done")}

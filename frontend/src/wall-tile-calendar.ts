@@ -100,7 +100,7 @@ export class WallTileCalendar extends WallTile {
         .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
       this._error = "";
     } catch {
-      if (seq === this._seq) this._error = "Could not read the calendar.";
+      if (seq === this._seq) this._error = t("wall_tile_calendar.could_not_read_the_calendar");
     }
   }
 

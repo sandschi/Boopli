@@ -71,10 +71,10 @@ export class BoopliWait extends LitElement {
   /** A calm sentence for how it is going, so a long wait never feels like a freeze. */
   private _hint(): string {
     const s = this._elapsed;
-    if (s < 20) return "This usually takes under a minute.";
-    if (s < 60) return "Still working. Free models can be slow.";
-    if (s < this.max * 0.85) return "Still working. This one is slow, but it is not stuck.";
-    return "Nearly at the limit. If there is no answer, you can try again.";
+    if (s < 20) return t("wait.this_usually_takes_under_a_minute");
+    if (s < 60) return t("wait.still_working_free_models_can_be");
+    if (s < this.max * 0.85) return t("wait.still_working_this_one_is_slow");
+    return t("wait.nearly_at_the_limit_if_there");
   }
 
   render() {
@@ -98,8 +98,8 @@ export class BoopliWait extends LitElement {
         <div class="fill" style="width:${used * 100}%"></div>
       </div>
       <div class="time">
-        <span>${mmss(this._elapsed)} so far</span>
-        <span>gives up after ${mmss(this.max)}</span>
+        <span>${t("wait.so_far", { mmss: mmss(this._elapsed) })}</span>
+        <span>${t("wait.gives_up_after", { mmss: mmss(this.max) })}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable

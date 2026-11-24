@@ -113,7 +113,7 @@ export class BoopliScheduleDays extends LitElement {
                   class="chip same"
                   @click=${() => this._setDay(day, [...this._times(above)])}
                 >
-                  Same as ${WEEKDAY_NAMES[above]}
+                  ${t("schedule_days.same_as", { value: WEEKDAY_NAMES[above] })}
                 </button>`
               : nothing}
           </div>`;

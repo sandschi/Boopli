@@ -246,7 +246,7 @@ export class BoopliBreakdown extends LitElement {
         )}
         ${chosen.length === 0 ? html`<span class="muted small">${t("breakdown.none")}</span>` : nothing}
         <button type="button" class="link" @click=${() => this._showPreview()}>
-          ${this._preview ? "Hide what is sent" : "What will the AI see?"}
+          ${this._preview ? t("breakdown.hide_what_is_sent") : t("breakdown.what_will_the_ai_see")}
         </button>
       </div>
       ${this._preview
@@ -306,7 +306,7 @@ export class BoopliBreakdown extends LitElement {
     this._lookId++;
     this._looking = false;
     this._sending = false;
-    this._error = "You stopped waiting. Your photos are still here, so you can try again.";
+    this._error = t("common.you_stopped_waiting_your_photos_are");
   }
 
   private _renderScene() {
@@ -336,8 +336,7 @@ export class BoopliBreakdown extends LitElement {
     const full = this._photos.length >= MAX_PHOTOS;
     return html`<div class="scene">
       <p class="muted small">
-        Take or pick up to ${MAX_PHOTOS} photos. They go once to the helper you pick below (your AI agent, or Claude), which writes down what is out of place.
-        Boopli keeps no photo: you see the text it wrote, and only that text is used.
+        ${t("breakdown.take_or_pick_up_to_photos", { MAX_PHOTOS })}
       </p>
       <div class="thumbs">
         ${this._photos.map(
@@ -349,7 +348,7 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${this._sending
         ? html`<boopli-wait
-            .label=${this._lookVia === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
+            .label=${this._lookVia === "claude" ? t("common.claude_is_looking_at_your_photos") : t("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${waitSeconds(this.snapshot, this._lookVia)}
             @stop-waiting=${() => this._stopLooking()}
@@ -358,7 +357,7 @@ export class BoopliBreakdown extends LitElement {
           ? html`<div class="muted" role="status">${t("breakdown.preparing")}</div>`
           : html`<div class="actions">
             <label class="filebtn ${full ? "off" : ""}">
-              ${this._photos.length ? "Add another photo" : "Take or pick photos"}
+              ${this._photos.length ? t("common.add_another_photo") : t("common.take_or_pick_photos")}
               <input
                 type="file"
                 accept="image/*"
@@ -388,9 +387,9 @@ export class BoopliBreakdown extends LitElement {
           </div>`}
       <div class="muted small">
         ${agentOn(this.snapshot)
-          ? "The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced. "
+          ? t("breakdown.the_agent_has_to_be_able")
           : ""}${claudeReady(this.snapshot)
-          ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+          ? t("common.claude_gets_each_photo_through_a")
           : ""}
       </div>
     </div>`;
@@ -436,7 +435,7 @@ export class BoopliBreakdown extends LitElement {
     this._askId++;
     this._busy = false;
     this._phase = this._backPhase;
-    this._error = "You stopped waiting. Your task and answers are still here, so you can try again.";
+    this._error = t("breakdown.you_stopped_waiting_your_task_and");
   }
 
   private async _begin(via?: Via): Promise<void> {
@@ -478,7 +477,7 @@ export class BoopliBreakdown extends LitElement {
       const parts = [...this._picked[i], this._typed[i].trim()].filter(Boolean);
       if (parts.length) out.push({ question: q.text, answer: parts.join(", ") });
     });
-    if (this._extra.trim()) out.push({ question: "Anything else to know?", answer: this._extra.trim() });
+    if (this._extra.trim()) out.push({ question: t("breakdown.anything_else_to_know"), answer: this._extra.trim() });
     return out;
   }
 
@@ -550,7 +549,7 @@ export class BoopliBreakdown extends LitElement {
   private _finish(action: BreakdownResult["action"]): void {
     const steps = this._steps.filter((s) => s.title.trim()).map((s) => ({ ...s, title: s.title.trim() }));
     if (steps.length === 0) {
-      this._error = "There is no step yet. Add one, or try again.";
+      this._error = t("breakdown.there_is_no_step_yet_add");
       return;
     }
     // Only the questions that a step still points to are kept, with a text that is not empty.
@@ -599,12 +598,12 @@ export class BoopliBreakdown extends LitElement {
     return html`
       <p>
         ${this.kind === "recurring"
-          ? "What is the chore? I will ask what it really involves, so we can break it into tiny steps once and reuse them every time."
-          : "What do you want to get done? Write it the way you would say it."}
+          ? t("breakdown.what_is_the_chore_i_will")
+          : t("breakdown.what_do_you_want_to_get")}
       </p>
       <textarea
         rows="3"
-        placeholder=${this.kind === "recurring" ? "For example: clean my room" : "For example: clean the bathroom"}
+        placeholder=${this.kind === "recurring" ? t("breakdown.for_example_clean_my_room") : t("today.for_example_clean_the_bathroom")}
         .value=${this._task}
         @input=${(e: Event) => this._onTaskInput((e.target as HTMLTextAreaElement).value)}
       ></textarea>
@@ -613,7 +612,7 @@ export class BoopliBreakdown extends LitElement {
       <div class="actions">
         ${agentOn(this.snapshot)
           ? html`<button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin("agent")}>
-              ${this.kind === "recurring" ? "Ask me about it" : "Break it down"}
+              ${this.kind === "recurring" ? t("breakdown.ask_me_about_it") : t("breakdown.break_it_down")}
             </button>`
           : nothing}
         ${claudeReady(this.snapshot)
@@ -682,7 +681,7 @@ export class BoopliBreakdown extends LitElement {
     return html`
       ${this._answers.length
         ? html`<details class="said">
-            <summary>What you told me so far (${this._answers.length})</summary>
+            <summary>${t("breakdown.what_you_told_me_so_far", { length: this._answers.length })}</summary>
             <ul>
               ${this._answers.map((a) => html`<li><span class="muted">${a.question}</span> ${a.answer}</li>`)}
             </ul>
@@ -715,9 +714,9 @@ export class BoopliBreakdown extends LitElement {
   private _renderWorking() {
     return html`<boopli-wait
       .label=${this._via === "claude"
-        ? "Asking Claude. This takes a little while…"
+        ? t("common.asking_claude_this_takes_a_little")
         : this._answers.length || this._steps.length
-          ? "Writing the steps…"
+          ? t("breakdown.writing_the_steps")
           : "Thinking…"}
       .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
       .max=${waitSeconds(this.snapshot, this._via)}
@@ -756,7 +755,7 @@ export class BoopliBreakdown extends LitElement {
           )}
         </span>
         ${s.wait_minutes > 0
-          ? html`<span class="wait muted small" title=${t("breakdown.time_to_wait_before_this_step")}>⏳ ${s.wait_minutes} min</span>`
+          ? html`<span class="wait muted small" title=${t("breakdown.time_to_wait_before_this_step")}>${t("breakdown.min", { wait_minutes: s.wait_minutes })}</span>`
           : nothing}
         <span class="tools">
           <button type="button" aria-label=${t("ladders.move_up")} ?disabled=${i === 0} @click=${() => this._move(i, -1)}>↑</button>
@@ -771,7 +770,7 @@ export class BoopliBreakdown extends LitElement {
               <span class="muted small">${t("breakdown.only_if")}</span>
               <select aria-label="Only if, for step ${i + 1}" @change=${(e: Event) => this._patchStep(i, { only_if: (e.target as HTMLSelectElement).value })}>
                 <option value="" ?selected=${!s.only_if}>${t("common.always_there")}</option>
-                ${this._checks.map((q) => html`<option value=${q.id} ?selected=${s.only_if === q.id}>${q.text} → yes</option>`)}
+                ${this._checks.map((q) => html`<option value=${q.id} ?selected=${s.only_if === q.id}>${t("breakdown.yes", { text: q.text })}</option>`)}
               </select>
             </label>
           </div>`
@@ -801,7 +800,7 @@ export class BoopliBreakdown extends LitElement {
     return html`
       <p>
         <b>${steps.length} ${steps.length === 1 ? "step" : "steps"}</b>
-        <span class="muted"> · worth about ${this._xp()} XP when all are done. Check them, change what does not fit.</span>
+        <span class="muted"> ${t("breakdown.worth_about_xp_when_all_are", { xp: this._xp() })}</span>
       </p>
       ${this._renderChecks()}
       <div class="steps">${steps.map((s, i) => this._renderStep(s, i))}</div>
@@ -841,7 +840,7 @@ export class BoopliBreakdown extends LitElement {
   render() {
     if (!this._aiOn()) return this._renderOff();
     const titles: Record<Phase, string> = {
-      task: this.kind === "recurring" ? "Break down a recurring chore" : "Break it down now",
+      task: this.kind === "recurring" ? t("today.break_down_a_recurring_chore") : t("common.break_it_down_now"),
       interview: "A few questions",
       working: this._task,
       review: this._task,

@@ -27,7 +27,7 @@ export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { val
   if (sp.speech?.target) {
     out.push({ value: "speech", label: "Speaks" });
     // An announcement (starts with a chime) is something Alexa Media Player does.
-    if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: "Speaks with chime" });
+    if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: t("rung.speaks_with_chime") });
   }
   if (plays(sp.alarm)) out.push({ value: "alarm", label: "Alarm" });
   return out;
@@ -201,7 +201,7 @@ export class BoopliRung extends LitElement {
               ?disabled=${!choices.length && !current}
               @change=${(e: Event) => this._setSpeaker(sp.entity_id, (e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!current}>${choices.length ? "Off" : "No sound set up"}</option>
+              <option value="" ?selected=${!current}>${choices.length ? "Off" : t("rung.no_sound_set_up")}</option>
               ${choices.map((c) => html`<option value=${c.value} ?selected=${current === c.value}>${c.label}</option>`)}
               ${current && !choices.some((c) => c.value === current)
                 ? html`<option value=${current} selected>${t("rung.not_available_any_more")}</option>`

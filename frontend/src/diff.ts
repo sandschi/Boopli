@@ -1,6 +1,7 @@
 import { friendlyName, lightKind, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { WEEKDAY_NAMES } from "./time";
 import type { Hass, Settings, SoundCfg, SpeakerCfg } from "./types";
+import { t } from "./i18n";
 
 /** Compare two arrays of items by a key. */
 function byKey<T>(before: T[], after: T[], key: (item: T) => string) {
@@ -163,12 +164,12 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   }
   if (!!before.ai.claude_enabled !== !!after.ai.claude_enabled)
     out.push(`Ask Claude: ${before.ai.claude_enabled ? "on" : "off"} → ${after.ai.claude_enabled ? "on" : "off"}`);
-  if ((before.ai.claude_fire_url ?? "") !== (after.ai.claude_fire_url ?? "")) out.push("Claude routine address changed");
-  if ((before.ai.claude_ha_url ?? "") !== (after.ai.claude_ha_url ?? "")) out.push("Home Assistant address for Claude changed");
+  if ((before.ai.claude_fire_url ?? "") !== (after.ai.claude_fire_url ?? "")) out.push(t("diff.claude_routine_address_changed"));
+  if ((before.ai.claude_ha_url ?? "") !== (after.ai.claude_ha_url ?? "")) out.push(t("diff.home_assistant_address_for_claude_changed"));
   if (before.ai.questions_prompt !== after.ai.questions_prompt) out.push("AI questions prompt changed");
   if (before.ai.steps_prompt !== after.ai.steps_prompt) out.push("AI steps prompt changed");
-  if ((before.ai.chat_room_prompt ?? "") !== (after.ai.chat_room_prompt ?? "")) out.push("Chat prompt for one room changed");
-  if ((before.ai.chat_home_prompt ?? "") !== (after.ai.chat_home_prompt ?? "")) out.push("Chat prompt for the whole home changed");
+  if ((before.ai.chat_room_prompt ?? "") !== (after.ai.chat_room_prompt ?? "")) out.push(t("diff.chat_prompt_for_one_room_changed"));
+  if ((before.ai.chat_home_prompt ?? "") !== (after.ai.chat_home_prompt ?? "")) out.push(t("diff.chat_prompt_for_the_whole_home"));
 
   if (before.presence_entity !== after.presence_entity) {
     const label = (id: string) => (id ? name(id) : "not set");

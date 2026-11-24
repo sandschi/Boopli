@@ -1,4 +1,5 @@
-import type {
+
+import { t } from "./i18n";import type {
   AiAnswer,
   AiPreview,
   AiQuestion,
@@ -291,7 +292,7 @@ export function errorMessage(err: unknown): string {
   if (err && typeof err === "object" && "message" in err) {
     return String((err as { message: unknown }).message);
   }
-  return "Something went wrong.";
+  return t("common.something_went_wrong");
 }
 
 /** Describe a room from photos, one time. `photos` are base64 JPEGs; they are deleted right after. */

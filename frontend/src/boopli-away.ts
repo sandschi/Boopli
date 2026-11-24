@@ -165,8 +165,8 @@ export class BoopliAway extends LitElement {
       <p>${awayWhen(away, this.nowMs, tz, onNow)}</p>
       <p class="muted small">
         ${onNow
-          ? "Nothing starts and nothing nudges you, except the chores that keep going."
-          : "Boopli carries on as usual until then."}
+          ? t("common.nothing_starts_and_nothing_nudges_you")
+          : t("common.boopli_carries_on_as_usual_until")}
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="actions">
@@ -241,7 +241,7 @@ export class BoopliAway extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._submit()}>
-          ${away?.active ? "Save away mode" : "Start away mode"}
+          ${away?.active ? t("away.save_away_mode") : t("away.start_away_mode")}
         </button>
         ${away?.active
           ? html`<button type="button" class="link" @click=${() => (this._changing = false)}>${t("common.cancel")}</button>`

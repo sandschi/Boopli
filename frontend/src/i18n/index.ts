@@ -70,3 +70,24 @@ export function t(key: string, params?: Params): string {
   if (!params) return text;
   return text.replace(/\{(\w+)\}/g, (whole, name: string) => (name in params ? String(params[name]) : whole));
 }
+
+// --- sentences with a little markup -----------------------------------------------------
+import { html, type TemplateResult } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
+
+const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+const escapeHtml = (s: string): string => s.replace(/[&<>"']/g, (c) => ESCAPES[c]);
+const ALLOWED_TAG = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
+
+/**
+ * Like `t`, for a sentence that holds <b>, <i>, <em>, <strong>, <code> or <br>. The values are
+ * escaped, and any other tag in a translation is shown as text, so a translation cannot
+ * add markup.
+ */
+export function rich(key: string, params?: Params): TemplateResult {
+  const safe = params
+    ? Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === "number" ? v : escapeHtml(String(v))]))
+    : undefined;
+  const text = t(key, safe).replace(/<[^>]*>/g, (tag) => (ALLOWED_TAG.test(tag) ? tag : escapeHtml(tag)));
+  return html`${unsafeHTML(text)}`;
+}

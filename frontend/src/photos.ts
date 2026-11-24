@@ -1,4 +1,5 @@
-/** Photos for the AI: picked in the browser, shrunk, sent once, never kept. */
+
+import { t } from "./i18n";/** Photos for the AI: picked in the browser, shrunk, sent once, never kept. */
 
 export const MAX_PHOTOS = 4;
 const PHOTO_CHARS_MAX = 800_000; // per photo as base64, so four fit in one message
@@ -10,7 +11,7 @@ export async function shrinkPhoto(file: File): Promise<string> {
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new Image();
       image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error("This photo could not be opened. Try a JPEG or PNG photo."));
+      image.onerror = () => reject(new Error(t("photos.this_photo_could_not_be_opened")));
       image.src = url;
     });
     let result = "";
@@ -20,7 +21,7 @@ export async function shrinkPhoto(file: File): Promise<string> {
       canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
       canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
       const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("This browser cannot prepare photos.");
+      if (!ctx) throw new Error(t("photos.this_browser_cannot_prepare_photos"));
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       result = canvas.toDataURL("image/jpeg", quality);
       if (result.length <= PHOTO_CHARS_MAX) break;

@@ -91,7 +91,7 @@ export class BoopliPetPreview extends LitElement {
       >
         <div class="win">
           <div class="head">
-            <h3>${info.label}: preview</h3>
+            <h3>${t("pet_preview.preview", { label: info.label })}</h3>
             <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
           </div>
           <boopli-stage
@@ -104,7 +104,7 @@ export class BoopliPetPreview extends LitElement {
             .momentSeq=${this._seq}
             .momentText=${this._text}
           ></boopli-stage>
-          ${info.art ? "" : html`<p class="muted small">${info.label} has no animated art yet, so it shows its emoji.</p>`}
+          ${info.art ? "" : html`<p class="muted small">${t("pet_preview.has_no_animated_art_yet_so", { label: info.label })}</p>`}
 
           <div class="group">
             <div class="label">${t("pet_preview.mood")}</div>

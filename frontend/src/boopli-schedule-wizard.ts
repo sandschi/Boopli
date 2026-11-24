@@ -119,7 +119,7 @@ export class BoopliScheduleWizard extends LitElement {
     if (!this.hass || !this._draft || this._busy) return;
     this._error = "";
     if (this._step === "days" && this._activeDays().length === 0) {
-      this._error = "Pick at least one day.";
+      this._error = t("schedule_wizard.pick_at_least_one_day");
       return;
     }
     const target = this._index + 1;
@@ -222,7 +222,7 @@ export class BoopliScheduleWizard extends LitElement {
       <p>${t("schedule_wizard.it_comes_back_this_many_days")}</p>
       <div class="chips">
         ${[2, 3, 7, 14, 30, 90].map(
-          (n) => html`<button type="button" class="chip ${d.every_n_days === n ? "on" : ""}" @click=${() => this._patch({ every_n_days: n })}>${n} days</button>`
+          (n) => html`<button type="button" class="chip ${d.every_n_days === n ? "on" : ""}" @click=${() => this._patch({ every_n_days: n })}>${t("schedule_wizard.days", { n })}</button>`
         )}
         <input
           class="short"
@@ -252,14 +252,14 @@ export class BoopliScheduleWizard extends LitElement {
     return html`
       <p>
         ${d.type === "every_n_days"
-          ? "The first time, and then every time after you finish:"
-          : "This is when it comes up next:"}
+          ? t("schedule_wizard.the_first_time_and_then_every")
+          : t("schedule_wizard.this_is_when_it_comes_up")}
       </p>
       ${times.length === 0
         ? html`<p class="muted">${t("schedule_wizard.nothing_is_scheduled")}</p>`
         : html`<ul>${times.map((t) => html`<li>${describeWhen(t, now, this.timeZone)}</li>`)}</ul>`}
       ${d.type === "every_n_days"
-        ? html`<p class="muted small">After that: ${d.every_n_days} days after you finish it, at ${d.time}.</p>`
+        ? html`<p class="muted small">${t("schedule_wizard.after_that_days_after_you_finish", { every_n_days: d.every_n_days, time: d.time })}</p>`
         : nothing}
     `;
   }
@@ -271,12 +271,12 @@ export class BoopliScheduleWizard extends LitElement {
     return html`
       <p><b>${t("common.what_changed")}</b> for ${this.choreName ? html`<b>${this.choreName}</b>` : "this chore"}:</p>
       ${same
-        ? html`<p class="muted">Nothing changed. ${after}.</p>`
-        : html`<ul><li>Schedule: ${before} → ${after}</li></ul>`}
+        ? html`<p class="muted">${t("schedule_wizard.nothing_changed", { after })}</p>`
+        : html`<ul><li>${t("schedule_wizard.schedule", { before, after })}</li></ul>`}
       <p class="muted small">
         ${this.saves
-          ? "Saving applies it to the chore right away."
-          : "Using it fills in the chore's form. Save the chore to keep it."}
+          ? t("schedule_wizard.saving_applies_it_to_the_chore")
+          : t("schedule_wizard.using_it_fills_in_the_chores")}
       </p>
     `;
   }
@@ -317,7 +317,7 @@ export class BoopliScheduleWizard extends LitElement {
         </nav>
         <section class="card main">
           <div class="top">
-            <span class="muted small">Step ${this._index + 1} of ${steps.length}</span>
+            <span class="muted small">${t("schedule_wizard.step_of", { value: this._index + 1, length: steps.length })}</span>
             <button type="button" class="link" @click=${() => this._cancel()}>${t("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / steps.length) * 100}%"></div></div>
@@ -331,7 +331,7 @@ export class BoopliScheduleWizard extends LitElement {
             <span class="spacer"></span>
             ${last
               ? html`<button type="button" class="primary" @click=${() => this._apply()}>
-                  ${this.saves ? "Save schedule" : "Use this schedule"}
+                  ${this.saves ? "Save schedule" : t("schedule_wizard.use_this_schedule")}
                 </button>`
               : html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>${t("common.next")}</button>`}
           </div>

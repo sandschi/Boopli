@@ -27,7 +27,21 @@
     "from": "from",
     "until": "until",
     "copy_monday_to_all_days": "Copy Monday to all days",
-    "choose": "Choose…"
+    "choose": "Choose…",
+    "something_went_wrong": "Something went wrong.",
+    "nothing_starts_and_nothing_nudges_you": "Nothing starts and nothing nudges you, except the chores that keep going.",
+    "boopli_carries_on_as_usual_until": "Boopli carries on as usual until then.",
+    "you_stopped_waiting_your_photos_are": "You stopped waiting. Your photos are still here, so you can try again.",
+    "claude_is_looking_at_your_photos": "Claude is looking at your photos…",
+    "the_ai_is_looking_at_your": "The AI is looking at your photos…",
+    "add_another_photo": "Add another photo",
+    "take_or_pick_photos": "Take or pick photos",
+    "claude_gets_each_photo_through_a": "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer.",
+    "asking_claude_this_takes_a_little": "Asking Claude. This takes a little while…",
+    "break_it_down_now": "Break it down now",
+    "make_a_cup_of_tea": "Make a cup of tea",
+    "alexa_sound_id": "Alexa sound id",
+    "on_for_seconds": "On for (seconds)"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Boopli rests: nothing starts and nothing nudges you, except the chores you tick below. Your pet stays just as it is, and when you are back it carries on from there.",
@@ -41,7 +55,9 @@
     "these_keep_going_while_im_away": "These keep going while I'm away",
     "tick_what_you_still_want_to": "Tick what you still want to be nudged about, like pills.",
     "until": "Until",
-    "until_i_turn_it_off": "Until I turn it off"
+    "until_i_turn_it_off": "Until I turn it off",
+    "save_away_mode": "Save away mode",
+    "start_away_mode": "Start away mode"
   },
   "backup": {
     "what_to_include": "What to include",
@@ -53,7 +69,15 @@
     "they_are_kept_but_do_nothing": "They are kept, but do nothing until you pick devices that exist here.",
     "pick_what_to_bring_in": "Pick what to bring in:",
     "replaces": "replaces",
-    "save_a_copy_of_what_i": "Save a copy of what I have now first"
+    "save_a_copy_of_what_i": "Save a copy of what I have now first",
+    "keep_it_somewhere_private_it_holds": "Keep it somewhere private: it holds the names of your devices and your notes.",
+    "this_file_is_too_big_to": "This file is too big to be a Boopli backup.",
+    "this_is_not_a_boopli_backup": "This is not a Boopli backup file.",
+    "the_file_ends_in_and_is": "The file ends in <code>{EXTENSION}</code> and is plain text inside. It holds the names of your devices and phones and your notes, so keep it private. Running chores, away mode and picture files are not part of it.",
+    "and_more": "and {value} more.",
+    "phones_not_found": "Phones not found: {join}.",
+    "saved": "(saved {copyName})",
+    "choose_a_backup_file": "Choose a backup file ({EXTENSION})"
   },
   "breakdown": {
     "open_my_home": "Open My home",
@@ -89,7 +113,24 @@
     "size": "Size",
     "add_a_step_after_this": "Add a step after this",
     "ask_claude_instead": "Ask Claude instead",
-    "you_can_try_again_or_skip": "You can try again, or skip the questions."
+    "you_can_try_again_or_skip": "You can try again, or skip the questions.",
+    "hide_what_is_sent": "Hide what is sent",
+    "what_will_the_ai_see": "What will the AI see?",
+    "the_agent_has_to_be_able": "The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced. ",
+    "you_stopped_waiting_your_task_and": "You stopped waiting. Your task and answers are still here, so you can try again.",
+    "anything_else_to_know": "Anything else to know?",
+    "there_is_no_step_yet_add": "There is no step yet. Add one, or try again.",
+    "what_is_the_chore_i_will": "What is the chore? I will ask what it really involves, so we can break it into tiny steps once and reuse them every time.",
+    "what_do_you_want_to_get": "What do you want to get done? Write it the way you would say it.",
+    "for_example_clean_my_room": "For example: clean my room",
+    "ask_me_about_it": "Ask me about it",
+    "break_it_down": "Break it down",
+    "writing_the_steps": "Writing the steps…",
+    "take_or_pick_up_to_photos": "Take or pick up to {MAX_PHOTOS} photos. They go once to the helper you pick below (your AI agent, or Claude), which writes down what is out of place. Boopli keeps no photo: you see the text it wrote, and only that text is used.",
+    "what_you_told_me_so_far": "What you told me so far ({length})",
+    "min": "⏳ {wait_minutes} min",
+    "yes": "{text} → yes",
+    "worth_about_xp_when_all_are": "· worth about {xp} XP when all are done. Check them, change what does not fit."
   },
   "chore_editor": {
     "repeats": "Repeats",
@@ -124,7 +165,12 @@
     "how_should_boopli_nudge_you": "How should Boopli nudge you?",
     "asked_every_time_you_start_this": "Asked every time you start this chore, because things look different each time. A step you link to a question is only in the list when you answer yes.",
     "add_a_question": "+ Add a question",
-    "suggest_steps_with_ai": "Suggest steps with AI"
+    "suggest_steps_with_ai": "Suggest steps with AI",
+    "give_the_chore_a_name_first": "Give the chore a name first, so the AI knows what to split up.",
+    "longest_it_waits_0_as_long": "Longest it waits (0 = as long as it takes):",
+    "wait_before_this_step": "Wait before this step:",
+    "yes": "{value} → yes",
+    "you_have_unsaved_changes": "<b>●</b> You have unsaved changes"
   },
   "chores": {
     "a_quick_look_first_so_the": "A quick look first, so the list only has what needs doing today.",
@@ -147,7 +193,11 @@
     "paste_the_token_here": "Paste the token here",
     "leave_empty_to_use_home_assistants": "Leave empty to use Home Assistant's external URL",
     "token_is_saved": "Token is saved",
-    "replace": "Replace"
+    "replace": "Replace",
+    "token_saved_boopli_keeps_it_out": "Token saved. Boopli keeps it out of backups and never shows it again.",
+    "asking_claude_this_can_take_up": "Asking Claude. This can take up to a minute…",
+    "claude_is_an_extra_next_to": "Claude is an extra, next to your Home Assistant agent. Press <b>{t}</b> when you do not trust the agent's answer, when your free agent is down, or when you have no agent. It uses your own Claude account: every ask is one run of your routine. Claude's routines are a research preview, so they can change or stop working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a task is about go along, and a room interview sends that room's name and its notes. Photos you choose go along too. Never device names, history or location.",
+    "of_asks_left_this_hour": "{fires_left} of {fires_per_hour} asks left this hour"
   },
   "home": {
     "anything_else_about_this_room": "Anything else about this room?",
@@ -185,7 +235,20 @@
     "talk_through_my_whole_home_in": "Talk through my whole home in my own chat",
     "copy_a_prompt_talk_it_out": "Copy a prompt, talk it out by voice or text, paste the result back.",
     "add_a_room_or_place": "Add a room or place",
-    "for_example_balcony": "For example: Balcony"
+    "for_example_balcony": "For example: Balcony",
+    "you_stopped_waiting_nothing_was_changed": "You stopped waiting. Nothing was changed, so you can try again.",
+    "copying_did_not_work_here_select": "Copying did not work here. Select the text in the box and copy it yourself.",
+    "nothing_was_used": "Nothing was used.",
+    "writing_the_notes": "Writing the notes…",
+    "this_is_what_i_read_from": "This is what I read from what you pasted.",
+    "this_is_what_the_ai_saw": "This is what the AI saw in your photos. The photos are already gone.",
+    "this_is_what_i_would_write": "This is what I would write down.",
+    "the_agent_has_to_be_able": "The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings under AI help, Advanced. ",
+    "my_whole_home": "My whole home",
+    "copy_the_prompt": "Copy the prompt",
+    "read_the_notes": "Read the notes",
+    "take_or_pick_up_to_photos": "Take or pick up to {MAX_PHOTOS} photos of this room. They go once to the helper you pick below (your AI agent, or Claude), which writes down what it sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.",
+    "with_the_chat_when_you_say": "<b>{t}</b> with the chat. When you say you are done, it answers with the notes."
   },
   "ladders": {
     "move_up": "Move up",
@@ -200,7 +263,11 @@
     "use_for_new_chores": "Use for new chores",
     "no_ladders_yet_the_built_in": "No ladders yet. The built-in styles work as before.",
     "right_away": "right away",
-    "new_ladder": "+ New ladder"
+    "new_ladder": "+ New ladder",
+    "then_it_stops": "Then it stops.",
+    "right_away_then_repeats_every": "Right away, then repeats every",
+    "nudge": "Nudge {value}",
+    "of": "{length} of {MAX_NUDGES}"
   },
   "panel": {
     "you_have_unsaved_changes": "You have unsaved changes",
@@ -209,7 +276,9 @@
     "unsaved_changes": "Unsaved changes",
     "open_sidebar": "Open sidebar",
     "show_a_board_for_a_screen": "Show a board for a screen on the wall",
-    "wall_view": "Wall view"
+    "wall_view": "Wall view",
+    "could_not_reach_boopli_is_the": "Could not reach Boopli. Is the integration set up?",
+    "away_mode_is_planned": "Away mode is planned"
   },
   "pet_preview": {
     "preview_your_pet": "▶ Preview your pet",
@@ -218,7 +287,9 @@
     "moments_they_play_once": "Moments (they play once)",
     "preview_of_your_pet": "Preview of your pet",
     "level": "Level",
-    "the_room_grows_with_the_level": "The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed."
+    "the_room_grows_with_the_level": "The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed.",
+    "has_no_animated_art_yet_so": "{label} has no animated art yet, so it shows its emoji.",
+    "preview": "{label}: preview"
   },
   "picture": {
     "picture_in_the_phone_notification_optional": "Picture in the phone notification (optional):",
@@ -230,7 +301,14 @@
     "preview_of_the_picture": "Preview of the picture",
     "a_camera": "A camera",
     "the_phone_shows_a_fresh_snapshot": "The phone shows a fresh snapshot when the nudge arrives.",
-    "a_picture_file": "A picture file"
+    "a_picture_file": "A picture file",
+    "this_camera_gives_no_picture_right": "This camera gives no picture right now.",
+    "use_a_jpg_png_or_gif": "Use a .jpg, .png or .gif file.",
+    "that_file_is_not_in_the": "That file is not in the media folder.",
+    "the_picture_could_not_be_loaded": "The picture could not be loaded.",
+    "that_file_is_not_in_the_2": "That file is not in the media folder, or it is not a picture.",
+    "not_found": "{value} (not found)",
+    "a_file_in_home_assistants_media": "A file in Home Assistant's media folder (the one you see as \"Media\"), not the public www folder. Type its name with the folder, for example <code>boopli/pills.jpg</code>."
   },
   "rung": {
     "set_up_a_phone_light_speaker": "Set up a phone, light, speaker or alarm device in Settings first. They show up here.",
@@ -239,12 +317,15 @@
     "status_light_stays_on_until_you": "Status light (stays on until you answer)",
     "as_set_for_the_light": "As set for the light",
     "not_available_any_more": "(not available any more)",
-    "use_the_normal_color": "Use the normal color"
+    "use_the_normal_color": "Use the normal color",
+    "speaks_with_chime": "Speaks with chime",
+    "no_sound_set_up": "No sound set up"
   },
   "schedule_days": {
     "time": "+ time",
     "no_run_this_day": "No run this day",
-    "remove_this_time": "Remove this time"
+    "remove_this_time": "Remove this time",
+    "same_as": "Same as {value}"
   },
   "schedule_wizard": {
     "tap_the_days_it_should_come": "Tap the days it should come up. You set the time for each day in the next step.",
@@ -253,7 +334,18 @@
     "every_day": "Every day",
     "clear": "Clear",
     "at_what_time_of_day": "At what time of day?",
-    "nothing_is_scheduled": "Nothing is scheduled."
+    "nothing_is_scheduled": "Nothing is scheduled.",
+    "pick_at_least_one_day": "Pick at least one day.",
+    "the_first_time_and_then_every": "The first time, and then every time after you finish:",
+    "this_is_when_it_comes_up": "This is when it comes up next:",
+    "saving_applies_it_to_the_chore": "Saving applies it to the chore right away.",
+    "using_it_fills_in_the_chores": "Using it fills in the chore's form. Save the chore to keep it.",
+    "use_this_schedule": "Use this schedule",
+    "days": "{n} days",
+    "after_that_days_after_you_finish": "After that: {every_n_days} days after you finish it, at {time}.",
+    "nothing_changed": "Nothing changed. {after}.",
+    "schedule": "Schedule: {before} → {after}",
+    "step_of": "Step {value} of {length}"
   },
   "settings": {
     "unsaved": "Unsaved",
@@ -308,7 +400,27 @@
     "keep_for_later": "Keep for later",
     "keep_for_later_closes_this_window": "\"Keep for later\" closes this window and keeps your changes. The card shows an orange \"Unsaved\" tag.",
     "discard_all": "Discard all",
-    "run_the_first_setup_again": "Run the first setup again"
+    "run_the_first_setup_again": "Run the first setup again",
+    "right_now_home": "Right now: home.",
+    "right_now_away": "Right now: away.",
+    "asking_the_agent": "Asking the agent…",
+    "chat_prompt_for_one_room": "Chat prompt for one room",
+    "chat_prompt_for_the_whole_home": "Chat prompt for the whole home",
+    "no_phone_set_up_yet": "No phone set up yet.",
+    "no_reminder_lights_yet": "No reminder lights yet.",
+    "no_speakers_yet": "No speakers yet.",
+    "no_alarm_devices_yet": "No alarm devices yet.",
+    "no_ladders_of_your_own_yet": "No ladders of your own yet.",
+    "not_set_boopli_assumes_you_are": "Not set. Boopli assumes you are home.",
+    "accent_colour_your_pets_own": "Accent colour: your pet's own",
+    "save_your_whole_setup_to_one": "Save your whole setup to one file (.adhd), or load one on a new install.",
+    "ask_claude_is_on": "Ask Claude is on",
+    "phones": "Phones",
+    "reminder_lights": "Reminder lights",
+    "quiet_hours": "Quiet hours",
+    "not_found": "{entity_id} (not found)",
+    "not_found_2": "{photo_entity_id} (not found)",
+    "ai_help": "AI help"
   },
   "speakers": {
     "alexa_sound_library": "Alexa sound library",
@@ -332,7 +444,16 @@
     "add_a_sound": "Add a sound",
     "no_speaker_yet_press_add_a": "No speaker yet. Press Add a speaker.",
     "add_an_alarm_device": "Add an alarm device",
-    "choose_a_siren_switch_or_script": "Choose a siren, switch or script…"
+    "choose_a_siren_switch_or_script": "Choose a siren, switch or script…",
+    "add_a_speaker_that_can_play": "Add a speaker that can play it first.",
+    "no_sound_chosen_yet": "No sound chosen yet",
+    "other_media_players": "Other media players",
+    "no_file_chosen_yet": "No file chosen yet",
+    "rings_for_seconds": "Rings for (seconds)",
+    "repeat_every_seconds_0_once": "Repeat every (seconds, 0 = once)",
+    "not_one_of_your_sounds": "Not one of your sounds",
+    "ding_and_alarm_sound": "Ding and alarm sound",
+    "your_own_sounds": "Your own sounds"
   },
   "stage": {
     "your_pets_room": "Your pet's room"
@@ -362,7 +483,23 @@
     "keep": "Keep",
     "boopli_is_not_fully_set_up": "Boopli is not fully set up yet.",
     "finish_setting_up": "Finish setting up",
-    "do_this_part_later": "Do this part later"
+    "do_this_part_later": "Do this part later",
+    "ready_when_you_are": "Ready when you are.",
+    "ask_claude_to_break_it_down": "Ask Claude to break it down",
+    "when_should_it_come_back": "When should it come back?",
+    "still_to_do_today": "Still to do today",
+    "set_aside_for_later": "Set aside for later",
+    "done_by_itself": "Done by itself",
+    "enjoy_the_quiet_what_is_coming": "Enjoy the quiet. What is coming up shows below.",
+    "add_your_first_chore_in_the": "Add your first chore in the Chores tab.",
+    "level": "· Level {level}",
+    "xp_to_the_next_level": "{xp_in_level} / {xp_for_level} XP to the next level",
+    "step_of": "Step {value} of {total}",
+    "at": "at {fmtTime}",
+    "and_more_in_the_chores_tab": "and {length} more in the Chores tab",
+    "step_of_2": "{group}: step {min} of {total}",
+    "snoozed_until": "Snoozed until {fmtTime}",
+    "boopli_checks_in_at": "· Boopli checks in at {fmtTime}"
   },
   "triggers": {
     "which_entity": "Which entity?",
@@ -391,11 +528,21 @@
     "or": "or",
     "an_entity_changes": "+ An entity changes",
     "nfc_tag": "+ NFC tag",
-    "button": "+ Button"
+    "button": "+ Button",
+    "an_nfc_tag_is_scanned": "An NFC tag is scanned",
+    "an_entity_changes_2": "An entity changes",
+    "now": "{friendly}: now <b>{state}</b>",
+    "now_2": "now: {state}"
   },
   "wait": {
     "waiting_time_used": "Waiting time used",
-    "stop_waiting": "Stop waiting"
+    "stop_waiting": "Stop waiting",
+    "this_usually_takes_under_a_minute": "This usually takes under a minute.",
+    "still_working_free_models_can_be": "Still working. Free models can be slow.",
+    "still_working_this_one_is_slow": "Still working. This one is slow, but it is not stuck.",
+    "nearly_at_the_limit_if_there": "Nearly at the limit. If there is no answer, you can try again.",
+    "so_far": "{mmss} so far",
+    "gives_up_after": "gives up after {mmss}"
   },
   "wall_edit": {
     "start_typing_a_name": "Start typing a name…",
@@ -420,7 +567,13 @@
     "add_tile": "＋ Add tile",
     "show_it_as": "Show it as",
     "drag_to_move_drag_the_corner": "Drag to move · drag the corner to resize · tap to change · ✕ to remove",
-    "edit_the_board": "Edit the board"
+    "edit_the_board": "Edit the board",
+    "every_cell_of_this_board_is": "Every cell of this board is taken. Make the grid bigger or remove a tile.",
+    "there_is_no_room_for_that": "There is no room for that.",
+    "this_grid_cannot_be_made_coarser": "This grid cannot be made coarser evenly.",
+    "some_tiles_do_not_line_up": "Some tiles do not line up with a coarser grid. Move or resize them first.",
+    "was_not_found": "{value} was not found.",
+    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{boardLink}</code> (after you save)"
   },
   "wall": {
     "away_mode_is_on": "Away mode is on",
@@ -429,7 +582,8 @@
     "reconnecting_to_home_assistant": "Reconnecting to Home Assistant…",
     "edit_this_board": "Edit this board",
     "full_screen": "Full screen",
-    "back_to_boopli": "Back to Boopli"
+    "back_to_boopli": "Back to Boopli",
+    "no_board_yet_make_one_in": "No board yet. Make one in Settings, on the Wall board card."
   },
   "wizard": {
     "a_board_is_a_grid_of": "A board is a grid of tiles for a screen on the wall: the clock, the pet, what is due, the weather and more.",
@@ -515,12 +669,54 @@
     "save_and_test_the_agent": "Save and test the agent",
     "nothing_changed": "Nothing changed.",
     "everything_can_be_changed_again_in": "Everything can be changed again in Settings, step by step or in the full forms.",
-    "optional_details_skip_if_the_defaults": "Optional details. Skip if the defaults are fine."
+    "optional_details_skip_if_the_defaults": "Optional details. Skip if the defaults are fine.",
+    "pick_a_speaker_or_press_skip": "Pick a speaker, or press Skip.",
+    "pick_a_board_first": "Pick a board first.",
+    "give_the_new_board_a_name": "Give the new board a name.",
+    "give_the_ladder_a_name": "Give the ladder a name.",
+    "create_a_ladder": "Create a ladder",
+    "edit_a_ladder": "Edit a ladder",
+    "you_have_no_ladders_yet": "You have no ladders yet.",
+    "change_its_name_its_nudges_or": "Change its name, its nudges or how it ends.",
+    "delete_a_ladder": "Delete a ladder",
+    "only_your_own_ladders_can_be": "Only your own ladders can be deleted. You have none.",
+    "remove_one_of_your_own_that": "Remove one of your own that you do not need any more.",
+    "the_first_nudge_goes_out_right": "The first nudge goes out right away. Which devices should act?",
+    "how_long_should_boopli_wait_for": "How long should Boopli wait for this nudge, and which devices should act?",
+    "repeat_every_minutes": "Repeat every (minutes)",
+    "your_own_ladder": "Your own ladder, ",
+    "status_light_stays_on_until_done": "Status light (stays on until done)",
+    "blink_length_ms": "Blink length (ms)",
+    "number_of_blinks": "Number of blinks",
+    "pause_between_blinks_ms": "Pause between blinks (ms)",
+    "file_in_the_media_folder_or": "File in the media folder (or a URL)",
+    "repeats_every_seconds_0_once": "Repeats every (seconds, 0 = once)",
+    "saving_and_asking_the_agent": "Saving and asking the agent…",
+    "your_browser_did_not_allow_copying": "Your browser did not allow copying. Select the text and copy it by hand.",
+    "skip_for_now": "Skip for now",
+    "it_is_used_by_pick_another": "It is used by {join}. Pick another nudge style for them first, then come back.",
+    "delete_the_ladder_this_cannot_be": "Delete the ladder <b>{name}</b>? This cannot be undone.",
+    "which_phone_should_get_booplis_notifications": "Which phone should get Boopli's notifications? They have <b>{t}</b> and <b>{t2}</b> buttons, so you can answer without opening anything.",
+    "min": "{m} min",
+    "which_lights_should_remind_you_each": "Which lights should remind you? Each one either <b>{t}</b> when a step is your turn, or is a <b>{t2}</b> that turns on and stays on until you are done. This is optional.",
+    "set_up": "<br />set up: {describeSpeaker}",
+    "for_example_boopli_ding_mp3_in": "For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.",
+    "which_nudge_plays_it_is_set": "{intro} Which nudge plays it is set in Nudge it your way.",
+    "joins_the_standard_nudges_one_nudge": "{fn} joins the standard nudges (One nudge, Escalating, Persistent) the way speakers always did: the ding first, then the spoken sentence, then the alarm. To change which nudge it acts at, open <b>{t}</b> in Settings.",
+    "boopli_can_split_a_big_task": "Boopli can split a big task, like \"clean my room\", into tiny steps. It asks you a few questions first, so the steps fit your situation. This uses <b>{t}</b> Home Assistant AI agent.",
+    "is_an_extra_button_next_to": "<b>{t}</b> is an extra button next to the normal one. Use it when you do not trust your agent's answer, when your free agent is down, or when you have no agent at all.",
+    "it_uses_you_make_a_small": "It uses <b>{t}</b>: you make a small routine there, and every ask runs it once. Claude calls routines a research preview, so they can change or stop working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a task is about go along, and a room interview sends that room's name and its notes. Photos you choose to send go along too. Never device names, history or location. You need a Claude account on claude.ai, and Home Assistant must be reachable from the internet, so Claude can send the answer back.",
+    "do_this_once_on_claude_ai": "Do this once on <b>claude.ai</b>, under Routines:",
+    "make_a_new_routine_name_it": "Make a new routine. Name it <b>{t}</b>.",
+    "add_an_to_the_routine_and": "Add an <b>{t}</b> to the routine, and press <b>{t2}</b>. Copy the token now: Claude shows it only once.",
+    "leave_every_connector_gmail_calendar_and": "Leave every connector (Gmail, calendar and so on) switched <b>{t}</b>. The routine does not need them.",
+    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{value}</code>"
   },
   "wall_tile_calendar": {
     "pick_a_calendar_in_the_board": "Pick a calendar in the board settings.",
     "calendar": "Calendar",
-    "nothing_in_the_next_week": "Nothing in the next week."
+    "nothing_in_the_next_week": "Nothing in the next week.",
+    "could_not_read_the_calendar": "Could not read the calendar."
   },
   "wall_tile_camera": {
     "pick_a_camera_in_the_board": "Pick a camera in the board settings.",
@@ -548,12 +744,30 @@
   "egg": {
     "here_would_be_an_easter_egg": "Here would be an Easter egg. 🐱 But you're on Safari, so you get a sentence instead of a spinning cat. On an iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to non-Apple products 😉",
     "stop_the_easter_egg": "Stop the Easter egg",
-    "stop": "⏹ Stop"
+    "stop": "⏹ Stop",
+    "turn_the_sound_on": "Turn the sound on",
+    "turn_the_sound_off": "Turn the sound off"
   },
   "pet_picker": {
     "art_soon": "art soon"
   },
   "pet_work": {
     "text": "</>"
+  },
+  "diff": {
+    "claude_routine_address_changed": "Claude routine address changed",
+    "home_assistant_address_for_claude_changed": "Home Assistant address for Claude changed",
+    "chat_prompt_for_one_room_changed": "Chat prompt for one room changed",
+    "chat_prompt_for_the_whole_home": "Chat prompt for the whole home changed"
+  },
+  "helpers": {
+    "alexa_media_player": "Alexa Media Player"
+  },
+  "photos": {
+    "this_photo_could_not_be_opened": "This photo could not be opened. Try a JPEG or PNG photo.",
+    "this_browser_cannot_prepare_photos": "This browser cannot prepare photos."
+  },
+  "time": {
+    "no_days_yet": "No days yet"
   }
 }

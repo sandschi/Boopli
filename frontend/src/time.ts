@@ -1,4 +1,5 @@
 import type { Repeat } from "./types";
+import { t } from "./i18n";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const WEEKDAY_NAMES = WEEKDAYS;
@@ -96,7 +97,7 @@ export function describeSchedule(days: Record<string, string[]>): string {
     parts.push(`${name} ${joinTimes(times)}`);
     i = j + 1;
   }
-  return parts.length ? parts.join(", ") : "No days yet";
+  return parts.length ? parts.join(", ") : t("time.no_days_yet");
 }
 
 /** A short sentence for a repeat rule. */

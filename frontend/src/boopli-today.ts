@@ -41,7 +41,7 @@ function moodLine(pet: Pet): string {
   if (pet.away) return `${pet.name} is resting while you are away.`;
   const lines: Record<Mood, string> = {
     happy: "Nice, you got things done today.",
-    content: "Ready when you are.",
+    content: t("today.ready_when_you_are"),
     sleepy: `${pet.name} is a bit sleepy.`,
     sad: `${pet.name} misses you. One step is enough.`,
     hibernating: `${pet.name} is curled up, resting until you are back. One step wakes it.`,
@@ -170,7 +170,7 @@ export class BoopliToday extends LitElement {
                 @input=${(e: Event) => (this._quick = (e.target as HTMLTextAreaElement).value)}
               ></textarea>
               <div class="quick-actions">
-                <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} ${agentOn(this.snapshot) ? "Break it down now" : "Ask Claude to break it down"}</button>
+                <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} ${agentOn(this.snapshot) ? t("common.break_it_down_now") : t("today.ask_claude_to_break_it_down")}</button>
                 <button @click=${() => this._openBreakdown("recurring")}>${icon("repeat")} ${t("today.break_down_a_recurring_chore")}</button>
               </div>
             `
@@ -214,11 +214,11 @@ export class BoopliToday extends LitElement {
         ></boopli-stage>
         ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
         <div class="pet-info">
-          <div class="pet-name">${pet.name} <span class="muted">· Level ${pet.level}</span></div>
+          <div class="pet-name">${pet.name} <span class="muted">${t("today.level", { level: pet.level })}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${pct}%"></div>
           </div>
-          <div class="muted small">${pet.xp_in_level} / ${pet.xp_for_level} XP to the next level</div>
+          <div class="muted small">${t("today.xp_to_the_next_level", { xp_in_level: pet.xp_in_level, xp_for_level: pet.xp_for_level })}</div>
           <div class="small">${moodLine(pet)}</div>
         </div>
       </section>
@@ -262,7 +262,7 @@ export class BoopliToday extends LitElement {
                 </li>`
             )}
           </ol>`
-        : html`<div class="muted small">Step ${now.done + 1} of ${now.total}</div>`}
+        : html`<div class="muted small">${t("today.step_of", { value: now.done + 1, total: now.total })}</div>`}
     </div>`;
   }
 
@@ -331,7 +331,7 @@ export class BoopliToday extends LitElement {
     const ask = this._park;
     if (!ask) return nothing;
     return html`<div class="park-ask" role="group" aria-label=${t("today.when_should_this_part_come_back")}>
-      <div class="small">${ask.choreId ? "When should it come back?" : `Set “${ask.group}” aside. When should it come back?`}</div>
+      <div class="small">${ask.choreId ? t("today.when_should_it_come_back") : `Set “${ask.group}” aside. When should it come back?`}</div>
       <div class="park-buttons">
         <button ?disabled=${this._busy} @click=${() => this._choose("any")}>${t("today.when_i_want")}</button>
         <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>${t("today.tomorrow_9_00")}</button>
@@ -365,8 +365,8 @@ export class BoopliToday extends LitElement {
         <div class="away-when">${awayWhen(away, this.nowMs, tz, onNow)}</div>
         <div class="away-note">
           ${onNow
-            ? "Nothing starts and nothing nudges you, except the chores that keep going."
-            : "Boopli carries on as usual until then."}
+            ? t("common.nothing_starts_and_nothing_nudges_you")
+            : t("common.boopli_carries_on_as_usual_until")}
         </div>
       </div>
       <div class="away-actions">
@@ -450,7 +450,7 @@ export class BoopliToday extends LitElement {
     const count = model.groups.reduce((n, g) => n + g.steps.length, 0) + model.dueToday.length;
     if (count === 0) return nothing;
     return html`<section class="sec soft">
-      ${this._heading("Still to do today", count)}
+      ${this._heading(t("today.still_to_do_today"), count)}
       ${model.groups.map(
         (g) => html`<div class="group">
           <div class="group-name">${g.run.chore_name}</div>
@@ -466,7 +466,7 @@ export class BoopliToday extends LitElement {
         (d) => html`<div class="group">
           <div class="row">
             <span class="group-name">${d.chore.name}</span>
-            <span class="hint">at ${fmtTime(d.at, tz)}</span>
+            <span class="hint">${t("today.at", { fmtTime: fmtTime(d.at, tz) })}</span>
           </div>
         </div>`
       )}
@@ -489,7 +489,7 @@ export class BoopliToday extends LitElement {
         </div>`
       )}
       ${model.upcoming.length > shown.length
-        ? html`<div class="muted small more">and ${model.upcoming.length - shown.length} more in the Chores tab</div>`
+        ? html`<div class="muted small more">${t("today.and_more_in_the_chores_tab", { length: model.upcoming.length - shown.length })}</div>`
         : nothing}
     </section>`;
   }
@@ -499,7 +499,7 @@ export class BoopliToday extends LitElement {
     if (parts.length === 0) return nothing;
     const tz = this.snapshot?.time_zone ?? "UTC";
     return html`<section class="sec parked">
-      ${this._heading("Set aside for later", parts.length)}
+      ${this._heading(t("today.set_aside_for_later"), parts.length)}
       ${parts.map(
         (c) => html`<div class="part">
           <div class="part-name">${c.name}</div>
@@ -542,7 +542,7 @@ export class BoopliToday extends LitElement {
     if (items.length === 0) return nothing;
     return html`
       <section class="sec auto soft">
-        ${this._heading("Done by itself", items.length)}
+        ${this._heading(t("today.done_by_itself"), items.length)}
         ${items.map(
           (h) => html`<div class="row">
             <span>${icon("check")} ${h.chore_name}: ${h.step_title}</span>
@@ -590,7 +590,7 @@ export class BoopliToday extends LitElement {
               ${(() => {
                 const part = partInfo(model.now!.run, model.now!.step);
                 return part && part.total > 1
-                  ? html`<div class="muted small">${model.now!.step.group}: step ${Math.min(part.done + 1, part.total)} of ${part.total}</div>`
+                  ? html`<div class="muted small">${t("today.step_of_2", { group: model.now!.step.group ?? "", min: Math.min(part.done + 1, part.total), total: part.total })}</div>`
                   : nothing;
               })()}
               ${model.now.step.active_at
@@ -601,13 +601,13 @@ export class BoopliToday extends LitElement {
               ${model.now.step.snoozed_until &&
               Date.parse(model.now.step.snoozed_until) > this.nowMs
                 ? html`<div class="muted small">
-                    Snoozed until ${fmtTime(model.now.step.snoozed_until, tz)}
+                    ${t("today.snoozed_until", { fmtTime: fmtTime(model.now.step.snoozed_until, tz) })}
                   </div>`
                 : nothing}
               ${model.now.step.on_it_until
                 ? html`<div class="in-progress">
                     ${icon("check-circle")} In progress${model.now.step.on_it_since ? html` since ${fmtTime(model.now.step.on_it_since, tz)}` : nothing}
-                    <span class="muted small">· Boopli checks in at ${fmtTime(model.now.step.on_it_until, tz)}</span>
+                    <span class="muted small">${t("today.boopli_checks_in_at", { fmtTime: fmtTime(model.now.step.on_it_until, tz) })}</span>
                   </div>`
                 : nothing}
               <div class="now-buttons">
@@ -655,8 +655,8 @@ export class BoopliToday extends LitElement {
               <h2>${t("today.nothing_needs_you_right_now")}</h2>
               <p class="muted">
                 ${hasChores
-                  ? "Enjoy the quiet. What is coming up shows below."
-                  : "Add your first chore in the Chores tab."}
+                  ? t("today.enjoy_the_quiet_what_is_coming")
+                  : t("today.add_your_first_chore_in_the")}
               </p>
             </section>
           `}
