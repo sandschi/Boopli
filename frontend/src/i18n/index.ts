@@ -125,6 +125,17 @@ function lookup(key: string, count: number | undefined): string | undefined {
   return own[key] ?? fallback[key];
 }
 
+/** Run `fn` with the English texts: for what must stay English (an AI prompt) or be recognised across languages. */
+export function inEnglish<T>(fn: () => T): T {
+  const before = current;
+  current = "en";
+  try {
+    return fn();
+  } finally {
+    current = before;
+  }
+}
+
 /** The text for a key in the current language, with the values filled in. */
 export function t(key: string, params?: Params): string {
   const count = typeof params?.count === "number" ? params.count : undefined;

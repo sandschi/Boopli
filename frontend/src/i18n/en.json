@@ -101,6 +101,7 @@
     "save_away_mode": "Save away mode",
     "start_away_mode": "Start away mode",
     "planned": "Planned",
+    "on": "On",
     "until_2": "until {when}",
     "from_2": "from {when} {until}",
     "until_you_turn_it_off": "until you turn it off"
@@ -549,6 +550,7 @@
     "unsaved": "Unsaved",
     "language": "Language",
     "language_same_as_home_assistant": "Same as Home Assistant",
+    "language_save_first": "Save or discard your unsaved changes to change the language.",
     "language_note": "Only for this browser. The questions the AI asks follow the language of Home Assistant.",
     "boopli_sends_a_notification_with_done": "Boopli sends a notification with Done and Snooze buttons through the Home Assistant app on the phones you turn on.",
     "notification_level": "Notification level",

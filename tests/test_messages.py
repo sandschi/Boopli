@@ -32,7 +32,10 @@ def test_a_plain_message_works_without_values():
 
 
 def test_the_key_does_not_change_with_the_values_and_differs_between_messages():
-    assert message_key("At most {n} rooms.") == message_key("At most {n} rooms.")
+    few = BoopliError("At most {n} rooms.", n=3)
+    many = BoopliError("At most {n} rooms.", n=40)
+    assert str(few) != str(many)  # the text has the values in it ...
+    assert few.code == many.code  # ... and the key does not change with them
     assert message_key("At most {n} rooms.") != message_key("At most {n} chores.")
 
 
@@ -105,6 +108,33 @@ def test_a_plain_reason_from_a_validator_is_still_translatable():
     websocket_api._send_error(connection, {"id": 5}, "invalid", BoopliError(problem))
     reason = connection.send_error.call_args.kwargs["translation_placeholders"]["error"]
     assert reason["key"] == message_key(reason["text"])  # a text without values is its own template
+
+
+def test_the_real_websocket_connection_sends_the_key_and_the_nested_values():
+    """Not a mock of send_error: Home Assistant's own ActiveConnection builds the reply, which must be valid JSON."""
+    import logging
+
+    import orjson
+    from homeassistant.components.websocket_api.connection import ActiveConnection
+    from homeassistant.helpers.json import json_encoder_default
+
+    sent: list = []
+    class Connection:  # a connection needs a whole socket: only the real send_error is borrowed
+        send_message = staticmethod(sent.append)
+        send_error = ActiveConnection.send_error
+
+    connection = Connection()
+    chore = engine.Chore.from_dict({"name": "Pills", "steps": [{"title": "Look", "image": "http://bad.example/x.jpg"}]})
+    problem = engine.validate_chore(chore, ["standard"])
+    websocket_api._send_error(connection, {"id": 12}, "invalid", BoopliError(problem))
+    raw = sent[0]  # Home Assistant turns the reply into JSON itself (bytes), or hands over a dict
+    reply = orjson.loads(raw) if isinstance(raw, (bytes, str)) else orjson.loads(orjson.dumps(raw, default=json_encoder_default))
+    error = reply["error"]
+    assert error["code"] == "invalid"
+    assert error["message"].startswith("Step 'Look': ")
+    assert error["translation_key"] == message_key("Step '{title}': {error}")
+    assert error["translation_placeholders"]["title"] == "Look"
+    assert error["translation_placeholders"]["error"]["text"] in error["message"]
 
 
 def test_a_number_stays_a_number_in_the_values():

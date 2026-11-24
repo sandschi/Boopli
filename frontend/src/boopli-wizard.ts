@@ -33,7 +33,7 @@ import "./boopli-pet-picker";
 import "./boopli-rung";
 import { boardLink, starterTiles } from "./wall-tiles";
 import { sharedStyles } from "./styles";
-import { TEMPLATES } from "./templates";
+import { starterNamesTaken, TEMPLATES } from "./templates";
 import { weekdayNames } from "./time";
 import { t, rich } from "./i18n";
 import type {
@@ -300,9 +300,8 @@ export class BoopliWizard extends LitElement {
     }
     const at = this._steps.indexOf(resume);
     this._index = at >= 0 ? at : 0;
-    this._picked = TEMPLATES().filter(
-      (t) => !this.snapshot!.chores.some((c) => c.name === t.draft.name)
-    ).map((t) => t.label);
+    const have = starterNamesTaken(this.snapshot.chores.map((c) => c.name));
+    this._picked = TEMPLATES().filter((t) => !have(t.draft.name)).map((t) => t.label);
     if (this.snapshot.settings.speakers.length === 1) {
       this._speaker = this.snapshot.settings.speakers[0].entity_id;
     }
@@ -487,6 +486,8 @@ export class BoopliWizard extends LitElement {
             ...t.draft,
             repeat: { type: "none", time: "09:00", every_n_days: 1, days: {} },
           });
+          // saved: if a later one fails, trying again must not add this one a second time
+          this._picked = this._picked.filter((l) => l !== t.label);
         }
         await saveSetup(this.hass, "done", "");
       }
@@ -1358,14 +1359,14 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderChores() {
-    const existing = new Set(this.snapshot?.chores.map((c) => c.name));
+    const have = starterNamesTaken((this.snapshot?.chores ?? []).map((c) => c.name));
     return html`
       <p>
         ${t("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
         ${TEMPLATES().map((tpl) => {
-          const taken = existing.has(tpl.draft.name);
+          const taken = have(tpl.draft.name);
           return html`<label class="inline option">
             <input
               type="checkbox"

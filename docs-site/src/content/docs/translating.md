@@ -18,6 +18,7 @@ You can translate in several rounds. A key that is missing in your file shows th
 
 - **Places like `{name}`.** They are filled in by the panel. Keep them as they are, and move them where your language needs them: `"Notes for {room}"` can become `"{room}: Notizen"`.
 - **Words that depend on a number.** A text such as `steps_count` comes as several lines, `steps_count_one` and `steps_count_other`. Your language may need more forms (`_zero`, `_two`, `_few`, `_many`). The form is chosen with the plural rules of your language, so write only the forms your language has.
+- **Places that hold a link, like `{library}`.** Keep these outside of any tag: write `see the {library}`, not `see the <b>{library}</b>`. The link is put in as it is.
 - **A little markup.** Some texts contain `<b>…</b>`, `<code>…</code>`, `<i>`, `<em>`, `<strong>` or `<br>`. Keep these tags around the same words. Any other tag is shown as plain text.
 - **The `errors` group.** These are the messages Boopli's Home Assistant side sends when something is not allowed ("A chore needs a name."). Their English text is generated from the integration: do not edit it in `en.json`. If you change or add a message in Python, run `python scripts/sync_error_messages.py`.
 

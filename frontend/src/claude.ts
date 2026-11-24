@@ -1,5 +1,5 @@
 import type { Snapshot, Via } from "./types";
-import { t } from "./i18n";
+import { inEnglish, t } from "./i18n";
 
 /** Is the Home Assistant AI agent switched on? */
 export function agentOn(snapshot?: Snapshot): boolean {
@@ -44,4 +44,4 @@ export function routineHost(haUrl: string | undefined, snapshot?: Snapshot): str
 }
 
 /** The text the person pastes into the routine as its instructions. */
-export const routinePrompt = (): string => t("claude.you_are_the_answering_side_of");
+export const routinePrompt = (): string => inEnglish(() => t("claude.you_are_the_answering_side_of")); // a prompt stays English

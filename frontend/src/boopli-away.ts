@@ -256,7 +256,7 @@ export class BoopliAway extends LitElement {
     const onNow = !!this.snapshot?.away_now;
     const open = this._expanded || this._changing;
     const status = away?.active
-      ? `${onNow ? "On" : t("away.planned")}: ${awayWhen(away, this.nowMs, tz, onNow)}`
+      ? `${onNow ? t("away.on") : t("away.planned")}: ${awayWhen(away, this.nowMs, tz, onNow)}`
       : t("rung.off");
     return html`
       <div class="head-row">

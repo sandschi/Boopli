@@ -1014,13 +1014,17 @@ export class BoopliSettings extends LitElement {
           .value=${choice}
           @change=${(e: Event) => {
             setLanguageChoice((e.target as HTMLSelectElement).value);
+            // a ?lang=xx in the address would still win over the choice: take it out
+            const address = new URL(location.href);
+            address.searchParams.delete("lang");
+            history.replaceState(null, "", address);
             location.reload(); // every text is drawn again in the new language
           }}
         >
           <option value="" ?selected=${choice === ""}>${t("settings.language_same_as_home_assistant")}</option>
           ${codes.map((code) => html`<option value=${code} ?selected=${choice === code}>${languageName(code)}</option>`)}
         </select>
-        <div class="muted small">${this._isDirty() ? t("settings.save_or_discard_your_unsaved_changes") : t("settings.language_note")}</div>
+        <div class="muted small">${this._isDirty() ? t("settings.language_save_first") : t("settings.language_note")}</div>
       </div>
     </section>`;
   }

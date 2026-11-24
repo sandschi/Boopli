@@ -1,10 +1,24 @@
 import type { ChoreDraft } from "./types";
-import { t } from "./i18n";
+import { inEnglish, t } from "./i18n";
 
 /** Starter chores the user can pick and edit. */
 export interface Template {
   label: string;
   draft: ChoreDraft;
+}
+
+/**
+ * Whether a starter is already among the chores. A starter added while the panel was in another
+ * language (or in English) has that language's name, so the name in English counts too.
+ */
+export function starterNamesTaken(existing: string[]): (starterName: string) => boolean {
+  const have = new Set(existing);
+  const now = TEMPLATES().map((tpl) => tpl.draft.name);
+  const english = inEnglish(() => TEMPLATES().map((tpl) => tpl.draft.name));
+  return (name) => {
+    const at = now.indexOf(name);
+    return have.has(name) || (at >= 0 && have.has(english[at]));
+  };
 }
 
 const noRepeat = { type: "none", time: "09:00", every_n_days: 1, days: {} } as const;
