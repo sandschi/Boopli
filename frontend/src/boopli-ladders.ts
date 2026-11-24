@@ -187,7 +187,7 @@ export class BoopliLadders extends LitElement {
       parts.push(`${friendlyName(this.hass, id)} (${label.toLowerCase()})`);
     }
     for (const id of r.alarms) parts.push(t("ladders.alarm", { device: friendlyName(this.hass, id) }));
-    return parts.length ? parts.join(", ") : "nothing";
+    return parts.length ? parts.join(", ") : t("ladders.nothing");
   }
 
   /** One line per nudge, then how the ladder ends. */

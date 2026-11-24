@@ -353,7 +353,7 @@ export class BoopliChoreEditor extends LitElement {
                 aria-pressed=${(step.size ?? "small") === z}
                 @click=${() => this._updateStep(index, { size: z })}
               >
-                ${z === "small" ? "S" : z === "medium" ? "M" : "B"}
+                ${z === "small" ? t("breakdown.letter_small") : z === "medium" ? t("breakdown.letter_medium") : t("breakdown.letter_big")}
               </button>`
             )}
           </span>

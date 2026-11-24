@@ -16,7 +16,7 @@ function byKey<T>(before: T[], after: T[], key: (item: T) => string) {
 
 function soundChanges(name: string, b: SoundCfg, a: SoundCfg, withAlarm: boolean): string[] {
   const out: string[] = [];
-  if (b.enabled !== a.enabled) out.push(`${name} ${a.enabled ? "on" : "off"}`);
+  if (b.enabled !== a.enabled) out.push(t("diff.sound_state", { name, state: a.enabled ? t("common.state_on") : t("common.state_off") }));
   if (a.enabled) {
     if (b.sound !== a.sound) out.push(t("diff.sound", { name, before: b.sound, after: a.sound }));
     if (b.start_at !== a.start_at) out.push(t("diff.starts_at_nudge", { name, before: b.start_at, after: a.start_at }));
@@ -28,8 +28,8 @@ function soundChanges(name: string, b: SoundCfg, a: SoundCfg, withAlarm: boolean
 
 function speakerChanges(b: SpeakerCfg, a: SpeakerCfg): string[] {
   const out = [
-    ...soundChanges("ding", b.cue, a.cue, false),
-    ...soundChanges("alarm", b.alarm, a.alarm, true),
+    ...soundChanges(t("diff.sound_ding"), b.cue, a.cue, false),
+    ...soundChanges(t("diff.sound_alarm"), b.alarm, a.alarm, true),
   ];
   if (b.speech.enabled !== a.speech.enabled) out.push(t("diff.speech_state", { state: a.speech.enabled ? t("common.state_on") : t("common.state_off") }));
   if (a.speech.enabled) {
@@ -105,7 +105,7 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   }
 
   const boards = byKey(before.boards ?? [], after.boards ?? [], (b) => b.id);
-  boards.added.forEach((b) => out.push(t("diff.wall_board_added_tiles", { name: b.name, count_2: b.tiles.length })));
+  boards.added.forEach((b) => out.push(t("diff.wall_board_added_tiles", { name: b.name, count: b.tiles.length })));
   boards.removed.forEach((b) => out.push(t("diff.wall_board_removed", { name: b.name })));
   boards.kept.forEach(({ before: b, after: a }) => {
     if (b.name !== a.name) out.push(t("diff.wall_board_renamed", { before: b.name, after: a.name }));
@@ -114,7 +114,7 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   });
 
   const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);
-  ladders.added.forEach((l) => out.push(t("diff.nudge_ladder_added_nudges", { name: l.name, count_2: l.rungs.length })));
+  ladders.added.forEach((l) => out.push(t("diff.nudge_ladder_added_nudges", { name: l.name, count: l.rungs.length })));
   ladders.removed.forEach((l) => out.push(t("diff.nudge_ladder_removed", { name: l.name })));
   ladders.kept.forEach(({ before: b, after: a }) => {
     if (b.name !== a.name) out.push(t("diff.nudge_ladder_renamed", { before: b.name, after: a.name }));

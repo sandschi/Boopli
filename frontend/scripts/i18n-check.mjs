@@ -59,6 +59,12 @@ for (const file of files) {
     if (m[3] === "${") prefixes.add(m[2]); // t(`errors.${code}`): everything under errors. counts as used
     else used.add(m[2]);
   }
+  // a key inside a condition: t(active ? "a.b" : "c.d"). A key that is not in en.json is a typo.
+  for (const m of text.matchAll(/\b(?:t|rich|hasText)\(\s*([^,()]*\?[^,()]*)(?:,|\))/g)) {
+    for (const k of m[1].matchAll(/["']([a-z][a-z_]*\.[a-z0-9_.]+)["']/g)) {
+      if (!(k[1] in en) && !Object.keys(en).some((x) => baseKey(x) === k[1])) errors.push(`missing in en.json: ${k[1]}`);
+    }
+  }
   // the values given to a text must be the places in it: t("key", { a, b: 2 }) against "... {a} ... {b}"
   // (only simple objects: no calls inside, as in { when: describeWhen(a, b) })
   for (const m of text.matchAll(/\b(?:t|rich)\(\s*"([\w.]+)"\s*,\s*\{([^{}()]*)\}\s*\)/g)) {
@@ -131,7 +137,7 @@ for (const file of files) {
     if (!["html", "svg", "shtml"].includes(tpl.tag)) {
       // an ordinary template string: a sentence with values in it, like `Snooze ${n} minutes`
       const flat = tpl.body.replaceAll(BLANK, "{}");
-      if (/[A-Za-z]{3,}/.test(flat) && /\s/.test(flat.trim()) && !/^[\w./:@#{}-]+$/.test(flat) && !/^https?:/.test(flat)) {
+      if (/[A-Za-z]{2,}/.test(flat) && /\s/.test(flat.trim()) && !/^[\w./:@#{}-]+$/.test(flat) && !/^https?:/.test(flat)) {
         hard.push({ file: rel, line: lineOf(tpl.map[0] ?? 0), text: flat.replace(/\s+/g, " ").trim(), why: "template string" });
       }
       continue;

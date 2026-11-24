@@ -725,6 +725,9 @@ var qe = {
 		a_few_questions: "A few questions",
 		claude_asks_left_one: "Ask Claude uses your Claude routine: {count} ask left this hour. Each question round and the steps are one ask each.",
 		claude_asks_left_other: "Ask Claude uses your Claude routine: {count} asks left this hour. Each question round and the steps are one ask each.",
+		letter_small: "S",
+		letter_medium: "M",
+		letter_big: "B",
 		small_quick_and_easy: "Small: quick and easy",
 		medium_takes_some_effort: "Medium: takes some effort",
 		big_hard_or_long: "Big: hard or long",
@@ -932,6 +935,7 @@ var qe = {
 		nudge_min_later: "Nudge {n}, {gap} min later: {who}",
 		then_it_repeats_the_last_nudge: "Then it repeats the last nudge every {gap} min until you answer.",
 		alarm: "{device} (alarm)",
+		nothing: "nothing",
 		my_ladder: "My ladder",
 		how_status_light: "status light",
 		how_blink: "blink",
@@ -1060,6 +1064,7 @@ var qe = {
 		language: "Language",
 		language_same_as_home_assistant: "Same as Home Assistant",
 		language_save_first: "Save or discard your unsaved changes to change the language.",
+		language_from_address: "From the address: {code}",
 		language_note: "Only for this browser. The questions the AI asks follow the language of Home Assistant.",
 		boopli_sends_a_notification_with_done: "Boopli sends a notification with Done and Snooze buttons through the Home Assistant app on the phones you turn on.",
 		notification_level: "Notification level",
@@ -1263,6 +1268,7 @@ var qe = {
 		add_your_first_chore_in_the: "Add your first chore in the Chores tab.",
 		level: "· Level {level}",
 		xp_to_the_next_level: "{xp} / {xp_needed} XP to the next level",
+		xp_gained: "+{xp} XP",
 		step_of: "Step {value} of {total}",
 		at: "at {time}",
 		and_more_in_the_chores_tab: "and {count} more in the Chores tab",
@@ -1420,7 +1426,8 @@ var qe = {
 	},
 	wall_tile_next: {
 		coming_up: "Coming up",
-		nothing_planned: "Nothing planned."
+		nothing_planned: "Nothing planned.",
+		at_time: "at {time}"
 	},
 	wall_tile_note: { write_a_note_in_the_board: "Write a note in the board settings." },
 	wall_tile_weather: {
@@ -1461,11 +1468,16 @@ var qe = {
 		sound_added: "Sound added: {label}",
 		sound_removed: "Sound removed: {label}",
 		sound_changed: "Sound changed: {name}",
-		wall_board_added_tiles: "Wall board added: {name} ({count_2} tiles)",
+		wall_board_added_tiles_one: "Wall board added: {name} ({count} tile)",
+		wall_board_added_tiles_other: "Wall board added: {name} ({count} tiles)",
+		sound_state: "{name} {state}",
+		sound_ding: "ding",
+		sound_alarm: "alarm",
 		wall_board_removed: "Wall board removed: {name}",
 		wall_board_renamed: "Wall board renamed: {before} → {after}",
 		wall_board_changed: "Wall board changed: {name}",
-		nudge_ladder_added_nudges: "Nudge ladder added: {name} ({count_2} nudges)",
+		nudge_ladder_added_nudges_one: "Nudge ladder added: {name} ({count} nudge)",
+		nudge_ladder_added_nudges_other: "Nudge ladder added: {name} ({count} nudges)",
 		nudge_ladder_removed: "Nudge ladder removed: {name}",
 		nudge_ladder_renamed: "Nudge ladder renamed: {before} → {after}",
 		nudge_ladder_changed: "Nudge ladder changed: {name}",
@@ -1617,7 +1629,7 @@ var qe = {
 		tap_switches_it: "switches it",
 		tap_does_nothing: "does nothing"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"A backup can have at most {max_chores} chores.\",\"a_board_name_can_have_at_most_201c\":\"A board name can have at most {board_name_max} letters.\",\"a_chore_can_ask_at_most_questions_61df\":\"A chore can ask at most {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"A chore can have at most {max_steps} steps.\",\"a_chore_needs_a_name_4f84\":\"A chore needs a name.\",\"a_chore_needs_at_least_one_step_2a00\":\"A chore needs at least one step.\",\"a_day_can_have_1_to_times_e106\":\"A day can have 1 to {max_times_per_day} times.\",\"a_ladder_name_can_have_at_most_40cc\":\"A ladder name can have at most {ladder_name_max} letters.\",\"a_light_can_blink_to_times_1a51\":\"A light can blink {repeats_min} to {repeats_max} times.\",\"a_light_color_needs_three_values_from_e686\":\"A light color needs three values from 0 to 255.\",\"a_light_must_be_a_light_entity_23fe\":\"A light must be a light entity.\",\"a_phone_must_be_a_notify_service_4918\":\"A phone must be a notify service name.\",\"a_picture_is_a_camera_or_a_5b81\":\"A picture is a camera, or a .jpg, .png or .gif file in the media folder.\",\"a_picture_name_can_have_at_most_d416\":\"A picture name can have at most {picture_max} letters.\",\"a_prompt_can_have_at_most_letters_852a\":\"A prompt can have at most {ai_prompt_max} letters.\",\"a_question_can_have_at_most_letters_dfba\":\"A question can have at most {question_max} letters.\",\"a_sound_name_can_have_at_most_5373\":\"A sound name can have at most {extra_sound_name_max} letters.\",\"a_speaker_must_be_a_media_player_9b44\":\"A speaker must be a media player.\",\"a_step_can_have_at_most_ways_26de\":\"A step can have at most {max_triggers} ways to finish by itself.\",\"a_step_can_wait_for_at_most_6d7a\":\"A step can wait for at most {max_triggers} things.\",\"a_step_is_small_medium_or_big_84cd\":\"A step is small, medium or big.\",\"a_step_title_can_have_at_most_ab49\":\"A step title can have at most {step_title_max} letters.\",\"a_tile_has_a_size_that_does_545b\":\"'{name}': a {type} tile has a size that does not fit the board.\",\"a_tile_has_an_unknown_56c1\":\"'{name}': a {type} tile has an unknown {key}.\",\"a_tile_is_outside_the_board_dc7a\":\"'{name}': a {type} tile is outside the board.\",\"a_tile_needs_a_3f0b\":\"'{name}': a {type} tile needs a {extra}.\",\"a_tile_s_can_have_at_most_b301\":\"'{name}': a {type} tile's {key} can have at most {extra} letters.\",\"a_tile_s_must_be_to_f1ac\":\"'{name}': a {type} tile's {key} must be {extra} to {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"A wait must be between 0 minutes and 7 days.\",\"above_must_be_lower_than_below_169b\":\"'Above' must be lower than 'below'.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI help is switched off. Turn it on in Settings first.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Alarm repeat must be 0 to {alarm_repeat_max} seconds.\",\"an_alarm_device_must_be_a_siren_81ed\":\"An alarm device must be a siren, switch, input_boolean or script.\",\"an_alarm_must_last_to_seconds_98c4\":\"An alarm must last {seconds_min} to {seconds_max} seconds.\",\"another_media_player_can_only_play_files_6876\":\"Another media player can only play files, not Amazon's sounds.\",\"ask_claude_is_not_set_up_yet_5ed9\":\"Ask Claude is not set up yet. Add the routine's address and token in Settings.\",\"ask_claude_is_switched_off_turn_it_899c\":\"Ask Claude is switched off. Turn it on in Settings first.\",\"ask_the_agent_or_claude_91c4\":\"Ask the agent or Claude.\",\"at_most_rooms_9431\":\"At most {max_rooms} rooms.\",\"blink_length_must_be_to_milliseconds_4188\":\"Blink length must be {blink_ms_min} to {blink_ms_max} milliseconds.\",\"boopli_already_asked_claude_times_this_hour_e159\":\"Boopli already asked Claude {limit} times this hour. Try again in about {wait} minutes.\",\"boopli_could_not_hand_the_photos_over_8b63\":\"Boopli could not hand the photos over: {error}\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli could not reach Claude. Check the internet connection.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli could not read its saved Ask Claude settings, so it will not overwrite them. Check the Home Assistant log.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli could not save the token. The old one is still in use.\",\"boopli_is_not_set_up_d962\":\"Boopli is not set up.\",\"can_have_at_most_tiles_36be\":\"'{name}' can have at most {board_tiles_max} tiles.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choose a TTS voice (tts.…) for speech.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choose the Alexa Media Player notify service for speech.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choose the Alexa notify entity (notify.…) for speech.\",\"choose_the_sound_for_3f45\":\"Choose the sound for '{name}'.\",\"choose_the_sound_for_first_985f\":\"Choose the {level} sound for {entity_id} first.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude answered, but the answer was empty.\",\"claude_answered_with_an_error_267f\":\"Claude answered with an error ({status}).\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude did not accept the request. Check that the routine is switched on.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude did not answer the start request. Try again.\",\"claude_did_not_send_an_answer_within_5d60\":\"Claude did not send an answer within {minutes} minutes. Try again.\",\"claude_does_not_know_that_routine_check_e7a5\":\"Claude does not know that routine. Check the fire address.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude is having trouble right now. Try again in a few minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude refused the token. Make a new token for the routine, paste it in Boopli and try again.\",\"claude_says_you_asked_too_often_wait_f201\":\"Claude says you asked too often. Wait a while and try again.\",\"days_must_be_0_monday_to_6_0b64\":\"Days must be 0 (Monday) to 6 (Sunday).\",\"ended_d64f\":\"ended\",\"every_board_needs_a_name_1704\":\"Every board needs a name.\",\"every_ladder_needs_a_name_b090\":\"Every ladder needs a name.\",\"every_question_needs_some_text_5008\":\"Every question needs some text.\",\"every_room_needs_a_name_f6fe\":\"Every room needs a name.\",\"every_sound_needs_a_name_ffb2\":\"Every sound needs a name.\",\"every_step_needs_a_title_5d77\":\"Every step needs a title.\",\"every_time_must_look_like_09_30_0302\":\"Every time must look like 09:30.\",\"for_must_be_between_0_minutes_and_813d\":\"'For' must be between 0 minutes and 24 hours.\",\"give_the_room_a_name_first_e276\":\"Give the room a name first.\",\"has_no_step_waiting_for_you_right_379f\":\"'{name}' has no step waiting for you right now.\",\"has_nothing_in_progress_5779\":\"'{name}' has nothing in progress.\",\"has_two_tiles_with_the_same_id_7762\":\"'{name}' has two tiles with the same id.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant has no AI Task yet. Set up an AI agent first.\",\"home_assistant_has_no_media_folder_so_7e94\":\"Home Assistant has no media folder, so Boopli cannot hand photos to the agent.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant has no web address that Claude can reach. Fill in the Home Assistant address under Ask Claude, or set the external URL in Home Assistant.\",\"more_than_one_chore_is_called_use_d4d6\":\"More than one chore is called '{ref}'. Use its id.\",\"needs_1_to_nudges_673d\":\"'{name}' needs 1 to {ladder_max_nudges} nudges.\",\"no_chore_called_b51e\":\"No chore called '{ref}'.\",\"nudge_a_light_color_needs_three_values_cb55\":\"'{name}', nudge {number}: a light color needs three values from 0 to 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"'{name}', nudge {number}: the wait must be {ladder_gap_min} to {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"'{name}', nudge {number}: unknown light mode.\",\"nudge_unknown_phone_notification_level_f7a6\":\"'{name}', nudge {number}: unknown phone notification level.\",\"nudge_unknown_speaker_choice_a39c\":\"'{name}', nudge {number}: unknown speaker choice.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Nudges must start before they stop on the same day.\",\"one_of_the_photos_could_not_be_6c36\":\"One of the photos could not be read.\",\"one_of_the_photos_is_too_big_1568\":\"One of the photos is too big. Try a smaller one.\",\"only_jpeg_or_png_photos_work_045e\":\"Only JPEG or PNG photos work.\",\"pick_a_light_first_9a5b\":\"Pick a light first.\",\"pick_a_pet_from_the_list_a356\":\"Pick a pet from the list.\",\"pick_a_phone_and_a_level_first_acd7\":\"Pick a phone and a level first.\",\"pick_a_siren_switch_or_script_first_5318\":\"Pick a siren, switch or script first.\",\"pick_an_ai_task_agent_for_photos_7858\":\"Pick an AI task agent for photos, or leave it empty to use the same agent.\",\"pick_an_ai_task_agent_or_leave_80e5\":\"Pick an AI task agent, or leave it empty for the default.\",\"pick_an_entity_cdc1\":\"Pick an entity.\",\"pick_an_entity_for_the_entity_tile_e356\":\"'{name}': pick an entity for the entity tile.\",\"pick_at_least_one_day_and_a_74e6\":\"Pick at least one day and a time.\",\"pick_at_least_one_part_to_back_9368\":\"Pick at least one part to back up.\",\"pick_at_least_one_part_to_import_705d\":\"Pick at least one part to import.\",\"pick_at_least_one_photo_2704\":\"Pick at least one photo.\",\"pick_the_for_the_tile_60f7\":\"'{name}': pick the {extra} for the {type} tile.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Quiet hours days must be 0 (Monday) to 6 (Sunday).\",\"quiet_hours_times_must_look_like_07_e804\":\"Quiet hours times must look like 07:30.\",\"repeat_every_n_days_needs_n_between_0c19\":\"Repeat every N days needs N between 1 and 365.\",\"say_which_state_or_which_number_finishes_7071\":\"Say which state, or which number, finishes the step.\",\"snooze_must_be_between_1_minute_and_1914\":\"Snooze must be between 1 minute and 12 hours.\",\"started_96da\":\"started\",\"starts_at_nudge_must_be_to_6549\":\"'Starts at nudge' must be {start_at_min} to {start_at_max}.\",\"step_dd83\":\"Step '{title}': {error}\",\"step_points_to_a_question_that_does_860a\":\"Step '{title}' points to a question that does not exist.\",\"step_wait_until_c420\":\"Step '{title}' (wait until): {error}\",\"that_does_not_look_like_a_routine_32ae\":\"That does not look like a routine token. Copy it again.\",\"that_fire_address_looks_wrong_copy_it_dd45\":\"That fire address looks wrong. Copy it again from the routine.\",\"that_is_not_a_routine_fire_address_2956\":\"That is not a routine fire address. It looks like {prefix}trig_…{suffix}\",\"that_part_is_not_waiting_any_more_3180\":\"That part is not waiting any more.\",\"that_request_is_too_big_for_claude_a7d5\":\"That request is too big for Claude. Use fewer or smaller photos.\",\"that_task_is_not_running_any_more_328a\":\"That task is not running any more.\",\"the_accent_colour_must_look_like_1a2b3c_dc48\":\"The accent colour must look like #1A2B3C.\",\"the_ai_agent_answered_with_an_error_9042\":\"The AI agent answered with an error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"The AI agent did not answer.\",\"the_ai_agent_took_too_long_over_bc02\":\"The AI agent took too long (over {timeout} seconds). Try again.\",\"the_check_in_after_on_it_must_2b59\":\"The check-in after \\\"On it\\\" must be between 5 minutes and 12 hours.\",\"the_chore_does_not_fit_this_setup_692d\":\"The chore '{name}' does not fit this setup: {error}\",\"the_chore_is_not_valid_6dd0\":\"The chore '{name}' is not valid: {error}\",\"the_columns_must_be_to_2cd0\":\"'{name}': the columns must be {board_columns_min} to {board_columns_max}.\",\"the_file_has_no_to_import_e300\":\"The file has no {part} to import.\",\"the_home_assistant_address_must_start_with_5b05\":\"The Home Assistant address must start with https:// (or http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"The kind must be 'now' or 'recurring'.\",\"the_ladder_is_used_by_and_it_4181\":\"The ladder '{name}' is used by {users}, and it is not in the file. Import the chores as well, or pick another nudge style for them first.\",\"the_ladder_is_used_by_pick_another_81ac\":\"The ladder '{name}' is used by {users}. Pick another nudge style for them first.\",\"the_next_due_time_cannot_be_read_f831\":\"The next due time cannot be read.\",\"the_next_due_time_needs_a_time_f91c\":\"The next due time needs a time zone.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"The pause between blinks must be {gap_ms_min} to {gap_ms_max} milliseconds.\",\"the_pet_s_name_can_have_at_f0d3\":\"The pet's name can have at most {pet_name_max} letters.\",\"the_presence_source_must_be_an_entity_ff79\":\"The presence source must be an entity id.\",\"the_rooms_in_this_file_are_not_8661\":\"The rooms in this file are not valid: {error}\",\"the_rows_must_be_to_1733\":\"'{name}': the rows must be {board_rows_min} to {board_rows_max}.\",\"the_settings_in_this_file_are_not_5e54\":\"The settings in this file are not valid: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"The spoken sentence must contain {chore} or {step}.\",\"the_standard_ladder_can_be_changed_but_ccdb\":\"The standard ladder '{gone}' can be changed but not deleted.\",\"the_time_must_look_like_09_30_87c6\":\"The time must look like 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"The wait for the questions must be between 5 minutes and 12 hours.\",\"there_are_more_than_chores_which_is_35dc\":\"There are more than {max_chores} chores, which is more than a backup can hold.\",\"there_are_two_boards_called_d80d\":\"There are two boards called '{name}'.\",\"there_are_two_ladders_called_07d6\":\"There are two ladders called '{name}'.\",\"there_are_two_sounds_called_340c\":\"There are two sounds called '{name}'.\",\"this_ai_agent_can_t_read_photos_3b93\":\"This AI agent can't read photos. Pick an agent that can under Settings, Advanced, AI help, or describe the room another way.\",\"two_boards_have_the_same_id_0fac\":\"Two boards have the same id.\",\"two_ladders_have_the_same_id_4083\":\"Two ladders have the same id.\",\"two_questions_have_the_same_id_2b7f\":\"Two questions have the same id.\",\"two_rooms_share_the_same_id_5997\":\"Two rooms share the same id.\",\"two_steps_have_the_same_id_8a53\":\"Two steps have the same id.\",\"two_tiles_are_on_the_same_spot_2681\":\"'{name}': two tiles are on the same spot.\",\"unknown_default_nudge_style_b675\":\"Unknown default nudge style.\",\"unknown_light_mode_cbab\":\"Unknown light mode.\",\"unknown_mode_1943\":\"Unknown mode.\",\"unknown_night_setting_a299\":\"'{name}': unknown night setting.\",\"unknown_nudge_style_9e66\":\"Unknown nudge style.\",\"unknown_phone_notification_level_6ae9\":\"Unknown phone notification level.\",\"unknown_repeat_type_10d7\":\"Unknown repeat type.\",\"unknown_setup_status_d393\":\"Unknown setup status.\",\"unknown_setup_step_102b\":\"Unknown setup step.\",\"unknown_sound_type_91b7\":\"Unknown {name} sound type.\",\"unknown_speaker_level_f356\":\"Unknown speaker level.\",\"unknown_test_9a31\":\"Unknown test.\",\"unknown_tile_type_0a67\":\"'{name}': unknown tile type '{type}'.\",\"unknown_type_for_the_sound_4d14\":\"Unknown type for the sound '{name}'.\",\"unknown_way_of_speaking_cbb3\":\"Unknown way of speaking.\",\"unknown_way_to_finish_by_itself_8016\":\"Unknown way to finish by itself.\",\"use_at_most_photos_4d47\":\"Use at most {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Use either a state or a number, not both.\",\"where_must_be_home_or_anywhere_fb12\":\"Where must be 'home' or 'anywhere'.\",\"write_what_you_want_to_get_done_70fd\":\"Write what you want to get done first.\",\"you_can_have_at_most_ladders_287d\":\"You can have at most {ladder_max} ladders.\",\"you_can_have_at_most_sounds_of_0a92\":\"You can have at most {extra_sounds_max} sounds of your own.\",\"you_need_1_to_boards_c238\":\"You need 1 to {board_max} boards.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"A backup can have at most {max_chores} chores.\",\"a_board_name_can_have_at_most_201c\":\"A board name can have at most {board_name_max} letters.\",\"a_chore_can_ask_at_most_questions_61df\":\"A chore can ask at most {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"A chore can have at most {max_steps} steps.\",\"a_chore_needs_a_name_4f84\":\"A chore needs a name.\",\"a_chore_needs_at_least_one_step_2a00\":\"A chore needs at least one step.\",\"a_day_can_have_1_to_times_e106\":\"A day can have 1 to {max_times_per_day} times.\",\"a_ladder_name_can_have_at_most_40cc\":\"A ladder name can have at most {ladder_name_max} letters.\",\"a_light_can_blink_to_times_1a51\":\"A light can blink {repeats_min} to {repeats_max} times.\",\"a_light_color_needs_three_values_from_e686\":\"A light color needs three values from 0 to 255.\",\"a_light_must_be_a_light_entity_23fe\":\"A light must be a light entity.\",\"a_phone_must_be_a_notify_service_4918\":\"A phone must be a notify service name.\",\"a_picture_is_a_camera_or_a_5b81\":\"A picture is a camera, or a .jpg, .png or .gif file in the media folder.\",\"a_picture_name_can_have_at_most_d416\":\"A picture name can have at most {picture_max} letters.\",\"a_prompt_can_have_at_most_letters_852a\":\"A prompt can have at most {ai_prompt_max} letters.\",\"a_question_can_have_at_most_letters_dfba\":\"A question can have at most {question_max} letters.\",\"a_sound_name_can_have_at_most_5373\":\"A sound name can have at most {extra_sound_name_max} letters.\",\"a_speaker_must_be_a_media_player_9b44\":\"A speaker must be a media player.\",\"a_step_can_have_at_most_ways_26de\":\"A step can have at most {max_triggers} ways to finish by itself.\",\"a_step_can_wait_for_at_most_6d7a\":\"A step can wait for at most {max_triggers} things.\",\"a_step_is_small_medium_or_big_84cd\":\"A step is small, medium or big.\",\"a_step_title_can_have_at_most_ab49\":\"A step title can have at most {step_title_max} letters.\",\"a_tile_has_a_size_that_does_545b\":\"'{name}': a {type} tile has a size that does not fit the board.\",\"a_tile_has_an_unknown_56c1\":\"'{name}': a {type} tile has an unknown {key}.\",\"a_tile_is_outside_the_board_dc7a\":\"'{name}': a {type} tile is outside the board.\",\"a_tile_needs_a_3f0b\":\"'{name}': a {type} tile needs a {extra}.\",\"a_tile_s_can_have_at_most_b301\":\"'{name}': a {type} tile's {key} can have at most {extra} letters.\",\"a_tile_s_must_be_to_f1ac\":\"'{name}': a {type} tile's {key} must be {extra} to {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"A wait must be between 0 minutes and 7 days.\",\"above_must_be_lower_than_below_169b\":\"'Above' must be lower than 'below'.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI help is switched off. Turn it on in Settings first.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Alarm repeat must be 0 to {alarm_repeat_max} seconds.\",\"an_alarm_device_must_be_a_siren_81ed\":\"An alarm device must be a siren, switch, input_boolean or script.\",\"an_alarm_must_last_to_seconds_98c4\":\"An alarm must last {seconds_min} to {seconds_max} seconds.\",\"another_media_player_can_only_play_files_6876\":\"Another media player can only play files, not Amazon's sounds.\",\"ask_claude_is_not_set_up_yet_5ed9\":\"Ask Claude is not set up yet. Add the routine's address and token in Settings.\",\"ask_claude_is_switched_off_turn_it_899c\":\"Ask Claude is switched off. Turn it on in Settings first.\",\"ask_the_agent_or_claude_91c4\":\"Ask the agent or Claude.\",\"at_most_rooms_9431\":\"At most {max_rooms} rooms.\",\"blink_length_must_be_to_milliseconds_4188\":\"Blink length must be {blink_ms_min} to {blink_ms_max} milliseconds.\",\"boopli_already_asked_claude_times_this_hour_e159\":\"Boopli already asked Claude {limit} times this hour. Try again in about {wait} minutes.\",\"boopli_could_not_hand_the_photos_over_8b63\":\"Boopli could not hand the photos over: {error}\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli could not reach Claude. Check the internet connection.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli could not read its saved Ask Claude settings, so it will not overwrite them. Check the Home Assistant log.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli could not save the token. The old one is still in use.\",\"boopli_is_not_set_up_d962\":\"Boopli is not set up.\",\"can_have_at_most_tiles_36be\":\"'{name}' can have at most {board_tiles_max} tiles.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choose a TTS voice (tts.…) for speech.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choose the Alexa Media Player notify service for speech.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choose the Alexa notify entity (notify.…) for speech.\",\"choose_the_sound_for_3f45\":\"Choose the sound for '{name}'.\",\"choose_the_sound_for_first_985f\":\"Choose the {level} sound for {entity_id} first.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude answered, but the answer was empty.\",\"claude_answered_with_an_error_267f\":\"Claude answered with an error ({status}).\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude did not accept the request. Check that the routine is switched on.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude did not answer the start request. Try again.\",\"claude_did_not_send_an_answer_within_5d60\":\"Claude did not send an answer within {minutes} minutes. Try again.\",\"claude_does_not_know_that_routine_check_e7a5\":\"Claude does not know that routine. Check the fire address.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude is having trouble right now. Try again in a few minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude refused the token. Make a new token for the routine, paste it in Boopli and try again.\",\"claude_says_you_asked_too_often_wait_f201\":\"Claude says you asked too often. Wait a while and try again.\",\"days_must_be_0_monday_to_6_0b64\":\"Days must be 0 (Monday) to 6 (Sunday).\",\"ended_d64f\":\"ended\",\"every_board_needs_a_name_1704\":\"Every board needs a name.\",\"every_ladder_needs_a_name_b090\":\"Every ladder needs a name.\",\"every_question_needs_some_text_5008\":\"Every question needs some text.\",\"every_room_needs_a_name_f6fe\":\"Every room needs a name.\",\"every_sound_needs_a_name_ffb2\":\"Every sound needs a name.\",\"every_step_needs_a_title_5d77\":\"Every step needs a title.\",\"every_time_must_look_like_09_30_0302\":\"Every time must look like 09:30.\",\"for_must_be_between_0_minutes_and_813d\":\"'For' must be between 0 minutes and 24 hours.\",\"give_the_room_a_name_first_e276\":\"Give the room a name first.\",\"has_no_step_waiting_for_you_right_379f\":\"'{name}' has no step waiting for you right now.\",\"has_nothing_in_progress_5779\":\"'{name}' has nothing in progress.\",\"has_two_tiles_with_the_same_id_7762\":\"'{name}' has two tiles with the same id.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant has no AI Task yet. Set up an AI agent first.\",\"home_assistant_has_no_media_folder_so_7e94\":\"Home Assistant has no media folder, so Boopli cannot hand photos to the agent.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant has no web address that Claude can reach. Fill in the Home Assistant address under Ask Claude, or set the external URL in Home Assistant.\",\"more_than_one_chore_is_called_use_d4d6\":\"More than one chore is called '{ref}'. Use its id.\",\"needs_1_to_nudges_673d\":\"'{name}' needs 1 to {ladder_max_nudges} nudges.\",\"no_chore_called_b51e\":\"No chore called '{ref}'.\",\"nudge_a_light_color_needs_three_values_cb55\":\"'{name}', nudge {number}: a light color needs three values from 0 to 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"'{name}', nudge {number}: the wait must be {ladder_gap_min} to {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"'{name}', nudge {number}: unknown light mode.\",\"nudge_unknown_phone_notification_level_f7a6\":\"'{name}', nudge {number}: unknown phone notification level.\",\"nudge_unknown_speaker_choice_a39c\":\"'{name}', nudge {number}: unknown speaker choice.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Nudges must start before they stop on the same day.\",\"one_of_the_photos_could_not_be_6c36\":\"One of the photos could not be read.\",\"one_of_the_photos_is_too_big_1568\":\"One of the photos is too big. Try a smaller one.\",\"only_jpeg_or_png_photos_work_045e\":\"Only JPEG or PNG photos work.\",\"pick_a_light_first_9a5b\":\"Pick a light first.\",\"pick_a_pet_from_the_list_a356\":\"Pick a pet from the list.\",\"pick_a_phone_and_a_level_first_acd7\":\"Pick a phone and a level first.\",\"pick_a_siren_switch_or_script_first_5318\":\"Pick a siren, switch or script first.\",\"pick_an_ai_task_agent_for_photos_7858\":\"Pick an AI task agent for photos, or leave it empty to use the same agent.\",\"pick_an_ai_task_agent_or_leave_80e5\":\"Pick an AI task agent, or leave it empty for the default.\",\"pick_an_entity_cdc1\":\"Pick an entity.\",\"pick_an_entity_for_the_entity_tile_e356\":\"'{name}': pick an entity for the entity tile.\",\"pick_an_nfc_tag_9bfb\":\"Pick an NFC tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Pick at least one day and a time.\",\"pick_at_least_one_part_to_back_9368\":\"Pick at least one part to back up.\",\"pick_at_least_one_part_to_import_705d\":\"Pick at least one part to import.\",\"pick_at_least_one_photo_2704\":\"Pick at least one photo.\",\"pick_the_for_the_tile_60f7\":\"'{name}': pick the {extra} for the {type} tile.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Quiet hours days must be 0 (Monday) to 6 (Sunday).\",\"quiet_hours_times_must_look_like_07_e804\":\"Quiet hours times must look like 07:30.\",\"repeat_every_n_days_needs_n_between_0c19\":\"Repeat every N days needs N between 1 and 365.\",\"say_which_state_or_which_number_finishes_7071\":\"Say which state, or which number, finishes the step.\",\"skip_557d\":\"skip\",\"snooze_must_be_between_1_minute_and_1914\":\"Snooze must be between 1 minute and 12 hours.\",\"start_558f\":\"start\",\"started_96da\":\"started\",\"starts_at_nudge_must_be_to_6549\":\"'Starts at nudge' must be {start_at_min} to {start_at_max}.\",\"step_dd83\":\"Step '{title}': {error}\",\"step_points_to_a_question_that_does_860a\":\"Step '{title}' points to a question that does not exist.\",\"step_wait_until_c420\":\"Step '{title}' (wait until): {error}\",\"that_does_not_look_like_a_routine_32ae\":\"That does not look like a routine token. Copy it again.\",\"that_fire_address_looks_wrong_copy_it_dd45\":\"That fire address looks wrong. Copy it again from the routine.\",\"that_is_not_a_routine_fire_address_2956\":\"That is not a routine fire address. It looks like {prefix}trig_…{suffix}\",\"that_part_is_not_waiting_any_more_3180\":\"That part is not waiting any more.\",\"that_request_is_too_big_for_claude_a7d5\":\"That request is too big for Claude. Use fewer or smaller photos.\",\"that_task_is_not_running_any_more_328a\":\"That task is not running any more.\",\"the_accent_colour_must_look_like_1a2b3c_dc48\":\"The accent colour must look like #1A2B3C.\",\"the_ai_agent_answered_with_an_error_9042\":\"The AI agent answered with an error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"The AI agent did not answer.\",\"the_ai_agent_took_too_long_over_bc02\":\"The AI agent took too long (over {timeout} seconds). Try again.\",\"the_check_in_after_on_it_must_2b59\":\"The check-in after \\\"On it\\\" must be between 5 minutes and 12 hours.\",\"the_chore_does_not_fit_this_setup_692d\":\"The chore '{name}' does not fit this setup: {error}\",\"the_chore_is_not_valid_6dd0\":\"The chore '{name}' is not valid: {error}\",\"the_columns_must_be_to_2cd0\":\"'{name}': the columns must be {board_columns_min} to {board_columns_max}.\",\"the_file_has_no_to_import_e300\":\"The file has no {part} to import.\",\"the_home_assistant_address_must_start_with_5b05\":\"The Home Assistant address must start with https:// (or http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"The kind must be 'now' or 'recurring'.\",\"the_ladder_is_used_by_and_it_4181\":\"The ladder '{name}' is used by {users}, and it is not in the file. Import the chores as well, or pick another nudge style for them first.\",\"the_ladder_is_used_by_pick_another_81ac\":\"The ladder '{name}' is used by {users}. Pick another nudge style for them first.\",\"the_next_due_time_cannot_be_read_f831\":\"The next due time cannot be read.\",\"the_next_due_time_needs_a_time_f91c\":\"The next due time needs a time zone.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"The pause between blinks must be {gap_ms_min} to {gap_ms_max} milliseconds.\",\"the_pet_s_name_can_have_at_f0d3\":\"The pet's name can have at most {pet_name_max} letters.\",\"the_presence_source_must_be_an_entity_ff79\":\"The presence source must be an entity id.\",\"the_rooms_in_this_file_are_not_8661\":\"The rooms in this file are not valid: {error}\",\"the_rows_must_be_to_1733\":\"'{name}': the rows must be {board_rows_min} to {board_rows_max}.\",\"the_settings_in_this_file_are_not_5e54\":\"The settings in this file are not valid: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"The spoken sentence must contain {chore} or {step}.\",\"the_standard_ladder_can_be_changed_but_ccdb\":\"The standard ladder '{gone}' can be changed but not deleted.\",\"the_time_must_look_like_09_30_87c6\":\"The time must look like 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"The wait for the questions must be between 5 minutes and 12 hours.\",\"there_are_more_than_chores_which_is_35dc\":\"There are more than {max_chores} chores, which is more than a backup can hold.\",\"there_are_two_boards_called_d80d\":\"There are two boards called '{name}'.\",\"there_are_two_ladders_called_07d6\":\"There are two ladders called '{name}'.\",\"there_are_two_sounds_called_340c\":\"There are two sounds called '{name}'.\",\"this_ai_agent_can_t_read_photos_3b93\":\"This AI agent can't read photos. Pick an agent that can under Settings, Advanced, AI help, or describe the room another way.\",\"two_boards_have_the_same_id_0fac\":\"Two boards have the same id.\",\"two_ladders_have_the_same_id_4083\":\"Two ladders have the same id.\",\"two_questions_have_the_same_id_2b7f\":\"Two questions have the same id.\",\"two_rooms_share_the_same_id_5997\":\"Two rooms share the same id.\",\"two_steps_have_the_same_id_8a53\":\"Two steps have the same id.\",\"two_tiles_are_on_the_same_spot_2681\":\"'{name}': two tiles are on the same spot.\",\"unknown_default_nudge_style_b675\":\"Unknown default nudge style.\",\"unknown_light_mode_cbab\":\"Unknown light mode.\",\"unknown_mode_1943\":\"Unknown mode.\",\"unknown_night_setting_a299\":\"'{name}': unknown night setting.\",\"unknown_nudge_style_9e66\":\"Unknown nudge style.\",\"unknown_phone_notification_level_6ae9\":\"Unknown phone notification level.\",\"unknown_repeat_type_10d7\":\"Unknown repeat type.\",\"unknown_setup_status_d393\":\"Unknown setup status.\",\"unknown_setup_step_102b\":\"Unknown setup step.\",\"unknown_sound_type_91b7\":\"Unknown {name} sound type.\",\"unknown_speaker_level_f356\":\"Unknown speaker level.\",\"unknown_test_9a31\":\"Unknown test.\",\"unknown_tile_type_0a67\":\"'{name}': unknown tile type '{type}'.\",\"unknown_type_for_the_sound_4d14\":\"Unknown type for the sound '{name}'.\",\"unknown_way_of_speaking_cbb3\":\"Unknown way of speaking.\",\"unknown_way_to_finish_by_itself_8016\":\"Unknown way to finish by itself.\",\"use_at_most_photos_4d47\":\"Use at most {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Use either a state or a number, not both.\",\"where_must_be_home_or_anywhere_fb12\":\"Where must be 'home' or 'anywhere'.\",\"write_what_you_want_to_get_done_70fd\":\"Write what you want to get done first.\",\"you_can_have_at_most_ladders_287d\":\"You can have at most {ladder_max} ladders.\",\"you_can_have_at_most_sounds_of_0a92\":\"You can have at most {extra_sounds_max} sounds of your own.\",\"you_need_1_to_boards_c238\":\"You need 1 to {board_max} boards.\"}")
 }, Je = {
 	ATTRIBUTE: 1,
 	CHILD: 2,
@@ -5167,8 +5179,8 @@ var Ui = class extends b {
 		this._lastPet = t;
 		let r = this.snapshot.runs.map((e) => e.id), i = this._lastRunIds.filter((e) => !r.includes(e)).map((e) => this.snapshot.history.find((t) => t.kind === "chore_done" && t.run_id === e)?.chore_name).filter((e) => !!e);
 		if (this._lastRunIds = r, !n || t.total_xp <= n.total_xp) return;
-		this._moment = "done", this._momentText = `+${t.total_xp - n.total_xp} XP`, (n.mood === "sleepy" || n.mood === "hibernating") && (this._moment = "wake", this._momentText = ""), t.level > n.level && (this._moment = "levelup", this._momentText = C("today.level_2", { level: t.level })), this._momentSeq += 1;
-		let a = [`+${t.total_xp - n.total_xp} XP`];
+		this._moment = "done", this._momentText = C("today.xp_gained", { xp: t.total_xp - n.total_xp }), (n.mood === "sleepy" || n.mood === "hibernating") && (this._moment = "wake", this._momentText = ""), t.level > n.level && (this._moment = "levelup", this._momentText = C("today.level_2", { level: t.level })), this._momentSeq += 1;
+		let a = [C("today.xp_gained", { xp: t.total_xp - n.total_xp })];
 		i.length && a.unshift(C("today.is_done", { value: i[0] })), t.level > n.level && a.push(C("today.level_2", { level: t.level })), (n.mood === "sad" || n.mood === "hibernating") && a.push(C("today.is_awake_welcome_back", { name: t.name })), this._toast = a.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
 	}
 	_openBreakdown(e) {
@@ -7456,19 +7468,19 @@ async function ja(e) {
 var Ma = () => [
 	{
 		value: "small",
-		letter: "S",
+		letter: C("breakdown.letter_small"),
 		label: C("breakdown.small_quick_and_easy"),
 		xp: 10
 	},
 	{
 		value: "medium",
-		letter: "M",
+		letter: C("breakdown.letter_medium"),
 		label: C("breakdown.medium_takes_some_effort"),
 		xp: 15
 	},
 	{
 		value: "big",
-		letter: "B",
+		letter: C("breakdown.letter_big"),
 		label: C("breakdown.big_hard_or_long"),
 		xp: 20
 	}
@@ -8669,7 +8681,7 @@ var La = 8, Ra = () => [{
                 aria-pressed=${(t.size ?? "small") === n}
                 @click=${() => this._updateStep(e, { size: n })}
               >
-                ${n === "small" ? "S" : n === "medium" ? "M" : "B"}
+                ${C(n === "small" ? "breakdown.letter_small" : n === "medium" ? "breakdown.letter_medium" : "breakdown.letter_big")}
               </button>`)}
           </span>
           <button type="button" aria-label=${C("ladders.move_up")} ?disabled=${e === 0} @click=${() => this._moveStep(e, -1)}>↑</button>
@@ -10750,7 +10762,7 @@ var po = class extends b {
 			t.push(`${q(this.hass, n)} (${i.toLowerCase()})`);
 		}
 		for (let n of e.alarms) t.push(C("ladders.alarm", { device: q(this.hass, n) }));
-		return t.length ? t.join(", ") : "nothing";
+		return t.length ? t.join(", ") : C("ladders.nothing");
 	}
 	_lines(e) {
 		let t = e.rungs.map((e, t) => t === 0 ? C("ladders.nudge_1_right_away", { who: this._who(e) }) : C("ladders.nudge_min_later", {
@@ -11324,7 +11336,10 @@ function vo(e, t, n) {
 }
 function yo(e, t, n, r) {
 	let i = [];
-	return t.enabled !== n.enabled && i.push(`${e} ${n.enabled ? "on" : "off"}`), n.enabled && (t.sound !== n.sound && i.push(C("diff.sound", {
+	return t.enabled !== n.enabled && i.push(C("diff.sound_state", {
+		name: e,
+		state: n.enabled ? C("common.state_on") : C("common.state_off")
+	})), n.enabled && (t.sound !== n.sound && i.push(C("diff.sound", {
 		name: e,
 		before: t.sound,
 		after: n.sound
@@ -11343,7 +11358,7 @@ function yo(e, t, n, r) {
 	}))), i;
 }
 function bo(e, t) {
-	let n = [...yo("ding", e.cue, t.cue, !1), ...yo("alarm", e.alarm, t.alarm, !0)];
+	let n = [...yo(C("diff.sound_ding"), e.cue, t.cue, !1), ...yo(C("diff.sound_alarm"), e.alarm, t.alarm, !0)];
 	return e.speech.enabled !== t.speech.enabled && n.push(C("diff.speech_state", { state: t.speech.enabled ? C("common.state_on") : C("common.state_off") })), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(C("diff.speech_goes_to", { target: t.speech.target || C("diff.nothing") })), e.speech.start_at !== t.speech.start_at && n.push(C("diff.speech_starts_at_nudge", {
 		before: e.speech.start_at,
 		after: t.speech.start_at
@@ -11416,7 +11431,7 @@ function xo(e, t, n) {
 	let u = vo(e.boards ?? [], t.boards ?? [], (e) => e.id);
 	u.added.forEach((e) => i.push(C("diff.wall_board_added_tiles", {
 		name: e.name,
-		count_2: e.tiles.length
+		count: e.tiles.length
 	}))), u.removed.forEach((e) => i.push(C("diff.wall_board_removed", { name: e.name }))), u.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(C("diff.wall_board_renamed", {
 			before: e.name,
@@ -11436,7 +11451,7 @@ function xo(e, t, n) {
 	let d = vo(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
 	d.added.forEach((e) => i.push(C("diff.nudge_ladder_added_nudges", {
 		name: e.name,
-		count_2: e.rungs.length
+		count: e.rungs.length
 	}))), d.removed.forEach((e) => i.push(C("diff.nudge_ladder_removed", { name: e.name }))), d.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(C("diff.nudge_ladder_renamed", {
 			before: e.name,
@@ -12104,7 +12119,7 @@ function Lo(e, t, n) {
 	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", Fo(r)), e.style.setProperty("--boopli-accent-deep", Io(r));
 }
 // src/boopli-settings.ts
-var Ro = () => ({
+var Ro = "@address", zo = () => ({
 	phone: {
 		icon: "cellphone",
 		title: C("settings.phone"),
@@ -12193,7 +12208,7 @@ var Ro = () => ({
 		title: C("settings.language"),
 		keys: []
 	}
-}), zo = () => [
+}), Bo = () => [
 	{
 		title: C("settings.devices"),
 		areas: [
@@ -12222,7 +12237,7 @@ var Ro = () => ({
 			"language"
 		]
 	}
-], Bo = zo().flatMap((e) => e.areas), Vo = () => [
+], Vo = Bo().flatMap((e) => e.areas), Ho = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -12239,16 +12254,16 @@ var Ro = () => ({
 		value: "alarm_max",
 		label: C("common.max_volume_not_on_every_phone")
 	}
-], Ho = () => [{
+], Uo = () => [{
 	value: "blink",
 	label: C("rung.blink")
 }, {
 	value: "indicator",
 	label: C("settings.indicator_lamp_on_until_done")
-}], Uo = {
+}], Wo = {
 	start: "07:00",
 	stop: "22:00"
-}, Wo = class extends b {
+}, Go = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -12449,7 +12464,7 @@ var Ro = () => ({
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(j().map((e, t) => [String(t), { ...Uo }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(j().map((e, t) => [String(t), { ...Wo }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -12502,7 +12517,7 @@ var Ro = () => ({
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${Vo().map((e) => h`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${Ho().map((e) => h`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>${C("common.test")}</button>
                 </div>
@@ -12533,7 +12548,7 @@ var Ro = () => ({
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${Ho().map((t) => h`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${Uo().map((t) => h`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
               ${na(this.hass, n) ? h`<input
                     type="color"
@@ -12627,7 +12642,7 @@ var Ro = () => ({
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Uo })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Wo })}
                       />
                       ${C("common.no_limit")}
                     </label>
@@ -12983,7 +12998,7 @@ var Ro = () => ({
 		}
 	}
 	_renderLanguageCard() {
-		let e = Ro().language, t = st(), n = [...ft(), tt];
+		let e = zo().language, t = st(), n = [...ft(), tt], r = new URLSearchParams(location.search).get("lang") ?? "", i = r ? Ro : t;
 		return h`<section id="card-language" class="card area">
       <div class="card-head">
         <span class="card-icon">${A(e.icon)}</span>
@@ -12993,15 +13008,18 @@ var Ro = () => ({
         <select
           aria-label=${e.title}
           ?disabled=${this._isDirty()}
-          .value=${t}
+          .value=${i}
           @change=${(e) => {
-			ct(e.target.value);
-			let t = new URL(location.href);
-			t.searchParams.delete("lang"), history.replaceState(null, "", t), location.reload();
+			let t = e.target.value;
+			if (t === Ro) return;
+			ct(t);
+			let n = new URL(location.href);
+			n.searchParams.delete("lang"), history.replaceState(null, "", n), location.reload();
 		}}
         >
-          <option value="" ?selected=${t === ""}>${C("settings.language_same_as_home_assistant")}</option>
-          ${n.map((e) => h`<option value=${e} ?selected=${t === e}>${pt(e)}</option>`)}
+          ${r ? h`<option value=${Ro} selected>${C("settings.language_from_address", { code: r })}</option>` : v}
+          <option value="" ?selected=${i === ""}>${C("settings.language_same_as_home_assistant")}</option>
+          ${n.map((e) => h`<option value=${e} ?selected=${i === e}>${pt(e)}</option>`)}
         </select>
         <div class="muted small">${this._isDirty() ? C("settings.language_save_first") : C("settings.language_note")}</div>
       </div>
@@ -13009,7 +13027,7 @@ var Ro = () => ({
 	}
 	_card(e, t) {
 		if (e === "language") return this._renderLanguageCard();
-		let n = Ro()[e], r = this._changed(...n.keys);
+		let n = zo()[e], r = this._changed(...n.keys);
 		return h`<section id="card-${e}" class="card area ${e === "pet" ? "accented" : ""} ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
       <div class="card-head">
         <span class="card-icon">${A(n.icon)}</span>
@@ -13076,7 +13094,7 @@ var Ro = () => ({
 		}
 	}
 	_renderModal(e) {
-		let t = this._modal ? Ro()[this._modal] : null;
+		let t = this._modal ? zo()[this._modal] : null;
 		return h`<dialog
       aria-labelledby="win-title"
       @cancel=${(e) => {
@@ -13114,12 +13132,12 @@ var Ro = () => ({
 	}
 	_renderSaveBar() {
 		if (!this._isDirty()) return v;
-		let e = Bo.filter((e) => this._changed(...Ro()[e].keys));
+		let e = Vo.filter((e) => this._changed(...zo()[e].keys));
 		return h`${this._error && !this._modal ? h`<div class="error" role="alert">${this._error}</div>` : v}
       <div class="savebar" role="status">
         <div class="where">
           <b aria-hidden="true">●</b> ${C("settings.unsaved_changes_in")}
-          ${e.map((e) => h`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Ro()[e].title}</button>`)}
+          ${e.map((e) => h`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${zo()[e].title}</button>`)}
         </div>
         <span class="spacer"></span>
         <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${C("common.save")}</button>
@@ -13132,7 +13150,7 @@ var Ro = () => ({
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${zo().map((t) => h`<h2 class="group">${t.title}</h2>
+      ${Bo().map((t) => h`<h2 class="group">${t.title}</h2>
           <div class="cards">${t.areas.map((t) => this._card(t, e))}</div>`)}
       <p class="muted small">
         ${C("settings.want_to_do_all_of_it")}
@@ -13646,13 +13664,13 @@ var Ro = () => ({
     `];
 	}
 };
-customElements.define("boopli-settings", Wo);
+customElements.define("boopli-settings", Go);
 // src/boopli-home.ts
-var Go = 2e3;
-function Ko() {
+var Ko = 2e3;
+function qo() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var qo = class extends b {
+var Jo = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13724,7 +13742,7 @@ var qo = class extends b {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: Ko(),
+				id: qo(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -13922,12 +13940,12 @@ var qo = class extends b {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, Go);
+			let e = r.notes.trim().slice(0, Ko);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: Ko(),
+				id: qo(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -14016,7 +14034,7 @@ var qo = class extends b {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Go) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Ko) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
@@ -14279,7 +14297,7 @@ var qo = class extends b {
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${Go}
+        maxlength=${Ko}
         placeholder=${C("home.for_example_dishwasher_is_under_the")}
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
@@ -14708,7 +14726,7 @@ var qo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-home", qo);
+customElements.define("boopli-home", Jo);
 // src/wall-tile.ts
 var Z = class extends b {
 	static {
@@ -14818,7 +14836,7 @@ var Z = class extends b {
     color: var(--error-color, #db4437);
     font-size: clamp(12px, 3.2cqw, 18px);
   }
-`, Jo = class extends Z {
+`, Yo = class extends Z {
 	render() {
 		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(void 0, {
 			timeZone: e,
@@ -14842,9 +14860,9 @@ var Z = class extends b {
 		this.styles = [Q, o``];
 	}
 };
-customElements.define("wall-tile-clock", Jo);
+customElements.define("wall-tile-clock", Yo);
 // src/wall-tile-pet.ts
-var Yo = class extends Z {
+var Xo = class extends Z {
 	render() {
 		let e = this.snapshot?.pet;
 		if (!e) return h`<div class="center muted normal">${C("common.loading")}</div>`;
@@ -14883,9 +14901,9 @@ var Yo = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-pet", Yo);
+customElements.define("wall-tile-pet", Xo);
 // src/wall-tile-due.ts
-var Xo = class extends Z {
+var Zo = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -14979,9 +14997,9 @@ var Xo = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-due-now", Xo);
+customElements.define("wall-tile-due-now", Zo);
 // src/wall-tile-next.ts
-var Zo = class extends Z {
+var Qo = class extends Z {
 	render() {
 		if (!this.snapshot) return h`<div class="center muted normal">${C("common.loading")}</div>`;
 		let e = this.snapshot.time_zone, t = Mn(this.snapshot, this.nowMs), n = [
@@ -14995,7 +15013,7 @@ var Zo = class extends Z {
 			}))),
 			...t.dueToday.map((t) => ({
 				title: t.chore.name,
-				when: `at ${M(t.at, e)}`
+				when: C("wall_tile_next.at_time", { time: M(t.at, e) })
 			})),
 			...t.upcoming.map((t) => ({
 				title: t.chore.name,
@@ -15024,9 +15042,9 @@ var Zo = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-coming-up", Zo);
+customElements.define("wall-tile-coming-up", Qo);
 // src/wall-tile-entity.ts
-var Qo = {
+var $o = {
 	light: ["homeassistant", "toggle"],
 	switch: ["homeassistant", "toggle"],
 	input_boolean: ["homeassistant", "toggle"],
@@ -15038,7 +15056,7 @@ var Qo = {
 	scene: ["scene", "turn_on"],
 	button: ["button", "press"],
 	input_button: ["input_button", "press"]
-}, $o = {
+}, es = {
 	light: "lightbulb-outline",
 	switch: "power-plug-outline",
 	input_boolean: "toggle-switch-outline",
@@ -15053,9 +15071,9 @@ var Qo = {
 	button: "gesture-tap-button",
 	person: "account-outline",
 	media_player: "speaker"
-}, es = class extends Z {
+}, ts = class extends Z {
 	_tap() {
-		let e = this.text("entity_id"), t = Qo[e.split(".")[0]];
+		let e = this.text("entity_id"), t = $o[e.split(".")[0]];
 		if (this.preview || !this.hass?.callService || !t || this.text("tap", "toggle") !== "toggle") return;
 		let [n, r] = t;
 		this.hass.callService(n, r, { entity_id: e });
@@ -15063,7 +15081,7 @@ var Qo = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return h`<div class="center muted normal">${C("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!Qo[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = h`<div class="icon big">${A($o[n] ?? "shape-outline")}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!$o[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = h`<div class="icon big">${A(es[n] ?? "shape-outline")}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : C("wall_tile_entity.not_found")}</div>
@@ -15108,9 +15126,9 @@ var Qo = {
     `];
 	}
 };
-customElements.define("wall-tile-entity", es);
+customElements.define("wall-tile-entity", ts);
 // src/wall-tile-weather.ts
-var ts = {
+var ns = {
 	"clear-night": "weather-night",
 	cloudy: "weather-cloudy",
 	exceptional: "alert-outline",
@@ -15126,7 +15144,7 @@ var ts = {
 	sunny: "weather-sunny",
 	windy: "weather-windy",
 	"windy-variant": "weather-windy-variant"
-}, ns = class extends Z {
+}, rs = class extends Z {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return h`<div class="center muted normal">${C("wall_tile_weather.pick_a_weather_entity_in_the")}</div>`;
@@ -15134,7 +15152,7 @@ var ts = {
 		if (!t) return h`<div class="center muted normal">${C("wall_tile_weather.weather_not_found")}</div>`;
 		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : C("wall_tile_weather.humidity", { percent: n.humidity });
 		return h`<div class="w">
-      <div class="huge sky">${A(ts[t.state] ?? "thermometer")}</div>
+      <div class="huge sky">${A(ns[t.state] ?? "thermometer")}</div>
       <div>
         <div class="big">${r}</div>
         <div class="normal">${t.state.replace(/-/g, " ")}</div>
@@ -15163,9 +15181,9 @@ var ts = {
     `];
 	}
 };
-customElements.define("wall-tile-weather", ns);
+customElements.define("wall-tile-weather", rs);
 // src/wall-tile-calendar.ts
-function rs(e, t) {
+function is(e, t) {
 	let n = new Intl.DateTimeFormat("en-US", {
 		timeZone: t,
 		year: "numeric",
@@ -15180,7 +15198,7 @@ function rs(e, t) {
 		time: `${n.hour}:${n.minute}`
 	};
 }
-var is = 6e5, as = 7, os = class extends Z {
+var as = 6e5, os = 7, ss = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -15192,7 +15210,7 @@ var is = 6e5, as = 7, os = class extends Z {
 		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), is);
+		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), as);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer);
@@ -15208,7 +15226,7 @@ var is = 6e5, as = 7, os = class extends Z {
 		}
 		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
-		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + as * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + os * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
@@ -15227,7 +15245,7 @@ var is = 6e5, as = 7, os = class extends Z {
 				}
 				let n = Date.parse(e.start.dateTime);
 				if (Number.isNaN(n)) return null;
-				let { day: r, time: i } = rs(n, a);
+				let { day: r, time: i } = is(n, a);
 				return {
 					title: t,
 					at: n,
@@ -15244,7 +15262,7 @@ var is = 6e5, as = 7, os = class extends Z {
 		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, r = rs(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(void 0, {
+		}, r = is(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(void 0, {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
@@ -15259,7 +15277,7 @@ var is = 6e5, as = 7, os = class extends Z {
 	}
 	render() {
 		if (!this.text("entity_id")) return h`<div class="center muted normal">${C("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
-		let e = rs(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
+		let e = is(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
 		return h`<div class="label">${C("wall_tile_calendar.calendar")}</div>
       ${this._error ? h`<div class="error">${this._error}</div>` : t.length ? t.map((e) => h`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : h`<div class="normal muted">${C("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
 	}
@@ -15282,9 +15300,9 @@ var is = 6e5, as = 7, os = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-calendar", os);
+customElements.define("wall-tile-calendar", ss);
 // src/wall-tile-camera.ts
-var ss = class extends Z {
+var cs = class extends Z {
 	static {
 		this.properties = {
 			...Z.properties,
@@ -15325,9 +15343,9 @@ var ss = class extends Z {
     `];
 	}
 };
-customElements.define("wall-tile-camera", ss);
+customElements.define("wall-tile-camera", cs);
 // src/wall-tile-note.ts
-var cs = class extends Z {
+var ls = class extends Z {
 	render() {
 		let e = this.text("text").trim();
 		return e ? h`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : h`<div class="center muted normal">${C("wall_tile_note.write_a_note_in_the_board")}</div>`;
@@ -15336,18 +15354,18 @@ var cs = class extends Z {
 		this.styles = [Q, o`.center div { white-space: pre-line; }`];
 	}
 };
-customElements.define("wall-tile-note", cs);
+customElements.define("wall-tile-note", ls);
 // src/wall-layout.ts
-function ls(e, t) {
+function us(e, t) {
 	return e.x < t.x + t.w && t.x < e.x + e.w && e.y < t.y + t.h && t.y < e.y + e.h;
 }
-function us(e) {
+function ds(e) {
 	return e.reduce((e, t) => Math.max(e, t.y + t.h), 0);
 }
-function ds(e) {
+function fs(e) {
 	return e.reduce((e, t) => Math.max(e, t.x + t.w), 0);
 }
-function fs(e, t, n = "") {
+function ps(e, t, n = "") {
 	let r = e.map((e) => ({
 		...e,
 		options: e.options
@@ -15356,7 +15374,7 @@ function fs(e, t, n = "") {
 	let o = r.filter((e) => e !== a).sort((e, t) => e.y - t.y || e.x - t.x);
 	for (let e of o) {
 		for (;;) {
-			let t = i.filter((t) => ls(t, e));
+			let t = i.filter((t) => us(t, e));
 			if (!t.length) break;
 			e.y = Math.max(...t.map((e) => e.y + e.h));
 		}
@@ -15365,9 +15383,9 @@ function fs(e, t, n = "") {
 	}
 	return r;
 }
-function ps(e, t, n, r, i) {
+function ms(e, t, n, r, i) {
 	r = Math.min(r, t);
-	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => ls({
+	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => us({
 		x: n,
 		y: a,
 		w: r,
@@ -15378,7 +15396,7 @@ function ps(e, t, n, r, i) {
 	};
 	return null;
 }
-function ms(e, t) {
+function hs(e, t) {
 	return t === 2 ? e.map((e) => ({
 		...e,
 		x: e.x * 2,
@@ -15394,7 +15412,7 @@ function ms(e, t) {
 	}));
 }
 // src/wall-tiles.ts
-var hs = () => [
+var gs = () => [
 	{
 		type: "clock",
 		label: C("wall_tiles.clock"),
@@ -15557,18 +15575,18 @@ var hs = () => [
 			default: !1
 		}]
 	}
-], gs = { due_now: [3, 2] };
-function _s(e) {
-	return hs().find((t) => t.type === e);
+], _s = { due_now: [3, 2] };
+function vs(e) {
+	return gs().find((t) => t.type === e);
 }
-function vs(e, t = [], n = 16, r = 9) {
-	let i = _s(e), a = {};
+function ys(e, t = [], n = 16, r = 9) {
+	let i = vs(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let [o, s] = gs[e] ?? [1, 1];
+	let [o, s] = _s[e] ?? [1, 1];
 	if (n < o || r < s) return null;
 	let c = Math.max(o, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), l = Math.max(s, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
 	for (;;) {
-		let i = ps(t, n, r, c, l);
+		let i = ms(t, n, r, c, l);
 		if (i) return {
 			id: ra(),
 			type: e,
@@ -15581,19 +15599,19 @@ function vs(e, t = [], n = 16, r = 9) {
 		(c >= l ? c > o : l <= s) ? --c : --l;
 	}
 }
-function ys(e = 16, t = 9) {
-	let n = vs("clock", [], e, t), r = vs("due_now", [n], e, t);
+function bs(e = 16, t = 9) {
+	let n = ys("clock", [], e, t), r = ys("due_now", [n], e, t);
 	return r ? [n, r] : [n];
 }
-function bs(e, t) {
+function xs(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
 	return r && n.find((e) => e.name.toLowerCase() === r || e.id === t) || n[0];
 }
-function xs(e) {
+function Ss(e) {
 	return `${location.origin}${location.pathname}?wall=${encodeURIComponent(e.name)}`;
 }
 // src/boopli-wizard.ts
-var Ss = {
+var Cs = {
 	first: [
 		"welcome",
 		"phone",
@@ -15642,13 +15660,13 @@ var Ss = {
 	],
 	ladders: ["lad_start", "done"],
 	wall: ["wall_start", "done"]
-}, Cs = [
+}, ws = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], ws = () => ({
+], Ts = () => ({
 	first: C("wizard.first_setup"),
 	phone: C("wizard.phone_setup"),
 	quiet: C("wizard.quiet_hours_setup"),
@@ -15661,7 +15679,7 @@ var Ss = {
 	ai: C("wizard.ai_help_setup"),
 	ladders: C("common.nudge_it_your_way"),
 	wall: C("common.wall_board")
-}), Ts = 10, $ = 30, Es = () => ({
+}), Es = 10, $ = 30, Ds = () => ({
 	welcome: C("wizard.welcome"),
 	phone: C("wizard.your_phone"),
 	phone_detail: C("wizard.phone_details"),
@@ -15693,16 +15711,16 @@ var Ss = {
 	lad_delete: C("wizard.delete_a_ladder"),
 	wall_start: C("wizard.which_board"),
 	done: C("common.all_set")
-}), Ds = [
+}), Os = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], Os = () => [{
+], ks = () => [{
 	value: "quiet",
 	label: C("common.quiet"),
 	text: C("wizard.only_shown_in_boopli_never_nudges")
-}], ks = () => [
+}], As = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -15719,7 +15737,7 @@ var Ss = {
 		value: "alarm_max",
 		label: C("common.max_volume_not_on_every_phone")
 	}
-], As = () => [
+], js = () => [
 	{
 		value: "alexa_media",
 		label: C("helpers.alexa_media_player")
@@ -15732,13 +15750,13 @@ var Ss = {
 		value: "tts",
 		label: C("common.a_tts_voice_on_this_speaker")
 	}
-], js = () => [{
+], Ms = () => [{
 	value: "alexa",
 	label: C("common.alexa_sound")
 }, {
 	value: "file",
 	label: C("common.file_in_my_media_folder")
-}], Ms = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Ns = [
+}], Ns = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Ps = [
 	0,
 	1,
 	2,
@@ -15746,7 +15764,7 @@ var Ss = {
 	4,
 	5,
 	6
-], Ps = class extends b {
+], Fs = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15782,11 +15800,11 @@ var Ss = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Ss[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Cs[this.wizard]];
 		let e = this.startAt;
-		if (this._first && Cs.includes(e)) {
+		if (this._first && ws.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...Cs);
+			this._steps.splice(e + 1, 0, ...ws);
 		}
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0;
@@ -15880,7 +15898,7 @@ var Ss = {
 					...this._steps.slice(this._index + 1)
 				]), this._rungAt(this._nudgesBefore(this._index + 1))), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...Cs,
+					...ws,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
@@ -15971,7 +15989,7 @@ var Ss = {
 		}
 		let n = this._boardName.trim();
 		if (!n) throw Error(C("wizard.give_the_new_board_a_name"));
-		if (t.length >= Ts) throw Error(C("wizard.you_have_boards_the_most_edit", { max_boards: Ts }));
+		if (t.length >= Es) throw Error(C("wizard.you_have_boards_the_most_edit", { max_boards: Es }));
 		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(C("wizard.there_is_already_a_board_called", { name: n }));
 		let r = {
 			id: ra(),
@@ -15979,7 +15997,7 @@ var Ss = {
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: ys(16, 9)
+			tiles: bs(16, 9)
 		};
 		this._boardId = r.id, this._boardPick = r.id, this._set({ boards: [...t, r] });
 	}
@@ -16105,7 +16123,7 @@ var Ss = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Es()[e];
+		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Ds()[e];
 	}
 	_renderLadStart(e) {
 		let t = e.ladders ?? [], n = t.length === 0, r = t.filter((e) => !e.id.startsWith("standard_")), i = (e, t, n, r = !1) => h`<label class="inline option">
@@ -16234,7 +16252,7 @@ var Ss = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Ns.map((e) => [String(e), { ...qi }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Ps.map((e) => [String(e), { ...qi }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -16260,7 +16278,7 @@ var Ss = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(Ns.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(Ps.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -16360,7 +16378,7 @@ var Ss = {
 			level: n.target.value
 		} : e) })}
               >
-                ${ks().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${As().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Bt(this.hass, t))}>${C("wizard.send_a_test")}</button>
@@ -16385,7 +16403,7 @@ var Ss = {
       </label>
       ${t.enabled ? h`
             <div class="days">
-              ${Ns.map((e) => {
+              ${Ps.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return h`<div class="dayrow">
                   <span class="dayname">${j()[e]}</span>
@@ -16448,7 +16466,7 @@ var Ss = {
         </div>
       </div>
       <p>${C("wizard.how_should_new_chores_nudge_you")}</p>
-      ${[...Os(), ...(e.ladders ?? []).map((e) => ({
+      ${[...ks(), ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
 			text: `${e.id.startsWith("standard_") ? "" : C("wizard.your_own_ladder")}${C("wizard.ladder_nudges_sentence", { count: e.rungs.length })}`
@@ -16589,7 +16607,7 @@ var Ss = {
             <label class="num">
               ${C("common.sound_type")}
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${js().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${Ms().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -16597,7 +16615,7 @@ var Ss = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? h`<div class="muted small">
-                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${Ms} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
+                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${Ns} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
                 </div>` : h`<div class="muted small">${w("wizard.for_example_boopli_ding_mp3_in")}</div>`}
             ${e === "alarm" ? h`${this._numField(C("wizard.lasts_seconds"), i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
                 ${this._numField(C("wizard.repeats_every_seconds_0_once"), i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : v}
@@ -16639,7 +16657,7 @@ var Ss = {
 			}));
 		}}
               >
-                ${As().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${js().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -16940,7 +16958,7 @@ var Ss = {
       ${t.length === 0 ? h`<p class="muted">${C("wizard.nothing_changed")}</p>` : h`<ul>${t.map((e) => h`<li>${e}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board() ? h`<p>${C("wizard.next_put_the_tiles_where_you")}</p>
             <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${C("wizard.edit_it_on_the_wall")}</button></p>
-            <p class="small">${w("wizard.link_for_the_tablets_start_page", { value: xs(this._board()) })}</p>` : v}
+            <p class="small">${w("wizard.link_for_the_tablets_start_page", { value: Ss(this._board()) })}</p>` : v}
       <p class="muted small">
         ${C("wizard.everything_can_be_changed_again_in")}
       </p>
@@ -16989,7 +17007,7 @@ var Ss = {
 		return h`
       <div class="shell">
         <nav class="rail" aria-label=${C("common.steps")}>
-          <div class="rail-title">${ws()[this.wizard]}</div>
+          <div class="rail-title">${Ts()[this.wizard]}</div>
           ${this._steps.map((e, t) => h`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -17012,7 +17030,7 @@ var Ss = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${Ds.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
+          ${Os.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
           ${this._renderStep(e)}
           ${this._error ? h`<div class="error">${this._error}</div>` : v}
           <div class="actions">
@@ -17343,31 +17361,31 @@ var Ss = {
     `];
 	}
 };
-customElements.define("boopli-wizard", Ps);
+customElements.define("boopli-wizard", Fs);
 // node_modules/lit-html/static.js
-var Fs = Symbol.for(""), Is = (e) => {
-	if (e?.r === Fs) return e?._$litStatic$;
-}, Ls = (e) => ({
+var Is = Symbol.for(""), Ls = (e) => {
+	if (e?.r === Is) return e?._$litStatic$;
+}, Rs = (e) => ({
 	_$litStatic$: e,
-	r: Fs
-}), Rs = /* @__PURE__ */ new Map(), zs = ((e) => (t, ...n) => {
+	r: Is
+}), zs = /* @__PURE__ */ new Map(), Bs = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = Is(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = Ls(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = Rs.get(e)) === void 0 && (o.raw = o, Rs.set(e, t = o)), n = s;
+		(t = zs.get(e)) === void 0 && (o.raw = o, zs.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
 })(h);
 // src/wall-night.ts
-function Bs(e) {
+function Vs(e) {
 	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
 	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function Vs(e, t, n) {
+function Hs(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -17385,11 +17403,11 @@ function Vs(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = Bs(o.start), l = Bs(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = Vs(o.start), l = Vs(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Hs = 3e4, Us = class extends b {
+var Us = 3e4, Ws = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -17411,7 +17429,7 @@ var Hs = 3e4, Us = class extends b {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Hs, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Us, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -17447,7 +17465,7 @@ var Hs = 3e4, Us = class extends b {
 				...i,
 				w: Math.max(1, Math.min(r.cx - i.x + 1, r.cols - i.x)),
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
-			}, o = fs(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
+			}, o = ps(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
 		}, this._up = (e) => {
 			let t = this._drag;
@@ -17490,7 +17508,7 @@ var Hs = 3e4, Us = class extends b {
 		} catch {}
 	}
 	_board() {
-		return this.board ?? bs(this.snapshot?.settings?.boards, this.boardName);
+		return this.board ?? xs(this.snapshot?.settings?.boards, this.boardName);
 	}
 	render() {
 		let e = this._board();
@@ -17499,22 +17517,22 @@ var Hs = 3e4, Us = class extends b {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Mn(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Vs(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Mn(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Hs(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return h`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
       ${a ? h`<div class="away" role="status">${A("bag-suitcase")} <b>${C("wall.away_mode_is_on")}</b> <span>${An(a, this.nowMs, t, !0)}</span></div>` : v}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : v}
-        ${(this._live ?? e.tiles).filter((e) => !!_s(e.type)).map((e) => h`<div
+        ${(this._live ?? e.tiles).filter((e) => !!vs(e.type)).map((e) => h`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${zs`<${Ls(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${Bs`<${Rs(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${Ls(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+            ></${Rs(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
                   <span class="handle" data-id=${e.id} data-resize title=${C("wall.drag_to_resize")}></span>
                   <button type="button" class="del" aria-label=${C("wall.remove_this_tile")} title=${C("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
@@ -17764,9 +17782,9 @@ var Hs = 3e4, Us = class extends b {
   `;
 	}
 };
-customElements.define("boopli-wall", Us);
+customElements.define("boopli-wall", Ws);
 // src/boopli-wall-edit.ts
-var Ws = 10, Gs = 30, Ks = 40, qs = [
+var Gs = 10, Ks = 30, qs = 40, Js = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -17783,11 +17801,11 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 	"automation",
 	"person",
 	"media_player"
-], Js = () => [
+], Ys = () => [
 	["dim", C("wall_edit.dim_the_screen")],
 	["black", C("wall_edit.black_with_a_small_clock")],
 	["off", C("wall_edit.keep_as_it_is")]
-], Ys = () => [
+], Xs = () => [
 	[
 		"window",
 		C("wall_edit.this_window"),
@@ -17803,10 +17821,10 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 		C("wall_edit.upright"),
 		C("wall_edit.a_tablet_hung_upright_9_16")
 	]
-], Xs = {
+], Zs = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, Zs = class extends b {
+}, Qs = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -17841,7 +17859,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 		let e = this.snapshot.settings.boards ?? [];
 		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
 		let t = structuredClone(e), n = this._boards ? this._id : "";
-		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || bs(t, this.boardName)?.id || t[0]?.id || "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || xs(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
 		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
@@ -17887,7 +17905,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : Xs[this._view];
+		return this._view === "window" ? this._win : Zs[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -17904,7 +17922,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 	_pick(e) {
 		this._sel = e.detail;
 		let t = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
-		this._modal = _s(t)?.options.length ? "tile" : "";
+		this._modal = vs(t)?.options.length ? "tile" : "";
 	}
 	_uniqueName(e) {
 		let t = new Set((this._boards ?? []).map((e) => e.name.toLowerCase()));
@@ -17914,14 +17932,14 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= Ws) return;
+		if (!this._boards || this._boards.length >= Gs) return;
 		let e = {
 			id: ra(),
 			name: this._uniqueName(C("wall_edit.my_board")),
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: ys(16, 9)
+			tiles: bs(16, 9)
 		};
 		this._boards = [...this._boards, e], this._id = e.id, this._sel = "";
 	}
@@ -17932,12 +17950,12 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= Gs) {
-			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: Gs }), this._modal = "";
+		if (t.tiles.length >= Ks) {
+			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: Ks }), this._modal = "";
 			return;
 		}
-		let n = vs(e, t.tiles, t.columns, t.rows);
-		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = _s(e)?.options.length ? "tile" : "") : (this._error = C("wall_edit.every_cell_of_this_board_is"), this._modal = "");
+		let n = ys(e, t.tiles, t.columns, t.rows);
+		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = vs(e)?.options.length ? "tile" : "") : (this._error = C("wall_edit.every_cell_of_this_board_is"), this._modal = "");
 	}
 	_remove(e = this._sel) {
 		this._edit((t) => t.tiles = t.tiles.filter((t) => t.id !== e)), e === this._sel && (this._sel = ""), this._modal = "";
@@ -17948,7 +17966,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 	_resize(e, t) {
 		let n = this._cur, r = this._tile;
 		if (!n || !r) return;
-		let i = fs(n.tiles.map((i) => i.id === r.id ? {
+		let i = ps(n.tiles.map((i) => i.id === r.id ? {
 			...i,
 			w: Math.max(1, Math.min(e, n.columns - i.x)),
 			h: Math.max(1, Math.min(t, n.rows - i.y))
@@ -17961,7 +17979,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 			columns: e,
 			rows: t
 		};
-		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = ds(n.tiles), o = us(n.tiles);
+		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = fs(n.tiles), o = ds(n.tiles);
 		return r < a || i < o ? (this._error = C("wall_edit.some_tiles_reach_to_column_and", {
 			columns: a,
 			rows: o
@@ -17978,7 +17996,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 	_scaleGrid(e) {
 		let t = this._cur;
 		if (!t) return;
-		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = ms(t.tiles, n);
+		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = hs(t.tiles, n);
 		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? C("wall_edit.by_is_the_finest_grid", {
 			columns_max: 32,
 			rows_max: 18
@@ -18043,7 +18061,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = J(this.hass, t.domains ?? qs), a = `dl-${e.id}-${t.key}`;
+				let i = J(this.hass, t.domains ?? Js), a = `dl-${e.id}-${t.key}`;
 				return h`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder=${C("wall_edit.start_typing_a_name")} .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
@@ -18051,13 +18069,13 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
           ${n && !this.hass?.states[String(n)] ? h`<div class="error small">${C("wall_edit.was_not_found", { value: String(n) })}</div>` : v}</div>`;
 			}
 			default: return h`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${Ks} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${qs} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
 		let t = this._tile;
 		if (!t) return v;
-		let n = _s(t.type);
+		let n = vs(t.type);
 		return h`
       <div class="mhead"><h2>${A(n?.icon ?? "shape-outline")} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? h`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : v}
@@ -18077,7 +18095,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
       <div class="mhead"><h2>${A("monitor-dashboard")} ${C("wall_edit.this_board")}</h2></div>
       <div class="field">
         <label for="bname">${C("common.name")}</label>
-        <input id="bname" maxlength=${Ks} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${qs} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", C("wall_edit.columns"), e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -18092,13 +18110,13 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
       <div class="field">
         <label for="bnight">${C("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${Js().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${Ys().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">${C("wall_edit.night_is_when_quiet_hours_are")}</p>
-      <p class="small">${w("wall_edit.link_for_the_tablets_start_page", { link: xs(e) })}</p>
+      <p class="small">${w("wall_edit.link_for_the_tablets_start_page", { link: Ss(e) })}</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= Ws} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= Gs} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${C("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>${C("common.done")}</button>
@@ -18109,7 +18127,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
 		return h`
       <div class="mhead"><h2>${C("wall_edit.add_a_tile")}</h2></div>
       <div class="adds" role="group" aria-label=${C("wall_edit.add_a_tile_2")}>
-        ${hs().map((e) => h`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${A(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+        ${gs().map((e) => h`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${A(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>${C("common.cancel")}</button></div>
     `;
@@ -18132,7 +18150,7 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
           <button @click=${() => this._modal = "board"}>${A("cog-outline")} ${C("wall_edit.board")}</button>
           <button @click=${() => this._modal = "add"}>${C("wall_edit.add_tile")}</button>
           <div class="views" role="group" aria-label=${C("wall_edit.show_it_as")}>
-            ${Ys().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${Xs().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">${C("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
@@ -18403,14 +18421,14 @@ var Ws = 10, Gs = 30, Ks = 40, qs = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", Zs);
+customElements.define("boopli-wall-edit", Qs);
 // src/boopli-panel.ts
-var Qs = () => ({
+var $s = () => ({
 	today: C("wall_tile_calendar.today"),
 	chores: C("common.chores"),
 	home: C("panel.my_home"),
 	settings: C("common.settings")
-}), $s = class extends b {
+}), ec = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -18622,16 +18640,16 @@ var Qs = () => ({
         ${this.narrow ? h`<button class="menu" aria-label=${C("panel.open_sidebar")} @click=${this._toggleSidebar}>${A("menu")}</button>` : v}
         <h1>${C("wizard.boopli")}</h1>
         <nav>
-          ${Object.keys(Qs()).map((t) => h`<button
+          ${Object.keys($s()).map((t) => h`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${Qs()[t]}
+              ${$s()[t]}
               ${e[t] ? h`<span class="dot" title=${C("panel.unsaved_changes")} aria-label=${C("panel.unsaved_changes")}></span>` : v}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title=${C("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(bs(this._snapshot?.settings?.boards, "")?.name ?? "")}>${A("monitor-dashboard")} ${C("panel.wall_view")}</button>
+        <button class="wallbtn" title=${C("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(xs(this._snapshot?.settings?.boards, "")?.name ?? "")}>${A("monitor-dashboard")} ${C("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -18822,5 +18840,5 @@ var Qs = () => ({
     `];
 	}
 };
-customElements.define("boopli-panel", $s);
-export { $s as BoopliPanel };
+customElements.define("boopli-panel", ec);
+export { ec as BoopliPanel };

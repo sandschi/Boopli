@@ -107,7 +107,9 @@ export function scanTemplates(src, withStrings = false) {
         comments.push([from, i]);
         continue;
       }
-      if (c === "/" && ("(,=:[!&|?{};".includes(prevSignificant(i)) || keywordBefore(i))) {
+      // after `=>` too: (x) => /"/.test(x)
+      const afterArrow = prevSignificant(i) === ">" && src[src.slice(0, i).trimEnd().length - 2] === "=";
+      if (c === "/" && ("(,=:[!&|?{};".includes(prevSignificant(i)) || keywordBefore(i) || afterArrow)) {
         skipRegex();
         continue;
       }

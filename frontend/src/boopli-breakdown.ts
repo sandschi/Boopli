@@ -21,9 +21,9 @@ export interface BreakdownResult {
 }
 
 const SIZES = (): { value: StepSize; letter: string; label: string; xp: number }[] => [
-  { value: "small", letter: "S", label: t("breakdown.small_quick_and_easy"), xp: 10 },
-  { value: "medium", letter: "M", label: t("breakdown.medium_takes_some_effort"), xp: 15 },
-  { value: "big", letter: "B", label: t("breakdown.big_hard_or_long"), xp: 20 },
+  { value: "small", letter: t("breakdown.letter_small"), label: t("breakdown.small_quick_and_easy"), xp: 10 },
+  { value: "medium", letter: t("breakdown.letter_medium"), label: t("breakdown.medium_takes_some_effort"), xp: 15 },
+  { value: "big", letter: t("breakdown.letter_big"), label: t("breakdown.big_hard_or_long"), xp: 20 },
 ];
 const XP = { small: 10, medium: 15, big: 20 } as const;
 const FINISH_BONUS = 20;

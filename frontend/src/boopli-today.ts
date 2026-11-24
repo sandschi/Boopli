@@ -124,7 +124,7 @@ export class BoopliToday extends LitElement {
     if (!before || pet.total_xp <= before.total_xp) return; // the first look shows nothing
     // The pet celebrates: a level up first, then waking up, otherwise a small hop for the step.
     this._moment = "done";
-    this._momentText = `+${pet.total_xp - before.total_xp} XP`;
+    this._momentText = t("today.xp_gained", { xp: pet.total_xp - before.total_xp });
     if (before.mood === "sleepy" || before.mood === "hibernating") {
       this._moment = "wake";
       this._momentText = "";
@@ -134,7 +134,7 @@ export class BoopliToday extends LitElement {
       this._momentText = t("today.level_2", { level: pet.level });
     }
     this._momentSeq += 1;
-    const parts = [`+${pet.total_xp - before.total_xp} XP`];
+    const parts = [t("today.xp_gained", { xp: pet.total_xp - before.total_xp })];
     if (finished.length) parts.unshift(t("today.is_done", { value: finished[0] }));
     if (pet.level > before.level) parts.push(t("today.level_2", { level: pet.level }));
     if (before.mood === "sad" || before.mood === "hibernating")

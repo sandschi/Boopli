@@ -37,6 +37,9 @@ import type {
   Snapshot,
 } from "./types";
 
+/** The entry of the language picker that stands for a ?lang=xx in the address. */
+const ADDRESS_CHOICE = "@address";
+
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
 type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup" | "language";
 
@@ -1002,6 +1005,10 @@ export class BoopliSettings extends LitElement {
     const a = AREAS().language;
     const choice = languageChoice();
     const codes = [...languages(), FANCY];
+    // a ?lang=xx in the address wins over everything: show it as the selected entry, so that picking
+    // any other entry (even the one that looks selected) is a change that takes it out
+    const fromAddress = new URLSearchParams(location.search).get("lang") ?? "";
+    const shown = fromAddress ? ADDRESS_CHOICE : choice;
     return html`<section id="card-language" class="card area">
       <div class="card-head">
         <span class="card-icon">${icon(a.icon)}</span>
@@ -1011,9 +1018,11 @@ export class BoopliSettings extends LitElement {
         <select
           aria-label=${a.title}
           ?disabled=${this._isDirty()}
-          .value=${choice}
+          .value=${shown}
           @change=${(e: Event) => {
-            setLanguageChoice((e.target as HTMLSelectElement).value);
+            const picked = (e.target as HTMLSelectElement).value;
+            if (picked === ADDRESS_CHOICE) return;
+            setLanguageChoice(picked);
             // a ?lang=xx in the address would still win over the choice: take it out
             const address = new URL(location.href);
             address.searchParams.delete("lang");
@@ -1021,8 +1030,9 @@ export class BoopliSettings extends LitElement {
             location.reload(); // every text is drawn again in the new language
           }}
         >
-          <option value="" ?selected=${choice === ""}>${t("settings.language_same_as_home_assistant")}</option>
-          ${codes.map((code) => html`<option value=${code} ?selected=${choice === code}>${languageName(code)}</option>`)}
+          ${fromAddress ? html`<option value=${ADDRESS_CHOICE} selected>${t("settings.language_from_address", { code: fromAddress })}</option>` : nothing}
+          <option value="" ?selected=${shown === ""}>${t("settings.language_same_as_home_assistant")}</option>
+          ${codes.map((code) => html`<option value=${code} ?selected=${shown === code}>${languageName(code)}</option>`)}
         </select>
         <div class="muted small">${this._isDirty() ? t("settings.language_save_first") : t("settings.language_note")}</div>
       </div>

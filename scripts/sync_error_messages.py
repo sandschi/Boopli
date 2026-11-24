@@ -54,13 +54,19 @@ def templates() -> list[str]:
                 first = node.args[0]
                 if isinstance(first, ast.Constant) and isinstance(first.value, str) and first.value:
                     found.append(first.value)
-            elif isinstance(node, ast.Return) and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
+            elif isinstance(node, ast.Return) and node.value is not None:
+                # a text, or a conditional with texts in it (return None if ok else "Pick an NFC tag.")
+                branches = [node.value]
+                while any(isinstance(b, ast.IfExp) for b in branches):
+                    branches = [x for b in branches for x in ((b.body, b.orelse) if isinstance(b, ast.IfExp) else (b,))]
+                texts = [b.value for b in branches if isinstance(b, ast.Constant) and isinstance(b.value, str) and b.value]
+                if not texts:
+                    continue
                 fn = function_of(node)
                 returns = ast.unparse(fn.returns) if fn is not None and fn.returns is not None else ""
                 # the validators return a text or None; _explain gives the plain reasons a routine call can fail
                 if ("str" in returns and "None" in returns) or (fn is not None and fn.name == "_explain"):
-                    if node.value.value:
-                        found.append(node.value.value)
+                    found.extend(texts)
     return found
 
 
