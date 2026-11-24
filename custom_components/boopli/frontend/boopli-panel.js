@@ -7398,7 +7398,7 @@ var Xi = 8, Zi = [{
           >
             ${[...Zi, ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
-			label: `${e.name}: my own ladder`
+			label: e.id.startsWith("standard_") ? e.name : `${e.name}: my own ladder`
 		}))].map((t) => g`<option
                 value=${t.value}
                 ?selected=${t.value === (e.nudge_style ?? this.defaultStyle)}
@@ -14568,7 +14568,7 @@ var Mo = {
       ${[...Ro, ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
-			text: `Your own ladder, ${e.rungs.length} ${e.rungs.length === 1 ? "nudge" : "nudges"}.`
+			text: `${e.id.startsWith("standard_") ? "" : "Your own ladder, "}${e.rungs.length} ${e.rungs.length === 1 ? "nudge" : "nudges"}.`
 		}))].map((t) => g`<label class="inline option">
           <input type="radio" name="style" .checked=${e.default_style === t.value} @change=${() => this._set({ default_style: t.value })} />
           <span><b>${t.label}</b> <span class="muted small">${t.text}</span></span>
@@ -15600,6 +15600,7 @@ var Qo = 3e4, $o = class extends x {
 		this.styles = o`
     :host {
       display: block;
+      font-family: ${a(Mt)};
       color: var(--primary-text-color);
     }
     * {
@@ -16199,7 +16200,7 @@ var es = 10, ts = 30, ns = 40, rs = [
       display: block;
       color: var(--primary-text-color);
       background: var(--primary-background-color);
-      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+      font-family: ${a(Mt)};
     }
     * {
       box-sizing: border-box;

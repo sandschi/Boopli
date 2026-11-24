@@ -1,4 +1,5 @@
-import { LitElement, css, nothing } from "lit";
+import { LitElement, css, nothing, unsafeCSS } from "lit";
+import { BOOPLI_FONT } from "./fonts";
 import { icon } from "./icon";
 import { html as shtml, unsafeStatic } from "lit/static-html.js";
 import { html } from "lit";
@@ -269,6 +270,7 @@ export class BoopliWall extends LitElement {
   static styles = css`
     :host {
       display: block;
+      font-family: ${unsafeCSS(BOOPLI_FONT)};
       color: var(--primary-text-color);
     }
     * {

@@ -1035,7 +1035,7 @@ export class BoopliWizard extends LitElement {
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
           label: l.name,
-          text: `Your own ladder, ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
+          text: `${l.id.startsWith("standard_") ? "" : "Your own ladder, "}${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
         })),
       ].map(
         (s) => html`<label class="inline option">

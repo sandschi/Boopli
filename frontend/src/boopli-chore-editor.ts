@@ -537,7 +537,7 @@ export class BoopliChoreEditor extends LitElement {
               ...STYLE_OPTIONS,
               ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
                 value: `ladder:${l.id}` as NudgeStyle,
-                label: `${l.name}: my own ladder`,
+                label: l.id.startsWith("standard_") ? l.name : `${l.name}: my own ladder`,
               })),
             ].map(
               (o) => html`<option

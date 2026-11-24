@@ -1,4 +1,5 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html, nothing, unsafeCSS } from "lit";
+import { BOOPLI_FONT } from "./fonts";
 import { errorMessage, saveSettings } from "./api";
 import "./boopli-wall";
 import { entityIds, friendlyName, newLadderId } from "./helpers";
@@ -576,7 +577,7 @@ export class BoopliWallEdit extends LitElement {
       display: block;
       color: var(--primary-text-color);
       background: var(--primary-background-color);
-      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+      font-family: ${unsafeCSS(BOOPLI_FONT)};
     }
     * {
       box-sizing: border-box;
