@@ -165,13 +165,13 @@ export class BoopliToday extends LitElement {
           ? html`
               <textarea
                 rows="2"
-                placeholder="For example: clean the bathroom"
+                placeholder=${t("today.for_example_clean_the_bathroom")}
                 .value=${this._quick}
                 @input=${(e: Event) => (this._quick = (e.target as HTMLTextAreaElement).value)}
               ></textarea>
               <div class="quick-actions">
                 <button class="primary" @click=${() => this._openBreakdown("now")}>${icon("auto-fix")} ${agentOn(this.snapshot) ? "Break it down now" : "Ask Claude to break it down"}</button>
-                <button @click=${() => this._openBreakdown("recurring")}>${icon("repeat")} Break down a recurring chore</button>
+                <button @click=${() => this._openBreakdown("recurring")}>${icon("repeat")} ${t("today.break_down_a_recurring_chore")}</button>
               </div>
             `
           : html`
@@ -342,14 +342,14 @@ export class BoopliToday extends LitElement {
         ? html`<div class="park-pick">
             <input
               type="datetime-local"
-              aria-label="Date and time"
+              aria-label=${t("today.date_and_time")}
               .value=${ask.at}
               @input=${(e: Event) => this._park && (this._park = { ...this._park, at: (e.target as HTMLInputElement).value })}
             />
-            <button class="primary" ?disabled=${this._busy || !ask.at} @click=${() => this._choose("at")}>Set it</button>
+            <button class="primary" ?disabled=${this._busy || !ask.at} @click=${() => this._choose("at")}>${t("today.set_it")}</button>
           </div>`
         : nothing}
-      <div class="muted small">Nothing is lost. The steps wait as their own small task under “Set aside for later”.</div>
+      <div class="muted small">${t("today.nothing_is_lost_the_steps_wait")}</div>
     </div>`;
   }
 
@@ -515,14 +515,14 @@ export class BoopliToday extends LitElement {
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
                 ${this._removing === c.id
-                  ? html`<span class="small">Remove it?</span>
+                  ? html`<span class="small">${t("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
                         @click=${() => this._partAction(async () => { await deleteChore(this.hass!, c.id); this._removing = ""; })}
                       >
-                        Yes, remove
+                        ${t("today.yes_remove")}
                       </button>
-                      <button class="link" @click=${() => (this._removing = "")}>Keep</button>`
+                      <button class="link" @click=${() => (this._removing = "")}>${t("today.keep")}</button>`
                   : html`<button class="link" @click=${() => (this._removing = c.id)}>${t("common.remove")}</button>`}
               </div>`}
         </div>`
@@ -565,7 +565,7 @@ export class BoopliToday extends LitElement {
       <div class="cols"><div class="col">
       ${setup === "skipped" || setup === "in_progress"
         ? html`<section class="card banner">
-            <span>Boopli is not fully set up yet.</span>
+            <span>${t("today.boopli_is_not_fully_set_up")}</span>
             <button
               class="primary"
               @click=${() =>
@@ -573,7 +573,7 @@ export class BoopliToday extends LitElement {
                   new CustomEvent("open-wizard", { bubbles: true, composed: true })
                 )}
             >
-              Finish setting up
+              ${t("today.finish_setting_up")}
             </button>
           </section>`
         : nothing}
@@ -617,7 +617,7 @@ export class BoopliToday extends LitElement {
                   @click=${() =>
                     this._done(model.now!.run.id, model.now!.step.step_id)}
                 >
-                  ${icon("check-bold")} Done
+                  ${icon("check-bold")} ${t("common.done")}
                 </button>
                 ${model.now.step.on_it_until
                   ? html`<button
@@ -644,7 +644,7 @@ export class BoopliToday extends LitElement {
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({ runId: model.now!.run.id, group: model.now!.step.group })}
                 >
-                  Do this part later
+                  ${t("today.do_this_part_later")}
                 </button>`;
               })()}
               ${this._error ? html`<div class="error">${this._error}</div>` : nothing}

@@ -113,7 +113,7 @@ export class BoopliWall extends LitElement {
     const board = this._board();
     if (!this.snapshot || !board) {
       return html`<div class="note">${this.snapshot ? "No board yet. Make one in Settings, on the Wall board card." : "Loading…"}</div>
-        ${this.preview ? nothing : html`<div class="controls"><button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button></div>`}`;
+        ${this.preview ? nothing : html`<div class="controls"><button type="button" aria-label=${t("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button></div>`}`;
     }
     const tz = this.snapshot.time_zone;
     const dueNow = !this.preview && !!buildToday(this.snapshot, this.nowMs).now;

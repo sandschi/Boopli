@@ -72,52 +72,45 @@ for (const name of readdirSync(i18nDir).filter((n) => n.endsWith(".json") && n !
   }
 }
 
-// 4: text written directly in templates
+// 4: text written directly in templates, and sentences written as string literals
+import { scanTemplates, textsOf, BLANK } from "./ts-templates.mjs";
 const allowFile = join(root, "scripts", "i18n-allow.txt");
-const allowed = new Set(existsSync(allowFile) ? readFileSync(allowFile, "utf8").split(/\r?\n/).filter(Boolean) : []);
-const hard = [];
-const looksLikeText = (s) => /[A-Za-z]{2,}/.test(s) && !/^[\s\d.,:;·•/\\|()[\]{}%+\-–—×✓✕…]*$/.test(s);
+const allowed = new Set(existsSync(allowFile) ? readFileSync(allowFile, "utf8").split(/\r?\n/).filter((l) => l && !l.startsWith("#")) : []);
+const looksLikeText = (s) => /[A-Za-z]{2,}/.test(s) && !/^[\s\d.,:;·•/\|()[\]{}%+\-–—×✓✕…]*$/.test(s);
+const identifierish = (s) => /^[\w./:@#-]+$/.test(s) && /[_/.:@#]/.test(s);
+const hard = []; // { file, line, text, why }
 for (const file of files) {
   const rel = relative(src, file).replaceAll("\\", "/");
   const text = readFileSync(file, "utf8");
-  // only inside html`...` templates
-  for (const block of text.matchAll(/html`([\s\S]*?)`(?=[;,)\s]|$)/g)) {
-    const body = block[1].replace(/\$\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}/g, "\u0000"); // blank out ${...}
-    const startLine = text.slice(0, block.index).split("\n").length;
-    for (const m of body.matchAll(/>([^<>\u0000]*[A-Za-z][^<>\u0000]*)</g)) {
-      const s = m[1].trim();
-      if (looksLikeText(s)) hard.push([rel, startLine + body.slice(0, m.index).split("\n").length - 1, s]);
+  const lineOf = (at) => text.slice(0, at).split("\n").length;
+  const { templates, strings } = scanTemplates(text, true);
+  for (const tpl of templates) {
+    for (const f of textsOf(tpl.body)) {
+      const real = f.text.replaceAll(BLANK, " ").replace(/\s+/g, " ").trim();
+      if (!looksLikeText(real) || identifierish(real) || /^https?:/.test(real)) continue;
+      const at = tpl.map[Math.min(f.at, tpl.map.length - 1)];
+      hard.push({ file: rel, line: lineOf(at), text: real, why: f.text.includes(BLANK) ? "with values" : f.kind });
     }
-    for (const m of body.matchAll(/\b(?:title|placeholder|aria-label|label|alt)="([^"\u0000]*[A-Za-z][^"\u0000]*)"/g)) {
-      const s = m[1].trim();
-      if (looksLikeText(s)) hard.push([rel, startLine + body.slice(0, m.index).split("\n").length - 1, s]);
+  }
+  // a sentence as a string literal: three or more words, starting with a capital letter
+  for (const s of strings) {
+    const v = s.text;
+    if (/^[A-Z][a-z'’]+( [\w'’,.!?:;…()-]+){2,}/.test(v) && !/^(Itim|Roboto)/.test(v)) {
+      hard.push({ file: rel, line: lineOf(s.at), text: v, why: "string" });
     }
-    // text on its own lines between tags
-    body.split("\n").forEach((line, i) => {
-      const s = line.trim();
-      if (/^[A-Z][^<>=;{}\u0000]*[a-z]{2}[^<>=;{}\u0000]*$/.test(s) && s.includes(" ")) {
-        hard.push([rel, startLine + i, s]);
-      }
-    });
   }
 }
-const seen = new Set();
-const remaining = hard.filter(([file, , s]) => {
-  const id = `${file}: ${s}`;
-  if (allowed.has(id) || seen.has(`${id}@${s}`)) return false;
-  return true;
-});
+const remaining = hard.filter((h) => !allowed.has(`${h.file}: ${h.text}`));
 
 if (report) {
   const per = {};
-  for (const [file] of remaining) per[file] = (per[file] ?? 0) + 1;
+  for (const h of remaining) per[h.file] = (per[h.file] ?? 0) + 1;
   for (const [file, n] of Object.entries(per).sort((a, b) => b[1] - a[1])) console.log(String(n).padStart(4), file);
 }
-for (const [file, line, s] of remaining.slice(0, report ? 0 : 40)) console.log(`hard-coded text: ${file}:${line}: ${s.slice(0, 70)}`);
-if (!report && remaining.length > 40) console.log(`... and ${remaining.length - 40} more (run with --report for counts)`);
+const showAll = process.argv.includes("--all");
+for (const h of remaining.slice(0, report ? 0 : showAll ? remaining.length : 40)) console.log(`hard-coded [${h.why}] ${h.file}:${h.line}: ${h.text.slice(0, 80)}`);
+if (!report && !showAll && remaining.length > 40) console.log(`... and ${remaining.length - 40} more (run with --report for counts, --all for the list)`);
 for (const w of warnings.slice(0, 20)) console.log(`warning: ${w}`);
 for (const e of errors) console.log(`error: ${e}`);
-console.log(
-  `\n${used.size} keys used, ${Object.keys(en).length} keys in en.json, ${remaining.length} hard-coded texts, ${errors.length} errors`
-);
+console.log(`\n${used.size} keys used, ${Object.keys(en).length} keys in en.json, ${remaining.length} hard-coded texts, ${errors.length} errors`);
 process.exit(errors.length || remaining.length ? 1 : 0);

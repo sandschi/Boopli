@@ -173,7 +173,7 @@ export class BoopliAway extends LitElement {
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
           ${onNow ? "Back now" : "Cancel it"}
         </button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._change(away)}>Change</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._change(away)}>${t("away.change")}</button>
       </div>
     `;
   }
@@ -194,7 +194,7 @@ export class BoopliAway extends LitElement {
         ${this._later
           ? html`<input
               type="datetime-local"
-              aria-label="Away from"
+              aria-label=${t("away.away_from")}
               .value=${this._start}
               @input=${(e: Event) => (this._start = (e.target as HTMLInputElement).value)}
             />`
@@ -202,11 +202,11 @@ export class BoopliAway extends LitElement {
       </div>
 
       <div class="field">
-        <div class="label">Until</div>
+        <div class="label">${t("away.until")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => (this._open = false)}>A date…</button>
+          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => (this._open = false)}>${t("away.a_date")}</button>
           <button type="button" class="chip ${this._open ? "on" : ""}" @click=${() => (this._open = true)}>
-            Until I turn it off
+            ${t("away.until_i_turn_it_off")}
           </button>
         </div>
         ${this._open
@@ -221,8 +221,8 @@ export class BoopliAway extends LitElement {
 
       ${chores.length
         ? html`<div class="field">
-            <div class="label">These keep going while I'm away</div>
-            <div class="muted small">Tick what you still want to be nudged about, like pills.</div>
+            <div class="label">${t("away.these_keep_going_while_im_away")}</div>
+            <div class="muted small">${t("away.tick_what_you_still_want_to")}</div>
             <div class="keep">
               ${chores.map(
                 (c) => html`<label class="inline">

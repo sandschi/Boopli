@@ -212,7 +212,7 @@ export class BoopliLadders extends LitElement {
       <div class="rung-head">
         <b>Nudge ${index + 1}</b>
         ${index === 0 && !(l.rungs.length === 1 && l.repeat_last)
-          ? html`<span class="muted small">right away</span>`
+          ? html`<span class="muted small">${t("ladders.right_away")}</span>`
           : html`<label class="gap">
               ${index === 0 ? "Right away, then repeats every" : "Wait"}
               <input
@@ -319,7 +319,7 @@ export class BoopliLadders extends LitElement {
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>
                   ${open ? "Close" : "Edit"}
                 </button>
-                ${l.id.startsWith("standard_") ? nothing : html`<button class="chip danger" @click=${() => this._delete(l)}>Delete</button>`}
+                ${l.id.startsWith("standard_") ? nothing : html`<button class="chip danger" @click=${() => this._delete(l)}>${t("chore_editor.delete")}</button>`}
               </div>
               ${open
                 ? this._renderEditor(l)
@@ -328,7 +328,7 @@ export class BoopliLadders extends LitElement {
           })}
       ${this._note ? html`<div class="error" role="alert">${this._note}</div>` : nothing}
       <div class="row">
-        <button class="primary" ?disabled=${ladders.length >= MAX_LADDERS} @click=${() => this._add()}>+ New ladder</button>
+        <button class="primary" ?disabled=${ladders.length >= MAX_LADDERS} @click=${() => this._add()}>${t("ladders.new_ladder")}</button>
       </div>
     </section>`;
   }

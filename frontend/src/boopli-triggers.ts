@@ -197,16 +197,16 @@ export class BoopliTriggers extends LitElement {
           : nothing}
       </div>
       <div class="field">
-        <label>It finishes the step when it…</label>
+        <label>${t("triggers.it_finishes_the_step_when_it")}</label>
         <select
           .value=${cond}
           @change=${(e: Event) =>
             this._setCondition(index, (e.target as HTMLSelectElement).value as Condition)}
         >
-          <option value="state" ?selected=${cond === "state"}>is in this state</option>
-          <option value="above" ?selected=${cond === "above"}>goes above a number</option>
-          <option value="below" ?selected=${cond === "below"}>goes below a number</option>
-          <option value="between" ?selected=${cond === "between"}>is between two numbers</option>
+          <option value="state" ?selected=${cond === "state"}>${t("triggers.is_in_this_state")}</option>
+          <option value="above" ?selected=${cond === "above"}>${t("triggers.goes_above_a_number")}</option>
+          <option value="below" ?selected=${cond === "below"}>${t("triggers.goes_below_a_number")}</option>
+          <option value="between" ?selected=${cond === "between"}>${t("triggers.is_between_two_numbers")}</option>
         </select>
       </div>
       ${cond === "state"
@@ -241,7 +241,7 @@ export class BoopliTriggers extends LitElement {
         : html`<div class="row2">
             ${cond === "above" || cond === "between"
               ? html`<div>
-                  <label>Above</label>
+                  <label>${t("triggers.above")}</label>
                   <input
                     type="number"
                     step="any"
@@ -265,7 +265,7 @@ export class BoopliTriggers extends LitElement {
               : nothing}
           </div>`}
       <div class="field">
-        <label>…and stays that way for (minutes, 0 = right away)</label>
+        <label>${t("triggers.and_stays_that_way_for_minutes")}</label>
         <input
           type="number"
           min="0"
@@ -278,7 +278,7 @@ export class BoopliTriggers extends LitElement {
         />
       </div>
       <details class="advanced">
-        <summary>Advanced</summary>
+        <summary>${t("settings.advanced")}</summary>
         <label class="inline">
           <input
             type="checkbox"
@@ -289,8 +289,7 @@ export class BoopliTriggers extends LitElement {
           Also count it if it is already true when the step starts
         </label>
         <div class="muted small">
-          Off (the usual): it has to happen after the step starts, so a door that was already open
-          does not finish "open it to dry". On: good for "windows are shut" or "plant is fine".
+          ${t("triggers.off_the_usual_it_has_to")}
         </div>
       </details>
     `;
@@ -320,7 +319,7 @@ export class BoopliTriggers extends LitElement {
             : html`<button type="button" @click=${() => this._scan(index)}>${t("triggers.scan_now")}</button>`}
         </div>
         ${this._scanning === index
-          ? html`<div class="muted small">Hold your phone to the tag now…</div>`
+          ? html`<div class="muted small">${t("triggers.hold_your_phone_to_the_tag")}</div>`
           : nothing}
       </div>
     `;
@@ -340,13 +339,13 @@ export class BoopliTriggers extends LitElement {
             this._patch(index, { entity_id: (e.target as HTMLInputElement).value.trim() })}
         />
         ${trig.entity_id && !current
-          ? html`<div class="warn small">Not found right now. Check the name.</div>`
+          ? html`<div class="warn small">${t("triggers.not_found_right_now_check_the")}</div>`
           : nothing}
       </div>
       <div class="field">
-        <label>Only this kind of press (empty = any press)</label>
+        <label>${t("triggers.only_this_kind_of_press_empty")}</label>
         <input
-          placeholder="for example single or double"
+          placeholder=${t("triggers.for_example_single_or_double")}
           .value=${trig.press}
           @input=${(e: Event) => this._patch(index, { press: (e.target as HTMLInputElement).value })}
         />
@@ -389,11 +388,11 @@ export class BoopliTriggers extends LitElement {
           </div>`
         : this.triggers.map(
             (trig, i) => html`
-              ${i > 0 ? html`<div class="or muted small">or</div>` : nothing}
+              ${i > 0 ? html`<div class="or muted small">${t("triggers.or")}</div>` : nothing}
               <div class="trigger">
                 <div class="trigger-head">
                   <b>${this._title(trig)}</b>
-                  <button type="button" aria-label="Remove" @click=${() => this._remove(i)}>✕</button>
+                  <button type="button" aria-label=${t("common.remove")} @click=${() => this._remove(i)}>✕</button>
                 </div>
                 ${trig.kind === "tag"
                   ? this._renderTag(trig, i)
@@ -405,9 +404,9 @@ export class BoopliTriggers extends LitElement {
           )}
       ${this._note ? html`<div class="warn small">${this._note}</div>` : nothing}
       <div class="chips add">
-        <button type="button" @click=${() => this._add("state")}>+ An entity changes</button>
-        <button type="button" @click=${() => this._add("tag")}>+ NFC tag</button>
-        <button type="button" @click=${() => this._add("button")}>+ Button</button>
+        <button type="button" @click=${() => this._add("state")}>${t("triggers.an_entity_changes")}</button>
+        <button type="button" @click=${() => this._add("tag")}>${t("triggers.nfc_tag")}</button>
+        <button type="button" @click=${() => this._add("button")}>${t("triggers.button")}</button>
       </div>
     `;
   }

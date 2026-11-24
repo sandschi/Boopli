@@ -438,7 +438,7 @@ export class BoopliSettings extends LitElement {
           ${t("settings.boopli_sends_a_notification_with_done")}
         </p>
         ${services.length === 0
-          ? html`<p class="muted">No phones with the Home Assistant app found.</p>`
+          ? html`<p class="muted">${t("settings.no_phones_with_the_home_assistant")}</p>`
           : services.map((service) => {
               const cfg = d.phones.find((p) => p.service === service);
               const note = this._notes[`phone:${service}`];
@@ -464,7 +464,7 @@ export class BoopliSettings extends LitElement {
                       (l) => html`<option value=${l.value} ?selected=${l.value === (cfg?.level ?? "normal")}>${l.label}</option>`
                     )}
                   </select>
-                  <button @click=${() => this._testPhone(service)}>Test</button>
+                  <button @click=${() => this._testPhone(service)}>${t("common.test")}</button>
                 </div>
                 ${note ? html`<div class="note muted small">${note}</div>` : nothing}
               `;
@@ -511,8 +511,8 @@ export class BoopliSettings extends LitElement {
                       this._patchLight(id, { color: this._hexToRgb((e.target as HTMLInputElement).value) })}
                   />`
                 : nothing}
-              <button @click=${() => this._testLight(light)}>Test</button>
-              <button aria-label="Remove light" @click=${() => this._removeLight(id)}>✕</button>
+              <button @click=${() => this._testLight(light)}>${t("common.test")}</button>
+              <button aria-label=${t("settings.remove_light")} @click=${() => this._removeLight(id)}>✕</button>
             </div>
             ${blink
               ? html`
@@ -563,16 +563,16 @@ export class BoopliSettings extends LitElement {
         })}
         <div class="row add">
           <select
-            aria-label="Add a light"
+            aria-label=${t("settings.add_a_light")}
             .value=${this._addLight}
             @change=${(e: Event) => (this._addLight = (e.target as HTMLSelectElement).value)}
           >
-            <option value="">Add a light…</option>
+            <option value="">${t("settings.add_a_light_2")}</option>
             ${choices.map(
               (id) => html`<option value=${id} ?selected=${id === this._addLight}>${this._friendly(id)}</option>`
             )}
           </select>
-          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>Add</button>
+          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>${t("common.add")}</button>
         </div>
       </section>
     `;
@@ -612,14 +612,14 @@ export class BoopliSettings extends LitElement {
                     </label>
                     ${day
                       ? html`
-                          <span class="muted small">from</span>
+                          <span class="muted small">${t("common.from")}</span>
                           <input
                             type="time"
                             aria-label="${name} nudges start"
                             .value=${day.start}
                             @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
                           />
-                          <span class="muted small">until</span>
+                          <span class="muted small">${t("common.until")}</span>
                           <input
                             type="time"
                             aria-label="${name} nudges stop"
@@ -631,7 +631,7 @@ export class BoopliSettings extends LitElement {
                   </div>
                 `;
               })}
-              <button class="chip" @click=${() => this._copyMondayToAll()}>Copy Monday to all days</button>
+              <button class="chip" @click=${() => this._copyMondayToAll()}>${t("common.copy_monday_to_all_days")}</button>
             `
           : nothing}
       </section>
@@ -718,12 +718,12 @@ export class BoopliSettings extends LitElement {
             @click=${() => set(s.hex)}
           ></button>`
         )}
-        <label class="acc custom" title="Pick any colour">
+        <label class="acc custom" title=${t("settings.pick_any_colour")}>
           Custom
           <input
             type="color"
             .value=${picked || own}
-            aria-label="Custom accent colour"
+            aria-label=${t("settings.custom_accent_colour")}
             @input=${(e: Event) => set((e.target as HTMLInputElement).value)}
           />
         </label>
@@ -848,12 +848,12 @@ export class BoopliSettings extends LitElement {
             ${icon("creation")} Ask Claude (extra)${ai.claude_enabled ? " · on" : ""}
           </button>
         </div>
-        ${changed ? html`<div class="muted small">Save first to test.</div>` : nothing}
+        ${changed ? html`<div class="muted small">${t("settings.save_first_to_test")}</div>` : nothing}
         ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
         <div class="field">
-          <label for="ai-agent">Which AI agent?</label>
+          <label for="ai-agent">${t("settings.which_ai_agent")}</label>
           <select id="ai-agent" @change=${(e: Event) => this._setAi({ entity_id: (e.target as HTMLSelectElement).value })}>
-            <option value="" .selected=${ai.entity_id === ""}>Home Assistant default</option>
+            <option value="" .selected=${ai.entity_id === ""}>${t("wizard.home_assistant_default")}</option>
             ${agents.map((id) => html`<option value=${id} .selected=${id === ai.entity_id}>${friendlyName(this.hass, id)}</option>`)}
             ${ai.entity_id && !agents.includes(ai.entity_id)
               ? html`<option value=${ai.entity_id} selected>${ai.entity_id} (not found)</option>`
@@ -889,14 +889,14 @@ export class BoopliSettings extends LitElement {
             </dialog>`
           : nothing}
         <details @toggle=${(e: Event) => (e.target as HTMLDetailsElement).open && this._loadDefaults()}>
-          <summary class="muted small">Advanced: agent for photos, and the prompts Boopli sends</summary>
+          <summary class="muted small">${t("settings.advanced_agent_for_photos_and_the")}</summary>
           <div class="field">
-            <label for="ai-photo-agent">Agent for room photos</label>
+            <label for="ai-photo-agent">${t("settings.agent_for_room_photos")}</label>
             <select
               id="ai-photo-agent"
               @change=${(e: Event) => this._setAi({ photo_entity_id: (e.target as HTMLSelectElement).value })}
             >
-              <option value="" .selected=${(ai.photo_entity_id ?? "") === ""}>The same agent as above</option>
+              <option value="" .selected=${(ai.photo_entity_id ?? "") === ""}>${t("settings.the_same_agent_as_above")}</option>
               ${agents.map(
                 (id) => html`<option value=${id} .selected=${id === ai.photo_entity_id}>${friendlyName(this.hass, id)}</option>`
               )}
@@ -905,21 +905,16 @@ export class BoopliSettings extends LitElement {
                 : nothing}
             </select>
             <div class="muted small">
-              Only used when you describe a room from photos on the My home screen. Pick an agent whose model can
-              read images. Your normal agent stays as it is.
+              ${t("settings.only_used_when_you_describe_a")}
             </div>
           </div>
           <p class="muted small">
-            These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the
-            built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.
+            ${t("settings.these_are_the_instructions_given_to")}
           </p>
           ${prompt("questions_prompt", "Questions prompt")} ${prompt("steps_prompt", "Steps prompt")}
-          <h3>Prompts you copy into your own AI chat</h3>
+          <h3>${t("settings.prompts_you_copy_into_your_own")}</h3>
           <p class="muted small">
-            These are the texts the "In my own chat" buttons on My home give you to copy. Boopli fills in {room}
-            (the room name), {names} (your rooms) and {known} (the notes so far, if you tick that). Keep the part that
-            asks for the answer in the same shape: one short fact per line in one code block, and for the whole home
-            a "## Room" heading line before each room. Boopli reads the pasted answer that way.
+            ${t("settings.these_are_the_texts_the_in")}
           </p>
           ${prompt("chat_room_prompt", "Chat prompt for one room")} ${prompt("chat_home_prompt", "Chat prompt for the whole home")}
         </details>
@@ -994,7 +989,7 @@ export class BoopliSettings extends LitElement {
         <span class="card-icon">${icon(a.icon)}</span>
         <h3 tabindex="-1">
           ${a.title}
-          ${changed ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+          ${changed ? html`<span class="unsaved-badge">${t("settings.unsaved")}</span>` : nothing}
         </h3>
       </div>
       <div class="summary">
@@ -1011,10 +1006,10 @@ export class BoopliSettings extends LitElement {
         ${area === "backup"
           ? nothing
           : area === "wall"
-          ? html`<button type="button" class="textlink quiet" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
+          ? html`<button type="button" class="textlink quiet" aria-label=${t("settings.edit_on_the_wall")} @click=${() => this._editWall()}>${t("settings.edit_on_the_wall")}</button>`
           : html`<button type="button" class="textlink quiet" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>${t("settings.advanced")}</button>`}
       </div>
-      ${area === "backup" && this._isDirty() ? html`<p class="muted small">Save or discard your unsaved changes to import.</p>` : nothing}
+      ${area === "backup" && this._isDirty() ? html`<p class="muted small">${t("settings.save_or_discard_your_unsaved_changes")}</p>` : nothing}
     </section>`;
   }
 
@@ -1103,16 +1098,16 @@ export class BoopliSettings extends LitElement {
         ? html`<div class="win">
             <div class="win-head ${this._modal === "ai" ? "noline" : ""}">
               <h2 id="win-title">${icon(area.icon)} ${area.title}</h2>
-              <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
+              <button type="button" class="close" aria-label=${t("settings.keep_for_later_and_close")} ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, d)}</div>
             ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
             <div class="win-foot">
-              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>Save and close</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>Discard and close</button>
-              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>Keep for later</button>
+              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>${t("settings.save_and_close")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>${t("settings.discard_and_close")}</button>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>${t("settings.keep_for_later")}</button>
               <p class="muted small hint-line">
-                "Keep for later" closes this window and keeps your changes. The card shows an orange "Unsaved" tag.
+                ${t("settings.keep_for_later_closes_this_window")}
               </p>
             </div>
           </div>`
@@ -1145,8 +1140,8 @@ export class BoopliSettings extends LitElement {
           )}
         </div>
         <span class="spacer"></span>
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-        <button ?disabled=${this._busy} @click=${() => this.discard()}>Discard all</button>
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+        <button ?disabled=${this._busy} @click=${() => this.discard()}>${t("settings.discard_all")}</button>
       </div>`;
   }
 
@@ -1163,7 +1158,7 @@ export class BoopliSettings extends LitElement {
       )}
       <p class="muted small">
         Want to do all of it again from the start?
-        <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
+        <button type="button" class="chip" @click=${() => this._openWizard("first")}>${t("settings.run_the_first_setup_again")}</button>
       </p>
       ${this._renderModal(d)} ${this._renderSaveBar()}
       ${this._backup

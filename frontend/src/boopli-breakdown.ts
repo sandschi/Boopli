@@ -251,7 +251,7 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${this._preview
         ? html`<div class="preview">
-            ${this._preview.shortened ? html`<div class="muted small">A long note was shortened to keep the request small.</div>` : nothing}
+            ${this._preview.shortened ? html`<div class="muted small">${t("breakdown.a_long_note_was_shortened_to")}</div>` : nothing}
             <pre>${this._preview.instructions}</pre>
           </div>`
         : nothing}
@@ -372,7 +372,7 @@ export class BoopliBreakdown extends LitElement {
             </label>
             ${agentOn(this.snapshot)
               ? html`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
-                  Look at the photos
+                  ${t("breakdown.look_at_the_photos")}
                 </button>`
               : nothing}
             ${claudeReady(this.snapshot)
@@ -384,7 +384,7 @@ export class BoopliBreakdown extends LitElement {
                   ${icon("creation")} ${t("breakdown.ask_claude_to_look")}
                 </button>`
               : nothing}
-            <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>Cancel</button>
+            <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>${t("common.cancel")}</button>
           </div>`}
       <div class="muted small">
         ${agentOn(this.snapshot)
@@ -626,7 +626,7 @@ export class BoopliBreakdown extends LitElement {
             </button>`
           : nothing}
         <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(agentOn(this.snapshot) ? "agent" : "claude")}>
-          Skip the questions
+          ${t("breakdown.skip_the_questions")}
         </button>
       </div>
       ${claudeReady(this.snapshot)
@@ -670,7 +670,7 @@ export class BoopliBreakdown extends LitElement {
       <textarea
         rows="1"
         class="own"
-        placeholder="Or write it in your own words"
+        placeholder=${t("common.or_write_it_in_your_own")}
         .value=${this._typed[i] ?? ""}
         @input=${(e: Event) =>
           (this._typed = this._typed.map((t, k) => (k === i ? (e.target as HTMLTextAreaElement).value : t)))}
@@ -696,18 +696,18 @@ export class BoopliBreakdown extends LitElement {
       ${this._renderScene()}
       ${this._questions.map((q, i) => this._renderQuestion(q, i))}
       <div class="question">
-        <div class="qtext">Anything else I should know?</div>
+        <div class="qtext">${t("breakdown.anything_else_i_should_know")}</div>
         <textarea
           rows="2"
           class="own"
-          placeholder="Optional. Long answers are welcome."
+          placeholder=${t("home.optional_long_answers_are_welcome")}
           .value=${this._extra}
           @input=${(e: Event) => (this._extra = (e.target as HTMLTextAreaElement).value)}
         ></textarea>
       </div>
       <div class="actions">
-        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>Next questions</button>
-        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>Enough, go on</button>
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>${t("home.next_questions")}</button>
+        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>${t("breakdown.enough_go_on")}</button>
       </div>
     `;
   }
@@ -738,11 +738,11 @@ export class BoopliBreakdown extends LitElement {
         <input
           class="title"
           aria-label="Step ${i + 1}"
-          placeholder="What to do"
+          placeholder=${t("chore_editor.what_to_do")}
           .value=${s.title}
           @input=${(e: Event) => this._patchStep(i, { title: (e.target as HTMLInputElement).value })}
         />
-        <span class="sizes" role="group" aria-label="Size">
+        <span class="sizes" role="group" aria-label=${t("breakdown.size")}>
           ${SIZES.map(
             (z) => html`<button
               type="button"
@@ -759,10 +759,10 @@ export class BoopliBreakdown extends LitElement {
           ? html`<span class="wait muted small" title=${t("breakdown.time_to_wait_before_this_step")}>⏳ ${s.wait_minutes} min</span>`
           : nothing}
         <span class="tools">
-          <button type="button" aria-label="Move up" ?disabled=${i === 0} @click=${() => this._move(i, -1)}>↑</button>
-          <button type="button" aria-label="Move down" ?disabled=${i === this._steps.length - 1} @click=${() => this._move(i, 1)}>↓</button>
-          <button type="button" aria-label="Add a step after this" @click=${() => this._add(i)}>+</button>
-          <button type="button" aria-label="Remove" @click=${() => this._remove(i)}>✕</button>
+          <button type="button" aria-label=${t("ladders.move_up")} ?disabled=${i === 0} @click=${() => this._move(i, -1)}>↑</button>
+          <button type="button" aria-label=${t("ladders.move_down")} ?disabled=${i === this._steps.length - 1} @click=${() => this._move(i, 1)}>↓</button>
+          <button type="button" aria-label=${t("breakdown.add_a_step_after_this")} @click=${() => this._add(i)}>+</button>
+          <button type="button" aria-label=${t("common.remove")} @click=${() => this._remove(i)}>✕</button>
         </span>
       </div>
       ${this._checks.length
@@ -788,8 +788,8 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${this._checks.map(
         (q) => html`<div class="check">
-          <input aria-label="Question" .value=${q.text} @input=${(e: Event) => this._patchCheck(q.id, (e.target as HTMLInputElement).value)} />
-          <button type="button" aria-label="Remove this question" @click=${() => this._removeCheck(q.id)}>✕</button>
+          <input aria-label=${t("chore_editor.question")} .value=${q.text} @input=${(e: Event) => this._patchCheck(q.id, (e.target as HTMLInputElement).value)} />
+          <button type="button" aria-label=${t("chore_editor.remove_this_question")} @click=${() => this._removeCheck(q.id)}>✕</button>
         </div>`
       )}
     </div>`;
@@ -810,7 +810,7 @@ export class BoopliBreakdown extends LitElement {
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${t("breakdown.try_again")}</button>
         ${agentOn(this.snapshot) && claudeReady(this.snapshot)
           ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
-              ${icon("creation")} Ask Claude instead
+              ${icon("creation")} ${t("breakdown.ask_claude_instead")}
             </button>`
           : nothing}
         ${this._answers.length || this._questions.length
@@ -857,7 +857,7 @@ export class BoopliBreakdown extends LitElement {
           ? html`<div class="error">
               ${this._error}
               ${this._phase === "interview" || this._phase === "task"
-                ? html`<div class="muted small">You can try again, or skip the questions.</div>`
+                ? html`<div class="muted small">${t("breakdown.you_can_try_again_or_skip")}</div>`
                 : nothing}
             </div>`
           : nothing}

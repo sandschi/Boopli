@@ -1,4 +1,5 @@
 import { css, svg, unsafeCSS, type SVGTemplateResult } from "lit";
+import { t } from "./i18n";
 
 /**
  * What the slime does besides being in a mood: a housework routine (wipe, wash a sock, take out
@@ -121,7 +122,7 @@ function typingFront(h: Hands): SVGTemplateResult {
     </g>
     ${h.typingBehind ? svg`` : paws}
     <g class="code" transform="translate(${h.codeAt?.[0] ?? 0} ${h.codeAt?.[1] ?? 0})">
-      <text class="c1" x="84" y="60">&lt;/&gt;</text>
+      <text class="c1" x="84" y="60">${t("pet_work.text")}</text>
       <text class="c2" x="104" y="52">{ }</text>
       <text class="c3" x="122" y="62">01</text>
     </g>`;

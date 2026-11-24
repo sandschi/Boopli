@@ -317,9 +317,9 @@ export class BoopliSpeakers extends LitElement {
                       />
                     </label>`
                   : nothing}
-                <button type="button" class="test" @click=${() => l.onTest()}>Test</button>
+                <button type="button" class="test" @click=${() => l.onTest()}>${t("common.test")}</button>
                 <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(l.key)}>
-                  Details
+                  ${t("speakers.details")}
                 </button>
                 ${l.onRemove
                   ? html`<button type="button" class="textlink quiet" aria-label=${l.removeLabel ?? "Remove"} @click=${() => l.onRemove!()}>${t("common.remove")}</button>`
@@ -372,7 +372,7 @@ export class BoopliSpeakers extends LitElement {
         </div>
         <div class="tests">
           ${tests.map((x) => html`<button type="button" class="test" @click=${() => void this._test(speaker, x.level)}>${x.label}</button>`)}
-          <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle("spk:" + id)}>Details</button>
+          <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle("spk:" + id)}>${t("speakers.details")}</button>
         </div>
         ${tests.map((x) => {
           const note = this._notes[`speaker:${id}:${x.level}`];
@@ -395,7 +395,7 @@ export class BoopliSpeakers extends LitElement {
                       this._setSpeech(id, { target, enabled: !!target });
                     }}
                   >
-                    <option value="" ?selected=${cfg.target === ""}>Choose…</option>
+                    <option value="" ?selected=${cfg.target === ""}>${t("common.choose")}</option>
                     ${targets.map((x) => html`<option value=${x.value} ?selected=${x.value === cfg.target}>${x.label}</option>`)}
                   </select>
                 </label>
@@ -408,7 +408,7 @@ export class BoopliSpeakers extends LitElement {
                   aria-label="Remove speaker ${this._friendly(id)}"
                   @click=${() => this._patch({ speakers: this._speakers().filter((s) => s.entity_id !== id) })}
                 >
-                  Remove speaker
+                  ${t("speakers.remove_speaker")}
                 </button>
               </div>`
           : nothing}
@@ -487,7 +487,7 @@ export class BoopliSpeakers extends LitElement {
         })
       )}
       <button type="button" class="textlink" ?disabled=${sounds.length >= 60} @click=${() => this._addExtra()}>
-        ${icon("plus")} Add a sound
+        ${icon("plus")} ${t("speakers.add_a_sound")}
       </button>
     `;
   }
@@ -546,7 +546,7 @@ export class BoopliSpeakers extends LitElement {
             <option value="">${t("speakers.choose_a_media_player")}</option>
             ${choices.map((id) => html`<option value=${id} ?selected=${id === this._addSpeaker}>${this._friendly(id)}</option>`)}
           </select>
-          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
+          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>${t("common.add")}</button>
         </div>`
       );
     }
@@ -589,7 +589,7 @@ export class BoopliSpeakers extends LitElement {
           ${topButton("add", "plus", "Add a speaker")} ${topButton("tone", "music-note", "Ding and alarm sound")}
           ${topButton("own", "playlist-music", "Your own sounds")} ${topButton("say", "message-text-outline", "What the speakers say")}
         </div>
-        ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">No speaker yet. Press Add a speaker.</p>`}
+        ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">${t("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(d)}
       </section>
     `;
@@ -636,14 +636,14 @@ export class BoopliSpeakers extends LitElement {
             removeLabel: `Remove alarm device ${this._friendly(device.entity_id)}`,
           })
         )}
-        <h3 class="sec">Add an alarm device</h3>
+        <h3 class="sec">${t("speakers.add_an_alarm_device")}</h3>
         <div class="row">
           <select
-            aria-label="Add an alarm device"
+            aria-label=${t("speakers.add_an_alarm_device")}
             .value=${this._addDevice}
             @change=${(e: Event) => (this._addDevice = (e.target as HTMLSelectElement).value)}
           >
-            <option value="">Choose a siren, switch or script…</option>
+            <option value="">${t("speakers.choose_a_siren_switch_or_script")}</option>
             ${choices.map((id) => html`<option value=${id} ?selected=${id === this._addDevice}>${this._friendly(id)}</option>`)}
           </select>
           <button
@@ -654,7 +654,7 @@ export class BoopliSpeakers extends LitElement {
               this._addDevice = "";
             }}
           >
-            Add
+            ${t("common.add")}
           </button>
         </div>
       </section>

@@ -58,7 +58,7 @@ export class BoopliPetPicker extends LitElement {
           >
             <span class="pic"><boopli-pet .kind=${p.kind} .mood=${"content"} still></boopli-pet></span>
             <span class="name">${p.label}</span>
-            ${p.art ? "" : html`<span class="soon">art soon</span>`}
+            ${p.art ? "" : html`<span class="soon">${t("pet_picker.art_soon")}</span>`}
           </button>`
         )}
       </div>

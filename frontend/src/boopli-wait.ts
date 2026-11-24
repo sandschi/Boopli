@@ -104,7 +104,7 @@ export class BoopliWait extends LitElement {
       <div class="hint">${this._hint()}</div>
       ${this.stoppable
         ? html`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", { bubbles: true, composed: true }))}>
-            Stop waiting
+            ${t("wait.stop_waiting")}
           </button>`
         : nothing}
     </div>`;

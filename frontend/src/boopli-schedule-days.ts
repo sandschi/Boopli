@@ -38,7 +38,7 @@ export class BoopliScheduleDays extends LitElement {
 
   private _emit(days: Record<string, string[]>): void {
     // A day without times is simply not in the schedule.
-    const cleaned = Object.fromEntries(Object.entries(days).filter(([, t]) => t.length > 0));
+    const cleaned = Object.fromEntries(Object.entries(days).filter(([, tm]) => tm.length > 0));
     this.dispatchEvent(new CustomEvent("days-change", { detail: cleaned, bubbles: true, composed: true }));
   }
 
@@ -52,7 +52,7 @@ export class BoopliScheduleDays extends LitElement {
 
   private _setTime(day: number, index: number, value: string): void {
     if (!value) return;
-    this._setDay(day, this._times(day).map((t, i) => (i === index ? value : t)));
+    this._setDay(day, this._times(day).map((tm, i) => (i === index ? value : tm)));
   }
 
   private _shownDays(): number[] {
@@ -83,18 +83,18 @@ export class BoopliScheduleDays extends LitElement {
             ${on
               ? html`<div class="times">
                   ${times.map(
-                    (t, i) => html`<span class="time">
+                    (tm, i) => html`<span class="time">
                       <input
                         type="time"
                         aria-label="${WEEKDAY_NAMES[day]} time ${i + 1}"
-                        .value=${t}
+                        .value=${tm}
                         @change=${(e: Event) => this._setTime(day, i, (e.target as HTMLInputElement).value)}
                       />
                       ${times.length > 1
                         ? html`<button
                             type="button"
                             class="x"
-                            aria-label="Remove this time"
+                            aria-label=${t("schedule_days.remove_this_time")}
                             @click=${() => this._setDay(day, times.filter((_, k) => k !== i))}
                           >
                             ✕

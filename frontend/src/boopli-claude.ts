@@ -107,7 +107,7 @@ export class BoopliClaude extends LitElement {
       ${this.hideIntro
         ? nothing
         : html`<p class="muted small">
-            Claude is an extra, next to your Home Assistant agent. Press <b>Ask Claude</b> when you do not trust the
+            Claude is an extra, next to your Home Assistant agent. Press <b>${t("common.ask_claude")}</b> when you do not trust the
             agent's answer, when your free agent is down, or when you have no agent. It uses your own Claude account:
             every ask is one run of your routine. Claude's routines are a research preview, so they can change or stop
             working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a
@@ -137,9 +137,9 @@ export class BoopliClaude extends LitElement {
         <label for="claude-token">${t("claude.the_routines_token")}</label>
         ${tokenSet && !this._changing
           ? html`<div class="row">
-              <span>Token is saved</span>
-              <button type="button" ?disabled=${this._busy} @click=${() => (this._changing = true)}>Replace</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>Remove</button>
+              <span>${t("claude.token_is_saved")}</span>
+              <button type="button" ?disabled=${this._busy} @click=${() => (this._changing = true)}>${t("claude.replace")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>${t("common.remove")}</button>
             </div>`
           : html`<div class="row">
               <input

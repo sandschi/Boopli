@@ -175,7 +175,7 @@ export class BoopliRung extends LitElement {
             </label>
             ${use && lightHasColor(this.hass, light.entity_id)
               ? html`<div class="dev colorrow">
-                  <span>Color</span>
+                  <span>${t("settings.color")}</span>
                   <input
                     type="color"
                     class="swatch"
@@ -184,7 +184,7 @@ export class BoopliRung extends LitElement {
                     @input=${(e: Event) => this._setLightColor(light.entity_id, hexToRgb((e.target as HTMLInputElement).value))}
                   />
                   <button type="button" class="chip" ?disabled=${!use.color} @click=${() => this._setLightColor(light.entity_id, null)}>
-                    Use the normal color
+                    ${t("rung.use_the_normal_color")}
                   </button>
                 </div>`
               : nothing}

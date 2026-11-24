@@ -119,8 +119,8 @@ export class BoopliPicture extends LitElement {
           @change=${(e: Event) => this._setMode((e.target as HTMLSelectElement).value as Mode)}
         >
           <option value="none" ?selected=${this._mode === "none"}>${t("picture.none")}</option>
-          ${hasCameras ? html`<option value="camera" ?selected=${this._mode === "camera"}>A camera</option>` : nothing}
-          <option value="file" ?selected=${this._mode === "file"}>A picture file</option>
+          ${hasCameras ? html`<option value="camera" ?selected=${this._mode === "camera"}>${t("picture.a_camera")}</option>` : nothing}
+          <option value="file" ?selected=${this._mode === "file"}>${t("picture.a_picture_file")}</option>
         </select>
       </div>
       ${this._mode === "camera"
@@ -137,7 +137,7 @@ export class BoopliPicture extends LitElement {
                 (id) => html`<option value=${id} ?selected=${this.value === id}>${friendlyName(this.hass, id)}</option>`
               )}
             </select>
-            <span class="muted small">The phone shows a fresh snapshot when the nudge arrives.</span>
+            <span class="muted small">${t("picture.the_phone_shows_a_fresh_snapshot")}</span>
           </div>`
         : nothing}
       ${this._mode === "file"

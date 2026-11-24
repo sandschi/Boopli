@@ -528,7 +528,7 @@ export class BoopliHome extends LitElement {
       <textarea
         rows="1"
         class="own"
-        placeholder="Or write it in your own words"
+        placeholder=${t("common.or_write_it_in_your_own")}
         .value=${iv.typed[i] ?? ""}
         @input=${(e: Event) =>
           this._patchIv({
@@ -590,22 +590,22 @@ export class BoopliHome extends LitElement {
                   ? "This is what the AI saw in your photos. The photos are already gone."
                   : "This is what I would write down."}
               Change anything that is wrong.
-              ${room?.notes ? html`<b>It replaces the notes you have now.</b>` : nothing}
+              ${room?.notes ? html`<b>${t("home.it_replaces_the_notes_you_have")}</b>` : nothing}
               Nothing is saved until you press Save afterwards.
             </p>
             <textarea
               rows="8"
               class="notes"
-              aria-label="Proposed notes"
+              aria-label=${t("home.proposed_notes")}
               .value=${iv.result}
               @input=${(e: Event) => this._patchIv({ result: (e.target as HTMLTextAreaElement).value })}
             ></textarea>
             <div class="actions">
-              <button class="primary big" ?disabled=${!iv.result.trim()} @click=${() => this._acceptNotes()}>Use these notes</button>
+              <button class="primary big" ?disabled=${!iv.result.trim()} @click=${() => this._acceptNotes()}>${t("home.use_these_notes")}</button>
               ${iv.source !== "paste" && this._aiOn()
                 ? html`<button class="big" @click=${() => this._askQuestions(iv.answers)}>${t("home.ask_me_more")}</button>`
                 : nothing}
-              <button class="big" @click=${() => (this._iv = null)}>Throw away</button>
+              <button class="big" @click=${() => (this._iv = null)}>${t("home.throw_away")}</button>
             </div>
           `
         : nothing}
@@ -708,7 +708,7 @@ export class BoopliHome extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <ol class="stepslist">
         <li>
-          <b>Copy this</b> and paste it into your chat.
+          <b>${t("home.copy_this")}</b> and paste it into your chat.
           ${this._hasNotes(tool.roomId)
             ? html`<label class="inline">
                 <input
@@ -731,14 +731,14 @@ export class BoopliHome extends LitElement {
           </div>
         </li>
         <li>
-          <b>Talk it through</b> with the chat. When you say you are done, it answers with the notes.
+          <b>${t("home.talk_it_through")}</b> with the chat. When you say you are done, it answers with the notes.
         </li>
         <li>
-          <b>Copy the notes</b> it gives back and paste them here.
+          <b>${t("home.copy_the_notes")}</b> it gives back and paste them here.
           <textarea
             class="pastebox"
             rows="6"
-            aria-label="Pasted notes"
+            aria-label=${t("home.pasted_notes")}
             placeholder=${whole ? "## Kitchen\nDishwasher is under the counter\n## Bedroom\n…" : "Dishwasher is under the counter\nBalcony door sticks"}
             .value=${tool.pasted}
             @input=${(e: Event) => this._patchTool({ pasted: (e.target as HTMLTextAreaElement).value })}
@@ -771,7 +771,7 @@ export class BoopliHome extends LitElement {
             ${item.name}
             <span class="tag">${item.id ? "your room" : "new room"}</span>
           </label>
-          ${existing?.notes.trim() ? html`<div class="muted small">It replaces the notes this room has now.</div>` : nothing}
+          ${existing?.notes.trim() ? html`<div class="muted small">${t("home.it_replaces_the_notes_this_room")}</div>` : nothing}
           <textarea
             class="notes"
             rows="5"
@@ -785,7 +785,7 @@ export class BoopliHome extends LitElement {
         <button class="primary big" ?disabled=${used === 0} @click=${() => this._applyFlat()}>
           Use ${used} ${used === 1 ? "room" : "rooms"}
         </button>
-        <button class="big" @click=${() => (this._tool = null)}>Throw away</button>
+        <button class="big" @click=${() => (this._tool = null)}>${t("home.throw_away")}</button>
       </div>
     </section>`;
   }
@@ -801,7 +801,7 @@ export class BoopliHome extends LitElement {
           .value=${room.name}
           @input=${(e: Event) => this._patchRoom(room.id, { name: (e.target as HTMLInputElement).value })}
         />
-        ${this._roomChanged(room.id) ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+        ${this._roomChanged(room.id) ? html`<span class="unsaved-badge">${t("settings.unsaved")}</span>` : nothing}
       </div>
       ${room.area_id ? html`<div class="muted small">${t("home.from_your_home_assistant_areas")}</div>` : html`<div class="muted small">${t("home.added_by_you")}</div>`}
       <label for="n-${room.id}">${t("home.what_should_the_ai_know_about")}</label>
@@ -817,7 +817,7 @@ export class BoopliHome extends LitElement {
       <div class="row-actions">
         ${aiOn
           ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
-              ${icon("auto-fix")} Let the AI ask me
+              ${icon("auto-fix")} ${t("home.let_the_ai_ask_me")}
             </button>`
           : nothing}
         ${aiOn || claudeOn
@@ -831,7 +831,7 @@ export class BoopliHome extends LitElement {
             </button>`
           : nothing}
         <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
-          ${icon("chat-outline")} In my own chat
+          ${icon("chat-outline")} ${t("home.in_my_own_chat")}
         </button>
         <span class="spacer"></span>
         <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? "Hide" : "Delete"}</button>
@@ -873,30 +873,29 @@ export class BoopliHome extends LitElement {
       </label>
       ${!this._aiOn()
         ? html`<p class="muted small">
-            AI help is off, so the notes are not used yet. Turn it on in Settings. Until then you can still write the
-            notes yourself.
+            ${t("home.ai_help_is_off_so_the")}
           </p>`
         : nothing}
       <div class="whole">
-        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${icon("chat-outline")} Talk through my whole home in my own chat</button>
-        <span class="muted small">Copy a prompt, talk it out by voice or text, paste the result back.</span>
+        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${icon("chat-outline")} ${t("home.talk_through_my_whole_home_in")}</button>
+        <span class="muted small">${t("home.copy_a_prompt_talk_it_out")}</span>
       </div>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${this._message ? html`<div class="ok">${this._message}</div>` : nothing}
       <div class="grid">${shown.map((r) => this._renderRoom(r))}</div>
       <div class="add">
-        <label for="newroom">Add a room or place</label>
+        <label for="newroom">${t("home.add_a_room_or_place")}</label>
         <div class="add-row">
           <input
             id="newroom"
-            placeholder="For example: Balcony"
+            placeholder=${t("home.for_example_balcony")}
             .value=${this._newName}
             @input=${(e: Event) => (this._newName = (e.target as HTMLInputElement).value)}
             @keydown=${(e: KeyboardEvent) => {
               if (e.key === "Enter") this._addRoom();
             }}
           />
-          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>Add</button>
+          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>${t("common.add")}</button>
         </div>
       </div>
       ${hidden.length
@@ -905,7 +904,7 @@ export class BoopliHome extends LitElement {
             ${hidden.map(
               (r) => html`<div class="hiddenrow">
                 <span>${r.name}</span>
-                <button type="button" @click=${() => this._patchRoom(r.id, { hidden: false })}>Show again</button>
+                <button type="button" @click=${() => this._patchRoom(r.id, { hidden: false })}>${t("home.show_again")}</button>
               </div>`
             )}
           </details>`

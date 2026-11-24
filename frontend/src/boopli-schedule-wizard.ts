@@ -197,9 +197,9 @@ export class BoopliScheduleWizard extends LitElement {
               ),
             })}
         >
-          Every day
+          ${t("schedule_wizard.every_day")}
         </button>
-        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>Clear</button>
+        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>${t("schedule_wizard.clear")}</button>
       </div>
     `;
   }
@@ -229,13 +229,13 @@ export class BoopliScheduleWizard extends LitElement {
           type="number"
           min="1"
           max="365"
-          aria-label="Number of days"
+          aria-label=${t("chore_editor.number_of_days")}
           .value=${String(d.every_n_days)}
           @input=${(e: Event) => this._patch({ every_n_days: Number((e.target as HTMLInputElement).value) || 1 })}
         />
       </div>
       <div class="field">
-        <label for="time">At what time of day?</label>
+        <label for="time">${t("schedule_wizard.at_what_time_of_day")}</label>
         <input
           id="time"
           type="time"
@@ -256,7 +256,7 @@ export class BoopliScheduleWizard extends LitElement {
           : "This is when it comes up next:"}
       </p>
       ${times.length === 0
-        ? html`<p class="muted">Nothing is scheduled.</p>`
+        ? html`<p class="muted">${t("schedule_wizard.nothing_is_scheduled")}</p>`
         : html`<ul>${times.map((t) => html`<li>${describeWhen(t, now, this.timeZone)}</li>`)}</ul>`}
       ${d.type === "every_n_days"
         ? html`<p class="muted small">After that: ${d.every_n_days} days after you finish it, at ${d.time}.</p>`
@@ -318,7 +318,7 @@ export class BoopliScheduleWizard extends LitElement {
         <section class="card main">
           <div class="top">
             <span class="muted small">Step ${this._index + 1} of ${steps.length}</span>
-            <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
+            <button type="button" class="link" @click=${() => this._cancel()}>${t("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / steps.length) * 100}%"></div></div>
           <h2>${TITLES[step]}</h2>

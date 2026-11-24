@@ -387,9 +387,9 @@ export class BoopliPanel extends LitElement {
     return html`
       <header>
         ${this.narrow
-          ? html`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>${icon("menu")}</button>`
+          ? html`<button class="menu" aria-label=${t("panel.open_sidebar")} @click=${this._toggleSidebar}>${icon("menu")}</button>`
           : nothing}
-        <h1>Boopli</h1>
+        <h1>${t("wizard.boopli")}</h1>
         <nav>
           ${(Object.keys(TAB_LABELS) as Tab[]).map(
             (tab) => html`<button
@@ -397,12 +397,12 @@ export class BoopliPanel extends LitElement {
               @click=${() => this._selectTab(tab)}
             >
               ${TAB_LABELS[tab]}
-              ${unsaved[tab] ? html`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : nothing}
+              ${unsaved[tab] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
             </button>`
           )}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>${icon("monitor-dashboard")} Wall view</button>
+        <button class="wallbtn" title=${t("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>${icon("monitor-dashboard")} ${t("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main

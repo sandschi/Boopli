@@ -274,7 +274,7 @@ export class BoopliBackup extends LitElement {
             <p class="muted small">
               ${this._file.name}${pre.exported_at ? html` · saved ${new Date(pre.exported_at).toLocaleString()}` : nothing}${pre.boopli_version ? html` · Boopli ${pre.boopli_version}` : nothing}
             </p>
-            <p>Pick what to bring in:</p>
+            <p>${t("backup.pick_what_to_bring_in")}</p>
             ${this._renderParts(pre.parts, pre.counts)}
             ${changes === null
               ? html`<div class="warn" role="status">${t("backup.the_list_of_changes_to_the")}</div>`
@@ -290,22 +290,22 @@ export class BoopliBackup extends LitElement {
                     ? html`<div class="small">Not found: ${pre.missing_entities.join(", ")}${pre.missing_entities_total > pre.missing_entities.length ? ` and ${pre.missing_entities_total - pre.missing_entities.length} more` : ""}.</div>`
                     : nothing}
                   ${pre.missing_services.length ? html`<div class="small">Phones not found: ${pre.missing_services.join(", ")}.</div>` : nothing}
-                  <div class="small muted">They are kept, but do nothing until you pick devices that exist here.</div>
+                  <div class="small muted">${t("backup.they_are_kept_but_do_nothing")}</div>
                 </div>`
               : nothing}
             ${pre.runs_ended
               ? html`<div class="warn" role="status">${pre.runs_ended} running ${pre.runs_ended === 1 ? "chore belongs" : "chores belong"} to chores that are not in the file and will end.</div>`
               : nothing}
             <p class="small">
-              Importing <b>replaces</b> the ticked parts on this install, and it cannot be undone.
-              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>Save a copy of what I have now first</button>
+              Importing <b>${t("backup.replaces")}</b> the ticked parts on this install, and it cannot be undone.
+              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${t("backup.save_a_copy_of_what_i")}</button>
               ${this._copyName ? html`<span class="muted">(saved ${this._copyName})</span>` : nothing}
             </p>
           `
         : nothing}
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !pre || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
-        <button ?disabled=${this._busy} @click=${this._close}>Cancel</button>
+        <button ?disabled=${this._busy} @click=${this._close}>${t("common.cancel")}</button>
       </div>
     `;
   }
@@ -320,9 +320,9 @@ export class BoopliBackup extends LitElement {
     >
       <div class="box">
         ${this._done.length
-          ? html`<h2>${icon("check-circle-outline")} Done</h2>
+          ? html`<h2>${icon("check-circle-outline")} ${t("common.done")}</h2>
               ${this._done.map((l) => html`<p>${l}</p>`)}
-              <div class="foot"><button class="primary" @click=${this._close}>Close</button></div>`
+              <div class="foot"><button class="primary" @click=${this._close}>${t("common.close")}</button></div>`
           : this.mode === "export"
             ? this._renderExport()
             : this._renderImport()}

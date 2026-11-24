@@ -984,7 +984,14 @@ var T = o`
 		what_changed: "What changed",
 		steps: "Steps",
 		next: "Next",
-		remove: "Remove"
+		remove: "Remove",
+		or_write_it_in_your_own: "Or write it in your own words",
+		add: "Add",
+		test: "Test",
+		from: "from",
+		until: "until",
+		copy_monday_to_all_days: "Copy Monday to all days",
+		choose: "Choose…"
 	},
 	away: {
 		boopli_rests_nothing_starts_and_nothing: "Boopli rests: nothing starts and nothing nudges you, except the chores you tick below. Your pet stays just as it is, and when you are back it carries on from there.",
@@ -992,7 +999,13 @@ var T = o`
 		now: "Now",
 		a_date: "A date…",
 		away_until: "Away until",
-		away_mode: "Away mode"
+		away_mode: "Away mode",
+		change: "Change",
+		away_from: "Away from",
+		these_keep_going_while_im_away: "These keep going while I'm away",
+		tick_what_you_still_want_to: "Tick what you still want to be nudged about, like pills.",
+		until: "Until",
+		until_i_turn_it_off: "Until I turn it off"
 	},
 	backup: {
 		what_to_include: "What to include",
@@ -1000,7 +1013,11 @@ var T = o`
 		the_list_of_changes_to_the: "The list of changes to the settings could not be made. Importing still replaces the settings.",
 		the_settings_would_change_like_this: "The settings would change like this:",
 		this_install_does_not_have_everything: "This install does not have everything the file points to.",
-		backup: "Backup"
+		backup: "Backup",
+		they_are_kept_but_do_nothing: "They are kept, but do nothing until you pick devices that exist here.",
+		pick_what_to_bring_in: "Pick what to bring in:",
+		replaces: "replaces",
+		save_a_copy_of_what_i: "Save a copy of what I have now first"
 	},
 	breakdown: {
 		open_my_home: "Open My home",
@@ -1027,7 +1044,16 @@ var T = o`
 		use_these_steps: "Use these steps",
 		save_and_set_the_schedule: "Save and set the schedule",
 		save_without_a_schedule: "Save without a schedule",
-		save_as_chore: "Save as chore"
+		save_as_chore: "Save as chore",
+		a_long_note_was_shortened_to: "A long note was shortened to keep the request small.",
+		look_at_the_photos: "Look at the photos",
+		skip_the_questions: "Skip the questions",
+		anything_else_i_should_know: "Anything else I should know?",
+		enough_go_on: "Enough, go on",
+		size: "Size",
+		add_a_step_after_this: "Add a step after this",
+		ask_claude_instead: "Ask Claude instead",
+		you_can_try_again_or_skip: "You can try again, or skip the questions."
 	},
 	chore_editor: {
 		repeats: "Repeats",
@@ -1047,7 +1073,22 @@ var T = o`
 		delete_it_and_anything_in_progress: "Delete it, and anything in progress?",
 		yes_delete: "Yes, delete",
 		no: "No",
-		delete: "Delete"
+		delete: "Delete",
+		set_the_schedule_step_by_step: "Set the schedule step by step",
+		remove_step: "Remove step",
+		part_of_the_task_optional: "Part of the task (optional):",
+		for_example_desk: "For example: Desk",
+		custom_wait_in_minutes: "Custom wait in minutes",
+		min: "min",
+		the_step_stays_quiet_with_no: "The step stays quiet, with no nudges, until one of these happens, for example your washing machine's \"cycle finished\" event. Then it is your turn. The minutes above become the longest it waits.",
+		for_example_dishwasher: "For example: Dishwasher",
+		where_does_it_make_sense: "Where does it make sense?",
+		home_only: "Home only",
+		anywhere_for_example_pills: "Anywhere (for example pills)",
+		how_should_boopli_nudge_you: "How should Boopli nudge you?",
+		asked_every_time_you_start_this: "Asked every time you start this chore, because things look different each time. A step you link to a question is only in the list when you answer yes.",
+		add_a_question: "+ Add a question",
+		suggest_steps_with_ai: "Suggest steps with AI"
 	},
 	chores: {
 		a_quick_look_first_so_the: "A quick look first, so the list only has what needs doing today.",
@@ -1055,7 +1096,9 @@ var T = o`
 		new_chore: "New chore",
 		new_chore_with_ai: "New chore with AI",
 		start_from_a_template: "Start from a template:",
-		no_chores_yet_pick_a_template: "No chores yet. Pick a template above or create your own."
+		no_chores_yet_pick_a_template: "No chores yet. Pick a template above or create your own.",
+		set_a_schedule: "Set a schedule",
+		edit: "Edit"
 	},
 	claude: {
 		the_routines_fire_address: "The routine's fire address",
@@ -1066,7 +1109,9 @@ var T = o`
 		it_must_be_reachable_from_the: "It must be reachable from the internet, and allowed in the routine's environment.",
 		test_claude: "Test Claude",
 		paste_the_token_here: "Paste the token here",
-		leave_empty_to_use_home_assistants: "Leave empty to use Home Assistant's external URL"
+		leave_empty_to_use_home_assistants: "Leave empty to use Home Assistant's external URL",
+		token_is_saved: "Token is saved",
+		replace: "Replace"
 	},
 	home: {
 		anything_else_about_this_room: "Anything else about this room?",
@@ -1087,7 +1132,24 @@ var T = o`
 		from_photos: "From photos",
 		let_claude_ask_me: "Let Claude ask me",
 		tell_boopli_about_your_rooms_so: "Tell Boopli about your rooms, so the AI's small steps fit your home. The notes stay in Boopli on your Home Assistant. They only leave inside a request to your own AI agent, and only the notes of the rooms a task is about. Before you send a task, you can see exactly what goes out.",
-		send_room_notes_to_the_ai: "Send room notes to the AI with my tasks"
+		send_room_notes_to_the_ai: "Send room notes to the AI with my tasks",
+		it_replaces_the_notes_you_have: "It replaces the notes you have now.",
+		proposed_notes: "Proposed notes",
+		use_these_notes: "Use these notes",
+		throw_away: "Throw away",
+		copy_this: "Copy this",
+		talk_it_through: "Talk it through",
+		copy_the_notes: "Copy the notes",
+		pasted_notes: "Pasted notes",
+		it_replaces_the_notes_this_room: "It replaces the notes this room has now.",
+		let_the_ai_ask_me: "Let the AI ask me",
+		in_my_own_chat: "In my own chat",
+		ai_help_is_off_so_the: "AI help is off, so the notes are not used yet. Turn it on in Settings. Until then you can still write the notes yourself.",
+		show_again: "Show again",
+		talk_through_my_whole_home_in: "Talk through my whole home in my own chat",
+		copy_a_prompt_talk_it_out: "Copy a prompt, talk it out by voice or text, paste the result back.",
+		add_a_room_or_place: "Add a room or place",
+		for_example_balcony: "For example: Balcony"
 	},
 	ladders: {
 		move_up: "Move up",
@@ -1100,20 +1162,27 @@ var T = o`
 		what_it_will_do: "What it will do",
 		build_your_own_ladder_of_nudges: "Build your own ladder of nudges. For each nudge you choose how long Boopli waits, and exactly which phone, light, speaker or alarm acts, and how loud. A chore uses a ladder when you pick it as its nudge style.",
 		use_for_new_chores: "Use for new chores",
-		no_ladders_yet_the_built_in: "No ladders yet. The built-in styles work as before."
+		no_ladders_yet_the_built_in: "No ladders yet. The built-in styles work as before.",
+		right_away: "right away",
+		new_ladder: "+ New ladder"
 	},
 	panel: {
 		you_have_unsaved_changes: "You have unsaved changes",
 		leave_without_saving_and_they_are: "Leave without saving and they are lost.",
 		stay: "Stay",
-		unsaved_changes: "Unsaved changes"
+		unsaved_changes: "Unsaved changes",
+		open_sidebar: "Open sidebar",
+		show_a_board_for_a_screen: "Show a board for a screen on the wall",
+		wall_view: "Wall view"
 	},
 	pet_preview: {
 		preview_your_pet: "▶ Preview your pet",
 		mood: "Mood",
 		busy_with: "Busy with",
 		moments_they_play_once: "Moments (they play once)",
-		preview_of_your_pet: "Preview of your pet"
+		preview_of_your_pet: "Preview of your pet",
+		level: "Level",
+		the_room_grows_with_the_level: "The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed."
 	},
 	picture: {
 		picture_in_the_phone_notification_optional: "Picture in the phone notification (optional):",
@@ -1122,7 +1191,10 @@ var T = o`
 		pick_a_camera: "Pick a camera…",
 		camera: "Camera",
 		picture_file: "Picture file",
-		preview_of_the_picture: "Preview of the picture"
+		preview_of_the_picture: "Preview of the picture",
+		a_camera: "A camera",
+		the_phone_shows_a_fresh_snapshot: "The phone shows a fresh snapshot when the nudge arrives.",
+		a_picture_file: "A picture file"
 	},
 	rung: {
 		set_up_a_phone_light_speaker: "Set up a phone, light, speaker or alarm device in Settings first. They show up here.",
@@ -1130,16 +1202,22 @@ var T = o`
 		blink: "Blink",
 		status_light_stays_on_until_you: "Status light (stays on until you answer)",
 		as_set_for_the_light: "As set for the light",
-		not_available_any_more: "(not available any more)"
+		not_available_any_more: "(not available any more)",
+		use_the_normal_color: "Use the normal color"
 	},
 	schedule_days: {
 		time: "+ time",
-		no_run_this_day: "No run this day"
+		no_run_this_day: "No run this day",
+		remove_this_time: "Remove this time"
 	},
 	schedule_wizard: {
 		tap_the_days_it_should_come: "Tap the days it should come up. You set the time for each day in the next step.",
 		what_time_on_each_day_a: "What time on each day? A day can have more than one time. \"Same as …\" copies the day above.",
-		it_comes_back_this_many_days: "It comes back this many days after you finished it:"
+		it_comes_back_this_many_days: "It comes back this many days after you finished it:",
+		every_day: "Every day",
+		clear: "Clear",
+		at_what_time_of_day: "At what time of day?",
+		nothing_is_scheduled: "Nothing is scheduled."
 	},
 	settings: {
 		unsaved: "Unsaved",
@@ -1170,7 +1248,31 @@ var T = o`
 		export: "Export",
 		import: "Import",
 		guide_me: "Guide me",
-		advanced: "Advanced"
+		advanced: "Advanced",
+		no_phones_with_the_home_assistant: "No phones with the Home Assistant app found.",
+		remove_light: "Remove light",
+		add_a_light: "Add a light",
+		add_a_light_2: "Add a light…",
+		pick_any_colour: "Pick any colour",
+		custom_accent_colour: "Custom accent colour",
+		save_first_to_test: "Save first to test.",
+		which_ai_agent: "Which AI agent?",
+		advanced_agent_for_photos_and_the: "Advanced: agent for photos, and the prompts Boopli sends",
+		agent_for_room_photos: "Agent for room photos",
+		the_same_agent_as_above: "The same agent as above",
+		only_used_when_you_describe_a: "Only used when you describe a room from photos on the My home screen. Pick an agent whose model can read images. Your normal agent stays as it is.",
+		these_are_the_instructions_given_to: "These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.",
+		prompts_you_copy_into_your_own: "Prompts you copy into your own AI chat",
+		these_are_the_texts_the_in: "These are the texts the \"In my own chat\" buttons on My home give you to copy. Boopli fills in {room} (the room name), {names} (your rooms) and {known} (the notes so far, if you tick that). Keep the part that asks for the answer in the same shape: one short fact per line in one code block, and for the whole home a \"## Room\" heading line before each room. Boopli reads the pasted answer that way.",
+		edit_on_the_wall: "Edit on the wall",
+		save_or_discard_your_unsaved_changes: "Save or discard your unsaved changes to import.",
+		keep_for_later_and_close: "Keep for later and close",
+		save_and_close: "Save and close",
+		discard_and_close: "Discard and close",
+		keep_for_later: "Keep for later",
+		keep_for_later_closes_this_window: "\"Keep for later\" closes this window and keeps your changes. The card shows an orange \"Unsaved\" tag.",
+		discard_all: "Discard all",
+		run_the_first_setup_again: "Run the first setup again"
 	},
 	speakers: {
 		alexa_sound_library: "Alexa sound library",
@@ -1189,7 +1291,12 @@ var T = o`
 		speakers: "Speakers",
 		press_a_test_link_to_hear: "Press a Test link to hear a speaker. What a speaker plays at which nudge is set in Nudge it your way.",
 		alarm_devices: "Alarm devices",
-		a_siren_switch_or_script_that: "A siren, switch or script that sounds the alarm. Boopli switches it on for the time you set, then off again, and also off when you answer or when Home Assistant restarts."
+		a_siren_switch_or_script_that: "A siren, switch or script that sounds the alarm. Boopli switches it on for the time you set, then off again, and also off when you answer or when Home Assistant restarts.",
+		remove_speaker: "Remove speaker",
+		add_a_sound: "Add a sound",
+		no_speaker_yet_press_add_a: "No speaker yet. Press Add a speaker.",
+		add_an_alarm_device: "Add an alarm device",
+		choose_a_siren_switch_or_script: "Choose a siren, switch or script…"
 	},
 	stage: { your_pets_room: "Your pet's room" },
 	today: {
@@ -1206,7 +1313,18 @@ var T = o`
 		change_time: "Change time",
 		not_on_it: "Not on it",
 		on_it: "On it",
-		nothing_needs_you_right_now: "Nothing needs you right now"
+		nothing_needs_you_right_now: "Nothing needs you right now",
+		for_example_clean_the_bathroom: "For example: clean the bathroom",
+		break_down_a_recurring_chore: "Break down a recurring chore",
+		date_and_time: "Date and time",
+		set_it: "Set it",
+		nothing_is_lost_the_steps_wait: "Nothing is lost. The steps wait as their own small task under “Set aside for later”.",
+		remove_it: "Remove it?",
+		yes_remove: "Yes, remove",
+		keep: "Keep",
+		boopli_is_not_fully_set_up: "Boopli is not fully set up yet.",
+		finish_setting_up: "Finish setting up",
+		do_this_part_later: "Do this part later"
 	},
 	triggers: {
 		which_entity: "Which entity?",
@@ -1220,9 +1338,27 @@ var T = o`
 		scan_now: "Scan now",
 		which_button: "Which button?",
 		start_typing_a_name_for_example_2: "Start typing a name, for example button",
-		nothing_yet_only_you_finish_this: "Nothing yet: only you finish this step (with Done). Add one below to let it finish by itself."
+		nothing_yet_only_you_finish_this: "Nothing yet: only you finish this step (with Done). Add one below to let it finish by itself.",
+		above: "Above",
+		it_finishes_the_step_when_it: "It finishes the step when it…",
+		is_in_this_state: "is in this state",
+		goes_above_a_number: "goes above a number",
+		goes_below_a_number: "goes below a number",
+		is_between_two_numbers: "is between two numbers",
+		and_stays_that_way_for_minutes: "…and stays that way for (minutes, 0 = right away)",
+		off_the_usual_it_has_to: "Off (the usual): it has to happen after the step starts, so a door that was already open does not finish \"open it to dry\". On: good for \"windows are shut\" or \"plant is fine\".",
+		hold_your_phone_to_the_tag: "Hold your phone to the tag now…",
+		only_this_kind_of_press_empty: "Only this kind of press (empty = any press)",
+		for_example_single_or_double: "for example single or double",
+		or: "or",
+		an_entity_changes: "+ An entity changes",
+		nfc_tag: "+ NFC tag",
+		button: "+ Button"
 	},
-	wait: { waiting_time_used: "Waiting time used" },
+	wait: {
+		waiting_time_used: "Waiting time used",
+		stop_waiting: "Stop waiting"
+	},
 	wall_edit: {
 		start_typing_a_name: "Start typing a name…",
 		this_board: "This board",
@@ -1238,7 +1374,15 @@ var T = o`
 		edit_the_wall_board: "Edit the wall board",
 		throw_away_your_changes: "Throw away your changes?",
 		yes_discard: "Yes, discard",
-		keep_editing: "Keep editing"
+		keep_editing: "Keep editing",
+		night_is_when_quiet_hours_are: "Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.",
+		new_board: "+ New board",
+		delete_this_board: "Delete this board",
+		ok: "OK",
+		add_tile: "＋ Add tile",
+		show_it_as: "Show it as",
+		drag_to_move_drag_the_corner: "Drag to move · drag the corner to resize · tap to change · ✕ to remove",
+		edit_the_board: "Edit the board"
 	},
 	wall: {
 		away_mode_is_on: "Away mode is on",
@@ -1319,7 +1463,21 @@ var T = o`
 		paste_the_routines_fire_address_and: "Paste the routine's fire address and its token. Then test it.",
 		the_test_saves_your_settings_first: "The test saves your settings first, then asks Claude for a tiny answer.",
 		next_put_the_tiles_where_you: "Next: put the tiles where you want them, on the board itself.",
-		edit_it_on_the_wall: "Edit it on the wall"
+		edit_it_on_the_wall: "Edit it on the wall",
+		delete_this_ladder: "Delete this ladder",
+		"12_nudges_is_the_most": "12 nudges is the most.",
+		no_phone_with_the_home_assistant: "No phone with the Home Assistant app found. Install the app and sign in, then come back. You can skip this for now.",
+		send_a_test: "Send a test",
+		how_should_new_chores_nudge_you: "How should new chores nudge you, unless you say otherwise?",
+		no_lights_found: "No lights found.",
+		no_speakers_media_players_found: "No speakers (media players) found.",
+		test_3_s: "Test (3 s)",
+		add_a_siren_switch_or_script: "Add a siren, switch or script…",
+		press_the_button_to_save_and: "Press the button to save and test it, or Next to only save it.",
+		save_and_test_the_agent: "Save and test the agent",
+		nothing_changed: "Nothing changed.",
+		everything_can_be_changed_again_in: "Everything can be changed again in Settings, step by step or in the full forms.",
+		optional_details_skip_if_the_defaults: "Optional details. Skip if the defaults are fine."
 	},
 	wall_tile_calendar: {
 		pick_a_calendar_in_the_board: "Pick a calendar in the board settings.",
@@ -1344,7 +1502,14 @@ var T = o`
 	wall_tile_weather: {
 		pick_a_weather_entity_in_the: "Pick a weather entity in the board settings.",
 		weather_not_found: "Weather not found."
-	}
+	},
+	egg: {
+		here_would_be_an_easter_egg: "Here would be an Easter egg. 🐱 But you're on Safari, so you get a sentence instead of a spinning cat. On an iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to non-Apple products 😉",
+		stop_the_easter_egg: "Stop the Easter egg",
+		stop: "⏹ Stop"
+	},
+	pet_picker: { art_soon: "art soon" },
+	pet_work: { text: "</>" }
 };
 // src/i18n/index.ts
 function Lt(e, t = "", n = {}) {
@@ -1701,7 +1866,7 @@ var sn = class extends x {
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
           ${t ? "Back now" : "Cancel it"}
         </button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._change(e)}>Change</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._change(e)}>${E("away.change")}</button>
       </div>
     `;
 	}
@@ -1720,18 +1885,18 @@ var sn = class extends x {
         </div>
         ${this._later ? g`<input
               type="datetime-local"
-              aria-label="Away from"
+              aria-label=${E("away.away_from")}
               .value=${this._start}
               @input=${(e) => this._start = e.target.value}
             />` : y}
       </div>
 
       <div class="field">
-        <div class="label">Until</div>
+        <div class="label">${E("away.until")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => this._open = !1}>A date…</button>
+          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => this._open = !1}>${E("away.a_date")}</button>
           <button type="button" class="chip ${this._open ? "on" : ""}" @click=${() => this._open = !0}>
-            Until I turn it off
+            ${E("away.until_i_turn_it_off")}
           </button>
         </div>
         ${this._open ? y : g`<input
@@ -1743,8 +1908,8 @@ var sn = class extends x {
       </div>
 
       ${t.length ? g`<div class="field">
-            <div class="label">These keep going while I'm away</div>
-            <div class="muted small">Tick what you still want to be nudged about, like pills.</div>
+            <div class="label">${E("away.these_keep_going_while_im_away")}</div>
+            <div class="muted small">${E("away.tick_what_you_still_want_to")}</div>
             <div class="keep">
               ${t.map((e) => g`<label class="inline">
                   <input
@@ -1983,7 +2148,7 @@ function hn(e) {
     </g>
     ${e.typingBehind ? _`` : t}
     <g class="code" transform="translate(${e.codeAt?.[0] ?? 0} ${e.codeAt?.[1] ?? 0})">
-      <text class="c1" x="84" y="60">&lt;/&gt;</text>
+      <text class="c1" x="84" y="60">${E("pet_work.text")}</text>
       <text class="c2" x="104" y="52">{ }</text>
       <text class="c3" x="122" y="62">01</text>
     </g>`;
@@ -4124,9 +4289,7 @@ var mi = class extends x {
 	render() {
 		return this._note ? g`<div class="note" role="status">
         <span
-          >Here would be an Easter egg. 🐱 But you're on Safari, so you get a sentence instead of a spinning cat. On an
-          iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to
-          non-Apple products 😉</span
+          >${E("egg.here_would_be_an_easter_egg")}</span
         >
         <button type="button" class="ctl" aria-label=${E("common.close")} @click=${() => this._stop(!0)}>✕</button>
       </div>` : g`${this._cat ? g`<div class="egg-layer" aria-hidden="true">
@@ -4144,7 +4307,7 @@ var mi = class extends x {
         >
           ${this._muted ? "🔇" : "🔊"}
         </button>
-        <button type="button" class="ctl" aria-label="Stop the Easter egg" @click=${() => this._stop(!0)}>⏹ Stop</button>
+        <button type="button" class="ctl" aria-label=${E("egg.stop_the_easter_egg")} @click=${() => this._stop(!0)}>${E("egg.stop")}</button>
       </div>`;
 	}
 	static {
@@ -4291,13 +4454,13 @@ var _i = class extends x {
         ${e ? g`
               <textarea
                 rows="2"
-                placeholder="For example: clean the bathroom"
+                placeholder=${E("today.for_example_clean_the_bathroom")}
                 .value=${this._quick}
                 @input=${(e) => this._quick = e.target.value}
               ></textarea>
               <div class="quick-actions">
                 <button class="primary" @click=${() => this._openBreakdown("now")}>${k("auto-fix")} ${D(this.snapshot) ? "Break it down now" : "Ask Claude to break it down"}</button>
-                <button @click=${() => this._openBreakdown("recurring")}>${k("repeat")} Break down a recurring chore</button>
+                <button @click=${() => this._openBreakdown("recurring")}>${k("repeat")} ${E("today.break_down_a_recurring_chore")}</button>
               </div>
             ` : g`
               <p class="muted small">
@@ -4441,16 +4604,16 @@ var _i = class extends x {
       ${e.picking ? g`<div class="park-pick">
             <input
               type="datetime-local"
-              aria-label="Date and time"
+              aria-label=${E("today.date_and_time")}
               .value=${e.at}
               @input=${(e) => this._park &&= {
 			...this._park,
 			at: e.target.value
 		}}
             />
-            <button class="primary" ?disabled=${this._busy || !e.at} @click=${() => this._choose("at")}>Set it</button>
+            <button class="primary" ?disabled=${this._busy || !e.at} @click=${() => this._choose("at")}>${E("today.set_it")}</button>
           </div>` : y}
-      <div class="muted small">Nothing is lost. The steps wait as their own small task under “Set aside for later”.</div>
+      <div class="muted small">${E("today.nothing_is_lost_the_steps_wait")}</div>
     </div>` : y;
 	}
 	_renderAway(e) {
@@ -4576,16 +4739,16 @@ var _i = class extends x {
                   ${E("common.start_now")}
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${E("today.change_time")}</button>
-                ${this._removing === e.id ? g`<span class="small">Remove it?</span>
+                ${this._removing === e.id ? g`<span class="small">${E("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
                         @click=${() => this._partAction(async () => {
 			await gt(this.hass, e.id), this._removing = "";
 		})}
                       >
-                        Yes, remove
+                        ${E("today.yes_remove")}
                       </button>
-                      <button class="link" @click=${() => this._removing = ""}>Keep</button>` : g`<button class="link" @click=${() => this._removing = e.id}>${E("common.remove")}</button>`}
+                      <button class="link" @click=${() => this._removing = ""}>${E("today.keep")}</button>` : g`<button class="link" @click=${() => this._removing = e.id}>${E("common.remove")}</button>`}
               </div>`}
         </div>`)}
     </section>`;
@@ -4611,7 +4774,7 @@ var _i = class extends x {
       ${this._renderAway(e)}
       <div class="cols"><div class="col">
       ${r === "skipped" || r === "in_progress" ? g`<section class="card banner">
-            <span>Boopli is not fully set up yet.</span>
+            <span>${E("today.boopli_is_not_fully_set_up")}</span>
             <button
               class="primary"
               @click=${() => this.dispatchEvent(new CustomEvent("open-wizard", {
@@ -4619,7 +4782,7 @@ var _i = class extends x {
 			composed: !0
 		}))}
             >
-              Finish setting up
+              ${E("today.finish_setting_up")}
             </button>
           </section>` : y}
       ${this._renderQuestions()}
@@ -4651,7 +4814,7 @@ var _i = class extends x {
                   ?disabled=${this._busy}
                   @click=${() => this._done(t.now.run.id, t.now.step.step_id)}
                 >
-                  ${k("check-bold")} Done
+                  ${k("check-bold")} ${E("common.done")}
                 </button>
                 ${t.now.step.on_it_until ? g`<button
                       class="link"
@@ -4675,7 +4838,7 @@ var _i = class extends x {
 			group: t.now.step.group
 		})}
                 >
-                  Do this part later
+                  ${E("today.do_this_part_later")}
                 </button>` : y}
               ${this._error ? g`<div class="error">${this._error}</div>` : y}
             </section>
@@ -5363,15 +5526,15 @@ var Vi = class extends x {
               </div>` : g`<div class="warn small">${E("triggers.not_found_right_now_check_the")}</div>` : y}
       </div>
       <div class="field">
-        <label>It finishes the step when it…</label>
+        <label>${E("triggers.it_finishes_the_step_when_it")}</label>
         <select
           .value=${a}
           @change=${(e) => this._setCondition(t, e.target.value)}
         >
-          <option value="state" ?selected=${a === "state"}>is in this state</option>
-          <option value="above" ?selected=${a === "above"}>goes above a number</option>
-          <option value="below" ?selected=${a === "below"}>goes below a number</option>
-          <option value="between" ?selected=${a === "between"}>is between two numbers</option>
+          <option value="state" ?selected=${a === "state"}>${E("triggers.is_in_this_state")}</option>
+          <option value="above" ?selected=${a === "above"}>${E("triggers.goes_above_a_number")}</option>
+          <option value="below" ?selected=${a === "below"}>${E("triggers.goes_below_a_number")}</option>
+          <option value="between" ?selected=${a === "between"}>${E("triggers.is_between_two_numbers")}</option>
         </select>
       </div>
       ${a === "state" ? g`<div class="field">
@@ -5399,7 +5562,7 @@ var Vi = class extends x {
             </div>
           </div>` : g`<div class="row2">
             ${a === "above" || a === "between" ? g`<div>
-                  <label>Above</label>
+                  <label>${E("triggers.above")}</label>
                   <input
                     type="number"
                     step="any"
@@ -5418,7 +5581,7 @@ var Vi = class extends x {
                 </div>` : y}
           </div>`}
       <div class="field">
-        <label>…and stays that way for (minutes, 0 = right away)</label>
+        <label>${E("triggers.and_stays_that_way_for_minutes")}</label>
         <input
           type="number"
           min="0"
@@ -5428,7 +5591,7 @@ var Vi = class extends x {
         />
       </div>
       <details class="advanced">
-        <summary>Advanced</summary>
+        <summary>${E("settings.advanced")}</summary>
         <label class="inline">
           <input
             type="checkbox"
@@ -5438,8 +5601,7 @@ var Vi = class extends x {
           Also count it if it is already true when the step starts
         </label>
         <div class="muted small">
-          Off (the usual): it has to happen after the step starts, so a door that was already open
-          does not finish "open it to dry". On: good for "windows are shut" or "plant is fine".
+          ${E("triggers.off_the_usual_it_has_to")}
         </div>
       </details>
     `;
@@ -5461,7 +5623,7 @@ var Vi = class extends x {
           </select>
           ${this._scanning === t ? g`<button type="button" @click=${() => this._cancelScan()}>${E("common.cancel")}</button>` : g`<button type="button" @click=${() => this._scan(t)}>${E("triggers.scan_now")}</button>`}
         </div>
-        ${this._scanning === t ? g`<div class="muted small">Hold your phone to the tag now…</div>` : y}
+        ${this._scanning === t ? g`<div class="muted small">${E("triggers.hold_your_phone_to_the_tag")}</div>` : y}
       </div>
     `;
 	}
@@ -5476,12 +5638,12 @@ var Vi = class extends x {
           .value=${e.entity_id}
           @change=${(e) => this._patch(t, { entity_id: e.target.value.trim() })}
         />
-        ${e.entity_id && !n ? g`<div class="warn small">Not found right now. Check the name.</div>` : y}
+        ${e.entity_id && !n ? g`<div class="warn small">${E("triggers.not_found_right_now_check_the")}</div>` : y}
       </div>
       <div class="field">
-        <label>Only this kind of press (empty = any press)</label>
+        <label>${E("triggers.only_this_kind_of_press_empty")}</label>
         <input
-          placeholder="for example single or double"
+          placeholder=${E("triggers.for_example_single_or_double")}
           .value=${e.press}
           @input=${(e) => this._patch(t, { press: e.target.value })}
         />
@@ -5511,20 +5673,20 @@ var Vi = class extends x {
       ${this.triggers.length === 0 ? g`<div class="muted small">
             ${E("triggers.nothing_yet_only_you_finish_this")}
           </div>` : this.triggers.map((e, t) => g`
-              ${t > 0 ? g`<div class="or muted small">or</div>` : y}
+              ${t > 0 ? g`<div class="or muted small">${E("triggers.or")}</div>` : y}
               <div class="trigger">
                 <div class="trigger-head">
                   <b>${this._title(e)}</b>
-                  <button type="button" aria-label="Remove" @click=${() => this._remove(t)}>✕</button>
+                  <button type="button" aria-label=${E("common.remove")} @click=${() => this._remove(t)}>✕</button>
                 </div>
                 ${e.kind === "tag" ? this._renderTag(e, t) : e.kind === "button" ? this._renderButton(e, t) : this._renderState(e, t)}
               </div>
             `)}
       ${this._note ? g`<div class="warn small">${this._note}</div>` : y}
       <div class="chips add">
-        <button type="button" @click=${() => this._add("state")}>+ An entity changes</button>
-        <button type="button" @click=${() => this._add("tag")}>+ NFC tag</button>
-        <button type="button" @click=${() => this._add("button")}>+ Button</button>
+        <button type="button" @click=${() => this._add("state")}>${E("triggers.an_entity_changes")}</button>
+        <button type="button" @click=${() => this._add("tag")}>${E("triggers.nfc_tag")}</button>
+        <button type="button" @click=${() => this._add("button")}>${E("triggers.button")}</button>
       </div>
     `;
 	}
@@ -5665,8 +5827,8 @@ var Gi = class extends x {
           @change=${(e) => this._setMode(e.target.value)}
         >
           <option value="none" ?selected=${this._mode === "none"}>${E("picture.none")}</option>
-          ${t ? g`<option value="camera" ?selected=${this._mode === "camera"}>A camera</option>` : y}
-          <option value="file" ?selected=${this._mode === "file"}>A picture file</option>
+          ${t ? g`<option value="camera" ?selected=${this._mode === "camera"}>${E("picture.a_camera")}</option>` : y}
+          <option value="file" ?selected=${this._mode === "file"}>${E("picture.a_picture_file")}</option>
         </select>
       </div>
       ${this._mode === "camera" ? g`<div class="row">
@@ -5678,7 +5840,7 @@ var Gi = class extends x {
               ${this.value && !e.includes(this.value) ? g`<option value=${this.value} selected>${this.value} (not found)</option>` : y}
               ${e.map((e) => g`<option value=${e} ?selected=${this.value === e}>${J(this.hass, e)}</option>`)}
             </select>
-            <span class="muted small">The phone shows a fresh snapshot when the nudge arrives.</span>
+            <span class="muted small">${E("picture.the_phone_shows_a_fresh_snapshot")}</span>
           </div>` : y}
       ${this._mode === "file" ? g`<div class="row">
             <input
@@ -5815,7 +5977,7 @@ var Yi = class extends x {
                       ${r.length > 1 ? g`<button
                             type="button"
                             class="x"
-                            aria-label="Remove this time"
+                            aria-label=${E("schedule_days.remove_this_time")}
                             @click=${() => this._setDay(t, r.filter((e, t) => t !== n))}
                           >
                             ✕
@@ -6055,9 +6217,9 @@ var Xi = {
           class="chip"
           @click=${() => this._patch({ days: Object.fromEntries($i.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
         >
-          Every day
+          ${E("schedule_wizard.every_day")}
         </button>
-        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>Clear</button>
+        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>${E("schedule_wizard.clear")}</button>
       </div>
     `;
 	}
@@ -6090,13 +6252,13 @@ var Xi = {
           type="number"
           min="1"
           max="365"
-          aria-label="Number of days"
+          aria-label=${E("chore_editor.number_of_days")}
           .value=${String(e.every_n_days)}
           @input=${(e) => this._patch({ every_n_days: Number(e.target.value) || 1 })}
         />
       </div>
       <div class="field">
-        <label for="time">At what time of day?</label>
+        <label for="time">${E("schedule_wizard.at_what_time_of_day")}</label>
         <input
           id="time"
           type="time"
@@ -6112,7 +6274,7 @@ var Xi = {
       <p>
         ${e.type === "every_n_days" ? "The first time, and then every time after you finish:" : "This is when it comes up next:"}
       </p>
-      ${t.length === 0 ? g`<p class="muted">Nothing is scheduled.</p>` : g`<ul>${t.map((e) => g`<li>${M(e, n, this.timeZone)}</li>`)}</ul>`}
+      ${t.length === 0 ? g`<p class="muted">${E("schedule_wizard.nothing_is_scheduled")}</p>` : g`<ul>${t.map((e) => g`<li>${M(e, n, this.timeZone)}</li>`)}</ul>`}
       ${e.type === "every_n_days" ? g`<p class="muted small">After that: ${e.every_n_days} days after you finish it, at ${e.time}.</p>` : y}
     `;
 	}
@@ -6152,7 +6314,7 @@ var Xi = {
         <section class="card main">
           <div class="top">
             <span class="muted small">Step ${this._index + 1} of ${t.length}</span>
-            <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
+            <button type="button" class="link" @click=${() => this._cancel()}>${E("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
           <h2>${Zi[n]}</h2>
@@ -6396,7 +6558,7 @@ var ra = class extends x {
 			bubbles: !0,
 			composed: !0
 		}))}>
-            Stop waiting
+            ${E("wait.stop_waiting")}
           </button>` : y}
     </div>`;
 	}
@@ -6655,7 +6817,7 @@ var oa = [
         </button>
       </div>
       ${this._preview ? g`<div class="preview">
-            ${this._preview.shortened ? g`<div class="muted small">A long note was shortened to keep the request small.</div>` : y}
+            ${this._preview.shortened ? g`<div class="muted small">${E("breakdown.a_long_note_was_shortened_to")}</div>` : y}
             <pre>${this._preview.instructions}</pre>
           </div>` : y}
     </div>`;
@@ -6742,7 +6904,7 @@ var oa = [
               />
             </label>
             ${D(this.snapshot) ? g`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
-                  Look at the photos
+                  ${E("breakdown.look_at_the_photos")}
                 </button>` : y}
             ${O(this.snapshot) ? g`<button
                   class=${D(this.snapshot) ? "" : "primary"}
@@ -6751,7 +6913,7 @@ var oa = [
                 >
                   ${k("creation")} ${E("breakdown.ask_claude_to_look")}
                 </button>` : y}
-            <button type="button" class="link" @click=${() => (this._photosOpen = !1, this._photos = [])}>Cancel</button>
+            <button type="button" class="link" @click=${() => (this._photosOpen = !1, this._photos = [])}>${E("common.cancel")}</button>
           </div>`}
       <div class="muted small">
         ${D(this.snapshot) ? "The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced. " : ""}${O(this.snapshot) ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer." : ""}
@@ -6932,7 +7094,7 @@ var oa = [
               ${k("creation")} ${E("common.ask_claude")}
             </button>` : y}
         <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(D(this.snapshot) ? "agent" : "claude")}>
-          Skip the questions
+          ${E("breakdown.skip_the_questions")}
         </button>
       </div>
       ${O(this.snapshot) ? g`<div class="muted small">
@@ -6964,7 +7126,7 @@ var oa = [
       <textarea
         rows="1"
         class="own"
-        placeholder="Or write it in your own words"
+        placeholder=${E("common.or_write_it_in_your_own")}
         .value=${this._typed[t] ?? ""}
         @input=${(e) => this._typed = this._typed.map((n, r) => r === t ? e.target.value : n)}
       ></textarea>
@@ -6986,18 +7148,18 @@ var oa = [
       ${this._renderScene()}
       ${this._questions.map((e, t) => this._renderQuestion(e, t))}
       <div class="question">
-        <div class="qtext">Anything else I should know?</div>
+        <div class="qtext">${E("breakdown.anything_else_i_should_know")}</div>
         <textarea
           rows="2"
           class="own"
-          placeholder="Optional. Long answers are welcome."
+          placeholder=${E("home.optional_long_answers_are_welcome")}
           .value=${this._extra}
           @input=${(e) => this._extra = e.target.value}
         ></textarea>
       </div>
       <div class="actions">
-        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>Next questions</button>
-        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>Enough, go on</button>
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>${E("home.next_questions")}</button>
+        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>${E("breakdown.enough_go_on")}</button>
       </div>
     `;
 	}
@@ -7020,11 +7182,11 @@ var oa = [
         <input
           class="title"
           aria-label="Step ${t + 1}"
-          placeholder="What to do"
+          placeholder=${E("chore_editor.what_to_do")}
           .value=${e.title}
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
-        <span class="sizes" role="group" aria-label="Size">
+        <span class="sizes" role="group" aria-label=${E("breakdown.size")}>
           ${oa.map((n) => g`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
@@ -7037,10 +7199,10 @@ var oa = [
         </span>
         ${e.wait_minutes > 0 ? g`<span class="wait muted small" title=${E("breakdown.time_to_wait_before_this_step")}>⏳ ${e.wait_minutes} min</span>` : y}
         <span class="tools">
-          <button type="button" aria-label="Move up" ?disabled=${t === 0} @click=${() => this._move(t, -1)}>↑</button>
-          <button type="button" aria-label="Move down" ?disabled=${t === this._steps.length - 1} @click=${() => this._move(t, 1)}>↓</button>
-          <button type="button" aria-label="Add a step after this" @click=${() => this._add(t)}>+</button>
-          <button type="button" aria-label="Remove" @click=${() => this._remove(t)}>✕</button>
+          <button type="button" aria-label=${E("ladders.move_up")} ?disabled=${t === 0} @click=${() => this._move(t, -1)}>↑</button>
+          <button type="button" aria-label=${E("ladders.move_down")} ?disabled=${t === this._steps.length - 1} @click=${() => this._move(t, 1)}>↓</button>
+          <button type="button" aria-label=${E("breakdown.add_a_step_after_this")} @click=${() => this._add(t)}>+</button>
+          <button type="button" aria-label=${E("common.remove")} @click=${() => this._remove(t)}>✕</button>
         </span>
       </div>
       ${this._checks.length ? g`<div class="only-if">
@@ -7061,8 +7223,8 @@ var oa = [
         ${E("breakdown.today_it_may_look_different_than")}
       </div>
       ${this._checks.map((e) => g`<div class="check">
-          <input aria-label="Question" .value=${e.text} @input=${(t) => this._patchCheck(e.id, t.target.value)} />
-          <button type="button" aria-label="Remove this question" @click=${() => this._removeCheck(e.id)}>✕</button>
+          <input aria-label=${E("chore_editor.question")} .value=${e.text} @input=${(t) => this._patchCheck(e.id, t.target.value)} />
+          <button type="button" aria-label=${E("chore_editor.remove_this_question")} @click=${() => this._removeCheck(e.id)}>✕</button>
         </div>`)}
     </div>` : y;
 	}
@@ -7079,7 +7241,7 @@ var oa = [
         <button type="button" @click=${() => this._add(e.length - 1)}>${E("breakdown.add_a_step")}</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${E("breakdown.try_again")}</button>
         ${D(this.snapshot) && O(this.snapshot) ? g`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
-              ${k("creation")} Ask Claude instead
+              ${k("creation")} ${E("breakdown.ask_claude_instead")}
             </button>` : y}
         ${this._answers.length || this._questions.length ? g`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>${E("breakdown.ask_me_again")}</button>` : y}
       </div>
@@ -7110,7 +7272,7 @@ var oa = [
         ${this.externalError ? g`<div class="error">${this.externalError}</div>` : y}
         ${this._error ? g`<div class="error">
               ${this._error}
-              ${this._phase === "interview" || this._phase === "task" ? g`<div class="muted small">You can try again, or skip the questions.</div>` : y}
+              ${this._phase === "interview" || this._phase === "task" ? g`<div class="muted small">${E("breakdown.you_can_try_again_or_skip")}</div>` : y}
             </div>` : y}
         ${this._phase === "task" ? this._renderTask() : y}
         ${this._phase === "interview" ? this._renderInterview() : y}
@@ -7713,7 +7875,7 @@ var da = 8, fa = [{
               />
             </div>` : y}
       <div class="field">
-        <button type="button" @click=${() => this._sched = "inline"}>Set the schedule step by step</button>
+        <button type="button" @click=${() => this._sched = "inline"}>${E("chore_editor.set_the_schedule_step_by_step")}</button>
       </div>
     `;
 	}
@@ -7744,18 +7906,18 @@ var da = 8, fa = [{
                 ${n === "small" ? "S" : n === "medium" ? "M" : "B"}
               </button>`)}
           </span>
-          <button type="button" aria-label="Move up" ?disabled=${e === 0} @click=${() => this._moveStep(e, -1)}>↑</button>
-          <button type="button" aria-label="Move down" ?disabled=${e === n} @click=${() => this._moveStep(e, 1)}>↓</button>
-          <button type="button" aria-label="Remove step" ?disabled=${n === 0} @click=${() => this._removeStep(e)}>✕</button>
+          <button type="button" aria-label=${E("ladders.move_up")} ?disabled=${e === 0} @click=${() => this._moveStep(e, -1)}>↑</button>
+          <button type="button" aria-label=${E("ladders.move_down")} ?disabled=${e === n} @click=${() => this._moveStep(e, 1)}>↓</button>
+          <button type="button" aria-label=${E("chore_editor.remove_step")} ?disabled=${n === 0} @click=${() => this._removeStep(e)}>✕</button>
         </div>
         <div class="part">
-          <label class="muted small" for="part-${e}">Part of the task (optional):</label>
+          <label class="muted small" for="part-${e}">${E("chore_editor.part_of_the_task_optional")}</label>
           <input
             id="part-${e}"
             class="part-input"
             list="parts-list"
             maxlength="40"
-            placeholder="For example: Desk"
+            placeholder=${E("chore_editor.for_example_desk")}
             .value=${t.group ?? ""}
             @input=${(t) => this._updateStep(e, { group: t.target.value })}
           />
@@ -7785,14 +7947,14 @@ var da = 8, fa = [{
               </button>`)}
             <span class="custom">
               <input
-                aria-label="Custom wait in minutes"
+                aria-label=${E("chore_editor.custom_wait_in_minutes")}
                 type="number"
                 min="0"
                 max="10080"
                 .value=${String(t.wait_minutes)}
                 @input=${(t) => this._updateStep(e, { wait_minutes: Math.max(0, Number(t.target.value) || 0) })}
               />
-              <span class="muted small">min</span>
+              <span class="muted small">${E("chore_editor.min")}</span>
             </span>
           </div>
         </div>
@@ -7802,8 +7964,7 @@ var da = 8, fa = [{
             ${(t.wait_for ?? []).length > 0 ? g`<span class="muted small">(${(t.wait_for ?? []).length} set)</span>` : y}
           </summary>
           <p class="muted small">
-            The step stays quiet, with no nudges, until one of these happens, for example your washing machine's
-            "cycle finished" event. Then it is your turn. The minutes above become the longest it waits.
+            ${E("chore_editor.the_step_stays_quiet_with_no")}
           </p>
           <boopli-triggers
             .hass=${this.hass}
@@ -7852,37 +8013,37 @@ var da = 8, fa = [{
       <section class="card ${this._isDirty() ? "changed" : ""}">
         <h2>
           ${e.id ? "Edit chore" : "New chore"}
-          ${this._isDirty() ? g`<span class="unsaved-badge">Unsaved</span>` : y}
+          ${this._isDirty() ? g`<span class="unsaved-badge">${E("settings.unsaved")}</span>` : y}
         </h2>
 
         <div class="editor-grid">
         <div class="col-a">
         <div class="field">
-          <label for="name">Name</label>
+          <label for="name">${E("common.name")}</label>
           <input
             id="name"
-            placeholder="For example: Dishwasher"
+            placeholder=${E("chore_editor.for_example_dishwasher")}
             .value=${e.name}
             @input=${(e) => this._update({ name: e.target.value })}
           />
         </div>
 
         <div class="field">
-          <label for="where">Where does it make sense?</label>
+          <label for="where">${E("chore_editor.where_does_it_make_sense")}</label>
           <select
             id="where"
             .value=${e.where}
             @change=${(e) => this._update({ where: e.target.value })}
           >
-            <option value="home" ?selected=${e.where === "home"}>Home only</option>
-            <option value="anywhere" ?selected=${e.where === "anywhere"}>Anywhere (for example pills)</option>
+            <option value="home" ?selected=${e.where === "home"}>${E("chore_editor.home_only")}</option>
+            <option value="anywhere" ?selected=${e.where === "anywhere"}>${E("chore_editor.anywhere_for_example_pills")}</option>
           </select>
         </div>
 
         ${this._renderRepeat()}
 
         <div class="field">
-          <label for="style">How should Boopli nudge you?</label>
+          <label for="style">${E("chore_editor.how_should_boopli_nudge_you")}</label>
           <select
             id="style"
             .value=${Mi(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
@@ -7951,8 +8112,7 @@ var da = 8, fa = [{
             ${(e.questions ?? []).length > 0 ? g`<span class="muted small">(${(e.questions ?? []).length})</span>` : y}
           </summary>
           <p class="muted small">
-            Asked every time you start this chore, because things look different each time. A step you link to a
-            question is only in the list when you answer yes.
+            ${E("chore_editor.asked_every_time_you_start_this")}
           </p>
           ${(e.questions ?? []).map((e) => g`<div class="question">
               <input
@@ -7965,17 +8125,17 @@ var da = 8, fa = [{
               <button type="button" aria-label=${E("chore_editor.remove_this_question")} @click=${() => this._removeQuestion(e.id)}>✕</button>
             </div>`)}
           <button type="button" ?disabled=${(e.questions ?? []).length >= da} @click=${() => this._addQuestion()}>
-            + Add a question
+            ${E("chore_editor.add_a_question")}
           </button>
         </details>
-        <h3 class="steps-title">Steps</h3>
+        <h3 class="steps-title">${E("common.steps")}</h3>
         <datalist id="parts-list">
           ${[...new Set(e.steps.map((e) => (e.group ?? "").trim()).filter(Boolean))].map((e) => g`<option value=${e}></option>`)}
         </datalist>
         ${e.steps.map((e, t) => this._renderStep(t))}
         <div class="step-buttons">
-          <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
-          <button type="button" @click=${() => this._openSuggest()}>${k("auto-fix")} Suggest steps with AI</button>
+          <button type="button" @click=${() => this._addStep()}>${E("breakdown.add_a_step")}</button>
+          <button type="button" @click=${() => this._openSuggest()}>${k("auto-fix")} ${E("chore_editor.suggest_steps_with_ai")}</button>
         </div>
         </div>
         </div>
@@ -7983,8 +8143,8 @@ var da = 8, fa = [{
         ${this._error ? g`<div class="error">${this._error}</div>` : y}
 
         <div class="actions">
-          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-          <button ?disabled=${this._busy} @click=${() => this._close()}>Cancel</button>
+          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${E("common.save")}</button>
+          <button ?disabled=${this._busy} @click=${() => this._close()}>${E("common.cancel")}</button>
           ${e.id ? this._confirmDelete ? g`<span class="muted small">${E("chore_editor.delete_it_and_anything_in_progress")}</span>
                   <button class="danger" ?disabled=${this._busy} @click=${() => this._delete()}>${E("chore_editor.yes_delete")}</button>
                   <button @click=${() => this._confirmDelete = !1}>${E("chore_editor.no")}</button>` : g`<button class="danger" @click=${() => this._confirmDelete = !0}>${E("chore_editor.delete")}</button>` : y}
@@ -8492,8 +8652,8 @@ var ba = class extends x {
                 </div>
                 <div class="chore-actions">
                   ${t.has(n.id) ? y : g`<button class="textlink" @click=${() => this._start(n)}>${E("common.start_now")}</button>`}
-                  ${n.repeat.type === "none" ? g`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>Set a schedule</button>` : y}
-                  <button class="textlink quiet" @click=${() => this._edit(n)}>Edit</button>
+                  ${n.repeat.type === "none" ? g`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>${E("chores.set_a_schedule")}</button>` : y}
+                  <button class="textlink quiet" @click=${() => this._edit(n)}>${E("chores.edit")}</button>
                 </div>
               </section>
             `)}</div>`}
@@ -8836,9 +8996,9 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
 		}}
                       />
                     </label>` : y}
-                <button type="button" class="test" @click=${() => e.onTest()}>Test</button>
+                <button type="button" class="test" @click=${() => e.onTest()}>${E("common.test")}</button>
                 <button type="button" class="textlink quiet" aria-expanded=${n ? "true" : "false"} @click=${() => this._toggle(e.key)}>
-                  Details
+                  ${E("speakers.details")}
                 </button>
                 ${e.onRemove ? g`<button type="button" class="textlink quiet" aria-label=${e.removeLabel ?? "Remove"} @click=${() => e.onRemove()}>${E("common.remove")}</button>` : y}
               </span>` : y}
@@ -8890,7 +9050,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
         </div>
         <div class="tests">
           ${c.map((t) => g`<button type="button" class="test" @click=${() => void this._test(e, t.level)}>${t.label}</button>`)}
-          <button type="button" class="textlink quiet" aria-expanded=${s ? "true" : "false"} @click=${() => this._toggle("spk:" + n)}>Details</button>
+          <button type="button" class="textlink quiet" aria-expanded=${s ? "true" : "false"} @click=${() => this._toggle("spk:" + n)}>${E("speakers.details")}</button>
         </div>
         ${c.map((e) => {
 			let t = this._notes[`speaker:${n}:${e.level}`];
@@ -8915,7 +9075,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
 			});
 		}}
                   >
-                    <option value="" ?selected=${t.target === ""}>Choose…</option>
+                    <option value="" ?selected=${t.target === ""}>${E("common.choose")}</option>
                     ${i.map((e) => g`<option value=${e.value} ?selected=${e.value === t.target}>${e.label}</option>`)}
                   </select>
                 </label>
@@ -8926,7 +9086,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
                   aria-label="Remove speaker ${this._friendly(n)}"
                   @click=${() => this._patch({ speakers: this._speakers().filter((e) => e.entity_id !== n) })}
                 >
-                  Remove speaker
+                  ${E("speakers.remove_speaker")}
                 </button>
               </div>` : y}
       </div>
@@ -8996,7 +9156,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
 			removeLabel: `Remove the sound ${e.name}`
 		}))}
       <button type="button" class="textlink" ?disabled=${e.length >= 60} @click=${() => this._addExtra()}>
-        ${k("plus")} Add a sound
+        ${k("plus")} ${E("speakers.add_a_sound")}
       </button>
     `;
 	}
@@ -9046,7 +9206,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
             <option value="">${E("speakers.choose_a_media_player")}</option>
             ${n.map((e) => g`<option value=${e} ?selected=${e === this._addSpeaker}>${this._friendly(e)}</option>`)}
           </select>
-          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
+          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>${E("common.add")}</button>
         </div>`);
 		}
 		return this._sub === "tone" ? this._subWindow("Ding and alarm sound", g`<p class="muted small">
@@ -9073,7 +9233,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
           ${t("add", "plus", "Add a speaker")} ${t("tone", "music-note", "Ding and alarm sound")}
           ${t("own", "playlist-music", "Your own sounds")} ${t("say", "message-text-outline", "What the speakers say")}
         </div>
-        ${e.speakers.length ? e.speakers.map((e) => this._speakerBody(e)) : g`<p class="muted">No speaker yet. Press Add a speaker.</p>`}
+        ${e.speakers.length ? e.speakers.map((e) => this._speakerBody(e)) : g`<p class="muted">${E("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(e)}
       </section>
     `;
@@ -9111,14 +9271,14 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
 			onRemove: () => this._patch({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) }),
 			removeLabel: `Remove alarm device ${this._friendly(t.entity_id)}`
 		}))}
-        <h3 class="sec">Add an alarm device</h3>
+        <h3 class="sec">${E("speakers.add_an_alarm_device")}</h3>
         <div class="row">
           <select
-            aria-label="Add an alarm device"
+            aria-label=${E("speakers.add_an_alarm_device")}
             .value=${this._addDevice}
             @change=${(e) => this._addDevice = e.target.value}
           >
-            <option value="">Choose a siren, switch or script…</option>
+            <option value="">${E("speakers.choose_a_siren_switch_or_script")}</option>
             ${n.map((e) => g`<option value=${e} ?selected=${e === this._addDevice}>${this._friendly(e)}</option>`)}
           </select>
           <button
@@ -9132,7 +9292,7 @@ var xa = "amzn_sfx_scifi_alarm_01", Sa = "amzn_sfx_doorbell_chime_01", Ca = "htt
 			}] }), this._addDevice = "";
 		}}
           >
-            Add
+            ${E("common.add")}
           </button>
         </div>
       </section>
@@ -9555,7 +9715,7 @@ var Ma = class extends x {
               </select>
             </label>
             ${r && Ai(this.hass, e.entity_id) ? g`<div class="dev colorrow">
-                  <span>Color</span>
+                  <span>${E("settings.color")}</span>
                   <input
                     type="color"
                     class="swatch"
@@ -9564,7 +9724,7 @@ var Ma = class extends x {
                     @input=${(t) => this._setLightColor(e.entity_id, Ei(t.target.value))}
                   />
                   <button type="button" class="chip" ?disabled=${!r.color} @click=${() => this._setLightColor(e.entity_id, null)}>
-                    Use the normal color
+                    ${E("rung.use_the_normal_color")}
                   </button>
                 </div>` : y}
           </div>`;
@@ -9814,7 +9974,7 @@ var Ba = class extends x {
 		return g`<div class="rung">
       <div class="rung-head">
         <b>Nudge ${n + 1}</b>
-        ${n === 0 && !(e.rungs.length === 1 && e.repeat_last) ? g`<span class="muted small">right away</span>` : g`<label class="gap">
+        ${n === 0 && !(e.rungs.length === 1 && e.repeat_last) ? g`<span class="muted small">${E("ladders.right_away")}</span>` : g`<label class="gap">
               ${n === 0 ? "Right away, then repeats every" : "Wait"}
               <input
                 type="number"
@@ -9909,14 +10069,14 @@ var Ba = class extends x {
                 <button class="chip" aria-expanded=${t ? "true" : "false"} @click=${() => this._open = t ? "" : e.id}>
                   ${t ? "Close" : "Edit"}
                 </button>
-                ${e.id.startsWith("standard_") ? y : g`<button class="chip danger" @click=${() => this._delete(e)}>Delete</button>`}
+                ${e.id.startsWith("standard_") ? y : g`<button class="chip danger" @click=${() => this._delete(e)}>${E("chore_editor.delete")}</button>`}
               </div>
               ${t ? this._renderEditor(e) : g`<div class="summary">${this._lines(e).map((e) => g`<div class="small">${e}</div>`)}</div>`}
             </div>`;
 		})}
       ${this._note ? g`<div class="error" role="alert">${this._note}</div>` : y}
       <div class="row">
-        <button class="primary" ?disabled=${t.length >= Na} @click=${() => this._add()}>+ New ladder</button>
+        <button class="primary" ?disabled=${t.length >= Na} @click=${() => this._add()}>${E("ladders.new_ladder")}</button>
       </div>
     </section>`;
 	}
@@ -10056,7 +10216,7 @@ var Va = class extends x {
           >
             <span class="pic"><boopli-pet .kind=${t.kind} .mood=${"content"} still></boopli-pet></span>
             <span class="name">${t.label}</span>
-            ${t.art ? "" : g`<span class="soon">art soon</span>`}
+            ${t.art ? "" : g`<span class="soon">${E("pet_picker.art_soon")}</span>`}
           </button>`)}
       </div>
       ${this.moods ? g`<div class="moods" aria-label="${e.label} in every mood">
@@ -10243,7 +10403,7 @@ var Ha = [
                 max="5"
                 step="1"
                 .value=${String(this._level)}
-                aria-label="Level"
+                aria-label=${E("pet_preview.level")}
                 @input=${(e) => this._level = Number(e.target.value)}
               />
             </label>
@@ -10252,8 +10412,8 @@ var Ha = [
               Away mode (suitcase)
             </label>
           </div>
-          <p class="muted small">The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed.</p>
-          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>Close</button></div>
+          <p class="muted small">${E("pet_preview.the_room_grows_with_the_level")}</p>
+          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${E("common.close")}</button></div>
         </div>
       </dialog>
     `;
@@ -10627,7 +10787,7 @@ var $a = class extends x {
             <p class="muted small">
               ${this._file.name}${e.exported_at ? g` · saved ${new Date(e.exported_at).toLocaleString()}` : y}${e.boopli_version ? g` · Boopli ${e.boopli_version}` : y}
             </p>
-            <p>Pick what to bring in:</p>
+            <p>${E("backup.pick_what_to_bring_in")}</p>
             ${this._renderParts(e.parts, e.counts)}
             ${t === null ? g`<div class="warn" role="status">${E("backup.the_list_of_changes_to_the")}</div>` : t.length ? g`<div class="changes"><b>${E("backup.the_settings_would_change_like_this")}</b>
                     <ul>${t.slice(0, 12).map((e) => g`<li>${e}</li>`)}</ul>
@@ -10636,18 +10796,18 @@ var $a = class extends x {
                   <b>${E("backup.this_install_does_not_have_everything")}</b>
                   ${e.missing_entities_total ? g`<div class="small">Not found: ${e.missing_entities.join(", ")}${e.missing_entities_total > e.missing_entities.length ? ` and ${e.missing_entities_total - e.missing_entities.length} more` : ""}.</div>` : y}
                   ${e.missing_services.length ? g`<div class="small">Phones not found: ${e.missing_services.join(", ")}.</div>` : y}
-                  <div class="small muted">They are kept, but do nothing until you pick devices that exist here.</div>
+                  <div class="small muted">${E("backup.they_are_kept_but_do_nothing")}</div>
                 </div>` : y}
             ${e.runs_ended ? g`<div class="warn" role="status">${e.runs_ended} running ${e.runs_ended === 1 ? "chore belongs" : "chores belong"} to chores that are not in the file and will end.</div>` : y}
             <p class="small">
-              Importing <b>replaces</b> the ticked parts on this install, and it cannot be undone.
-              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>Save a copy of what I have now first</button>
+              Importing <b>${E("backup.replaces")}</b> the ticked parts on this install, and it cannot be undone.
+              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${E("backup.save_a_copy_of_what_i")}</button>
               ${this._copyName ? g`<span class="muted">(saved ${this._copyName})</span>` : y}
             </p>
           ` : y}
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !e || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
-        <button ?disabled=${this._busy} @click=${this._close}>Cancel</button>
+        <button ?disabled=${this._busy} @click=${this._close}>${E("common.cancel")}</button>
       </div>
     `;
 	}
@@ -10660,9 +10820,9 @@ var $a = class extends x {
       @click=${(e) => e.target === e.currentTarget && this._close()}
     >
       <div class="box">
-        ${this._done.length ? g`<h2>${k("check-circle-outline")} Done</h2>
+        ${this._done.length ? g`<h2>${k("check-circle-outline")} ${E("common.done")}</h2>
               ${this._done.map((e) => g`<p>${e}</p>`)}
-              <div class="foot"><button class="primary" @click=${this._close}>Close</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
+              <div class="foot"><button class="primary" @click=${this._close}>${E("common.close")}</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
         ${this._error ? g`<div class="error" role="alert">${this._error}</div>` : y}
       </div>
     </dialog>`;
@@ -10839,7 +10999,7 @@ var eo = class extends x {
 		let t = this.snapshot?.claude, n = !!t?.token_set, r = !!(e.claude_enabled && e.claude_fire_url?.trim() && n), i = this._busy || !r || !!this.blocked;
 		return g`
       ${this.hideIntro ? y : g`<p class="muted small">
-            Claude is an extra, next to your Home Assistant agent. Press <b>Ask Claude</b> when you do not trust the
+            Claude is an extra, next to your Home Assistant agent. Press <b>${E("common.ask_claude")}</b> when you do not trust the
             agent's answer, when your free agent is down, or when you have no agent. It uses your own Claude account:
             every ask is one run of your routine. Claude's routines are a research preview, so they can change or stop
             working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a
@@ -10868,9 +11028,9 @@ var eo = class extends x {
       <div class="field">
         <label for="claude-token">${E("claude.the_routines_token")}</label>
         ${n && !this._changing ? g`<div class="row">
-              <span>Token is saved</span>
-              <button type="button" ?disabled=${this._busy} @click=${() => this._changing = !0}>Replace</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>Remove</button>
+              <span>${E("claude.token_is_saved")}</span>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._changing = !0}>${E("claude.replace")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>${E("common.remove")}</button>
             </div>` : g`<div class="row">
               <input
                 id="claude-token"
@@ -11406,7 +11566,7 @@ var fo = {
         <p class="muted small">
           ${E("settings.boopli_sends_a_notification_with_done")}
         </p>
-        ${t.length === 0 ? g`<p class="muted">No phones with the Home Assistant app found.</p>` : t.map((t) => {
+        ${t.length === 0 ? g`<p class="muted">${E("settings.no_phones_with_the_home_assistant")}</p>` : t.map((t) => {
 			let n = e.phones.find((e) => e.service === t), r = this._notes[`phone:${t}`];
 			return g`
                 <div class="row">
@@ -11426,7 +11586,7 @@ var fo = {
                   >
                     ${ho.map((e) => g`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
-                  <button @click=${() => this._testPhone(t)}>Test</button>
+                  <button @click=${() => this._testPhone(t)}>${E("common.test")}</button>
                 </div>
                 ${r ? g`<div class="note muted small">${r}</div>` : y}
               `;
@@ -11464,8 +11624,8 @@ var fo = {
                     .value=${this._rgbToHex(e.color)}
                     @input=${(e) => this._patchLight(n, { color: this._hexToRgb(e.target.value) })}
                   />` : y}
-              <button @click=${() => this._testLight(e)}>Test</button>
-              <button aria-label="Remove light" @click=${() => this._removeLight(n)}>✕</button>
+              <button @click=${() => this._testLight(e)}>${E("common.test")}</button>
+              <button aria-label=${E("settings.remove_light")} @click=${() => this._removeLight(n)}>✕</button>
             </div>
             ${r ? g`
                   <div class="blinkopts">
@@ -11511,14 +11671,14 @@ var fo = {
 		})}
         <div class="row add">
           <select
-            aria-label="Add a light"
+            aria-label=${E("settings.add_a_light")}
             .value=${this._addLight}
             @change=${(e) => this._addLight = e.target.value}
           >
-            <option value="">Add a light…</option>
+            <option value="">${E("settings.add_a_light_2")}</option>
             ${t.map((e) => g`<option value=${e} ?selected=${e === this._addLight}>${this._friendly(e)}</option>`)}
           </select>
-          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>Add</button>
+          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>${E("common.add")}</button>
         </div>
       </section>
     `;
@@ -11554,7 +11714,7 @@ var fo = {
                       No limit
                     </label>
                     ${r ? g`
-                          <span class="muted small">from</span>
+                          <span class="muted small">${E("common.from")}</span>
                           <input
                             type="time"
                             aria-label="${e} nudges start"
@@ -11564,7 +11724,7 @@ var fo = {
 				start: e.target.value
 			})}
                           />
-                          <span class="muted small">until</span>
+                          <span class="muted small">${E("common.until")}</span>
                           <input
                             type="time"
                             aria-label="${e} nudges stop"
@@ -11578,7 +11738,7 @@ var fo = {
                   </div>
                 `;
 		})}
-              <button class="chip" @click=${() => this._copyMondayToAll()}>Copy Monday to all days</button>
+              <button class="chip" @click=${() => this._copyMondayToAll()}>${E("common.copy_monday_to_all_days")}</button>
             ` : y}
       </section>
     `;
@@ -11654,12 +11814,12 @@ var fo = {
             title=${e.name}
             @click=${() => r(e.hex)}
           ></button>`)}
-        <label class="acc custom" title="Pick any colour">
+        <label class="acc custom" title=${E("settings.pick_any_colour")}>
           Custom
           <input
             type="color"
             .value=${n || t}
-            aria-label="Custom accent colour"
+            aria-label=${E("settings.custom_accent_colour")}
             @input=${(e) => r(e.target.value)}
           />
         </label>
@@ -11778,12 +11938,12 @@ var fo = {
             ${k("creation")} Ask Claude (extra)${n.claude_enabled ? " · on" : ""}
           </button>
         </div>
-        ${i ? g`<div class="muted small">Save first to test.</div>` : y}
+        ${i ? g`<div class="muted small">${E("settings.save_first_to_test")}</div>` : y}
         ${this._aiNote ? g`<div class="note muted small">${this._aiNote}</div>` : y}
         <div class="field">
-          <label for="ai-agent">Which AI agent?</label>
+          <label for="ai-agent">${E("settings.which_ai_agent")}</label>
           <select id="ai-agent" @change=${(e) => this._setAi({ entity_id: e.target.value })}>
-            <option value="" .selected=${n.entity_id === ""}>Home Assistant default</option>
+            <option value="" .selected=${n.entity_id === ""}>${E("wizard.home_assistant_default")}</option>
             ${t.map((e) => g`<option value=${e} .selected=${e === n.entity_id}>${J(this.hass, e)}</option>`)}
             ${n.entity_id && !t.includes(n.entity_id) ? g`<option value=${n.entity_id} selected>${n.entity_id} (not found)</option>` : y}
           </select>
@@ -11813,33 +11973,28 @@ var fo = {
               </div>
             </dialog>` : y}
         <details @toggle=${(e) => e.target.open && this._loadDefaults()}>
-          <summary class="muted small">Advanced: agent for photos, and the prompts Boopli sends</summary>
+          <summary class="muted small">${E("settings.advanced_agent_for_photos_and_the")}</summary>
           <div class="field">
-            <label for="ai-photo-agent">Agent for room photos</label>
+            <label for="ai-photo-agent">${E("settings.agent_for_room_photos")}</label>
             <select
               id="ai-photo-agent"
               @change=${(e) => this._setAi({ photo_entity_id: e.target.value })}
             >
-              <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>The same agent as above</option>
+              <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>${E("settings.the_same_agent_as_above")}</option>
               ${t.map((e) => g`<option value=${e} .selected=${e === n.photo_entity_id}>${J(this.hass, e)}</option>`)}
               ${n.photo_entity_id && !t.includes(n.photo_entity_id) ? g`<option value=${n.photo_entity_id} selected>${n.photo_entity_id} (not found)</option>` : y}
             </select>
             <div class="muted small">
-              Only used when you describe a room from photos on the My home screen. Pick an agent whose model can
-              read images. Your normal agent stays as it is.
+              ${E("settings.only_used_when_you_describe_a")}
             </div>
           </div>
           <p class="muted small">
-            These are the instructions given to the agent. You can change them. Leave a prompt as it is to use the
-            built-in one. The placeholders {task}, {kind}, {known} and {answers} are filled in by Boopli.
+            ${E("settings.these_are_the_instructions_given_to")}
           </p>
           ${a("questions_prompt", "Questions prompt")} ${a("steps_prompt", "Steps prompt")}
-          <h3>Prompts you copy into your own AI chat</h3>
+          <h3>${E("settings.prompts_you_copy_into_your_own")}</h3>
           <p class="muted small">
-            These are the texts the "In my own chat" buttons on My home give you to copy. Boopli fills in {room}
-            (the room name), {names} (your rooms) and {known} (the notes so far, if you tick that). Keep the part that
-            asks for the answer in the same shape: one short fact per line in one code block, and for the whole home
-            a "## Room" heading line before each room. Boopli reads the pasted answer that way.
+            ${E("settings.these_are_the_texts_the_in")}
           </p>
           ${a("chat_room_prompt", "Chat prompt for one room")} ${a("chat_home_prompt", "Chat prompt for the whole home")}
         </details>
@@ -11888,7 +12043,7 @@ var fo = {
         <span class="card-icon">${k(n.icon)}</span>
         <h3 tabindex="-1">
           ${n.title}
-          ${r ? g`<span class="unsaved-badge">Unsaved</span>` : y}
+          ${r ? g`<span class="unsaved-badge">${E("settings.unsaved")}</span>` : y}
         </h3>
       </div>
       <div class="summary">
@@ -11897,9 +12052,9 @@ var fo = {
       <div class="buttons">
         ${e === "backup" ? g`<button type="button" class="textlink" aria-label=${E("common.export_a_backup")} @click=${() => this._backup = "export"}>${E("settings.export")}</button>
               <button type="button" class="textlink quiet" aria-label=${E("common.import_a_backup")} ?disabled=${this._isDirty()} @click=${() => this._backup = "import"}>${E("settings.import")}</button>` : g`<button type="button" class="textlink" aria-label="Guide me: ${n.title}" @click=${() => this._openWizard(n.wizard)}>${E("settings.guide_me")}</button>`}
-        ${e === "backup" ? y : e === "wall" ? g`<button type="button" class="textlink quiet" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>` : g`<button type="button" class="textlink quiet" aria-label="Advanced: ${n.title}" ?disabled=${this._busy} @click=${() => this._openArea(e)}>${E("settings.advanced")}</button>`}
+        ${e === "backup" ? y : e === "wall" ? g`<button type="button" class="textlink quiet" aria-label=${E("settings.edit_on_the_wall")} @click=${() => this._editWall()}>${E("settings.edit_on_the_wall")}</button>` : g`<button type="button" class="textlink quiet" aria-label="Advanced: ${n.title}" ?disabled=${this._busy} @click=${() => this._openArea(e)}>${E("settings.advanced")}</button>`}
       </div>
-      ${e === "backup" && this._isDirty() ? g`<p class="muted small">Save or discard your unsaved changes to import.</p>` : y}
+      ${e === "backup" && this._isDirty() ? g`<p class="muted small">${E("settings.save_or_discard_your_unsaved_changes")}</p>` : y}
     </section>`;
 	}
 	_editWall() {
@@ -11962,16 +12117,16 @@ var fo = {
       ${t && this._modal ? g`<div class="win">
             <div class="win-head ${this._modal === "ai" ? "noline" : ""}">
               <h2 id="win-title">${k(t.icon)} ${t.title}</h2>
-              <button type="button" class="close" aria-label="Keep for later and close" ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
+              <button type="button" class="close" aria-label=${E("settings.keep_for_later_and_close")} ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, e)}</div>
             ${this._error ? g`<div class="error" role="alert">${this._error}</div>` : y}
             <div class="win-foot">
-              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>Save and close</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>Discard and close</button>
-              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>Keep for later</button>
+              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>${E("settings.save_and_close")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>${E("settings.discard_and_close")}</button>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>${E("settings.keep_for_later")}</button>
               <p class="muted small hint-line">
-                "Keep for later" closes this window and keeps your changes. The card shows an orange "Unsaved" tag.
+                ${E("settings.keep_for_later_closes_this_window")}
               </p>
             </div>
           </div>` : y}
@@ -11995,8 +12150,8 @@ var fo = {
           ${e.map((e) => g`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${fo[e].title}</button>`)}
         </div>
         <span class="spacer"></span>
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-        <button ?disabled=${this._busy} @click=${() => this.discard()}>Discard all</button>
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${E("common.save")}</button>
+        <button ?disabled=${this._busy} @click=${() => this.discard()}>${E("settings.discard_all")}</button>
       </div>`;
 	}
 	render() {
@@ -12009,7 +12164,7 @@ var fo = {
           <div class="cards">${t.areas.map((t) => this._card(t, e))}</div>`)}
       <p class="muted small">
         Want to do all of it again from the start?
-        <button type="button" class="chip" @click=${() => this._openWizard("first")}>Run the first setup again</button>
+        <button type="button" class="chip" @click=${() => this._openWizard("first")}>${E("settings.run_the_first_setup_again")}</button>
       </p>
       ${this._renderModal(e)} ${this._renderSaveBar()}
       ${this._backup ? g`<boopli-backup .hass=${this.hass} .snapshot=${this.snapshot} .mode=${this._backup} @backup-close=${() => this._backup = ""}></boopli-backup>` : y}
@@ -12914,7 +13069,7 @@ var xo = class extends x {
       <textarea
         rows="1"
         class="own"
-        placeholder="Or write it in your own words"
+        placeholder=${E("common.or_write_it_in_your_own")}
         .value=${n.typed[t] ?? ""}
         @input=${(e) => this._patchIv({ typed: (this._iv?.typed ?? []).map((n, r) => r === t ? e.target.value : n) })}
       ></textarea>
@@ -12963,20 +13118,20 @@ var xo = class extends x {
             <p>
               ${e.source === "paste" ? "This is what I read from what you pasted." : e.source === "photos" ? "This is what the AI saw in your photos. The photos are already gone." : "This is what I would write down."}
               Change anything that is wrong.
-              ${t?.notes ? g`<b>It replaces the notes you have now.</b>` : y}
+              ${t?.notes ? g`<b>${E("home.it_replaces_the_notes_you_have")}</b>` : y}
               Nothing is saved until you press Save afterwards.
             </p>
             <textarea
               rows="8"
               class="notes"
-              aria-label="Proposed notes"
+              aria-label=${E("home.proposed_notes")}
               .value=${e.result}
               @input=${(e) => this._patchIv({ result: e.target.value })}
             ></textarea>
             <div class="actions">
-              <button class="primary big" ?disabled=${!e.result.trim()} @click=${() => this._acceptNotes()}>Use these notes</button>
+              <button class="primary big" ?disabled=${!e.result.trim()} @click=${() => this._acceptNotes()}>${E("home.use_these_notes")}</button>
               ${e.source !== "paste" && this._aiOn() ? g`<button class="big" @click=${() => this._askQuestions(e.answers)}>${E("home.ask_me_more")}</button>` : y}
-              <button class="big" @click=${() => this._iv = null}>Throw away</button>
+              <button class="big" @click=${() => this._iv = null}>${E("home.throw_away")}</button>
             </div>
           ` : y}
     </section>`;
@@ -13059,7 +13214,7 @@ var xo = class extends x {
       ${this._error ? g`<div class="error">${this._error}</div>` : y}
       <ol class="stepslist">
         <li>
-          <b>Copy this</b> and paste it into your chat.
+          <b>${E("home.copy_this")}</b> and paste it into your chat.
           ${this._hasNotes(e.roomId) ? g`<label class="inline">
                 <input
                   type="checkbox"
@@ -13081,14 +13236,14 @@ var xo = class extends x {
           </div>
         </li>
         <li>
-          <b>Talk it through</b> with the chat. When you say you are done, it answers with the notes.
+          <b>${E("home.talk_it_through")}</b> with the chat. When you say you are done, it answers with the notes.
         </li>
         <li>
-          <b>Copy the notes</b> it gives back and paste them here.
+          <b>${E("home.copy_the_notes")}</b> it gives back and paste them here.
           <textarea
             class="pastebox"
             rows="6"
-            aria-label="Pasted notes"
+            aria-label=${E("home.pasted_notes")}
             placeholder=${n ? "## Kitchen\nDishwasher is under the counter\n## Bedroom\n…" : "Dishwasher is under the counter\nBalcony door sticks"}
             .value=${e.pasted}
             @input=${(e) => this._patchTool({ pasted: e.target.value })}
@@ -13120,7 +13275,7 @@ var xo = class extends x {
             ${e.name}
             <span class="tag">${e.id ? "your room" : "new room"}</span>
           </label>
-          ${n?.notes.trim() ? g`<div class="muted small">It replaces the notes this room has now.</div>` : y}
+          ${n?.notes.trim() ? g`<div class="muted small">${E("home.it_replaces_the_notes_this_room")}</div>` : y}
           <textarea
             class="notes"
             rows="5"
@@ -13134,7 +13289,7 @@ var xo = class extends x {
         <button class="primary big" ?disabled=${t === 0} @click=${() => this._applyFlat()}>
           Use ${t} ${t === 1 ? "room" : "rooms"}
         </button>
-        <button class="big" @click=${() => this._tool = null}>Throw away</button>
+        <button class="big" @click=${() => this._tool = null}>${E("home.throw_away")}</button>
       </div>
     </section>`;
 	}
@@ -13148,7 +13303,7 @@ var xo = class extends x {
           .value=${e.name}
           @input=${(t) => this._patchRoom(e.id, { name: t.target.value })}
         />
-        ${this._roomChanged(e.id) ? g`<span class="unsaved-badge">Unsaved</span>` : y}
+        ${this._roomChanged(e.id) ? g`<span class="unsaved-badge">${E("settings.unsaved")}</span>` : y}
       </div>
       ${e.area_id ? g`<div class="muted small">${E("home.from_your_home_assistant_areas")}</div>` : g`<div class="muted small">${E("home.added_by_you")}</div>`}
       <label for="n-${e.id}">${E("home.what_should_the_ai_know_about")}</label>
@@ -13163,7 +13318,7 @@ var xo = class extends x {
       ></textarea>
       <div class="row-actions">
         ${t ? g`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e)}>
-              ${k("auto-fix")} Let the AI ask me
+              ${k("auto-fix")} ${E("home.let_the_ai_ask_me")}
             </button>` : y}
         ${t || n ? g`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openPhotos(e)}>
               ${k("camera-outline")} ${E("home.from_photos")}
@@ -13172,7 +13327,7 @@ var xo = class extends x {
               ${k("creation")} ${E("home.let_claude_ask_me")}
             </button>` : y}
         <button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openChat(e)}>
-          ${k("chat-outline")} In my own chat
+          ${k("chat-outline")} ${E("home.in_my_own_chat")}
         </button>
         <span class="spacer"></span>
         <button type="button" class="textlink quiet" @click=${() => this._removeRoom(e)}>${e.area_id ? "Hide" : "Delete"}</button>
@@ -13211,36 +13366,35 @@ var xo = class extends x {
         <span>${E("home.send_room_notes_to_the_ai")}</span>
       </label>
       ${this._aiOn() ? y : g`<p class="muted small">
-            AI help is off, so the notes are not used yet. Turn it on in Settings. Until then you can still write the
-            notes yourself.
+            ${E("home.ai_help_is_off_so_the")}
           </p>`}
       <div class="whole">
-        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${k("chat-outline")} Talk through my whole home in my own chat</button>
-        <span class="muted small">Copy a prompt, talk it out by voice or text, paste the result back.</span>
+        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${k("chat-outline")} ${E("home.talk_through_my_whole_home_in")}</button>
+        <span class="muted small">${E("home.copy_a_prompt_talk_it_out")}</span>
       </div>
       ${this._error ? g`<div class="error">${this._error}</div>` : y}
       ${this._message ? g`<div class="ok">${this._message}</div>` : y}
       <div class="grid">${t.map((e) => this._renderRoom(e))}</div>
       <div class="add">
-        <label for="newroom">Add a room or place</label>
+        <label for="newroom">${E("home.add_a_room_or_place")}</label>
         <div class="add-row">
           <input
             id="newroom"
-            placeholder="For example: Balcony"
+            placeholder=${E("home.for_example_balcony")}
             .value=${this._newName}
             @input=${(e) => this._newName = e.target.value}
             @keydown=${(e) => {
 			e.key === "Enter" && this._addRoom();
 		}}
           />
-          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>Add</button>
+          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>${E("common.add")}</button>
         </div>
       </div>
       ${n.length ? g`<details class="hiddenrooms" ?open=${this._showHidden} @toggle=${(e) => this._showHidden = e.target.open}>
             <summary>${n.length} hidden ${n.length === 1 ? "room" : "rooms"}</summary>
             ${n.map((e) => g`<div class="hiddenrow">
                 <span>${e.name}</span>
-                <button type="button" @click=${() => this._patchRoom(e.id, { hidden: !1 })}>Show again</button>
+                <button type="button" @click=${() => this._patchRoom(e.id, { hidden: !1 })}>${E("home.show_again")}</button>
               </div>`)}
           </details>` : y}
       ${this._renderSaveBar()}
@@ -13797,13 +13951,13 @@ var wo = class extends Z {
       ${e.total > 1 ? g`<div class="small muted">Step ${e.done + 1} of ${e.total}</div>` : y}
       <div class="actions">
         <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => xt(this.hass, t.id, n.step_id))}>
-          Done
+          ${E("common.done")}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => (r ? lt : ct)(this.hass, t.id, n.step_id))}>
           ${r ? "Not yet" : "On it"}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => st(this.hass, t.id, n.step_id))}>
-          Snooze
+          ${E("wizard.snooze")}
         </button>
       </div>
       ${this._error ? g`<div class="error">${this._error}</div>` : y}
@@ -15009,7 +15163,7 @@ var Xo = {
       ${n.length ? g`<p class="muted">It is used by ${n.join(", ")}. Pick another nudge style for them first, then come back.</p>` : y}
       <div class="gate">
         <button type="button" class="danger big" ?disabled=${this._busy || n.length > 0} @click=${() => this._deleteLadder()}>
-          Delete this ladder
+          ${E("wizard.delete_this_ladder")}
         </button>
       </div>
     `;
@@ -15045,7 +15199,7 @@ var Xo = {
         .index=${t}
         @rung-change=${(e) => this._setRung(t, e.detail)}
       ></boopli-rung>
-      ${(this._ladder()?.rungs.length ?? 0) > 1 ? g`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(t)}>Remove this nudge</button></p>` : y}
+      ${(this._ladder()?.rungs.length ?? 0) > 1 ? g`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(t)}>${E("ladders.remove_this_nudge")}</button></p>` : y}
     ` : g`<p class="muted">${E("wizard.give_the_ladder_a_name_first")}</p>`;
 	}
 	_renderLadMore() {
@@ -15058,7 +15212,7 @@ var Xo = {
         </button>
         <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>${E("wizard.thats_all")}</button>
       </div>
-      ${e >= 12 ? g`<p class="muted small">12 nudges is the most.</p>` : y}
+      ${e >= 12 ? g`<p class="muted small">${E("wizard.12_nudges_is_the_most")}</p>` : y}
     `;
 	}
 	_renderLadEnd(e) {
@@ -15176,8 +15330,7 @@ var Xo = {
         buttons, so you can answer without opening anything.
       </p>
       ${t.length === 0 ? g`<p class="muted">
-            No phone with the Home Assistant app found. Install the app and sign in, then come back.
-            You can skip this for now.
+            ${E("wizard.no_phone_with_the_home_assistant")}
           </p>` : g`<div class="list">
             ${t.map((t) => {
 			let n = e.phones.find((e) => e.service === t);
@@ -15202,7 +15355,7 @@ var Xo = {
 				level: n?.level ?? "normal",
 				start_at: 1
 			}))}>
-                  Send a test
+                  ${E("wizard.send_a_test")}
                 </button>
                 ${this._noteLine(`phone:${t}`)}
               </div>`;
@@ -15229,7 +15382,7 @@ var Xo = {
                 ${rs.map((e) => g`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
-            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => dt(this.hass, t))}>Send a test</button>
+            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => dt(this.hass, t))}>${E("wizard.send_a_test")}</button>
             ${this._noteLine(`phone:${t.service}`)}
           </div>`)}
       </div>
@@ -15263,7 +15416,7 @@ var Xo = {
                     />
                     No limit
                   </label>
-                  ${n ? g`<span class="muted small">from</span>
+                  ${n ? g`<span class="muted small">${E("common.from")}</span>
                         <input
                           type="time"
                           aria-label="${A[e]} from"
@@ -15273,7 +15426,7 @@ var Xo = {
 				start: t.target.value
 			})}
                         />
-                        <span class="muted small">until</span>
+                        <span class="muted small">${E("common.until")}</span>
                         <input
                           type="time"
                           aria-label="${A[e]} until"
@@ -15287,7 +15440,7 @@ var Xo = {
                 </div>`;
 		})}
             </div>
-            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>Copy Monday to all days</button>
+            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>${E("common.copy_monday_to_all_days")}</button>
           ` : y}
     `;
 	}
@@ -15313,7 +15466,7 @@ var Xo = {
           />
         </div>
       </div>
-      <p>How should new chores nudge you, unless you say otherwise?</p>
+      <p>${E("wizard.how_should_new_chores_nudge_you")}</p>
       ${[...ns, ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
@@ -15331,7 +15484,7 @@ var Xo = {
         Which lights should remind you? Each one either <b>${E("wizard.blinks")}</b> when a step is your turn, or
         is a <b>${E("wizard.status_light")}</b> that turns on and stays on until you are done. This is optional.
       </p>
-      ${t.length === 0 ? g`<p class="muted">No lights found.</p>` : g`<div class="list grid">
+      ${t.length === 0 ? g`<p class="muted">${E("wizard.no_lights_found")}</p>` : g`<div class="list grid">
             ${t.map((t) => {
 			let n = e.lights.find((e) => e.entity_id === t);
 			return g`<div class="choice col">
@@ -15361,7 +15514,7 @@ var Xo = {
                       />
                       ${r === "blink" ? "Blinks" : "Status light (stays on until done)"}
                     </label>`)}
-                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => ut(this.hass, n))}>Test</button>
+                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => ut(this.hass, n))}>${E("common.test")}</button>
                 </div>
                 ${n ? this._noteLine(`light:${t}`) : y}
               </div>`;
@@ -15389,7 +15542,7 @@ var Xo = {
             ${t.mode === "blink" ? g`${this._numField("Blink length (ms)", t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
                 ${this._numField("Number of blinks", t.repeats, 1, 5, (e) => n({ repeats: e }))}
                 ${this._numField("Pause between blinks (ms)", t.gap_ms, 0, 3e4, (e) => n({ gap_ms: e }), 100)}` : g`<span class="muted small">${E("wizard.a_status_light_has_no_blink")}</span>`}
-            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => ut(this.hass, t))}>Test</button>
+            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => ut(this.hass, t))}>${E("common.test")}</button>
             ${this._noteLine(`light:${t.entity_id}`)}
           </div>`;
 		})}
@@ -15411,7 +15564,7 @@ var Xo = {
 		let t = Y(this.hass, ["media_player"]);
 		return g`
       <p>${E("wizard.which_speaker_do_you_want_to")}</p>
-      ${t.length === 0 ? g`<p class="muted">No speakers (media players) found.</p>` : g`<div class="list grid">
+      ${t.length === 0 ? g`<p class="muted">${E("wizard.no_speakers_media_players_found")}</p>` : g`<div class="list grid">
             ${t.map((t) => {
 			let n = e.speakers.find((e) => e.entity_id === t);
 			return g`<label class="inline option card-choice">
@@ -15467,7 +15620,7 @@ var Xo = {
                 </div>` : g`<div class="muted small">For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.</div>`}
             ${e === "alarm" ? g`${this._numField("Lasts (seconds)", i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
                 ${this._numField("Repeats every (seconds, 0 = once)", i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : y}
-            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => ft(this.hass, t, r))}>Test</button></div>
+            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => ft(this.hass, t, r))}>${E("common.test")}</button></div>
             ${this._noteLine(`spk:${r}`)}
           </div>`}
     `;
@@ -15514,7 +15667,7 @@ var Xo = {
 			target: e.target.value,
 			enabled: !!e.target.value
 		})}>
-                <option value="" .selected=${n.target === ""}>Choose…</option>
+                <option value="" .selected=${n.target === ""}>${E("common.choose")}</option>
                 ${i.map((e) => g`<option value=${e.value} .selected=${e.value === n.target}>${e.label}</option>`)}
               </select>
             </label>
@@ -15522,7 +15675,7 @@ var Xo = {
               The sentence ({chore} and {step} are filled in)
               <input .value=${t.speech_template} @input=${(e) => this._set({ speech_template: e.target.value })} />
             </label>
-            <div><button type="button" @click=${() => this._try("spk:speech", () => ft(this.hass, e, "speech"))}>Test</button></div>
+            <div><button type="button" @click=${() => this._try("spk:speech", () => ft(this.hass, e, "speech"))}>${E("common.test")}</button></div>
             ${this._noteLine("spk:speech")}
           </div>`}
     `;
@@ -15561,14 +15714,14 @@ var Xo = {
       <div class="list">
         ${e.alarm_devices.map((t) => g`<div class="choice">
             <span class="grow">${this._fn(t.entity_id)}</span>
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => pt(this.hass, t))}>Test (3 s)</button>
-            <button type="button" aria-label="Remove" @click=${() => this._set({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}>✕</button>
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => pt(this.hass, t))}>${E("wizard.test_3_s")}</button>
+            <button type="button" aria-label=${E("common.remove")} @click=${() => this._set({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}>✕</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`)}
       </div>
       <div class="choice">
         <select class="grow" @change=${(e) => this._addDevice = e.target.value}>
-          <option value="" .selected=${this._addDevice === ""}>Add a siren, switch or script…</option>
+          <option value="" .selected=${this._addDevice === ""}>${E("wizard.add_a_siren_switch_or_script")}</option>
           ${t.map((e) => g`<option value=${e} .selected=${e === this._addDevice}>${this._fn(e)}</option>`)}
         </select>
         <button
@@ -15578,7 +15731,7 @@ var Xo = {
 			this._set({ alarm_devices: [...e.alarm_devices, Ti(this._addDevice)] }), this._addDevice = "";
 		}}
         >
-          Add
+          ${E("common.add")}
         </button>
       </div>
     `;
@@ -15595,7 +15748,7 @@ var Xo = {
 			return g`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
             ${this._numField("On for (seconds)", t.seconds, 1, 600, (e) => n({ seconds: e }))}
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => pt(this.hass, t))}>Test (3 s)</button>
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => pt(this.hass, t))}>${E("wizard.test_3_s")}</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`;
 		})}
@@ -15681,14 +15834,14 @@ var Xo = {
         </select>
         ${t.length === 0 ? g`<div class="muted small">${E("wizard.no_ai_task_agent_found_yet")}</div>` : y}
       </div>
-      <p class="muted small">Press the button to save and test it, or Next to only save it.</p>
+      <p class="muted small">${E("wizard.press_the_button_to_save_and")}</p>
       <div class="actions inline-actions">
         <button
           type="button"
           ?disabled=${this._busy}
           @click=${() => this._testAiAgent(e)}
         >
-          Save and test the agent
+          ${E("wizard.save_and_test_the_agent")}
         </button>
       </div>
       ${this._noteLine("ai:test")}
@@ -15804,12 +15957,12 @@ var Xo = {
 		let t = this._baseline ? Ja(this._baseline, e, this.hass) : [], n = va.filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(`Chores added: ${n.join(", ")}`), g`
       <p><b>${E("common.what_changed")}</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
-      ${t.length === 0 ? g`<p class="muted">Nothing changed.</p>` : g`<ul>${t.map((e) => g`<li>${e}</li>`)}</ul>`}
+      ${t.length === 0 ? g`<p class="muted">${E("wizard.nothing_changed")}</p>` : g`<ul>${t.map((e) => g`<li>${e}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board() ? g`<p>${E("wizard.next_put_the_tiles_where_you")}</p>
             <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${E("wizard.edit_it_on_the_wall")}</button></p>
             <p class="small">Link for the tablet's start page: <code>${Yo(this._board())}</code></p>` : y}
       <p class="muted small">
-        Everything can be changed again in Settings, step by step or in the full forms.
+        ${E("wizard.everything_can_be_changed_again_in")}
       </p>
     `;
 	}
@@ -15876,7 +16029,7 @@ var Xo = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${ts.includes(t) ? g`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>` : y}
+          ${ts.includes(t) ? g`<div class="muted small optional">${E("wizard.optional_details_skip_if_the_defaults")}</div>` : y}
           ${this._renderStep(e)}
           ${this._error ? g`<div class="error">${this._error}</div>` : y}
           <div class="actions">
@@ -15884,7 +16037,7 @@ var Xo = {
             <span class="spacer"></span>
             ${n ? g`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
                   ${this._first ? "Finish" : "Save and close"}
-                </button>` : r ? y : g`${t === "lad_name" || t === "lad_start" || t === "lad_nudge" ? y : g`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
+                </button>` : r ? y : g`${t === "lad_name" || t === "lad_start" || t === "lad_nudge" ? y : g`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${E("wizard.skip")}</button>`}
                     <button type="button" class="primary" ?disabled=${this._busy || this._index >= i} @click=${() => this._go(1)}>${E("common.next")}</button>`}
           </div>
         </section>
@@ -16359,7 +16512,7 @@ var gs = 3e4, _s = class extends x {
 	render() {
 		let e = this._board();
 		if (!this.snapshot || !e) return g`<div class="note">${this.snapshot ? "No board yet. Make one in Settings, on the Wall board card." : "Loading…"}</div>
-        ${this.preview ? y : g`<div class="controls"><button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
+        ${this.preview ? y : g`<div class="controls"><button type="button" aria-label=${E("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
@@ -16924,9 +17077,9 @@ var vs = 10, ys = 30, bs = 40, xs = [
         ${this._numField("th", "Cells tall", t.h, 1, e.rows - t.y, (e) => (this._resize(t.w, e), this._tile?.h))}
       </div>
       <div class="mfoot">
-        <button class="danger" @click=${() => this._remove()}>Remove this tile</button>
+        <button class="danger" @click=${() => this._remove()}>${E("wall.remove_this_tile")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => this._modal = ""}>Done</button>
+        <button class="primary" @click=${() => this._modal = ""}>${E("common.done")}</button>
       </div>
     `;
 	}
@@ -16953,13 +17106,13 @@ var vs = 10, ys = 30, bs = 40, xs = [
           ${Ss.map(([t, n]) => g`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
-      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
+      <p class="muted small">${E("wall_edit.night_is_when_quiet_hours_are")}</p>
       <p class="small">Link for the tablet's start page: <code>${Yo(e)}</code> (after you save)</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= vs} @click=${() => this._newBoard()}>+ New board</button>
-        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= vs} @click=${() => this._newBoard()}>${E("wall_edit.new_board")}</button>
+        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${E("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => this._modal = ""}>Done</button>
+        <button class="primary" @click=${() => this._modal = ""}>${E("common.done")}</button>
       </div>
     `;
 	}
@@ -16969,7 +17122,7 @@ var vs = 10, ys = 30, bs = 40, xs = [
       <div class="adds" role="group" aria-label=${E("wall_edit.add_a_tile_2")}>
         ${Uo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${k(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
-      <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>Cancel</button></div>
+      <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>${E("common.cancel")}</button></div>
     `;
 	}
 	render() {
@@ -16987,12 +17140,12 @@ var vs = 10, ys = 30, bs = 40, xs = [
               ${this._boards.map((t) => g`<option value=${t.id} ?selected=${t.id === e.id}>${t.name || "(no name)"}</option>`)}
             </select>
           </label>
-          <button @click=${() => this._modal = "board"}>${k("cog-outline")} Board</button>
-          <button @click=${() => this._modal = "add"}>＋ Add tile</button>
-          <div class="views" role="group" aria-label="Show it as">
+          <button @click=${() => this._modal = "board"}>${k("cog-outline")} ${E("wall_edit.board")}</button>
+          <button @click=${() => this._modal = "add"}>${E("wall_edit.add_tile")}</button>
+          <div class="views" role="group" aria-label=${E("wall_edit.show_it_as")}>
             ${Cs.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
-          <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
+          <span class="hint muted small">${E("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
           ${this._askDiscard ? g`<span class="small">${E("wall_edit.throw_away_your_changes")}</span>
                 <button class="danger" @click=${() => this._exit(this._savedName())}>${E("wall_edit.yes_discard")}</button>
@@ -17017,10 +17170,10 @@ var vs = 10, ys = 30, bs = 40, xs = [
             </div>
           </div>
         </div>
-        ${this._error && !this._modal ? g`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>OK</button></div>` : y}
+        ${this._error && !this._modal ? g`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>${E("wall_edit.ok")}</button></div>` : y}
         <dialog
           class="modal"
-          aria-label="Edit the board"
+          aria-label=${E("wall_edit.edit_the_board")}
           ?inert=${this._busy}
           @close=${() => {
 			this._modal &&= "";
@@ -17477,19 +17630,19 @@ var Es = {
 		};
 		return g`
       <header>
-        ${this.narrow ? g`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>${k("menu")}</button>` : y}
-        <h1>Boopli</h1>
+        ${this.narrow ? g`<button class="menu" aria-label=${E("panel.open_sidebar")} @click=${this._toggleSidebar}>${k("menu")}</button>` : y}
+        <h1>${E("wizard.boopli")}</h1>
         <nav>
           ${Object.keys(Es).map((t) => g`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
               ${Es[t]}
-              ${e[t] ? g`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : y}
+              ${e[t] ? g`<span class="dot" title=${E("panel.unsaved_changes")} aria-label=${E("panel.unsaved_changes")}></span>` : y}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(Jo(this._snapshot?.settings?.boards, "")?.name ?? "")}>${k("monitor-dashboard")} Wall view</button>
+        <button class="wallbtn" title=${E("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(Jo(this._snapshot?.settings?.boards, "")?.name ?? "")}>${k("monitor-dashboard")} ${E("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main

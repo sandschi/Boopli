@@ -131,7 +131,7 @@ export class BoopliPetPreview extends LitElement {
                 max="5"
                 step="1"
                 .value=${String(this._level)}
-                aria-label="Level"
+                aria-label=${t("pet_preview.level")}
                 @input=${(e: Event) => (this._level = Number((e.target as HTMLInputElement).value))}
               />
             </label>
@@ -140,8 +140,8 @@ export class BoopliPetPreview extends LitElement {
               Away mode (suitcase)
             </label>
           </div>
-          <p class="muted small">The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed.</p>
-          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>Close</button></div>
+          <p class="muted small">${t("pet_preview.the_room_grows_with_the_level")}</p>
+          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${t("common.close")}</button></div>
         </div>
       </dialog>
     `;

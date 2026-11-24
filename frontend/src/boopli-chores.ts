@@ -224,9 +224,9 @@ export class BoopliChores extends LitElement {
                     ? nothing
                     : html`<button class="textlink" @click=${() => this._start(c)}>${t("common.start_now")}</button>`}
                   ${c.repeat.type === "none"
-                    ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>Set a schedule</button>`
+                    ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>${t("chores.set_a_schedule")}</button>`
                     : nothing}
-                  <button class="textlink quiet" @click=${() => this._edit(c)}>Edit</button>
+                  <button class="textlink quiet" @click=${() => this._edit(c)}>${t("chores.edit")}</button>
                 </div>
               </section>
             `

@@ -173,9 +173,7 @@ export class BoopliEgg extends LitElement {
     if (this._note) {
       return html`<div class="note" role="status">
         <span
-          >Here would be an Easter egg. 🐱 But you're on Safari, so you get a sentence instead of a spinning cat. On an
-          iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to
-          non-Apple products 😉</span
+          >${t("egg.here_would_be_an_easter_egg")}</span
         >
         <button type="button" class="ctl" aria-label=${t("common.close")} @click=${() => this._stop(true)}>✕</button>
       </div>`;
@@ -197,7 +195,7 @@ export class BoopliEgg extends LitElement {
         >
           ${this._muted ? "🔇" : "🔊"}
         </button>
-        <button type="button" class="ctl" aria-label="Stop the Easter egg" @click=${() => this._stop(true)}>⏹ Stop</button>
+        <button type="button" class="ctl" aria-label=${t("egg.stop_the_easter_egg")} @click=${() => this._stop(true)}>${t("egg.stop")}</button>
       </div>`;
   }
 

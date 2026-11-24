@@ -43,13 +43,13 @@ export class WallTileDue extends WallTile {
       ${item.total > 1 ? html`<div class="small muted">Step ${item.done + 1} of ${item.total}</div>` : nothing}
       <div class="actions">
         <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => completeStep(this.hass!, run.id, step.step_id))}>
-          Done
+          ${t("common.done")}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => (working ? notOnIt : onIt)(this.hass!, run.id, step.step_id))}>
           ${working ? "Not yet" : "On it"}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => snoozeStep(this.hass!, run.id, step.step_id))}>
-          Snooze
+          ${t("wizard.snooze")}
         </button>
       </div>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}

@@ -454,9 +454,9 @@ export class BoopliWallEdit extends LitElement {
         })}
       </div>
       <div class="mfoot">
-        <button class="danger" @click=${() => this._remove()}>Remove this tile</button>
+        <button class="danger" @click=${() => this._remove()}>${t("wall.remove_this_tile")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
+        <button class="primary" @click=${() => (this._modal = "")}>${t("common.done")}</button>
       </div>
     `;
   }
@@ -484,13 +484,13 @@ export class BoopliWallEdit extends LitElement {
           ${NIGHT_CHOICES.map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
         </select>
       </div>
-      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
+      <p class="muted small">${t("wall_edit.night_is_when_quiet_hours_are")}</p>
       <p class="small">Link for the tablet's start page: <code>${boardLink(cur)}</code> (after you save)</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>+ New board</button>
-        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>${t("wall_edit.new_board")}</button>
+        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${t("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
+        <button class="primary" @click=${() => (this._modal = "")}>${t("common.done")}</button>
       </div>
     `;
   }
@@ -501,7 +501,7 @@ export class BoopliWallEdit extends LitElement {
       <div class="adds" role="group" aria-label=${t("wall_edit.add_a_tile_2")}>
         ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
       </div>
-      <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>Cancel</button></div>
+      <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>${t("common.cancel")}</button></div>
     `;
   }
 
@@ -519,12 +519,12 @@ export class BoopliWallEdit extends LitElement {
               ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || "(no name)"}</option>`)}
             </select>
           </label>
-          <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} Board</button>
-          <button @click=${() => (this._modal = "add")}>＋ Add tile</button>
-          <div class="views" role="group" aria-label="Show it as">
+          <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} ${t("wall_edit.board")}</button>
+          <button @click=${() => (this._modal = "add")}>${t("wall_edit.add_tile")}</button>
+          <div class="views" role="group" aria-label=${t("wall_edit.show_it_as")}>
             ${VIEWS.map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
           </div>
-          <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
+          <span class="hint muted small">${t("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
           ${this._askDiscard
             ? html`<span class="small">${t("wall_edit.throw_away_your_changes")}</span>
@@ -551,10 +551,10 @@ export class BoopliWallEdit extends LitElement {
             </div>
           </div>
         </div>
-        ${this._error && !this._modal ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
+        ${this._error && !this._modal ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>${t("wall_edit.ok")}</button></div>` : nothing}
         <dialog
           class="modal"
-          aria-label="Edit the board"
+          aria-label=${t("wall_edit.edit_the_board")}
           ?inert=${this._busy}
           @close=${() => {
             if (this._modal) this._modal = ""; // closed with Escape

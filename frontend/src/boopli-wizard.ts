@@ -714,7 +714,7 @@ export class BoopliWizard extends LitElement {
         : nothing}
       <div class="gate">
         <button type="button" class="danger big" ?disabled=${this._busy || users.length > 0} @click=${() => this._deleteLadder()}>
-          Delete this ladder
+          ${t("wizard.delete_this_ladder")}
         </button>
       </div>
     `;
@@ -757,7 +757,7 @@ export class BoopliWizard extends LitElement {
         @rung-change=${(e: CustomEvent<Rung>) => this._setRung(i, e.detail)}
       ></boopli-rung>
       ${(this._ladder()?.rungs.length ?? 0) > 1
-        ? html`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(i)}>Remove this nudge</button></p>`
+        ? html`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(i)}>${t("ladders.remove_this_nudge")}</button></p>`
         : nothing}
     `;
   }
@@ -772,7 +772,7 @@ export class BoopliWizard extends LitElement {
         </button>
         <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>${t("wizard.thats_all")}</button>
       </div>
-      ${n >= 12 ? html`<p class="muted small">12 nudges is the most.</p>` : nothing}
+      ${n >= 12 ? html`<p class="muted small">${t("wizard.12_nudges_is_the_most")}</p>` : nothing}
     `;
   }
 
@@ -902,8 +902,7 @@ export class BoopliWizard extends LitElement {
       </p>
       ${phones.length === 0
         ? html`<p class="muted">
-            No phone with the Home Assistant app found. Install the app and sign in, then come back.
-            You can skip this for now.
+            ${t("wizard.no_phone_with_the_home_assistant")}
           </p>`
         : html`<div class="list">
             ${phones.map((service) => {
@@ -924,7 +923,7 @@ export class BoopliWizard extends LitElement {
                   ${phoneName(service)}
                 </label>
                 <button type="button" @click=${() => this._try(`phone:${service}`, () => testPhone(this.hass!, { service, level: cfg?.level ?? "normal", start_at: 1 }))}>
-                  Send a test
+                  ${t("wizard.send_a_test")}
                 </button>
                 ${this._noteLine(`phone:${service}`)}
               </div>`;
@@ -956,7 +955,7 @@ export class BoopliWizard extends LitElement {
                 ${LEVELS.map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
               </select>
             </label>
-            <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>Send a test</button>
+            <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>${t("wizard.send_a_test")}</button>
             ${this._noteLine(`phone:${p.service}`)}
           </div>`
         )}
@@ -995,14 +994,14 @@ export class BoopliWizard extends LitElement {
                     No limit
                   </label>
                   ${day
-                    ? html`<span class="muted small">from</span>
+                    ? html`<span class="muted small">${t("common.from")}</span>
                         <input
                           type="time"
                           aria-label="${WEEKDAY_NAMES[i]} from"
                           .value=${day.start}
                           @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
                         />
-                        <span class="muted small">until</span>
+                        <span class="muted small">${t("common.until")}</span>
                         <input
                           type="time"
                           aria-label="${WEEKDAY_NAMES[i]} until"
@@ -1016,7 +1015,7 @@ export class BoopliWizard extends LitElement {
                 </div>`;
               })}
             </div>
-            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>Copy Monday to all days</button>
+            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>${t("common.copy_monday_to_all_days")}</button>
           `
         : nothing}
     `;
@@ -1041,7 +1040,7 @@ export class BoopliWizard extends LitElement {
           />
         </div>
       </div>
-      <p>How should new chores nudge you, unless you say otherwise?</p>
+      <p>${t("wizard.how_should_new_chores_nudge_you")}</p>
       ${[
         ...STYLE_CHOICES,
         ...(d.ladders ?? []).map((l) => ({
@@ -1066,7 +1065,7 @@ export class BoopliWizard extends LitElement {
         is a <b>${t("wizard.status_light")}</b> that turns on and stays on until you are done. This is optional.
       </p>
       ${lights.length === 0
-        ? html`<p class="muted">No lights found.</p>`
+        ? html`<p class="muted">${t("wizard.no_lights_found")}</p>`
         : html`<div class="list grid">
             ${lights.map((id) => {
               const cfg = d.lights.find((l) => l.entity_id === id);
@@ -1097,7 +1096,7 @@ export class BoopliWizard extends LitElement {
                       ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
                     </label>`
                   )}
-                  <button type="button" ?disabled=${!cfg} @click=${() => cfg && this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
+                  <button type="button" ?disabled=${!cfg} @click=${() => cfg && this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>${t("common.test")}</button>
                 </div>
                 ${cfg ? this._noteLine(`light:${id}`) : nothing}
               </div>`;
@@ -1129,7 +1128,7 @@ export class BoopliWizard extends LitElement {
                 ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
                 ${this._numField("Pause between blinks (ms)", l.gap_ms, 0, 30000, (n) => patch({ gap_ms: n }), 100)}`
               : html`<span class="muted small">${t("wizard.a_status_light_has_no_blink")}</span>`}
-            <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>Test</button>
+            <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>${t("common.test")}</button>
             ${this._noteLine(`light:${l.entity_id}`)}
           </div>`;
         })}
@@ -1154,7 +1153,7 @@ export class BoopliWizard extends LitElement {
     return html`
       <p>${t("wizard.which_speaker_do_you_want_to")}</p>
       ${players.length === 0
-        ? html`<p class="muted">No speakers (media players) found.</p>`
+        ? html`<p class="muted">${t("wizard.no_speakers_media_players_found")}</p>`
         : html`<div class="list grid">
             ${players.map((id) => {
               const cfg = d.speakers.find((s) => s.entity_id === id);
@@ -1218,7 +1217,7 @@ export class BoopliWizard extends LitElement {
               ? html`${this._numField("Lasts (seconds)", sound.seconds, 3, 600, (n) => this._patchSound("alarm", { seconds: n }))}
                 ${this._numField("Repeats every (seconds, 0 = once)", sound.repeat_s, 0, 60, (n) => this._patchSound("alarm", { repeat_s: n }))}`
               : nothing}
-            <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>Test</button></div>
+            <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>${t("common.test")}</button></div>
             ${this._noteLine(`spk:${level}`)}
           </div>`}
     `;
@@ -1247,7 +1246,7 @@ export class BoopliWizard extends LitElement {
             <label class="num">
               ${sp.route === "tts" ? "Voice" : "Alexa device"}
               <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value, enabled: !!(e.target as HTMLSelectElement).value })}>
-                <option value="" .selected=${sp.target === ""}>Choose…</option>
+                <option value="" .selected=${sp.target === ""}>${t("common.choose")}</option>
                 ${targets.map((t) => html`<option value=${t.value} .selected=${t.value === sp.target}>${t.label}</option>`)}
               </select>
             </label>
@@ -1255,7 +1254,7 @@ export class BoopliWizard extends LitElement {
               The sentence ({chore} and {step} are filled in)
               <input .value=${d.speech_template} @input=${(e: Event) => this._set({ speech_template: (e.target as HTMLInputElement).value })} />
             </label>
-            <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>Test</button></div>
+            <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>${t("common.test")}</button></div>
             ${this._noteLine("spk:speech")}
           </div>`}
     `;
@@ -1304,15 +1303,15 @@ export class BoopliWizard extends LitElement {
         ${d.alarm_devices.map(
           (a) => html`<div class="choice">
             <span class="grow">${this._fn(a.entity_id)}</span>
-            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
-            <button type="button" aria-label="Remove" @click=${() => this._set({ alarm_devices: d.alarm_devices.filter((x) => x.entity_id !== a.entity_id) })}>✕</button>
+            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>${t("wizard.test_3_s")}</button>
+            <button type="button" aria-label=${t("common.remove")} @click=${() => this._set({ alarm_devices: d.alarm_devices.filter((x) => x.entity_id !== a.entity_id) })}>✕</button>
             ${this._noteLine(`alarm:${a.entity_id}`)}
           </div>`
         )}
       </div>
       <div class="choice">
         <select class="grow" @change=${(e: Event) => (this._addDevice = (e.target as HTMLSelectElement).value)}>
-          <option value="" .selected=${this._addDevice === ""}>Add a siren, switch or script…</option>
+          <option value="" .selected=${this._addDevice === ""}>${t("wizard.add_a_siren_switch_or_script")}</option>
           ${choices.map((id) => html`<option value=${id} .selected=${id === this._addDevice}>${this._fn(id)}</option>`)}
         </select>
         <button
@@ -1323,7 +1322,7 @@ export class BoopliWizard extends LitElement {
             this._addDevice = "";
           }}
         >
-          Add
+          ${t("common.add")}
         </button>
       </div>
     `;
@@ -1340,7 +1339,7 @@ export class BoopliWizard extends LitElement {
           return html`<div class="choice col">
             <b>${this._fn(a.entity_id)}</b>
             ${this._numField("On for (seconds)", a.seconds, 1, 600, (n) => patch({ seconds: n }))}
-            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
+            <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>${t("wizard.test_3_s")}</button>
             ${this._noteLine(`alarm:${a.entity_id}`)}
           </div>`;
         })}
@@ -1427,14 +1426,14 @@ export class BoopliWizard extends LitElement {
           ? html`<div class="muted small">${t("wizard.no_ai_task_agent_found_yet")}</div>`
           : nothing}
       </div>
-      <p class="muted small">Press the button to save and test it, or Next to only save it.</p>
+      <p class="muted small">${t("wizard.press_the_button_to_save_and")}</p>
       <div class="actions inline-actions">
         <button
           type="button"
           ?disabled=${this._busy}
           @click=${() => this._testAiAgent(d)}
         >
-          Save and test the agent
+          ${t("wizard.save_and_test_the_agent")}
         </button>
       </div>
       ${this._noteLine("ai:test")}
@@ -1553,7 +1552,7 @@ export class BoopliWizard extends LitElement {
     return html`
       <p><b>${t("common.what_changed")}</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
       ${changes.length === 0
-        ? html`<p class="muted">Nothing changed.</p>`
+        ? html`<p class="muted">${t("wizard.nothing_changed")}</p>`
         : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board()
         ? html`<p>${t("wizard.next_put_the_tiles_where_you")}</p>
@@ -1561,7 +1560,7 @@ export class BoopliWizard extends LitElement {
             <p class="small">Link for the tablet's start page: <code>${boardLink(this._board()!)}</code></p>`
         : nothing}
       <p class="muted small">
-        Everything can be changed again in Settings, step by step or in the full forms.
+        ${t("wizard.everything_can_be_changed_again_in")}
       </p>
     `;
   }
@@ -1671,7 +1670,7 @@ export class BoopliWizard extends LitElement {
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / this._steps.length) * 100}%"></div></div>
           <h2>${this._title(step, this._index)}</h2>
           ${OPTIONAL_STEPS.includes(step)
-            ? html`<div class="muted small optional">Optional details. Skip if the defaults are fine.</div>`
+            ? html`<div class="muted small optional">${t("wizard.optional_details_skip_if_the_defaults")}</div>`
             : nothing}
           ${this._renderStep(d)}
           ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
@@ -1686,7 +1685,7 @@ export class BoopliWizard extends LitElement {
                 </button>`
               : isGate
                 ? nothing
-                : html`${step === "lad_name" || step === "lad_start" || step === "lad_nudge" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
+                : html`${step === "lad_name" || step === "lad_start" || step === "lad_nudge" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${t("wizard.skip")}</button>`}
                     <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>${t("common.next")}</button>`}
           </div>
         </section>
