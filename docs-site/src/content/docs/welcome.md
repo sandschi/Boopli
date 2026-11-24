@@ -1,5 +1,7 @@
 ---
 title: Welcome to the Boopli documentation
+sidebar:
+  label: Welcome
 description: Where to start, and where to find things.
 ---
 

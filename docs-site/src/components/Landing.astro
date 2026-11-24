@@ -80,8 +80,8 @@ const features = [
 
 <div class="landing">
 	<section class="hero">
+		<h1><span class="line">Chores in tiny steps.</span> <span class="line">A pet that cheers you on.</span></h1>
 		<div class="hero-text">
-			<h1><span class="line">Chores in tiny steps.</span> <span class="line">A pet that cheers you on.</span></h1>
 			<p class="lead">
 				Boopli is an ADHD-friendly chore and task companion that lives inside <b>Home Assistant</b>. It nudges you with
 				the lights, speakers and phone you already have. No account, no cloud, no server.
@@ -203,6 +203,10 @@ const features = [
 		grid-template-columns: 1.2fr 1fr;
 		gap: 2.5rem;
 		align-items: center;
+	}
+	.hero h1 {
+		grid-column: 1 / -1;
+		margin-bottom: 0;
 	}
 	.lead {
 		font-size: 1.3rem;
