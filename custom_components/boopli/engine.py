@@ -18,14 +18,38 @@ There is deliberately no "overdue" state. A step is active until it is done.
 
 from __future__ import annotations
 
+
 import colorsys
 import re
 import uuid
+import zlib
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, time as dtime, timedelta, timezone, tzinfo
 from collections.abc import Iterable
 from typing import Any
 from urllib.parse import quote
+
+
+def message_key(template: str) -> str:
+    """The key of a message template in the panel's language files: a readable start plus a short fingerprint."""
+    words = re.sub(r"\{\w+\}", " ", template.lower())
+    words = re.sub(r"[^a-z0-9]+", " ", words).split()
+    head = "_".join(words[:7])[:48] or "message"
+    return f"{head}_{zlib.crc32(template.encode()) & 0xFFFF:04x}"
+
+
+class Msg(str):
+    """An English message that remembers its template and its values, so the panel can show it in another language."""
+
+    template: str
+    params: dict[str, Any]
+
+    def __new__(cls, template: str, **params: Any) -> Msg:
+        text = template.format(**params) if params else template
+        obj = super().__new__(cls, text)
+        obj.template = template
+        obj.params = params
+        return obj
 
 # --- constants -----------------------------------------------------------
 
@@ -620,7 +644,7 @@ class Home:
 
 def validate_home(home: Home) -> str | None:
     if len(home.rooms) > MAX_ROOMS:
-        return f"At most {MAX_ROOMS} rooms."
+        return Msg("At most {max_rooms} rooms.", max_rooms=MAX_ROOMS)
     seen: set[str] = set()
     for room in home.rooms:
         if not room.name:
@@ -847,7 +871,7 @@ def validate_picture(image: str) -> str | None:
     if not image:
         return None
     if len(image) > PICTURE_MAX:
-        return f"A picture name can have at most {PICTURE_MAX} letters."
+        return Msg("A picture name can have at most {picture_max} letters.", picture_max=PICTURE_MAX)
     if is_camera(image):
         return None
     if (
@@ -879,15 +903,15 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
     if not chore.steps:
         return "A chore needs at least one step."
     if len(chore.steps) > MAX_STEPS:
-        return f"A chore can have at most {MAX_STEPS} steps."
+        return Msg("A chore can have at most {max_steps} steps.", max_steps=MAX_STEPS)
     if len(chore.questions) > MAX_QUESTIONS:
-        return f"A chore can ask at most {MAX_QUESTIONS} questions."
+        return Msg("A chore can ask at most {max_questions} questions.", max_questions=MAX_QUESTIONS)
     question_ids: set[str] = set()
     for question in chore.questions:
         if not question.text:
             return "Every question needs some text."
         if len(question.text) > QUESTION_MAX:
-            return f"A question can have at most {QUESTION_MAX} letters."
+            return Msg("A question can have at most {question_max} letters.", question_max=QUESTION_MAX)
         if question.id in question_ids:
             return "Two questions have the same id."
         question_ids.add(question.id)
@@ -897,30 +921,30 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
             return "Two steps have the same id."
         step_ids.add(step.id)
         if step.only_if and step.only_if not in question_ids:
-            return f"Step '{step.title}' points to a question that does not exist."
+            return Msg("Step '{title}' points to a question that does not exist.", title=step.title)
         if not step.title:
             return "Every step needs a title."
         error = validate_picture(step.image)
         if error:
-            return f"Step '{step.title}': {error}"
+            return Msg("Step '{title}': {error}", title=step.title, error=error)
         if not 0 <= step.wait_minutes <= MAX_WAIT_MINUTES:
             return "A wait must be between 0 minutes and 7 days."
         if step.size not in SIZE_VALUES:
             return "A step is small, medium or big."
         if len(step.title) > STEP_TITLE_MAX:
-            return f"A step title can have at most {STEP_TITLE_MAX} letters."
+            return Msg("A step title can have at most {step_title_max} letters.", step_title_max=STEP_TITLE_MAX)
         if len(step.wait_for) > MAX_TRIGGERS:
-            return f"A step can wait for at most {MAX_TRIGGERS} things."
+            return Msg("A step can wait for at most {max_triggers} things.", max_triggers=MAX_TRIGGERS)
         for trigger in step.wait_for:
             error = validate_trigger(trigger)
             if error:
-                return f"Step '{step.title}' (wait until): {error}"
+                return Msg("Step '{title}' (wait until): {error}", title=step.title, error=error)
         if len(step.triggers) > MAX_TRIGGERS:
-            return f"A step can have at most {MAX_TRIGGERS} ways to finish by itself."
+            return Msg("A step can have at most {max_triggers} ways to finish by itself.", max_triggers=MAX_TRIGGERS)
         for trigger in step.triggers:
             error = validate_trigger(trigger)
             if error:
-                return f"Step '{step.title}': {error}"
+                return Msg("Step '{title}': {error}", title=step.title, error=error)
     if chore.where not in WHERE_VALUES:
         return "Where must be 'home' or 'anywhere'."
     if chore.light_color is not None and (len(chore.light_color) != 3 or any(not 0 <= c <= 255 for c in chore.light_color)):
@@ -962,7 +986,7 @@ def validate_repeat(rep: Repeat) -> str | None:
             if key not in {str(i) for i in range(7)}:
                 return "Days must be 0 (Monday) to 6 (Sunday)."
             if not 1 <= len(times) <= MAX_TIMES_PER_DAY:
-                return f"A day can have 1 to {MAX_TIMES_PER_DAY} times."
+                return Msg("A day can have 1 to {max_times_per_day} times.", max_times_per_day=MAX_TIMES_PER_DAY)
             if any(not _time_ok(t) for t in times):
                 return "Every time must look like 09:30."
     return None
@@ -2397,7 +2421,7 @@ def default_board() -> Board:
 def validate_boards(boards: list[Board]) -> str | None:
     """Check the boards: how many, the names, the tiles, their sizes and their options."""
     if not 1 <= len(boards) <= BOARD_MAX:
-        return f"You need 1 to {BOARD_MAX} boards."
+        return Msg("You need 1 to {board_max} boards.", board_max=BOARD_MAX)
     ids: set[str] = set()
     names: set[str] = set()
     for board in boards:
@@ -2407,48 +2431,48 @@ def validate_boards(boards: list[Board]) -> str | None:
         if not board.name:
             return "Every board needs a name."
         if len(board.name) > BOARD_NAME_MAX:
-            return f"A board name can have at most {BOARD_NAME_MAX} letters."
+            return Msg("A board name can have at most {board_name_max} letters.", board_name_max=BOARD_NAME_MAX)
         if board.name.casefold() in names:
-            return f"There are two boards called '{board.name}'."
+            return Msg("There are two boards called '{name}'.", name=board.name)
         names.add(board.name.casefold())
         if not BOARD_COLUMNS_MIN <= board.columns <= BOARD_COLUMNS_MAX:
-            return f"'{board.name}': the columns must be {BOARD_COLUMNS_MIN} to {BOARD_COLUMNS_MAX}."
+            return Msg("'{name}': the columns must be {board_columns_min} to {board_columns_max}.", name=board.name, board_columns_min=BOARD_COLUMNS_MIN, board_columns_max=BOARD_COLUMNS_MAX)
         if not BOARD_ROWS_MIN <= board.rows <= BOARD_ROWS_MAX:
-            return f"'{board.name}': the rows must be {BOARD_ROWS_MIN} to {BOARD_ROWS_MAX}."
+            return Msg("'{name}': the rows must be {board_rows_min} to {board_rows_max}.", name=board.name, board_rows_min=BOARD_ROWS_MIN, board_rows_max=BOARD_ROWS_MAX)
         if board.night not in NIGHT_VALUES:
-            return f"'{board.name}': unknown night setting."
+            return Msg("'{name}': unknown night setting.", name=board.name)
         if len(board.tiles) > BOARD_TILES_MAX:
-            return f"'{board.name}' can have at most {BOARD_TILES_MAX} tiles."
+            return Msg("'{name}' can have at most {board_tiles_max} tiles.", name=board.name, board_tiles_max=BOARD_TILES_MAX)
         tile_ids: set[str] = set()
         for i, tile in enumerate(board.tiles):
             if tile.id in tile_ids:
-                return f"'{board.name}' has two tiles with the same id."
+                return Msg("'{name}' has two tiles with the same id.", name=board.name)
             tile_ids.add(tile.id)
             if tile.x >= 0 and any(tiles_overlap(tile, other) for other in board.tiles[:i]):
-                return f"'{board.name}': two tiles are on the same spot."
+                return Msg("'{name}': two tiles are on the same spot.", name=board.name)
             spec = TILE_OPTIONS.get(tile.type)
             if spec is None:
-                return f"'{board.name}': unknown tile type '{tile.type}'."
+                return Msg("'{name}': unknown tile type '{type}'.", name=board.name, type=tile.type)
             if not 1 <= tile.w <= board.columns or not 1 <= tile.h <= board.rows:
-                return f"'{board.name}': a {tile.type} tile has a size that does not fit the board."
+                return Msg("'{name}': a {type} tile has a size that does not fit the board.", name=board.name, type=tile.type)
             if tile.x < 0 or tile.y < 0 or tile.x + tile.w > board.columns or tile.y + tile.h > board.rows:
-                return f"'{board.name}': a {tile.type} tile is outside the board."
+                return Msg("'{name}': a {type} tile is outside the board.", name=board.name, type=tile.type)
             for key, (kind, _default, extra) in spec.items():
                 value = tile.options.get(key)
                 if kind == "choice" and value not in extra:
-                    return f"'{board.name}': a {tile.type} tile has an unknown {key}."
+                    return Msg("'{name}': a {type} tile has an unknown {key}.", name=board.name, type=tile.type, key=key)
                 if kind == "int" and not extra[0] <= value <= extra[1]:
-                    return f"'{board.name}': a {tile.type} tile's {key} must be {extra[0]} to {extra[1]}."
+                    return Msg("'{name}': a {type} tile's {key} must be {extra} to {extra2}.", name=board.name, type=tile.type, key=key, extra=extra[0], extra2=extra[1])
                 if kind == "text" and len(value) > extra:
-                    return f"'{board.name}': a {tile.type} tile's {key} can have at most {extra} letters."
+                    return Msg("'{name}': a {type} tile's {key} can have at most {extra} letters.", name=board.name, type=tile.type, key=key, extra=extra)
                 if kind == "entity":
                     domain, _, rest = value.partition(".")
                     if tile.type != "entity" and not value:
-                        return f"'{board.name}': pick the {domain_label(extra)} for the {tile.type} tile."
+                        return Msg("'{name}': pick the {extra} for the {type} tile.", name=board.name, extra=domain_label(extra), type=tile.type)
                     if tile.type == "entity" and not value:
-                        return f"'{board.name}': pick an entity for the entity tile."
+                        return Msg("'{name}': pick an entity for the entity tile.", name=board.name)
                     if not rest or (extra and domain not in extra):
-                        return f"'{board.name}': a {tile.type} tile needs a {domain_label(extra)}."
+                        return Msg("'{name}': a {type} tile needs a {extra}.", name=board.name, type=tile.type, extra=domain_label(extra))
     return None
 
 
@@ -2564,9 +2588,9 @@ class Settings:
         )
 
 
-_START_AT_ERROR = f"'Starts at nudge' must be {START_AT_MIN} to {START_AT_MAX}."
-_ALARM_SECONDS_ERROR = (
-    f"An alarm must last {ALARM_SECONDS_MIN} to {ALARM_SECONDS_MAX} seconds."
+_START_AT_ERROR = Msg("'Starts at nudge' must be {start_at_min} to {start_at_max}.", start_at_min=START_AT_MIN, start_at_max=START_AT_MAX)
+_ALARM_SECONDS_ERROR = Msg(
+    "An alarm must last {seconds_min} to {seconds_max} seconds.", seconds_min=ALARM_SECONDS_MIN, seconds_max=ALARM_SECONDS_MAX
 )
 
 
@@ -2577,11 +2601,11 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
         if not START_AT_MIN <= sound.start_at <= START_AT_MAX:
             return _START_AT_ERROR
         if sound.kind not in SOUND_KINDS:
-            return f"Unknown {name} sound type."
+            return Msg("Unknown {name} sound type.", name=name)
     if not ALARM_SECONDS_MIN <= speaker.alarm.seconds <= ALARM_SECONDS_MAX:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
-        return f"Alarm repeat must be 0 to {ALARM_REPEAT_MAX} seconds."
+        return Msg("Alarm repeat must be 0 to {alarm_repeat_max} seconds.", alarm_repeat_max=ALARM_REPEAT_MAX)
     speech = speaker.speech
     if not START_AT_MIN <= speech.start_at <= START_AT_MAX:
         return _START_AT_ERROR
@@ -2600,22 +2624,22 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
 def validate_sounds(sounds: list[ExtraSound]) -> str | None:
     """Check your own sounds (the shared list): a name, a unique name, a known type and a sound."""
     if len(sounds) > EXTRA_SOUNDS_MAX:
-        return f"You can have at most {EXTRA_SOUNDS_MAX} sounds of your own."
+        return Msg("You can have at most {extra_sounds_max} sounds of your own.", extra_sounds_max=EXTRA_SOUNDS_MAX)
     ids: set[str] = set()
     names: set[str] = set()
     for sound in sounds:
         if not sound.name:
             return "Every sound needs a name."
         if len(sound.name) > EXTRA_SOUND_NAME_MAX:
-            return f"A sound name can have at most {EXTRA_SOUND_NAME_MAX} letters."
+            return Msg("A sound name can have at most {extra_sound_name_max} letters.", extra_sound_name_max=EXTRA_SOUND_NAME_MAX)
         if sound.id in ids or sound.name.casefold() in names:
-            return f"There are two sounds called '{sound.name}'."
+            return Msg("There are two sounds called '{name}'.", name=sound.name)
         ids.add(sound.id)
         names.add(sound.name.casefold())
         if sound.kind not in SOUND_KINDS:
-            return f"Unknown type for the sound '{sound.name}'."
+            return Msg("Unknown type for the sound '{name}'.", name=sound.name)
         if not sound.sound:
-            return f"Choose the sound for '{sound.name}'."
+            return Msg("Choose the sound for '{name}'.", name=sound.name)
     return None
 
 
@@ -2627,7 +2651,7 @@ def validate_speaker_test(speaker: SpeakerCfg, level: str, sounds: list[ExtraSou
         return "Unknown speaker level."
     probe = speaker
     if level in (SPEAKER_CUE, SPEAKER_ALARM) and not (speaker.cue if level == SPEAKER_CUE else speaker.alarm).sound:
-        return f"Choose the {level} sound for {speaker.entity_id} first."  # saving without one is fine; testing it is not
+        return Msg("Choose the {level} sound for {entity_id} first.", level=level, entity_id=speaker.entity_id)  # saving without one is fine; testing it is not
     if level in (SPEAKER_CUE, SPEAKER_ALARM) and (speaker.cue if level == SPEAKER_CUE else speaker.alarm).kind == SOUND_ALEXA and not speaker_plays_alexa_sounds(speaker):
         return "Another media player can only play files, not Amazon's sounds."
     if level == SPEAKER_CUE:
@@ -2649,11 +2673,11 @@ def validate_settings(settings: Settings) -> str | None:
         if len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color):
             return "A light color needs three values from 0 to 255."
         if not BLINK_MS_MIN <= light.blink_ms <= BLINK_MS_MAX:
-            return f"Blink length must be {BLINK_MS_MIN} to {BLINK_MS_MAX} milliseconds."
+            return Msg("Blink length must be {blink_ms_min} to {blink_ms_max} milliseconds.", blink_ms_min=BLINK_MS_MIN, blink_ms_max=BLINK_MS_MAX)
         if not GAP_MS_MIN <= light.gap_ms <= GAP_MS_MAX:
-            return f"The pause between blinks must be {GAP_MS_MIN} to {GAP_MS_MAX} milliseconds."
+            return Msg("The pause between blinks must be {gap_ms_min} to {gap_ms_max} milliseconds.", gap_ms_min=GAP_MS_MIN, gap_ms_max=GAP_MS_MAX)
         if not REPEATS_MIN <= light.repeats <= REPEATS_MAX:
-            return f"A light can blink {REPEATS_MIN} to {REPEATS_MAX} times."
+            return Msg("A light can blink {repeats_min} to {repeats_max} times.", repeats_min=REPEATS_MIN, repeats_max=REPEATS_MAX)
     for phone in settings.phones:
         if not phone.service or "." in phone.service:
             return "A phone must be a notify service name."
@@ -2707,9 +2731,9 @@ def validate_settings(settings: Settings) -> str | None:
         or len(settings.ai.chat_room_prompt) > AI_PROMPT_MAX
         or len(settings.ai.chat_home_prompt) > AI_PROMPT_MAX
     ):
-        return f"A prompt can have at most {AI_PROMPT_MAX} letters."
+        return Msg("A prompt can have at most {ai_prompt_max} letters.", ai_prompt_max=AI_PROMPT_MAX)
     if len(settings.pet_name) > PET_NAME_MAX:
-        return f"The pet's name can have at most {PET_NAME_MAX} letters."
+        return Msg("The pet's name can have at most {pet_name_max} letters.", pet_name_max=PET_NAME_MAX)
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
     if settings.accent and not ACCENT_RE.fullmatch(settings.accent):
@@ -2729,7 +2753,7 @@ def _speaker_choice_known(choice: str) -> bool:
 def validate_ladders(ladders: list[Ladder]) -> str | None:
     """Check "Nudge it your way": names, the number of nudges, the waits and the device levels."""
     if len(ladders) > LADDER_MAX:
-        return f"You can have at most {LADDER_MAX} ladders."
+        return Msg("You can have at most {ladder_max} ladders.", ladder_max=LADDER_MAX)
     ids: set[str] = set()
     names: set[str] = set()
     for ladder in ladders:
@@ -2739,24 +2763,24 @@ def validate_ladders(ladders: list[Ladder]) -> str | None:
         if not ladder.name:
             return "Every ladder needs a name."
         if len(ladder.name) > LADDER_NAME_MAX:
-            return f"A ladder name can have at most {LADDER_NAME_MAX} letters."
+            return Msg("A ladder name can have at most {ladder_name_max} letters.", ladder_name_max=LADDER_NAME_MAX)
         if ladder.name.casefold() in names:
-            return f"There are two ladders called '{ladder.name}'."
+            return Msg("There are two ladders called '{name}'.", name=ladder.name)
         names.add(ladder.name.casefold())
         if not 1 <= len(ladder.rungs) <= LADDER_MAX_NUDGES:
-            return f"'{ladder.name}' needs 1 to {LADDER_MAX_NUDGES} nudges."
+            return Msg("'{name}' needs 1 to {ladder_max_nudges} nudges.", name=ladder.name, ladder_max_nudges=LADDER_MAX_NUDGES)
         for number, rung in enumerate(ladder.rungs, start=1):
             if not LADDER_GAP_MIN <= rung.gap <= LADDER_GAP_MAX:
-                return f"'{ladder.name}', nudge {number}: the wait must be {LADDER_GAP_MIN} to {LADDER_GAP_MAX} minutes."
+                return Msg("'{name}', nudge {number}: the wait must be {ladder_gap_min} to {ladder_gap_max} minutes.", name=ladder.name, number=number, ladder_gap_min=LADDER_GAP_MIN, ladder_gap_max=LADDER_GAP_MAX)
             if any(level not in LEVEL_VALUES for level in rung.phones.values()):
-                return f"'{ladder.name}', nudge {number}: unknown phone notification level."
+                return Msg("'{name}', nudge {number}: unknown phone notification level.", name=ladder.name, number=number)
             if any(not _speaker_choice_known(choice) for choice in rung.speakers.values()):
-                return f"'{ladder.name}', nudge {number}: unknown speaker choice."
+                return Msg("'{name}', nudge {number}: unknown speaker choice.", name=ladder.name, number=number)
             for light in rung.lights.values():
                 if light.mode not in (LIGHT_OWN_MODE, *LIGHT_MODE_VALUES):
-                    return f"'{ladder.name}', nudge {number}: unknown light mode."
+                    return Msg("'{name}', nudge {number}: unknown light mode.", name=ladder.name, number=number)
                 if light.color is not None and (len(light.color) != 3 or any(not 0 <= c <= 255 for c in light.color)):
-                    return f"'{ladder.name}', nudge {number}: a light color needs three values from 0 to 255."
+                    return Msg("'{name}', nudge {number}: a light color needs three values from 0 to 255.", name=ladder.name, number=number)
     return None
 
 
@@ -3310,7 +3334,7 @@ def build_backup(
     asked = set(parts)
     chores = list(chores)
     if "chores" in asked and len(chores) > BACKUP_CHORES_MAX:
-        raise BackupError(f"There are more than {BACKUP_CHORES_MAX} chores, which is more than a backup can hold.")
+        raise BackupError(Msg("There are more than {max_chores} chores, which is more than a backup can hold.", max_chores=BACKUP_CHORES_MAX))
     data: dict[str, Any] = {
         "format": BACKUP_FORMAT,
         "version": BACKUP_VERSION,
@@ -3359,7 +3383,7 @@ def parse_backup(data: Any, current_ladder_ids: Iterable[str] = ()) -> Backup:
             if not isinstance(raw, list) or any(not isinstance(c, dict) for c in raw):
                 raise BackupError("The chores in this file are damaged.")
             if len(raw) > BACKUP_CHORES_MAX:
-                raise BackupError(f"A backup can have at most {BACKUP_CHORES_MAX} chores.")
+                raise BackupError(Msg("A backup can have at most {max_chores} chores.", max_chores=BACKUP_CHORES_MAX))
             backup.chores = [Chore.from_dict(c) for c in raw]
             ladders = (
                 [lad.id for lad in backup.settings.ladders] if backup.settings else list(current_ladder_ids)
@@ -3417,14 +3441,14 @@ def check_backup_selection(
         return "Pick at least one part to import."
     for part in BACKUP_PARTS:
         if part in wanted and part not in backup.parts:
-            return f"The file has no {part} to import."
+            return Msg("The file has no {part} to import.", part=part)
     ladders = backup.settings.ladders if "settings" in wanted and backup.settings else settings.ladders
     ladder_ids = [lad.id for lad in ladders]
     if "chores" in wanted and backup.chores is not None:
         for chore in backup.chores:
             error = validate_chore(chore, ladder_ids)
             if error:
-                return f"The chore '{chore.name}' does not fit this setup: {error}"
+                return Msg("The chore '{name}' does not fit this setup: {error}", name=chore.name, error=error)
     elif "settings" in wanted:
         # New settings, chores that stay: they must not lose a ladder they use.
         kept = set(ladder_ids)
@@ -3434,8 +3458,7 @@ def check_backup_selection(
             users = chores_using(ladder.id, chores)
             if users:
                 return (
-                    f"The ladder '{ladder.name}' is used by {', '.join(users)}, and it is not in the file. "
-                    "Import the chores as well, or pick another nudge style for them first."
+                    Msg("The ladder '{name}' is used by {users}, and it is not in the file. Import the chores as well, or pick another nudge style for them first.", name=ladder.name, users=', '.join(users))
                 )
     return None
 

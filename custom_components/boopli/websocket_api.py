@@ -61,8 +61,25 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_backup_import)
 
 
+def _send_error(
+    connection: websocket_api.ActiveConnection, msg: dict[str, Any], code: str, err: Exception
+) -> None:
+    """Send a problem to the panel. The panel shows its own translation of err.code, and the English text is the fallback."""
+    if isinstance(err, BoopliError):
+        connection.send_error(
+            msg["id"],
+            code,
+            str(err),
+            translation_key=err.code,
+            translation_domain=DOMAIN,
+            translation_placeholders=err.params,
+        )
+    else:
+        connection.send_error(msg["id"], code, str(err))
+
+
 def _not_loaded(connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
-    connection.send_error(msg["id"], "not_loaded", "Boopli is not set up.")
+    _send_error(connection, msg, "not_loaded", BoopliError("Boopli is not set up."))
 
 
 @websocket_api.websocket_command({vol.Required("type"): "boopli/state"})
@@ -115,7 +132,7 @@ def ws_chore_save(
     try:
         chore = manager.save_chore(msg["chore"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {"id": chore.id})
 
@@ -135,7 +152,7 @@ def ws_chore_delete(
     try:
         manager.delete_chore(msg["chore_id"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"])
 
@@ -163,7 +180,7 @@ def ws_chore_start(
     try:
         run = manager.start_chore(msg["chore_id"], msg.get("answers"))
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {"run_id": run.id})
 
@@ -190,7 +207,7 @@ def ws_away_set(
     try:
         manager.set_away(msg["start"], msg["until"], msg.get("keep_going"))
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"])
 
@@ -255,7 +272,7 @@ def ws_part_park(
     try:
         chore = manager.park_part(msg["run_id"], msg["group"], msg["when"], msg["at"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {"chore_id": chore.id})
 
@@ -275,7 +292,7 @@ def ws_part_time(
     try:
         manager.set_parked_time(msg["chore_id"], msg["when"], msg["at"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {})
 
@@ -375,7 +392,7 @@ def ws_settings_save(
     try:
         manager.save_settings(msg["settings"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     # The ladders as saved (a new device may have been added to the standard ones), so a screen keeping its own copy can follow.
     connection.send_result(msg["id"], {"ladders": manager.snapshot()["settings"]["ladders"]})
@@ -400,7 +417,7 @@ def ws_schedule_preview(
     try:
         times = manager.preview_schedule(msg["repeat"], msg["count"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {"times": times})
 
@@ -431,7 +448,7 @@ def ws_home_save(
     try:
         manager.save_home(msg["home"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"])
 
@@ -478,7 +495,7 @@ def ws_ai_preview(
             msg["task"], msg["kind"], msg["answers"], msg["notes"], msg.get("rooms"), msg["scene"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -506,7 +523,7 @@ async def ws_room_questions(
             msg["room"], msg["notes"], msg["answers"], msg["via"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -526,7 +543,7 @@ async def ws_room_notes(
             msg["room"], msg["notes"], msg["answers"], msg["via"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -552,7 +569,7 @@ async def ws_ai_questions(
             msg["via"],
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -578,7 +595,7 @@ async def ws_ai_steps(
             msg["via"],
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -606,7 +623,7 @@ async def ws_room_photos(
             msg["room"], msg["notes"], msg["photos"], msg["via"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -634,7 +651,7 @@ async def ws_scene_photos(
             msg["task"], msg["photos"], msg.get("rooms"), msg["via"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -693,7 +710,7 @@ def ws_paste_notes(
             else manager.paste_room(msg["text"])
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -751,7 +768,7 @@ def ws_task_add(
             msg["title"], msg["steps"], msg["notes"], msg["where"]
         )
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], {"run_id": run.id})
 
@@ -775,7 +792,7 @@ def ws_setup_save(
     try:
         manager.save_setup({"status": msg["status"], "step": msg.get("step", "")})
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"])
 
@@ -804,7 +821,7 @@ async def ws_test_channel(
     try:
         result = await manager.async_test_channel(msg)
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -832,7 +849,7 @@ async def ws_backup_export(
     try:
         backup = manager.export_backup(msg["parts"], str(integration.version))
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], backup)
 
@@ -857,7 +874,7 @@ def ws_backup_preview(
     try:
         result = manager.preview_backup(msg["backup"], msg["parts"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -882,7 +899,7 @@ def ws_backup_import(
     try:
         result = manager.import_backup(msg["backup"], msg["parts"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], result)
 
@@ -906,7 +923,7 @@ async def ws_claude_token(
     try:
         await manager.async_set_claude_token(msg["token"])
     except BoopliError as err:
-        connection.send_error(msg["id"], "invalid", str(err))
+        _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], manager.claude_status())
 
@@ -925,6 +942,6 @@ async def ws_claude_test(
     try:
         result = await manager.async_test_claude()
     except BoopliError as err:
-        connection.send_error(msg["id"], "ai_failed", str(err))
+        _send_error(connection, msg, "ai_failed", err)
         return
     connection.send_result(msg["id"], result)
