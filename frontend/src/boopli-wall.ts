@@ -10,6 +10,7 @@ import { settle } from "./wall-layout";
 import { pickBoard, tileDef } from "./wall-tiles";
 import "./wall-tiles";
 import type { Board, Hass, Snapshot, Tile } from "./types";
+import { t } from "./i18n";
 
 const AWAKE_MS = 30_000; // how long a tap keeps a dimmed board awake
 
@@ -81,7 +82,7 @@ export class BoopliWall extends LitElement {
   /** Ask the browser not to turn the screen off. Not every browser can; then the tablet's own setting rules. */
   private async _keepAwake(): Promise<void> {
     try {
-      const wl = (navigator as Navigator & { wakeLock?: { request(t: "screen"): Promise<{ release(): Promise<void> }> } }).wakeLock;
+      const wl = (navigator as Navigator & { wakeLock?: { request(tl: "screen"): Promise<{ release(): Promise<void> }> } }).wakeLock;
       if (!wl || this._lock) return;
       const sentinel = await wl.request("screen");
       if (!this.isConnected || this._lock) {
@@ -126,38 +127,38 @@ export class BoopliWall extends LitElement {
     const away = !this.preview && this.snapshot.away_now ? this.snapshot.away : null; // only while it is on, not while it is only planned
     return html`<div class="wall ${night ? `night-${board.night}` : ""}" @pointerdown=${this._wake}>
       ${away
-        ? html`<div class="away" role="status">${icon("bag-suitcase")} <b>Away mode is on</b> <span>${awayWhen(away, this.nowMs, tz, true)}</span></div>`
+        ? html`<div class="away" role="status">${icon("bag-suitcase")} <b>${t("wall.away_mode_is_on")}</b> <span>${awayWhen(away, this.nowMs, tz, true)}</span></div>`
         : nothing}
       <div class="stage">
       <div class="grid" style="--cols:${board.columns};--rows:${board.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(board) : nothing}
-        ${(this._live ?? board.tiles).filter((t) => !!tileDef(t.type)).map(
-          (t) =>
+        ${(this._live ?? board.tiles).filter((tl) => !!tileDef(tl.type)).map(
+          (tl) =>
             html`<div
-              class="cell ${this.selectedId === t.id ? "selected" : ""} ${this._drag?.id === t.id ? "dragging" : ""}"
-              style="--x:${t.x};--y:${t.y};--w:${t.w};--h:${t.h}"
-            >${shtml`<${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}
+              class="cell ${this.selectedId === tl.id ? "selected" : ""} ${this._drag?.id === tl.id ? "dragging" : ""}"
+              style="--x:${tl.x};--y:${tl.y};--w:${tl.w};--h:${tl.h}"
+            >${shtml`<${unsafeStatic(`wall-tile-${tl.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
-              .options=${t.options}
+              .options=${tl.options}
               .preview=${this.preview}
-            ></${unsafeStatic(`wall-tile-${t.type.replace(/_/g, "-")}`)}>`}${this.pickable
-              ? html`<button type="button" class="shield" data-id=${t.id} aria-label="Edit this tile: ${t.type.replace(/_/g, " ")}" @click=${(e: MouseEvent) => e.detail === 0 && this._pick(t.id)}></button>
-                  <span class="handle" data-id=${t.id} data-resize title="Drag to resize"></span>
-                  <button type="button" class="del" aria-label="Remove this tile" title="Remove this tile" @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", { detail: t.id, bubbles: true, composed: true }))}>✕</button>`
+            ></${unsafeStatic(`wall-tile-${tl.type.replace(/_/g, "-")}`)}>`}${this.pickable
+              ? html`<button type="button" class="shield" data-id=${tl.id} aria-label="Edit this tile: ${tl.type.replace(/_/g, " ")}" @click=${(e: MouseEvent) => e.detail === 0 && this._pick(tl.id)}></button>
+                  <span class="handle" data-id=${tl.id} data-resize title=${t("wall.drag_to_resize")}></span>
+                  <button type="button" class="del" aria-label=${t("wall.remove_this_tile")} title=${t("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", { detail: tl.id, bubbles: true, composed: true }))}>✕</button>`
               : nothing}</div>`
         )}
       </div>
       </div>
       ${night && board.night === "black" ? html`<div class="black">${this._time(tz)}</div>` : nothing}
-      ${down ? html`<div class="down" role="status">Reconnecting to Home Assistant…</div>` : nothing}
+      ${down ? html`<div class="down" role="status">${t("wall.reconnecting_to_home_assistant")}</div>` : nothing}
       ${this.preview
         ? nothing
         : html`<div class="controls">
-            <button type="button" aria-label="Edit this board" title="Edit this board" @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>${icon("pencil")}</button>
-            <button type="button" aria-label="Full screen" @click=${this._fullscreen}>${icon("fullscreen")}</button>
-            <button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button>
+            <button type="button" aria-label=${t("wall.edit_this_board")} title=${t("wall.edit_this_board")} @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>${icon("pencil")}</button>
+            <button type="button" aria-label=${t("wall.full_screen")} @click=${this._fullscreen}>${icon("fullscreen")}</button>
+            <button type="button" aria-label=${t("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button>
           </div>`}
     </div>`;
   }
@@ -207,7 +208,7 @@ export class BoopliWall extends LitElement {
     const id = el.dataset?.id;
     const board = this._board();
     if (!id || !board) return;
-    const tile = board.tiles.find((t) => t.id === id);
+    const tile = board.tiles.find((tl) => tl.id === id);
     const at = this._cellAt(e.clientX, e.clientY);
     if (!tile || !at) return;
     this._drag = { id, bid: board.id, pid: e.pointerId, mode: el.hasAttribute("data-resize") ? "resize" : "move", gx: at.cx - tile.x, gy: at.cy - tile.y, x0: e.clientX, y0: e.clientY, moved: false };
@@ -228,13 +229,13 @@ export class BoopliWall extends LitElement {
     if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 6) return; // still a tap
     d.moved = true;
     const at = this._cellAt(e.clientX, e.clientY);
-    const orig = board.tiles.find((t) => t.id === d.id);
+    const orig = board.tiles.find((tl) => tl.id === d.id);
     if (!at || !orig) return;
     const moved: Tile =
       d.mode === "move"
         ? { ...orig, x: Math.max(0, Math.min(at.cx - d.gx, at.cols - orig.w)), y: Math.max(0, Math.min(at.cy - d.gy, at.rows - orig.h)) }
         : { ...orig, w: Math.max(1, Math.min(at.cx - orig.x + 1, at.cols - orig.x)), h: Math.max(1, Math.min(at.cy - orig.y + 1, at.rows - orig.y)) };
-    const next = settle(board.tiles.map((t) => (t.id === d.id ? moved : t)), board.rows, d.id);
+    const next = settle(board.tiles.map((tl) => (tl.id === d.id ? moved : tl)), board.rows, d.id);
     if (next) this._live = next; // null: it would not fit on the board, keep what was shown
   };
 

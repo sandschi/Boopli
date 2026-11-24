@@ -6,6 +6,7 @@ import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
 import type { AiAnswer, AiPreview, AiQuestion, AiStep, ChoreQuestion, Hass, Room, Snapshot, StepSize, Via } from "./types";
+import { t } from "./i18n";
 
 type Phase = "task" | "interview" | "working" | "review";
 type Kind = "now" | "recurring";
@@ -226,13 +227,13 @@ export class BoopliBreakdown extends LitElement {
     if (noted.length === 0) {
       return html`<p class="muted small roomtip">
         Tip: tell Boopli about your rooms and the steps will fit them.
-        <button type="button" class="link" @click=${() => this._fire("open-home")}>Open My home</button>
+        <button type="button" class="link" @click=${() => this._fire("open-home")}>${t("breakdown.open_my_home")}</button>
       </p>`;
     }
     const chosen = noted.filter((r) => this._rooms.includes(r.id));
     return html`<div class="rooms">
       <div class="roomline">
-        <span class="muted small">Room notes the AI will see:</span>
+        <span class="muted small">${t("breakdown.room_notes_the_ai_will_see")}</span>
         ${noted.map(
           (r) => html`<button
             type="button"
@@ -243,7 +244,7 @@ export class BoopliBreakdown extends LitElement {
             ${r.name}
           </button>`
         )}
-        ${chosen.length === 0 ? html`<span class="muted small">none</span>` : nothing}
+        ${chosen.length === 0 ? html`<span class="muted small">${t("breakdown.none")}</span>` : nothing}
         <button type="button" class="link" @click=${() => this._showPreview()}>
           ${this._preview ? "Hide what is sent" : "What will the AI see?"}
         </button>
@@ -312,7 +313,7 @@ export class BoopliBreakdown extends LitElement {
     if (!anyAi(this.snapshot)) return nothing;
     if (this._scene) {
       return html`<div class="scene">
-        <label for="scene">What the AI sees today (from your photos). Change anything that is wrong:</label>
+        <label for="scene">${t("breakdown.what_the_ai_sees_today_from")}</label>
         <textarea
           id="scene"
           rows="5"
@@ -323,13 +324,13 @@ export class BoopliBreakdown extends LitElement {
             this._preview = null;
           }}
         ></textarea>
-        <div class="muted small">The photos are already gone. This text goes with the questions and the steps, and is not saved afterwards.</div>
-        <button type="button" class="link" @click=${() => ((this._scene = ""), (this._preview = null))}>Remove it</button>
+        <div class="muted small">${t("breakdown.the_photos_are_already_gone_this")}</div>
+        <button type="button" class="link" @click=${() => ((this._scene = ""), (this._preview = null))}>${t("breakdown.remove_it")}</button>
       </div>`;
     }
     if (!this._photosOpen) {
       return html`<div class="scene">
-        <button type="button" @click=${() => (this._photosOpen = true)}>${icon("camera-outline")} Add photos of how it looks now (optional)</button>
+        <button type="button" @click=${() => (this._photosOpen = true)}>${icon("camera-outline")} ${t("breakdown.add_photos_of_how_it_looks")}</button>
       </div>`;
     }
     const full = this._photos.length >= MAX_PHOTOS;
@@ -354,7 +355,7 @@ export class BoopliBreakdown extends LitElement {
             @stop-waiting=${() => this._stopLooking()}
           ></boopli-wait>`
         : this._looking
-          ? html`<div class="muted" role="status">Preparing…</div>`
+          ? html`<div class="muted" role="status">${t("breakdown.preparing")}</div>`
           : html`<div class="actions">
             <label class="filebtn ${full ? "off" : ""}">
               ${this._photos.length ? "Add another photo" : "Take or pick photos"}
@@ -380,7 +381,7 @@ export class BoopliBreakdown extends LitElement {
                   ?disabled=${!this._photos.length || !this._task.trim()}
                   @click=${() => this._look("claude")}
                 >
-                  ${icon("creation")} Ask Claude to look
+                  ${icon("creation")} ${t("breakdown.ask_claude_to_look")}
                 </button>`
               : nothing}
             <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>Cancel</button>
@@ -583,14 +584,13 @@ export class BoopliBreakdown extends LitElement {
 
   private _renderOff() {
     return html`<section class="card main">
-      <h2>AI help is switched off</h2>
+      <h2>${t("breakdown.ai_help_is_switched_off")}</h2>
       <p>
-        To split tasks into small steps, switch on AI help and choose your Home Assistant AI agent.
-        It takes a minute, and Boopli never sends anything before you do.
+        ${t("breakdown.to_split_tasks_into_small_steps")}
       </p>
       <div class="actions">
-        <button class="primary" @click=${() => this._fire("open-wizard", { wizard: "ai" })}>Set up AI help</button>
-        <button @click=${() => this._cancel()}>Close</button>
+        <button class="primary" @click=${() => this._fire("open-wizard", { wizard: "ai" })}>${t("common.set_up_ai_help")}</button>
+        <button @click=${() => this._cancel()}>${t("common.close")}</button>
       </div>
     </section>`;
   }
@@ -622,7 +622,7 @@ export class BoopliBreakdown extends LitElement {
               ?disabled=${!this._task.trim() || this._busy}
               @click=${() => this._begin("claude")}
             >
-              ${icon("creation")} Ask Claude
+              ${icon("creation")} ${t("common.ask_claude")}
             </button>`
           : nothing}
         <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(agentOn(this.snapshot) ? "agent" : "claude")}>
@@ -756,7 +756,7 @@ export class BoopliBreakdown extends LitElement {
           )}
         </span>
         ${s.wait_minutes > 0
-          ? html`<span class="wait muted small" title="Time to wait before this step">⏳ ${s.wait_minutes} min</span>`
+          ? html`<span class="wait muted small" title=${t("breakdown.time_to_wait_before_this_step")}>⏳ ${s.wait_minutes} min</span>`
           : nothing}
         <span class="tools">
           <button type="button" aria-label="Move up" ?disabled=${i === 0} @click=${() => this._move(i, -1)}>↑</button>
@@ -768,9 +768,9 @@ export class BoopliBreakdown extends LitElement {
       ${this._checks.length
         ? html`<div class="only-if">
             <label>
-              <span class="muted small">Only if</span>
+              <span class="muted small">${t("breakdown.only_if")}</span>
               <select aria-label="Only if, for step ${i + 1}" @change=${(e: Event) => this._patchStep(i, { only_if: (e.target as HTMLSelectElement).value })}>
-                <option value="" ?selected=${!s.only_if}>Always there</option>
+                <option value="" ?selected=${!s.only_if}>${t("common.always_there")}</option>
                 ${this._checks.map((q) => html`<option value=${q.id} ?selected=${s.only_if === q.id}>${q.text} → yes</option>`)}
               </select>
             </label>
@@ -782,9 +782,9 @@ export class BoopliBreakdown extends LitElement {
   private _renderChecks() {
     if (!this._checks.length) return nothing;
     return html`<div class="checks">
-      <b>Questions asked each time you start this chore</b>
+      <b>${t("breakdown.questions_asked_each_time_you_start")}</b>
       <div class="muted small">
-        Today it may look different than next week. Steps that belong to a question only show up when you answer yes.
+        ${t("breakdown.today_it_may_look_different_than")}
       </div>
       ${this._checks.map(
         (q) => html`<div class="check">
@@ -806,34 +806,34 @@ export class BoopliBreakdown extends LitElement {
       ${this._renderChecks()}
       <div class="steps">${steps.map((s, i) => this._renderStep(s, i))}</div>
       <div class="inline-actions">
-        <button type="button" @click=${() => this._add(steps.length - 1)}>+ Add a step</button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>Try again</button>
+        <button type="button" @click=${() => this._add(steps.length - 1)}>${t("breakdown.add_a_step")}</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${t("breakdown.try_again")}</button>
         ${agentOn(this.snapshot) && claudeReady(this.snapshot)
           ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
               ${icon("creation")} Ask Claude instead
             </button>`
           : nothing}
         ${this._answers.length || this._questions.length
-          ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>Ask me again</button>`
+          ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>${t("breakdown.ask_me_again")}</button>`
           : nothing}
       </div>
       ${this.kind === "recurring" || editor
         ? html`<div class="field">
-            <label for="notes">Kept with the chore, for next time (you can edit it)</label>
+            <label for="notes">${t("breakdown.kept_with_the_chore_for_next")}</label>
             <textarea id="notes" rows="2" .value=${this._notes} @input=${(e: Event) => (this._notes = (e.target as HTMLTextAreaElement).value)}></textarea>
           </div>`
         : nothing}
       <div class="actions">
         ${editor
           ? this.hasSteps
-            ? html`<button class="primary big" @click=${() => this._finish("replace")}>Replace my steps</button>
-                <button class="big" @click=${() => this._finish("append")}>Add to my steps</button>`
-            : html`<button class="primary big" @click=${() => this._finish("replace")}>Use these steps</button>`
+            ? html`<button class="primary big" @click=${() => this._finish("replace")}>${t("breakdown.replace_my_steps")}</button>
+                <button class="big" @click=${() => this._finish("append")}>${t("breakdown.add_to_my_steps")}</button>`
+            : html`<button class="primary big" @click=${() => this._finish("replace")}>${t("breakdown.use_these_steps")}</button>`
           : this.kind === "recurring"
-            ? html`<button class="primary big" @click=${() => this._finish("schedule")}>Save and set the schedule</button>
-                <button class="big" @click=${() => this._finish("save")}>Save without a schedule</button>`
-            : html`<button class="primary big" @click=${() => this._finish("start")}>Start now</button>
-                <button class="big" @click=${() => this._finish("save")}>Save as chore</button>`}
+            ? html`<button class="primary big" @click=${() => this._finish("schedule")}>${t("breakdown.save_and_set_the_schedule")}</button>
+                <button class="big" @click=${() => this._finish("save")}>${t("breakdown.save_without_a_schedule")}</button>`
+            : html`<button class="primary big" @click=${() => this._finish("start")}>${t("common.start_now")}</button>
+                <button class="big" @click=${() => this._finish("save")}>${t("breakdown.save_as_chore")}</button>`}
       </div>
     `;
   }
@@ -850,7 +850,7 @@ export class BoopliBreakdown extends LitElement {
       <section class="card main">
         <div class="top">
           <h2>${titles[this._phase]}</h2>
-          <button type="button" class="link" @click=${() => this._cancel()}>Close</button>
+          <button type="button" class="link" @click=${() => this._cancel()}>${t("common.close")}</button>
         </div>
         ${this.externalError ? html`<div class="error">${this.externalError}</div>` : nothing}
         ${this._error

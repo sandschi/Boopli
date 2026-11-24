@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import "./boopli-pet";
 import { sharedStyles } from "./styles";
 import { MOODS, PETS, petInfo } from "./pets";
+import { t } from "./i18n";
 
 /**
  * Choose a pet. Each pet is a small picture you press; below, the chosen one in all five moods.
@@ -44,7 +45,7 @@ export class BoopliPetPicker extends LitElement {
   render() {
     const chosen = petInfo(this.value);
     return html`
-      <div class="grid" role="radiogroup" aria-label="Your pet">
+      <div class="grid" role="radiogroup" aria-label=${t("common.your_pet")}>
         ${PETS.map(
           (p, i) => html`<button
             type="button"

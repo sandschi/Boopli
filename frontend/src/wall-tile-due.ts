@@ -2,6 +2,7 @@ import { css, html, nothing } from "lit";
 import { completeStep, errorMessage, notOnIt, onIt, snoozeStep } from "./api";
 import { buildToday } from "./today";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
 
 /** What is due now, big, with Done, On it and Snooze. */
 export class WallTileDue extends WallTile {
@@ -29,10 +30,10 @@ export class WallTileDue extends WallTile {
   }
 
   render() {
-    if (!this.snapshot) return html`<div class="center muted normal">Loading…</div>`;
+    if (!this.snapshot) return html`<div class="center muted normal">${t("common.loading")}</div>`;
     const item = buildToday(this.snapshot, this.nowMs).now;
     if (!item) {
-      return html`<div class="center"><div><div class="big">All clear</div><div class="normal muted">Nothing is due right now.</div></div></div>`;
+      return html`<div class="center"><div><div class="big">${t("wall_tile_due.all_clear")}</div><div class="normal muted">${t("wall_tile_due.nothing_is_due_right_now")}</div></div></div>`;
     }
     const { run, step } = item;
     const working = !!step.on_it_until;

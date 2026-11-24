@@ -12,6 +12,7 @@ import {
 import { diffSettings } from "./diff";
 import { sharedStyles } from "./styles";
 import type { Hass, Settings, Snapshot } from "./types";
+import { t } from "./i18n";
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // a backup is a few hundred kilobytes at most
 const EXTENSION = ".adhd";
@@ -221,7 +222,7 @@ export class BoopliBackup extends LitElement {
       if (p === "home") return `${counts.rooms} ${counts.rooms === 1 ? "room" : "rooms"}.`;
       return `Level ${counts.level}, ${counts.history} things done on record.`;
     };
-    return html`<div class="parts" role="group" aria-label="What to include">
+    return html`<div class="parts" role="group" aria-label=${t("backup.what_to_include")}>
       ${BACKUP_PARTS.filter((p) => available.includes(p)).map(
         (p) => html`<label class="part">
           <input type="checkbox" .checked=${this._parts.includes(p)} ?disabled=${this._busy} @change=${(e: Event) => this._toggle(p, (e.target as HTMLInputElement).checked)} />
@@ -245,8 +246,8 @@ export class BoopliBackup extends LitElement {
 
   private _renderExport() {
     return html`
-      <h2>${icon("content-save-outline")} Export a backup</h2>
-      <p>Save your setup to one file. Pick what goes in:</p>
+      <h2>${icon("content-save-outline")} ${t("common.export_a_backup")}</h2>
+      <p>${t("backup.save_your_setup_to_one_file")}</p>
       ${this._renderParts([...BACKUP_PARTS])}
       <p class="muted small">
         The file ends in <code>${EXTENSION}</code> and is plain text inside. It holds the names of your devices and phones and your notes, so keep it private.
@@ -254,7 +255,7 @@ export class BoopliBackup extends LitElement {
       </p>
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? "Saving…" : "Download backup"}</button>
-        <button ?disabled=${this._busy} @click=${this._close}>Close</button>
+        <button ?disabled=${this._busy} @click=${this._close}>${t("common.close")}</button>
       </div>
     `;
   }
@@ -263,7 +264,7 @@ export class BoopliBackup extends LitElement {
     const pre = this._preview;
     const changes = this._changes();
     return html`
-      <h2>${icon("content-save-outline")} Import a backup</h2>
+      <h2>${icon("content-save-outline")} ${t("common.import_a_backup")}</h2>
       <div class="field">
         <label for="file">Choose a backup file (${EXTENSION})</label>
         <input id="file" type="file" accept="${EXTENSION},.json,application/json" ?disabled=${this._busy} @change=${(e: Event) => void this._choose(e)} />
@@ -276,15 +277,15 @@ export class BoopliBackup extends LitElement {
             <p>Pick what to bring in:</p>
             ${this._renderParts(pre.parts, pre.counts)}
             ${changes === null
-              ? html`<div class="warn" role="status">The list of changes to the settings could not be made. Importing still replaces the settings.</div>`
+              ? html`<div class="warn" role="status">${t("backup.the_list_of_changes_to_the")}</div>`
               : changes.length
-                ? html`<div class="changes"><b>The settings would change like this:</b>
+                ? html`<div class="changes"><b>${t("backup.the_settings_would_change_like_this")}</b>
                     <ul>${changes.slice(0, 12).map((c) => html`<li>${c}</li>`)}</ul>
                     ${changes.length > 12 ? html`<span class="muted small">and ${changes.length - 12} more.</span>` : nothing}</div>`
                 : nothing}
             ${pre.missing_entities_total || pre.missing_services.length
               ? html`<div class="warn" role="status">
-                  <b>This install does not have everything the file points to.</b>
+                  <b>${t("backup.this_install_does_not_have_everything")}</b>
                   ${pre.missing_entities_total
                     ? html`<div class="small">Not found: ${pre.missing_entities.join(", ")}${pre.missing_entities_total > pre.missing_entities.length ? ` and ${pre.missing_entities_total - pre.missing_entities.length} more` : ""}.</div>`
                     : nothing}
@@ -312,7 +313,7 @@ export class BoopliBackup extends LitElement {
   render() {
     return html`<dialog
       class="modal"
-      aria-label="Backup"
+      aria-label=${t("backup.backup")}
       @close=${this._closed}
       @cancel=${(e: Event) => this._busy && e.preventDefault()}
       @click=${(e: Event) => e.target === e.currentTarget && this._close()}

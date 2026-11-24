@@ -4,6 +4,7 @@ import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
 import type { Activity, Moment } from "./boopli-pet";
+import { t } from "./i18n";
 
 const INK = "#101010";
 
@@ -138,7 +139,7 @@ export class BoopliStage extends LitElement {
     // Asleep in the bed, unless it is busy with something.
     const sleeping = hasBed && !activity && (mood === "sleepy" || mood === "hibernating");
     const deep = sleeping && mood === "hibernating";
-    return html`<div class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}" role="group" aria-label="Your pet's room">
+    return html`<div class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}" role="group" aria-label=${t("stage.your_pets_room")}>
       <div class="floor"></div>
       <div class="prop water">${WATER_BOWL}</div>
       ${this.level >= 2 ? html`<div class="prop food">${FOOD_BOWL}</div>` : nothing}

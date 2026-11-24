@@ -13,6 +13,7 @@ import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
+import { t } from "./i18n";
 
 /** The question "when should this part come back?", for a part of a running task or a parked one. */
 interface ParkAsk {
@@ -159,7 +160,7 @@ export class BoopliToday extends LitElement {
     const aiOn = anyAi(this.snapshot); // the agent, or Ask Claude
     return html`
       <section class="card quick">
-        <h3>What do you want to get done?</h3>
+        <h3>${t("today.what_do_you_want_to_get")}</h3>
         ${aiOn
           ? html`
               <textarea
@@ -175,7 +176,7 @@ export class BoopliToday extends LitElement {
             `
           : html`
               <p class="muted small">
-                Boopli can split a big task into tiny steps with your own AI agent. It is switched off until you set it up.
+                ${t("today.boopli_can_split_a_big_task")}
               </p>
               <button
                 @click=${() =>
@@ -183,7 +184,7 @@ export class BoopliToday extends LitElement {
                     new CustomEvent("open-wizard", { detail: { wizard: "ai" }, bubbles: true, composed: true })
                   )}
               >
-                ${icon("robot-outline")} Set up AI help
+                ${icon("robot-outline")} ${t("common.set_up_ai_help")}
               </button>
             `}
       </section>
@@ -237,7 +238,7 @@ export class BoopliToday extends LitElement {
       <div
         class="track"
         role="progressbar"
-        aria-label="Steps done"
+        aria-label=${t("today.steps_done")}
         aria-valuenow=${now.done}
         aria-valuemin="0"
         aria-valuemax=${now.total}
@@ -329,13 +330,13 @@ export class BoopliToday extends LitElement {
   private _renderParkAsk() {
     const ask = this._park;
     if (!ask) return nothing;
-    return html`<div class="park-ask" role="group" aria-label="When should this part come back?">
+    return html`<div class="park-ask" role="group" aria-label=${t("today.when_should_this_part_come_back")}>
       <div class="small">${ask.choreId ? "When should it come back?" : `Set “${ask.group}” aside. When should it come back?`}</div>
       <div class="park-buttons">
-        <button ?disabled=${this._busy} @click=${() => this._choose("any")}>When I want</button>
-        <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>Tomorrow, 9:00</button>
-        <button ?disabled=${this._busy} @click=${() => this._choose("at")}>Pick a time</button>
-        <button class="link" @click=${() => (this._park = null)}>Cancel</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("any")}>${t("today.when_i_want")}</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>${t("today.tomorrow_9_00")}</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("at")}>${t("today.pick_a_time")}</button>
+        <button class="link" @click=${() => (this._park = null)}>${t("common.cancel")}</button>
       </div>
       ${ask.picking
         ? html`<div class="park-pick">
@@ -373,7 +374,7 @@ export class BoopliToday extends LitElement {
           ${onNow ? "Back now" : "Cancel it"}
         </button>
         <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
-          Change in Settings
+          ${t("today.change_in_settings")}
         </button>
       </div>
     </section>`;
@@ -385,15 +386,15 @@ export class BoopliToday extends LitElement {
     return open.map(
       (run) => html`<section class="card ask">
         <div class="muted small">${run.chore_name}</div>
-        <h2>Quick look first</h2>
+        <h2>${t("today.quick_look_first")}</h2>
         <p class="muted small">
-          It started with all its steps. Answer, and the steps you do not need today disappear.
+          ${t("today.it_started_with_all_its_steps")}
         </p>
         <boopli-questions
           .questions=${run.questions ?? []}
           .busy=${this._busy}
           .cancelable=${false}
-          label="Done"
+          label=${t("common.done")}
           allLabel="Keep all steps"
           @answered=${(e: CustomEvent<{ answers: Record<string, boolean> }>) =>
             this._partAction(() => answerQuestions(this.hass!, run.id, e.detail.answers))}
@@ -510,9 +511,9 @@ export class BoopliToday extends LitElement {
             ? this._renderParkAsk()
             : html`<div class="part-actions">
                 <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => startChore(this.hass!, c.id))}>
-                  Start now
+                  ${t("common.start_now")}
                 </button>
-                <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>Change time</button>
+                <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
                 ${this._removing === c.id
                   ? html`<span class="small">Remove it?</span>
                       <button
@@ -522,7 +523,7 @@ export class BoopliToday extends LitElement {
                         Yes, remove
                       </button>
                       <button class="link" @click=${() => (this._removing = "")}>Keep</button>`
-                  : html`<button class="link" @click=${() => (this._removing = c.id)}>Remove</button>`}
+                  : html`<button class="link" @click=${() => (this._removing = c.id)}>${t("common.remove")}</button>`}
               </div>`}
         </div>`
       )}
@@ -553,7 +554,7 @@ export class BoopliToday extends LitElement {
   }
 
   render() {
-    if (!this.snapshot) return html`<p class="muted">Loading…</p>`;
+    if (!this.snapshot) return html`<p class="muted">${t("common.loading")}</p>`;
     const tz = this.snapshot.time_zone;
     const model = buildToday(this.snapshot, this.nowMs);
     const hasChores = this.snapshot.chores.length > 0;
@@ -624,14 +625,14 @@ export class BoopliToday extends LitElement {
                       ?disabled=${this._busy}
                       @click=${() => this._working(model.now!.run.id, model.now!.step.step_id, false)}
                     >
-                      Not on it
+                      ${t("today.not_on_it")}
                     </button>`
                   : html`<button
                       class="on-it"
                       ?disabled=${this._busy}
                       @click=${() => this._working(model.now!.run.id, model.now!.step.step_id, true)}
                     >
-                      On it
+                      ${t("today.on_it")}
                     </button>`}
               </div>
               ${(() => {
@@ -651,7 +652,7 @@ export class BoopliToday extends LitElement {
           `
         : html`
             <section class="card empty">
-              <h2>Nothing needs you right now</h2>
+              <h2>${t("today.nothing_needs_you_right_now")}</h2>
               <p class="muted">
                 ${hasChores
                   ? "Enjoy the quiet. What is coming up shows below."

@@ -3,6 +3,7 @@ import { icon } from "./icon";
 import { friendlyName, hexToRgb, lightHasColor, phoneName, rgbToHex } from "./helpers";
 import { sharedStyles } from "./styles";
 import type { ExtraSound, Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
+import { t } from "./i18n";
 
 const GAP_MIN = 1;
 const GAP_MAX = 720;
@@ -138,7 +139,7 @@ export class BoopliRung extends LitElement {
         : nothing}
       ${none
         ? html`<p class="muted small">
-            Set up a phone, light, speaker or alarm device in Settings first. They show up here.
+            ${t("rung.set_up_a_phone_light_speaker")}
           </p>`
         : nothing}
       <div class="devs">
@@ -149,7 +150,7 @@ export class BoopliRung extends LitElement {
               aria-label="${phoneName(p.service)} at nudge ${n}"
               @change=${(e: Event) => this._setPhone(p.service, (e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!r.phones[p.service]}>Off</option>
+              <option value="" ?selected=${!r.phones[p.service]}>${t("rung.off")}</option>
               ${PHONE_CHOICES.map(
                 (c) => html`<option value=${c.value} ?selected=${r.phones[p.service] === c.value}>${c.label}</option>`
               )}
@@ -166,10 +167,10 @@ export class BoopliRung extends LitElement {
                 aria-label="${name} at nudge ${n}"
                 @change=${(e: Event) => this._setLight(light.entity_id, (e.target as HTMLSelectElement).value)}
               >
-                <option value="" ?selected=${!use}>Off</option>
-                <option value="blink" ?selected=${use?.mode === "blink"}>Blink</option>
-                <option value="indicator" ?selected=${use?.mode === "indicator"}>Status light (stays on until you answer)</option>
-                <option value="own" ?selected=${use?.mode === ""}>As set for the light</option>
+                <option value="" ?selected=${!use}>${t("rung.off")}</option>
+                <option value="blink" ?selected=${use?.mode === "blink"}>${t("rung.blink")}</option>
+                <option value="indicator" ?selected=${use?.mode === "indicator"}>${t("rung.status_light_stays_on_until_you")}</option>
+                <option value="own" ?selected=${use?.mode === ""}>${t("rung.as_set_for_the_light")}</option>
               </select>
             </label>
             ${use && lightHasColor(this.hass, light.entity_id)
@@ -203,7 +204,7 @@ export class BoopliRung extends LitElement {
               <option value="" ?selected=${!current}>${choices.length ? "Off" : "No sound set up"}</option>
               ${choices.map((c) => html`<option value=${c.value} ?selected=${current === c.value}>${c.label}</option>`)}
               ${current && !choices.some((c) => c.value === current)
-                ? html`<option value=${current} selected>(not available any more)</option>`
+                ? html`<option value=${current} selected>${t("rung.not_available_any_more")}</option>`
                 : nothing}
             </select>
           </label>`;

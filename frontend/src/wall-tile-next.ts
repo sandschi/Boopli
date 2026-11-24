@@ -2,6 +2,7 @@ import { css, html } from "lit";
 import { buildToday } from "./today";
 import { describeWhen, fmtTime } from "./time";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
 
 interface Line {
   title: string;
@@ -11,7 +12,7 @@ interface Line {
 /** What comes next: other steps that are ready, the rest of today, then later days. Option: count. */
 export class WallTileNext extends WallTile {
   render() {
-    if (!this.snapshot) return html`<div class="center muted normal">Loading…</div>`;
+    if (!this.snapshot) return html`<div class="center muted normal">${t("common.loading")}</div>`;
     const tz = this.snapshot.time_zone;
     const model = buildToday(this.snapshot, this.nowMs);
     const lines: Line[] = [
@@ -20,10 +21,10 @@ export class WallTileNext extends WallTile {
       ...model.dueToday.map((d) => ({ title: d.chore.name, when: `at ${fmtTime(d.at, tz)}` })),
       ...model.upcoming.map((d) => ({ title: d.chore.name, when: describeWhen(d.at, this.nowMs, tz) })),
     ].slice(0, this.num("count", 3));
-    return html`<div class="label">Coming up</div>
+    return html`<div class="label">${t("wall_tile_next.coming_up")}</div>
       ${lines.length
         ? lines.map((l) => html`<div class="row normal"><span class="t">${l.title}</span><span class="muted small">${l.when}</span></div>`)
-        : html`<div class="normal muted">Nothing planned.</div>`}`;
+        : html`<div class="normal muted">${t("wall_tile_next.nothing_planned")}</div>`}`;
   }
 
   static styles = [

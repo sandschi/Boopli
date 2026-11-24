@@ -4,6 +4,7 @@ import { friendlyName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } f
 import { speakerChoices } from "./boopli-rung";
 import { sharedStyles } from "./styles";
 import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot } from "./types";
+import { t } from "./i18n";
 
 // The same limits as in the integration.
 const MAX_LADDERS = 30; // the same as the backend (the three standard ladders count too)
@@ -225,13 +226,13 @@ export class BoopliLadders extends LitElement {
               min
             </label>`}
         <span class="spacer"></span>
-        <button class="chip" title="Move up" aria-label="Move nudge ${index + 1} up" ?disabled=${index === 0}
+        <button class="chip" title=${t("ladders.move_up")} aria-label="Move nudge ${index + 1} up" ?disabled=${index === 0}
           @click=${() => this._moveRung(l.id, index, -1)}>↑</button>
-        <button class="chip" title="Move down" aria-label="Move nudge ${index + 1} down" ?disabled=${index === l.rungs.length - 1}
+        <button class="chip" title=${t("ladders.move_down")} aria-label="Move nudge ${index + 1} down" ?disabled=${index === l.rungs.length - 1}
           @click=${() => this._moveRung(l.id, index, 1)}>↓</button>
-        <button class="chip" title="Copy this nudge" aria-label="Copy nudge ${index + 1}" ?disabled=${l.rungs.length >= MAX_NUDGES}
+        <button class="chip" title=${t("ladders.copy_this_nudge")} aria-label="Copy nudge ${index + 1}" ?disabled=${l.rungs.length >= MAX_NUDGES}
           @click=${() => this._duplicateRung(l.id, index)}>⧉</button>
-        <button class="chip" title="Remove this nudge" aria-label="Remove nudge ${index + 1}" ?disabled=${!many}
+        <button class="chip" title=${t("ladders.remove_this_nudge")} aria-label="Remove nudge ${index + 1}" ?disabled=${!many}
           @click=${() => this._removeRung(l.id, index)}>✕</button>
       </div>
       <boopli-rung
@@ -247,7 +248,7 @@ export class BoopliLadders extends LitElement {
   private _renderEditor(l: Ladder) {
     return html`<div class="editor">
       <div class="field">
-        <label for="name-${l.id}">Name</label>
+        <label for="name-${l.id}">${t("common.name")}</label>
         <input
           id="name-${l.id}"
           maxlength=${NAME_MAX}
@@ -257,22 +258,22 @@ export class BoopliLadders extends LitElement {
       </div>
       ${l.rungs.map((r, i) => this._renderRung(l, r, i))}
       <div class="row">
-        <button ?disabled=${l.rungs.length >= MAX_NUDGES} @click=${() => this._addRung(l.id)}>+ Add a nudge</button>
+        <button ?disabled=${l.rungs.length >= MAX_NUDGES} @click=${() => this._addRung(l.id)}>${t("ladders.add_a_nudge")}</button>
         <span class="muted small">${l.rungs.length} of ${MAX_NUDGES}</span>
       </div>
       <div class="field">
-        <label for="end-${l.id}">After the last nudge</label>
+        <label for="end-${l.id}">${t("ladders.after_the_last_nudge")}</label>
         <select
           id="end-${l.id}"
           @change=${(e: Event) =>
             this._edit(l.id, (x) => (x.repeat_last = (e.target as HTMLSelectElement).value === "repeat"))}
         >
-          <option value="stop" ?selected=${!l.repeat_last}>Stop</option>
-          <option value="repeat" ?selected=${l.repeat_last}>Repeat the last nudge until I answer</option>
+          <option value="stop" ?selected=${!l.repeat_last}>${t("common.stop")}</option>
+          <option value="repeat" ?selected=${l.repeat_last}>${t("ladders.repeat_the_last_nudge_until_i")}</option>
         </select>
       </div>
       <div class="summary">
-        <b class="small">What it will do</b>
+        <b class="small">${t("ladders.what_it_will_do")}</b>
         ${this._lines(l).map((line) => html`<div class="small">${line}</div>`)}
       </div>
     </div>`;
@@ -283,13 +284,12 @@ export class BoopliLadders extends LitElement {
     if (!s) return nothing;
     const ladders = this._ladders;
     return html`<section class="card">
-      <h2>${icon("stairs")} Nudge it your way</h2>
+      <h2>${icon("stairs")} ${t("common.nudge_it_your_way")}</h2>
       <p class="muted small">
-        Build your own ladder of nudges. For each nudge you choose how long Boopli waits, and exactly which phone,
-        light, speaker or alarm acts, and how loud. A chore uses a ladder when you pick it as its nudge style.
+        ${t("ladders.build_your_own_ladder_of_nudges")}
       </p>
       <div class="field">
-        <label for="default-style">Use for new chores</label>
+        <label for="default-style">${t("ladders.use_for_new_chores")}</label>
         <select
           id="default-style"
           @change=${(e: Event) => this._patch(ladders, { default_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
@@ -308,7 +308,7 @@ export class BoopliLadders extends LitElement {
         </select>
       </div>
       ${ladders.length === 0
-        ? html`<p class="muted">No ladders yet. The built-in styles work as before.</p>`
+        ? html`<p class="muted">${t("ladders.no_ladders_yet_the_built_in")}</p>`
         : ladders.map((l) => {
             const open = this._open === l.id;
             return html`<div class="ladder">

@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { t } from "./i18n";
 
 /**
  * The Easter egg: the spinning cat.
@@ -176,7 +177,7 @@ export class BoopliEgg extends LitElement {
           iPhone or iPad no browser can do it. On a Mac, Chrome or Firefox will. Or go all the way and switch to
           non-Apple products 😉</span
         >
-        <button type="button" class="ctl" aria-label="Close" @click=${() => this._stop(true)}>✕</button>
+        <button type="button" class="ctl" aria-label=${t("common.close")} @click=${() => this._stop(true)}>✕</button>
       </div>`;
     }
     return html`${this._cat

@@ -35,6 +35,7 @@ import { boardLink, starterTiles } from "./wall-tiles";
 import { sharedStyles } from "./styles";
 import { TEMPLATES } from "./templates";
 import { WEEKDAY_NAMES } from "./time";
+import { t } from "./i18n";
 import type {
   AlarmDeviceCfg,
   Hass,
@@ -554,18 +555,18 @@ export class BoopliWizard extends LitElement {
   private _renderWallStart(d: Settings) {
     const boards = d.boards ?? [];
     return html`
-      <p>A board is a grid of tiles for a screen on the wall: the clock, the pet, what is due, the weather and more.</p>
+      <p>${t("wizard.a_board_is_a_grid_of")}</p>
       <div class="field">
-        <label for="boardpick">Which board?</label>
+        <label for="boardpick">${t("wizard.which_board")}</label>
         <select id="boardpick" @change=${(e: Event) => (this._boardPick = (e.target as HTMLSelectElement).value)}>
-          <option value="" ?selected=${!this._boardPick}>A new board</option>
+          <option value="" ?selected=${!this._boardPick}>${t("wizard.a_new_board")}</option>
           ${boards.map((b) => html`<option value=${b.id} ?selected=${this._boardPick === b.id}>${b.name}</option>`)}
         </select>
       </div>
       ${this._boardPick
         ? nothing
         : html`<div class="field">
-            <label for="boardname">Name of the new board</label>
+            <label for="boardname">${t("wizard.name_of_the_new_board")}</label>
             <input id="boardname" maxlength="40" .value=${this._boardName} @input=${(e: Event) => (this._boardName = (e.target as HTMLInputElement).value)} />
           </div>`}
     `;
@@ -687,9 +688,9 @@ export class BoopliWizard extends LitElement {
       ${choice("delete", "Delete a ladder", own.length === 0 ? "Only your own ladders can be deleted. You have none." : "Remove one of your own that you do not need any more.", own.length === 0)}
       ${this._ladderAction !== "create" && !none
         ? html`<div class="field">
-            <label for="ladpick">Which ladder?</label>
+            <label for="ladpick">${t("wizard.which_ladder")}</label>
             <select id="ladpick" .value=${this._ladderPick} @change=${(e: Event) => (this._ladderPick = (e.target as HTMLSelectElement).value)}>
-              <option value="" ?selected=${!this._ladderPick}>Pick a ladder…</option>
+              <option value="" ?selected=${!this._ladderPick}>${t("wizard.pick_a_ladder")}</option>
               ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
                   ${l.name} (${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"})
@@ -703,7 +704,7 @@ export class BoopliWizard extends LitElement {
 
   private _renderLadDelete() {
     const l = this._ladder();
-    if (!l) return html`<p class="muted">Pick a ladder first.</p>`;
+    if (!l) return html`<p class="muted">${t("wizard.pick_a_ladder_first")}</p>`;
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     return html`
@@ -722,15 +723,14 @@ export class BoopliWizard extends LitElement {
   private _renderLadName() {
     return html`
       <p>
-        A ladder is a list of nudges. For each nudge you choose how long Boopli waits, and exactly which devices act
-        and how loud. Start by giving it a name.
+        ${t("wizard.a_ladder_is_a_list_of")}
       </p>
       <div class="field">
-        <label for="ladname">Name</label>
+        <label for="ladname">${t("common.name")}</label>
         <input
           id="ladname"
           maxlength="40"
-          placeholder="For example: Pills"
+          placeholder=${t("wizard.for_example_pills")}
           .value=${this._ladderName}
           @input=${(e: Event) => (this._ladderName = (e.target as HTMLInputElement).value)}
         />
@@ -741,7 +741,7 @@ export class BoopliWizard extends LitElement {
   private _renderLadNudge(d: Settings) {
     const i = this._nudgesBefore(this._index);
     const rung = this._ladder()?.rungs[i];
-    if (!rung) return html`<p class="muted">Give the ladder a name first.</p>`;
+    if (!rung) return html`<p class="muted">${t("wizard.give_the_ladder_a_name_first")}</p>`;
     return html`
       <p>
         ${i === 0
@@ -768,9 +768,9 @@ export class BoopliWizard extends LitElement {
       <p>This ladder has ${n} ${n === 1 ? "nudge" : "nudges"} so far. Add another one, or are you done?</p>
       <div class="gate">
         <button type="button" class="primary big" ?disabled=${this._busy || n >= 12} @click=${() => this._go(1, "more")}>
-          Add another nudge
+          ${t("wizard.add_another_nudge")}
         </button>
-        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>That's all</button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>${t("wizard.thats_all")}</button>
       </div>
       ${n >= 12 ? html`<p class="muted small">12 nudges is the most.</p>` : nothing}
     `;
@@ -778,17 +778,17 @@ export class BoopliWizard extends LitElement {
 
   private _renderLadEnd(d: Settings) {
     const l = this._ladder();
-    if (!l) return html`<p class="muted">Give the ladder a name first.</p>`;
+    if (!l) return html`<p class="muted">${t("wizard.give_the_ladder_a_name_first")}</p>`;
     const style = `ladder:${l.id}` as NudgeStyle;
     return html`
-      <p>What should happen after the last nudge?</p>
+      <p>${t("wizard.what_should_happen_after_the_last")}</p>
       <label class="inline option">
         <input type="radio" name="end" .checked=${!l.repeat_last} @change=${() => this._patchLadder((x) => ({ ...x, repeat_last: false }))} />
-        <span><b>Stop</b> <span class="muted small">No more nudges after the last one.</span></span>
+        <span><b>${t("common.stop")}</b> <span class="muted small">${t("wizard.no_more_nudges_after_the_last")}</span></span>
       </label>
       <label class="inline option">
         <input type="radio" name="end" .checked=${l.repeat_last} @change=${() => this._patchLadder((x) => ({ ...x, repeat_last: true }))} />
-        <span><b>Repeat the last nudge</b> <span class="muted small">Until you answer.</span></span>
+        <span><b>${t("wizard.repeat_the_last_nudge")}</b> <span class="muted small">${t("wizard.until_you_answer")}</span></span>
       </label>
       ${l.repeat_last && l.rungs.length === 1
         ? this._numField("Repeat every (minutes)", l.rungs[0].gap, 1, 720, (n) => this._setRung(0, { ...l.rungs[0], gap: n }))
@@ -805,10 +805,10 @@ export class BoopliWizard extends LitElement {
                     : style === "ladder:standard_escalating" ? "ladder:standard_one" : "ladder:standard_escalating",
               })}
           />
-          <span><b>Use it for new chores</b></span>
+          <span><b>${t("wizard.use_it_for_new_chores")}</b></span>
         </label>
       </p>
-      <p class="muted small">You pick a ladder for a chore in the chore's nudge style.</p>
+      <p class="muted small">${t("wizard.you_pick_a_ladder_for_a")}</p>
     `;
   }
 
@@ -868,9 +868,7 @@ export class BoopliWizard extends LitElement {
   private _renderWelcome(d: Settings) {
     return html`
       <p>
-        Boopli breaks chores into small steps and nudges you with the lights, speakers and phone
-        you already have. A few quick questions, and you can skip any of them. Nothing leaves your
-        home, and nothing is sent to a device until you press a Test button.
+        ${t("wizard.boopli_breaks_chores_into_small_steps")}
       </p>
       ${this._renderPet(d)}
     `;
@@ -878,7 +876,7 @@ export class BoopliWizard extends LitElement {
 
   private _renderPet(d: Settings) {
     return html`<div class="field">
-      <label for="petname">What should your pet be called?</label>
+      <label for="petname">${t("wizard.what_should_your_pet_be_called")}</label>
       <input
         id="petname"
         maxlength="30"
@@ -887,7 +885,7 @@ export class BoopliWizard extends LitElement {
       />
     </div>
     <div class="field">
-      <label>Pick your pet</label>
+      <label>${t("wizard.pick_your_pet")}</label>
       <boopli-pet-picker
         .value=${d.pet_kind ?? "slime"}
         @pet-kind-change=${(e: CustomEvent<string>) => this._set({ pet_kind: e.detail })}
@@ -899,7 +897,7 @@ export class BoopliWizard extends LitElement {
     const phones = this._phones();
     return html`
       <p>
-        Which phone should get Boopli's notifications? They have <b>Done</b> and <b>Snooze</b>
+        Which phone should get Boopli's notifications? They have <b>${t("common.done")}</b> and <b>${t("wizard.snooze")}</b>
         buttons, so you can answer without opening anything.
       </p>
       ${phones.length === 0
@@ -936,11 +934,10 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderPhoneDetail(d: Settings) {
-    if (d.phones.length === 0) return html`<p class="muted">No phone is set up yet. Skip this.</p>`;
+    if (d.phones.length === 0) return html`<p class="muted">${t("wizard.no_phone_is_set_up_yet")}</p>`;
     return html`
       <p>
-        How loud should each phone be, and from which nudge on? Nudge 1 is the first one for a step.
-        You can leave the defaults.
+        ${t("wizard.how_loud_should_each_phone_be")}
       </p>
       <div class="list">
         ${d.phones.map(
@@ -971,9 +968,7 @@ export class BoopliWizard extends LitElement {
     const qh = d.quiet_hours;
     return html`
       <p>
-        Should Boopli stay quiet at certain times, like at night? Set the times Boopli may nudge you
-        for each day on its own. Outside them, nudges wait. A chore can opt out later, for example
-        pills.
+        ${t("wizard.should_boopli_stay_quiet_at_certain")}
       </p>
       <label class="inline option">
         <input
@@ -1030,7 +1025,7 @@ export class BoopliWizard extends LitElement {
   private _renderNudging(d: Settings) {
     return html`
       <div class="field">
-        <label for="snooze">When you press Snooze, how many minutes until the next nudge?</label>
+        <label for="snooze">${t("wizard.when_you_press_snooze_how_many")}</label>
         <div class="chips">
           ${[5, 10, 15, 30].map(
             (m) => html`<button type="button" class="chip ${d.snooze_minutes === m ? "on" : ""}" @click=${() => this._set({ snooze_minutes: m })}>${m} min</button>`
@@ -1067,8 +1062,8 @@ export class BoopliWizard extends LitElement {
     const lights = entityIds(this.hass, ["light"]);
     return html`
       <p>
-        Which lights should remind you? Each one either <b>blinks</b> when a step is your turn, or
-        is a <b>status light</b> that turns on and stays on until you are done. This is optional.
+        Which lights should remind you? Each one either <b>${t("wizard.blinks")}</b> when a step is your turn, or
+        is a <b>${t("wizard.status_light")}</b> that turns on and stays on until you are done. This is optional.
       </p>
       ${lights.length === 0
         ? html`<p class="muted">No lights found.</p>`
@@ -1112,11 +1107,10 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderLightDetail(d: Settings) {
-    if (d.lights.length === 0) return html`<p class="muted">No reminder light is set up yet. Skip this.</p>`;
+    if (d.lights.length === 0) return html`<p class="muted">${t("wizard.no_reminder_light_is_set_up")}</p>`;
     return html`
       <p>
-        Fine-tune each light. A light in your home can follow a few hundred milliseconds; a
-        cloud-connected light needs about a second or more, so find its limit with Test.
+        ${t("wizard.fine_tune_each_light_a_light")}
       </p>
       <div class="list grid">
         ${d.lights.map((l: LightCfg) => {
@@ -1129,12 +1123,12 @@ export class BoopliWizard extends LitElement {
                   Color
                   <input type="color" class="swatch" .value=${rgbToHex(l.color)} @input=${(e: Event) => patch({ color: hexToRgb((e.target as HTMLInputElement).value) })} />
                 </label>`
-              : html`<span class="muted small">This light only goes on and off, so it has no color.</span>`}
+              : html`<span class="muted small">${t("wizard.this_light_only_goes_on_and")}</span>`}
             ${l.mode === "blink"
               ? html`${this._numField("Blink length (ms)", l.blink_ms, 100, 30000, (n) => patch({ blink_ms: n }), 100)}
                 ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
                 ${this._numField("Pause between blinks (ms)", l.gap_ms, 0, 30000, (n) => patch({ gap_ms: n }), 100)}`
-              : html`<span class="muted small">A status light has no blink settings.</span>`}
+              : html`<span class="muted small">${t("wizard.a_status_light_has_no_blink")}</span>`}
             <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>Test</button>
             ${this._noteLine(`light:${l.entity_id}`)}
           </div>`;
@@ -1146,13 +1140,11 @@ export class BoopliWizard extends LitElement {
   private _renderGate() {
     return html`
       <p>
-        Do you want speaker reminders? A speaker can play a small ding, say the step out loud, or
-        sound an alarm if you keep ignoring it. You can also use a siren or a switch as an alarm.
-        If you only want lights and your phone, skip this.
+        ${t("wizard.do_you_want_speaker_reminders_a")}
       </p>
       <div class="gate">
-        <button type="button" class="primary big" ?disabled=${this._busy} @click=${() => this._go(1, "gate")}>Set up speakers</button>
-        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>
+        <button type="button" class="primary big" ?disabled=${this._busy} @click=${() => this._go(1, "gate")}>${t("wizard.set_up_speakers")}</button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${t("wizard.skip")}</button>
       </div>
     `;
   }
@@ -1160,7 +1152,7 @@ export class BoopliWizard extends LitElement {
   private _renderSpkPick(d: Settings) {
     const players = entityIds(this.hass, ["media_player"]);
     return html`
-      <p>Which speaker do you want to set up? You can add more speakers afterwards.</p>
+      <p>${t("wizard.which_speaker_do_you_want_to")}</p>
       ${players.length === 0
         ? html`<p class="muted">No speakers (media players) found.</p>`
         : html`<div class="list grid">
@@ -1197,7 +1189,7 @@ export class BoopliWizard extends LitElement {
   }
 
   private _noSpeaker() {
-    return html`<p class="muted">Pick a speaker first. Press Back.</p>`;
+    return html`<p class="muted">${t("wizard.pick_a_speaker_first_press_back")}</p>`;
   }
 
   private _soundBlock(which: "cue" | "alarm", s: SpeakerCfg, intro: string, level: SpeakerLevel) {
@@ -1217,7 +1209,7 @@ export class BoopliWizard extends LitElement {
             </label>
             ${sound.kind === "alexa"
               ? html`<div class="muted small">
-                  Pick a sound from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">Amazon sound library</a>. The id is
+                  Pick a sound from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">${t("wizard.amazon_sound_library")}</a>. The id is
                   <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
                   <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
                 </div>`
@@ -1237,7 +1229,7 @@ export class BoopliWizard extends LitElement {
     const patch = (p: Partial<SpeakerCfg["speech"]>) => this._patchSpeaker((x) => ({ ...x, speech: { ...x.speech, ...p } }));
     const targets = speechTargets(this.hass, sp.route, sp.target);
     return html`
-      <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
+      <p>${t("wizard.the_speaker_says_the_step_out")}</p>
       ${html`<div class="fields">
             <label class="num">
               How
@@ -1274,10 +1266,10 @@ export class BoopliWizard extends LitElement {
       <p>
         ${this._fn(s.entity_id)} joins the standard nudges (One nudge, Escalating, Persistent) the way speakers always
         did: the ding first, then the spoken sentence, then the alarm. To change which nudge it acts at, open
-        <b>Nudge it your way</b> in Settings.
+        <b>${t("common.nudge_it_your_way")}</b> in Settings.
       </p>
       <div class="actions inline-actions">
-        <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>Add another speaker</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>${t("wizard.add_another_speaker")}</button>
       </div>
     `;
   }
@@ -1306,8 +1298,7 @@ export class BoopliWizard extends LitElement {
     );
     return html`
       <p>
-        Optional: a siren, switch or script that Boopli switches on for a while if you keep ignoring
-        a step, and off again. It also stops when you answer.
+        ${t("wizard.optional_a_siren_switch_or_script")}
       </p>
       <div class="list">
         ${d.alarm_devices.map(
@@ -1339,9 +1330,9 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderAlarmDetail(d: Settings) {
-    if (d.alarm_devices.length === 0) return html`<p class="muted">No alarm device is set up yet. Skip this.</p>`;
+    if (d.alarm_devices.length === 0) return html`<p class="muted">${t("wizard.no_alarm_device_is_set_up")}</p>`;
     return html`
-      <p>How long should each device stay on, and from which nudge on?</p>
+      <p>${t("wizard.how_long_should_each_device_stay")}</p>
       <div class="list grid">
         ${d.alarm_devices.map((a: AlarmDeviceCfg) => {
           const patch = (p: Partial<AlarmDeviceCfg>) =>
@@ -1361,14 +1352,12 @@ export class BoopliWizard extends LitElement {
     const persons = entityIds(this.hass, ["person"]);
     return html`
       <p>
-        If Boopli knows where you are, it reminds you with lights and speakers only when you are
-        home, and only on your phone when you are away. This is optional. Without it, Boopli assumes
-        you are home.
+        ${t("wizard.if_boopli_knows_where_you_are")}
       </p>
       <div class="field">
-        <label for="presence">Which person are you?</label>
+        <label for="presence">${t("wizard.which_person_are_you")}</label>
         <select id="presence" @change=${(e: Event) => this._set({ presence_entity: (e.target as HTMLSelectElement).value })}>
-          <option value="" .selected=${d.presence_entity === ""}>Skip (assume I am home)</option>
+          <option value="" .selected=${d.presence_entity === ""}>${t("wizard.skip_assume_i_am_home")}</option>
           ${persons.map((id) => html`<option value=${id} .selected=${id === d.presence_entity}>${this._fn(id)}</option>`)}
         </select>
       </div>
@@ -1379,8 +1368,7 @@ export class BoopliWizard extends LitElement {
     const existing = new Set(this.snapshot?.chores.map((c) => c.name));
     return html`
       <p>
-        Some chores to start with. Untick what you do not want. They are added without a schedule,
-        so nothing nudges you until you set a time (in the Chores tab) or start one yourself.
+        ${t("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
         ${TEMPLATES.map((t) => {
@@ -1409,13 +1397,10 @@ export class BoopliWizard extends LitElement {
     return html`
       <p>
         Boopli can split a big task, like "clean my room", into tiny steps. It asks you a few questions first, so
-        the steps fit your situation. This uses <b>your own</b> Home Assistant AI agent.
+        the steps fit your situation. This uses <b>${t("wizard.your_own")}</b> Home Assistant AI agent.
       </p>
       <p class="muted">
-        Boopli sends nothing by itself. When you use it, the text of the task and your answers go to the agent you
-        choose, and nothing else: no device names, no history, no location. A cloud agent receives that text, and
-        free models may keep or learn from what they get, so do not type private details. A local agent keeps
-        everything at home.
+        ${t("wizard.boopli_sends_nothing_by_itself_when")}
       </p>
       <label class="inline option">
         <input
@@ -1430,16 +1415,16 @@ export class BoopliWizard extends LitElement {
 
   private _renderAiAgent(d: Settings) {
     const agents = entityIds(this.hass, ["ai_task"]);
-    if (!d.ai.enabled) return html`<p class="muted">AI help is off. Go back to switch it on, or skip this.</p>`;
+    if (!d.ai.enabled) return html`<p class="muted">${t("wizard.ai_help_is_off_go_back")}</p>`;
     return html`
-      <p>Which AI agent should Boopli use?</p>
+      <p>${t("wizard.which_ai_agent_should_boopli_use")}</p>
       <div class="field">
         <select @change=${(e: Event) => this._set({ ai: { ...d.ai, entity_id: (e.target as HTMLSelectElement).value } })}>
-          <option value="" .selected=${d.ai.entity_id === ""}>Home Assistant default</option>
+          <option value="" .selected=${d.ai.entity_id === ""}>${t("wizard.home_assistant_default")}</option>
           ${agents.map((id) => html`<option value=${id} .selected=${id === d.ai.entity_id}>${this._fn(id)}</option>`)}
         </select>
         ${agents.length === 0
-          ? html`<div class="muted small">No AI Task agent found yet. Add one in Home Assistant under Settings, Devices and services, then come back.</div>`
+          ? html`<div class="muted small">${t("wizard.no_ai_task_agent_found_yet")}</div>`
           : nothing}
       </div>
       <p class="muted small">Press the button to save and test it, or Next to only save it.</p>
@@ -1472,11 +1457,11 @@ export class BoopliWizard extends LitElement {
   private _renderClaudeIntro(d: Settings) {
     return html`
       <p>
-        <b>Ask Claude</b> is an extra button next to the normal one. Use it when you do not trust your agent's answer,
+        <b>${t("common.ask_claude")}</b> is an extra button next to the normal one. Use it when you do not trust your agent's answer,
         when your free agent is down, or when you have no agent at all.
       </p>
       <p class="muted">
-        It uses <b>your own Claude account</b>: you make a small routine there, and every ask runs it once. Claude
+        It uses <b>${t("wizard.your_own_claude_account")}</b>: you make a small routine there, and every ask runs it once. Claude
         calls routines a research preview, so they can change or stop working. Boopli sends the task text and your
         answers. If you turned on room notes, the notes of the rooms a task is about go along, and a room interview
         sends that room's name and its notes. Photos you choose to send go along too. Never device names, history or
@@ -1491,7 +1476,7 @@ export class BoopliWizard extends LitElement {
         />
         Switch Ask Claude on
       </label>
-      <p class="muted small">Not interested? Press Skip or go to the end. Nothing changes.</p>
+      <p class="muted small">${t("wizard.not_interested_press_skip_or_go")}</p>
     `;
   }
 
@@ -1505,38 +1490,38 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderClaudeMake(d: Settings) {
-    if (!d.ai.claude_enabled) return html`<p class="muted">Ask Claude is off. Go back to switch it on, or skip this.</p>`;
+    if (!d.ai.claude_enabled) return html`<p class="muted">${t("wizard.ask_claude_is_off_go_back")}</p>`;
     const host = routineHost(d.ai.claude_ha_url, this.snapshot);
     return html`
       <p>Do this once on <b>claude.ai</b>, under Routines:</p>
       <ol class="how">
-        <li>Make a new routine. Name it <b>Boopli</b>.</li>
+        <li>Make a new routine. Name it <b>${t("wizard.boopli")}</b>.</li>
         <li>
           Paste this as its instructions:
-          <textarea class="code" rows="6" readonly aria-label="Routine instructions" .value=${ROUTINE_PROMPT}></textarea>
+          <textarea class="code" rows="6" readonly aria-label=${t("wizard.routine_instructions")} .value=${ROUTINE_PROMPT}></textarea>
           <div class="actions inline-actions">
-            <button type="button" @click=${() => this._copyRoutinePrompt()}>Copy the instructions</button>
+            <button type="button" @click=${() => this._copyRoutinePrompt()}>${t("wizard.copy_the_instructions")}</button>
           </div>
           ${this._noteLine("claude:copy")}
         </li>
         <li>
-          Make an <b>environment</b> for it with network access <b>Limited</b>, and allow this address:
+          Make an <b>${t("wizard.environment")}</b> for it with network access <b>${t("wizard.limited")}</b>, and allow this address:
           ${host
             ? html`<code>${host}</code>`
-            : html`<b>your Home Assistant's address on the internet</b>. Home Assistant does not know it yet: set the
+            : html`<b>${t("wizard.your_home_assistants_address_on_the")}</b>. Home Assistant does not know it yet: set the
                 external URL in Home Assistant, or fill in the address under Ask Claude in the next screen.`}
         </li>
-        <li>Add an <b>API trigger</b> to the routine, and press <b>Generate token</b>. Copy the token now: Claude shows it only once.</li>
-        <li>Leave every connector (Gmail, calendar and so on) switched <b>off</b>. The routine does not need them.</li>
+        <li>Add an <b>${t("wizard.api_trigger")}</b> to the routine, and press <b>${t("wizard.generate_token")}</b>. Copy the token now: Claude shows it only once.</li>
+        <li>Leave every connector (Gmail, calendar and so on) switched <b>${t("wizard.off")}</b>. The routine does not need them.</li>
       </ol>
-      <p class="muted small">Claude's screens change now and then, so a button may be named a little differently.</p>
+      <p class="muted small">${t("wizard.claudes_screens_change_now_and_then")}</p>
     `;
   }
 
   private _renderClaudePaste(d: Settings) {
-    if (!d.ai.claude_enabled) return html`<p class="muted">Ask Claude is off. Go back to switch it on, or skip this.</p>`;
+    if (!d.ai.claude_enabled) return html`<p class="muted">${t("wizard.ask_claude_is_off_go_back")}</p>`;
     return html`
-      <p>Paste the routine's fire address and its token. Then test it.</p>
+      <p>${t("wizard.paste_the_routines_fire_address_and")}</p>
       <boopli-claude
         .hass=${this.hass}
         .snapshot=${this.snapshot}
@@ -1549,7 +1534,7 @@ export class BoopliWizard extends LitElement {
         }}
         @ai-patch=${(e: CustomEvent<Partial<Settings["ai"]>>) => this._set({ ai: { ...d.ai, ...e.detail } })}
       ></boopli-claude>
-      <p class="muted small">The test saves your settings first, then asks Claude for a tiny answer.</p>
+      <p class="muted small">${t("wizard.the_test_saves_your_settings_first")}</p>
     `;
   }
 
@@ -1566,13 +1551,13 @@ export class BoopliWizard extends LitElement {
     const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
     if (this._first && adding.length) changes.push(`Chores added: ${adding.join(", ")}`);
     return html`
-      <p><b>What changed</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
+      <p><b>${t("common.what_changed")}</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
       ${changes.length === 0
         ? html`<p class="muted">Nothing changed.</p>`
         : html`<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board()
-        ? html`<p>Next: put the tiles where you want them, on the board itself.</p>
-            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>Edit it on the wall</button></p>
+        ? html`<p>${t("wizard.next_put_the_tiles_where_you")}</p>
+            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${t("wizard.edit_it_on_the_wall")}</button></p>
             <p class="small">Link for the tablet's start page: <code>${boardLink(this._board()!)}</code></p>`
         : nothing}
       <p class="muted small">
@@ -1653,14 +1638,14 @@ export class BoopliWizard extends LitElement {
 
   render() {
     const d = this._draft;
-    if (!d) return html`<p class="muted">Loading…</p>`;
+    if (!d) return html`<p class="muted">${t("common.loading")}</p>`;
     const step = this._step;
     const isDone = step === "done";
     const isGate = step === "speaker_gate" || step === "lad_more" || step === "lad_delete"; // these screens have their own buttons
     const last = this._steps.length - 1;
     return html`
       <div class="shell">
-        <nav class="rail" aria-label="Steps">
+        <nav class="rail" aria-label=${t("common.steps")}>
           <div class="rail-title">${WIZARD_TITLES[this.wizard]}</div>
           ${this._steps.map(
             (id, i) => html`<button
@@ -1692,7 +1677,7 @@ export class BoopliWizard extends LitElement {
           ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
           <div class="actions">
             ${this._index > 0
-              ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1)}>Back</button>`
+              ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1)}>${t("common.back")}</button>`
               : nothing}
             <span class="spacer"></span>
             ${isDone
@@ -1702,7 +1687,7 @@ export class BoopliWizard extends LitElement {
               : isGate
                 ? nothing
                 : html`${step === "lad_name" || step === "lad_start" || step === "lad_nudge" ? nothing : html`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>Skip</button>`}
-                    <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>Next</button>`}
+                    <button type="button" class="primary" ?disabled=${this._busy || this._index >= last} @click=${() => this._go(1)}>${t("common.next")}</button>`}
           </div>
         </section>
       </div>

@@ -4,6 +4,7 @@ import "./boopli-schedule-days";
 import { sharedStyles } from "./styles";
 import { describeRepeat, describeWhen, WEEKDAY_NAMES } from "./time";
 import type { Hass, Repeat, RepeatType } from "./types";
+import { t } from "./i18n";
 
 type Step = "how" | "days" | "times" | "interval" | "preview" | "done";
 
@@ -172,7 +173,7 @@ export class BoopliScheduleWizard extends LitElement {
   private _renderDays(d: Repeat) {
     const active = this._activeDays();
     return html`
-      <p>Tap the days it should come up. You set the time for each day in the next step.</p>
+      <p>${t("schedule_wizard.tap_the_days_it_should_come")}</p>
       <div class="chips">
         ${ALL_DAYS.map(
           (day) => html`<button
@@ -206,7 +207,7 @@ export class BoopliScheduleWizard extends LitElement {
   private _renderTimes(d: Repeat) {
     return html`
       <p>
-        What time on each day? A day can have more than one time. "Same as …" copies the day above.
+        ${t("schedule_wizard.what_time_on_each_day_a")}
       </p>
       <boopli-schedule-days
         .onlyActive=${true}
@@ -218,7 +219,7 @@ export class BoopliScheduleWizard extends LitElement {
 
   private _renderInterval(d: Repeat) {
     return html`
-      <p>It comes back this many days after you finished it:</p>
+      <p>${t("schedule_wizard.it_comes_back_this_many_days")}</p>
       <div class="chips">
         ${[2, 3, 7, 14, 30, 90].map(
           (n) => html`<button type="button" class="chip ${d.every_n_days === n ? "on" : ""}" @click=${() => this._patch({ every_n_days: n })}>${n} days</button>`
@@ -268,7 +269,7 @@ export class BoopliScheduleWizard extends LitElement {
     const after = describeRepeat(d);
     const same = JSON.stringify(this._before) === JSON.stringify(d);
     return html`
-      <p><b>What changed</b> for ${this.choreName ? html`<b>${this.choreName}</b>` : "this chore"}:</p>
+      <p><b>${t("common.what_changed")}</b> for ${this.choreName ? html`<b>${this.choreName}</b>` : "this chore"}:</p>
       ${same
         ? html`<p class="muted">Nothing changed. ${after}.</p>`
         : html`<ul><li>Schedule: ${before} → ${after}</li></ul>`}
@@ -305,7 +306,7 @@ export class BoopliScheduleWizard extends LitElement {
     const last = step === "done";
     return html`
       <div class="shell">
-        <nav class="rail" aria-label="Steps">
+        <nav class="rail" aria-label=${t("common.steps")}>
           <div class="rail-title">Schedule${this.choreName ? `: ${this.choreName}` : ""}</div>
           ${steps.map(
             (id, i) => html`<div class="rail-item ${i === this._index ? "current" : ""} ${i < this._index ? "past" : ""}">
@@ -325,14 +326,14 @@ export class BoopliScheduleWizard extends LitElement {
           ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
           <div class="actions">
             ${this._index > 0
-              ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._back()}>Back</button>`
+              ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._back()}>${t("common.back")}</button>`
               : nothing}
             <span class="spacer"></span>
             ${last
               ? html`<button type="button" class="primary" @click=${() => this._apply()}>
                   ${this.saves ? "Save schedule" : "Use this schedule"}
                 </button>`
-              : html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>Next</button>`}
+              : html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>${t("common.next")}</button>`}
           </div>
         </section>
       </div>

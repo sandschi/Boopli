@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing, type PropertyValues } from "lit";
 import { entityIds, friendlyName } from "./helpers";
 import { sharedStyles } from "./styles";
 import type { Hass } from "./types";
+import { t } from "./i18n";
 
 type Mode = "none" | "camera" | "file";
 
@@ -112,12 +113,12 @@ export class BoopliPicture extends LitElement {
     const hasCameras = cameras.length > 0 || isCamera(this.value);
     return html`
       <div class="row">
-        <span class="muted small">Picture in the phone notification (optional):</span>
+        <span class="muted small">${t("picture.picture_in_the_phone_notification_optional")}</span>
         <select
-          aria-label="Kind of picture"
+          aria-label=${t("picture.kind_of_picture")}
           @change=${(e: Event) => this._setMode((e.target as HTMLSelectElement).value as Mode)}
         >
-          <option value="none" ?selected=${this._mode === "none"}>None</option>
+          <option value="none" ?selected=${this._mode === "none"}>${t("picture.none")}</option>
           ${hasCameras ? html`<option value="camera" ?selected=${this._mode === "camera"}>A camera</option>` : nothing}
           <option value="file" ?selected=${this._mode === "file"}>A picture file</option>
         </select>
@@ -125,10 +126,10 @@ export class BoopliPicture extends LitElement {
       ${this._mode === "camera"
         ? html`<div class="row">
             <select
-              aria-label="Camera"
+              aria-label=${t("picture.camera")}
               @change=${(e: Event) => this._emit((e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!this.value}>Pick a camera…</option>
+              <option value="" ?selected=${!this.value}>${t("picture.pick_a_camera")}</option>
               ${this.value && !cameras.includes(this.value)
                 ? html`<option value=${this.value} selected>${this.value} (not found)</option>`
                 : nothing}
@@ -142,7 +143,7 @@ export class BoopliPicture extends LitElement {
       ${this._mode === "file"
         ? html`<div class="row">
             <input
-              aria-label="Picture file"
+              aria-label=${t("picture.picture_file")}
               placeholder="boopli/pills.jpg"
               maxlength="120"
               .value=${this.value}
@@ -157,7 +158,7 @@ export class BoopliPicture extends LitElement {
       ${this._src
         ? html`<img
             class="preview"
-            alt="Preview of the picture"
+            alt=${t("picture.preview_of_the_picture")}
             src=${this._src}
             @error=${() => {
               this._src = "";

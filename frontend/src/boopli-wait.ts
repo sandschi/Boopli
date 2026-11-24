@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import "./boopli-egg";
 import "./boopli-pet";
 import { petInfo } from "./pets";
+import { t } from "./i18n";
 
 const EGG_AFTER_SECONDS = 30; // the Easter egg shows up once a wait has lasted this long
 
@@ -89,7 +90,7 @@ export class BoopliWait extends LitElement {
       <div
         class="bar"
         role="progressbar"
-        aria-label="Waiting time used"
+        aria-label=${t("wait.waiting_time_used")}
         aria-valuemin="0"
         aria-valuemax=${this.max}
         aria-valuenow=${Math.round(this._elapsed)}

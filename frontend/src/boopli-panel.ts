@@ -17,6 +17,7 @@ import { applyAccent } from "./accent";
 import { loadFonts } from "./fonts";
 import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
+import { t } from "./i18n";
 
 type Tab = "today" | "chores" | "home" | "settings";
 
@@ -304,14 +305,14 @@ export class BoopliPanel extends LitElement {
   private _renderConfirm() {
     if (!this._confirm) return nothing;
     const answer = (c: Choice) => () => this._confirm?.(c);
-    return html`<div class="backdrop" role="dialog" aria-modal="true" aria-label="Unsaved changes">
+    return html`<div class="backdrop" role="dialog" aria-modal="true" aria-label=${t("panel.unsaved_changes")}>
       <div class="card dialog">
-        <h2>You have unsaved changes</h2>
-        <p class="muted">Leave without saving and they are lost.</p>
+        <h2>${t("panel.you_have_unsaved_changes")}</h2>
+        <p class="muted">${t("panel.leave_without_saving_and_they_are")}</p>
         <div class="dialog-actions">
-          <button class="primary" @click=${answer("save")}>Save</button>
-          <button class="danger" @click=${answer("discard")}>Discard</button>
-          <button @click=${answer("stay")}>Stay</button>
+          <button class="primary" @click=${answer("save")}>${t("common.save")}</button>
+          <button class="danger" @click=${answer("discard")}>${t("common.discard")}</button>
+          <button @click=${answer("stay")}>${t("panel.stay")}</button>
         </div>
       </div>
     </div>`;

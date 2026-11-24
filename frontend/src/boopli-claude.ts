@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { claudeTest, claudeToken, errorMessage } from "./api";
 import { sharedStyles } from "./styles";
 import type { AiSettings, Hass, Snapshot } from "./types";
+import { t } from "./i18n";
 
 /**
  * The "Ask Claude" fields: switch, fire address, token, test. Used by the AI card in
@@ -122,7 +123,7 @@ export class BoopliClaude extends LitElement {
         Switch Ask Claude on
       </label>
       <div class="field">
-        <label for="claude-url">The routine's fire address</label>
+        <label for="claude-url">${t("claude.the_routines_fire_address")}</label>
         <input
           id="claude-url"
           type="url"
@@ -133,7 +134,7 @@ export class BoopliClaude extends LitElement {
         />
       </div>
       <div class="field">
-        <label for="claude-token">The routine's token</label>
+        <label for="claude-token">${t("claude.the_routines_token")}</label>
         ${tokenSet && !this._changing
           ? html`<div class="row">
               <span>Token is saved</span>
@@ -146,32 +147,32 @@ export class BoopliClaude extends LitElement {
                 type="password"
                 autocomplete="off"
                 spellcheck="false"
-                placeholder="Paste the token here"
+                placeholder=${t("claude.paste_the_token_here")}
                 .value=${this._token}
                 @input=${(e: Event) => (this._token = (e.target as HTMLInputElement).value)}
               />
               <button type="button" ?disabled=${this._busy || !this._token.trim()} @click=${() => this._saveToken()}>
-                Save token
+                ${t("claude.save_token")}
               </button>
             </div>`}
       </div>
       <details>
-        <summary class="muted small">Advanced: Home Assistant's web address</summary>
+        <summary class="muted small">${t("claude.advanced_home_assistants_web_address")}</summary>
         <div class="field">
-          <label for="claude-ha">Where the routine sends its answer</label>
+          <label for="claude-ha">${t("claude.where_the_routine_sends_its_answer")}</label>
           <input
             id="claude-ha"
             type="url"
             autocomplete="off"
-            placeholder="Leave empty to use Home Assistant's external URL"
+            placeholder=${t("claude.leave_empty_to_use_home_assistants")}
             .value=${ai.claude_ha_url ?? ""}
             @change=${(e: Event) => this._patch({ claude_ha_url: (e.target as HTMLInputElement).value.trim() })}
           />
-          <div class="muted small">It must be reachable from the internet, and allowed in the routine's environment.</div>
+          <div class="muted small">${t("claude.it_must_be_reachable_from_the")}</div>
         </div>
       </details>
       <div class="row">
-        <button type="button" ?disabled=${testOff} @click=${() => this._test()}>Test Claude</button>
+        <button type="button" ?disabled=${testOff} @click=${() => this._test()}>${t("claude.test_claude")}</button>
         ${this.blocked ? html`<span class="muted small">${this.blocked}</span>` : nothing}
         ${status ? html`<span class="muted small">${status.fires_left} of ${status.fires_per_hour} asks left this hour</span>` : nothing}
       </div>

@@ -4,6 +4,7 @@ import type { Activity, Moment } from "./boopli-pet";
 import { MOODS, petInfo } from "./pets";
 import { sharedStyles } from "./styles";
 import type { Mood } from "./types";
+import { t } from "./i18n";
 
 const MOMENTS: { value: Exclude<Moment, "">; label: string }[] = [
   { value: "levelup", label: "Level up" },
@@ -81,9 +82,9 @@ export class BoopliPetPreview extends LitElement {
   render() {
     const info = petInfo(this.kind);
     return html`
-      <button type="button" class="open" @click=${() => this._open()}>▶ Preview your pet</button>
+      <button type="button" class="open" @click=${() => this._open()}>${t("pet_preview.preview_your_pet")}</button>
       <dialog
-        aria-label="Preview of your pet"
+        aria-label=${t("pet_preview.preview_of_your_pet")}
         @click=${(e: MouseEvent) => {
           if (e.target === e.currentTarget) this._close(); // a click on the dark area around the window
         }}
@@ -91,7 +92,7 @@ export class BoopliPetPreview extends LitElement {
         <div class="win">
           <div class="head">
             <h3>${info.label}: preview</h3>
-            <button type="button" class="close" aria-label="Close" @click=${() => this._close()}>✕</button>
+            <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
           </div>
           <boopli-stage
             .kind=${this.kind}
@@ -106,17 +107,17 @@ export class BoopliPetPreview extends LitElement {
           ${info.art ? "" : html`<p class="muted small">${info.label} has no animated art yet, so it shows its emoji.</p>`}
 
           <div class="group">
-            <div class="label">Mood</div>
+            <div class="label">${t("pet_preview.mood")}</div>
             <div class="chips">${MOODS.map((m) => this._chip(m, this._mood === m, () => (this._mood = m)))}</div>
           </div>
           <div class="group">
-            <div class="label">Busy with</div>
+            <div class="label">${t("pet_preview.busy_with")}</div>
             <div class="chips">
               ${ACTIVITIES.map((a) => this._chip(a.label, this._activity === a.value, () => (this._activity = a.value)))}
             </div>
           </div>
           <div class="group">
-            <div class="label">Moments (they play once)</div>
+            <div class="label">${t("pet_preview.moments_they_play_once")}</div>
             <div class="chips">
               ${MOMENTS.map((m) => html`<button type="button" class="chip" @click=${() => this._play(m.value)}>${m.label}</button>`)}
             </div>

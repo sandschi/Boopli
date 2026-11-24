@@ -1,5 +1,6 @@
 import { css, html } from "lit";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
 
 interface CalendarEvent {
   summary?: string;
@@ -124,15 +125,15 @@ export class WallTileCalendar extends WallTile {
   }
 
   render() {
-    if (!this.text("entity_id")) return html`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
+    if (!this.text("entity_id")) return html`<div class="center muted normal">${t("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
     const today = dayAndTime(this.nowMs || Date.now(), this.snapshot?.time_zone).day;
     const lines = this._events.filter((l) => l.day >= today).slice(0, this.num("count", 4)); // an event stays until its day is over
-    return html`<div class="label">Calendar</div>
+    return html`<div class="label">${t("wall_tile_calendar.calendar")}</div>
       ${this._error
         ? html`<div class="error">${this._error}</div>`
         : lines.length
           ? lines.map((l) => html`<div class="row normal"><span class="t">${l.title}</span><span class="muted small">${this._when(l)}</span></div>`)
-          : html`<div class="normal muted">Nothing in the next week.</div>`}`;
+          : html`<div class="normal muted">${t("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
   }
 
   static styles = [

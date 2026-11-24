@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { sharedStyles } from "./styles";
 import { WEEKDAY_NAMES } from "./time";
+import { t } from "./i18n";
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
 const MAX_TIMES = 6;
@@ -102,10 +103,10 @@ export class BoopliScheduleDays extends LitElement {
                     </span>`
                   )}
                   ${times.length < MAX_TIMES
-                    ? html`<button type="button" class="chip" @click=${() => this._setDay(day, [...times, nextTime(times)])}>+ time</button>`
+                    ? html`<button type="button" class="chip" @click=${() => this._setDay(day, [...times, nextTime(times)])}>${t("schedule_days.time")}</button>`
                     : nothing}
                 </div>`
-              : html`<span class="muted small">No run this day</span>`}
+              : html`<span class="muted small">${t("schedule_days.no_run_this_day")}</span>`}
             ${above !== null
               ? html`<button
                   type="button"

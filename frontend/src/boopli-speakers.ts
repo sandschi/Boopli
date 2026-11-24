@@ -3,6 +3,7 @@ import { errorMessage, testAlarmDevice, testSpeaker } from "./api";
 import { newLadderId } from "./helpers";
 import { icon } from "./icon";
 import { sharedStyles } from "./styles";
+import { t } from "./i18n";
 import type {
   AlarmDeviceCfg,
   ExtraSound,
@@ -278,7 +279,7 @@ export class BoopliSpeakers extends LitElement {
       </label>
       ${kind === "alexa"
         ? html`<div class="muted small libhint">
-            Pick an id from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">Alexa sound library</a>,
+            Pick an id from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">${t("speakers.alexa_sound_library")}</a>,
             for example <code>amzn_sfx_doorbell_chime_01</code>. Use a Test button to hear it. Some ids stay silent.
           </div>`
         : nothing}
@@ -321,7 +322,7 @@ export class BoopliSpeakers extends LitElement {
                   Details
                 </button>
                 ${l.onRemove
-                  ? html`<button type="button" class="textlink quiet" aria-label=${l.removeLabel ?? "Remove"} @click=${() => l.onRemove!()}>Remove</button>`
+                  ? html`<button type="button" class="textlink quiet" aria-label=${l.removeLabel ?? "Remove"} @click=${() => l.onRemove!()}>${t("common.remove")}</button>`
                   : nothing}
               </span>`
             : nothing}
@@ -381,7 +382,7 @@ export class BoopliSpeakers extends LitElement {
           ? html`<div class="fields">
                 <label class="num wide">
                   What kind of speaker
-                  <select aria-label="What kind of speaker" @change=${(e: Event) => this._setRoute(id, (e.target as HTMLSelectElement).value as SpeechRoute)}>
+                  <select aria-label=${t("speakers.what_kind_of_speaker")} @change=${(e: Event) => this._setRoute(id, (e.target as HTMLSelectElement).value as SpeechRoute)}>
                     ${ROUTES.map((r) => html`<option value=${r.value} ?selected=${r.value === cfg.route}>${r.label}</option>`)}
                   </select>
                 </label>
@@ -399,7 +400,7 @@ export class BoopliSpeakers extends LitElement {
                   </select>
                 </label>
                 ${cfg.route === "alexa_devices" && !targets.length
-                  ? html`<div class="note muted small libhint">No Alexa Devices entities found. Is the integration installed?</div>`
+                  ? html`<div class="note muted small libhint">${t("speakers.no_alexa_devices_entities_found_is")}</div>`
                   : nothing}
                 <button
                   type="button"
@@ -420,7 +421,7 @@ export class BoopliSpeakers extends LitElement {
     const speakers = this._speakers().filter((s) => this._group(s) === group);
     const title = group === "alexa" ? "Alexa speakers" : "Other media players";
     if (!speakers.length) {
-      return html`<h4>${title}</h4><p class="muted small">You have no such speaker yet.</p>`;
+      return html`<h4>${title}</h4><p class="muted small">${t("speakers.you_have_no_such_speaker_yet")}</p>`;
     }
     const first = speakers[0];
     const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
@@ -437,7 +438,7 @@ export class BoopliSpeakers extends LitElement {
             <span class="ltitle">${name}</span>
             <span class="lsum muted">${group === "other" && c.kind === "alexa" ? "No file chosen yet" : this._soundSummary(c.kind as SoundKind, c.sound)}</span>
             <span class="lacts">
-              <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(key)}>Details</button>
+              <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(key)}>${t("speakers.details")}</button>
             </span>
           </div>
           ${open
@@ -464,8 +465,7 @@ export class BoopliSpeakers extends LitElement {
     const sounds = this._sounds();
     return html`
       <p class="muted small">
-        One list for all speakers. Pick them as the Ding or the Alarm sound, or in your ladders. An Alexa sound plays on
-        Alexa speakers, a file on any speaker.
+        ${t("speakers.one_list_for_all_speakers_pick")}
       </p>
       ${sounds.map((x) =>
         this._line({
@@ -475,7 +475,7 @@ export class BoopliSpeakers extends LitElement {
             class="soundname"
             type="text"
             maxlength="30"
-            aria-label="Name of the sound"
+            aria-label=${t("speakers.name_of_the_sound")}
             .value=${x.name}
             @change=${(e: Event) => this._setExtra(x.id, { name: (e.target as HTMLInputElement).value.trim() })}
           />`,
@@ -500,7 +500,7 @@ export class BoopliSpeakers extends LitElement {
     return html`<label class="num wide">
       Pick one of your sounds
       <select
-        aria-label="Pick one of your sounds"
+        aria-label=${t("speakers.pick_one_of_your_sounds")}
         @change=${(e: Event) => {
           const id = (e.target as HTMLSelectElement).value;
           const found = fits.find((x) => x.id === id);
@@ -527,10 +527,10 @@ export class BoopliSpeakers extends LitElement {
       <div class="win">
         <div class="head">
           <h3>${title}</h3>
-          <button type="button" class="close" aria-label="Close" @click=${close}>✕</button>
+          <button type="button" class="close" aria-label=${t("common.close")} @click=${close}>✕</button>
         </div>
         ${body}
-        <div class="actions"><button type="button" class="primary" @click=${close}>Done</button></div>
+        <div class="actions"><button type="button" class="primary" @click=${close}>${t("common.done")}</button></div>
       </div>
     </dialog>`;
   }
@@ -542,8 +542,8 @@ export class BoopliSpeakers extends LitElement {
       return this._subWindow(
         "Add a speaker",
         html`<div class="row">
-          <select aria-label="Add a speaker" .value=${this._addSpeaker} @change=${(e: Event) => (this._addSpeaker = (e.target as HTMLSelectElement).value)}>
-            <option value="">Choose a media player…</option>
+          <select aria-label=${t("speakers.add_a_speaker")} .value=${this._addSpeaker} @change=${(e: Event) => (this._addSpeaker = (e.target as HTMLSelectElement).value)}>
+            <option value="">${t("speakers.choose_a_media_player")}</option>
             ${choices.map((id) => html`<option value=${id} ?selected=${id === this._addSpeaker}>${this._friendly(id)}</option>`)}
           </select>
           <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
@@ -554,7 +554,7 @@ export class BoopliSpeakers extends LitElement {
       return this._subWindow(
         "Ding and alarm sound",
         html`<p class="muted small">
-            One setting for each kind of speaker. Another media player can only play files. Which sound plays when is set in Nudge it your way.
+            ${t("speakers.one_setting_for_each_kind_of")}
           </p>
           ${this._toneGroup("alexa")} ${this._toneGroup("other")}`
       );
@@ -566,11 +566,11 @@ export class BoopliSpeakers extends LitElement {
         html`<input
             id="sentence"
             type="text"
-            aria-label="What the speakers say"
+            aria-label=${t("speakers.what_the_speakers_say")}
             .value=${d.speech_template}
             @change=${(e: Event) => this._patch({ speech_template: (e.target as HTMLInputElement).value.trim() })}
           />
-          <div class="muted small hintline">Use {chore} for the chore name and {step} for the step. Example: "{chore}: {step}".</div>`
+          <div class="muted small hintline">${t("speakers.use_chore_for_the_chore_name")}</div>`
       );
     }
     return nothing;
@@ -581,9 +581,9 @@ export class BoopliSpeakers extends LitElement {
       html`<button type="button" class="textlink" @click=${() => (this._sub = sub)}>${icon(ico)} ${label}</button>`;
     return html`
       <section class="card">
-        <h2>${icon("volume-high")} Speakers</h2>
+        <h2>${icon("volume-high")} ${t("speakers.speakers")}</h2>
         <p class="muted small">
-          Press a Test link to hear a speaker. What a speaker plays at which nudge is set in Nudge it your way.
+          ${t("speakers.press_a_test_link_to_hear")}
         </p>
         <div class="topbtns">
           ${topButton("add", "plus", "Add a speaker")} ${topButton("tone", "music-note", "Ding and alarm sound")}
@@ -621,10 +621,9 @@ export class BoopliSpeakers extends LitElement {
     const choices = this._ids(ALARM_DOMAINS, used);
     return html`
       <section class="card">
-        <h2>${icon("bell-ring-outline")} Alarm devices</h2>
+        <h2>${icon("bell-ring-outline")} ${t("speakers.alarm_devices")}</h2>
         <p class="muted small">
-          A siren, switch or script that sounds the alarm. Boopli switches it on for the time you set, then off again,
-          and also off when you answer or when Home Assistant restarts.
+          ${t("speakers.a_siren_switch_or_script_that")}
         </p>
         ${d.alarm_devices.map((device) =>
           this._line({

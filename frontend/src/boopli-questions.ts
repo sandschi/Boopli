@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { sharedStyles } from "./styles";
 import type { ChoreQuestion } from "./types";
+import { t } from "./i18n";
 
 /**
  * The yes/no questions of a chore, answered with two big buttons each:
@@ -87,7 +88,7 @@ export class BoopliQuestions extends LitElement {
         ${this.allLabel
           ? html`<button type="button" ?disabled=${this.busy} @click=${() => this._emit("all-steps")}>${this.allLabel}</button>`
           : ""}
-        ${this.cancelable ? html`<button type="button" class="link" @click=${() => this._emit("cancel")}>Cancel</button>` : ""}
+        ${this.cancelable ? html`<button type="button" class="link" @click=${() => this._emit("cancel")}>${t("common.cancel")}</button>` : ""}
       </div>
     `;
   }

@@ -2,6 +2,7 @@ import { css, html } from "lit";
 import { friendlyName } from "./helpers";
 import { WallTile, wallTileStyles } from "./wall-tile";
 import { icon } from "./icon";
+import { t } from "./i18n";
 
 /** What a tap does, by kind of entity: [domain, service], or none (a sensor has nothing to press). */
 const TAP: Record<string, [string, string]> = {
@@ -47,7 +48,7 @@ export class WallTileEntity extends WallTile {
 
   render() {
     const id = this.text("entity_id");
-    if (!id) return html`<div class="center muted normal">Pick an entity in the board settings.</div>`;
+    if (!id) return html`<div class="center muted normal">${t("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
     const st = this.hass?.states[id];
     const domain = id.split(".")[0];
     const name = this.text("name") || friendlyName(this.hass, id);

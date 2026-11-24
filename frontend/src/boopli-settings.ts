@@ -24,6 +24,7 @@ import "./boopli-claude";
 import { petInfo } from "./pets";
 import { accentFor, applyAccent, isHex, SWATCHES } from "./accent";
 import { icon } from "./icon";
+import { t } from "./i18n";
 
 import type {
   Hass,
@@ -209,7 +210,7 @@ export class BoopliSettings extends LitElement {
   }
 
   private _badge(...keys: (keyof Settings)[]) {
-    return this._changed(...keys) ? html`<span class="unsaved-badge">Unsaved</span>` : nothing;
+    return this._changed(...keys) ? html`<span class="unsaved-badge">${t("settings.unsaved")}</span>` : nothing;
   }
 
   private _cardClass(...keys: (keyof Settings)[]): string {
@@ -434,8 +435,7 @@ export class BoopliSettings extends LitElement {
       <section class=${this._cardClass("phones")}>
         <h2>Phones${this._badge("phones")}</h2>
         <p class="muted small">
-          Boopli sends a notification with Done and Snooze buttons through the
-          Home Assistant app on the phones you turn on.
+          ${t("settings.boopli_sends_a_notification_with_done")}
         </p>
         ${services.length === 0
           ? html`<p class="muted">No phones with the Home Assistant app found.</p>`
@@ -454,7 +454,7 @@ export class BoopliSettings extends LitElement {
                     ${service.replace("mobile_app_", "")}
                   </label>
                   <select
-                    aria-label="Notification level"
+                    aria-label=${t("settings.notification_level")}
                     ?disabled=${!cfg}
                     .value=${cfg?.level ?? "normal"}
                     @change=${(e: Event) =>
@@ -479,9 +479,7 @@ export class BoopliSettings extends LitElement {
       <section class=${this._cardClass("lights")}>
         <h2>Reminder lights${this._badge("lights")}</h2>
         <p class="muted small">
-          Boopli blinks a light itself and puts it back exactly as it was, or
-          uses it as an indicator lamp that stays on in a color until you are
-          done. Press Test to see what a light really does: lights differ a lot.
+          ${t("settings.boopli_blinks_a_light_itself_and")}
         </p>
         ${d.lights.map((light) => {
           const note = this._notes[`light:${light.entity_id}`];
@@ -491,10 +489,10 @@ export class BoopliSettings extends LitElement {
             <div class="row">
               <div class="grow">
                 <div>${this._friendly(id)}</div>
-                ${this.hass?.states[id] ? nothing : html`<div class="muted small">Not found right now</div>`}
+                ${this.hass?.states[id] ? nothing : html`<div class="muted small">${t("settings.not_found_right_now")}</div>`}
               </div>
               <select
-                aria-label="Light mode"
+                aria-label=${t("settings.light_mode")}
                 .value=${light.mode}
                 @change=${(e: Event) =>
                   this._setLightMode(id, (e.target as HTMLSelectElement).value as LightMode)}
@@ -507,7 +505,7 @@ export class BoopliSettings extends LitElement {
                 ? html`<input
                     type="color"
                     class="swatch"
-                    aria-label="Color"
+                    aria-label=${t("settings.color")}
                     .value=${this._rgbToHex(light.color)}
                     @input=${(e: Event) =>
                       this._patchLight(id, { color: this._hexToRgb((e.target as HTMLInputElement).value) })}
@@ -556,9 +554,7 @@ export class BoopliSettings extends LitElement {
                     </label>
                   </div>
                   <div class="muted small hint">
-                    A light in your home can follow a few hundred milliseconds. A
-                    light that goes through a cloud service needs about a second
-                    or more, so find its limit with Test.
+                    ${t("settings.a_light_in_your_home_can")}
                   </div>
                 `
               : nothing}
@@ -588,8 +584,7 @@ export class BoopliSettings extends LitElement {
       <section class=${this._cardClass("quiet_hours")}>
         <h2>Quiet hours${this._badge("quiet_hours")}</h2>
         <p class="muted small">
-          Nudges wait outside these times. Set different hours for each day.
-          A chore can opt out (for example pills).
+          ${t("settings.nudges_wait_outside_these_times_set")}
         </p>
         <label class="inline">
           <input
@@ -647,13 +642,13 @@ export class BoopliSettings extends LitElement {
     return html`
       <section class=${this._cardClass("presence_entity")}>
         <div class="field">
-          <label for="presence">Where you are (optional)</label>
+          <label for="presence">${t("settings.where_you_are_optional")}</label>
           <select
             id="presence"
             .value=${d.presence_entity}
             @change=${(e: Event) => this._set({ presence_entity: (e.target as HTMLSelectElement).value })}
           >
-            <option value="" ?selected=${d.presence_entity === ""}>None (assume I am home)</option>
+            <option value="" ?selected=${d.presence_entity === ""}>${t("settings.none_assume_i_am_home")}</option>
             ${this._persons().map(
               (id) => html`<option value=${id} ?selected=${id === d.presence_entity}>${this._friendly(id)}</option>`
             )}
@@ -672,7 +667,7 @@ export class BoopliSettings extends LitElement {
     return html`
       <section class=${this._cardClass("pet_name", "pet_kind", "accent")}>
         <div class="field">
-          <label for="petname">Your pet's name</label>
+          <label for="petname">${t("settings.your_pets_name")}</label>
           <input
             id="petname"
             maxlength="30"
@@ -681,7 +676,7 @@ export class BoopliSettings extends LitElement {
           />
         </div>
         <div class="field">
-          <label>Your pet</label>
+          <label>${t("common.your_pet")}</label>
           <boopli-pet-picker
             moods
             .value=${d.pet_kind ?? "slime"}
@@ -700,17 +695,17 @@ export class BoopliSettings extends LitElement {
     const picked = isHex(d.accent) ? d.accent.toLowerCase() : "";
     const set = (hex: string) => this._set({ accent: hex });
     return html`<div class="field">
-      <label id="accent-label">Accent colour</label>
+      <label id="accent-label">${t("settings.accent_colour")}</label>
       <div class="swatches" role="group" aria-labelledby="accent-label">
         <button
           type="button"
           class="acc own ${picked ? "" : "on"}"
           style="--sw:${own}"
           aria-pressed=${picked ? "false" : "true"}
-          title="Your pet's own colour"
+          title=${t("settings.your_pets_own_colour")}
           @click=${() => set("")}
         >
-          Pet's colour
+          ${t("settings.pets_colour")}
         </button>
         ${SWATCHES.map(
           (s) => html`<button
@@ -740,7 +735,7 @@ export class BoopliSettings extends LitElement {
     return html`
       <section class=${this._cardClass("snooze_minutes", "question_wait_minutes", "check_in_minutes")}>
         <div class="field">
-          <label for="snooze">Snooze length (minutes)</label>
+          <label for="snooze">${t("settings.snooze_length_minutes")}</label>
           <input
             id="snooze"
             type="number"
@@ -751,7 +746,7 @@ export class BoopliSettings extends LitElement {
           />
         </div>
         <div class="field">
-          <label for="qwait">How long the first nudge waits for your answers (minutes)</label>
+          <label for="qwait">${t("settings.how_long_the_first_nudge_waits")}</label>
           <input
             id="qwait"
             type="number"
@@ -761,12 +756,11 @@ export class BoopliSettings extends LitElement {
             @input=${(e: Event) => this._set({ question_wait_minutes: Number((e.target as HTMLInputElement).value) || 30 })}
           />
           <div class="muted small">
-            For chores that start by themselves and have questions. They start with all steps; this is how long Boopli
-            waits for your answers before it nudges.
+            ${t("settings.for_chores_that_start_by_themselves")}
           </div>
         </div>
         <div class="field">
-          <label for="checkin">After "On it", Boopli asks "still on it?" after (minutes)</label>
+          <label for="checkin">${t("settings.after_on_it_boopli_asks_still")}</label>
           <input
             id="checkin"
             type="number"
@@ -776,7 +770,7 @@ export class BoopliSettings extends LitElement {
             @input=${(e: Event) => this._set({ check_in_minutes: Number((e.target as HTMLInputElement).value) || 30 })}
           />
           <div class="muted small">
-            When you press "On it" on a nudge, Boopli stays quiet while you work and checks in once after this time.
+            ${t("settings.when_you_press_on_it_on")}
           </div>
         </div>
       </section>
@@ -830,7 +824,7 @@ export class BoopliSettings extends LitElement {
           }}
         ></textarea>
         <button type="button" class="chip" ?disabled=${!ai[key]} @click=${() => this._setAi({ [key]: "" })}>
-          Reset to the built-in prompt
+          ${t("settings.reset_to_the_built_in_prompt")}
         </button>
       </div>
     `;
@@ -838,11 +832,7 @@ export class BoopliSettings extends LitElement {
       <section class=${this._cardClass("ai")}>
         <h2>AI help${this._badge("ai")}</h2>
         <p class="muted small">
-          Boopli can split a task into tiny steps with your own Home Assistant AI agent. It is off until you
-          switch it on. Boopli sends nothing by itself: when you use it, the text of the task and your answers
-          go to the agent you choose, and nothing else (no device names, history or location). A cloud agent
-          receives that text, and free models may keep or learn from what they get, so do not type private
-          details. A local agent keeps everything at home.
+          ${t("settings.boopli_can_split_a_task_into")}
         </p>
         <div class="aitop">
           <label class="inline">
@@ -853,7 +843,7 @@ export class BoopliSettings extends LitElement {
             />
             Switch AI help on
           </label>
-          <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>Test the agent</button>
+          <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>${t("settings.test_the_agent")}</button>
           <button type="button" @click=${() => (this._claudeOpen = true)}>
             ${icon("creation")} Ask Claude (extra)${ai.claude_enabled ? " · on" : ""}
           </button>
@@ -870,13 +860,13 @@ export class BoopliSettings extends LitElement {
               : nothing}
           </select>
           ${agents.length === 0
-            ? html`<div class="muted small">No AI Task agent found in Home Assistant yet. Add one under Settings, Devices and services.</div>`
+            ? html`<div class="muted small">${t("settings.no_ai_task_agent_found_in")}</div>`
             : nothing}
         </div>
         ${this._claudeOpen
           ? html`<dialog
               class="sub"
-              aria-label="Ask Claude"
+              aria-label=${t("common.ask_claude")}
               @close=${() => (this._claudeOpen = false)}
               @click=${(e: MouseEvent) => {
                 if (e.target === e.currentTarget) this._claudeOpen = false; // the dark area around the window
@@ -884,8 +874,8 @@ export class BoopliSettings extends LitElement {
             >
               <div class="cwin">
                 <div class="chead">
-                  <h3>${icon("creation")} Ask Claude (extra)</h3>
-                  <button type="button" class="cclose" aria-label="Close" @click=${() => (this._claudeOpen = false)}>✕</button>
+                  <h3>${icon("creation")} ${t("settings.ask_claude_extra")}</h3>
+                  <button type="button" class="cclose" aria-label=${t("common.close")} @click=${() => (this._claudeOpen = false)}>✕</button>
                 </div>
                 <boopli-claude
                   .hass=${this.hass}
@@ -894,7 +884,7 @@ export class BoopliSettings extends LitElement {
                   .blocked=${changed ? "Save first to test." : ""}
                   @ai-patch=${(e: CustomEvent<Partial<Settings["ai"]>>) => this._setAi(e.detail)}
                 ></boopli-claude>
-                <div class="cactions"><button type="button" class="primary" @click=${() => (this._claudeOpen = false)}>Done</button></div>
+                <div class="cactions"><button type="button" class="primary" @click=${() => (this._claudeOpen = false)}>${t("common.done")}</button></div>
               </div>
             </dialog>`
           : nothing}
@@ -1015,14 +1005,14 @@ export class BoopliSettings extends LitElement {
       </div>
       <div class="buttons">
         ${area === "backup"
-          ? html`<button type="button" class="textlink" aria-label="Export a backup" @click=${() => (this._backup = "export")}>Export</button>
-              <button type="button" class="textlink quiet" aria-label="Import a backup" ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>Import</button>`
-          : html`<button type="button" class="textlink" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>Guide me</button>`}
+          ? html`<button type="button" class="textlink" aria-label=${t("common.export_a_backup")} @click=${() => (this._backup = "export")}>${t("settings.export")}</button>
+              <button type="button" class="textlink quiet" aria-label=${t("common.import_a_backup")} ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>${t("settings.import")}</button>`
+          : html`<button type="button" class="textlink" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>${t("settings.guide_me")}</button>`}
         ${area === "backup"
           ? nothing
           : area === "wall"
           ? html`<button type="button" class="textlink quiet" aria-label="Edit on the wall" @click=${() => this._editWall()}>Edit on the wall</button>`
-          : html`<button type="button" class="textlink quiet" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>Advanced</button>`}
+          : html`<button type="button" class="textlink quiet" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>${t("settings.advanced")}</button>`}
       </div>
       ${area === "backup" && this._isDirty() ? html`<p class="muted small">Save or discard your unsaved changes to import.</p>` : nothing}
     </section>`;
@@ -1162,7 +1152,7 @@ export class BoopliSettings extends LitElement {
 
   render() {
     const d = this._draft;
-    if (!d) return html`<p class="muted">Loading…</p>`;
+    if (!d) return html`<p class="muted">${t("common.loading")}</p>`;
     return html`
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
