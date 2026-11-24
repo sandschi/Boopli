@@ -1,0 +1,149 @@
+/* Boopli's look for the documentation: Itim, the slime's green, a cozy dark page,
+   lines instead of boxes, and chunky pressable buttons (like Done in the panel). */
+
+@font-face {
+	font-family: 'Itim';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('./fonts/Itim-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'Itim';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('./fonts/Itim-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+	--sl-font: 'Itim', ui-sans-serif, system-ui, sans-serif;
+	--sl-text-body: 1.1rem;
+	--boopli-green: #5ee05a;
+	--boopli-green-deep: #3a8b38;
+	--boopli-ink: #14210f;
+	--boopli-lilac: #a894e8;
+}
+
+/* dark (the default look) */
+:root,
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #163a14;
+	--sl-color-accent: #3fa83c;
+	--sl-color-accent-high: #5ee05a;
+	--sl-color-white: #f3f6f1;
+	--sl-color-gray-1: #e4e9e1;
+	--sl-color-gray-2: #c4cbc1;
+	--sl-color-gray-3: #9aa396;
+	--sl-color-gray-4: #6a7367;
+	--sl-color-gray-5: #3a4237;
+	--sl-color-gray-6: #1d221b;
+	--sl-color-gray-7: #151913;
+	--sl-color-black: #101310;
+	--sl-color-hairline-light: #2b3228;
+	--sl-color-hairline: #232920;
+	--sl-color-bg-nav: #101310;
+	--sl-color-bg-sidebar: #101310;
+}
+
+/* light */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #d8f6d5;
+	--sl-color-accent: #2f8f2d;
+	--sl-color-accent-high: #1d6a1b;
+	--sl-color-white: #14210f;
+	--sl-color-gray-1: #1f2c1a;
+	--sl-color-gray-2: #384533;
+	--sl-color-gray-3: #5a6656;
+	--sl-color-gray-4: #7e8a7a;
+	--sl-color-gray-5: #c5cdc2;
+	--sl-color-gray-6: #e6ebe3;
+	--sl-color-gray-7: #f3f6f1;
+	--sl-color-black: #fbfdf9;
+	--sl-color-hairline-light: #d3dacf;
+	--sl-color-hairline: #e0e6dd;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	letter-spacing: 0.01em;
+}
+.sl-markdown-content h2 {
+	border-top: 2px solid var(--sl-color-hairline-light);
+	padding-top: 0.9rem;
+	margin-top: 2.2rem;
+}
+.sl-markdown-content h3 {
+	color: var(--sl-color-accent-high);
+}
+.sl-markdown-content a:not(.sl-link-button) {
+	text-decoration-thickness: 2px;
+	text-underline-offset: 3px;
+	text-decoration-color: color-mix(in srgb, var(--sl-color-accent-high) 55%, transparent);
+}
+.sl-markdown-content img {
+	border-radius: 14px;
+	border: 2px solid var(--sl-color-hairline-light);
+}
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+}
+.sl-markdown-content :not(pre) > code {
+	background: var(--sl-color-gray-6);
+	border-radius: 6px;
+}
+
+/* chunky pressable buttons, like Done in the panel */
+.sl-link-button,
+.boopli-btn {
+	border-radius: 16px;
+	font-size: 1.1rem;
+	padding: 0.65rem 1.4rem;
+	border: 0;
+	border-bottom: 5px solid var(--boopli-green-deep);
+	background: var(--boopli-green);
+	color: var(--boopli-ink);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	transition: transform 0.08s ease, border-bottom-width 0.08s ease;
+}
+.sl-link-button:hover,
+.boopli-btn:hover {
+	background: #7bea77;
+	color: var(--boopli-ink);
+}
+.sl-link-button:active,
+.boopli-btn:active {
+	transform: translateY(3px);
+	border-bottom-width: 2px;
+}
+.sl-link-button.minimal,
+.boopli-btn.quiet {
+	background: transparent;
+	color: var(--sl-color-white);
+	border: 2px solid var(--sl-color-hairline-light);
+	border-bottom-width: 5px;
+}
+.sl-link-button.minimal:hover,
+.boopli-btn.quiet:hover {
+	background: var(--sl-color-gray-6);
+	border-color: var(--boopli-green);
+	color: var(--sl-color-white);
+}
+
+/* the sidebar: plain lines, the current page in green */
+nav.sidebar a[aria-current='page'] {
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-accent-high);
+	border-radius: 10px;
+}
+.site-title img {
+	image-rendering: auto;
+}
