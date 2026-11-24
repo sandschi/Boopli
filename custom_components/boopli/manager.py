@@ -1421,6 +1421,7 @@ class BoopliManager:
             self._claude_fires.take()
         except routine.RoutineError as err:
             raise BoopliError(str(err)) from err
+        self._notify()  # the panel shows how many asks are left this hour
         request_id, future = self._claude_waiting.new()
         text = routine.fire_text(instructions, request_id, answer_url, photo_urls or [])
         try:

@@ -10,6 +10,7 @@ import {
   testPhone,
   testSpeaker,
 } from "./api";
+import { ROUTINE_PROMPT, routineHost } from "./claude";
 import { diffSettings } from "./diff";
 import {
   ALARM_DOMAINS,
@@ -27,6 +28,7 @@ import {
   rgbToHex,
   speechTargets,
 } from "./helpers";
+import "./boopli-claude";
 import "./boopli-pet-picker";
 import "./boopli-rung";
 import { boardLink, starterTiles } from "./wall-tiles";
@@ -88,6 +90,9 @@ type StepId =
   | "pet"
   | "ai_intro"
   | "ai_agent"
+  | "claude_intro"
+  | "claude_make"
+  | "claude_paste"
   | "chores"
   | "lad_start"
   | "lad_name"
@@ -108,7 +113,7 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
   presence: ["presence", "done"],
   nudging: ["nudging", "done"],
   pet: ["pet", "done"],
-  ai: ["ai_intro", "ai_agent", "done"],
+  ai: ["ai_intro", "ai_agent", "claude_intro", "claude_make", "claude_paste", "done"],
   ladders: ["lad_start", "done"], // the rest depends on what you want to do (see _startLadderWork)
   wall: ["wall_start", "done"],
 };
@@ -154,6 +159,9 @@ const TITLES: Record<StepId, string> = {
   pet: "Your pet",
   ai_intro: "AI help",
   ai_agent: "Your AI agent",
+  claude_intro: "Ask Claude (extra)",
+  claude_make: "Make the routine",
+  claude_paste: "Connect it",
   chores: "First chores",
   lad_start: "What do you want to do?",
   lad_name: "Name your ladder",
@@ -1461,6 +1469,85 @@ export class BoopliWizard extends LitElement {
     }
   }
 
+  private _renderClaudeIntro(d: Settings) {
+    return html`
+      <p>
+        <b>Ask Claude</b> is an extra button next to the normal one. Use it when you do not trust your agent's answer,
+        when your free agent is down, or when you have no agent at all.
+      </p>
+      <p class="muted">
+        It uses <b>your own Claude account</b>: you make a small routine there, and every ask runs it once. Claude
+        calls routines a research preview, so they can change or stop working. Boopli sends only the task text and
+        your answers, never device names, history or location. You need a Claude account on claude.ai, and Home
+        Assistant must be reachable from the internet, so Claude can send the answer back.
+      </p>
+      <label class="inline option">
+        <input
+          type="checkbox"
+          .checked=${!!d.ai.claude_enabled}
+          @change=${(e: Event) => this._set({ ai: { ...d.ai, claude_enabled: (e.target as HTMLInputElement).checked } })}
+        />
+        Switch Ask Claude on
+      </label>
+      <p class="muted small">Not interested? Press Skip or go to the end. Nothing changes.</p>
+    `;
+  }
+
+  private async _copyRoutinePrompt(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(ROUTINE_PROMPT);
+      this._note("claude:copy", "Copied.");
+    } catch {
+      this._note("claude:copy", "Your browser did not allow copying. Select the text and copy it by hand.");
+    }
+  }
+
+  private _renderClaudeMake(d: Settings) {
+    if (!d.ai.claude_enabled) return html`<p class="muted">Ask Claude is off. Go back to switch it on, or skip this.</p>`;
+    const host = routineHost(d.ai.claude_ha_url);
+    return html`
+      <p>Do this once on <b>claude.ai</b>, under Routines:</p>
+      <ol class="how">
+        <li>Make a new routine. Name it <b>Boopli</b>.</li>
+        <li>
+          Paste this as its instructions:
+          <textarea class="code" rows="6" readonly aria-label="Routine instructions" .value=${ROUTINE_PROMPT}></textarea>
+          <div class="actions inline-actions">
+            <button type="button" @click=${() => this._copyRoutinePrompt()}>Copy the instructions</button>
+          </div>
+          ${this._noteLine("claude:copy")}
+        </li>
+        <li>
+          Make an <b>environment</b> for it with network access <b>Limited</b>, and allow this address:
+          <code>${host}</code>
+        </li>
+        <li>Add an <b>API trigger</b> to the routine, and press <b>Generate token</b>. Copy the token now: Claude shows it only once.</li>
+        <li>Leave every connector (Gmail, calendar and so on) switched <b>off</b>. The routine does not need them.</li>
+      </ol>
+      <p class="muted small">Claude's screens change now and then, so a button may be named a little differently.</p>
+    `;
+  }
+
+  private _renderClaudePaste(d: Settings) {
+    if (!d.ai.claude_enabled) return html`<p class="muted">Ask Claude is off. Go back to switch it on, or skip this.</p>`;
+    return html`
+      <p>Paste the routine's fire address and its token. Then test it.</p>
+      <boopli-claude
+        .hass=${this.hass}
+        .snapshot=${this.snapshot}
+        .ai=${d.ai}
+        .hideIntro=${true}
+        .beforeTest=${async () => {
+          if (!this.hass) return;
+          const sent = structuredClone(d);
+          this._adoptLadders(await saveSettings(this.hass, sent), sent);
+        }}
+        @ai-patch=${(e: CustomEvent<Partial<Settings["ai"]>>) => this._set({ ai: { ...d.ai, ...e.detail } })}
+      ></boopli-claude>
+      <p class="muted small">The test saves your settings first, then asks Claude for a tiny answer.</p>
+    `;
+  }
+
   /** The last screen of the wall guide: leave the guide and open the board in edit mode. */
   private _editOnWall(): void {
     const b = this._board();
@@ -1500,6 +1587,12 @@ export class BoopliWizard extends LitElement {
         return this._renderAiIntro(d);
       case "ai_agent":
         return this._renderAiAgent(d);
+      case "claude_intro":
+        return this._renderClaudeIntro(d);
+      case "claude_make":
+        return this._renderClaudeMake(d);
+      case "claude_paste":
+        return this._renderClaudePaste(d);
       case "phone":
         return this._renderPhone(d);
       case "phone_detail":
@@ -1828,6 +1921,26 @@ export class BoopliWizard extends LitElement {
         background: var(--secondary-background-color);
         padding: 1px 5px;
         border-radius: 5px;
+        overflow-wrap: anywhere;
+      }
+      ol.how {
+        padding-left: 22px;
+        max-width: 760px;
+      }
+      ol.how li {
+        margin: 10px 0;
+      }
+      textarea.code {
+        display: block;
+        width: 100%;
+        margin-top: 6px;
+        font-family: monospace;
+        font-size: 14px;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 10px;
+        padding: 8px 10px;
       }
       a {
         color: var(--boopli-accent, var(--primary-color));

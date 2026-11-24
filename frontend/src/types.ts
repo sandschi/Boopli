@@ -270,7 +270,22 @@ export interface AiSettings {
   steps_prompt: string;
   chat_room_prompt: string; // the text to copy into your own chat, one room; empty = built-in
   chat_home_prompt: string; // the same for the whole home
+  // "Ask Claude": an extra next to the agent, through your own Claude routine (the token is not here)
+  claude_enabled?: boolean;
+  claude_fire_url?: string;
+  claude_ha_url?: string; // where the routine posts back; empty = Home Assistant's external URL
 }
+
+/** What the panel may know about the Claude routine: never the token itself. */
+export interface ClaudeStatus {
+  token_set: boolean;
+  fires_left: number;
+  fires_per_hour: number;
+  wait_seconds: number;
+}
+
+/** Who answers an AI request: the Home Assistant agent (normal) or the Claude routine (extra). */
+export type Via = "agent" | "claude";
 
 export type Mood = "happy" | "content" | "sleepy" | "sad" | "hibernating";
 
@@ -327,6 +342,7 @@ export interface Snapshot {
   now: string;
   time_zone: string;
   ai_timeout?: number; // the longest Boopli waits for the AI agent, in seconds
+  claude?: ClaudeStatus;
   is_home: boolean;
   pet: Pet;
   away?: Away;

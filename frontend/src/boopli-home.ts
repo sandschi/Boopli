@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { agentOn, anyAi, claudeReady, waitSeconds } from "./claude";
 import { icon } from "./icon";
 import {
   chatPrompt,
@@ -15,7 +16,7 @@ import {
 import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
 import { sharedStyles } from "./styles";
-import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot } from "./types";
+import type { AiAnswer, AiQuestion, Hass, Home, Room, Snapshot, Via } from "./types";
 
 const NOTES_MAX = 2000;
 
@@ -51,6 +52,7 @@ type Tool = PhotosTool | ChatTool | FlatTool;
 interface Interview {
   roomId: string;
   source: "ai" | "photos" | "paste";
+  via: Via; // who answers the questions and writes the notes
   phase: "working" | "questions" | "review";
   questions: AiQuestion[];
   picked: string[][];
@@ -230,24 +232,24 @@ export class BoopliHome extends LitElement {
   // --- the AI interview --------------------------------------------------------------------
 
   private _aiOn(): boolean {
-    return !!this.snapshot?.settings.ai?.enabled;
+    return anyAi(this.snapshot); // the agent, or Ask Claude
   }
 
   private _room(id: string): Room | undefined {
     return this._draft?.rooms.find((r) => r.id === id);
   }
 
-  private async _startInterview(room: Room): Promise<void> {
+  private async _startInterview(room: Room, via: Via = "agent"): Promise<void> {
     if (!this.hass) return;
     this._error = "";
-    this._iv = { roomId: room.id, source: "ai", phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
+    this._iv = { roomId: room.id, source: "ai", via, phase: "working", questions: [], picked: [], typed: [], extra: "", answers: [], result: "", round: 0 };
     await this._askQuestions([]);
   }
 
   /** Open the review screen with notes that came from somewhere else (photos or a paste). */
   private _review(roomId: string, source: Interview["source"], notes: string): void {
     this._tool = null;
-    this._iv = { roomId, source, phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
+    this._iv = { roomId, source, via: "agent", phase: "review", questions: [], picked: [], typed: [], extra: "", answers: [], result: notes, round: 0 };
   }
 
   // --- describing a room from photos (one time, never kept) --------------------------------
@@ -428,7 +430,7 @@ export class BoopliHome extends LitElement {
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
-      const result = await roomQuestions(this.hass, room.name, room.notes, answers);
+      const result = await roomQuestions(this.hass, room.name, room.notes, answers, iv.via);
       if (run !== this._run) return; // the person stopped waiting
       if (result.enough || result.questions.length === 0) {
         await this._writeNotes(answers);
@@ -458,7 +460,7 @@ export class BoopliHome extends LitElement {
     this._iv = { ...iv, phase: "working", answers };
     const run = ++this._run;
     try {
-      const result = await roomNotes(this.hass, room.name, room.notes, answers);
+      const result = await roomNotes(this.hass, room.name, room.notes, answers, iv.via);
       if (run !== this._run) return; // the person stopped waiting
       this._iv = { ...iv, answers, phase: "review", result: result.notes };
     } catch (err) {
@@ -536,9 +538,9 @@ export class BoopliHome extends LitElement {
       </div>
       ${iv.phase === "working"
         ? html`<boopli-wait
-            .label=${iv.answers.length ? "Writing the notes…" : "Thinking…"}
+            .label=${iv.via === "claude" ? "Asking Claude. This takes a little while…" : iv.answers.length ? "Writing the notes…" : "Thinking…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, iv.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`
         : nothing}
@@ -767,7 +769,8 @@ export class BoopliHome extends LitElement {
   }
 
   private _renderRoom(room: Room) {
-    const aiOn = this._aiOn();
+    const aiOn = agentOn(this.snapshot);
+    const claudeOn = claudeReady(this.snapshot);
     return html`<section class="room ${this._roomChanged(room.id) ? "changed" : ""}">
       <div class="head">
         <input
@@ -797,6 +800,11 @@ export class BoopliHome extends LitElement {
               <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
                 ${icon("camera-outline")} From photos
               </button>`
+          : nothing}
+        ${claudeOn
+          ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room, "claude")}>
+              ${icon("creation")} Let Claude ask me
+            </button>`
           : nothing}
         <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
           ${icon("chat-outline")} In my own chat
