@@ -3,7 +3,11 @@ title: AI help
 description: Break a task into tiny steps with your own Home Assistant AI agent.
 ---
 
+If you want a second opinion, or have no agent, see also [Ask Claude](/Boopli/ask-claude/).
+
 Boopli can split a big task, such as "clean my room", into very small steps with **your own Home Assistant AI agent** (the `ai_task` integration: Google, OpenRouter, a local model such as Ollama, and so on). It is **off until you switch it on** in Settings (the 🤖 AI help card, or its step-by-step wizard), where you also choose the agent and press **Test the agent**.
+
+![The AI help window in Settings](/Boopli/img/ai-help.jpg)
 
 ### Two ways in
 
@@ -35,7 +39,7 @@ While the agent works, Boopli shows an animation, the time so far, the longest i
 
 ### Service
 
-`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) returns the steps, for your own automations and voice assistants. Without `rooms`, the rooms are guessed from the task, like in the panel.
+`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) returns the steps, for your own automations and voice assistants. Without `rooms`, the rooms are guessed from the task, like in the panel. See also [Services, events and sensors](/Boopli/automations/).
 
 ### The prompts are yours
 

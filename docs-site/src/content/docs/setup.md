@@ -13,6 +13,8 @@ If you skip or leave it unfinished, Today shows a **Finish setting up** banner t
 
 Every weekday has its own times, or "no limit". Nothing is grouped into "weekdays" and "weekend", because not everyone has the same weekend. Shortcuts like "Same as Monday" only fill in the times.
 
+![The Settings page: cards for devices, timing and extras, each with Guide me and Advanced](/Boopli/img/settings.jpg)
+
 ## Two views, Simple and Advanced
 
 Settings has two views, switched with a button at the top (Boopli remembers your choice in the browser):
@@ -30,3 +32,8 @@ On the Settings page and in the chore editor, a bar sticks to the bottom of the 
 
 Cards in three groups: Devices (phone, lights, speakers, alarm devices), Timing (quiet hours, snooze and timing, Nudge it your way, where you are) and Extras (your pet, wall board, AI help). Each card shows what is set in a few lines and has two buttons: **Guide me** (a step-by-step guide) and **Advanced** (a window with every detail; the Wall board card has **Edit on the wall** instead, which opens the wall board in edit mode). The Advanced window has **Save and close**, **Discard and close** (throws away what you changed in that window) and **Keep for later** (closes it and keeps your changes as an unsaved draft).
 
+
+
+## Start again
+
+At the bottom of Settings, **Run the first setup again** opens the first-run wizard once more. Every wizard ends with the list of what changed, so you can see exactly what you did.

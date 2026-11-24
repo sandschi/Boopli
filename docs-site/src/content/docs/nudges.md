@@ -49,3 +49,7 @@ At home, every channel you turned on is used. Away, only your phone is used, and
 
 delays the next nudge (15 minutes by default). The step stays open. There is no dismiss.
 
+
+### Standard styles and your own sounds
+
+The three built-in styles, **One nudge**, **Escalating** and **Persistent**, are ladders like the ones you make yourself. You can change them, but not delete them. Your own sounds (files or Alexa sounds you give a name) are one shared list that every speaker can pick from.

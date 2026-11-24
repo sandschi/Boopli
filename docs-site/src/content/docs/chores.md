@@ -27,6 +27,8 @@ A step can wait for something instead of only for minutes: its "Wait until this 
 
 ### Questions before it starts
 
+On Today, a chore that started by itself and has questions shows them under **Quick look first**.
+
 A chore can ask yes/no questions every time it starts ("Does the table need decluttering?"), because things look different each time. A step linked to a question ("Only if…") is only in the list when you answer **Yes** (green); on **No** (red) it never shows up. Steps that belong to no question are always there, so the table still gets wiped. Press **Start now** and you answer first. A chore that starts by itself (schedule, sensor, NFC) starts with all its steps right away, so triggers and Done work as usual, and your phone gets a notification with **Start with all steps** or **Answer the questions** (which opens Boopli in the app). The first nudge waits for your answers (30 minutes by default, set in Settings); answer later and the steps you did not do yet are tidied. When the AI breaks down a recurring chore it can write these questions itself, and the chore keeps them for next week. Automations get the answers in the `boopli_chore_started` and `boopli_questions_answered` events.
 
 ## Steps that finish by themselves

@@ -4,6 +4,8 @@ An ADHD-friendly chore and task companion that lives inside [Home Assistant](htt
 
 Boopli turns chores into small steps, nudges you with the lights, speakers and phone you already have, and rewards progress with a pet. Everything runs inside your own Home Assistant: no account, no cloud, no server.
 
+![Boopli: the Today screen](docs-site/public/img/today.jpg)
+
 [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sandschi&repository=Boopli&category=integration)
 [![Open your Home Assistant instance and start setting up Boopli.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli)
 

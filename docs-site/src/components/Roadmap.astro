@@ -1,0 +1,48 @@
+---
+// The roadmap is read from the repo's GitHub issues when the site is built.
+// Issues with the label "roadmap" are listed: open ones as planned (or "in progress" when they
+// also carry that label), closed ones as shipped. The workflow rebuilds the site whenever an
+// issue changes, and once a day.
+const repo = 'sandschi/Boopli';
+type Issue = { number: number; title: string; html_url: string; state: string; labels: { name: string }[]; closed_at: string | null; pull_request?: unknown };
+
+let issues: Issue[] = [];
+let failed = false;
+try {
+	const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
+	const token = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+	if (token) headers.Authorization = `Bearer ${token}`;
+	const res = await fetch(`https://api.github.com/repos/${repo}/issues?labels=roadmap&state=all&sort=created&direction=asc&per_page=100`, { headers });
+	if (!res.ok) throw new Error(String(res.status));
+	issues = ((await res.json()) as Issue[]).filter((i) => !i.pull_request);
+} catch {
+	failed = true;
+}
+
+const has = (i: Issue, label: string) => i.labels.some((l) => l.name === label);
+const inProgress = issues.filter((i) => i.state === 'open' && has(i, 'in progress'));
+const planned = issues.filter((i) => i.state === 'open' && !has(i, 'in progress'));
+const shipped = issues
+	.filter((i) => i.state === 'closed')
+	.sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? ''));
+const groups = [
+	{ title: 'In progress', items: inProgress },
+	{ title: 'Planned', items: planned },
+	{ title: 'Shipped', items: shipped },
+].filter((g) => g.items.length > 0);
+---
+
+{failed && (
+	<p>The list could not be loaded when this page was built. See the <a href={`https://github.com/${repo}/issues?q=label%3Aroadmap`}>roadmap issues on GitHub</a>.</p>
+)}
+{!failed && groups.length === 0 && <p>Nothing is listed yet.</p>}
+{groups.map((g) => (
+	<>
+		<h2>{g.title}</h2>
+		<ul>
+			{g.items.map((i) => (
+				<li><a href={i.html_url}>{i.title}</a></li>
+			))}
+		</ul>
+	</>
+))}
