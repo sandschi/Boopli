@@ -7,6 +7,7 @@ import { describeRepeat, describeWhen } from "./time";
 import { sharedStyles } from "./styles";
 import { icon } from "./icon";
 import type { Chore, ChoreDraft, Hass, Snapshot } from "./types";
+import { t } from "./i18n";
 
 /** The Chores screen: the list, starter templates, and the editor. */
 export class BoopliChores extends LitElement {
@@ -120,7 +121,7 @@ export class BoopliChores extends LitElement {
   }
 
   render() {
-    if (!this.snapshot) return html`<p class="muted">Loading…</p>`;
+    if (!this.snapshot) return html`<p class="muted">${t("common.loading")}</p>`;
 
     if (this._editing) {
       return html`<boopli-chore-editor
@@ -149,11 +150,11 @@ export class BoopliChores extends LitElement {
       const chore = this._asking;
       return html`<section class="card">
         <h2>${chore.name}</h2>
-        <p class="muted">A quick look first, so the list only has what needs doing today.</p>
+        <p class="muted">${t("chores.a_quick_look_first_so_the")}</p>
         <boopli-questions
           .questions=${chore.questions ?? []}
           .busy=${this._busy}
-          label="Start"
+          label=${t("chores.start")}
           @answered=${(e: CustomEvent<{ answers: Record<string, boolean> }>) => this._start(chore, e.detail.answers)}
           @cancel=${() => (this._asking = null)}
         ></boopli-questions>
@@ -170,7 +171,7 @@ export class BoopliChores extends LitElement {
     return html`
       <div class="toolbar">
         <button class="primary" @click=${() => (this._editing = blankDraft())}>
-          ${icon("plus")} New chore
+          ${icon("plus")} ${t("chores.new_chore")}
         </button>
         <button
           @click=${() =>
@@ -178,13 +179,13 @@ export class BoopliChores extends LitElement {
               new CustomEvent("open-breakdown", { detail: { kind: "recurring" }, bubbles: true, composed: true })
             )}
         >
-          ${icon("auto-fix")} New chore with AI
+          ${icon("auto-fix")} ${t("chores.new_chore_with_ai")}
         </button>
       </div>
 
       <div class="templates">
-        <span class="muted small">Start from a template:</span>
-        ${TEMPLATES.map(
+        <span class="muted small">${t("chores.start_from_a_template")}</span>
+        ${TEMPLATES().map(
           (t) => html`<button
             class="chip"
             @click=${() => (this._editing = structuredClone(t.draft))}
@@ -197,7 +198,7 @@ export class BoopliChores extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${chores.length === 0
         ? html`<p class="muted empty">
-            No chores yet. Pick a template above or create your own.
+            ${t("chores.no_chores_yet_pick_a_template")}
           </p>`
         : html`<div class="chore-list">${chores.map(
             (c) => html`
@@ -205,27 +206,27 @@ export class BoopliChores extends LitElement {
                 <div class="chore-main">
                   <div class="name">${c.name}</div>
                   <div class="muted small">
-                    ${describeRepeat(c.repeat)} · ${c.where === "home" ? "Home only" : "Anywhere"}
-                    · ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"}
+                    ${describeRepeat(c.repeat)} · ${c.where === "home" ? t("chore_editor.home_only") : t("chores.anywhere")}
+                    · ${t("common.steps_count", { count: c.steps.length })}
                   </div>
                   <div class=${running.has(c.id) ? "status live" : "muted small status"}>
                     ${running.has(c.id)
-                      ? html`${icon("progress-clock")} In progress`
+                      ? html`${icon("progress-clock")} ${t("chores.in_progress")}`
                       : c.enabled && c.next_due
-                        ? `Next: ${describeWhen(c.next_due, this.nowMs, tz)}`
+                        ? t("chores.next", { when: describeWhen(c.next_due, this.nowMs, tz) })
                         : c.repeat.type === "none"
                           ? ""
-                          : "Not scheduled"}
+                          : t("chores.not_scheduled")}
                   </div>
                 </div>
                 <div class="chore-actions">
                   ${running.has(c.id)
                     ? nothing
-                    : html`<button class="textlink" @click=${() => this._start(c)}>Start now</button>`}
+                    : html`<button class="textlink" @click=${() => this._start(c)}>${t("common.start_now")}</button>`}
                   ${c.repeat.type === "none"
-                    ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>Set a schedule</button>`
+                    ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>${t("chores.set_a_schedule")}</button>`
                     : nothing}
-                  <button class="textlink quiet" @click=${() => this._edit(c)}>Edit</button>
+                  <button class="textlink quiet" @click=${() => this._edit(c)}>${t("chores.edit")}</button>
                 </div>
               </section>
             `

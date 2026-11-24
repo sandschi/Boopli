@@ -4,18 +4,19 @@ import type { Activity, Moment } from "./boopli-pet";
 import { MOODS, petInfo } from "./pets";
 import { sharedStyles } from "./styles";
 import type { Mood } from "./types";
+import { t } from "./i18n";
 
-const MOMENTS: { value: Exclude<Moment, "">; label: string }[] = [
-  { value: "levelup", label: "Level up" },
-  { value: "wake", label: "Waking up" },
-  { value: "tap", label: "Tap" },
-  { value: "done", label: "Step done" },
+const MOMENTS = (): { value: Exclude<Moment, "">; label: string }[] => [
+  { value: "levelup", label: t("pet_preview.level_up") },
+  { value: "wake", label: t("pet_preview.waking_up") },
+  { value: "tap", label: t("pet_preview.tap") },
+  { value: "done", label: t("pet_preview.step_done") },
 ];
 
-const ACTIVITIES: { value: Activity; label: string }[] = [
-  { value: "", label: "Nothing" },
-  { value: "housework", label: "Housework" },
-  { value: "typing", label: "Typing" },
+const ACTIVITIES = (): { value: Activity; label: string }[] => [
+  { value: "", label: t("pet_preview.nothing") },
+  { value: "housework", label: t("pet_preview.housework") },
+  { value: "typing", label: t("pet_preview.typing") },
 ];
 
 /**
@@ -70,7 +71,7 @@ export class BoopliPetPreview extends LitElement {
 
   private _play(moment: Exclude<Moment, "">): void {
     this._moment = moment;
-    this._text = moment === "levelup" ? `Level ${Math.min(this._level + 1, 99)}!` : moment === "done" ? "+10 XP" : "";
+    this._text = moment === "levelup" ? t("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : moment === "done" ? "+10 XP" : "";
     this._seq += 1;
   }
 
@@ -81,17 +82,17 @@ export class BoopliPetPreview extends LitElement {
   render() {
     const info = petInfo(this.kind);
     return html`
-      <button type="button" class="open" @click=${() => this._open()}>▶ Preview your pet</button>
+      <button type="button" class="open" @click=${() => this._open()}>${t("pet_preview.preview_your_pet")}</button>
       <dialog
-        aria-label="Preview of your pet"
+        aria-label=${t("pet_preview.preview_of_your_pet")}
         @click=${(e: MouseEvent) => {
           if (e.target === e.currentTarget) this._close(); // a click on the dark area around the window
         }}
       >
         <div class="win">
           <div class="head">
-            <h3>${info.label}: preview</h3>
-            <button type="button" class="close" aria-label="Close" @click=${() => this._close()}>✕</button>
+            <h3>${t("pet_preview.preview", { label: info.label })}</h3>
+            <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
           </div>
           <boopli-stage
             .kind=${this.kind}
@@ -103,44 +104,44 @@ export class BoopliPetPreview extends LitElement {
             .momentSeq=${this._seq}
             .momentText=${this._text}
           ></boopli-stage>
-          ${info.art ? "" : html`<p class="muted small">${info.label} has no animated art yet, so it shows its emoji.</p>`}
+          ${info.art ? "" : html`<p class="muted small">${t("pet_preview.has_no_animated_art_yet_so", { label: info.label })}</p>`}
 
           <div class="group">
-            <div class="label">Mood</div>
-            <div class="chips">${MOODS.map((m) => this._chip(m, this._mood === m, () => (this._mood = m)))}</div>
+            <div class="label">${t("pet_preview.mood")}</div>
+            <div class="chips">${MOODS.map((m) => this._chip(t(`pet.mood_${m}`), this._mood === m, () => (this._mood = m)))}</div>
           </div>
           <div class="group">
-            <div class="label">Busy with</div>
+            <div class="label">${t("pet_preview.busy_with")}</div>
             <div class="chips">
-              ${ACTIVITIES.map((a) => this._chip(a.label, this._activity === a.value, () => (this._activity = a.value)))}
+              ${ACTIVITIES().map((a) => this._chip(a.label, this._activity === a.value, () => (this._activity = a.value)))}
             </div>
           </div>
           <div class="group">
-            <div class="label">Moments (they play once)</div>
+            <div class="label">${t("pet_preview.moments_they_play_once")}</div>
             <div class="chips">
-              ${MOMENTS.map((m) => html`<button type="button" class="chip" @click=${() => this._play(m.value)}>${m.label}</button>`)}
+              ${MOMENTS().map((m) => html`<button type="button" class="chip" @click=${() => this._play(m.value)}>${m.label}</button>`)}
             </div>
           </div>
           <div class="group row">
             <label class="inline">
-              Level ${this._level}
+              ${t("pet_preview.level_n", { n: this._level })}
               <input
                 type="range"
                 min="1"
                 max="5"
                 step="1"
                 .value=${String(this._level)}
-                aria-label="Level"
+                aria-label=${t("pet_preview.level")}
                 @input=${(e: Event) => (this._level = Number((e.target as HTMLInputElement).value))}
               />
             </label>
             <label class="inline">
               <input type="checkbox" .checked=${this._away} @change=${(e: Event) => (this._away = (e.target as HTMLInputElement).checked)} />
-              Away mode (suitcase)
+              ${t("pet_preview.away_mode_suitcase")}
             </label>
           </div>
-          <p class="muted small">The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed.</p>
-          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>Close</button></div>
+          <p class="muted small">${t("pet_preview.the_room_grows_with_the_level")}</p>
+          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${t("common.close")}</button></div>
         </div>
       </dialog>
     `;

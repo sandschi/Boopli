@@ -2,6 +2,7 @@ import { css, html, nothing } from "lit";
 import { completeStep, errorMessage, notOnIt, onIt, snoozeStep } from "./api";
 import { buildToday } from "./today";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
 
 /** What is due now, big, with Done, On it and Snooze. */
 export class WallTileDue extends WallTile {
@@ -29,26 +30,26 @@ export class WallTileDue extends WallTile {
   }
 
   render() {
-    if (!this.snapshot) return html`<div class="center muted normal">Loading…</div>`;
+    if (!this.snapshot) return html`<div class="center muted normal">${t("common.loading")}</div>`;
     const item = buildToday(this.snapshot, this.nowMs).now;
     if (!item) {
-      return html`<div class="center"><div><div class="big">All clear</div><div class="normal muted">Nothing is due right now.</div></div></div>`;
+      return html`<div class="center"><div><div class="big">${t("wall_tile_due.all_clear")}</div><div class="normal muted">${t("wall_tile_due.nothing_is_due_right_now")}</div></div></div>`;
     }
     const { run, step } = item;
     const working = !!step.on_it_until;
     return html`<div class="due">
       <div class="label">${run.chore_name}</div>
       <div class="big title">${step.title}</div>
-      ${item.total > 1 ? html`<div class="small muted">Step ${item.done + 1} of ${item.total}</div>` : nothing}
+      ${item.total > 1 ? html`<div class="small muted">${t("today.step_of", { value: item.done + 1, total: item.total })}</div>` : nothing}
       <div class="actions">
         <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => completeStep(this.hass!, run.id, step.step_id))}>
-          Done
+          ${t("common.done")}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => (working ? notOnIt : onIt)(this.hass!, run.id, step.step_id))}>
-          ${working ? "Not yet" : "On it"}
+          ${working ? t("wall_tile_due.not_yet") : t("today.on_it")}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => snoozeStep(this.hass!, run.id, step.step_id))}>
-          Snooze
+          ${t("wizard.snooze")}
         </button>
       </div>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}

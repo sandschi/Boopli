@@ -2,6 +2,7 @@ import { css, html } from "lit";
 import { friendlyName } from "./helpers";
 import { WallTile, wallTileStyles } from "./wall-tile";
 import { icon } from "./icon";
+import { t } from "./i18n";
 
 /** What a tap does, by kind of entity: [domain, service], or none (a sensor has nothing to press). */
 const TAP: Record<string, [string, string]> = {
@@ -47,7 +48,7 @@ export class WallTileEntity extends WallTile {
 
   render() {
     const id = this.text("entity_id");
-    if (!id) return html`<div class="center muted normal">Pick an entity in the board settings.</div>`;
+    if (!id) return html`<div class="center muted normal">${t("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
     const st = this.hass?.states[id];
     const domain = id.split(".")[0];
     const name = this.text("name") || friendlyName(this.hass, id);
@@ -57,11 +58,11 @@ export class WallTileEntity extends WallTile {
     const inside = html`<div class="icon big">${icon(ICON[domain] ?? "shape-outline")}</div>
       <div>
         <div class="label">${name}</div>
-        <div class="big">${st ? `${st.state}${unit}` : "not found"}</div>
+        <div class="big">${st ? `${st.state}${unit}` : t("wall_tile_entity.not_found")}</div>
       </div>`;
     // something a tap switches is a real button, so it can also be reached and used from a keyboard
     return tappable
-      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label="${name}: ${st?.state ?? "not found"}. Switch" @click=${() => this._tap()}>${inside}</button>`
+      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label=${t("wall_tile_entity.tap_label", { name, state: st?.state ?? t("wall_tile_entity.not_found") })} @click=${() => this._tap()}>${inside}</button>`
       : html`<div class="ent ${on ? "on" : ""}">${inside}</div>`;
   }
 

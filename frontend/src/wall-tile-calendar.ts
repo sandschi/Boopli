@@ -1,5 +1,7 @@
 import { css, html } from "lit";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
+import { dateLocale } from "./time";
 
 interface CalendarEvent {
   summary?: string;
@@ -85,7 +87,7 @@ export class WallTileCalendar extends WallTile {
       const tz = this.snapshot?.time_zone;
       this._events = events
         .map((e): Line | null => {
-          const title = e.summary ?? "(no title)";
+          const title = e.summary ?? t("wall_tile_calendar.no_title");
           if (!e.start.dateTime) {
             const date = String(e.start.date ?? "");
             return /^\d{4}-\d{2}-\d{2}$/.test(date) ? { title, at: 0, allDay: true, day: date, key: `${date}T00:00` } : null;
@@ -99,7 +101,7 @@ export class WallTileCalendar extends WallTile {
         .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
       this._error = "";
     } catch {
-      if (seq === this._seq) this._error = "Could not read the calendar.";
+      if (seq === this._seq) this._error = t("wall_tile_calendar.could_not_read_the_calendar");
     }
   }
 
@@ -115,24 +117,24 @@ export class WallTileCalendar extends WallTile {
     const day = line.day;
     const name =
       day === today
-        ? "Today"
+        ? t("wall_tile_calendar.today")
         : day === nextDay(today)
-          ? "Tomorrow"
-          : new Intl.DateTimeFormat(undefined, { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
+          ? t("wall_tile_calendar.tomorrow")
+          : new Intl.DateTimeFormat(dateLocale(), { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
     if (line.allDay) return name;
-    return `${name} ${new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;
+    return `${name} ${new Intl.DateTimeFormat(dateLocale(), { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;
   }
 
   render() {
-    if (!this.text("entity_id")) return html`<div class="center muted normal">Pick a calendar in the board settings.</div>`;
+    if (!this.text("entity_id")) return html`<div class="center muted normal">${t("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
     const today = dayAndTime(this.nowMs || Date.now(), this.snapshot?.time_zone).day;
     const lines = this._events.filter((l) => l.day >= today).slice(0, this.num("count", 4)); // an event stays until its day is over
-    return html`<div class="label">Calendar</div>
+    return html`<div class="label">${t("wall_tile_calendar.calendar")}</div>
       ${this._error
         ? html`<div class="error">${this._error}</div>`
         : lines.length
           ? lines.map((l) => html`<div class="row normal"><span class="t">${l.title}</span><span class="muted small">${this._when(l)}</span></div>`)
-          : html`<div class="normal muted">Nothing in the next week.</div>`}`;
+          : html`<div class="normal muted">${t("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
   }
 
   static styles = [

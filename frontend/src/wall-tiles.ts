@@ -10,6 +10,7 @@ import "./wall-tile-note";
 import { newLadderId } from "./helpers";
 import { firstFit } from "./wall-layout";
 import type { Board, Tile, TileOptions } from "./types";
+import { t } from "./i18n";
 
 /**
  * The list of tiles. A tile of type `due_now` is the element `wall-tile-due-now` (underscores become dashes).
@@ -40,86 +41,86 @@ export interface TileDef {
   options: OptionField[];
 }
 
-export const TILE_DEFS: TileDef[] = [
+export const TILE_DEFS = (): TileDef[] => [
   {
     type: "clock",
-    label: "Clock",
+    label: t("wall_tiles.clock"),
     icon: "clock-outline",
-    blurb: "The time and the date.",
+    blurb: t("wall_tiles.the_time_and_the_date"),
     defaultW: 4,
     defaultH: 2,
     options: [
-      { key: "format", label: "Clock", kind: "choice", default: "24h", choices: [["24h", "24 hours"], ["12h", "12 hours (AM/PM)"]] },
-      { key: "date", label: "Show the date", kind: "bool", default: true },
+      { key: "format", label: t("wall_tiles.clock"), kind: "choice", default: "24h", choices: [["24h", t("wall_tiles.hours_24")], ["12h", t("wall_tiles.hours_12")]] },
+      { key: "date", label: t("wall_tiles.show_the_date"), kind: "bool", default: true },
     ],
   },
-  { type: "pet", label: "Pet", icon: "paw", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
-  { type: "due_now", label: "Due now", icon: "check-circle-outline", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "pet", label: t("wall_tiles.pet"), icon: "paw", blurb: t("wall_tiles.your_pet_in_its_room"), defaultW: 6, defaultH: 4, options: [] },
+  { type: "due_now", label: t("wall_tiles.due_now"), icon: "check-circle-outline", blurb: t("wall_tiles.what_is_due_now_with_done"), defaultW: 6, defaultH: 4, options: [] },
   {
     type: "coming_up",
-    label: "Coming up",
+    label: t("wall_tile_next.coming_up"),
     icon: "calendar-clock",
-    blurb: "What comes next.",
+    blurb: t("wall_tiles.what_comes_next"),
     defaultW: 6,
     defaultH: 3,
-    options: [{ key: "count", label: "How many to show", kind: "int", default: 3, min: 1, max: 10 }],
+    options: [{ key: "count", label: t("wall_tiles.how_many_to_show"), kind: "int", default: 3, min: 1, max: 10 }],
   },
   {
     type: "entity",
-    label: "Entity",
+    label: t("wall_tiles.entity"),
     icon: "toggle-switch-outline",
-    blurb: "Any sensor or switch. A tap switches it.",
+    blurb: t("wall_tiles.any_sensor_or_switch_a_tap"),
     defaultW: 2,
     defaultH: 2,
     options: [
-      { key: "entity_id", label: "Entity", kind: "entity", default: "" },
-      { key: "name", label: "Name (optional)", kind: "text", default: "" },
-      { key: "tap", label: "A tap", kind: "choice", default: "toggle", choices: [["toggle", "switches it"], ["none", "does nothing"]] },
+      { key: "entity_id", label: t("wall_tiles.entity"), kind: "entity", default: "" },
+      { key: "name", label: t("wall_tiles.name_optional"), kind: "text", default: "" },
+      { key: "tap", label: t("wall_tiles.a_tap"), kind: "choice", default: "toggle", choices: [["toggle", t("wall_tiles.tap_switches_it")], ["none", t("wall_tiles.tap_does_nothing")]] },
     ],
   },
   {
     type: "weather",
-    label: "Weather",
+    label: t("wall_tiles.weather"),
     icon: "weather-partly-cloudy",
-    blurb: "The weather now.",
+    blurb: t("wall_tiles.the_weather_now"),
     defaultW: 4,
     defaultH: 2,
-    options: [{ key: "entity_id", label: "Weather", kind: "entity", default: "", domains: ["weather"] }],
+    options: [{ key: "entity_id", label: t("wall_tiles.weather"), kind: "entity", default: "", domains: ["weather"] }],
   },
   {
     type: "calendar",
-    label: "Calendar",
+    label: t("wall_tile_calendar.calendar"),
     icon: "calendar-month-outline",
-    blurb: "The next events.",
+    blurb: t("wall_tiles.the_next_events"),
     defaultW: 6,
     defaultH: 4,
     options: [
-      { key: "entity_id", label: "Calendar", kind: "entity", default: "", domains: ["calendar"] },
-      { key: "count", label: "How many to show", kind: "int", default: 4, min: 1, max: 10 },
+      { key: "entity_id", label: t("wall_tile_calendar.calendar"), kind: "entity", default: "", domains: ["calendar"] },
+      { key: "count", label: t("wall_tiles.how_many_to_show"), kind: "int", default: 4, min: 1, max: 10 },
     ],
   },
   {
     type: "camera",
-    label: "Camera",
+    label: t("picture.camera"),
     icon: "camera-outline",
-    blurb: "A picture from a camera.",
+    blurb: t("wall_tiles.a_picture_from_a_camera"),
     defaultW: 6,
     defaultH: 4,
     options: [
-      { key: "entity_id", label: "Camera", kind: "entity", default: "", domains: ["camera"] },
-      { key: "refresh_s", label: "New picture every (seconds)", kind: "int", default: 10, min: 5, max: 300 },
+      { key: "entity_id", label: t("picture.camera"), kind: "entity", default: "", domains: ["camera"] },
+      { key: "refresh_s", label: t("wall_tiles.new_picture_every_seconds"), kind: "int", default: 10, min: 5, max: 300 },
     ],
   },
   {
     type: "note",
-    label: "Note",
+    label: t("wall_tiles.note"),
     icon: "note-text-outline",
-    blurb: "Some words you write.",
+    blurb: t("wall_tiles.some_words_you_write"),
     defaultW: 4,
     defaultH: 2,
     options: [
-      { key: "text", label: "Text", kind: "text", default: "", long: true },
-      { key: "big", label: "Big letters", kind: "bool", default: false },
+      { key: "text", label: t("wall_tiles.text"), kind: "text", default: "", long: true },
+      { key: "big", label: t("wall_tiles.big_letters"), kind: "bool", default: false },
     ],
   },
 ];
@@ -128,7 +129,7 @@ export const TILE_DEFS: TileDef[] = [
 const TILE_MIN_SIZE: Record<string, [number, number]> = { due_now: [3, 2] };
 
 export function tileDef(type: string): TileDef | undefined {
-  return TILE_DEFS.find((d) => d.type === type);
+  return TILE_DEFS().find((d) => d.type === type);
 }
 
 /**

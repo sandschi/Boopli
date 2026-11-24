@@ -3,15 +3,16 @@ import { icon } from "./icon";
 import { friendlyName, hexToRgb, lightHasColor, phoneName, rgbToHex } from "./helpers";
 import { sharedStyles } from "./styles";
 import type { ExtraSound, Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
+import { t } from "./i18n";
 
 const GAP_MIN = 1;
 const GAP_MAX = 720;
 
-const PHONE_CHOICES: { value: PhoneLevel; label: string }[] = [
-  { value: "normal", label: "Normal notification" },
-  { value: "high", label: "High priority (pops up)" },
-  { value: "alarm", label: "Alarm volume" },
-  { value: "alarm_max", label: "Max volume" },
+const PHONE_CHOICES = (): { value: PhoneLevel; label: string }[] => [
+  { value: "normal", label: t("common.normal_notification") },
+  { value: "high", label: t("common.high_priority_pops_up") },
+  { value: "alarm", label: t("common.alarm_volume") },
+  { value: "alarm_max", label: t("rung.max_volume") },
 ];
 
 /** What a ladder can pick for a speaker: only what is set up (levels that are switched on, its extra sounds). */
@@ -20,15 +21,15 @@ export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { val
   // A ding and an alarm are always on offer; speaking needs somewhere to speak (set on the speaker).
   const alexa = sp.speech?.route !== "tts";
   const plays = (t?: { sound: string; kind: string }) => !!t?.sound && (t.kind !== "alexa" || alexa); // an Amazon sound needs an Alexa speaker
-  if (plays(sp.cue)) out.push({ value: "cue", label: "A ding" });
+  if (plays(sp.cue)) out.push({ value: "cue", label: t("rung.a_ding") });
   // your own sounds: a file plays on any speaker, an Alexa sound only on an Alexa one
   for (const x of sounds) if (x.sound && (x.kind !== "alexa" || alexa)) out.push({ value: `sound:${x.id}`, label: x.name });
   if (sp.speech?.target) {
-    out.push({ value: "speech", label: "Speaks" });
+    out.push({ value: "speech", label: t("rung.speaks") });
     // An announcement (starts with a chime) is something Alexa Media Player does.
-    if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: "Speaks with chime" });
+    if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: t("rung.speaks_with_chime") });
   }
-  if (plays(sp.alarm)) out.push({ value: "alarm", label: "Alarm" });
+  if (plays(sp.alarm)) out.push({ value: "alarm", label: t("rung.alarm") });
   return out;
 }
 
@@ -124,21 +125,21 @@ export class BoopliRung extends LitElement {
     return html`
       ${this.gap && this.index > 0
         ? html`<label class="gap">
-            Wait
+            ${t("rung.wait")}
             <input
               type="number"
               min=${GAP_MIN}
               max=${GAP_MAX}
               .value=${String(r.gap)}
-              aria-label="Minutes before nudge ${n}"
+              aria-label=${t("ladders.minutes_before_nudge", { n })}
               @change=${(e: Event) => this._setGap(e.target as HTMLInputElement)}
             />
-            minutes after the previous nudge
+            ${t("rung.minutes_after_the_previous_nudge")}
           </label>`
         : nothing}
       ${none
         ? html`<p class="muted small">
-            Set up a phone, light, speaker or alarm device in Settings first. They show up here.
+            ${t("rung.set_up_a_phone_light_speaker")}
           </p>`
         : nothing}
       <div class="devs">
@@ -146,11 +147,11 @@ export class BoopliRung extends LitElement {
           (p) => html`<label class="dev">
             <span>${icon("cellphone")} ${phoneName(p.service)}</span>
             <select
-              aria-label="${phoneName(p.service)} at nudge ${n}"
+              aria-label=${t("rung.at_nudge", { phone: phoneName(p.service), n  })}
               @change=${(e: Event) => this._setPhone(p.service, (e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!r.phones[p.service]}>Off</option>
-              ${PHONE_CHOICES.map(
+              <option value="" ?selected=${!r.phones[p.service]}>${t("rung.off")}</option>
+              ${PHONE_CHOICES().map(
                 (c) => html`<option value=${c.value} ?selected=${r.phones[p.service] === c.value}>${c.label}</option>`
               )}
             </select>
@@ -163,27 +164,27 @@ export class BoopliRung extends LitElement {
             <label class="dev">
               <span>${icon("lightbulb-outline")} ${name}</span>
               <select
-                aria-label="${name} at nudge ${n}"
+                aria-label=${t("rung.at_nudge_2", { name, n })}
                 @change=${(e: Event) => this._setLight(light.entity_id, (e.target as HTMLSelectElement).value)}
               >
-                <option value="" ?selected=${!use}>Off</option>
-                <option value="blink" ?selected=${use?.mode === "blink"}>Blink</option>
-                <option value="indicator" ?selected=${use?.mode === "indicator"}>Status light (stays on until you answer)</option>
-                <option value="own" ?selected=${use?.mode === ""}>As set for the light</option>
+                <option value="" ?selected=${!use}>${t("rung.off")}</option>
+                <option value="blink" ?selected=${use?.mode === "blink"}>${t("rung.blink")}</option>
+                <option value="indicator" ?selected=${use?.mode === "indicator"}>${t("rung.status_light_stays_on_until_you")}</option>
+                <option value="own" ?selected=${use?.mode === ""}>${t("rung.as_set_for_the_light")}</option>
               </select>
             </label>
             ${use && lightHasColor(this.hass, light.entity_id)
               ? html`<div class="dev colorrow">
-                  <span>Color</span>
+                  <span>${t("settings.color")}</span>
                   <input
                     type="color"
                     class="swatch"
-                    aria-label="${name} color at nudge ${n}"
+                    aria-label=${t("rung.color_at_nudge", { name, n })}
                     .value=${rgbToHex(use.color ?? light.color)}
                     @input=${(e: Event) => this._setLightColor(light.entity_id, hexToRgb((e.target as HTMLInputElement).value))}
                   />
                   <button type="button" class="chip" ?disabled=${!use.color} @click=${() => this._setLightColor(light.entity_id, null)}>
-                    Use the normal color
+                    ${t("rung.use_the_normal_color")}
                   </button>
                 </div>`
               : nothing}
@@ -196,14 +197,14 @@ export class BoopliRung extends LitElement {
           return html`<label class="dev">
             <span>${icon("volume-high")} ${name}</span>
             <select
-              aria-label="${name} at nudge ${n}"
+              aria-label=${t("rung.at_nudge_2", { name, n })}
               ?disabled=${!choices.length && !current}
               @change=${(e: Event) => this._setSpeaker(sp.entity_id, (e.target as HTMLSelectElement).value)}
             >
-              <option value="" ?selected=${!current}>${choices.length ? "Off" : "No sound set up"}</option>
+              <option value="" ?selected=${!current}>${choices.length ? t("rung.off") : t("rung.no_sound_set_up")}</option>
               ${choices.map((c) => html`<option value=${c.value} ?selected=${current === c.value}>${c.label}</option>`)}
               ${current && !choices.some((c) => c.value === current)
-                ? html`<option value=${current} selected>(not available any more)</option>`
+                ? html`<option value=${current} selected>${t("rung.not_available_any_more")}</option>`
                 : nothing}
             </select>
           </label>`;

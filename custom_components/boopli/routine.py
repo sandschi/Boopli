@@ -18,6 +18,8 @@ from urllib.parse import urlparse
 
 import aiohttp
 
+from .errors import BoopliError, Msg
+
 _LOGGER = logging.getLogger(__name__)
 
 # The routine API is a research preview: the beta header is part of the contract.
@@ -34,7 +36,7 @@ MAX_TEXT = 60_000  # what goes into one fire
 TOKEN_MIN, TOKEN_MAX = 20, 400
 
 
-class RoutineError(Exception):
+class RoutineError(BoopliError):
     """A problem with the routine; the message is plain words for the user."""
 
 
@@ -45,8 +47,9 @@ def clean_fire_url(value: str) -> str:
         return ""
     if not url.startswith(FIRE_URL_PREFIX) or not url.endswith(FIRE_URL_SUFFIX):
         raise RoutineError(
-            "That is not a routine fire address. It looks like "
-            f"{FIRE_URL_PREFIX}trig_…{FIRE_URL_SUFFIX}"
+            "That is not a routine fire address. It looks like {prefix}trig_…{suffix}",
+            prefix=FIRE_URL_PREFIX,
+            suffix=FIRE_URL_SUFFIX,
         )
     middle = url[len(FIRE_URL_PREFIX) : -len(FIRE_URL_SUFFIX)]
     if not middle or "/" in middle or " " in middle or "?" in middle:
@@ -108,8 +111,7 @@ class FireCounter:
         if len(self.times) >= self.limit:
             wait = max(1, int((self.times[0] + 3600 - now) // 60) + 1)
             raise RoutineError(
-                f"Boopli already asked Claude {self.limit} times this hour. "
-                f"Try again in about {wait} minutes."
+                "Boopli already asked Claude {limit} times this hour. Try again in about {wait} minutes.", limit=self.limit, wait=wait
             )
         self.times.append(now)
 
@@ -185,7 +187,7 @@ def _explain(status: int) -> str:
         return "Claude did not accept the request. Check that the routine is switched on."
     if status >= 500:
         return "Claude is having trouble right now. Try again in a few minutes."
-    return f"Claude answered with an error ({status})."
+    return Msg("Claude answered with an error ({status}).", status=status)
 
 
 async def fire(
@@ -222,5 +224,5 @@ async def wait_for_answer(future: asyncio.Future[Any], seconds: float | None = N
     except TimeoutError as err:
         minutes = max(1, round(seconds / 60))
         raise RoutineError(
-            f"Claude did not send an answer within {minutes} minutes. Try again."
+            "Claude did not send an answer within {minutes} minutes. Try again.", minutes=minutes
         ) from err

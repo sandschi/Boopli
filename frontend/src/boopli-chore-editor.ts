@@ -11,25 +11,26 @@ import "./boopli-schedule-wizard";
 import "./boopli-breakdown";
 import type { BreakdownResult } from "./boopli-breakdown";
 import type { ChoreDraft, Hass, NudgeStyle, Repeat, RepeatType, Snapshot, StepSize, Trigger } from "./types";
+import { t, rich } from "./i18n";
 
 const MAX_QUESTIONS = 8; // the same as in the integration
 
-const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
-  { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
+const STYLE_OPTIONS = (): { value: NudgeStyle; label: string }[] => [
+  { value: "quiet", label: t("chore_editor.quiet_only_shown_in_boopli_no") },
 ];
 
-const WAIT_PRESETS: { minutes: number; label: string }[] = [
-  { minutes: 0, label: "No wait" },
-  { minutes: 15, label: "15 min" },
-  { minutes: 30, label: "30 min" },
-  { minutes: 60, label: "1 h" },
-  { minutes: 180, label: "3 h" },
+const WAIT_PRESETS = (): { minutes: number; label: string }[] => [
+  { minutes: 0, label: t("chore_editor.no_wait") },
+  { minutes: 15, label: t("chore_editor.wait_min", { n: 15 }) },
+  { minutes: 30, label: t("chore_editor.wait_min", { n: 30 }) },
+  { minutes: 60, label: t("chore_editor.wait_h", { n: 1 }) },
+  { minutes: 180, label: t("chore_editor.wait_h", { n: 3 }) },
 ];
 
-const REPEAT_OPTIONS: { value: RepeatType; label: string }[] = [
-  { value: "none", label: "On demand (I start it)" },
-  { value: "schedule", label: "On certain days and times" },
-  { value: "every_n_days", label: "Every N days after I finish" },
+const REPEAT_OPTIONS = (): { value: RepeatType; label: string }[] => [
+  { value: "none", label: t("chore_editor.on_demand_i_start_it") },
+  { value: "schedule", label: t("common.on_certain_days_and_times") },
+  { value: "every_n_days", label: t("chore_editor.every_n_days_after_i_finish") },
 ];
 
 const ALL_DAYS_AT_NINE: Record<string, string[]> = Object.fromEntries(
@@ -212,7 +213,7 @@ export class BoopliChoreEditor extends LitElement {
 
   private _openSuggest(): void {
     if (!this.draft.name.trim()) {
-      this._error = "Give the chore a name first, so the AI knows what to split up.";
+      this._error = t("chore_editor.give_the_chore_a_name_first");
       return;
     }
     this._error = "";
@@ -274,7 +275,7 @@ export class BoopliChoreEditor extends LitElement {
     const r = this.draft.repeat;
     return html`
       <div class="field">
-        <label for="repeat">Repeats</label>
+        <label for="repeat">${t("chore_editor.repeats")}</label>
         <select
           id="repeat"
           .value=${r.type}
@@ -285,14 +286,14 @@ export class BoopliChoreEditor extends LitElement {
             this._updateRepeat({ type, days });
           }}
         >
-          ${REPEAT_OPTIONS.map(
+          ${REPEAT_OPTIONS().map(
             (o) => html`<option value=${o.value} ?selected=${o.value === r.type}>${o.label}</option>`
           )}
         </select>
       </div>
       ${r.type === "schedule"
         ? html`<div class="field">
-            <label>Each day has its own times. Untick a day that has none.</label>
+            <label>${t("chore_editor.each_day_has_its_own_times")}</label>
             <boopli-schedule-days
               .days=${r.days}
               @days-change=${(e: CustomEvent<Record<string, string[]>>) => this._updateRepeat({ days: e.detail })}
@@ -302,7 +303,7 @@ export class BoopliChoreEditor extends LitElement {
         : nothing}
       ${r.type === "every_n_days"
         ? html`<div class="field">
-              <label for="n">Number of days</label>
+              <label for="n">${t("chore_editor.number_of_days")}</label>
               <input
                 id="n"
                 type="number"
@@ -314,7 +315,7 @@ export class BoopliChoreEditor extends LitElement {
               />
             </div>
             <div class="field">
-              <label for="time">At</label>
+              <label for="time">${t("chore_editor.at")}</label>
               <input
                 id="time"
                 type="time"
@@ -324,7 +325,7 @@ export class BoopliChoreEditor extends LitElement {
             </div>`
         : nothing}
       <div class="field">
-        <button type="button" @click=${() => (this._sched = "inline")}>Set the schedule step by step</button>
+        <button type="button" @click=${() => (this._sched = "inline")}>${t("chore_editor.set_the_schedule_step_by_step")}</button>
       </div>
     `;
   }
@@ -337,62 +338,62 @@ export class BoopliChoreEditor extends LitElement {
         <div class="step-head">
           <span class="num">${index + 1}</span>
           <input
-            aria-label="Step ${index + 1} title"
-            placeholder="What to do"
+            aria-label=${t("chore_editor.step_title", { n: index + 1 })}
+            placeholder=${t("chore_editor.what_to_do")}
             .value=${step.title}
             @input=${(e: Event) =>
               this._updateStep(index, { title: (e.target as HTMLInputElement).value })}
           />
-          <span class="sizes" role="group" aria-label="Size of step ${index + 1}">
+          <span class="sizes" role="group" aria-label=${t("chore_editor.size_of_step", { n: index + 1 })}>
             ${(["small", "medium", "big"] as StepSize[]).map(
               (z) => html`<button
                 type="button"
                 class="chip size ${(step.size ?? "small") === z ? "on" : ""}"
-                title="${z === "small" ? "Small: 10 XP" : z === "medium" ? "Medium: 15 XP" : "Big: 20 XP"}"
+                title="${z === "small" ? t("chore_editor.small_10_xp") : z === "medium" ? t("chore_editor.medium_15_xp") : t("chore_editor.big_20_xp")}"
                 aria-pressed=${(step.size ?? "small") === z}
                 @click=${() => this._updateStep(index, { size: z })}
               >
-                ${z === "small" ? "S" : z === "medium" ? "M" : "B"}
+                ${z === "small" ? t("breakdown.letter_small") : z === "medium" ? t("breakdown.letter_medium") : t("breakdown.letter_big")}
               </button>`
             )}
           </span>
-          <button type="button" aria-label="Move up" ?disabled=${index === 0} @click=${() => this._moveStep(index, -1)}>↑</button>
-          <button type="button" aria-label="Move down" ?disabled=${index === last} @click=${() => this._moveStep(index, 1)}>↓</button>
-          <button type="button" aria-label="Remove step" ?disabled=${last === 0} @click=${() => this._removeStep(index)}>✕</button>
+          <button type="button" aria-label=${t("ladders.move_up")} ?disabled=${index === 0} @click=${() => this._moveStep(index, -1)}>↑</button>
+          <button type="button" aria-label=${t("ladders.move_down")} ?disabled=${index === last} @click=${() => this._moveStep(index, 1)}>↓</button>
+          <button type="button" aria-label=${t("chore_editor.remove_step")} ?disabled=${last === 0} @click=${() => this._removeStep(index)}>✕</button>
         </div>
         <div class="part">
-          <label class="muted small" for="part-${index}">Part of the task (optional):</label>
+          <label class="muted small" for="part-${index}">${t("chore_editor.part_of_the_task_optional")}</label>
           <input
             id="part-${index}"
             class="part-input"
             list="parts-list"
             maxlength="40"
-            placeholder="For example: Desk"
+            placeholder=${t("chore_editor.for_example_desk")}
             .value=${step.group ?? ""}
             @input=${(e: Event) => this._updateStep(index, { group: (e.target as HTMLInputElement).value })}
           />
         </div>
         ${(this.draft.questions ?? []).length
           ? html`<div class="part">
-              <label class="muted small" for="only-if-${index}">Only if:</label>
+              <label class="muted small" for="only-if-${index}">${t("chore_editor.only_if")}</label>
               <select
                 id="only-if-${index}"
                 class="part-input"
                 @change=${(e: Event) => this._updateStep(index, { only_if: (e.target as HTMLSelectElement).value })}
               >
-                <option value="" ?selected=${!step.only_if}>Always there</option>
+                <option value="" ?selected=${!step.only_if}>${t("common.always_there")}</option>
                 ${(this.draft.questions ?? []).map(
-                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${q.text || "(question without words)"} → yes</option>`
+                  (q) => html`<option value=${q.id} ?selected=${step.only_if === q.id}>${t("chore_editor.yes", { value: q.text || t("chore_editor.question_without_words") })}</option>`
                 )}
               </select>
             </div>`
           : nothing}
         <div class="wait">
           <span class="muted small">
-            ${(step.wait_for ?? []).length > 0 ? "Longest it waits (0 = as long as it takes):" : "Wait before this step:"}
+            ${(step.wait_for ?? []).length > 0 ? t("chore_editor.longest_it_waits_0_as_long") : t("chore_editor.wait_before_this_step")}
           </span>
           <div class="chips">
-            ${WAIT_PRESETS.map(
+            ${WAIT_PRESETS().map(
               (p) => html`<button
                 type="button"
                 class="chip ${step.wait_minutes === p.minutes ? "on" : ""}"
@@ -403,7 +404,7 @@ export class BoopliChoreEditor extends LitElement {
             )}
             <span class="custom">
               <input
-                aria-label="Custom wait in minutes"
+                aria-label=${t("chore_editor.custom_wait_in_minutes")}
                 type="number"
                 min="0"
                 max="10080"
@@ -413,20 +414,19 @@ export class BoopliChoreEditor extends LitElement {
                     wait_minutes: Math.max(0, Number((e.target as HTMLInputElement).value) || 0),
                   })}
               />
-              <span class="muted small">min</span>
+              <span class="muted small">${t("chore_editor.min")}</span>
             </span>
           </div>
         </div>
         <details class="auto" ?open=${(step.wait_for ?? []).length > 0}>
           <summary>
-            Wait until this happens…
+            ${t("chore_editor.wait_until_this_happens")}
             ${(step.wait_for ?? []).length > 0
-              ? html`<span class="muted small">(${(step.wait_for ?? []).length} set)</span>`
+              ? html`<span class="muted small">${t("chore_editor.n_set", { n: (step.wait_for ?? []).length })}</span>`
               : nothing}
           </summary>
           <p class="muted small">
-            The step stays quiet, with no nudges, until one of these happens, for example your washing machine's
-            "cycle finished" event. Then it is your turn. The minutes above become the longest it waits.
+            ${t("chore_editor.the_step_stays_quiet_with_no")}
           </p>
           <boopli-triggers
             .hass=${this.hass}
@@ -437,8 +437,8 @@ export class BoopliChoreEditor extends LitElement {
         </details>
         <details class="auto" ?open=${!!step.image}>
           <summary>
-            ${icon("camera-outline")} Picture…
-            ${step.image ? html`<span class="muted small">(set)</span>` : nothing}
+            ${icon("camera-outline")} ${t("chore_editor.picture")}
+            ${step.image ? html`<span class="muted small">${t("chore_editor.set")}</span>` : nothing}
           </summary>
           <boopli-picture
             .hass=${this.hass}
@@ -448,9 +448,9 @@ export class BoopliChoreEditor extends LitElement {
         </details>
         <details class="auto" ?open=${(step.triggers ?? []).length > 0}>
           <summary>
-            Finishes by itself when…
+            ${t("chore_editor.finishes_by_itself_when")}
             ${(step.triggers ?? []).length > 0
-              ? html`<span class="muted small">(${(step.triggers ?? []).length} set)</span>`
+              ? html`<span class="muted small">${t("chore_editor.n_set", { n: (step.triggers ?? []).length })}</span>`
               : nothing}
           </summary>
           <boopli-triggers
@@ -494,39 +494,39 @@ export class BoopliChoreEditor extends LitElement {
     return html`
       <section class="card ${this._isDirty() ? "changed" : ""}">
         <h2>
-          ${d.id ? "Edit chore" : "New chore"}
-          ${this._isDirty() ? html`<span class="unsaved-badge">Unsaved</span>` : nothing}
+          ${d.id ? t("chore_editor.edit_chore") : t("chores.new_chore")}
+          ${this._isDirty() ? html`<span class="unsaved-badge">${t("settings.unsaved")}</span>` : nothing}
         </h2>
 
         <div class="editor-grid">
         <div class="col-a">
         <div class="field">
-          <label for="name">Name</label>
+          <label for="name">${t("common.name")}</label>
           <input
             id="name"
-            placeholder="For example: Dishwasher"
+            placeholder=${t("chore_editor.for_example_dishwasher")}
             .value=${d.name}
             @input=${(e: Event) => this._update({ name: (e.target as HTMLInputElement).value })}
           />
         </div>
 
         <div class="field">
-          <label for="where">Where does it make sense?</label>
+          <label for="where">${t("chore_editor.where_does_it_make_sense")}</label>
           <select
             id="where"
             .value=${d.where}
             @change=${(e: Event) =>
               this._update({ where: (e.target as HTMLSelectElement).value as ChoreDraft["where"] })}
           >
-            <option value="home" ?selected=${d.where === "home"}>Home only</option>
-            <option value="anywhere" ?selected=${d.where === "anywhere"}>Anywhere (for example pills)</option>
+            <option value="home" ?selected=${d.where === "home"}>${t("chore_editor.home_only")}</option>
+            <option value="anywhere" ?selected=${d.where === "anywhere"}>${t("chore_editor.anywhere_for_example_pills")}</option>
           </select>
         </div>
 
         ${this._renderRepeat()}
 
         <div class="field">
-          <label for="style">How should Boopli nudge you?</label>
+          <label for="style">${t("chore_editor.how_should_boopli_nudge_you")}</label>
           <select
             id="style"
             .value=${normalizeStyle(d.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
@@ -534,10 +534,10 @@ export class BoopliChoreEditor extends LitElement {
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
             ${[
-              ...STYLE_OPTIONS,
+              ...STYLE_OPTIONS(),
               ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
                 value: `ladder:${l.id}` as NudgeStyle,
-                label: l.id.startsWith("standard_") ? l.name : `${l.name}: my own ladder`,
+                label: l.id.startsWith("standard_") ? l.name : t("chore_editor.my_own_ladder", { name: l.name }),
               })),
             ].map(
               (o) => html`<option
@@ -549,13 +549,13 @@ export class BoopliChoreEditor extends LitElement {
             )}
             ${(d.nudge_style ?? this.defaultStyle).startsWith("ladder:") &&
             !(this.snapshot?.settings?.ladders ?? []).some((l) => `ladder:${l.id}` === (d.nudge_style ?? this.defaultStyle))
-              ? html`<option value=${d.nudge_style ?? this.defaultStyle} selected>A ladder that is gone</option>`
+              ? html`<option value=${d.nudge_style ?? this.defaultStyle} selected>${t("chore_editor.a_ladder_that_is_gone")}</option>`
               : nothing}
           </select>
         </div>
         ${(this.snapshot?.settings?.lights ?? []).some((l) => lightHasColor(this.hass, l.entity_id))
           ? html`<div class="field">
-          <label for="lightcolor">Light color for this chore (optional)</label>
+          <label for="lightcolor">${t("chore_editor.light_color_for_this_chore_optional")}</label>
           <div class="colorrow">
             <input
               id="lightcolor"
@@ -565,12 +565,11 @@ export class BoopliChoreEditor extends LitElement {
               @input=${(e: Event) => this._update({ light_color: hexToRgb((e.target as HTMLInputElement).value) })}
             />
             <button type="button" class="chip" ?disabled=${!d.light_color} @click=${() => this._update({ light_color: undefined })}>
-              Use the lights' own color
+              ${t("chore_editor.use_the_lights_own_color")}
             </button>
           </div>
           <div class="muted small">
-            A status light can mean something: pills red, laundry blue. This color wins over the colors set in ladders.
-            Without one, the nudge's or the light's own color is used. Lights that cannot show colors ignore it.
+            ${t("chore_editor.a_status_light_can_mean_something")}
           </div>
         </div>`
           : nothing}
@@ -582,7 +581,7 @@ export class BoopliChoreEditor extends LitElement {
               @change=${(e: Event) =>
                 this._update({ ignore_quiet_hours: (e.target as HTMLInputElement).checked })}
             />
-            Nudge even in quiet hours (for example pills)
+            ${t("chore_editor.nudge_even_in_quiet_hours_for")}
           </label>
         </div>
         <div class="field check">
@@ -592,7 +591,7 @@ export class BoopliChoreEditor extends LitElement {
               .checked=${d.keeps_going ?? false}
               @change=${(e: Event) => this._update({ keeps_going: (e.target as HTMLInputElement).checked })}
             />
-            Keeps going while I'm away (for example pills)
+            ${t("chore_editor.keeps_going_while_im_away_for")}
           </label>
         </div>
 
@@ -600,32 +599,31 @@ export class BoopliChoreEditor extends LitElement {
         <div class="col-b">
         <details class="auto questions" ?open=${(d.questions ?? []).length > 0}>
           <summary>
-            Questions before starting…
+            ${t("chore_editor.questions_before_starting")}
             ${(d.questions ?? []).length > 0
               ? html`<span class="muted small">(${(d.questions ?? []).length})</span>`
               : nothing}
           </summary>
           <p class="muted small">
-            Asked every time you start this chore, because things look different each time. A step you link to a
-            question is only in the list when you answer yes.
+            ${t("chore_editor.asked_every_time_you_start_this")}
           </p>
           ${(d.questions ?? []).map(
             (q) => html`<div class="question">
               <input
-                aria-label="Question"
+                aria-label=${t("chore_editor.question")}
                 maxlength="120"
-                placeholder="Does the table need decluttering?"
+                placeholder=${t("chore_editor.does_the_table_need_decluttering")}
                 .value=${q.text}
                 @input=${(e: Event) => this._setQuestion(q.id, (e.target as HTMLInputElement).value)}
               />
-              <button type="button" aria-label="Remove this question" @click=${() => this._removeQuestion(q.id)}>✕</button>
+              <button type="button" aria-label=${t("chore_editor.remove_this_question")} @click=${() => this._removeQuestion(q.id)}>✕</button>
             </div>`
           )}
           <button type="button" ?disabled=${(d.questions ?? []).length >= MAX_QUESTIONS} @click=${() => this._addQuestion()}>
-            + Add a question
+            ${t("chore_editor.add_a_question")}
           </button>
         </details>
-        <h3 class="steps-title">Steps</h3>
+        <h3 class="steps-title">${t("common.steps")}</h3>
         <datalist id="parts-list">
           ${[...new Set(d.steps.map((s) => (s.group ?? "").trim()).filter(Boolean))].map(
             (g) => html`<option value=${g}></option>`
@@ -633,8 +631,8 @@ export class BoopliChoreEditor extends LitElement {
         </datalist>
         ${d.steps.map((_, i) => this._renderStep(i))}
         <div class="step-buttons">
-          <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
-          <button type="button" @click=${() => this._openSuggest()}>${icon("auto-fix")} Suggest steps with AI</button>
+          <button type="button" @click=${() => this._addStep()}>${t("breakdown.add_a_step")}</button>
+          <button type="button" @click=${() => this._openSuggest()}>${icon("auto-fix")} ${t("chore_editor.suggest_steps_with_ai")}</button>
         </div>
         </div>
         </div>
@@ -642,23 +640,23 @@ export class BoopliChoreEditor extends LitElement {
         ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
 
         <div class="actions">
-          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-          <button ?disabled=${this._busy} @click=${() => this._close()}>Cancel</button>
+          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+          <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.cancel")}</button>
           ${d.id
             ? this._confirmDelete
-              ? html`<span class="muted small">Delete it, and anything in progress?</span>
-                  <button class="danger" ?disabled=${this._busy} @click=${() => this._delete()}>Yes, delete</button>
-                  <button @click=${() => (this._confirmDelete = false)}>No</button>`
-              : html`<button class="danger" @click=${() => (this._confirmDelete = true)}>Delete</button>`
+              ? html`<span class="muted small">${t("chore_editor.delete_it_and_anything_in_progress")}</span>
+                  <button class="danger" ?disabled=${this._busy} @click=${() => this._delete()}>${t("chore_editor.yes_delete")}</button>
+                  <button @click=${() => (this._confirmDelete = false)}>${t("chore_editor.no")}</button>`
+              : html`<button class="danger" @click=${() => (this._confirmDelete = true)}>${t("chore_editor.delete")}</button>`
             : nothing}
         </div>
       </section>
       ${this._isDirty()
         ? html`<div class="savebar" role="status">
-            <span><b>●</b> You have unsaved changes</span>
+            <span>${rich("chore_editor.you_have_unsaved_changes")}</span>
             <span class="spacer"></span>
-            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>Save</button>
-            <button ?disabled=${this._busy} @click=${() => this._close()}>Discard</button>
+            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+            <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.discard")}</button>
           </div>`
         : nothing}
     `;

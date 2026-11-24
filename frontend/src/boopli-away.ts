@@ -4,6 +4,7 @@ import { sharedStyles } from "./styles";
 import { icon } from "./icon";
 import { dayKey, describeWhen } from "./time";
 import type { Away, Hass, Snapshot } from "./types";
+import { t } from "./i18n";
 
 /**
  * A date and time for a date picker ("YYYY-MM-DDTHH:MM"), `days` from today at `hour`:00.
@@ -36,9 +37,9 @@ function pickValue(iso: string, tz: string): string {
 
 /** One line for banners: "until Sun 29 Nov, 18:00", "from Sat 28 Nov, 08:00 until …" or "until you turn it off". */
 export function awayWhen(away: Away, nowMs: number, tz: string, onNow: boolean): string {
-  const until = away.until ? `until ${describeWhen(away.until, nowMs, tz)}` : "until you turn it off";
+  const until = away.until ? t("away.until_2", { when: describeWhen(away.until, nowMs, tz) }) : t("away.until_you_turn_it_off");
   if (onNow || !away.start) return until;
-  return `from ${describeWhen(away.start, nowMs, tz)} ${until}`;
+  return t("away.from_2", { when: describeWhen(away.start, nowMs, tz), until  });
 }
 
 /**
@@ -75,6 +76,11 @@ export class BoopliAway extends LitElement {
   declare _busy: boolean;
   declare _error: string;
   private _seeded = false;
+
+  /** The form to change away mode is open: its edits are not saved anywhere else. */
+  get editing(): boolean {
+    return this._changing;
+  }
 
   constructor() {
     super();
@@ -164,15 +170,15 @@ export class BoopliAway extends LitElement {
       <p>${awayWhen(away, this.nowMs, tz, onNow)}</p>
       <p class="muted small">
         ${onNow
-          ? "Nothing starts and nothing nudges you, except the chores that keep going."
-          : "Boopli carries on as usual until then."}
+          ? t("common.nothing_starts_and_nothing_nudges_you")
+          : t("common.boopli_carries_on_as_usual_until")}
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-          ${onNow ? "Back now" : "Cancel it"}
+          ${onNow ? t("common.back_now") : t("common.cancel_it")}
         </button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._change(away)}>Change</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._change(away)}>${t("away.change")}</button>
       </div>
     `;
   }
@@ -181,20 +187,19 @@ export class BoopliAway extends LitElement {
     const chores = this._chores();
     return html`
       <p class="muted small">
-        Boopli rests: nothing starts and nothing nudges you, except the chores you tick below. Your pet stays just as
-        it is, and when you are back it carries on from there.
+        ${t("away.boopli_rests_nothing_starts_and_nothing")}
       </p>
 
       <div class="field">
-        <div class="label">From</div>
+        <div class="label">${t("away.from")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._later ? "" : "on"}" @click=${() => (this._later = false)}>Now</button>
-          <button type="button" class="chip ${this._later ? "on" : ""}" @click=${() => (this._later = true)}>A date…</button>
+          <button type="button" class="chip ${this._later ? "" : "on"}" @click=${() => (this._later = false)}>${t("away.now")}</button>
+          <button type="button" class="chip ${this._later ? "on" : ""}" @click=${() => (this._later = true)}>${t("away.a_date")}</button>
         </div>
         ${this._later
           ? html`<input
               type="datetime-local"
-              aria-label="Away from"
+              aria-label=${t("away.away_from")}
               .value=${this._start}
               @input=${(e: Event) => (this._start = (e.target as HTMLInputElement).value)}
             />`
@@ -202,18 +207,18 @@ export class BoopliAway extends LitElement {
       </div>
 
       <div class="field">
-        <div class="label">Until</div>
+        <div class="label">${t("away.until")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => (this._open = false)}>A date…</button>
+          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => (this._open = false)}>${t("away.a_date")}</button>
           <button type="button" class="chip ${this._open ? "on" : ""}" @click=${() => (this._open = true)}>
-            Until I turn it off
+            ${t("away.until_i_turn_it_off")}
           </button>
         </div>
         ${this._open
           ? nothing
           : html`<input
               type="datetime-local"
-              aria-label="Away until"
+              aria-label=${t("away.away_until")}
               .value=${this._until}
               @input=${(e: Event) => (this._until = (e.target as HTMLInputElement).value)}
             />`}
@@ -221,8 +226,8 @@ export class BoopliAway extends LitElement {
 
       ${chores.length
         ? html`<div class="field">
-            <div class="label">These keep going while I'm away</div>
-            <div class="muted small">Tick what you still want to be nudged about, like pills.</div>
+            <div class="label">${t("away.these_keep_going_while_im_away")}</div>
+            <div class="muted small">${t("away.tick_what_you_still_want_to")}</div>
             <div class="keep">
               ${chores.map(
                 (c) => html`<label class="inline">
@@ -241,10 +246,10 @@ export class BoopliAway extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._submit()}>
-          ${away?.active ? "Save away mode" : "Start away mode"}
+          ${away?.active ? t("away.save_away_mode") : t("away.start_away_mode")}
         </button>
         ${away?.active
-          ? html`<button type="button" class="link" @click=${() => (this._changing = false)}>Cancel</button>`
+          ? html`<button type="button" class="link" @click=${() => (this._changing = false)}>${t("common.cancel")}</button>`
           : nothing}
       </div>
     `;
@@ -256,18 +261,18 @@ export class BoopliAway extends LitElement {
     const onNow = !!this.snapshot?.away_now;
     const open = this._expanded || this._changing;
     const status = away?.active
-      ? `${onNow ? "On" : "Planned"}: ${awayWhen(away, this.nowMs, tz, onNow)}`
-      : "Off";
+      ? `${onNow ? t("away.on") : t("away.planned")}: ${awayWhen(away, this.nowMs, tz, onNow)}`
+      : t("rung.off");
     return html`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${open} @click=${() => this._toggle()}>
-          <span class="title">${icon("bag-suitcase")} Away mode</span>
+          <span class="title">${icon("bag-suitcase")} ${t("away.away_mode")}</span>
           <span class="status ${away?.active ? "on" : ""}">${status}</span>
           <span class="chev" aria-hidden="true">${open ? "▾" : "▸"}</span>
         </button>
         ${away?.active && !open
           ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-              ${onNow ? "Back now" : "Cancel it"}
+              ${onNow ? t("common.back_now") : t("common.cancel_it")}
             </button>`
           : nothing}
       </div>

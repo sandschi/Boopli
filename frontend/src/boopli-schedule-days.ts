@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { sharedStyles } from "./styles";
-import { WEEKDAY_NAMES } from "./time";
+import { weekdayNames } from "./time";
+import { t } from "./i18n";
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
 const MAX_TIMES = 6;
@@ -37,7 +38,7 @@ export class BoopliScheduleDays extends LitElement {
 
   private _emit(days: Record<string, string[]>): void {
     // A day without times is simply not in the schedule.
-    const cleaned = Object.fromEntries(Object.entries(days).filter(([, t]) => t.length > 0));
+    const cleaned = Object.fromEntries(Object.entries(days).filter(([, tm]) => tm.length > 0));
     this.dispatchEvent(new CustomEvent("days-change", { detail: cleaned, bubbles: true, composed: true }));
   }
 
@@ -51,7 +52,7 @@ export class BoopliScheduleDays extends LitElement {
 
   private _setTime(day: number, index: number, value: string): void {
     if (!value) return;
-    this._setDay(day, this._times(day).map((t, i) => (i === index ? value : t)));
+    this._setDay(day, this._times(day).map((tm, i) => (i === index ? value : tm)));
   }
 
   private _shownDays(): number[] {
@@ -67,7 +68,7 @@ export class BoopliScheduleDays extends LitElement {
           const above = position > 0 ? shown[position - 1] : null;
           const on = times.length > 0;
           return html`<div class="row ${on ? "" : "off"}">
-            <span class="dayname">${WEEKDAY_NAMES[day]}</span>
+            <span class="dayname">${weekdayNames()[day]}</span>
             ${this.onlyActive
               ? nothing
               : html`<label class="inline small">
@@ -77,23 +78,23 @@ export class BoopliScheduleDays extends LitElement {
                     @change=${(e: Event) =>
                       this._setDay(day, (e.target as HTMLInputElement).checked ? [nextTime([])] : [])}
                   />
-                  Runs
+                  ${t("schedule_days.runs")}
                 </label>`}
             ${on
               ? html`<div class="times">
                   ${times.map(
-                    (t, i) => html`<span class="time">
+                    (tm, i) => html`<span class="time">
                       <input
                         type="time"
-                        aria-label="${WEEKDAY_NAMES[day]} time ${i + 1}"
-                        .value=${t}
+                        aria-label=${t("schedule_days.time_2", { value: weekdayNames()[day], n: i + 1 })}
+                        .value=${tm}
                         @change=${(e: Event) => this._setTime(day, i, (e.target as HTMLInputElement).value)}
                       />
                       ${times.length > 1
                         ? html`<button
                             type="button"
                             class="x"
-                            aria-label="Remove this time"
+                            aria-label=${t("schedule_days.remove_this_time")}
                             @click=${() => this._setDay(day, times.filter((_, k) => k !== i))}
                           >
                             ✕
@@ -102,17 +103,17 @@ export class BoopliScheduleDays extends LitElement {
                     </span>`
                   )}
                   ${times.length < MAX_TIMES
-                    ? html`<button type="button" class="chip" @click=${() => this._setDay(day, [...times, nextTime(times)])}>+ time</button>`
+                    ? html`<button type="button" class="chip" @click=${() => this._setDay(day, [...times, nextTime(times)])}>${t("schedule_days.time")}</button>`
                     : nothing}
                 </div>`
-              : html`<span class="muted small">No run this day</span>`}
+              : html`<span class="muted small">${t("schedule_days.no_run_this_day")}</span>`}
             ${above !== null
               ? html`<button
                   type="button"
                   class="chip same"
                   @click=${() => this._setDay(day, [...this._times(above)])}
                 >
-                  Same as ${WEEKDAY_NAMES[above]}
+                  ${t("schedule_days.same_as", { value: weekdayNames()[above] })}
                 </button>`
               : nothing}
           </div>`;

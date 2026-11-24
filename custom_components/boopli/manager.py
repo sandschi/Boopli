@@ -46,6 +46,7 @@ from homeassistant.util.file import write_utf8_file_atomic
 
 from . import breakdown, engine, routine
 from .const import DOMAIN
+from .errors import BoopliError, Msg
 from .nudger import BoopliNudger
 
 _LOGGER = logging.getLogger(__name__)
@@ -71,10 +72,6 @@ _PHOTO_KINDS = (  # (magic bytes, extension, mime type)
     (b"\xff\xd8\xff", ".jpg", "image/jpeg"),
     (b"\x89PNG\r\n\x1a\n", ".png", "image/png"),
 )
-
-
-class BoopliError(Exception):
-    """A problem the caller can fix (bad input, unknown chore)."""
 
 
 def _delete_files(paths: list[Path], folder: Path | None = None) -> None:
@@ -352,7 +349,7 @@ class BoopliManager:
         try:
             away = engine.set_away(start, until, now, self.tz)
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         for chore_id, flag in (keep_going or {}).items():
             chore = self.chores.get(chore_id)
             if chore is not None:
@@ -934,9 +931,9 @@ class BoopliManager:
             return self.chores[ref]
         matches = [c for c in self.chores.values() if c.name.lower() == ref.lower()]
         if not matches:
-            raise BoopliError(f"No chore called '{ref}'.")
+            raise BoopliError("No chore called '{ref}'.", ref=ref)
         if len(matches) > 1:
-            raise BoopliError(f"More than one chore is called '{ref}'. Use its id.")
+            raise BoopliError("More than one chore is called '{ref}'. Use its id.", ref=ref)
         return matches[0]
 
     def _clear_notifications_for(self, run: engine.Run) -> None:
@@ -953,7 +950,7 @@ class BoopliManager:
         """Replace the settings."""
         settings = engine.Settings.from_dict(data)
         if (gone := engine.deleted_standard_ladder(self.settings, settings)) is not None:
-            raise BoopliError(f"The standard ladder '{gone}' can be changed but not deleted.")
+            raise BoopliError("The standard ladder '{gone}' can be changed but not deleted.", gone=gone)
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
@@ -961,7 +958,7 @@ class BoopliManager:
             settings.ai.claude_fire_url = routine.clean_fire_url(settings.ai.claude_fire_url)
             settings.ai.claude_ha_url = routine.clean_ha_url(settings.ai.claude_ha_url)
         except routine.RoutineError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         # A ladder that chores use cannot be deleted: say which chores, and leave everything as it was.
         kept = {ladder.id for ladder in settings.ladders}
         for ladder in self.settings.ladders:
@@ -970,8 +967,7 @@ class BoopliManager:
             users = engine.chores_using(ladder.id, self.chores.values())
             if users:
                 raise BoopliError(
-                    f"The ladder '{ladder.name}' is used by {', '.join(users)}. "
-                    "Pick another nudge style for them first."
+                    "The ladder '{name}' is used by {users}. Pick another nudge style for them first.", name=ladder.name, users=', '.join(users)
                 )
         # Devices added now act in the standard ladders the way they used to (their "starts at nudge").
         engine.sync_phone_levels_to_standard_ladders(self.settings, settings)
@@ -1058,7 +1054,7 @@ class BoopliManager:
                 chore, now, answers, self.settings.question_wait_minutes
             )
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         self.runs[run.id] = run
         self._announce(events)
         self._ask_questions(run)
@@ -1102,7 +1098,7 @@ class BoopliManager:
             due = engine.park_time(when, at, now, self.tz)
             steps, events = engine.park_part(run, group, now)
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         chore = engine.parked_chore(run, self.chores.get(run.chore_id), group.strip(), steps, due, now)
         self.chores[chore.id] = chore
         self._announce(events)
@@ -1117,7 +1113,7 @@ class BoopliManager:
         try:
             chore.next_due = engine.park_time(when, at, dt_util.utcnow(), self.tz)
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         self._tick()
 
     def park_part(self, run_id: str, group: str, when: str, at: str = "") -> engine.Chore:
@@ -1134,7 +1130,7 @@ class BoopliManager:
             due = engine.park_time(when, at, now, self.tz)
             steps, events = engine.park_part(run, group, now)
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         chore = engine.parked_chore(run, self.chores.get(run.chore_id), group.strip(), steps, due, now)
         self.chores[chore.id] = chore
         self._announce(events)
@@ -1149,7 +1145,7 @@ class BoopliManager:
         try:
             chore.next_due = engine.park_time(when, at, dt_util.utcnow(), self.tz)
         except ValueError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         self._tick()
 
     def complete_step(self, run_id: str, step_id: str) -> None:
@@ -1164,10 +1160,10 @@ class BoopliManager:
         chore = self.find_chore(ref)
         run = self._active_run_for(chore.id)
         if run is None:
-            raise BoopliError(f"'{chore.name}' has nothing in progress.")
+            raise BoopliError("'{name}' has nothing in progress.", name=chore.name)
         step = next((s for s in run.steps if s.status == engine.STEP_ACTIVE), None)
         if step is None:
-            raise BoopliError(f"'{chore.name}' has no step waiting for you right now.")
+            raise BoopliError("'{name}' has no step waiting for you right now.", name=chore.name)
         self._complete(run, step.step_id)
 
     def _complete(self, run: engine.Run, step_id: str) -> None:
@@ -1245,7 +1241,7 @@ class BoopliManager:
             next((s for s in run.steps if s.status == engine.STEP_ACTIVE), None) if run else None
         )
         if run is None or step is None:
-            raise BoopliError(f"'{chore.name}' has no step waiting for you right now.")
+            raise BoopliError("'{name}' has no step waiting for you right now.", name=chore.name)
         return run, step
 
     def on_it_chore(self, ref: str) -> None:
@@ -1267,7 +1263,7 @@ class BoopliManager:
             else None
         )
         if run is None or step is None:
-            raise BoopliError(f"'{chore.name}' has no step waiting for you right now.")
+            raise BoopliError("'{name}' has no step waiting for you right now.", name=chore.name)
         self.snooze(run.id, step.step_id)
 
     def add_task(
@@ -1292,6 +1288,17 @@ class BoopliManager:
 
     # --- AI help: splitting a task into small steps -----------------------------
 
+    def _with_language(self, instructions: str) -> str:
+        """The prompts are written in English. For another language, the agent is asked to write what the person reads in it."""
+        language = self.hass.config.language
+        if not isinstance(language, str) or language.lower().split("-")[0] in ("", "en"):
+            return instructions
+        return (
+            f"{instructions}\n\n"
+            "Write everything the person will read (questions, the answers to pick from, step titles, notes) "
+            f'in the language with the code "{language}". Keep the JSON keys and the other fixed words exactly as asked.'
+        )
+
     async def _run_agent(
         self,
         name: str,
@@ -1301,6 +1308,7 @@ class BoopliManager:
         timeout: int = AI_TIMEOUT,
     ) -> Any:
         """Ask the user's own AI agent (Home Assistant's AI Task) and return its data."""
+        instructions = self._with_language(instructions)
         ai = self.settings.ai
         if not ai.enabled:
             raise BoopliError("AI help is switched off. Turn it on in Settings first.")
@@ -1322,7 +1330,7 @@ class BoopliManager:
                 )
         except TimeoutError as err:
             raise BoopliError(
-                f"The AI agent took too long (over {timeout} seconds). Try again."
+                "The AI agent took too long (over {timeout} seconds). Try again.", timeout=timeout
             ) from err
         except ServiceNotFound as err:
             raise BoopliError(
@@ -1334,10 +1342,10 @@ class BoopliManager:
                     "This AI agent can't read photos. Pick an agent that can under "
                     "Settings, Advanced, AI help, or describe the room another way."
                 ) from err
-            raise BoopliError(f"The AI agent answered with an error: {err}") from err
+            raise BoopliError("The AI agent answered with an error: {error}", error=err) from err
         except HomeAssistantError as err:
             # The agent's own reason is the useful part ("credits depleted", "model gone").
-            raise BoopliError(f"The AI agent answered with an error: {err}") from err
+            raise BoopliError("The AI agent answered with an error: {error}", error=err) from err
         return (response or {}).get("data")
 
     # --- Ask Claude: the optional extra through the user's own Claude routine ------------
@@ -1417,7 +1425,7 @@ class BoopliManager:
         try:
             new = routine.clean_token(token)
         except routine.RoutineError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         if not self._claude_secrets_ok:
             raise BoopliError(
                 "Boopli could not read its saved Ask Claude settings, so it will not overwrite them. "
@@ -1440,7 +1448,7 @@ class BoopliManager:
                 # Also checks values that came in from a stored or imported file.
                 return routine.clean_ha_url(base)
             except routine.RoutineError as err:
-                raise BoopliError(str(err)) from err
+                raise BoopliError(err) from err
         try:
             return get_url(self.hass, allow_internal=False, prefer_external=True).rstrip("/")
         except NoURLAvailableError as err:
@@ -1491,6 +1499,7 @@ class BoopliManager:
         self, instructions: str, photo_urls: list[str] | None = None
     ) -> Any:
         """Fire the routine with the task, wait for its answer, return the answer's data."""
+        instructions = self._with_language(instructions)
         ai = self.settings.ai
         if not ai.claude_enabled:
             raise BoopliError("Ask Claude is switched off. Turn it on in Settings first.")
@@ -1503,7 +1512,7 @@ class BoopliManager:
             # from an imported backup file instead of the normal save.
             fire_url = routine.clean_fire_url(ai.claude_fire_url)
         except routine.RoutineError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         answer_url = self._claude_answer_url()
         request_id, future = self._claude_waiting.new()
         try:
@@ -1514,7 +1523,7 @@ class BoopliManager:
             await routine.fire(async_get_clientsession(self.hass), fire_url, self._claude_token, text)
             return await routine.wait_for_answer(future)
         except routine.RoutineError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         finally:
             self._claude_waiting.drop(request_id)
 
@@ -1595,14 +1604,14 @@ class BoopliManager:
                 exported_at=engine.fmt_ts(dt_util.utcnow()),
             )
         except engine.BackupError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
 
     def _parse_backup(self, data: Any) -> engine.Backup:
         """Read a backup file and check what is in it. Changes nothing."""
         try:
             return engine.parse_backup(data, [lad.id for lad in self.settings.ladders])
         except engine.BackupError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
 
     def _read_backup(self, data: Any, parts: list[str]) -> engine.Backup:
         """Read a backup file, and check that the parts picked fit together. Changes nothing."""
@@ -1735,7 +1744,7 @@ class BoopliManager:
             scene,
         )
         return {
-            "instructions": instructions,
+            "instructions": self._with_language(instructions),
             "rooms_text": text,
             "shortened": shortened,
             "enabled": self.home.enabled,
@@ -1762,7 +1771,7 @@ class BoopliManager:
                 enough, questions = breakdown.parse_questions(data)
             except breakdown.BreakdownError as err:
                 if attempt == 2:
-                    raise BoopliError(str(err)) from err
+                    raise BoopliError(err) from err
                 continue
             return {"enough": enough, "questions": [asdict(q) for q in questions]}
         raise BoopliError("The AI agent did not answer.")  # not reached
@@ -1781,7 +1790,7 @@ class BoopliManager:
                 return {"notes": breakdown.parse_room_notes(data)}
             except breakdown.BreakdownError as err:
                 if attempt == 2:
-                    raise BoopliError(str(err)) from err
+                    raise BoopliError(err) from err
         raise BoopliError("The AI agent did not answer.")  # not reached
 
     # --- My home: describing a room from photos (one time, never kept) ---------------
@@ -1807,7 +1816,7 @@ class BoopliManager:
         if not isinstance(photos, list) or not photos:
             raise BoopliError("Pick at least one photo.")
         if len(photos) > MAX_PHOTOS:
-            raise BoopliError(f"Use at most {MAX_PHOTOS} photos.")
+            raise BoopliError("Use at most {max_photos} photos.", max_photos=MAX_PHOTOS)
         result: list[tuple[bytes, str, str]] = []
         for item in photos:
             text = str(item or "")
@@ -1939,7 +1948,7 @@ class BoopliManager:
             )
             raise
         except OSError as err:
-            raise BoopliError(f"Boopli could not hand the photos over: {err}") from err
+            raise BoopliError("Boopli could not hand the photos over: {error}", error=err) from err
         attachments = [
             {
                 "media_content_id": f"media-source://media_source/{dir_id}/{PHOTO_DIR}/{path.name}",
@@ -1967,7 +1976,7 @@ class BoopliManager:
                     return parse(data)
                 except breakdown.BreakdownError as err:
                     if attempt == 2:
-                        raise BoopliError(str(err)) from err
+                        raise BoopliError(err) from err
             raise BoopliError("The AI agent did not answer.")  # not reached
         finally:
             await self.hass.async_add_executor_job(
@@ -1993,7 +2002,7 @@ class BoopliManager:
         try:
             return {"notes": breakdown.parse_pasted_notes(text)}
         except breakdown.BreakdownError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
 
     def paste_home(
         self, text: str, rooms: list[tuple[str, str]] | None = None
@@ -2007,7 +2016,7 @@ class BoopliManager:
         try:
             sections = breakdown.parse_pasted_home(text, known)
         except breakdown.BreakdownError as err:
-            raise BoopliError(str(err)) from err
+            raise BoopliError(err) from err
         return {"rooms": sections}
 
     async def async_ai_questions(
@@ -2040,7 +2049,7 @@ class BoopliManager:
                 enough, questions = breakdown.parse_questions(data)
             except breakdown.BreakdownError as err:
                 if attempt == 2:
-                    raise BoopliError(str(err)) from err
+                    raise BoopliError(err) from err
                 continue
             return {"enough": enough, "questions": [asdict(q) for q in questions]}
         raise BoopliError("The AI agent did not answer.")  # not reached
@@ -2077,7 +2086,7 @@ class BoopliManager:
                 )
             except breakdown.BreakdownError as err:
                 if attempt == 2:
-                    raise BoopliError(str(err)) from err
+                    raise BoopliError(err) from err
                 continue
             if kind != breakdown.KIND_RECURRING:
                 # A one-off task has no use for questions: it is already written for today.

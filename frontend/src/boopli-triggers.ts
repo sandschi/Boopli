@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { errorMessage } from "./api";
 import { sharedStyles } from "./styles";
 import type { Hass, Trigger, TriggerKind } from "./types";
+import { t, rich } from "./i18n";
 
 interface TagInfo {
   tag_id: string;
@@ -24,11 +25,11 @@ const BUTTON_DOMAINS = ["event", "input_button", "button"];
 
 type Condition = "state" | "above" | "below" | "between";
 
-function conditionOf(t: Trigger): Condition {
-  if (t.state) return "state";
-  if (t.above !== null && t.below !== null) return "between";
-  if (t.below !== null) return "below";
-  if (t.above !== null) return "above";
+function conditionOf(trig: Trigger): Condition {
+  if (trig.state) return "state";
+  if (trig.above !== null && trig.below !== null) return "between";
+  if (trig.below !== null) return "below";
+  if (trig.above !== null) return "above";
   return "state";
 }
 
@@ -101,7 +102,7 @@ export class BoopliTriggers extends LitElement {
   }
 
   private _patch(index: number, patch: Partial<Trigger>): void {
-    this._emit(this.triggers.map((t, i) => (i === index ? { ...t, ...patch } : t)));
+    this._emit(this.triggers.map((trig, i) => (i === index ? { ...trig, ...patch } : trig)));
   }
 
   private _add(kind: TriggerKind): void {
@@ -131,12 +132,12 @@ export class BoopliTriggers extends LitElement {
   }
 
   private _setCondition(index: number, cond: Condition): void {
-    const t = this.triggers[index];
-    if (cond === "state") this._patch(index, { state: t.state || "on", above: null, below: null });
-    if (cond === "above") this._patch(index, { state: "", above: t.above ?? 0, below: null });
-    if (cond === "below") this._patch(index, { state: "", above: null, below: t.below ?? 0 });
+    const trig = this.triggers[index];
+    if (cond === "state") this._patch(index, { state: trig.state || "on", above: null, below: null });
+    if (cond === "above") this._patch(index, { state: "", above: trig.above ?? 0, below: null });
+    if (cond === "below") this._patch(index, { state: "", above: null, below: trig.below ?? 0 });
     if (cond === "between")
-      this._patch(index, { state: "", above: t.above ?? 0, below: t.below ?? 100 });
+      this._patch(index, { state: "", above: trig.above ?? 0, below: trig.below ?? 100 });
   }
 
   // --- tag scanning ---------------------------------------------------------
@@ -166,61 +167,61 @@ export class BoopliTriggers extends LitElement {
       else unsubscribe();
     } catch (err) {
       this._scanning = -1;
-      this._note = `Scanning did not start (${errorMessage(err)}). Pick the tag from the list instead.`;
+      this._note = t("triggers.scanning_did_not_start_pick_the", { error: errorMessage(err) });
     }
   }
 
   // --- rendering ------------------------------------------------------------
 
-  private _renderState(t: Trigger, index: number) {
-    const domain = t.entity_id.split(".")[0];
-    const current = this.hass?.states[t.entity_id];
+  private _renderState(trig: Trigger, index: number) {
+    const domain = trig.entity_id.split(".")[0];
+    const current = this.hass?.states[trig.entity_id];
     const choices = STATE_CHOICES[domain] ?? [];
-    const cond = conditionOf(t);
+    const cond = conditionOf(trig);
     return html`
       <div class="field">
-        <label>Which entity?</label>
+        <label>${t("triggers.which_entity")}</label>
         <input
           list="states-list"
-          placeholder="Start typing a name, for example door"
-          .value=${t.entity_id}
+          placeholder=${t("triggers.start_typing_a_name_for_example")}
+          .value=${trig.entity_id}
           @change=${(e: Event) =>
             this._patch(index, { entity_id: (e.target as HTMLInputElement).value.trim() })}
         />
-        ${t.entity_id
+        ${trig.entity_id
           ? current
             ? html`<div class="muted small">
-                ${this._friendly(t.entity_id)}: now <b>${current.state}</b>
+                ${rich("triggers.now", { device: this._friendly(trig.entity_id), state: current.state    })}
               </div>`
-            : html`<div class="warn small">Not found right now. Check the name.</div>`
+            : html`<div class="warn small">${t("triggers.not_found_right_now_check_the")}</div>`
           : nothing}
       </div>
       <div class="field">
-        <label>It finishes the step when it…</label>
+        <label>${t("triggers.it_finishes_the_step_when_it")}</label>
         <select
           .value=${cond}
           @change=${(e: Event) =>
             this._setCondition(index, (e.target as HTMLSelectElement).value as Condition)}
         >
-          <option value="state" ?selected=${cond === "state"}>is in this state</option>
-          <option value="above" ?selected=${cond === "above"}>goes above a number</option>
-          <option value="below" ?selected=${cond === "below"}>goes below a number</option>
-          <option value="between" ?selected=${cond === "between"}>is between two numbers</option>
+          <option value="state" ?selected=${cond === "state"}>${t("triggers.is_in_this_state")}</option>
+          <option value="above" ?selected=${cond === "above"}>${t("triggers.goes_above_a_number")}</option>
+          <option value="below" ?selected=${cond === "below"}>${t("triggers.goes_below_a_number")}</option>
+          <option value="between" ?selected=${cond === "between"}>${t("triggers.is_between_two_numbers")}</option>
         </select>
       </div>
       ${cond === "state"
         ? html`<div class="field">
-            <label>State</label>
+            <label>${t("triggers.state")}</label>
             <input
-              placeholder="for example on, off, open"
-              .value=${t.state}
+              placeholder=${t("triggers.for_example_on_off_open")}
+              .value=${trig.state}
               @input=${(e: Event) => this._patch(index, { state: (e.target as HTMLInputElement).value })}
             />
             <div class="chips">
               ${choices.map(
                 (c) => html`<button
                   type="button"
-                  class="chip ${t.state === c ? "on" : ""}"
+                  class="chip ${trig.state === c ? "on" : ""}"
                   @click=${() => this._patch(index, { state: c })}
                 >
                   ${c}
@@ -232,7 +233,7 @@ export class BoopliTriggers extends LitElement {
                     class="chip"
                     @click=${() => this._patch(index, { state: current.state })}
                   >
-                    now: ${current.state}
+                    ${t("triggers.now_2", { state: current.state })}
                   </button>`
                 : nothing}
             </div>
@@ -240,11 +241,11 @@ export class BoopliTriggers extends LitElement {
         : html`<div class="row2">
             ${cond === "above" || cond === "between"
               ? html`<div>
-                  <label>Above</label>
+                  <label>${t("triggers.above")}</label>
                   <input
                     type="number"
                     step="any"
-                    .value=${t.above === null ? "" : String(t.above)}
+                    .value=${trig.above === null ? "" : String(trig.above)}
                     @input=${(e: Event) =>
                       this._patch(index, { above: this._numberOrNull((e.target as HTMLInputElement).value) })}
                   />
@@ -252,11 +253,11 @@ export class BoopliTriggers extends LitElement {
               : nothing}
             ${cond === "below" || cond === "between"
               ? html`<div>
-                  <label>Below</label>
+                  <label>${t("triggers.below")}</label>
                   <input
                     type="number"
                     step="any"
-                    .value=${t.below === null ? "" : String(t.below)}
+                    .value=${trig.below === null ? "" : String(trig.below)}
                     @input=${(e: Event) =>
                       this._patch(index, { below: this._numberOrNull((e.target as HTMLInputElement).value) })}
                   />
@@ -264,12 +265,12 @@ export class BoopliTriggers extends LitElement {
               : nothing}
           </div>`}
       <div class="field">
-        <label>…and stays that way for (minutes, 0 = right away)</label>
+        <label>${t("triggers.and_stays_that_way_for_minutes")}</label>
         <input
           type="number"
           min="0"
           max="1440"
-          .value=${String(t.for_minutes)}
+          .value=${String(trig.for_minutes)}
           @input=${(e: Event) =>
             this._patch(index, {
               for_minutes: Math.max(0, Number((e.target as HTMLInputElement).value) || 0),
@@ -277,76 +278,75 @@ export class BoopliTriggers extends LitElement {
         />
       </div>
       <details class="advanced">
-        <summary>Advanced</summary>
+        <summary>${t("settings.advanced")}</summary>
         <label class="inline">
           <input
             type="checkbox"
-            .checked=${t.mode === "is"}
+            .checked=${trig.mode === "is"}
             @change=${(e: Event) =>
               this._patch(index, { mode: (e.target as HTMLInputElement).checked ? "is" : "happens" })}
           />
-          Also count it if it is already true when the step starts
+          ${t("triggers.also_count_it_if_it_is")}
         </label>
         <div class="muted small">
-          Off (the usual): it has to happen after the step starts, so a door that was already open
-          does not finish "open it to dry". On: good for "windows are shut" or "plant is fine".
+          ${t("triggers.off_the_usual_it_has_to")}
         </div>
       </details>
     `;
   }
 
-  private _renderTag(t: Trigger, index: number) {
-    const known = this._tags.find((tag) => tag.tag_id === t.tag_id);
+  private _renderTag(trig: Trigger, index: number) {
+    const known = this._tags.find((tag) => tag.tag_id === trig.tag_id);
     return html`
       <div class="field">
-        <label>Which NFC tag?</label>
+        <label>${t("triggers.which_nfc_tag")}</label>
         <div class="scan">
           <select
             @change=${(e: Event) => this._patch(index, { tag_id: (e.target as HTMLSelectElement).value })}
           >
-            <option value="" .selected=${!t.tag_id}>Pick a tag…</option>
+            <option value="" .selected=${!trig.tag_id}>${t("triggers.pick_a_tag")}</option>
             ${this._tags.map(
-              (tag) => html`<option value=${tag.tag_id} .selected=${tag.tag_id === t.tag_id}>
+              (tag) => html`<option value=${tag.tag_id} .selected=${tag.tag_id === trig.tag_id}>
                 ${tag.name || tag.tag_id}
               </option>`
             )}
-            ${t.tag_id && !known
-              ? html`<option value=${t.tag_id} .selected=${true}>${t.tag_id}</option>`
+            ${trig.tag_id && !known
+              ? html`<option value=${trig.tag_id} .selected=${true}>${trig.tag_id}</option>`
               : nothing}
           </select>
           ${this._scanning === index
-            ? html`<button type="button" @click=${() => this._cancelScan()}>Cancel</button>`
-            : html`<button type="button" @click=${() => this._scan(index)}>Scan now</button>`}
+            ? html`<button type="button" @click=${() => this._cancelScan()}>${t("common.cancel")}</button>`
+            : html`<button type="button" @click=${() => this._scan(index)}>${t("triggers.scan_now")}</button>`}
         </div>
         ${this._scanning === index
-          ? html`<div class="muted small">Hold your phone to the tag now…</div>`
+          ? html`<div class="muted small">${t("triggers.hold_your_phone_to_the_tag")}</div>`
           : nothing}
       </div>
     `;
   }
 
-  private _renderButton(t: Trigger, index: number) {
-    const current = this.hass?.states[t.entity_id];
+  private _renderButton(trig: Trigger, index: number) {
+    const current = this.hass?.states[trig.entity_id];
     const types = current?.attributes?.event_types;
     return html`
       <div class="field">
-        <label>Which button?</label>
+        <label>${t("triggers.which_button")}</label>
         <input
           list="buttons-list"
-          placeholder="Start typing a name, for example button"
-          .value=${t.entity_id}
+          placeholder=${t("triggers.start_typing_a_name_for_example_2")}
+          .value=${trig.entity_id}
           @change=${(e: Event) =>
             this._patch(index, { entity_id: (e.target as HTMLInputElement).value.trim() })}
         />
-        ${t.entity_id && !current
-          ? html`<div class="warn small">Not found right now. Check the name.</div>`
+        ${trig.entity_id && !current
+          ? html`<div class="warn small">${t("triggers.not_found_right_now_check_the")}</div>`
           : nothing}
       </div>
       <div class="field">
-        <label>Only this kind of press (empty = any press)</label>
+        <label>${t("triggers.only_this_kind_of_press_empty")}</label>
         <input
-          placeholder="for example single or double"
-          .value=${t.press}
+          placeholder=${t("triggers.for_example_single_or_double")}
+          .value=${trig.press}
           @input=${(e: Event) => this._patch(index, { press: (e.target as HTMLInputElement).value })}
         />
         ${Array.isArray(types) && types.length
@@ -354,7 +354,7 @@ export class BoopliTriggers extends LitElement {
               ${types.map(
                 (p) => html`<button
                   type="button"
-                  class="chip ${t.press === p ? "on" : ""}"
+                  class="chip ${trig.press === p ? "on" : ""}"
                   @click=${() => this._patch(index, { press: p })}
                 >
                   ${String(p)}
@@ -366,10 +366,10 @@ export class BoopliTriggers extends LitElement {
     `;
   }
 
-  private _title(t: Trigger): string {
-    if (t.kind === "tag") return "An NFC tag is scanned";
-    if (t.kind === "button") return "A button is pressed";
-    return "An entity changes";
+  private _title(trig: Trigger): string {
+    if (trig.kind === "tag") return t("triggers.an_nfc_tag_is_scanned");
+    if (trig.kind === "button") return t("triggers.a_button_is_pressed");
+    return t("triggers.an_entity_changes_2");
   }
 
   render() {
@@ -384,30 +384,29 @@ export class BoopliTriggers extends LitElement {
       </datalist>
       ${this.triggers.length === 0
         ? html`<div class="muted small">
-            Nothing yet: only you finish this step (with Done). Add one below to let it finish by
-            itself.
+            ${t("triggers.nothing_yet_only_you_finish_this")}
           </div>`
         : this.triggers.map(
-            (t, i) => html`
-              ${i > 0 ? html`<div class="or muted small">or</div>` : nothing}
+            (trig, i) => html`
+              ${i > 0 ? html`<div class="or muted small">${t("triggers.or")}</div>` : nothing}
               <div class="trigger">
                 <div class="trigger-head">
-                  <b>${this._title(t)}</b>
-                  <button type="button" aria-label="Remove" @click=${() => this._remove(i)}>✕</button>
+                  <b>${this._title(trig)}</b>
+                  <button type="button" aria-label=${t("common.remove")} @click=${() => this._remove(i)}>✕</button>
                 </div>
-                ${t.kind === "tag"
-                  ? this._renderTag(t, i)
-                  : t.kind === "button"
-                    ? this._renderButton(t, i)
-                    : this._renderState(t, i)}
+                ${trig.kind === "tag"
+                  ? this._renderTag(trig, i)
+                  : trig.kind === "button"
+                    ? this._renderButton(trig, i)
+                    : this._renderState(trig, i)}
               </div>
             `
           )}
       ${this._note ? html`<div class="warn small">${this._note}</div>` : nothing}
       <div class="chips add">
-        <button type="button" @click=${() => this._add("state")}>+ An entity changes</button>
-        <button type="button" @click=${() => this._add("tag")}>+ NFC tag</button>
-        <button type="button" @click=${() => this._add("button")}>+ Button</button>
+        <button type="button" @click=${() => this._add("state")}>${t("triggers.an_entity_changes")}</button>
+        <button type="button" @click=${() => this._add("tag")}>${t("triggers.nfc_tag")}</button>
+        <button type="button" @click=${() => this._add("button")}>${t("triggers.button")}</button>
       </div>
     `;
   }

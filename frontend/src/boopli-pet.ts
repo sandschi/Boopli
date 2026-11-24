@@ -8,6 +8,7 @@ import { slimeSvg } from "./pet-slime";
 import { MOMENT_MS, type Activity, type Moment } from "./pet-work";
 import { petInfo, type PetKind } from "./pets";
 import type { Mood } from "./types";
+import { t } from "./i18n";
 
 export type { Activity, Moment };
 
@@ -157,7 +158,7 @@ export class BoopliPet extends LitElement {
     return html`<div
       class="pet ${this.mood}"
       role="img"
-      aria-label="Your pet is ${this.mood}"
+      aria-label=${t("pet.your_pet_is", { mood: t(`pet.mood_${this.mood}`) })}
       @click=${() => this._tap()}
     >
       ${this._art()}

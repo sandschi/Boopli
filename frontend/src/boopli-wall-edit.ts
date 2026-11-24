@@ -7,6 +7,7 @@ import { COLUMNS_MAX, COLUMNS_MIN, ROWS_MAX, ROWS_MIN, bottom, right, scaleTiles
 import { TILE_DEFS, boardLink, newTile, pickBoard, starterTiles, tileDef, type OptionField } from "./wall-tiles";
 import { icon } from "./icon";
 import type { Board, Hass, NightMode, Snapshot, Tile } from "./types";
+import { t, rich } from "./i18n";
 
 const MAX_BOARDS = 10;
 const MAX_TILES = 30;
@@ -18,17 +19,17 @@ const ANY_DOMAINS = [
   "script", "scene", "button", "input_button", "automation", "person", "media_player",
 ];
 
-const NIGHT_CHOICES: [NightMode, string][] = [
-  ["dim", "Dim the screen"],
-  ["black", "Black, with a small clock"],
-  ["off", "Keep as it is"],
+const NIGHT_CHOICES = (): [NightMode, string][] => [
+  ["dim", t("wall_edit.dim_the_screen")],
+  ["black", t("wall_edit.black_with_a_small_clock")],
+  ["off", t("wall_edit.keep_as_it_is")],
 ];
 
 type View = "window" | "wide" | "tall";
-const VIEWS: [View, string, string][] = [
-  ["window", "This window", "Show the board in the shape of this window"],
-  ["wide", "16:9", "A TV or a tablet lying down"],
-  ["tall", "Upright", "A tablet hung upright (9:16)"],
+const VIEWS = (): [View, string, string][] => [
+  ["window", t("wall_edit.this_window"), t("wall_edit.show_the_board_in_the_shape")],
+  ["wide", "16:9", t("wall_edit.a_tv_or_a_tablet_lying")],
+  ["tall", t("wall_edit.upright"), t("wall_edit.a_tablet_hung_upright_9_16")],
 ];
 /** The size of the screen each view stands for. The board is drawn at that size and then scaled down to fit, so it looks exactly as it will. */
 const SCREEN: Record<Exclude<View, "window">, [number, number]> = {
@@ -233,7 +234,7 @@ export class BoopliWallEdit extends LitElement {
     if (!this._boards || this._boards.length >= MAX_BOARDS) return;
     const board: Board = {
       id: newLadderId(),
-      name: this._uniqueName("My board"),
+      name: this._uniqueName(t("wall_edit.my_board")),
       columns: 16,
       rows: 9,
       night: "dim",
@@ -257,13 +258,13 @@ export class BoopliWallEdit extends LitElement {
     const cur = this._cur;
     if (!cur) return;
     if (cur.tiles.length >= MAX_TILES) {
-      this._error = `A board can have ${MAX_TILES} tiles at most.`;
+      this._error = t("wall_edit.a_board_can_have_tiles_at", { max_tiles: MAX_TILES });
       this._modal = "";
       return;
     }
     const tile = newTile(type, cur.tiles, cur.columns, cur.rows);
     if (!tile) {
-      this._error = "Every cell of this board is taken. Make the grid bigger or remove a tile.";
+      this._error = t("wall_edit.every_cell_of_this_board_is");
       this._modal = "";
       return;
     }
@@ -293,7 +294,7 @@ export class BoopliWallEdit extends LitElement {
       tile.id
     );
     if (!next) {
-      this._error = "There is no room for that.";
+      this._error = t("wall_edit.there_is_no_room_for_that");
       return;
     }
     this._edit((b) => (b.tiles = next));
@@ -310,7 +311,7 @@ export class BoopliWallEdit extends LitElement {
     const needC = right(cur.tiles);
     const needR = bottom(cur.tiles);
     if (c < needC || r < needR) {
-      this._error = `Some tiles reach to column ${needC} and row ${needR}. Move or shrink them first.`;
+      this._error = t("wall_edit.some_tiles_reach_to_column_and", { columns: needC, rows: needR });
       return { columns: cur.columns, rows: cur.rows };
     }
     this._edit((b) => {
@@ -329,11 +330,11 @@ export class BoopliWallEdit extends LitElement {
     const rows = cur.rows * f;
     const tiles = scaleTiles(cur.tiles, f);
     if (!Number.isInteger(columns) || !Number.isInteger(rows) || columns < COLUMNS_MIN || rows < ROWS_MIN || columns > COLUMNS_MAX || rows > ROWS_MAX) {
-      this._error = finer ? `${COLUMNS_MAX} by ${ROWS_MAX} is the finest grid.` : "This grid cannot be made coarser evenly.";
+      this._error = finer ? t("wall_edit.by_is_the_finest_grid", { columns_max: COLUMNS_MAX, rows_max: ROWS_MAX }) : t("wall_edit.this_grid_cannot_be_made_coarser");
       return;
     }
     if (!tiles) {
-      this._error = "Some tiles do not line up with a coarser grid. Move or resize them first.";
+      this._error = t("wall_edit.some_tiles_do_not_line_up");
       return;
     }
     this._edit((b) => {
@@ -422,10 +423,10 @@ export class BoopliWallEdit extends LitElement {
         const ids = entityIds(this.hass, f.domains ?? ANY_DOMAINS);
         const list = `dl-${tile.id}-${f.key}`;
         return html`<div class="field"><label for=${id}>${f.label}</label>
-          <input id=${id} list=${list} placeholder="Start typing a name…" .value=${String(value)}
+          <input id=${id} list=${list} placeholder=${t("wall_edit.start_typing_a_name")} .value=${String(value)}
             @change=${(e: Event) => this._setOption(f.key, (e.target as HTMLInputElement).value.trim())} />
           <datalist id=${list}>${ids.map((e) => html`<option value=${e}>${friendlyName(this.hass, e)}</option>`)}</datalist>
-          ${value && !this.hass?.states[String(value)] ? html`<div class="error small">${value} was not found.</div>` : nothing}</div>`;
+          ${value && !this.hass?.states[String(value)] ? html`<div class="error small">${t("wall_edit.was_not_found", { value: String(value) })}</div>` : nothing}</div>`;
       }
       default:
         return html`<div class="field"><label for=${id}>${f.label}</label>
@@ -443,94 +444,94 @@ export class BoopliWallEdit extends LitElement {
       <div class="mhead"><h2>${icon(def?.icon ?? "shape-outline")} ${def?.label ?? tile.type}</h2></div>
       ${def?.options.length ? html`<div class="opts">${def.options.map((f) => this._renderField(tile, f))}</div>` : nothing}
       <div class="srow">
-        ${this._numField("tw", "Cells wide", tile.w, 1, cur.columns - tile.x, (n) => {
+        ${this._numField("tw", t("wall_edit.cells_wide"), tile.w, 1, cur.columns - tile.x, (n) => {
           this._resize(n, tile.h);
           return this._tile?.w; // what it is now (the old width when there was no room)
         })}
-        ${this._numField("th", "Cells tall", tile.h, 1, cur.rows - tile.y, (n) => {
+        ${this._numField("th", t("wall_edit.cells_tall"), tile.h, 1, cur.rows - tile.y, (n) => {
           this._resize(tile.w, n);
           return this._tile?.h;
         })}
       </div>
       <div class="mfoot">
-        <button class="danger" @click=${() => this._remove()}>Remove this tile</button>
+        <button class="danger" @click=${() => this._remove()}>${t("wall.remove_this_tile")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
+        <button class="primary" @click=${() => (this._modal = "")}>${t("common.done")}</button>
       </div>
     `;
   }
 
   private _renderBoardModal(cur: Board) {
     return html`
-      <div class="mhead"><h2>${icon("monitor-dashboard")} This board</h2></div>
+      <div class="mhead"><h2>${icon("monitor-dashboard")} ${t("wall_edit.this_board")}</h2></div>
       <div class="field">
-        <label for="bname">Name</label>
+        <label for="bname">${t("common.name")}</label>
         <input id="bname" maxlength=${NAME_MAX} .value=${cur.name} @change=${(e: Event) => this._edit((b) => (b.name = (e.target as HTMLInputElement).value.trim()))} />
       </div>
       <div class="srow">
-        ${this._numField("bcols", "Columns", cur.columns, COLUMNS_MIN, COLUMNS_MAX, (n) => this._setGrid(n, cur.rows).columns)}
-        ${this._numField("brows", "Rows", cur.rows, ROWS_MIN, ROWS_MAX, (n) => this._setGrid(cur.columns, n).rows)}
-        <button title="Choose the rows that make the cells square on the screen shown" @click=${() => this._matchScreen()}>Match this screen</button>
+        ${this._numField("bcols", t("wall_edit.columns"), cur.columns, COLUMNS_MIN, COLUMNS_MAX, (n) => this._setGrid(n, cur.rows).columns)}
+        ${this._numField("brows", t("wall_edit.rows"), cur.rows, ROWS_MIN, ROWS_MAX, (n) => this._setGrid(cur.columns, n).rows)}
+        <button title=${t("wall_edit.choose_the_rows_that_make_the")} @click=${() => this._matchScreen()}>${t("wall_edit.match_this_screen")}</button>
       </div>
       <div class="srow">
-        <button @click=${() => this._scaleGrid(true)}>Finer grid (cells half as big)</button>
-        <button @click=${() => this._scaleGrid(false)}>Coarser grid (cells twice as big)</button>
+        <button @click=${() => this._scaleGrid(true)}>${t("wall_edit.finer_grid_cells_half_as_big")}</button>
+        <button @click=${() => this._scaleGrid(false)}>${t("wall_edit.coarser_grid_cells_twice_as_big")}</button>
       </div>
-      <p class="muted small">The board is a grid of square cells, scaled to fit the screen. 16 by 9 fits a TV or a tablet lying down.</p>
+      <p class="muted small">${t("wall_edit.the_board_is_a_grid_of")}</p>
       <div class="field">
-        <label for="bnight">At night</label>
+        <label for="bnight">${t("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e: Event) => this._edit((b) => (b.night = (e.target as HTMLSelectElement).value as NightMode))}>
-          ${NIGHT_CHOICES.map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
+          ${NIGHT_CHOICES().map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
         </select>
       </div>
-      <p class="muted small">Night is when quiet hours are on and it is outside the hours of nudging. A tap wakes the board for 30 seconds. While away mode is on, a slim bar shows at the top of the wall. It is not shown here.</p>
-      <p class="small">Link for the tablet's start page: <code>${boardLink(cur)}</code> (after you save)</p>
+      <p class="muted small">${t("wall_edit.night_is_when_quiet_hours_are")}</p>
+      <p class="small">${rich("wall_edit.link_for_the_tablets_start_page", { link: boardLink(cur)  })}</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>+ New board</button>
-        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>Delete this board</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= MAX_BOARDS} @click=${() => this._newBoard()}>${t("wall_edit.new_board")}</button>
+        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${t("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => (this._modal = "")}>Done</button>
+        <button class="primary" @click=${() => (this._modal = "")}>${t("common.done")}</button>
       </div>
     `;
   }
 
   private _renderAddModal() {
     return html`
-      <div class="mhead"><h2>＋ Add a tile</h2></div>
-      <div class="adds" role="group" aria-label="Add a tile">
-        ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
+      <div class="mhead"><h2>${t("wall_edit.add_a_tile")}</h2></div>
+      <div class="adds" role="group" aria-label=${t("wall_edit.add_a_tile_2")}>
+        ${TILE_DEFS().map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
       </div>
-      <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>Cancel</button></div>
+      <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>${t("common.cancel")}</button></div>
     `;
   }
 
   render() {
     const cur = this._cur;
-    if (!this._boards || !cur) return html`<div class="load">Loading…</div>`;
+    if (!this._boards || !cur) return html`<div class="load">${t("common.loading")}</div>`;
     const [sw, sh] = this._screen();
     const scale = this._stage[0] > 0 && this._stage[1] > 0 ? Math.min(1, this._stage[0] / sw, this._stage[1] / sh) : 1;
     return html`
       <div class="edit">
-        <div class="bar" role="toolbar" aria-label="Edit the wall board" ?inert=${this._busy}>
+        <div class="bar" role="toolbar" aria-label=${t("wall_edit.edit_the_wall_board")} ?inert=${this._busy}>
           <label class="pick">
-            <span class="muted small">Board</span>
-            <select aria-label="Board" @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._modal = ""; }}>
-              ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || "(no name)"}</option>`)}
+            <span class="muted small">${t("wall_edit.board")}</span>
+            <select aria-label=${t("wall_edit.board")} @change=${(e: Event) => { this._id = (e.target as HTMLSelectElement).value; this._sel = ""; this._modal = ""; }}>
+              ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || t("ladders.no_name")}</option>`)}
             </select>
           </label>
-          <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} Board</button>
-          <button @click=${() => (this._modal = "add")}>＋ Add tile</button>
-          <div class="views" role="group" aria-label="Show it as">
-            ${VIEWS.map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
+          <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} ${t("wall_edit.board")}</button>
+          <button @click=${() => (this._modal = "add")}>${t("wall_edit.add_tile")}</button>
+          <div class="views" role="group" aria-label=${t("wall_edit.show_it_as")}>
+            ${VIEWS().map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
           </div>
-          <span class="hint muted small">Drag to move · drag the corner to resize · tap to change · ✕ to remove</span>
+          <span class="hint muted small">${t("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
           ${this._askDiscard
-            ? html`<span class="small">Throw away your changes?</span>
-                <button class="danger" @click=${() => this._exit(this._savedName())}>Yes, discard</button>
-                <button @click=${() => (this._askDiscard = false)}>Keep editing</button>`
-            : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>Cancel</button>
-                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
+            ? html`<span class="small">${t("wall_edit.throw_away_your_changes")}</span>
+                <button class="danger" @click=${() => this._exit(this._savedName())}>${t("wall_edit.yes_discard")}</button>
+                <button @click=${() => (this._askDiscard = false)}>${t("wall_edit.keep_editing")}</button>`
+            : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>${t("common.cancel")}</button>
+                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? t("common.saving") : t("common.save")}</button>`}
         </div>
         <div class="stage" ?inert=${this._busy}>
           <div class="slot" style="width:${sw * scale}px;height:${sh * scale}px">
@@ -550,10 +551,10 @@ export class BoopliWallEdit extends LitElement {
             </div>
           </div>
         </div>
-        ${this._error && !this._modal ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>OK</button></div>` : nothing}
+        ${this._error && !this._modal ? html`<div class="toast" role="alert">${this._error} <button @click=${() => (this._error = "")}>${t("wall_edit.ok")}</button></div>` : nothing}
         <dialog
           class="modal"
-          aria-label="Edit the board"
+          aria-label=${t("wall_edit.edit_the_board")}
           ?inert=${this._busy}
           @close=${() => {
             if (this._modal) this._modal = ""; // closed with Escape

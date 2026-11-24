@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { eggFound, saveChore, saveSetup, subscribe, taskAdd } from "./api";
+import { eggFound, errorMessage, saveChore, saveSetup, subscribe, taskAdd } from "./api";
 import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
@@ -17,15 +17,16 @@ import { applyAccent } from "./accent";
 import { loadFonts } from "./fonts";
 import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
+import { setLanguage, t } from "./i18n";
 
 type Tab = "today" | "chores" | "home" | "settings";
 
-const TAB_LABELS: Record<Tab, string> = {
-  today: "Today",
-  chores: "Chores",
-  home: "My home",
-  settings: "Settings",
-};
+const TAB_LABELS = (): Record<Tab, string> => ({
+  today: t("wall_tile_calendar.today"),
+  chores: t("common.chores"),
+  home: t("panel.my_home"),
+  settings: t("common.settings"),
+});
 
 /** What the wizard should do, and where to start. */
 interface WizardRequest {
@@ -239,8 +240,7 @@ export class BoopliPanel extends LitElement {
         this._tab = "chores";
       }
     } catch (err) {
-      this._breakdownError =
-        err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : "Something went wrong.";
+      this._breakdownError = errorMessage(err);
     }
   };
 
@@ -262,6 +262,10 @@ export class BoopliPanel extends LitElement {
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
+    // The language of the texts: the person's Home Assistant language, or ?lang=xx in the address (to try a translation).
+    if (changed.has("hass") && this.hass) {
+      setLanguage(this.hass.language); // ?lang=xx and the choice in Settings come first (see i18n/index.ts)
+    }
     // The accent colour (the pet's own, or the one picked in Settings) for everything inside the panel.
     if (changed.has("_snapshot")) {
       const s = this._snapshot?.settings;
@@ -288,7 +292,7 @@ export class BoopliPanel extends LitElement {
           this._unsub = unsub;
         })
         .catch(() => {
-          this._connectionError = "Could not reach Boopli. Is the integration set up?";
+          this._connectionError = t("panel.could_not_reach_boopli_is_the");
         })
         .finally(() => {
           this._subscribing = false;
@@ -304,14 +308,14 @@ export class BoopliPanel extends LitElement {
   private _renderConfirm() {
     if (!this._confirm) return nothing;
     const answer = (c: Choice) => () => this._confirm?.(c);
-    return html`<div class="backdrop" role="dialog" aria-modal="true" aria-label="Unsaved changes">
+    return html`<div class="backdrop" role="dialog" aria-modal="true" aria-label=${t("panel.unsaved_changes")}>
       <div class="card dialog">
-        <h2>You have unsaved changes</h2>
-        <p class="muted">Leave without saving and they are lost.</p>
+        <h2>${t("panel.you_have_unsaved_changes")}</h2>
+        <p class="muted">${t("panel.leave_without_saving_and_they_are")}</p>
         <div class="dialog-actions">
-          <button class="primary" @click=${answer("save")}>Save</button>
-          <button class="danger" @click=${answer("discard")}>Discard</button>
-          <button @click=${answer("stay")}>Stay</button>
+          <button class="primary" @click=${answer("save")}>${t("common.save")}</button>
+          <button class="danger" @click=${answer("discard")}>${t("common.discard")}</button>
+          <button @click=${answer("stay")}>${t("panel.stay")}</button>
         </div>
       </div>
     </div>`;
@@ -327,8 +331,8 @@ export class BoopliPanel extends LitElement {
     const onNow = !!this._snapshot?.away_now;
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
-      <span>${icon("bag-suitcase")} <b>${onNow ? "Away mode is on" : "Away mode is planned"}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
-      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? "Back now…" : "Change"}</button>
+      <span>${icon("bag-suitcase")} <b>${onNow ? t("wall.away_mode_is_on") : t("panel.away_mode_is_planned")}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
+      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>
     </div>`;
   }
 
@@ -386,22 +390,22 @@ export class BoopliPanel extends LitElement {
     return html`
       <header>
         ${this.narrow
-          ? html`<button class="menu" aria-label="Open sidebar" @click=${this._toggleSidebar}>${icon("menu")}</button>`
+          ? html`<button class="menu" aria-label=${t("panel.open_sidebar")} @click=${this._toggleSidebar}>${icon("menu")}</button>`
           : nothing}
-        <h1>Boopli</h1>
+        <h1>${t("wizard.boopli")}</h1>
         <nav>
-          ${(Object.keys(TAB_LABELS) as Tab[]).map(
+          ${(Object.keys(TAB_LABELS()) as Tab[]).map(
             (tab) => html`<button
               class="tab ${this._tab === tab && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(tab)}
             >
-              ${TAB_LABELS[tab]}
-              ${unsaved[tab] ? html`<span class="dot" title="Unsaved changes" aria-label="Unsaved changes"></span>` : nothing}
+              ${TAB_LABELS()[tab]}
+              ${unsaved[tab] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
             </button>`
           )}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title="Show a board for a screen on the wall" @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>${icon("monitor-dashboard")} Wall view</button>
+        <button class="wallbtn" title=${t("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(pickBoard(this._snapshot?.settings?.boards, "")?.name ?? "")}>${icon("monitor-dashboard")} ${t("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main

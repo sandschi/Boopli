@@ -1,5 +1,6 @@
 import { css, html } from "lit";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { t } from "./i18n";
 
 /** A picture from a camera, refreshed every few seconds. Options: entity_id, refresh_s. */
 export class WallTileCamera extends WallTile {
@@ -35,11 +36,11 @@ export class WallTileCamera extends WallTile {
 
   render() {
     const id = this.text("entity_id");
-    if (!id) return html`<div class="center muted normal">Pick a camera in the board settings.</div>`;
+    if (!id) return html`<div class="center muted normal">${t("wall_tile_camera.pick_a_camera_in_the_board")}</div>`;
     const picture = this.hass?.states[id]?.attributes?.entity_picture;
-    if (typeof picture !== "string") return html`<div class="center muted normal">No picture from this camera.</div>`;
+    if (typeof picture !== "string") return html`<div class="center muted normal">${t("wall_tile_camera.no_picture_from_this_camera")}</div>`;
     const src = `${picture}${picture.includes("?") ? "&" : "?"}t=${this._tick}`;
-    return html`<img src=${src} alt="Camera picture" />`;
+    return html`<img src=${src} alt=${t("wall_tile_camera.camera_picture")} />`;
   }
 
   static styles = [

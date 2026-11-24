@@ -1,3 +1,5 @@
+
+import { hasText, t, type Params } from "./i18n";
 import type {
   AiAnswer,
   AiPreview,
@@ -286,12 +288,34 @@ export function completeStep(
   });
 }
 
+/**
+ * A value inside an error can itself be a message ("Step 'x': {error}"): it arrives as
+ * { key, params, text } and is translated first, then put into the outer sentence.
+ */
+function resolveValues(values: Params): Params {
+  const out: Params = {};
+  for (const [name, value] of Object.entries(values)) {
+    const nested = value as { key?: unknown; params?: Params; text?: unknown } | null;
+    if (nested && typeof nested === "object" && typeof nested.key === "string") {
+      out[name] = hasText(`errors.${nested.key}`) ? t(`errors.${nested.key}`, resolveValues(nested.params ?? {})) : String(nested.text ?? "");
+    } else {
+      out[name] = value;
+    }
+  }
+  return out;
+}
+
 /** Turn a failed websocket call into a readable message. */
 export function errorMessage(err: unknown): string {
-  if (err && typeof err === "object" && "message" in err) {
-    return String((err as { message: unknown }).message);
+  if (err && typeof err === "object") {
+    const e = err as { message?: unknown; translation_key?: unknown; translation_placeholders?: Params };
+    // Home Assistant sends the key of the message and its values: show the text in the language of the panel.
+    if (typeof e.translation_key === "string" && hasText(`errors.${e.translation_key}`)) {
+      return t(`errors.${e.translation_key}`, resolveValues(e.translation_placeholders ?? {}));
+    }
+    if ("message" in e) return String(e.message);
   }
-  return "Something went wrong.";
+  return t("common.something_went_wrong");
 }
 
 /** Describe a room from photos, one time. `photos` are base64 JPEGs; they are deleted right after. */

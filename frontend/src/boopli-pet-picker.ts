@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import "./boopli-pet";
 import { sharedStyles } from "./styles";
 import { MOODS, PETS, petInfo } from "./pets";
+import { t } from "./i18n";
 
 /**
  * Choose a pet. Each pet is a small picture you press; below, the chosen one in all five moods.
@@ -29,7 +30,7 @@ export class BoopliPetPicker extends LitElement {
 
   /** The arrow keys, Home and End move between the pets and choose, like any radio group. */
   private _key(e: KeyboardEvent, index: number): void {
-    const last = PETS.length - 1;
+    const last = PETS().length - 1;
     let next = index;
     if (e.key === "ArrowRight" || e.key === "ArrowDown") next = index === last ? 0 : index + 1;
     else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = index === 0 ? last : index - 1;
@@ -37,15 +38,15 @@ export class BoopliPetPicker extends LitElement {
     else if (e.key === "End") next = last;
     else return;
     e.preventDefault();
-    this._pick(PETS[next].kind);
+    this._pick(PETS()[next].kind);
     (this.shadowRoot?.querySelectorAll<HTMLElement>("button.choice")[next])?.focus();
   }
 
   render() {
     const chosen = petInfo(this.value);
     return html`
-      <div class="grid" role="radiogroup" aria-label="Your pet">
-        ${PETS.map(
+      <div class="grid" role="radiogroup" aria-label=${t("common.your_pet")}>
+        ${PETS().map(
           (p, i) => html`<button
             type="button"
             role="radio"
@@ -57,12 +58,12 @@ export class BoopliPetPicker extends LitElement {
           >
             <span class="pic"><boopli-pet .kind=${p.kind} .mood=${"content"} still></boopli-pet></span>
             <span class="name">${p.label}</span>
-            ${p.art ? "" : html`<span class="soon">art soon</span>`}
+            ${p.art ? "" : html`<span class="soon">${t("pet_picker.art_soon")}</span>`}
           </button>`
         )}
       </div>
       ${this.moods
-        ? html`<div class="moods" aria-label="${chosen.label} in every mood">
+        ? html`<div class="moods" aria-label=${t("pet_picker.in_every_mood", { label: chosen.label })}>
             ${MOODS.map(
               (m) => html`<div class="mood">
                 <span class="pic"><boopli-pet .kind=${chosen.kind} .mood=${m} still></boopli-pet></span>

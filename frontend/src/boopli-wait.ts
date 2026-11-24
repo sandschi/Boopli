@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import "./boopli-egg";
 import "./boopli-pet";
 import { petInfo } from "./pets";
+import { t } from "./i18n";
 
 const EGG_AFTER_SECONDS = 30; // the Easter egg shows up once a wait has lasted this long
 
@@ -41,7 +42,7 @@ export class BoopliWait extends LitElement {
 
   constructor() {
     super();
-    this.label = "Thinking…";
+    this.label = t("common.thinking");
     this.pet = "";
     this.max = 180;
     this.stoppable = true;
@@ -70,10 +71,10 @@ export class BoopliWait extends LitElement {
   /** A calm sentence for how it is going, so a long wait never feels like a freeze. */
   private _hint(): string {
     const s = this._elapsed;
-    if (s < 20) return "This usually takes under a minute.";
-    if (s < 60) return "Still working. Free models can be slow.";
-    if (s < this.max * 0.85) return "Still working. This one is slow, but it is not stuck.";
-    return "Nearly at the limit. If there is no answer, you can try again.";
+    if (s < 20) return t("wait.this_usually_takes_under_a_minute");
+    if (s < 60) return t("wait.still_working_free_models_can_be");
+    if (s < this.max * 0.85) return t("wait.still_working_this_one_is_slow");
+    return t("wait.nearly_at_the_limit_if_there");
   }
 
   render() {
@@ -89,7 +90,7 @@ export class BoopliWait extends LitElement {
       <div
         class="bar"
         role="progressbar"
-        aria-label="Waiting time used"
+        aria-label=${t("wait.waiting_time_used")}
         aria-valuemin="0"
         aria-valuemax=${this.max}
         aria-valuenow=${Math.round(this._elapsed)}
@@ -97,13 +98,13 @@ export class BoopliWait extends LitElement {
         <div class="fill" style="width:${used * 100}%"></div>
       </div>
       <div class="time">
-        <span>${mmss(this._elapsed)} so far</span>
-        <span>gives up after ${mmss(this.max)}</span>
+        <span>${t("wait.so_far", { time: mmss(this._elapsed) })}</span>
+        <span>${t("wait.gives_up_after", { time: mmss(this.max) })}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable
         ? html`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", { bubbles: true, composed: true }))}>
-            Stop waiting
+            ${t("wait.stop_waiting")}
           </button>`
         : nothing}
     </div>`;

@@ -413,6 +413,7 @@ export interface HassState {
 /** The slice of Home Assistant's `hass` object that the panel uses. */
 export interface Hass {
   user?: { name?: string };
+  language?: string; // the language of the person (for example "de"), also used for the panel texts
   states: Record<string, HassState>;
   services: Record<string, Record<string, unknown>>;
   callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;

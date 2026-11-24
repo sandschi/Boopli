@@ -1,0 +1,25 @@
+# Texts the check should not ask to translate: names, keyboard keys, CSS and code that only looks like text.
+boopli-settings.ts: Boopli
+boopli-wizard.ts: Boopli
+boopli-home.ts: Enter
+boopli-pet-picker.ts: Home
+boopli-pet-picker.ts: End
+boopli-wall.ts: < .hass= .snapshot= .nowMs= .options= .preview= >
+boopli-egg.ts: translate({}px, {}px) scale(1)
+boopli-egg.ts: translate({}px, {}px) scale({})
+fonts.ts: "Itim", var(--paper-font-body1_-_font-family, Roboto, sans-serif)
+fonts.ts: url({}fonts/{}) format("woff2")
+pet-bear.ts: work {}
+pet-cat.ts: work {}
+pet-dog.ts: work {}
+pet-fox.ts: work {}
+pet-slime.ts: work {}
+pet-work.ts: @keyframes {}{{}}
+wall-night.ts: Mon
+wall-night.ts: Tue
+wall-night.ts: Wed
+wall-night.ts: Thu
+wall-night.ts: Fri
+wall-night.ts: Sat
+wall-night.ts: Sun
+boopli-egg.ts: MacIntel

@@ -1,4 +1,5 @@
 import type { PetKind } from "./pets";
+import { t } from "./i18n";
 
 /** The accent colour of each pet, taken from its own art. Light enough to read on a dark screen. */
 export const PET_ACCENTS: Record<PetKind, string> = {
@@ -10,15 +11,15 @@ export const PET_ACCENTS: Record<PetKind, string> = {
 };
 
 /** The ready-made colours next to "Pet's colour" (a custom colour is also possible). */
-export const SWATCHES: { name: string; hex: string }[] = [
-  { name: "Green", hex: "#5ee05a" },
-  { name: "Teal", hex: "#3fd1b5" },
-  { name: "Blue", hex: "#4fb3f0" },
-  { name: "Lilac", hex: "#a894e8" },
-  { name: "Pink", hex: "#f07db0" },
-  { name: "Coral", hex: "#f0605d" },
-  { name: "Orange", hex: "#f28a30" },
-  { name: "Gold", hex: "#f5b544" },
+export const SWATCHES = (): { name: string; hex: string }[] => [
+  { name: t("accent.green"), hex: "#5ee05a" },
+  { name: t("accent.teal"), hex: "#3fd1b5" },
+  { name: t("accent.blue"), hex: "#4fb3f0" },
+  { name: t("accent.lilac"), hex: "#a894e8" },
+  { name: t("accent.pink"), hex: "#f07db0" },
+  { name: t("accent.coral"), hex: "#f0605d" },
+  { name: t("accent.orange"), hex: "#f28a30" },
+  { name: t("accent.gold"), hex: "#f5b544" },
 ];
 
 const HEX = /^#[0-9a-f]{6}$/i;
