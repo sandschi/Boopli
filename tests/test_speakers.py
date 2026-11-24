@@ -169,6 +169,7 @@ def full_settings() -> "engine.Settings":
     s.alarm_devices = [engine.AlarmDeviceCfg("siren.garage", 20, 5)]
     s.lights = [engine.LightCfg("light.x", start_at=2)]
     s.phones = [engine.PhoneCfg("mobile_app_x", "high", 3)]
+    s.standard_done = True
     return s
 
 
@@ -194,7 +195,7 @@ def test_speaker_validation_errors():
         return engine.validate_settings(s)
 
     assert check(lambda s: setattr(s.speakers[0], "entity_id", "light.x"))
-    assert check(lambda s: setattr(s.speakers[0].cue, "sound", ""))  # enabled but empty
+    assert check(lambda s: setattr(s.speakers[0].cue, "sound", "")) is None  # no ding yet: fine to save, it just is not offered
     assert check(lambda s: setattr(s.speakers[0].cue, "kind", "radio"))
     assert check(lambda s: setattr(s.speakers[0].cue, "start_at", 0))
     assert check(lambda s: setattr(s.speakers[0].alarm, "start_at", 21))

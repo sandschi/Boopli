@@ -68,9 +68,9 @@ export function newLight(entityId: string): LightCfg {
 export function newSpeaker(entityId: string): SpeakerCfg {
   return {
     entity_id: entityId,
-    cue: { enabled: false, kind: "alexa", sound: ALEXA_DING_SOUND, start_at: 1, seconds: 30, repeat_s: 5 },
+    cue: { enabled: true, kind: "alexa", sound: ALEXA_DING_SOUND, start_at: 1, seconds: 30, repeat_s: 5 },
     speech: { enabled: false, route: "alexa_media", target: "", announce: false, start_at: 2 },
-    alarm: { enabled: false, kind: "alexa", sound: ALEXA_ALARM_SOUND, start_at: 4, seconds: 30, repeat_s: 5 },
+    alarm: { enabled: true, kind: "alexa", sound: ALEXA_ALARM_SOUND, start_at: 4, seconds: 30, repeat_s: 5 },
   };
 }
 
@@ -125,6 +125,12 @@ export function newLadderId(): string {
 }
 
 /** The name of a nudge style, including one of your own ladders. A ladder that is gone is called that. */
+/** A stored built-in style ("escalating") as the standard ladder that replaced it, when there is one. */
+export function normalizeStyle(style: string, ladders: Ladder[] | undefined): string {
+  const id = { one: "standard_one", escalating: "standard_escalating", persistent: "standard_persistent" }[style];
+  return id && ladders?.some((l) => l.id === id) ? `ladder:${id}` : style;
+}
+
 export function styleLabel(style: string, ladders: Ladder[] | undefined): string {
   if (style.startsWith("ladder:")) {
     return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? "A ladder that is gone";
@@ -159,12 +165,8 @@ export function describeQuiet(qh: QuietHours): string {
 
 /** What a speaker plays, in a few words. */
 export function describeSpeaker(s: SpeakerCfg): string {
-  const levels = [
-    s.cue.enabled ? `ding (from nudge ${s.cue.start_at})` : "",
-    s.speech.enabled ? `speech (from nudge ${s.speech.start_at})` : "",
-    s.alarm.enabled ? `alarm (from nudge ${s.alarm.start_at})` : "",
-  ].filter(Boolean);
-  return levels.length ? levels.join(", ") : "nothing switched on yet";
+  const kind = s.speech.route === "tts" ? "TTS voice" : s.speech.route === "alexa_devices" ? "Alexa Devices" : "Alexa Media Player";
+  return s.speech.target && s.speech.enabled ?`${kind}, speaks` : `${kind}, no speaking device yet`;
 }
 
 export function lightKind(l: LightCfg): string {

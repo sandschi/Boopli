@@ -137,8 +137,8 @@ SPEAKER_ALARM = "alarm"  # a loud sound, repeated for a while
 SPEAKER_LEVELS = (SPEAKER_CUE, SPEAKER_SPEECH, SPEAKER_ALARM)  # low to high
 # What a ladder can pick for a speaker at one nudge, besides the three levels above:
 SPEAKER_SPEECH_CHIME = "speech_chime"  # speech as an Alexa announcement, which starts with a chime
-SPEAKER_SOUND_PREFIX = "sound:"  # "sound:<id>": one of the extra sounds of that speaker
-EXTRA_SOUNDS_MAX = 30  # extra sounds per speaker
+SPEAKER_SOUND_PREFIX = "sound:"  # "sound:<id>": one of your own sounds (the shared list in the settings)
+EXTRA_SOUNDS_MAX = 60  # your own sounds, one list for all speakers
 EXTRA_SOUND_NAME_MAX = 30
 
 SOUND_ALEXA = "alexa"  # one of Amazon's built-in sounds, by id
@@ -183,6 +183,7 @@ PROGRESS_DAYS_KEPT = 7  # how long the per-day XP bookkeeping is kept
 PET_NAME_DEFAULT = "Boopli"
 PET_NAME_MAX = 30
 PET_KINDS = ("bear", "cat", "dog", "fox", "slime")  # the pets to choose from
+ACCENT_RE = re.compile(r"^#[0-9a-fA-F]{6}$")  # the panel's accent colour as "#RRGGBB"; empty means the pet's own
 PET_KIND_DEFAULT = "slime"  # the first one with real animated art
 
 MOOD_HAPPY = "happy"  # you finished something today
@@ -1844,7 +1845,9 @@ class SpeakerCfg:
             sound=ALEXA_ALARM_SOUND, start_at=4, kind=SOUND_ALEXA
         )
     )
-    sounds: list[ExtraSound] = field(default_factory=list)  # more sound effects, for ladders
+    # Older settings kept your own sounds here, one list per speaker. They are one shared list in the
+    # settings now (`Settings.sounds`); this is only read, and moved there when the settings are loaded.
+    sounds: list[ExtraSound] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
@@ -1950,7 +1953,7 @@ class AiSettings:
 # exactly which devices act (and how loud), so "no lights at nudge 2" is possible.
 
 LADDER_PREFIX = "ladder:"  # a chore's nudge style "ladder:<id>" points at one of your ladders
-LADDER_MAX = 20
+LADDER_MAX = 30
 LADDER_MAX_NUDGES = 12
 LADDER_GAP_MIN, LADDER_GAP_MAX = 1, 720  # minutes
 LADDER_GAP_DEFAULT = 5
@@ -2078,6 +2081,148 @@ def rung_for(ladder: Ladder, number: int) -> Rung | None:
     if number <= len(ladder.rungs):
         return ladder.rungs[number - 1]
     return ladder.rungs[-1] if ladder.repeat_last else None
+
+
+# --- the standard ladders --------------------------------------------------------
+#
+# "One nudge", "Escalating" and "Persistent" used to be built in: which device acted when was spread
+# over the settings of every device ("starts at nudge"). They are ordinary ladders now, the first three
+# in the list, that you change in one place like your own. The first time older settings are loaded the
+# three are made from what the devices said, so nudging stays exactly as it was.
+
+STANDARD_LADDERS = {
+    STYLE_ONE: ("standard_one", "One nudge"),
+    STYLE_ESCALATING: ("standard_escalating", "Escalating"),
+    STYLE_PERSISTENT: ("standard_persistent", "Persistent"),
+}
+
+
+def normalize_style(style: str, ladders: list[Ladder]) -> str:
+    """A built-in style value (older settings, a template, an import) as the standard ladder that replaced it."""
+    entry = STANDARD_LADDERS.get(style)
+    if entry and any(ladder.id == entry[0] for ladder in ladders):
+        return ladder_style(entry[0])
+    return style
+
+
+def _speaker_choice_at(speaker: SpeakerCfg, number: int) -> str | None:
+    """What a speaker plays at this nudge: its highest level that is switched on and reached."""
+    level = speaker_level(speaker, number)
+    if level == SPEAKER_SPEECH and speaker.speech.announce and speaker.speech.route == SPEECH_ALEXA_MEDIA:
+        return SPEAKER_SPEECH_CHIME
+    return level
+
+
+def standard_rungs(
+    style: str,
+    phones: Iterable[PhoneCfg],
+    lights: Iterable[LightCfg],
+    speakers: Iterable[SpeakerCfg],
+    alarms: Iterable[AlarmDeviceCfg],
+) -> list[Rung]:
+    """The nudges of a standard style, with the devices given acting where their "starts at nudge" says."""
+    phones, lights, speakers, alarms = list(phones), list(lights), list(speakers), list(alarms)
+    if style == STYLE_ONE:
+        gaps: list[int] = []
+    elif style == STYLE_ESCALATING:
+        gaps = list(ESCALATING_GAPS)
+    else:  # persistent: as many nudges as the devices need, the last one then repeats
+        starts = [p.start_at for p in phones] + [x.start_at for x in lights] + [a.start_at for a in alarms]
+        starts += [c.start_at for s in speakers for c in (s.cue, s.speech, s.alarm)]
+        gaps = [PERSISTENT_GAP] * (max(1, min(LADDER_MAX_NUDGES, max(starts, default=1))) - 1)
+    rungs: list[Rung] = []
+    for number in range(1, len(gaps) + 2):
+        first = PERSISTENT_GAP if style == STYLE_PERSISTENT else LADDER_GAP_DEFAULT  # a repeating last nudge waits this long
+        rung = Rung(gap=first if number == 1 else gaps[number - 2])
+        for phone in phones:
+            if reached(phone.start_at, number):
+                rung.phones[phone.service] = phone.level
+        for light in lights:
+            if reached(light.start_at, number):
+                rung.lights[light.entity_id] = RungLight(mode=LIGHT_OWN_MODE)
+        for speaker in speakers:
+            choice = _speaker_choice_at(speaker, number)
+            if choice:
+                rung.speakers[speaker.entity_id] = choice
+        for alarm in alarms:
+            if reached(alarm.start_at, number):
+                rung.alarms.append(alarm.entity_id)
+        rungs.append(rung)
+    return rungs
+
+
+def seed_standard_ladders(settings: Settings) -> None:
+    """Make the three standard ladders from the devices (once) and point the default style at its ladder."""
+    ids = {ladder.id for ladder in settings.ladders}
+    names = {ladder.name.casefold() for ladder in settings.ladders}
+    made: list[Ladder] = []
+    for style, (ladder_id, name) in STANDARD_LADDERS.items():
+        if ladder_id in ids:
+            continue
+        unique, n = name, 1
+        while unique.casefold() in names:
+            n += 1
+            unique = f"{name} (standard)" if n == 2 else f"{name} (standard {n - 1})"
+        names.add(unique.casefold())
+        rungs = standard_rungs(style, settings.phones, settings.lights, settings.speakers, settings.alarm_devices)
+        made.append(Ladder(id=ladder_id, name=unique, rungs=rungs, repeat_last=style == STYLE_PERSISTENT))
+    settings.ladders[:0] = made
+    settings.default_style = normalize_style(settings.default_style, settings.ladders)
+    settings.standard_done = True
+
+
+STANDARD_LADDER_IDS = frozenset(ladder_id for ladder_id, _name in STANDARD_LADDERS.values())
+
+
+def deleted_standard_ladder(old: Settings, new: Settings) -> str | None:
+    """The name of a standard ladder (One nudge, Escalating, Persistent) that `new` lacks but `old` has: they cannot be deleted."""
+    kept = {ladder.id for ladder in new.ladders}
+    return next((l.name for l in old.ladders if l.id in STANDARD_LADDER_IDS and l.id not in kept), None)
+
+
+def sync_phone_levels_to_standard_ladders(old: Settings, new: Settings) -> None:
+    """A phone whose level was changed in the settings uses the new level in the standard ladders too."""
+    changed = {
+        p.service: p.level for p in new.phones if any(o.service == p.service and o.level != p.level for o in old.phones)
+    }
+    if not changed:
+        return
+    for ladder in new.ladders:
+        if ladder.id not in STANDARD_LADDER_IDS:
+            continue
+        for rung in ladder.rungs:
+            for service, level in changed.items():
+                if service in rung.phones:
+                    rung.phones[service] = level
+
+
+def add_new_devices_to_standard_ladders(old: Settings, new: Settings) -> None:
+    """Devices added in `new` act in the standard ladders the way their "starts at nudge" says (the old behaviour)."""
+    phones = [p for p in new.phones if all(o.service != p.service for o in old.phones)]
+    lights = [x for x in new.lights if all(o.entity_id != x.entity_id for o in old.lights)]
+    speakers = [s for s in new.speakers if all(o.entity_id != s.entity_id for o in old.speakers)]
+    alarms = [a for a in new.alarm_devices if all(o.entity_id != a.entity_id for o in old.alarm_devices)]
+    if not (phones or lights or speakers or alarms):
+        return
+    for style, (ladder_id, _name) in STANDARD_LADDERS.items():
+        ladder = next((x for x in new.ladders if x.id == ladder_id), None)
+        if ladder is None:
+            continue
+        extra = standard_rungs(style, phones, lights, speakers, alarms)
+        if style == STYLE_PERSISTENT:  # a device with a later "starts at nudge" needs the ladder to be that long
+            while ladder.rungs and len(ladder.rungs) < len(extra):
+                last = ladder.rungs[-1]
+                ladder.rungs.append(
+                    Rung(gap=PERSISTENT_GAP, phones=dict(last.phones), lights=dict(last.lights), speakers=dict(last.speakers), alarms=list(last.alarms))
+                )
+        pairs = list(zip(ladder.rungs, extra))
+        if style == STYLE_PERSISTENT and extra:  # the last nudge repeats, so the new devices keep acting in the rungs after it
+            pairs += [(rung, extra[-1]) for rung in ladder.rungs[len(extra):]]
+        for rung, add in pairs:
+            rung.phones.update(add.phones)
+            rung.lights.update(add.lights)
+            rung.speakers.update(add.speakers)
+            rung.alarms.extend(a for a in add.alarms if a not in rung.alarms)
 
 
 # --- the wall board --------------------------------------------------------------
@@ -2319,19 +2464,72 @@ class Settings:
     default_style: str = STYLE_ONE
     pet_name: str = PET_NAME_DEFAULT
     pet_kind: str = PET_KIND_DEFAULT  # which pet it is (see PET_KINDS)
+    accent: str = ""  # colour of buttons and bars as "#RRGGBB"; empty = the pet's own colour
     ai: AiSettings = field(default_factory=AiSettings)
     question_wait_minutes: int = QUESTION_WAIT_DEFAULT  # how long the first nudge waits for the questions
     check_in_minutes: int = CHECK_IN_DEFAULT  # after "On it": when Boopli asks "still on it?"
     ladders: list[Ladder] = field(default_factory=list)  # "Nudge it your way"
     boards: list[Board] = field(default_factory=lambda: [default_board()])  # wall boards
+    sounds: list[ExtraSound] = field(default_factory=list)  # your own sounds, shared by all speakers
+    standard_done: bool = False  # the three standard styles have been turned into ladders (see seed_standard_ladders)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Settings:
+        settings = cls._parse(d)
+        settings.merge_speaker_sounds()
+        if not settings.standard_done:
+            seed_standard_ladders(settings)
+        return settings
+
+    def merge_speaker_sounds(self) -> None:
+        """Older settings: the sounds of each speaker move into the one shared list."""
+        ids = {s.id for s in self.sounds}
+        names = {s.name.casefold() for s in self.sounds}
+        for speaker in self.speakers:
+            moved: dict[str, str] = {}  # this speaker's old sound id -> the id it has in the shared list
+            for sound in speaker.sounds:
+                same = next(
+                    (
+                        s
+                        for s in self.sounds
+                        if s.kind == sound.kind and s.sound == sound.sound and s.name.casefold() == sound.name.casefold()
+                    ),
+                    None,
+                )
+                if same is not None:  # the same sound on another speaker is the same sound
+                    moved[sound.id] = same.id
+                    continue
+                keep_id = sound.id
+                while keep_id in ids:  # the same id for another sound on another speaker
+                    keep_id = new_id()
+                name, n = sound.name, 2
+                while name.casefold() in names:
+                    suffix = f" {n}"
+                    name = sound.name[: EXTRA_SOUND_NAME_MAX - len(suffix)] + suffix
+                    n += 1
+                self.sounds.append(replace(sound, id=keep_id, name=name))
+                moved[sound.id] = keep_id
+                ids.add(keep_id)
+                names.add(name.casefold())
+            speaker.sounds = []
+            # Ladders that picked one of this speaker's sounds follow it to its new place in the list.
+            for ladder in self.ladders:
+                for rung in ladder.rungs:
+                    choice = rung.speakers.get(speaker.entity_id, "")
+                    old = choice[len(SPEAKER_SOUND_PREFIX):] if choice.startswith(SPEAKER_SOUND_PREFIX) else ""
+                    if old in moved and moved[old] != old:
+                        rung.speakers[speaker.entity_id] = SPEAKER_SOUND_PREFIX + moved[old]
+
+    @classmethod
+    def _parse(cls, d: dict[str, Any] | None) -> Settings:
         d = d or {}
         ladders = d.get("ladders")
         boards = d.get("boards")
+        sounds = d.get("sounds")
         board_list = [Board.from_dict(x) for x in boards if isinstance(x, dict)] if isinstance(boards, list) else []
         return cls(
+            sounds=[ExtraSound.from_dict(x) for x in sounds if isinstance(x, dict)] if isinstance(sounds, list) else [],
+            standard_done=bool(d.get("standard_done", False)),
             boards=board_list or [default_board()],
             ladders=[Ladder.from_dict(x) for x in ladders if isinstance(x, dict)] if isinstance(ladders, list) else [],
             check_in_minutes=int(d.get("check_in_minutes", CHECK_IN_DEFAULT) or CHECK_IN_DEFAULT),
@@ -2352,6 +2550,7 @@ class Settings:
             snooze_minutes=int(d.get("snooze_minutes", 15) or 15),
             default_style=str(d.get("default_style", STYLE_ONE)),
             pet_kind=str(d.get("pet_kind") or PET_KIND_DEFAULT).strip(),
+            accent=str(d.get("accent") or "").strip(),
             pet_name=str(d.get("pet_name") or PET_NAME_DEFAULT).strip()
             or PET_NAME_DEFAULT,
         )
@@ -2371,29 +2570,10 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
             return _START_AT_ERROR
         if sound.kind not in SOUND_KINDS:
             return f"Unknown {name} sound type."
-        if sound.enabled and not sound.sound:
-            return f"Choose the {name} sound for {speaker.entity_id}."
     if not ALARM_SECONDS_MIN <= speaker.alarm.seconds <= ALARM_SECONDS_MAX:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
         return f"Alarm repeat must be 0 to {ALARM_REPEAT_MAX} seconds."
-    if len(speaker.sounds) > EXTRA_SOUNDS_MAX:
-        return f"A speaker can have at most {EXTRA_SOUNDS_MAX} extra sounds."
-    sound_ids: set[str] = set()
-    sound_names: set[str] = set()
-    for extra in speaker.sounds:
-        if not extra.name:
-            return f"Every extra sound of {speaker.entity_id} needs a name."
-        if len(extra.name) > EXTRA_SOUND_NAME_MAX:
-            return f"A sound name can have at most {EXTRA_SOUND_NAME_MAX} letters."
-        if extra.id in sound_ids or extra.name.casefold() in sound_names:
-            return f"{speaker.entity_id} has two sounds with the same name."
-        sound_ids.add(extra.id)
-        sound_names.add(extra.name.casefold())
-        if extra.kind not in SOUND_KINDS:
-            return f"Unknown type for the sound '{extra.name}'."
-        if not extra.sound:
-            return f"Choose the sound for '{extra.name}'."
     speech = speaker.speech
     if not START_AT_MIN <= speech.start_at <= START_AT_MAX:
         return _START_AT_ERROR
@@ -2409,13 +2589,39 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
     return None
 
 
-def validate_speaker_test(speaker: SpeakerCfg, level: str) -> str | None:
+def validate_sounds(sounds: list[ExtraSound]) -> str | None:
+    """Check your own sounds (the shared list): a name, a unique name, a known type and a sound."""
+    if len(sounds) > EXTRA_SOUNDS_MAX:
+        return f"You can have at most {EXTRA_SOUNDS_MAX} sounds of your own."
+    ids: set[str] = set()
+    names: set[str] = set()
+    for sound in sounds:
+        if not sound.name:
+            return "Every sound needs a name."
+        if len(sound.name) > EXTRA_SOUND_NAME_MAX:
+            return f"A sound name can have at most {EXTRA_SOUND_NAME_MAX} letters."
+        if sound.id in ids or sound.name.casefold() in names:
+            return f"There are two sounds called '{sound.name}'."
+        ids.add(sound.id)
+        names.add(sound.name.casefold())
+        if sound.kind not in SOUND_KINDS:
+            return f"Unknown type for the sound '{sound.name}'."
+        if not sound.sound:
+            return f"Choose the sound for '{sound.name}'."
+    return None
+
+
+def validate_speaker_test(speaker: SpeakerCfg, level: str, sounds: list[ExtraSound] | None = None) -> str | None:
     """Check a speaker before testing one level (which need not be switched on)."""
-    if find_extra_sound(speaker, level) is not None:
-        return _validate_speaker(speaker)  # one of the speaker's extra sounds
+    if find_sound(sounds or [], level) is not None:
+        return _validate_speaker(speaker)  # one of your own sounds
     if level not in SPEAKER_LEVELS and level != SPEAKER_SPEECH_CHIME:
         return "Unknown speaker level."
     probe = speaker
+    if level in (SPEAKER_CUE, SPEAKER_ALARM) and not (speaker.cue if level == SPEAKER_CUE else speaker.alarm).sound:
+        return f"Choose the {level} sound for {speaker.entity_id} first."  # saving without one is fine; testing it is not
+    if level in (SPEAKER_CUE, SPEAKER_ALARM) and (speaker.cue if level == SPEAKER_CUE else speaker.alarm).kind == SOUND_ALEXA and not speaker_plays_alexa_sounds(speaker):
+        return "Another media player can only play files, not Amazon's sounds."
     if level == SPEAKER_CUE:
         probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
     elif level in (SPEAKER_SPEECH, SPEAKER_SPEECH_CHIME):
@@ -2498,7 +2704,9 @@ def validate_settings(settings: Settings) -> str | None:
         return f"The pet's name can have at most {PET_NAME_MAX} letters."
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
-    error = validate_ladders(settings.ladders) or validate_boards(settings.boards)
+    if settings.accent and not ACCENT_RE.fullmatch(settings.accent):
+        return "The accent colour must look like #1A2B3C."
+    error = validate_sounds(settings.sounds) or validate_ladders(settings.ladders) or validate_boards(settings.boards)
     if error:
         return error
     if not style_known(settings.default_style, settings.ladders):
@@ -2932,25 +3140,39 @@ def phones_reached(settings: Settings, style: str, number: int) -> list[PhoneCfg
     return out
 
 
-def find_extra_sound(speaker: SpeakerCfg, choice: str) -> ExtraSound | None:
-    """The extra sound a "sound:<id>" choice points at."""
+def find_sound(sounds: Iterable[ExtraSound], choice: str) -> ExtraSound | None:
+    """The sound of your own list that a "sound:<id>" choice points at."""
     if not choice.startswith(SPEAKER_SOUND_PREFIX):
         return None
     wanted = choice[len(SPEAKER_SOUND_PREFIX):]
-    return next((s for s in speaker.sounds if s.id == wanted), None)
+    return next((s for s in sounds if s.id == wanted), None)
 
 
-def speaker_choice_ok(speaker: SpeakerCfg, choice: str) -> bool:
-    """Whether a speaker can do what a ladder asks of it (a level that is switched on, or a sound it has)."""
+def speaker_plays_alexa_sounds(speaker: SpeakerCfg) -> bool:
+    """Whether this speaker is an Alexa one. Amazon's sounds only play there; a file plays on any speaker."""
+    return speaker.speech.route != SPEECH_TTS
+
+
+def sound_fits_speaker(sound: ExtraSound, speaker: SpeakerCfg) -> bool:
+    """A file plays on any speaker, one of Amazon's sounds on an Alexa speaker."""
+    return sound.kind != SOUND_ALEXA or speaker_plays_alexa_sounds(speaker)
+
+
+def speaker_choice_ok(speaker: SpeakerCfg, choice: str, sounds: Iterable[ExtraSound] = ()) -> bool:
+    """Whether a speaker can do what a ladder asks of it (a level that is switched on, or a sound it can play)."""
     if choice.startswith(SPEAKER_SOUND_PREFIX):
-        return find_extra_sound(speaker, choice) is not None
-    cfg = {
-        SPEAKER_CUE: speaker.cue,
-        SPEAKER_SPEECH: speaker.speech,
-        SPEAKER_SPEECH_CHIME: speaker.speech,
-        SPEAKER_ALARM: speaker.alarm,
-    }.get(choice)
-    return bool(cfg and cfg.enabled)
+        sound = find_sound(sounds, choice)
+        return sound is not None and sound_fits_speaker(sound, speaker)
+    # A ding and an alarm are always on offer once they have a sound; speaking needs somewhere to speak.
+    # (an Amazon sound cannot play on another media player: that one needs a file)
+    for level, tone in ((SPEAKER_CUE, speaker.cue), (SPEAKER_ALARM, speaker.alarm)):
+        if choice == level:
+            return bool(tone.sound) and (tone.kind != SOUND_ALEXA or speaker_plays_alexa_sounds(speaker))
+    if choice == SPEAKER_SPEECH:
+        return bool(speaker.speech.target)
+    if choice == SPEAKER_SPEECH_CHIME:
+        return bool(speaker.speech.target) and speaker.speech.route == SPEECH_ALEXA_MEDIA
+    return False
 
 
 def speaker_level(speaker: SpeakerCfg, number: int) -> str | None:

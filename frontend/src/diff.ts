@@ -51,6 +51,8 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   if (before.pet_name !== after.pet_name) out.push(`Pet name: ${before.pet_name} → ${after.pet_name}`);
   if ((before.pet_kind ?? "slime") !== (after.pet_kind ?? "slime"))
     out.push(`Pet: ${before.pet_kind ?? "slime"} → ${after.pet_kind ?? "slime"}`);
+  if ((before.accent ?? "") !== (after.accent ?? ""))
+    out.push(`Accent colour: ${before.accent || "the pet's own"} → ${after.accent || "the pet's own"}`);
 
   const phones = byKey(before.phones, after.phones, (p) => p.service);
   phones.added.forEach((p) => out.push(`Phone added: ${phoneName(p.service)} (${PHONE_LEVEL_LABEL[p.level] ?? p.level})`));
@@ -91,18 +93,14 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   if (before.default_style !== after.default_style)
     out.push(`Default style: ${styleLabel(before.default_style, before.ladders)} → ${styleLabel(after.default_style, after.ladders)}`);
 
-  // Extra sounds of the speakers (for ladders).
-  for (const after_sp of after.speakers) {
-    const before_sp = before.speakers.find((x) => x.entity_id === after_sp.entity_id);
-    const was = new Map((before_sp?.sounds ?? []).map((s) => [s.id, s.name]));
-    const now = new Map((after_sp.sounds ?? []).map((s) => [s.id, s.name]));
-    for (const [id, label] of now) if (!was.has(id)) out.push(`${name(after_sp.entity_id)}: sound added (${label})`);
-    for (const [id, label] of was) if (!now.has(id)) out.push(`${name(after_sp.entity_id)}: sound removed (${label})`);
-    for (const s of after_sp.sounds ?? []) {
-      const o = (before_sp?.sounds ?? []).find((x) => x.id === s.id);
-      if (o && (o.name !== s.name || o.kind !== s.kind || o.sound !== s.sound))
-        out.push(`${name(after_sp.entity_id)}: sound changed (${s.name})`);
-    }
+  // Your own sounds (one list for all speakers).
+  const was = new Map((before.sounds ?? []).map((s) => [s.id, s.name]));
+  const now = new Map((after.sounds ?? []).map((s) => [s.id, s.name]));
+  for (const [id, label] of now) if (!was.has(id)) out.push(`Sound added: ${label}`);
+  for (const [id, label] of was) if (!now.has(id)) out.push(`Sound removed: ${label}`);
+  for (const s of after.sounds ?? []) {
+    const o = (before.sounds ?? []).find((x) => x.id === s.id);
+    if (o && (o.name !== s.name || o.kind !== s.kind || o.sound !== s.sound)) out.push(`Sound changed: ${s.name}`);
   }
 
   const boards = byKey(before.boards ?? [], after.boards ?? [], (b) => b.id);

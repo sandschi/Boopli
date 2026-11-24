@@ -1,11 +1,12 @@
 import { LitElement, html, css, nothing } from "lit";
+import { icon } from "./icon";
 import { friendlyName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { speakerChoices } from "./boopli-rung";
 import { sharedStyles } from "./styles";
-import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot, SpeakerCfg } from "./types";
+import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot } from "./types";
 
 // The same limits as in the integration.
-const MAX_LADDERS = 20;
+const MAX_LADDERS = 30; // the same as the backend (the three standard ladders count too)
 const MAX_NUDGES = 12;
 const GAP_MIN = 1;
 const GAP_MAX = 720;
@@ -13,9 +14,6 @@ const NAME_MAX = 40;
 
 const BUILT_IN: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet (no nudges)" },
-  { value: "one", label: "One nudge" },
-  { value: "escalating", label: "Escalating" },
-  { value: "persistent", label: "Persistent" },
 ];
 
 function copyRung(r: Rung): Rung {
@@ -180,8 +178,12 @@ export class BoopliLadders extends LitElement {
     }
     for (const [id, choice] of Object.entries(r.speakers)) {
       const sp = this.settings?.speakers.find((x) => x.entity_id === id);
-      const label = speakerChoices(sp ?? ({ entity_id: id } as SpeakerCfg)).find((c) => c.value === choice)?.label ?? choice;
-      parts.push(`${friendlyName(this.hass, id)} (${label.replace("🔔 ", "").toLowerCase()})`);
+      if (!sp) {
+        parts.push(`${friendlyName(this.hass, id)} (not set up any more)`);
+        continue;
+      }
+      const label = speakerChoices(sp, this.settings?.sounds).find((c) => c.value === choice)?.label ?? choice;
+      parts.push(`${friendlyName(this.hass, id)} (${label.toLowerCase()})`);
     }
     for (const id of r.alarms) parts.push(`${friendlyName(this.hass, id)} (alarm)`);
     return parts.length ? parts.join(", ") : "nothing";
@@ -281,7 +283,7 @@ export class BoopliLadders extends LitElement {
     if (!s) return nothing;
     const ladders = this._ladders;
     return html`<section class="card">
-      <h2>🪜 Nudge it your way</h2>
+      <h2>${icon("stairs")} Nudge it your way</h2>
       <p class="muted small">
         Build your own ladder of nudges. For each nudge you choose how long Boopli waits, and exactly which phone,
         light, speaker or alarm acts, and how loud. A chore uses a ladder when you pick it as its nudge style.
@@ -317,7 +319,7 @@ export class BoopliLadders extends LitElement {
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>
                   ${open ? "Close" : "Edit"}
                 </button>
-                <button class="chip danger" @click=${() => this._delete(l)}>Delete</button>
+                ${l.id.startsWith("standard_") ? nothing : html`<button class="chip danger" @click=${() => this._delete(l)}>Delete</button>`}
               </div>
               ${open
                 ? this._renderEditor(l)
@@ -352,11 +354,11 @@ export class BoopliLadders extends LitElement {
         box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
       }
       h2 {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 6px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .spacer {
         flex: 1;

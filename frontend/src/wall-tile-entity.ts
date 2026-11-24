@@ -1,6 +1,7 @@
 import { css, html } from "lit";
 import { friendlyName } from "./helpers";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { icon } from "./icon";
 
 /** What a tap does, by kind of entity: [domain, service], or none (a sensor has nothing to press). */
 const TAP: Record<string, [string, string]> = {
@@ -18,20 +19,20 @@ const TAP: Record<string, [string, string]> = {
 };
 
 const ICON: Record<string, string> = {
-  light: "💡",
-  switch: "🔌",
-  input_boolean: "🔘",
-  fan: "🌀",
-  cover: "🪟",
-  lock: "🔒",
-  climate: "🌡️",
-  sensor: "📟",
-  binary_sensor: "👁️",
-  script: "▶️",
-  scene: "🎬",
-  button: "⏺️",
-  person: "🧑",
-  media_player: "🎵",
+  light: "lightbulb-outline",
+  switch: "power-plug-outline",
+  input_boolean: "toggle-switch-outline",
+  fan: "fan",
+  cover: "window-shutter",
+  lock: "lock-outline",
+  climate: "thermostat",
+  sensor: "gauge",
+  binary_sensor: "eye-outline",
+  script: "script-text-play-outline",
+  scene: "palette-outline",
+  button: "gesture-tap-button",
+  person: "account-outline",
+  media_player: "speaker",
 };
 
 /** Any Home Assistant entity: its state, and a tap that toggles it when that makes sense. Options: entity_id, name, tap. */
@@ -53,7 +54,7 @@ export class WallTileEntity extends WallTile {
     const unit = typeof st?.attributes?.unit_of_measurement === "string" ? ` ${st.attributes.unit_of_measurement}` : "";
     const on = st?.state === "on";
     const tappable = !!TAP[domain] && this.text("tap", "toggle") === "toggle" && !this.preview; // in the editor it does nothing, so it is no button there
-    const inside = html`<div class="icon big">${ICON[domain] ?? "◻️"}</div>
+    const inside = html`<div class="icon big">${icon(ICON[domain] ?? "shape-outline")}</div>
       <div>
         <div class="label">${name}</div>
         <div class="big">${st ? `${st.state}${unit}` : "not found"}</div>
@@ -87,12 +88,12 @@ export class WallTileEntity extends WallTile {
         cursor: pointer;
       }
       button.ent:focus-visible {
-        outline: 3px solid var(--primary-color);
+        outline: 3px solid var(--boopli-accent, var(--primary-color));
         outline-offset: 4px;
         border-radius: 12px;
       }
       .on .icon {
-        filter: drop-shadow(0 0 8px var(--primary-color));
+        filter: drop-shadow(0 0 8px var(--boopli-accent, var(--primary-color)));
       }
       .big {
         text-transform: capitalize;

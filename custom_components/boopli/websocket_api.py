@@ -375,7 +375,8 @@ def ws_settings_save(
     except BoopliError as err:
         connection.send_error(msg["id"], "invalid", str(err))
         return
-    connection.send_result(msg["id"])
+    # The ladders as saved (a new device may have been added to the standard ones), so a screen keeping its own copy can follow.
+    connection.send_result(msg["id"], {"ladders": manager.snapshot()["settings"]["ladders"]})
 
 
 @websocket_api.websocket_command(
@@ -760,6 +761,7 @@ def ws_setup_save(
         vol.Optional("light"): dict,
         vol.Optional("phone"): dict,
         vol.Optional("speaker"): dict,
+        vol.Optional("sounds"): list,
         vol.Optional("level"): str,
         vol.Optional("alarm_device"): dict,
     }

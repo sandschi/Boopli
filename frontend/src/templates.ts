@@ -64,7 +64,7 @@ export const TEMPLATES: Template[] = [
         every_n_days: 1,
         days: Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map((d) => [String(d), ["08:00"]])),
       },
-      nudge_style: "escalating",
+      nudge_style: "ladder:standard_escalating",
       ignore_quiet_hours: true,
       keeps_going: true, // pills are taken on holiday too
       steps: [{ title: "Take your pills", wait_minutes: 0 }],

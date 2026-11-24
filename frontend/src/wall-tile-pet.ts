@@ -37,7 +37,7 @@ export class WallTilePet extends WallTile {
       boopli-stage {
         /* the room keeps its shape: as wide as fits, and as tall as the tile leaves room for */
         flex: none;
-        width: min(100cqw - 16px, calc((100cqh - 56px) * 2.667));
+        width: min(100cqw - 16px, calc((100cqh - 56px) * 3.2));
         align-self: center;
       }
       .name {

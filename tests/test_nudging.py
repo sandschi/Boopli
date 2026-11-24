@@ -232,6 +232,7 @@ def good_settings() -> "engine.Settings":
         phones=[engine.PhoneCfg("mobile_app_sm_a335g", "high")],
         quiet_hours=working_week_quiet(),
         presence_entity="person.sandro",
+        standard_done=True,
     )
 
 

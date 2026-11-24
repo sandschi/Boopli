@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { icon } from "./icon";
 import {
   chatPrompt,
   errorMessage,
@@ -767,7 +768,7 @@ export class BoopliHome extends LitElement {
 
   private _renderRoom(room: Room) {
     const aiOn = this._aiOn();
-    return html`<section class="card room ${this._roomChanged(room.id) ? "changed" : ""}">
+    return html`<section class="room ${this._roomChanged(room.id) ? "changed" : ""}">
       <div class="head">
         <input
           class="name"
@@ -790,18 +791,18 @@ export class BoopliHome extends LitElement {
       ></textarea>
       <div class="row-actions">
         ${aiOn
-          ? html`<button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
-                ✨ Let the AI ask me
+          ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
+                ${icon("auto-fix")} Let the AI ask me
               </button>
-              <button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
-                📷 From photos
+              <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
+                ${icon("camera-outline")} From photos
               </button>`
           : nothing}
-        <button type="button" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
-          💬 In my own chat
+        <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openChat(room)}>
+          ${icon("chat-outline")} In my own chat
         </button>
         <span class="spacer"></span>
-        <button type="button" class="link" @click=${() => this._removeRoom(room)}>${room.area_id ? "Hide" : "Delete"}</button>
+        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? "Hide" : "Delete"}</button>
       </div>
     </section>`;
   }
@@ -824,7 +825,6 @@ export class BoopliHome extends LitElement {
     const shown = d.rooms.filter((r) => !r.hidden);
     const hidden = d.rooms.filter((r) => r.hidden);
     return html`
-      <h2>My home</h2>
       <p class="intro">
         Tell Boopli about your rooms, so the AI's small steps fit your home. The notes stay in Boopli on your Home
         Assistant. They only leave inside a request to your own AI agent, and only the notes of the rooms a task is
@@ -848,13 +848,13 @@ export class BoopliHome extends LitElement {
           </p>`
         : nothing}
       <div class="whole">
-        <button type="button" @click=${() => this._openChat(null)}>💬 Talk through my whole home in my own chat</button>
+        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${icon("chat-outline")} Talk through my whole home in my own chat</button>
         <span class="muted small">Copy a prompt, talk it out by voice or text, paste the result back.</span>
       </div>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${this._message ? html`<div class="ok">${this._message}</div>` : nothing}
       <div class="grid">${shown.map((r) => this._renderRoom(r))}</div>
-      <div class="add card">
+      <div class="add">
         <label for="newroom">Add a room or place</label>
         <div class="add-row">
           <input
@@ -897,7 +897,7 @@ export class BoopliHome extends LitElement {
         margin: 6px 0 14px;
       }
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .ok {
         color: var(--success-color, #43a047);
@@ -907,7 +907,7 @@ export class BoopliHome extends LitElement {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 8px 0;
         cursor: pointer;
@@ -917,26 +917,50 @@ export class BoopliHome extends LitElement {
         min-height: 20px;
         height: 20px;
       }
+      /* Rooms without boxes: a thin line on top (accent colour on hover or while typing), the name, the notes. */
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: 22px 32px;
         margin: 16px 0;
         align-items: start;
       }
-      .room.changed,
-      .card.changed {
-        border-color: var(--warning-color, #ffa600);
+      .room {
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
+        transition: border-color 0.15s;
+      }
+      .room:hover,
+      .room:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
+      }
+      .room.changed {
+        border-top-color: var(--warning-color, #ffa600);
       }
       .head {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
       }
-      .name {
-        font-size: 17px;
+      /* The room name looks like a heading until you click it. */
+      input.name {
+        font-size: 21px;
         font-weight: 500;
+        background: none;
+        border: 0;
+        border-bottom: 1px solid transparent;
+        border-radius: 0;
+        padding: 4px 0;
+      }
+      input.name:hover,
+      input.name:focus {
+        border-bottom-color: var(--divider-color);
+        outline: none;
+      }
+      .add {
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
       }
       textarea {
         font: inherit;
@@ -968,6 +992,13 @@ export class BoopliHome extends LitElement {
         min-height: 0;
         padding: 4px 6px;
       }
+      .row-actions button.textlink {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      button.textlink.quiet {
+        color: var(--secondary-text-color);
+      }
       .add {
         max-width: 520px;
       }
@@ -994,7 +1025,7 @@ export class BoopliHome extends LitElement {
         display: inline-block;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -1059,7 +1090,7 @@ export class BoopliHome extends LitElement {
       button.big {
         min-height: 48px;
         padding: 0 22px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .whole {
         display: flex;
@@ -1098,7 +1129,7 @@ export class BoopliHome extends LitElement {
         height: 28px;
         padding: 0;
         border-radius: 50%;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
       }
       .filebtn {
@@ -1148,7 +1179,7 @@ export class BoopliHome extends LitElement {
         height: 20px;
       }
       .tag {
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 400;
         padding: 1px 8px;
         border-radius: 999px;
@@ -1160,7 +1191,7 @@ export class BoopliHome extends LitElement {
         align-items: center;
         gap: 14px;
         padding: 28px 4px;
-        font-size: 18px;
+        font-size: 20px;
       }
       .dots {
         display: inline-flex;
@@ -1170,7 +1201,7 @@ export class BoopliHome extends LitElement {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         animation: bounce 1s infinite ease-in-out;
       }
       .dots i:nth-child(2) {

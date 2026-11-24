@@ -164,7 +164,7 @@ export class BoopliScheduleDays extends LitElement {
         min-height: 32px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;

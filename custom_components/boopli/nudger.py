@@ -163,7 +163,7 @@ class BoopliNudger:
                 )
             for speaker in settings.speakers:
                 choice = rung.speakers.get(speaker.entity_id)
-                if choice and engine.speaker_choice_ok(speaker, choice):
+                if choice and engine.speaker_choice_ok(speaker, choice, settings.sounds):
                     # "Speaks" is plain speech; "Speaks with chime" is an announcement.
                     announce = {engine.SPEAKER_SPEECH: False, engine.SPEAKER_SPEECH_CHIME: True}.get(choice)
                     await self._play_speaker(speaker, choice, chore_name, step_title, key, announce)
@@ -376,14 +376,18 @@ class BoopliNudger:
         step_title: str,
         key: str,
         announce: bool | None = None,
+        sounds: list[engine.ExtraSound] | None = None,
     ) -> bool:
-        """Play one level on a speaker (or one of its extra sounds). Returns whether something was sent.
+        """Play one level on a speaker (or one of your own sounds). Returns whether something was sent.
 
-        `announce` is for speech: None follows the speaker's own setting.
+        `announce` is for speech: None follows the speaker's own setting. `sounds` is your list of sounds
+        (the saved one unless a test brings its own).
         """
         if not self._speaker_available(speaker.entity_id):
             return False
-        extra = engine.find_extra_sound(speaker, level)
+        extra = engine.find_sound(self.manager.settings.sounds if sounds is None else sounds, level)
+        if extra is None and level.startswith(engine.SPEAKER_SOUND_PREFIX):
+            return False  # one of your own sounds that is not there any more: not the alarm
         if extra is not None:
             return await self._call(
                 "media_player",
@@ -535,10 +539,11 @@ class BoopliNudger:
         await self.async_turn_off_indicators([entity_id])
 
     async def async_test_speaker(
-        self, speaker: engine.SpeakerCfg, level: str
+        self, speaker: engine.SpeakerCfg, level: str, sounds: list[engine.ExtraSound] | None = None
     ) -> dict[str, Any]:
-        """Play one level of a speaker once so the user hears it."""
-        extra = engine.find_extra_sound(speaker, level)
+        """Play one level of a speaker (or one of your own sounds) once so the user hears it."""
+        sounds = self.manager.settings.sounds if sounds is None else sounds
+        extra = engine.find_sound(sounds, level)
         if extra is None and level not in engine.SPEAKER_LEVELS and level != engine.SPEAKER_SPEECH_CHIME:
             return {"ok": False, "note": "Unknown speaker level."}
         if not self._speaker_available(speaker.entity_id):
@@ -557,7 +562,7 @@ class BoopliNudger:
         else:
             announce = True if level == engine.SPEAKER_SPEECH_CHIME else None
             ok = await self._play_speaker(
-                speaker, level, "Boopli test", "Dishwasher: empty it", "test", announce
+                speaker, level, "Boopli test", "Dishwasher: empty it", "test", announce, sounds
             )
             playing = extra is not None or level == engine.SPEAKER_CUE
             note = "Playing the sound." if playing else "Speaking."

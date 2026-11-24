@@ -33,7 +33,7 @@ export interface OptionField {
 export interface TileDef {
   type: string;
   label: string;
-  emoji: string;
+  icon: string; // a Material Design icon name
   blurb: string;
   defaultW: number; // the size a new tile starts with on a 16 x 9 grid (it grows with a finer grid)
   defaultH: number;
@@ -44,7 +44,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "clock",
     label: "Clock",
-    emoji: "🕒",
+    icon: "clock-outline",
     blurb: "The time and the date.",
     defaultW: 4,
     defaultH: 2,
@@ -53,12 +53,12 @@ export const TILE_DEFS: TileDef[] = [
       { key: "date", label: "Show the date", kind: "bool", default: true },
     ],
   },
-  { type: "pet", label: "Pet", emoji: "🐾", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
-  { type: "due_now", label: "Due now", emoji: "✅", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "pet", label: "Pet", icon: "paw", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "due_now", label: "Due now", icon: "check-circle-outline", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
   {
     type: "coming_up",
     label: "Coming up",
-    emoji: "📅",
+    icon: "calendar-clock",
     blurb: "What comes next.",
     defaultW: 6,
     defaultH: 3,
@@ -67,7 +67,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "entity",
     label: "Entity",
-    emoji: "🔘",
+    icon: "toggle-switch-outline",
     blurb: "Any sensor or switch. A tap switches it.",
     defaultW: 2,
     defaultH: 2,
@@ -80,7 +80,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "weather",
     label: "Weather",
-    emoji: "⛅",
+    icon: "weather-partly-cloudy",
     blurb: "The weather now.",
     defaultW: 4,
     defaultH: 2,
@@ -89,7 +89,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "calendar",
     label: "Calendar",
-    emoji: "🗓️",
+    icon: "calendar-month-outline",
     blurb: "The next events.",
     defaultW: 6,
     defaultH: 4,
@@ -101,7 +101,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "camera",
     label: "Camera",
-    emoji: "📷",
+    icon: "camera-outline",
     blurb: "A picture from a camera.",
     defaultW: 6,
     defaultH: 4,
@@ -113,7 +113,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "note",
     label: "Note",
-    emoji: "📝",
+    icon: "note-text-outline",
     blurb: "Some words you write.",
     defaultW: 4,
     defaultH: 2,
@@ -124,25 +124,41 @@ export const TILE_DEFS: TileDef[] = [
   },
 ];
 
+/** The smallest size (columns, rows) a new tile of a type is made at. Others can shrink to one cell. */
+const TILE_MIN_SIZE: Record<string, [number, number]> = { due_now: [3, 2] };
+
 export function tileDef(type: string): TileDef | undefined {
   return TILE_DEFS.find((d) => d.type === type);
 }
 
-/** A new tile of a type, with its default size and options, at the first free spot (null: no room). */
+/**
+ * A new tile of a type, with its default options, at the first free spot. It starts at its default size;
+ * when that does not fit anywhere it is made smaller, a step at a time (down to one cell), until it does.
+ * Null: not even one cell is free.
+ */
 export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 9): Tile | null {
   const def = tileDef(type);
   const options: TileOptions = {};
   for (const f of def?.options ?? []) options[f.key] = f.default;
-  const w = Math.max(1, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
-  const h = Math.max(1, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
-  const spot = firstFit(others, columns, rows, w, h);
-  return spot ? { id: newLadderId(), type, ...spot, w, h, options } : null;
+  // A tile never gets smaller than it can still be used at: "Due now" keeps its three buttons reachable.
+  const [minW, minH] = TILE_MIN_SIZE[type] ?? [1, 1];
+  if (columns < minW || rows < minH) return null; // the board is too small for it
+  let w = Math.max(minW, Math.min(Math.round(((def?.defaultW ?? 2) * columns) / 16), columns));
+  let h = Math.max(minH, Math.min(Math.round(((def?.defaultH ?? 2) * rows) / 9), rows));
+  for (;;) {
+    const spot = firstFit(others, columns, rows, w, h);
+    if (spot) return { id: newLadderId(), type, ...spot, w, h, options };
+    if (w <= minW && h <= minH) return null;
+    if (w >= h ? w > minW : h <= minH) w -= 1; // shrink the longer side first, so the shape stays about the same
+    else h -= 1;
+  }
 }
 
 /** The tiles a new board starts with. */
 export function starterTiles(columns = 16, rows = 9): Tile[] {
   const clock = newTile("clock", [], columns, rows)!;
-  return [clock, newTile("due_now", [clock], columns, rows)!];
+  const due = newTile("due_now", [clock], columns, rows); // null when the board is too small for it
+  return due ? [clock, due] : [clock];
 }
 
 /** The board a screen shows: the one named (or with that id), else the first. */

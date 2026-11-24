@@ -1,9 +1,11 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html, nothing, unsafeCSS } from "lit";
+import { BOOPLI_FONT } from "./fonts";
 import { errorMessage, saveSettings } from "./api";
 import "./boopli-wall";
 import { entityIds, friendlyName, newLadderId } from "./helpers";
 import { COLUMNS_MAX, COLUMNS_MIN, ROWS_MAX, ROWS_MIN, bottom, right, scaleTiles, settle } from "./wall-layout";
 import { TILE_DEFS, boardLink, newTile, pickBoard, starterTiles, tileDef, type OptionField } from "./wall-tiles";
+import { icon } from "./icon";
 import type { Board, Hass, NightMode, Snapshot, Tile } from "./types";
 
 const MAX_BOARDS = 10;
@@ -261,7 +263,7 @@ export class BoopliWallEdit extends LitElement {
     }
     const tile = newTile(type, cur.tiles, cur.columns, cur.rows);
     if (!tile) {
-      this._error = "There is no room left on this board. Make the grid bigger or remove a tile.";
+      this._error = "Every cell of this board is taken. Make the grid bigger or remove a tile.";
       this._modal = "";
       return;
     }
@@ -438,7 +440,7 @@ export class BoopliWallEdit extends LitElement {
     if (!tile) return nothing;
     const def = tileDef(tile.type);
     return html`
-      <div class="mhead"><h2>${def?.emoji ?? "◻️"} ${def?.label ?? tile.type}</h2></div>
+      <div class="mhead"><h2>${icon(def?.icon ?? "shape-outline")} ${def?.label ?? tile.type}</h2></div>
       ${def?.options.length ? html`<div class="opts">${def.options.map((f) => this._renderField(tile, f))}</div>` : nothing}
       <div class="srow">
         ${this._numField("tw", "Cells wide", tile.w, 1, cur.columns - tile.x, (n) => {
@@ -460,7 +462,7 @@ export class BoopliWallEdit extends LitElement {
 
   private _renderBoardModal(cur: Board) {
     return html`
-      <div class="mhead"><h2>🖥️ This board</h2></div>
+      <div class="mhead"><h2>${icon("monitor-dashboard")} This board</h2></div>
       <div class="field">
         <label for="bname">Name</label>
         <input id="bname" maxlength=${NAME_MAX} .value=${cur.name} @change=${(e: Event) => this._edit((b) => (b.name = (e.target as HTMLInputElement).value.trim()))} />
@@ -496,7 +498,7 @@ export class BoopliWallEdit extends LitElement {
     return html`
       <div class="mhead"><h2>＋ Add a tile</h2></div>
       <div class="adds" role="group" aria-label="Add a tile">
-        ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${d.emoji}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
+        ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>Cancel</button></div>
     `;
@@ -516,7 +518,7 @@ export class BoopliWallEdit extends LitElement {
               ${this._boards.map((b) => html`<option value=${b.id} ?selected=${b.id === cur.id}>${b.name || "(no name)"}</option>`)}
             </select>
           </label>
-          <button @click=${() => (this._modal = "board")}>⚙ Board</button>
+          <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} Board</button>
           <button @click=${() => (this._modal = "add")}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
             ${VIEWS.map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
@@ -575,7 +577,7 @@ export class BoopliWallEdit extends LitElement {
       display: block;
       color: var(--primary-text-color);
       background: var(--primary-background-color);
-      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+      font-family: ${unsafeCSS(BOOPLI_FONT)};
     }
     * {
       box-sizing: border-box;
@@ -640,13 +642,13 @@ export class BoopliWallEdit extends LitElement {
       cursor: pointer;
     }
     button.on {
-      border-color: var(--primary-color);
-      background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+      border-color: var(--boopli-accent, var(--primary-color));
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 18%, transparent);
     }
     button.primary {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-      color: var(--text-primary-color, #fff);
+      background: var(--boopli-accent, var(--primary-color));
+      border-color: var(--boopli-accent, var(--primary-color));
+      color: var(--boopli-accent-ink, var(--text-primary-color, #fff));
     }
     button.danger {
       color: var(--error-color, #db4437);
@@ -695,7 +697,7 @@ export class BoopliWallEdit extends LitElement {
     }
     .mhead h2 {
       margin: 0 0 10px;
-      font-size: 20px;
+      font-size: 22px;
     }
     .mfoot,
     .srow {
@@ -713,7 +715,7 @@ export class BoopliWallEdit extends LitElement {
     }
     .field label,
     label.inline {
-      font-size: 13px;
+      font-size: 15px;
       color: var(--secondary-text-color);
     }
     label.inline {
@@ -759,7 +761,7 @@ export class BoopliWallEdit extends LitElement {
       color: var(--secondary-text-color);
     }
     .small {
-      font-size: 13px;
+      font-size: 15px;
     }
     .error {
       color: var(--error-color, #db4437);

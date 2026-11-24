@@ -34,7 +34,7 @@ def ladder(rungs=None, name="Pills", id="p1", repeat_last=False):
 
 
 def settings(*ladders, **kw):
-    return engine.Settings(ladders=list(ladders), **kw)
+    return engine.Settings(ladders=list(ladders), standard_done=True, **kw)
 
 
 # --- the data -------------------------------------------------------------------------------
@@ -55,9 +55,11 @@ def test_a_ladder_survives_saving_and_loading():
     assert engine.validate_settings(again) is None
 
 
-def test_old_settings_without_ladders_still_load():
+def test_old_settings_without_ladders_get_the_three_standard_ones():
     s = engine.Settings.from_dict({"default_style": "escalating"})
-    assert s.ladders == []
+    assert [x.id for x in s.ladders] == ["standard_one", "standard_escalating", "standard_persistent"]
+    assert s.default_style == "ladder:standard_escalating"
+    assert s.standard_done
     assert engine.validate_settings(s) is None
 
 
@@ -71,7 +73,7 @@ def test_junk_in_a_ladder_is_ignored_not_a_crash():
     s = engine.Settings.from_dict(
         {"ladders": ["x", {"id": "a", "name": "A", "rungs": ["junk", {"gap": "7", "phones": "no", "lights": {"a": 1}}]}]}
     )
-    (lad,) = s.ladders
+    lad = next(x for x in s.ladders if x.id == "a")
     assert [r.gap for r in lad.rungs] == [7]
     assert lad.rungs[0].phones == {}
     assert lad.rungs[0].lights == {"a": engine.RungLight()}  # a value that is not a mode: a blink
@@ -94,7 +96,7 @@ def test_ladders_are_checked():
     assert engine.validate_ladders([ladder(rungs=[rung(720)])]) is None
     assert "phone" in engine.validate_ladders([ladder(rungs=[rung(phones={"pixel": "screaming"})])])
     assert "speaker" in engine.validate_ladders([ladder(rungs=[rung(speakers={"media_player.k": "opera"})])])
-    too_many = [ladder(id=str(i), name=f"L{i}") for i in range(21)]
+    too_many = [ladder(id=str(i), name=f"L{i}") for i in range(31)]
     assert "at most" in engine.validate_ladders(too_many)
 
 
@@ -213,52 +215,238 @@ def test_a_phone_listed_twice_counts_once():
 
 def test_a_ladder_can_only_use_a_speaker_choice_that_is_set_up():
     speaker = engine.SpeakerCfg(entity_id="media_player.kitchen")
-    assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_CUE)  # off by default
-    speaker.cue.enabled = True
+    # a ding and an alarm are always on offer (they come with a sound); no switch needed
     assert engine.speaker_choice_ok(speaker, engine.SPEAKER_CUE)
+    assert engine.speaker_choice_ok(speaker, engine.SPEAKER_ALARM)
+    speaker.alarm.sound = ""
     assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_ALARM)
     assert not engine.speaker_choice_ok(speaker, "opera")
-    # speech, with or without the chime, needs the speech level switched on
+    # speech, with or without the chime, needs somewhere to speak
+    assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH)
     assert not engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH_CHIME)
-    speaker.speech.enabled = True
+    speaker.speech.target = "alexa_media_kitchen"
     assert engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH)
     assert engine.speaker_choice_ok(speaker, engine.SPEAKER_SPEECH_CHIME)
 
 
-def test_a_speaker_can_have_many_extra_sounds_and_a_ladder_can_pick_one():
-    speaker = engine.SpeakerCfg(
-        entity_id="media_player.kitchen",
-        sounds=[engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "amzn_sfx_trumpet_bugle_01")],
-    )
-    assert engine.speaker_choice_ok(speaker, "sound:f1")
-    assert not engine.speaker_choice_ok(speaker, "sound:gone")
-    assert engine.find_extra_sound(speaker, "sound:f1").name == "Fanfare"
-    assert engine.find_extra_sound(speaker, "cue") is None
+def test_a_dropped_duplicate_sound_keeps_the_ladder_choice_working():
+    data = {
+        "standard_done": True,
+        "speakers": [
+            {"entity_id": "media_player.a", "sounds": [{"id": "x1", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+            {"entity_id": "media_player.b", "sounds": [{"id": "x2", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+        ],
+        "ladders": [{"id": "l1", "name": "L", "rungs": [{"gap": 1, "speakers": {"media_player.b": "sound:x2"}}]}],
+    }
+    settings = engine.Settings.from_dict(data)
+    assert [s.id for s in settings.sounds] == ["x1"]
+    assert settings.ladders[0].rungs[0].speakers["media_player.b"] == "sound:x1"
 
 
-def test_extra_sounds_are_saved_and_checked():
-    spk = {
+def test_the_same_id_for_two_different_old_sounds_keeps_both():
+    data = {
+        "standard_done": True,
+        "speakers": [
+            {"entity_id": "media_player.a", "sounds": [{"id": "x1", "name": "Bell", "kind": "alexa", "sound": "s"}]},
+            {"entity_id": "media_player.b", "sounds": [{"id": "x1", "name": "Gong", "kind": "alexa", "sound": "t"}]},
+        ],
+        "ladders": [{"id": "l1", "name": "L", "rungs": [{"gap": 1, "speakers": {"media_player.b": "sound:x1"}}]}],
+    }
+    settings = engine.Settings.from_dict(data)
+    assert sorted(s.name for s in settings.sounds) == ["Bell", "Gong"]
+    gong = next(s for s in settings.sounds if s.name == "Gong")
+    assert gong.id != "x1"
+    assert settings.ladders[0].rungs[0].speakers["media_player.b"] == f"sound:{gong.id}"
+
+
+def test_a_clashing_long_name_still_gets_a_new_name():
+    long = "N" * engine.EXTRA_SOUND_NAME_MAX
+    data = {
+        "standard_done": True,
+        "sounds": [{"id": "a", "name": long, "kind": "alexa", "sound": "s"}],
+        "speakers": [{"entity_id": "media_player.a", "sounds": [{"id": "b", "name": long, "kind": "alexa", "sound": "t"}]}],
+    }
+    names = [s.name for s in engine.Settings.from_dict(data).sounds]
+    assert len(set(n.casefold() for n in names)) == 2
+    assert all(len(n) <= engine.EXTRA_SOUND_NAME_MAX for n in names)
+
+
+def test_a_device_with_a_late_start_lengthens_the_persistent_ladder():
+    old = engine.Settings(standard_done=True)
+    engine.seed_standard_ladders(old)
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones.append(engine.PhoneCfg(service="pixel", level="normal", start_at=5))
+    engine.add_new_devices_to_standard_ladders(old, new)
+    persistent = next(l for l in new.ladders if l.id == "standard_persistent")
+    assert len(persistent.rungs) == 5
+    assert "pixel" in persistent.rungs[4].phones
+
+
+def test_a_phones_new_level_reaches_the_standard_ladders():
+    old = engine.Settings(phones=[engine.PhoneCfg(service="pixel", level="normal", start_at=1)], standard_done=False)
+    engine.seed_standard_ladders(old)
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones[0].level = "alarm"
+    engine.sync_phone_levels_to_standard_ladders(old, new)
+    for ladder in new.ladders:
+        assert all(r.phones["pixel"] == "alarm" for r in ladder.rungs if "pixel" in r.phones)
+    assert any("pixel" in r.phones for l in new.ladders for r in l.rungs)
+
+
+def test_a_new_device_acts_in_every_later_persistent_nudge():
+    old = engine.Settings(standard_done=False)
+    old.phones.append(engine.PhoneCfg(service="old", level="normal", start_at=4))
+    engine.seed_standard_ladders(old)  # persistent has 4 nudges, the last one repeats
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones.append(engine.PhoneCfg(service="pixel", level="normal", start_at=1))
+    engine.add_new_devices_to_standard_ladders(old, new)
+    persistent = next(l for l in new.ladders if l.id == "standard_persistent")
+    assert all("pixel" in r.phones for r in persistent.rungs)
+
+
+def test_the_standard_ladders_cannot_be_deleted_but_your_own_can():
+    old = engine.Settings(standard_done=False)
+    engine.seed_standard_ladders(old)
+    old.ladders.append(engine.Ladder(id="mine", name="Mine", rungs=[engine.Rung()]))
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.ladders = [l for l in new.ladders if l.id != "mine"]
+    assert engine.deleted_standard_ladder(old, new) is None
+    new.ladders = [l for l in new.ladders if l.id != "standard_escalating"]
+    assert engine.deleted_standard_ladder(old, new) == "Escalating"
+
+
+def test_an_amazon_sound_cannot_be_tested_on_another_media_player():
+    tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_ALEXA, sound="amzn_sfx_x")
+    assert "only play files" in engine.validate_speaker_test(tv, engine.SPEAKER_CUE)
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_FILE, sound="boopli/ding.mp3")
+    assert engine.validate_speaker_test(tv, engine.SPEAKER_CUE) is None
+
+
+def test_a_tts_speaker_can_be_saved_before_it_has_a_ding_file():
+    tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_FILE, sound="")
+    assert engine.validate_settings(engine.Settings(speakers=[tv], standard_done=True)) is None
+    assert not engine.speaker_choice_ok(tv, engine.SPEAKER_CUE)  # and it is not offered until it has a file
+
+
+def test_an_amazon_ding_or_alarm_does_not_play_on_another_media_player():
+    tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    assert not engine.speaker_choice_ok(tv, engine.SPEAKER_CUE)  # still an Alexa sound
+    assert not engine.speaker_choice_ok(tv, engine.SPEAKER_ALARM)
+    tv.cue.kind, tv.cue.sound = engine.SOUND_FILE, "boopli/ding.mp3"
+    assert engine.speaker_choice_ok(tv, engine.SPEAKER_CUE)  # a file plays anywhere
+
+
+def test_one_shared_list_of_sounds_and_a_ladder_can_pick_one_for_any_speaker():
+    fanfare = engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "amzn_sfx_trumpet_bugle_01")
+    kitchen = engine.SpeakerCfg(entity_id="media_player.kitchen")
+    assert engine.speaker_choice_ok(kitchen, "sound:f1", [fanfare])
+    assert not engine.speaker_choice_ok(kitchen, "sound:gone", [fanfare])
+    assert not engine.speaker_choice_ok(kitchen, "sound:f1")  # no list: no sound
+    assert engine.find_sound([fanfare], "sound:f1").name == "Fanfare"
+    assert engine.find_sound([fanfare], "cue") is None
+
+
+def test_an_alexa_sound_needs_an_alexa_speaker_but_a_file_plays_anywhere():
+    alexa_sound = engine.ExtraSound("a", "Fanfare", engine.SOUND_ALEXA, "amzn_sfx_x")
+    a_file = engine.ExtraSound("b", "Opera", engine.SOUND_FILE, "boopli/opera.mp3")
+    tts = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    alexa = engine.SpeakerCfg(entity_id="media_player.echo")
+    sounds = [alexa_sound, a_file]
+    assert engine.speaker_choice_ok(alexa, "sound:a", sounds) and engine.speaker_choice_ok(alexa, "sound:b", sounds)
+    assert not engine.speaker_choice_ok(tts, "sound:a", sounds)
+    assert engine.speaker_choice_ok(tts, "sound:b", sounds)
+
+
+def test_sounds_kept_per_speaker_move_into_the_shared_list():
+    spk1 = {
         "entity_id": "media_player.kitchen",
         "sounds": [{"id": "f1", "name": "Fanfare", "kind": "alexa", "sound": "amzn_sfx_x"}, "junk"],
     }
-    s = engine.Settings.from_dict({"speakers": [spk]})
-    assert [x.name for x in s.speakers[0].sounds] == ["Fanfare"]
+    spk2 = {"entity_id": "media_player.echo", "sounds": [{"id": "f2", "name": "Fanfare", "kind": "file", "sound": "boopli/f.mp3"}]}
+    s = engine.Settings.from_dict({"speakers": [spk1, spk2]})
+    assert [(x.id, x.name) for x in s.sounds] == [("f1", "Fanfare"), ("f2", "Fanfare 2")]  # names stay unique
+    assert all(sp.sounds == [] for sp in s.speakers)
     assert engine.validate_settings(s) is None
     again = engine.Settings.from_dict(engine.to_dict(s))
-    assert again.speakers[0].sounds == s.speakers[0].sounds
+    assert again.sounds == s.sounds
 
+
+def test_the_same_sound_on_two_speakers_becomes_one():
+    one = {"id": "x1", "name": "Bell", "kind": "alexa", "sound": "amzn_sfx_bell"}
+    two = {"id": "x2", "name": "bell", "kind": "alexa", "sound": "amzn_sfx_bell"}
+    s = engine.Settings.from_dict({"speakers": [{"entity_id": "media_player.a", "sounds": [one]}, {"entity_id": "media_player.b", "sounds": [two]}]})
+    assert [x.id for x in s.sounds] == ["x1"]
+
+
+def test_standard_ladders_are_made_from_what_the_devices_said():
+    s = engine.Settings.from_dict(
+        {
+            "phones": [{"service": "pixel", "level": "high", "start_at": 1}, {"service": "ipad", "level": "alarm", "start_at": 3}],
+            "lights": [{"entity_id": "light.hall", "start_at": 2}],
+            "alarm_devices": [{"entity_id": "siren.hall", "start_at": 4}],
+            "speakers": [
+                {
+                    "entity_id": "media_player.echo",
+                    "cue": {"enabled": True, "start_at": 1, "sound": "amzn_sfx_x"},
+                    "speech": {"enabled": True, "start_at": 2, "announce": True, "target": "alexa_media_echo"},
+                    "alarm": {"enabled": True, "start_at": 4, "sound": "amzn_sfx_y"},
+                }
+            ],
+        }
+    )
+    esc = next(x for x in s.ladders if x.id == "standard_escalating")
+    assert [r.gap for r in esc.rungs][1:] == list(engine.ESCALATING_GAPS) and not esc.repeat_last
+    assert esc.rungs[0].phones == {"pixel": "high"} and esc.rungs[2].phones == {"pixel": "high", "ipad": "alarm"}
+    assert "light.hall" not in esc.rungs[0].lights and "light.hall" in esc.rungs[1].lights
+    assert [r.speakers["media_player.echo"] for r in esc.rungs[:4]] == ["cue", "speech_chime", "speech_chime", "alarm"]
+    assert esc.rungs[2].alarms == [] and esc.rungs[3].alarms == ["siren.hall"]
+    one = next(x for x in s.ladders if x.id == "standard_one")
+    assert len(one.rungs) == 1 and one.rungs[0].phones == {"pixel": "high"}
+    pers = next(x for x in s.ladders if x.id == "standard_persistent")
+    assert pers.repeat_last and len(pers.rungs) == 4 and all(r.gap == engine.PERSISTENT_GAP for r in pers.rungs[1:])
+    assert engine.validate_settings(s) is None
+
+
+def test_chore_styles_of_the_old_built_in_kind_point_at_the_standard_ladders():
+    s = engine.Settings.from_dict({})
+    assert engine.normalize_style("escalating", s.ladders) == "ladder:standard_escalating"
+    assert engine.normalize_style("quiet", s.ladders) == "quiet"
+    assert engine.normalize_style("escalating", []) == "escalating"  # no such ladder: the old way still works
+
+
+def test_a_standard_ladder_name_never_clashes_with_one_of_yours():
+    s = engine.Settings.from_dict({"ladders": [{"id": "mine", "name": "escalating", "rungs": [{"gap": 5}]}]})
+    names = [x.name for x in s.ladders]
+    assert len({n.casefold() for n in names}) == len(names)
+    assert engine.validate_settings(s) is None
+
+
+def test_a_device_added_later_acts_in_the_standard_ladders():
+    old = engine.Settings.from_dict({})
+    new = engine.Settings.from_dict(engine.to_dict(old))
+    new.phones = [engine.PhoneCfg("pixel", "high", 1), engine.PhoneCfg("ipad", "normal", 2)]
+    engine.add_new_devices_to_standard_ladders(old, new)
+    esc = next(x for x in new.ladders if x.id == "standard_escalating")
+    assert esc.rungs[0].phones == {"pixel": "high"} and esc.rungs[1].phones == {"pixel": "high", "ipad": "normal"}
+    again = engine.Settings.from_dict(engine.to_dict(new))
+    assert again.ladders == new.ladders  # saved and loaded: no second seeding
+
+
+def test_extra_sounds_are_checked():
     def with_sounds(*sounds):
-        return engine.Settings(speakers=[engine.SpeakerCfg(entity_id="media_player.k", sounds=list(sounds))])
+        return engine.Settings(sounds=list(sounds), standard_done=True)
 
     ok = engine.ExtraSound("a", "Ding", engine.SOUND_ALEXA, "x")
     assert engine.validate_settings(with_sounds(ok)) is None
     assert "name" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "", engine.SOUND_ALEXA, "x")))
-    assert "same name" in engine.validate_settings(with_sounds(ok, engine.ExtraSound("b", "ding", engine.SOUND_ALEXA, "y")))
+    assert "two sounds" in engine.validate_settings(with_sounds(ok, engine.ExtraSound("b", "ding", engine.SOUND_ALEXA, "y")))
     assert "Choose the sound" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "Ding", engine.SOUND_ALEXA, "")))
     assert "Unknown" in engine.validate_settings(with_sounds(engine.ExtraSound("a", "Ding", "radio", "x")))
-    many = [engine.ExtraSound(str(i), f"S{i}", engine.SOUND_ALEXA, "x") for i in range(31)]
+    many = [engine.ExtraSound(str(i), f"S{i}", engine.SOUND_ALEXA, "x") for i in range(61)]
     assert "at most" in engine.validate_settings(with_sounds(*many))
-    assert engine.validate_settings(with_sounds(*many[:30])) is None
+    assert engine.validate_settings(with_sounds(*many[:60])) is None
 
 
 def test_ladder_speaker_choices_are_checked():

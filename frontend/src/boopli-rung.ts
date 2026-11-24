@@ -1,7 +1,8 @@
 import { LitElement, html, css, nothing } from "lit";
+import { icon } from "./icon";
 import { friendlyName, hexToRgb, lightHasColor, phoneName, rgbToHex } from "./helpers";
 import { sharedStyles } from "./styles";
-import type { Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
+import type { ExtraSound, Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
 
 const GAP_MIN = 1;
 const GAP_MAX = 720;
@@ -14,16 +15,20 @@ const PHONE_CHOICES: { value: PhoneLevel; label: string }[] = [
 ];
 
 /** What a ladder can pick for a speaker: only what is set up (levels that are switched on, its extra sounds). */
-export function speakerChoices(sp: SpeakerCfg): { value: string; label: string }[] {
+export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { value: string; label: string }[] {
   const out: { value: string; label: string }[] = [];
-  if (sp.cue?.enabled) out.push({ value: "cue", label: "A ding" });
-  for (const x of sp.sounds ?? []) out.push({ value: `sound:${x.id}`, label: `🔔 ${x.name}` });
-  if (sp.speech?.enabled) {
+  // A ding and an alarm are always on offer; speaking needs somewhere to speak (set on the speaker).
+  const alexa = sp.speech?.route !== "tts";
+  const plays = (t?: { sound: string; kind: string }) => !!t?.sound && (t.kind !== "alexa" || alexa); // an Amazon sound needs an Alexa speaker
+  if (plays(sp.cue)) out.push({ value: "cue", label: "A ding" });
+  // your own sounds: a file plays on any speaker, an Alexa sound only on an Alexa one
+  for (const x of sounds) if (x.sound && (x.kind !== "alexa" || alexa)) out.push({ value: `sound:${x.id}`, label: x.name });
+  if (sp.speech?.target) {
     out.push({ value: "speech", label: "Speaks" });
     // An announcement (starts with a chime) is something Alexa Media Player does.
     if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: "Speaks with chime" });
   }
-  if (sp.alarm?.enabled) out.push({ value: "alarm", label: "Alarm" });
+  if (plays(sp.alarm)) out.push({ value: "alarm", label: "Alarm" });
   return out;
 }
 
@@ -139,7 +144,7 @@ export class BoopliRung extends LitElement {
       <div class="devs">
         ${s.phones.map(
           (p) => html`<label class="dev">
-            <span>📱 ${phoneName(p.service)}</span>
+            <span>${icon("cellphone")} ${phoneName(p.service)}</span>
             <select
               aria-label="${phoneName(p.service)} at nudge ${n}"
               @change=${(e: Event) => this._setPhone(p.service, (e.target as HTMLSelectElement).value)}
@@ -156,7 +161,7 @@ export class BoopliRung extends LitElement {
           const name = friendlyName(this.hass, light.entity_id);
           return html`<div class="devblock">
             <label class="dev">
-              <span>💡 ${name}</span>
+              <span>${icon("lightbulb-outline")} ${name}</span>
               <select
                 aria-label="${name} at nudge ${n}"
                 @change=${(e: Event) => this._setLight(light.entity_id, (e.target as HTMLSelectElement).value)}
@@ -185,11 +190,11 @@ export class BoopliRung extends LitElement {
           </div>`;
         })}
         ${s.speakers.map((sp) => {
-          const choices = speakerChoices(sp);
+          const choices = speakerChoices(sp, s.sounds);
           const current = r.speakers[sp.entity_id];
           const name = friendlyName(this.hass, sp.entity_id);
           return html`<label class="dev">
-            <span>🔊 ${name}</span>
+            <span>${icon("volume-high")} ${name}</span>
             <select
               aria-label="${name} at nudge ${n}"
               ?disabled=${!choices.length && !current}
@@ -210,7 +215,7 @@ export class BoopliRung extends LitElement {
               .checked=${r.alarms.includes(device.entity_id)}
               @change=${(e: Event) => this._toggle(device.entity_id, (e.target as HTMLInputElement).checked)}
             />
-            <span>🚨 ${friendlyName(this.hass, device.entity_id)}</span>
+            <span>${icon("bell-ring-outline")} ${friendlyName(this.hass, device.entity_id)}</span>
           </label>`
         )}
       </div>
@@ -224,7 +229,7 @@ export class BoopliRung extends LitElement {
         display: block;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.gap {
         display: flex;
@@ -232,7 +237,7 @@ export class BoopliRung extends LitElement {
         align-items: center;
         gap: 6px;
         margin: 0 0 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
       }
       label.gap input {
@@ -251,7 +256,7 @@ export class BoopliRung extends LitElement {
         align-items: center;
         gap: 4px 10px;
         margin: 0;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
       }
       label.dev > span {
@@ -275,7 +280,7 @@ export class BoopliRung extends LitElement {
         align-items: center;
         gap: 6px 10px;
         padding-left: 4px;
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
       }
       .colorrow .swatch {

@@ -169,11 +169,11 @@ export class BoopliStage extends LitElement {
       .scene {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 6; /* a third lower than 16:9 */
+        aspect-ratio: 16 / 5; /* low, so Today fits on one screen */
         container-type: size;
         border-radius: 14px;
         overflow: hidden;
-        background: color-mix(in srgb, var(--primary-color, #03a9f4) 10%, var(--secondary-background-color, #2a2a2a));
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 10%, var(--secondary-background-color, #2a2a2a));
       }
       .floor {
         position: absolute;

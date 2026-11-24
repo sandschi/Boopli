@@ -1,22 +1,23 @@
 import { css, html } from "lit";
 import { WallTile, wallTileStyles } from "./wall-tile";
+import { icon } from "./icon";
 
-const EMOJI: Record<string, string> = {
-  "clear-night": "🌙",
-  cloudy: "☁️",
-  exceptional: "⚠️",
-  fog: "🌫️",
-  hail: "🌨️",
-  lightning: "🌩️",
-  "lightning-rainy": "⛈️",
-  partlycloudy: "⛅",
-  pouring: "🌧️",
-  rainy: "🌦️",
-  snowy: "❄️",
-  "snowy-rainy": "🌨️",
-  sunny: "☀️",
-  windy: "💨",
-  "windy-variant": "💨",
+const SKY: Record<string, string> = {
+  "clear-night": "weather-night",
+  cloudy: "weather-cloudy",
+  exceptional: "alert-outline",
+  fog: "weather-fog",
+  hail: "weather-hail",
+  lightning: "weather-lightning",
+  "lightning-rainy": "weather-lightning-rainy",
+  partlycloudy: "weather-partly-cloudy",
+  pouring: "weather-pouring",
+  rainy: "weather-rainy",
+  snowy: "weather-snowy",
+  "snowy-rainy": "weather-snowy-rainy",
+  sunny: "weather-sunny",
+  windy: "weather-windy",
+  "windy-variant": "weather-windy-variant",
 };
 
 /** The weather now, from a weather entity. Option: entity_id. */
@@ -30,7 +31,7 @@ export class WallTileWeather extends WallTile {
     const temp = a.temperature !== undefined ? `${a.temperature}${a.temperature_unit ?? "°"}` : "";
     const humidity = a.humidity !== undefined ? `${a.humidity} % humidity` : "";
     return html`<div class="w">
-      <div class="huge sky">${EMOJI[st.state] ?? "🌡️"}</div>
+      <div class="huge sky">${icon(SKY[st.state] ?? "thermometer")}</div>
       <div>
         <div class="big">${temp}</div>
         <div class="normal">${st.state.replace(/-/g, " ")}</div>
@@ -50,6 +51,10 @@ export class WallTileWeather extends WallTile {
       }
       .sky {
         line-height: 1;
+      }
+      .sky .ico {
+        --mdc-icon-size: 1em;
+        margin: 0;
       }
       .normal {
         text-transform: capitalize;

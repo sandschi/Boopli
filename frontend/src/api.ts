@@ -15,6 +15,7 @@ import type {
   Settings,
   SpeakerCfg,
   SpeakerChoice,
+  ExtraSound,
   Snapshot,
 } from "./types";
 
@@ -24,7 +25,7 @@ export interface TestResult {
   note: string;
 }
 
-export function saveSettings(hass: Hass, settings: Settings): Promise<void> {
+export function saveSettings(hass: Hass, settings: Settings): Promise<{ ladders?: Settings["ladders"] } | void> {
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 
@@ -200,9 +201,10 @@ export function testPhone(hass: Hass, phone: PhoneCfg): Promise<TestResult> {
 export function testSpeaker(
   hass: Hass,
   speaker: SpeakerCfg,
-  level: SpeakerChoice
+  level: SpeakerChoice,
+  sounds?: ExtraSound[] // your own sounds as they are on screen (maybe not saved yet)
 ): Promise<TestResult> {
-  return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level });
+  return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level, ...(sounds ? { sounds } : {}) });
 }
 
 export function testAlarmDevice(

@@ -5,6 +5,7 @@ import "./boopli-questions";
 import { blankDraft, TEMPLATES } from "./templates";
 import { describeRepeat, describeWhen } from "./time";
 import { sharedStyles } from "./styles";
+import { icon } from "./icon";
 import type { Chore, ChoreDraft, Hass, Snapshot } from "./types";
 
 /** The Chores screen: the list, starter templates, and the editor. */
@@ -169,7 +170,7 @@ export class BoopliChores extends LitElement {
     return html`
       <div class="toolbar">
         <button class="primary" @click=${() => (this._editing = blankDraft())}>
-          + New chore
+          ${icon("plus")} New chore
         </button>
         <button
           @click=${() =>
@@ -177,7 +178,7 @@ export class BoopliChores extends LitElement {
               new CustomEvent("open-breakdown", { detail: { kind: "recurring" }, bubbles: true, composed: true })
             )}
         >
-          ✨ New chore with AI
+          ${icon("auto-fix")} New chore with AI
         </button>
       </div>
 
@@ -200,16 +201,16 @@ export class BoopliChores extends LitElement {
           </p>`
         : html`<div class="chore-list">${chores.map(
             (c) => html`
-              <section class="card chore">
+              <section class="chore">
                 <div class="chore-main">
                   <div class="name">${c.name}</div>
                   <div class="muted small">
                     ${describeRepeat(c.repeat)} · ${c.where === "home" ? "Home only" : "Anywhere"}
                     · ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"}
                   </div>
-                  <div class="muted small">
+                  <div class=${running.has(c.id) ? "status live" : "muted small status"}>
                     ${running.has(c.id)
-                      ? "In progress"
+                      ? html`${icon("progress-clock")} In progress`
                       : c.enabled && c.next_due
                         ? `Next: ${describeWhen(c.next_due, this.nowMs, tz)}`
                         : c.repeat.type === "none"
@@ -220,11 +221,11 @@ export class BoopliChores extends LitElement {
                 <div class="chore-actions">
                   ${running.has(c.id)
                     ? nothing
-                    : html`<button @click=${() => this._start(c)}>Start now</button>`}
+                    : html`<button class="textlink" @click=${() => this._start(c)}>Start now</button>`}
                   ${c.repeat.type === "none"
-                    ? html`<button @click=${() => this._edit(c, true)}>Set a schedule</button>`
+                    ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>Set a schedule</button>`
                     : nothing}
-                  <button @click=${() => this._edit(c)}>Edit</button>
+                  <button class="textlink quiet" @click=${() => this._edit(c)}>Edit</button>
                 </div>
               </section>
             `
@@ -236,7 +237,7 @@ export class BoopliChores extends LitElement {
     sharedStyles,
     css`
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
       .toolbar {
         margin-bottom: 12px;
@@ -254,40 +255,46 @@ export class BoopliChores extends LitElement {
       .empty {
         padding: 24px 0;
       }
+      /* No boxes: a thin line on top (it turns to the accent colour on hover), the name, what it is, and quiet links. */
       .chore-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+        gap: 18px 32px;
         align-items: start;
       }
       .chore {
         display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: 10px;
+        border-top: 2px solid var(--divider-color);
+        transition: border-color 0.15s;
+      }
+      .chore:hover,
+      .chore:focus-within {
+        border-top-color: var(--boopli-accent, var(--primary-color));
       }
       .name {
-        font-size: 17px;
+        font-size: 20px;
         font-weight: 500;
         margin-bottom: 2px;
+      }
+      .status.live {
+        font-size: 17px;
+        color: var(--boopli-accent, var(--primary-color));
       }
       .chore-actions {
         display: flex;
         flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 8px;
-        flex-shrink: 0;
+        gap: 4px 16px;
+        margin-top: 2px;
       }
-      /* Phones: last, so it wins over the rules above. */
-      @media (max-width: 520px) {
-        .chore {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .chore-actions {
-          justify-content: flex-start;
-          flex-shrink: 1;
-        }
+      .chore-actions button {
+        font-size: 17px;
+        padding: 4px 2px;
+      }
+      .chore-actions button.quiet {
+        color: var(--secondary-text-color);
       }
     `,
   ];

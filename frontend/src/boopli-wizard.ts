@@ -132,7 +132,7 @@ export const WIZARD_TITLES: Record<WizardId, string> = {
 };
 
 const MAX_BOARDS = 10; // the most boards (the same as in the board editor)
-const MAX_LADDERS = 20; // the most ladders (the same as in the ladder editor)
+const MAX_LADDERS = 30; // the most ladders (the same as in the ladder editor and the backend)
 
 const TITLES: Record<StepId, string> = {
   welcome: "Welcome",
@@ -168,9 +168,6 @@ const TITLES: Record<StepId, string> = {
 const OPTIONAL_STEPS: StepId[] = ["phone_detail", "lights_detail", "spk_when", "alarm_detail"];
 
 const STYLE_CHOICES: { value: NudgeStyle; label: string; text: string }[] = [
-  { value: "one", label: "One nudge", text: "A single nudge, then quiet." },
-  { value: "escalating", label: "Escalating", text: "Gets more frequent, then stops." },
-  { value: "persistent", label: "Persistent", text: "Every 5 minutes until it is done." },
   { value: "quiet", label: "Quiet", text: "Only shown in Boopli, never nudges." },
 ];
 
@@ -368,7 +365,15 @@ export class BoopliWizard extends LitElement {
   }
 
   private _patchSound(which: "cue" | "alarm", patch: Partial<SoundCfg>): void {
-    this._patchSpeaker((s) => ({ ...s, [which]: { ...s[which], ...patch } }));
+    // The ding and the alarm sound are one setting for each kind of speaker (Alexa, or another media player).
+    const cur = this._currentSpeaker();
+    if (!this._draft || !cur) return;
+    const alexa = cur.speech.route !== "tts";
+    this._set({
+      speakers: this._draft.speakers.map((s) =>
+        (s.speech.route !== "tts") === alexa ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s
+      ),
+    });
   }
 
   /** Called whenever a step is shown. */
@@ -399,8 +404,7 @@ export class BoopliWizard extends LitElement {
         if (this._step === "wall_start") this._startBoardWork();
         if (this._step === "lad_name") this._ensureLadder();
         const sent = structuredClone(this._draft);
-        await saveSettings(this.hass, sent);
-        this._saved = sent;
+        this._adoptLadders(await saveSettings(this.hass, sent), sent);
       }
       if (delta === 1 && mode === "skip") {
         // Skip: drop what was changed on this screen.
@@ -658,6 +662,7 @@ export class BoopliWizard extends LitElement {
   private _renderLadStart(d: Settings) {
     const ladders = d.ladders ?? [];
     const none = ladders.length === 0;
+    const own = ladders.filter((l) => !l.id.startsWith("standard_")); // the standard ladders can be changed, not deleted
     const choice = (value: "create" | "edit" | "delete", label: string, text: string, disabled = false) => html`<label class="inline option">
       <input
         type="radio"
@@ -671,13 +676,13 @@ export class BoopliWizard extends LitElement {
     return html`
       ${choice("create", "Create a ladder", ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : "A new list of nudges.", ladders.length >= MAX_LADDERS)}
       ${choice("edit", "Edit a ladder", none ? "You have no ladders yet." : "Change its name, its nudges or how it ends.", none)}
-      ${choice("delete", "Delete a ladder", none ? "You have no ladders yet." : "Remove one you do not need any more.", none)}
+      ${choice("delete", "Delete a ladder", own.length === 0 ? "Only your own ladders can be deleted. You have none." : "Remove one of your own that you do not need any more.", own.length === 0)}
       ${this._ladderAction !== "create" && !none
         ? html`<div class="field">
             <label for="ladpick">Which ladder?</label>
             <select id="ladpick" .value=${this._ladderPick} @change=${(e: Event) => (this._ladderPick = (e.target as HTMLSelectElement).value)}>
               <option value="" ?selected=${!this._ladderPick}>Pick a ladder…</option>
-              ${ladders.map(
+              ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
                   ${l.name} (${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"})
                 </option>`
@@ -789,7 +794,7 @@ export class BoopliWizard extends LitElement {
               this._set({
                 default_style: (e.target as HTMLInputElement).checked ? style : this._baseline?.default_style && this._baseline.default_style !== style
                     ? this._baseline.default_style
-                    : "escalating",
+                    : style === "ladder:standard_escalating" ? "ladder:standard_one" : "ladder:standard_escalating",
               })}
           />
           <span><b>Use it for new chores</b></span>
@@ -946,9 +951,6 @@ export class BoopliWizard extends LitElement {
                 ${LEVELS.map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
               </select>
             </label>
-            ${this._numField("Starts at nudge #", p.start_at ?? 1, 1, 20, (n) =>
-              this._set({ phones: d.phones.map((x) => (x.service === p.service ? { ...x, start_at: n } : x)) })
-            )}
             <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>Send a test</button>
             ${this._noteLine(`phone:${p.service}`)}
           </div>`
@@ -1042,7 +1044,7 @@ export class BoopliWizard extends LitElement {
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
           label: l.name,
-          text: `Your own ladder, ${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
+          text: `${l.id.startsWith("standard_") ? "" : "Your own ladder, "}${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}.`,
         })),
       ].map(
         (s) => html`<label class="inline option">
@@ -1078,23 +1080,23 @@ export class BoopliWizard extends LitElement {
                   />
                   ${this._fn(id)}
                 </label>
-                ${cfg
-                  ? html`<div class="radios">
-                      ${(["blink", "indicator"] as const).map(
-                        (mode) => html`<label class="inline small">
-                          <input
-                            type="radio"
-                            name="mode-${id}"
-                            .checked=${cfg.mode === mode}
-                            @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
-                          />
-                          ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
-                        </label>`
-                      )}
-                      <button type="button" @click=${() => this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
-                    </div>
-                    ${this._noteLine(`light:${id}`)}`
-                  : nothing}
+                <!-- always shown (greyed out until the light is ticked), so every card is the same height -->
+                <div class="radios ${cfg ? "" : "off"}">
+                  ${(["blink", "indicator"] as const).map(
+                    (mode) => html`<label class="inline small">
+                      <input
+                        type="radio"
+                        name="mode-${id}"
+                        ?disabled=${!cfg}
+                        .checked=${cfg?.mode === mode}
+                        @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
+                      />
+                      ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
+                    </label>`
+                  )}
+                  <button type="button" ?disabled=${!cfg} @click=${() => cfg && this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
+                </div>
+                ${cfg ? this._noteLine(`light:${id}`) : nothing}
               </div>`;
             })}
           </div>`}
@@ -1125,7 +1127,6 @@ export class BoopliWizard extends LitElement {
                 ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
                 ${this._numField("Pause between blinks (ms)", l.gap_ms, 0, 30000, (n) => patch({ gap_ms: n }), 100)}`
               : html`<span class="muted small">A status light has no blink settings.</span>`}
-            ${this._numField("Starts at nudge #", l.start_at ?? 1, 1, 20, (n) => patch({ start_at: n }))}
             <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>Test</button>
             ${this._noteLine(`light:${l.entity_id}`)}
           </div>`;
@@ -1177,6 +1178,16 @@ export class BoopliWizard extends LitElement {
     `;
   }
 
+  /** What was saved is now the base. The server may have added a new device to the standard ladders: keep those too. */
+  private _adoptLadders(result: { ladders?: Settings["ladders"] } | void, sent: Settings): void {
+    const ladders = result && result.ladders ? structuredClone(result.ladders) : sent.ladders;
+    this._saved = { ...sent, ladders };
+    // Only if the ladders were not changed while the save was on its way (that edit would be lost).
+    if (this._draft && JSON.stringify(this._draft.ladders) === JSON.stringify(sent.ladders)) {
+      this._draft = { ...this._draft, ladders: structuredClone(ladders) };
+    }
+  }
+
   private _noSpeaker() {
     return html`<p class="muted">Pick a speaker first. Press Back.</p>`;
   }
@@ -1184,17 +1195,12 @@ export class BoopliWizard extends LitElement {
   private _soundBlock(which: "cue" | "alarm", s: SpeakerCfg, intro: string, level: SpeakerLevel) {
     const sound = s[which];
     return html`
-      <p>${intro}</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${sound.enabled} @change=${(e: Event) => this._patchSound(which, { enabled: (e.target as HTMLInputElement).checked })} />
-        Use this on ${this._fn(s.entity_id)}
-      </label>
-      ${sound.enabled
-        ? html`<div class="fields">
+      <p>${intro} Which nudge plays it is set in Nudge it your way.</p>
+      ${html`<div class="fields">
             <label class="num">
               Sound type
               <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
-                ${SOUND_KINDS.map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
+                ${SOUND_KINDS.filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -1214,8 +1220,7 @@ export class BoopliWizard extends LitElement {
               : nothing}
             <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>Test</button></div>
             ${this._noteLine(`spk:${level}`)}
-          </div>`
-        : nothing}
+          </div>`}
     `;
   }
 
@@ -1225,62 +1230,44 @@ export class BoopliWizard extends LitElement {
     const targets = speechTargets(this.hass, sp.route, sp.target);
     return html`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${sp.enabled} @change=${(e: Event) => patch({ enabled: (e.target as HTMLInputElement).checked })} />
-        Say it on ${this._fn(s.entity_id)}
-      </label>
-      ${sp.enabled
-        ? html`<div class="fields">
+      ${html`<div class="fields">
             <label class="num">
               How
-              <select @change=${(e: Event) => patch({ route: (e.target as HTMLSelectElement).value as SpeechRoute, target: "" })}>
+              <select
+                @change=${(e: Event) => {
+                  const route = (e.target as HTMLSelectElement).value as SpeechRoute;
+                  // Another media player can only play files, not Amazon's sounds.
+                  const tone = (t: SpeakerCfg["cue"]) => (route === "tts" && t.kind === "alexa" ? { ...t, kind: "file" as SoundKind, sound: "" } : t);
+                  this._patchSpeaker((x) => ({ ...x, cue: tone(x.cue), alarm: tone(x.alarm), speech: { ...x.speech, route, target: "", enabled: false } }));
+                }}
+              >
                 ${ROUTES.map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}
               </select>
             </label>
             <label class="num">
               ${sp.route === "tts" ? "Voice" : "Alexa device"}
-              <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value })}>
+              <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value, enabled: !!(e.target as HTMLSelectElement).value })}>
                 <option value="" .selected=${sp.target === ""}>Choose…</option>
                 ${targets.map((t) => html`<option value=${t.value} .selected=${t.value === sp.target}>${t.label}</option>`)}
               </select>
             </label>
-            ${sp.route === "alexa_media"
-              ? html`<label class="inline small">
-                  <input type="checkbox" .checked=${sp.announce} @change=${(e: Event) => patch({ announce: (e.target as HTMLInputElement).checked })} />
-                  Announce with a chime (some Alexas stay silent, so test it)
-                </label>`
-              : nothing}
             <label class="num wide">
               The sentence ({chore} and {step} are filled in)
               <input .value=${d.speech_template} @input=${(e: Event) => this._set({ speech_template: (e.target as HTMLInputElement).value })} />
             </label>
             <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>Test</button></div>
             ${this._noteLine("spk:speech")}
-          </div>`
-        : nothing}
+          </div>`}
     `;
   }
 
   private _renderSpkWhen(s: SpeakerCfg) {
-    const rows: { label: string; on: boolean; value: number; set: (n: number) => void }[] = [
-      { label: "Ding", on: s.cue.enabled, value: s.cue.start_at, set: (n) => this._patchSound("cue", { start_at: n }) },
-      {
-        label: "Spoken sentence",
-        on: s.speech.enabled,
-        value: s.speech.start_at,
-        set: (n) => this._patchSpeaker((x) => ({ ...x, speech: { ...x.speech, start_at: n } })),
-      },
-      { label: "Alarm sound", on: s.alarm.enabled, value: s.alarm.start_at, set: (n) => this._patchSound("alarm", { start_at: n }) },
-    ];
-    const active = rows.filter((r) => r.on);
     return html`
       <p>
-        From which nudge does each thing join in on ${this._fn(s.entity_id)}? Nudge 1 is the first
-        for a step. A speaker plays the highest one reached.
+        ${this._fn(s.entity_id)} joins the standard nudges (One nudge, Escalating, Persistent) the way speakers always
+        did: the ding first, then the spoken sentence, then the alarm. To change which nudge it acts at, open
+        <b>Nudge it your way</b> in Settings.
       </p>
-      ${active.length === 0
-        ? html`<p class="muted">Nothing is switched on for this speaker yet.</p>`
-        : html`<div class="fields">${active.map((r) => this._numField(`${r.label} starts at nudge #`, r.value, 1, 20, r.set))}</div>`}
       <div class="actions inline-actions">
         <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>Add another speaker</button>
       </div>
@@ -1292,8 +1279,7 @@ export class BoopliWizard extends LitElement {
     this._busy = true;
     try {
       const sent = structuredClone(this._draft);
-      await saveSettings(this.hass, sent);
-      this._saved = sent;
+      this._adoptLadders(await saveSettings(this.hass, sent), sent);
       this._speaker = "";
       this._index = this._steps.indexOf("spk_pick");
       this._enter();
@@ -1355,7 +1341,6 @@ export class BoopliWizard extends LitElement {
           return html`<div class="choice col">
             <b>${this._fn(a.entity_id)}</b>
             ${this._numField("On for (seconds)", a.seconds, 1, 600, (n) => patch({ seconds: n }))}
-            ${this._numField("Starts at nudge #", a.start_at ?? 4, 1, 20, (n) => patch({ start_at: n }))}
             <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
             ${this._noteLine(`alarm:${a.entity_id}`)}
           </div>`;
@@ -1468,8 +1453,7 @@ export class BoopliWizard extends LitElement {
     this._note("ai:test", "Saving and asking the agent…");
     try {
       const sent = structuredClone(d);
-      await saveSettings(this.hass, sent);
-      this._saved = sent;
+      this._adoptLadders(await saveSettings(this.hass, sent), sent);
       const result = await aiSteps(this.hass, "Make a cup of tea", "now", []);
       this._note("ai:test", `It works. The agent split "Make a cup of tea" into ${result.steps.length} steps, starting with: ${result.steps[0]?.title ?? "(none)"}`);
     } catch (err) {
@@ -1644,7 +1628,7 @@ export class BoopliWizard extends LitElement {
         gap: 4px;
       }
       .rail-title {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -1687,11 +1671,11 @@ export class BoopliWizard extends LitElement {
         flex: 0 0 24px;
         border-radius: 50%;
         border: 1px solid var(--divider-color);
-        font-size: 12px;
+        font-size: 14px;
       }
       .past .mark {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
+        border-color: var(--boopli-accent, var(--primary-color));
         color: var(--text-primary-color, #fff);
       }
       .main {
@@ -1721,7 +1705,7 @@ export class BoopliWizard extends LitElement {
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         transition: width 0.3s ease;
       }
       h2 {
@@ -1734,7 +1718,7 @@ export class BoopliWizard extends LitElement {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .optional {
         margin-bottom: 8px;
@@ -1786,6 +1770,9 @@ export class BoopliWizard extends LitElement {
         gap: 6px;
         padding-left: 28px;
       }
+      .radios.off {
+        opacity: 0.45;
+      }
       .note {
         flex-basis: 100%;
       }
@@ -1793,12 +1780,12 @@ export class BoopliWizard extends LitElement {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 0;
       }
       label.inline.small {
-        font-size: 14px;
+        font-size: 16px;
       }
       label.inline input {
         width: auto;
@@ -1819,7 +1806,7 @@ export class BoopliWizard extends LitElement {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 15px;
         margin: 0;
       }
       label.num.wide {
@@ -1843,7 +1830,7 @@ export class BoopliWizard extends LitElement {
         border-radius: 5px;
       }
       a {
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       .days {
         display: flex;
@@ -1885,7 +1872,7 @@ export class BoopliWizard extends LitElement {
       button.big {
         min-height: 52px;
         padding: 0 24px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .actions {
         display: flex;

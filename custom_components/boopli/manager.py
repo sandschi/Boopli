@@ -714,7 +714,8 @@ class BoopliManager:
     def style_for(self, run: engine.Run) -> str:
         """The nudge style of the chore a run belongs to (the default when the chore is gone)."""
         chore = self.chores.get(run.chore_id)
-        return chore.nudge_style if chore else self.settings.default_style
+        style = chore.nudge_style if chore else self.settings.default_style
+        return engine.normalize_style(style, self.settings.ladders)
 
     def _nudge_due_steps(
         self, now: datetime, wakeups: list[datetime]
@@ -724,7 +725,9 @@ class BoopliManager:
         home = self.is_home()
         for run in self.runs.values():
             chore = self.chores.get(run.chore_id)
-            style = chore.nudge_style if chore else self.settings.default_style
+            style = engine.normalize_style(
+                chore.nudge_style if chore else self.settings.default_style, self.settings.ladders
+            )
             ignore_quiet = chore.ignore_quiet_hours if chore else False
             if self._paused_run(run, now):
                 continue  # away: frozen, nothing nudges until you are back
@@ -919,6 +922,8 @@ class BoopliManager:
     def save_settings(self, data: dict[str, Any]) -> None:
         """Replace the settings."""
         settings = engine.Settings.from_dict(data)
+        if (gone := engine.deleted_standard_ladder(self.settings, settings)) is not None:
+            raise BoopliError(f"The standard ladder '{gone}' can be changed but not deleted.")
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
@@ -933,6 +938,10 @@ class BoopliManager:
                     f"The ladder '{ladder.name}' is used by {', '.join(users)}. "
                     "Pick another nudge style for them first."
                 )
+        # Devices added now act in the standard ladders the way they used to (their "starts at nudge").
+        engine.sync_phone_levels_to_standard_ladders(self.settings, settings)
+        engine.add_new_devices_to_standard_ladders(self.settings, settings)
+        settings.default_style = engine.normalize_style(settings.default_style, settings.ladders)
         self.settings = settings
         self._watch_presence()
         self._tick()
@@ -1850,10 +1859,17 @@ class BoopliManager:
         if kind == "speaker":
             speaker = engine.SpeakerCfg.from_dict(data.get("speaker") or {})
             level = str(data.get("level", ""))
-            error = engine.validate_speaker_test(speaker, level)
+            # The test brings the sounds as they are on screen (maybe not saved yet), else the saved ones.
+            raw = data.get("sounds")
+            sounds = (
+                [engine.ExtraSound.from_dict(x) for x in raw if isinstance(x, dict)]
+                if isinstance(raw, list)
+                else self.settings.sounds
+            )
+            error = engine.validate_speaker_test(speaker, level, sounds)
             if error:
                 raise BoopliError(error)
-            return await self.nudger.async_test_speaker(speaker, level)
+            return await self.nudger.async_test_speaker(speaker, level, sounds)
         if kind == "alarm_device":
             device = engine.AlarmDeviceCfg.from_dict(data.get("alarm_device") or {})
             if device.entity_id.split(".")[0] not in engine.ALARM_DEVICE_DOMAINS:

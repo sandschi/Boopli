@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
+import { icon } from "./icon";
 import { deleteChore, errorMessage, saveChore } from "./api";
-import { hexToRgb, lightHasColor, rgbToHex } from "./helpers";
+import { hexToRgb, lightHasColor, normalizeStyle, rgbToHex } from "./helpers";
 import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
@@ -15,9 +16,6 @@ const MAX_QUESTIONS = 8; // the same as in the integration
 
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
-  { value: "one", label: "One nudge" },
-  { value: "escalating", label: "Escalating: gets more frequent, then stops" },
-  { value: "persistent", label: "Persistent: every 5 minutes until done" },
 ];
 
 const WAIT_PRESETS: { minutes: number; label: string }[] = [
@@ -439,7 +437,7 @@ export class BoopliChoreEditor extends LitElement {
         </details>
         <details class="auto" ?open=${!!step.image}>
           <summary>
-            📷 Picture…
+            ${icon("camera-outline")} Picture…
             ${step.image ? html`<span class="muted small">(set)</span>` : nothing}
           </summary>
           <boopli-picture
@@ -531,7 +529,7 @@ export class BoopliChoreEditor extends LitElement {
           <label for="style">How should Boopli nudge you?</label>
           <select
             id="style"
-            .value=${d.nudge_style ?? this.defaultStyle}
+            .value=${normalizeStyle(d.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
             @change=${(e: Event) =>
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
@@ -539,12 +537,12 @@ export class BoopliChoreEditor extends LitElement {
               ...STYLE_OPTIONS,
               ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
                 value: `ladder:${l.id}` as NudgeStyle,
-                label: `${l.name}: my own ladder`,
+                label: l.id.startsWith("standard_") ? l.name : `${l.name}: my own ladder`,
               })),
             ].map(
               (o) => html`<option
                 value=${o.value}
-                ?selected=${o.value === (d.nudge_style ?? this.defaultStyle)}
+                ?selected=${o.value === normalizeStyle(d.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
               >
                 ${o.label}
               </option>`
@@ -636,7 +634,7 @@ export class BoopliChoreEditor extends LitElement {
         ${d.steps.map((_, i) => this._renderStep(i))}
         <div class="step-buttons">
           <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
-          <button type="button" @click=${() => this._openSuggest()}>✨ Suggest steps with AI</button>
+          <button type="button" @click=${() => this._openSuggest()}>${icon("auto-fix")} Suggest steps with AI</button>
         </div>
         </div>
         </div>
@@ -701,9 +699,9 @@ export class BoopliChoreEditor extends LitElement {
       .tag {
         padding: 2px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 14px;
         background: var(--secondary-background-color);
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
         white-space: nowrap;
       }
       .sizes {
@@ -730,7 +728,7 @@ export class BoopliChoreEditor extends LitElement {
         margin-left: 8px;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -763,7 +761,7 @@ export class BoopliChoreEditor extends LitElement {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
         margin: 0;
       }
@@ -772,7 +770,7 @@ export class BoopliChoreEditor extends LitElement {
         min-height: 0;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .chips {
         display: flex;
@@ -842,7 +840,7 @@ export class BoopliChoreEditor extends LitElement {
       }
       details.auto summary {
         cursor: pointer;
-        font-size: 14px;
+        font-size: 16px;
       }
       .custom {
         display: inline-flex;

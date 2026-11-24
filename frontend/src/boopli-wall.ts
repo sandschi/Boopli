@@ -1,4 +1,6 @@
-import { LitElement, css, nothing } from "lit";
+import { LitElement, css, nothing, unsafeCSS } from "lit";
+import { BOOPLI_FONT } from "./fonts";
+import { icon } from "./icon";
 import { html as shtml, unsafeStatic } from "lit/static-html.js";
 import { html } from "lit";
 import { awayWhen } from "./boopli-away";
@@ -124,7 +126,7 @@ export class BoopliWall extends LitElement {
     const away = !this.preview && this.snapshot.away_now ? this.snapshot.away : null; // only while it is on, not while it is only planned
     return html`<div class="wall ${night ? `night-${board.night}` : ""}" @pointerdown=${this._wake}>
       ${away
-        ? html`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${awayWhen(away, this.nowMs, tz, true)}</span></div>`
+        ? html`<div class="away" role="status">${icon("bag-suitcase")} <b>Away mode is on</b> <span>${awayWhen(away, this.nowMs, tz, true)}</span></div>`
         : nothing}
       <div class="stage">
       <div class="grid" style="--cols:${board.columns};--rows:${board.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
@@ -153,8 +155,8 @@ export class BoopliWall extends LitElement {
       ${this.preview
         ? nothing
         : html`<div class="controls">
-            <button type="button" aria-label="Edit this board" title="Edit this board" @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>✎</button>
-            <button type="button" aria-label="Full screen" @click=${this._fullscreen}>⛶</button>
+            <button type="button" aria-label="Edit this board" title="Edit this board" @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>${icon("pencil")}</button>
+            <button type="button" aria-label="Full screen" @click=${this._fullscreen}>${icon("fullscreen")}</button>
             <button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button>
           </div>`}
     </div>`;
@@ -268,6 +270,7 @@ export class BoopliWall extends LitElement {
   static styles = css`
     :host {
       display: block;
+      font-family: ${unsafeCSS(BOOPLI_FONT)};
       color: var(--primary-text-color);
     }
     * {
@@ -345,7 +348,7 @@ export class BoopliWall extends LitElement {
       width: 26px;
       height: 26px;
       border-radius: 8px;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       opacity: 0.8;
       cursor: nwse-resize;
       touch-action: none;
@@ -374,7 +377,7 @@ export class BoopliWall extends LitElement {
       inset: 0;
       z-index: 1;
       width: 100%;
-      border: 2px dashed var(--primary-color);
+      border: 2px dashed var(--boopli-accent, var(--primary-color));
       border-radius: 18px;
       background: transparent;
       cursor: pointer;
@@ -385,13 +388,13 @@ export class BoopliWall extends LitElement {
     .shield:hover,
     .shield:focus-visible {
       opacity: 1;
-      background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 12%, transparent);
     }
     .selected .shield {
       opacity: 1;
       border-style: solid;
       border-width: 4px;
-      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 15%, transparent);
     }
     .night-dim .grid {
       filter: brightness(0.3);

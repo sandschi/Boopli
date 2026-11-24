@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { icon } from "./icon";
 import { aiPreview, aiQuestions, aiSteps, errorMessage, roomsGuess, scenePhotos } from "./api";
 import "./boopli-wait";
 import { MAX_PHOTOS, shrinkPhoto } from "./photos";
@@ -322,7 +323,7 @@ export class BoopliBreakdown extends LitElement {
     }
     if (!this._photosOpen) {
       return html`<div class="scene">
-        <button type="button" @click=${() => (this._photosOpen = true)}>📷 Add photos of how it looks now (optional)</button>
+        <button type="button" @click=${() => (this._photosOpen = true)}>${icon("camera-outline")} Add photos of how it looks now (optional)</button>
       </div>`;
     }
     const full = this._photos.length >= MAX_PHOTOS;
@@ -823,7 +824,7 @@ export class BoopliBreakdown extends LitElement {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .link {
         border: 0;
@@ -853,7 +854,7 @@ export class BoopliBreakdown extends LitElement {
       button.big {
         min-height: 48px;
         padding: 0 22px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .question {
         padding: 14px 16px;
@@ -877,7 +878,7 @@ export class BoopliBreakdown extends LitElement {
       }
       .said {
         margin: 6px 0 12px;
-        font-size: 14px;
+        font-size: 16px;
       }
       .said summary {
         cursor: pointer;
@@ -891,7 +892,7 @@ export class BoopliBreakdown extends LitElement {
         align-items: center;
         gap: 14px;
         padding: 28px 4px;
-        font-size: 18px;
+        font-size: 20px;
       }
       .dots {
         display: inline-flex;
@@ -901,7 +902,7 @@ export class BoopliBreakdown extends LitElement {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         animation: bounce 1s infinite ease-in-out;
       }
       .dots i:nth-child(2) {
@@ -927,11 +928,11 @@ export class BoopliBreakdown extends LitElement {
       }
       .group {
         margin: 16px 0 6px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       .step {
         display: flex;
@@ -953,7 +954,7 @@ export class BoopliBreakdown extends LitElement {
       .only-if select {
         flex: 1;
         min-width: 0;
-        font-size: 13px;
+        font-size: 15px;
       }
       .checks {
         margin: 12px 0;
@@ -976,7 +977,7 @@ export class BoopliBreakdown extends LitElement {
         width: 26px;
         text-align: right;
         color: var(--secondary-text-color);
-        font-size: 13px;
+        font-size: 15px;
         flex: 0 0 26px;
       }
       input.title {
@@ -1071,7 +1072,7 @@ export class BoopliBreakdown extends LitElement {
         height: 28px;
         padding: 0;
         border-radius: 50%;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
       }
       .filebtn {
@@ -1104,7 +1105,7 @@ export class BoopliBreakdown extends LitElement {
       .preview pre {
         white-space: pre-wrap;
         font: inherit;
-        font-size: 13px;
+        font-size: 15px;
         line-height: 1.45;
         background: var(--secondary-background-color);
         border: 1px solid var(--divider-color);
