@@ -7,6 +7,10 @@ Today is where you do things. It shows your pet in its room at the top, and unde
 
 ![The Today screen: the step waiting for you with Done and On it, the pet in its room, and what is ready now](/Boopli/img/today.jpg)
 
+<img src="/Boopli/img/today-phone.jpg" alt="The Today screen on a phone" width="260" />
+
+The panel fits a phone too, so you can use it from the Home Assistant app.
+
 ## What is on it
 
 - **What to do now.** The step that is waiting for you, with its group, "Step 3 of 8" and a progress bar. A celebration shows when a task is finished.

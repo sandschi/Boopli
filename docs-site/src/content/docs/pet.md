@@ -18,3 +18,7 @@ The mood follows how long ago you last finished a step:
 | Hibernating | 7 days or more. |
 
 While [Away mode](/Boopli/away-mode/) is on, the mood stays as it was. The mood, the level and the XP are also available as [sensors](/Boopli/automations/).
+
+## Accent colour
+
+The **Your pet and accent colour** card in Settings also sets the colour of Boopli's buttons, bars and highlights. By default it is your pet's own colour. Pick one of the swatches, or type your own, if you prefer another. The Settings card shows the colour that is set, and **Save** applies it everywhere.
