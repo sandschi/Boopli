@@ -15,6 +15,7 @@ import type {
   Settings,
   SpeakerCfg,
   SpeakerChoice,
+  ExtraSound,
   Snapshot,
 } from "./types";
 
@@ -200,9 +201,10 @@ export function testPhone(hass: Hass, phone: PhoneCfg): Promise<TestResult> {
 export function testSpeaker(
   hass: Hass,
   speaker: SpeakerCfg,
-  level: SpeakerChoice
+  level: SpeakerChoice,
+  sounds?: ExtraSound[] // your own sounds as they are on screen (maybe not saved yet)
 ): Promise<TestResult> {
-  return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level });
+  return hass.callWS({ type: "boopli/test_channel", kind: "speaker", speaker, level, ...(sounds ? { sounds } : {}) });
 }
 
 export function testAlarmDevice(

@@ -168,9 +168,6 @@ const TITLES: Record<StepId, string> = {
 const OPTIONAL_STEPS: StepId[] = ["phone_detail", "lights_detail", "spk_when", "alarm_detail"];
 
 const STYLE_CHOICES: { value: NudgeStyle; label: string; text: string }[] = [
-  { value: "one", label: "One nudge", text: "A single nudge, then quiet." },
-  { value: "escalating", label: "Escalating", text: "Gets more frequent, then stops." },
-  { value: "persistent", label: "Persistent", text: "Every 5 minutes until it is done." },
   { value: "quiet", label: "Quiet", text: "Only shown in Boopli, never nudges." },
 ];
 
@@ -789,7 +786,7 @@ export class BoopliWizard extends LitElement {
               this._set({
                 default_style: (e.target as HTMLInputElement).checked ? style : this._baseline?.default_style && this._baseline.default_style !== style
                     ? this._baseline.default_style
-                    : "escalating",
+                    : "ladder:standard_escalating",
               })}
           />
           <span><b>Use it for new chores</b></span>
@@ -946,9 +943,6 @@ export class BoopliWizard extends LitElement {
                 ${LEVELS.map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
               </select>
             </label>
-            ${this._numField("Starts at nudge #", p.start_at ?? 1, 1, 20, (n) =>
-              this._set({ phones: d.phones.map((x) => (x.service === p.service ? { ...x, start_at: n } : x)) })
-            )}
             <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>Send a test</button>
             ${this._noteLine(`phone:${p.service}`)}
           </div>`
@@ -1125,7 +1119,6 @@ export class BoopliWizard extends LitElement {
                 ${this._numField("Number of blinks", l.repeats, 1, 5, (n) => patch({ repeats: n }))}
                 ${this._numField("Pause between blinks (ms)", l.gap_ms, 0, 30000, (n) => patch({ gap_ms: n }), 100)}`
               : html`<span class="muted small">A status light has no blink settings.</span>`}
-            ${this._numField("Starts at nudge #", l.start_at ?? 1, 1, 20, (n) => patch({ start_at: n }))}
             <button type="button" @click=${() => this._try(`light:${l.entity_id}`, () => testLight(this.hass!, l))}>Test</button>
             ${this._noteLine(`light:${l.entity_id}`)}
           </div>`;
@@ -1262,25 +1255,12 @@ export class BoopliWizard extends LitElement {
   }
 
   private _renderSpkWhen(s: SpeakerCfg) {
-    const rows: { label: string; on: boolean; value: number; set: (n: number) => void }[] = [
-      { label: "Ding", on: s.cue.enabled, value: s.cue.start_at, set: (n) => this._patchSound("cue", { start_at: n }) },
-      {
-        label: "Spoken sentence",
-        on: s.speech.enabled,
-        value: s.speech.start_at,
-        set: (n) => this._patchSpeaker((x) => ({ ...x, speech: { ...x.speech, start_at: n } })),
-      },
-      { label: "Alarm sound", on: s.alarm.enabled, value: s.alarm.start_at, set: (n) => this._patchSound("alarm", { start_at: n }) },
-    ];
-    const active = rows.filter((r) => r.on);
     return html`
       <p>
-        From which nudge does each thing join in on ${this._fn(s.entity_id)}? Nudge 1 is the first
-        for a step. A speaker plays the highest one reached.
+        ${this._fn(s.entity_id)} joins the standard nudges (One nudge, Escalating, Persistent) the way speakers always
+        did: the ding first, then the spoken sentence, then the alarm. To change which nudge it acts at, open
+        <b>Nudge it your way</b> in Settings.
       </p>
-      ${active.length === 0
-        ? html`<p class="muted">Nothing is switched on for this speaker yet.</p>`
-        : html`<div class="fields">${active.map((r) => this._numField(`${r.label} starts at nudge #`, r.value, 1, 20, r.set))}</div>`}
       <div class="actions inline-actions">
         <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>Add another speaker</button>
       </div>
@@ -1355,7 +1335,6 @@ export class BoopliWizard extends LitElement {
           return html`<div class="choice col">
             <b>${this._fn(a.entity_id)}</b>
             ${this._numField("On for (seconds)", a.seconds, 1, 600, (n) => patch({ seconds: n }))}
-            ${this._numField("Starts at nudge #", a.start_at ?? 4, 1, 20, (n) => patch({ start_at: n }))}
             <button type="button" @click=${() => this._try(`alarm:${a.entity_id}`, () => testAlarmDevice(this.hass!, a))}>Test (3 s)</button>
             ${this._noteLine(`alarm:${a.entity_id}`)}
           </div>`;

@@ -95,6 +95,8 @@ def test_a_partial_backup_only_has_its_parts():
 def test_the_wall_boards_and_ladders_come_back_with_the_settings():
     s = engine.Settings.from_dict({})
     s.ladders = [a_ladder()]
+    s.default_style = engine.STYLE_QUIET
+    s.default_style = engine.ladder_style("l1")
     backup = engine.parse_backup(make(["settings"], settings=s))
     assert [lad.id for lad in backup.settings.ladders] == ["l1"]
     assert backup.settings.boards[0].name == "Wall" and backup.settings.boards[0].columns == 16
@@ -183,6 +185,7 @@ def test_a_chore_needs_the_ladder_it_uses():
     assert engine.parse_backup(make(["chores"], chores=[chore]), ["l1"]).parts == ["chores"]  # this install has it
     s = engine.Settings.from_dict({})
     s.ladders = [a_ladder()]
+    s.default_style = engine.STYLE_QUIET
     assert engine.parse_backup(make(["settings", "chores"], settings=s, chores=[chore])).parts == ["settings", "chores"]
 
 
@@ -201,6 +204,7 @@ def test_chores_picked_without_settings_must_fit_the_ladders_here():
     chore = a_chore(style=engine.ladder_style("l1"))
     s = engine.Settings.from_dict({})
     s.ladders = [a_ladder()]
+    s.default_style = engine.STYLE_QUIET
     backup = engine.parse_backup(make(ALL, settings=s, chores=[chore]))
     no_ladder_here = engine.Settings.from_dict({})
     assert "does not fit" in engine.check_backup_selection(backup, ["chores"], no_ladder_here, [])
@@ -211,6 +215,7 @@ def test_chores_picked_without_settings_must_fit_the_ladders_here():
 def test_settings_picked_without_chores_must_not_take_a_ladder_away_from_a_chore():
     here = engine.Settings.from_dict({})
     here.ladders = [a_ladder()]
+    here.default_style = engine.STYLE_QUIET
     using = a_chore(style=engine.ladder_style("l1"))
     backup = engine.parse_backup(make(["settings"]))  # a file whose settings have no ladders
     error = engine.check_backup_selection(backup, ["settings"], here, [using])

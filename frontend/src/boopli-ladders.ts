@@ -14,9 +14,6 @@ const NAME_MAX = 40;
 
 const BUILT_IN: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet (no nudges)" },
-  { value: "one", label: "One nudge" },
-  { value: "escalating", label: "Escalating" },
-  { value: "persistent", label: "Persistent" },
 ];
 
 function copyRung(r: Rung): Rung {
@@ -181,7 +178,7 @@ export class BoopliLadders extends LitElement {
     }
     for (const [id, choice] of Object.entries(r.speakers)) {
       const sp = this.settings?.speakers.find((x) => x.entity_id === id);
-      const label = speakerChoices(sp ?? ({ entity_id: id } as SpeakerCfg)).find((c) => c.value === choice)?.label ?? choice;
+      const label = speakerChoices(sp ?? ({ entity_id: id } as SpeakerCfg), this.settings?.sounds).find((c) => c.value === choice)?.label ?? choice;
       parts.push(`${friendlyName(this.hass, id)} (${label.toLowerCase()})`);
     }
     for (const id of r.alarms) parts.push(`${friendlyName(this.hass, id)} (alarm)`);

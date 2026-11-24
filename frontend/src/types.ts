@@ -171,7 +171,6 @@ export interface SpeakerCfg {
   cue: SoundCfg;
   speech: SpeechCfg;
   alarm: SoundCfg;
-  sounds?: ExtraSound[]; // more sound effects, for ladders
 }
 
 export interface AlarmDeviceCfg {
@@ -255,6 +254,8 @@ export interface Settings {
   pet_name: string;
   pet_kind?: string; // which pet: bear, cat, dog, fox or slime
   accent?: string; // colour of buttons and bars as "#RRGGBB"; empty = the pet's own colour
+  sounds?: ExtraSound[]; // your own sounds, one list for all speakers
+  standard_done?: boolean; // the three standard styles are ladders now (set by the integration)
   ai: AiSettings;
   question_wait_minutes?: number; // how long the first nudge waits for the questions
   check_in_minutes?: number; // after "On it": when Boopli asks "still on it?"

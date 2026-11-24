@@ -760,6 +760,7 @@ def ws_setup_save(
         vol.Optional("light"): dict,
         vol.Optional("phone"): dict,
         vol.Optional("speaker"): dict,
+        vol.Optional("sounds"): list,
         vol.Optional("level"): str,
         vol.Optional("alarm_device"): dict,
     }

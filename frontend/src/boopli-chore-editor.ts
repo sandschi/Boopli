@@ -16,9 +16,6 @@ const MAX_QUESTIONS = 8; // the same as in the integration
 
 const STYLE_OPTIONS: { value: NudgeStyle; label: string }[] = [
   { value: "quiet", label: "Quiet: only shown in Boopli, no nudges" },
-  { value: "one", label: "One nudge" },
-  { value: "escalating", label: "Escalating: gets more frequent, then stops" },
-  { value: "persistent", label: "Persistent: every 5 minutes until done" },
 ];
 
 const WAIT_PRESETS: { minutes: number; label: string }[] = [

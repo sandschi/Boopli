@@ -78,6 +78,7 @@ def test_a_light_can_be_left_out_of_a_later_nudge():
 def test_a_speaker_level_that_is_not_set_up_is_skipped():
     rung = engine.Rung(speakers={"media_player.kitchen": engine.SPEAKER_ALARM})
     n = make(rung)
+    n.manager.settings.speakers[0].alarm.sound = ""  # no alarm sound chosen
     send(n, rung)
     n._play_speaker.assert_not_awaited()
 
@@ -174,7 +175,7 @@ def speaker_calls(n):
 
 def test_speaks_and_speaks_with_chime_are_two_choices():
     n = make(None)
-    n.manager.settings.speakers[0].speech.enabled = True
+    n.manager.settings.speakers[0].speech.target = "alexa_media_kitchen"
     plain = engine.Rung(speakers={"media_player.kitchen": engine.SPEAKER_SPEECH})
     chime = engine.Rung(speakers={"media_player.kitchen": engine.SPEAKER_SPEECH_CHIME})
     send(n, plain)
@@ -187,7 +188,7 @@ def test_speaks_and_speaks_with_chime_are_two_choices():
 
 def test_a_speaker_can_play_one_of_its_extra_sounds():
     n = make(None)
-    n.manager.settings.speakers[0].sounds = [engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "x")]
+    n.manager.settings.sounds = [engine.ExtraSound("f1", "Fanfare", engine.SOUND_ALEXA, "x")]
     send(n, engine.Rung(speakers={"media_player.kitchen": "sound:f1"}))
     assert speaker_calls(n) == [("media_player.kitchen", "sound:f1", None)]
     n._play_speaker.reset_mock()

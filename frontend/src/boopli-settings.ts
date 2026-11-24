@@ -296,33 +296,6 @@ export class BoopliSettings extends LitElement {
     });
   }
 
-  private _startAtField(value: number, onChange: (n: number) => void) {
-    return html`
-      <label class="startat">
-        Starts at nudge #
-        <input
-          type="number"
-          min="1"
-          max="20"
-          .value=${String(value)}
-          @change=${(e: Event) => {
-            const n = Math.round(Number((e.target as HTMLInputElement).value));
-            if (!Number.isNaN(n)) onChange(Math.min(20, Math.max(1, n)));
-          }}
-        />
-      </label>
-    `;
-  }
-
-  private _setPhoneStart(service: string, start_at: number): void {
-    if (!this._draft) return;
-    this._set({
-      phones: this._draft.phones.map((p) =>
-        p.service === service ? { ...p, start_at } : p
-      ),
-    });
-  }
-
   private _setPhoneLevel(service: string, level: PhoneLevel): void {
     if (!this._draft) return;
     this._set({
@@ -487,11 +460,6 @@ export class BoopliSettings extends LitElement {
                   </select>
                   <button @click=${() => this._testPhone(service)}>Test</button>
                 </div>
-                ${cfg
-                  ? html`<div class="startrow">
-                      ${this._startAtField(cfg.start_at ?? 1, (n) => this._setPhoneStart(service, n))}
-                    </div>`
-                  : nothing}
                 ${note ? html`<div class="note muted small">${note}</div>` : nothing}
               `;
             })}
@@ -541,9 +509,6 @@ export class BoopliSettings extends LitElement {
                 : nothing}
               <button @click=${() => this._testLight(light)}>Test</button>
               <button aria-label="Remove light" @click=${() => this._removeLight(id)}>✕</button>
-            </div>
-            <div class="startrow">
-              ${this._startAtField(light.start_at ?? 1, (n) => this._patchLight(id, { start_at: n }))}
             </div>
             ${blink
               ? html`
@@ -946,7 +911,7 @@ export class BoopliSettings extends LitElement {
     switch (area) {
       case "phone":
         return d.phones.length
-          ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}, from nudge ${p.start_at}`)
+          ? d.phones.map((p) => `${phoneName(p.service)}: ${PHONE_LEVEL_LABEL[p.level] ?? p.level}`)
           : ["No phone set up yet."];
       case "lights":
         return d.lights.length ? d.lights.map((l) => `${fn(l.entity_id)}: ${lightKind(l)}`) : ["No reminder lights yet."];
@@ -956,7 +921,7 @@ export class BoopliSettings extends LitElement {
           : ["No speakers yet."];
       case "alarms":
         return d.alarm_devices.length
-          ? d.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s, from nudge ${a.start_at}`)
+          ? d.alarm_devices.map((a) => `${fn(a.entity_id)}: on for ${a.seconds} s`)
           : ["No alarm devices yet."];
       case "quiet":
         return [describeQuiet(d.quiet_hours)];

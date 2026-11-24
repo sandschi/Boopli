@@ -169,6 +169,7 @@ def full_settings() -> "engine.Settings":
     s.alarm_devices = [engine.AlarmDeviceCfg("siren.garage", 20, 5)]
     s.lights = [engine.LightCfg("light.x", start_at=2)]
     s.phones = [engine.PhoneCfg("mobile_app_x", "high", 3)]
+    s.standard_done = True
     return s
 
 

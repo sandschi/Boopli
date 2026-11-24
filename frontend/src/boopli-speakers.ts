@@ -59,6 +59,7 @@ export class BoopliSpeakers extends LitElement {
     _addDevice: { state: true },
     _notes: { state: true },
     _open: { state: true },
+    _sub: { state: true },
   };
 
   declare hass?: Hass;
@@ -68,6 +69,7 @@ export class BoopliSpeakers extends LitElement {
   declare _addDevice: string;
   declare _notes: Record<string, string>;
   declare _open: Record<string, boolean>; // the lines whose details are showing
+  declare _sub: "" | "add" | "tone" | "own" | "say"; // which small window is open
 
   constructor() {
     super();
@@ -75,6 +77,12 @@ export class BoopliSpeakers extends LitElement {
     this._addDevice = "";
     this._notes = {};
     this._open = {};
+    this._sub = "";
+  }
+
+  protected updated(): void {
+    const d = this.renderRoot.querySelector<HTMLDialogElement>("dialog.sub");
+    if (d && !d.open) d.showModal();
   }
 
   // --- helpers ---------------------------------------------------------
@@ -143,37 +151,43 @@ export class BoopliSpeakers extends LitElement {
     });
   }
 
+  /** Alexa speakers play Alexa sounds (or files); other media players can only play files. */
+  private _group(s: SpeakerCfg): "alexa" | "other" {
+    return s.speech.route === "tts" ? "other" : "alexa";
+  }
+
+  /** The ding and the alarm sound of a kind of speaker: the ones its speakers already have, or the first ones. */
+  private _soundsFor(group: "alexa" | "other"): { cue: SoundCfg; alarm: SoundCfg } {
+    const have = this._speakers().find((s) => this._group(s) === group);
+    if (have) return { cue: structuredClone(have.cue), alarm: structuredClone(have.alarm) };
+    const alexa = group === "alexa";
+    return {
+      cue: { enabled: true, kind: alexa ? "alexa" : "file", sound: alexa ? ALEXA_DING_SOUND : "", start_at: 1, seconds: 30, repeat_s: 5 },
+      alarm: { enabled: true, kind: alexa ? "alexa" : "file", sound: alexa ? ALEXA_ALARM_SOUND : "", start_at: 4, seconds: 30, repeat_s: 5 },
+    };
+  }
+
   private _newSpeaker(entityId: string): SpeakerCfg {
     return {
       entity_id: entityId,
-      cue: {
-        enabled: false,
-        kind: "alexa",
-        sound: ALEXA_DING_SOUND,
-        start_at: 1,
-        seconds: 30,
-        repeat_s: 5,
-      },
+      ...this._soundsFor("alexa"),
       speech: { enabled: false, route: "alexa_media", target: "", announce: false, start_at: 2 },
-      alarm: {
-        enabled: false,
-        kind: "alexa",
-        sound: ALEXA_ALARM_SOUND,
-        start_at: 4,
-        seconds: 30,
-        repeat_s: 5,
-      },
     };
+  }
+
+  private _setRoute(entityId: string, route: SpeechRoute): void {
+    this._updateSpeaker(entityId, (s) => {
+      const next: SpeakerCfg = { ...s, speech: { ...s.speech, route, target: "", enabled: false } };
+      if (this._group(s) !== this._group(next)) Object.assign(next, this._soundsFor(this._group(next)));
+      return next;
+    });
   }
 
   private _add(): void {
     if (!this._addSpeaker) return;
     this._patch({ speakers: [...this._speakers(), this._newSpeaker(this._addSpeaker)] });
     this._addSpeaker = "";
-  }
-
-  private _setSound(entityId: string, which: "cue" | "alarm", patch: Partial<SoundCfg>): void {
-    this._updateSpeaker(entityId, (s) => ({ ...s, [which]: { ...s[which], ...patch } }));
+    this._sub = "";
   }
 
   private _setSpeech(entityId: string, patch: Partial<SpeechCfg>): void {
@@ -193,24 +207,41 @@ export class BoopliSpeakers extends LitElement {
 
   // --- your own sounds (for ladders) ---
 
-  private _setExtra(entityId: string, soundId: string, patch: Partial<ExtraSound>): void {
-    this._updateSpeaker(entityId, (s) => ({
-      ...s,
-      sounds: (s.sounds ?? []).map((x) => (x.id === soundId ? { ...x, ...patch } : x)),
-    }));
+  /** Your own sounds are one list for all speakers (in the settings, not on a speaker). */
+  private _sounds(): ExtraSound[] {
+    return this.settings?.sounds ?? [];
   }
 
-  private _addExtra(entityId: string): void {
-    this._updateSpeaker(entityId, (s) => {
-      const taken = new Set((s.sounds ?? []).map((x) => x.name.toLowerCase()));
-      let n = (s.sounds ?? []).length + 1;
-      while (taken.has(`sound ${n}`)) n++;
-      return { ...s, sounds: [...(s.sounds ?? []), { id: newLadderId(), name: `Sound ${n}`, kind: "alexa", sound: "" }] };
-    });
+  private _setExtra(soundId: string, patch: Partial<ExtraSound>): void {
+    this._patch({ sounds: this._sounds().map((x) => (x.id === soundId ? { ...x, ...patch } : x)) });
   }
 
-  private _removeExtra(entityId: string, soundId: string): void {
-    this._updateSpeaker(entityId, (s) => ({ ...s, sounds: (s.sounds ?? []).filter((x) => x.id !== soundId) }));
+  private _addExtra(): void {
+    const taken = new Set(this._sounds().map((x) => x.name.toLowerCase()));
+    let n = this._sounds().length + 1;
+    while (taken.has(`sound ${n}`)) n++;
+    this._patch({ sounds: [...this._sounds(), { id: newLadderId(), name: `Sound ${n}`, kind: "alexa", sound: "" }] });
+  }
+
+  private _removeExtra(soundId: string): void {
+    this._patch({ sounds: this._sounds().filter((x) => x.id !== soundId) });
+  }
+
+  /** Test one of your sounds on the first speaker that can play it. */
+  private async _testExtra(sound: ExtraSound): Promise<void> {
+    const key = `own:${sound.id}`;
+    const speaker = this._speakers().find((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
+    if (!speaker) {
+      this._note(key, "Add a speaker that can play it first.");
+      return;
+    }
+    if (!this.hass) return;
+    this._note(key, "Sending…");
+    try {
+      this._note(key, (await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())).note);
+    } catch (err) {
+      this._note(key, errorMessage(err));
+    }
   }
 
   // --- drawing -----------------------------------------------------------
@@ -279,7 +310,7 @@ export class BoopliSpeakers extends LitElement {
                       />
                     </label>`
                   : nothing}
-                <button type="button" class="textlink" @click=${() => l.onTest()}>Test</button>
+                <button type="button" class="test" @click=${() => l.onTest()}>Test</button>
                 <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(l.key)}>
                   Details
                 </button>
@@ -311,156 +342,249 @@ export class BoopliSpeakers extends LitElement {
     </label>`;
   }
 
-  private _soundLine(speaker: SpeakerCfg, which: "cue" | "alarm") {
-    const cfg = speaker[which];
-    const id = speaker.entity_id;
-    const alarm = which === "alarm";
-    const key = `speaker:${id}:${which}`;
-    return this._line({
-      key,
-      title: alarm ? "Alarm sound" : "Ding",
-      enabled: cfg.enabled,
-      onToggle: (on) => this._setSound(id, which, { enabled: on }),
-      summary: alarm ? `${this._soundSummary(cfg.kind, cfg.sound)} · loud, rings ${cfg.seconds} s` : `${this._soundSummary(cfg.kind, cfg.sound)} · a small sound`,
-      from: cfg.start_at,
-      onFrom: (n) => this._setSound(id, which, { start_at: n }),
-      onTest: () => void this._test(speaker, which),
-      details: html`
-        ${this._soundFields(cfg.kind, cfg.sound, alarm ? "alarm" : "ding", (k) => this._setSound(id, which, { kind: k }), (s) => this._setSound(id, which, { sound: s }))}
-        ${alarm
-          ? html`${this._numField("Rings for (seconds)", cfg.seconds, 3, 600, (n) => this._setSound(id, which, { seconds: n }))}
-            ${this._numField("Repeat every (seconds, 0 = once)", cfg.repeat_s, 0, 60, (n) => this._setSound(id, which, { repeat_s: n }))}`
-          : nothing}
-      `,
-    });
-  }
-
-  private _speechLine(speaker: SpeakerCfg) {
+  /** One speaker: a short line, test links, and what kind it is (folded) . What it plays when is set in the ladders. */
+  private _speakerBody(speaker: SpeakerCfg) {
     const cfg = speaker.speech;
     const id = speaker.entity_id;
+    const alexa = cfg.route !== "tts";
     const targets = this._targets(cfg.route, cfg.target);
-    const route = ROUTES.find((r) => r.value === cfg.route)?.label ?? cfg.route;
-    const target = targets.find((t) => t.value === cfg.target)?.label;
-    return this._line({
-      key: `speaker:${id}:speech`,
-      title: "Speak a sentence",
-      enabled: cfg.enabled,
-      onToggle: (on) => this._setSpeech(id, { enabled: on }),
-      summary: `${route} · ${target ?? "no device chosen yet"}`,
-      from: cfg.start_at,
-      onFrom: (n) => this._setSpeech(id, { start_at: n }),
-      onTest: () => void this._test(speaker, "speech"),
-      details: html`
-        <label class="num wide">
-          How
-          <select
-            .value=${cfg.route}
-            @change=${(e: Event) => this._setSpeech(id, { route: (e.target as HTMLSelectElement).value as SpeechRoute, target: "" })}
-          >
-            ${ROUTES.map((r) => html`<option value=${r.value} ?selected=${r.value === cfg.route}>${r.label}</option>`)}
-          </select>
-        </label>
-        <label class="num wide">
-          ${cfg.route === "tts" ? "Voice" : "Alexa device"}
-          <select .value=${cfg.target} @change=${(e: Event) => this._setSpeech(id, { target: (e.target as HTMLSelectElement).value })}>
-            <option value="" ?selected=${cfg.target === ""}>Choose…</option>
-            ${targets.map((t) => html`<option value=${t.value} ?selected=${t.value === cfg.target}>${t.label}</option>`)}
-          </select>
-        </label>
-        ${cfg.route === "alexa_media"
-          ? html`<label class="inline small libhint">
-              <input type="checkbox" .checked=${cfg.announce} @change=${(e: Event) => this._setSpeech(id, { announce: (e.target as HTMLInputElement).checked })} />
-              Announce (with chime). Some Alexas stay silent, so test it.
-            </label>`
-          : nothing}
-      `,
-    });
-  }
-
-  private _ownSounds(speaker: SpeakerCfg) {
-    const id = speaker.entity_id;
-    const sounds = speaker.sounds ?? [];
+    const kind = ROUTES.find((r) => r.value === cfg.route)?.label ?? cfg.route;
+    const where = targets.find((x) => x.value === cfg.target)?.label ?? "no device chosen yet";
+    const open = !!this._open["spk:" + id];
+    const tests: { level: SpeakerChoice; label: string }[] = [
+      ...(cfg.route === "alexa_media" ? [{ level: "speech_chime" as SpeakerChoice, label: "Test announcement" }] : []),
+      { level: "speech", label: "Test talk" },
+      { level: "cue", label: "Test ding" },
+      { level: "alarm", label: "Test alarm" },
+    ];
     return html`
-      <div class="own">
-        <h4>Your own sounds</h4>
-        <p class="muted small">For your own ladders (Nudge it your way). Give each a name.</p>
-        ${sounds.map((x) =>
-          this._line({
-            key: `speaker:${id}:sound:${x.id}`,
-            title: x.name,
-            nameInput: html`<input
-              class="soundname"
-              type="text"
-              maxlength="30"
-              aria-label="Name of the sound"
-              .value=${x.name}
-              @change=${(e: Event) => this._setExtra(id, x.id, { name: (e.target as HTMLInputElement).value.trim() })}
-            />`,
-            summary: this._soundSummary(x.kind, x.sound),
-            onTest: () => void this._test(speaker, `sound:${x.id}`),
-            details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(id, x.id, { kind: k }), (s) => this._setExtra(id, x.id, { sound: s })),
-            onRemove: () => this._removeExtra(id, x.id),
-            removeLabel: `Remove the sound ${x.name}`,
-          })
-        )}
-        <button type="button" class="textlink" ?disabled=${sounds.length >= 30} @click=${() => this._addExtra(id)}>
-          ${icon("plus")} Add a sound
-        </button>
+      <div class="speaker">
+        <div class="shead">
+          <h3>${this._friendly(id)}</h3>
+          <span class="lsum muted">${kind} · ${where}</span>
+        </div>
+        <div class="tests">
+          ${tests.map((x) => html`<button type="button" class="test" @click=${() => void this._test(speaker, x.level)}>${x.label}</button>`)}
+          <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle("spk:" + id)}>Details</button>
+        </div>
+        ${tests.map((x) => {
+          const note = this._notes[`speaker:${id}:${x.level}`];
+          return note ? html`<div class="note muted small">${x.label}: ${note}</div>` : nothing;
+        })}
+        ${open
+          ? html`<div class="fields">
+                <label class="num wide">
+                  What kind of speaker
+                  <select aria-label="What kind of speaker" @change=${(e: Event) => this._setRoute(id, (e.target as HTMLSelectElement).value as SpeechRoute)}>
+                    ${ROUTES.map((r) => html`<option value=${r.value} ?selected=${r.value === cfg.route}>${r.label}</option>`)}
+                  </select>
+                </label>
+                <label class="num wide">
+                  ${alexa ? "Alexa device" : "Voice"}
+                  <select
+                    aria-label=${alexa ? "Alexa device" : "Voice"}
+                    @change=${(e: Event) => {
+                      const target = (e.target as HTMLSelectElement).value;
+                      this._setSpeech(id, { target, enabled: !!target });
+                    }}
+                  >
+                    <option value="" ?selected=${cfg.target === ""}>Choose…</option>
+                    ${targets.map((x) => html`<option value=${x.value} ?selected=${x.value === cfg.target}>${x.label}</option>`)}
+                  </select>
+                </label>
+                ${cfg.route === "alexa_devices" && !targets.length
+                  ? html`<div class="note muted small libhint">No Alexa Devices entities found. Is the integration installed?</div>`
+                  : nothing}
+                <button
+                  type="button"
+                  class="textlink quiet"
+                  aria-label="Remove speaker ${this._friendly(id)}"
+                  @click=${() => this._patch({ speakers: this._speakers().filter((s) => s.entity_id !== id) })}
+                >
+                  Remove speaker
+                </button>
+              </div>`
+          : nothing}
       </div>
     `;
   }
 
-  private _renderSpeakers(d: Settings) {
-    const used = d.speakers.map((s) => s.entity_id);
-    const choices = this._ids(["media_player"], used);
+  /** The ding and the alarm sound, one setting for each kind of speaker (it is written to every speaker of that kind). */
+  private _toneGroup(group: "alexa" | "other") {
+    const speakers = this._speakers().filter((s) => this._group(s) === group);
+    const title = group === "alexa" ? "Alexa speakers" : "Other media players";
+    if (!speakers.length) {
+      return html`<h4>${title}</h4><p class="muted small">You have no such speaker yet.</p>`;
+    }
+    const first = speakers[0];
+    const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
+      this._patch({
+        speakers: this._speakers().map((s) => (this._group(s) === group ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s)),
+      });
+    const one = (which: "cue" | "alarm", name: string, example: string) => {
+      const c = first[which];
+      const key = `shared:${group}:${which}`;
+      const open = !!this._open[key];
+      return html`
+        <div class="line">
+          <div class="lmain">
+            <span class="ltitle">${name}</span>
+            <span class="lsum muted">${group === "other" && c.kind === "alexa" ? "No file chosen yet" : this._soundSummary(c.kind as SoundKind, c.sound)}</span>
+            <span class="lacts">
+              <button type="button" class="textlink quiet" aria-expanded=${open ? "true" : "false"} @click=${() => this._toggle(key)}>Details</button>
+            </span>
+          </div>
+          ${open
+            ? html`<div class="fields">
+                ${this._soundPicker(c, first, (x) => setAll(which, { kind: x.kind, sound: x.sound }))}
+                ${group === "alexa"
+                  ? this._soundFields(c.kind as SoundKind, c.sound, example, (k) => setAll(which, { kind: k }), (s) => setAll(which, { sound: s }))
+                  : html`<label class="num wide">
+                      File in my media folder (for example boopli/${example}.mp3)
+                      <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
+                    </label>`}
+                ${which === "alarm"
+                  ? html`${this._numField("Rings for (seconds)", c.seconds, 3, 600, (n) => setAll(which, { seconds: n }))}
+                    ${this._numField("Repeat every (seconds, 0 = once)", c.repeat_s, 0, 60, (n) => setAll(which, { repeat_s: n }))}`
+                  : nothing}
+              </div>`
+            : nothing}
+        </div>`;
+    };
+    return html`<h4>${title}</h4>${one("cue", "Ding", "ding")} ${one("alarm", "Alarm sound", "alarm")}`;
+  }
+
+  private _ownSounds() {
+    const sounds = this._sounds();
     return html`
-      <section class="card">
-        <h2>${icon("volume-high")} Speakers</h2>
-        <p class="muted small">
-          Each speaker can play a ding, speak a sentence and sound an alarm. Press Test to hear one.
-          <b>From nudge</b> says when it starts in the built-in styles, which play the highest level reached.
-          Your own ladders choose per nudge, so it does not apply there.
-        </p>
-        ${d.speakers.map(
-          (speaker) => html`
-            <div class="speaker">
-              <div class="shead">
-                <h3>${this._friendly(speaker.entity_id)}</h3>
-                <button
-                  type="button"
-                  class="textlink quiet"
-                  aria-label="Remove speaker ${this._friendly(speaker.entity_id)}"
-                  @click=${() => this._patch({ speakers: d.speakers.filter((s) => s.entity_id !== speaker.entity_id) })}
-                >
-                  Remove speaker
-                </button>
-              </div>
-              ${this._soundLine(speaker, "cue")} ${this._speechLine(speaker)} ${this._soundLine(speaker, "alarm")}
-              ${this._ownSounds(speaker)}
-            </div>
-          `
-        )}
-        <h3 class="sec">Add a speaker</h3>
-        <div class="row">
-          <select
-            aria-label="Add a speaker"
-            .value=${this._addSpeaker}
-            @change=${(e: Event) => (this._addSpeaker = (e.target as HTMLSelectElement).value)}
-          >
+      <p class="muted small">
+        One list for all speakers. Pick them as the Ding or the Alarm sound, or in your ladders. An Alexa sound plays on
+        Alexa speakers, a file on any speaker.
+      </p>
+      ${sounds.map((x) =>
+        this._line({
+          key: `own:${x.id}`,
+          title: x.name,
+          nameInput: html`<input
+            class="soundname"
+            type="text"
+            maxlength="30"
+            aria-label="Name of the sound"
+            .value=${x.name}
+            @change=${(e: Event) => this._setExtra(x.id, { name: (e.target as HTMLInputElement).value.trim() })}
+          />`,
+          summary: this._soundSummary(x.kind, x.sound),
+          onTest: () => void this._testExtra(x),
+          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, { kind: k }), (s) => this._setExtra(x.id, { sound: s })),
+          onRemove: () => this._removeExtra(x.id),
+          removeLabel: `Remove the sound ${x.name}`,
+        })
+      )}
+      <button type="button" class="textlink" ?disabled=${sounds.length >= 60} @click=${() => this._addExtra()}>
+        ${icon("plus")} Add a sound
+      </button>
+    `;
+  }
+
+  /** The Sound list of the Ding and the Alarm: what it is now, your own sounds, or typed in by hand (in the details). */
+  private _soundPicker(current: { kind: SoundKind; sound: string }, speaker: SpeakerCfg, onPick: (s: ExtraSound) => void) {
+    const fits = this._sounds().filter((x) => x.kind !== "alexa" || speaker.speech.route !== "tts");
+    if (!fits.length) return nothing;
+    const chosen = fits.find((x) => x.kind === current.kind && x.sound === current.sound);
+    return html`<label class="num wide">
+      Pick one of your sounds
+      <select
+        aria-label="Pick one of your sounds"
+        @change=${(e: Event) => {
+          const id = (e.target as HTMLSelectElement).value;
+          const found = fits.find((x) => x.id === id);
+          if (found) onPick(found);
+        }}
+      >
+        <option value="" ?selected=${!chosen}>${chosen ? "Choose…" : "Not one of your sounds"}</option>
+        ${fits.map((x) => html`<option value=${x.id} ?selected=${chosen?.id === x.id}>${x.name}</option>`)}
+      </select>
+    </label>`;
+  }
+
+  /** A small window on top of the Speakers window. */
+  private _subWindow(title: string, body: TemplateResult) {
+    const close = () => (this._sub = "");
+    return html`<dialog
+      class="sub"
+      aria-label=${title}
+      @close=${close}
+      @click=${(e: MouseEvent) => {
+        if (e.target === e.currentTarget) close(); // the dark area around the window
+      }}
+    >
+      <div class="win">
+        <div class="head">
+          <h3>${title}</h3>
+          <button type="button" class="close" aria-label="Close" @click=${close}>✕</button>
+        </div>
+        ${body}
+        <div class="actions"><button type="button" class="primary" @click=${close}>Done</button></div>
+      </div>
+    </dialog>`;
+  }
+
+  private _renderSub(d: Settings) {
+    if (this._sub === "add") {
+      const used = d.speakers.map((s) => s.entity_id);
+      const choices = this._ids(["media_player"], used);
+      return this._subWindow(
+        "Add a speaker",
+        html`<div class="row">
+          <select aria-label="Add a speaker" .value=${this._addSpeaker} @change=${(e: Event) => (this._addSpeaker = (e.target as HTMLSelectElement).value)}>
             <option value="">Choose a media player…</option>
             ${choices.map((id) => html`<option value=${id} ?selected=${id === this._addSpeaker}>${this._friendly(id)}</option>`)}
           </select>
           <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
+        </div>`
+      );
+    }
+    if (this._sub === "tone") {
+      return this._subWindow(
+        "Ding and alarm sound",
+        html`<p class="muted small">
+            One setting for each kind of speaker. Another media player can only play files. Which sound plays when is set in Nudge it your way.
+          </p>
+          ${this._toneGroup("alexa")} ${this._toneGroup("other")}`
+      );
+    }
+    if (this._sub === "own") return this._subWindow("Your own sounds", this._ownSounds());
+    if (this._sub === "say") {
+      return this._subWindow(
+        "What the speakers say",
+        html`<input
+            id="sentence"
+            type="text"
+            aria-label="What the speakers say"
+            .value=${d.speech_template}
+            @change=${(e: Event) => this._patch({ speech_template: (e.target as HTMLInputElement).value.trim() })}
+          />
+          <div class="muted small hintline">Use {chore} for the chore name and {step} for the step. Example: "{chore}: {step}".</div>`
+      );
+    }
+    return nothing;
+  }
+
+  private _renderSpeakers(d: Settings) {
+    const topButton = (sub: "add" | "tone" | "own" | "say", ico: string, label: string) =>
+      html`<button type="button" class="textlink" @click=${() => (this._sub = sub)}>${icon(ico)} ${label}</button>`;
+    return html`
+      <section class="card">
+        <h2>${icon("volume-high")} Speakers</h2>
+        <p class="muted small">
+          Press a Test link to hear a speaker. What a speaker plays at which nudge is set in Nudge it your way.
+        </p>
+        <div class="topbtns">
+          ${topButton("add", "plus", "Add a speaker")} ${topButton("tone", "music-note", "Ding and alarm sound")}
+          ${topButton("own", "playlist-music", "Your own sounds")} ${topButton("say", "message-text-outline", "What the speakers say")}
         </div>
-        <h3 class="sec">What the speakers say</h3>
-        <input
-          id="sentence"
-          type="text"
-          aria-label="What the speakers say"
-          .value=${d.speech_template}
-          @change=${(e: Event) => this._patch({ speech_template: (e.target as HTMLInputElement).value.trim() })}
-        />
-        <div class="muted small hintline">Use {chore} for the chore name and {step} for the step. Example: "{chore}: {step}".</div>
+        ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">No speaker yet. Press Add a speaker.</p>`}
+        ${this._renderSub(d)}
       </section>
     `;
   }
@@ -501,8 +625,6 @@ export class BoopliSpeakers extends LitElement {
             key: `device:${device.entity_id}`,
             title: this._friendly(device.entity_id),
             summary: `On for ${device.seconds} s`,
-            from: device.start_at,
-            onFrom: (n) => this._updateDevice(device.entity_id, { start_at: n }),
             onTest: () => void this._testDevice(device),
             details: this._numField("On for (seconds)", device.seconds, 3, 600, (n) => this._updateDevice(device.entity_id, { seconds: n })),
             onRemove: () => this._patch({ alarm_devices: d.alarm_devices.filter((a) => a.entity_id !== device.entity_id) }),
@@ -702,6 +824,60 @@ export class BoopliSpeakers extends LitElement {
       }
       code {
         font-size: 15px;
+      }
+      .topbtns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 22px;
+        margin: 4px 0 12px;
+      }
+      dialog.sub {
+        padding: 0;
+        border: 1px solid var(--divider-color, #444);
+        border-radius: 16px;
+        width: min(94vw, 640px);
+        max-height: 90vh;
+        overflow: auto;
+        background: var(--card-background-color, #1c1c1c);
+        color: var(--primary-text-color, #fff);
+      }
+      dialog.sub::backdrop {
+        background: rgba(0, 0, 0, 0.6);
+      }
+      dialog.sub .win {
+        padding: 16px 18px 18px;
+      }
+      dialog.sub .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      dialog.sub .head h3 {
+        font-size: 22px;
+      }
+      dialog.sub .close {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 22px;
+        cursor: pointer;
+      }
+      dialog.sub .actions {
+        margin-top: 14px;
+      }
+      .tests {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        padding: 8px 0 0;
+      }
+      button.test {
+        min-height: 36px;
+        padding: 4px 14px;
+        font-size: 16px;
       }
       .own {
         margin-top: 10px;

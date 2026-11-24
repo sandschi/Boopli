@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { icon } from "./icon";
 import { friendlyName, hexToRgb, lightHasColor, phoneName, rgbToHex } from "./helpers";
 import { sharedStyles } from "./styles";
-import type { Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
+import type { ExtraSound, Hass, LightMode, PhoneLevel, Rung, Settings, SpeakerCfg, SpeakerChoice } from "./types";
 
 const GAP_MIN = 1;
 const GAP_MAX = 720;
@@ -15,16 +15,20 @@ const PHONE_CHOICES: { value: PhoneLevel; label: string }[] = [
 ];
 
 /** What a ladder can pick for a speaker: only what is set up (levels that are switched on, its extra sounds). */
-export function speakerChoices(sp: SpeakerCfg): { value: string; label: string }[] {
+export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { value: string; label: string }[] {
   const out: { value: string; label: string }[] = [];
-  if (sp.cue?.enabled) out.push({ value: "cue", label: "A ding" });
-  for (const x of sp.sounds ?? []) out.push({ value: `sound:${x.id}`, label: x.name });
-  if (sp.speech?.enabled) {
+  // A ding and an alarm are always on offer; speaking needs somewhere to speak (set on the speaker).
+  const alexa = sp.speech?.route !== "tts";
+  const plays = (t?: { sound: string; kind: string }) => !!t?.sound && (t.kind !== "alexa" || alexa); // an Amazon sound needs an Alexa speaker
+  if (plays(sp.cue)) out.push({ value: "cue", label: "A ding" });
+  // your own sounds: a file plays on any speaker, an Alexa sound only on an Alexa one
+  for (const x of sounds) if (x.kind !== "alexa" || sp.speech?.route !== "tts") out.push({ value: `sound:${x.id}`, label: x.name });
+  if (sp.speech?.target) {
     out.push({ value: "speech", label: "Speaks" });
     // An announcement (starts with a chime) is something Alexa Media Player does.
     if (sp.speech.route === "alexa_media") out.push({ value: "speech_chime", label: "Speaks with chime" });
   }
-  if (sp.alarm?.enabled) out.push({ value: "alarm", label: "Alarm" });
+  if (plays(sp.alarm)) out.push({ value: "alarm", label: "Alarm" });
   return out;
 }
 
@@ -186,7 +190,7 @@ export class BoopliRung extends LitElement {
           </div>`;
         })}
         ${s.speakers.map((sp) => {
-          const choices = speakerChoices(sp);
+          const choices = speakerChoices(sp, s.sounds);
           const current = r.speakers[sp.entity_id];
           const name = friendlyName(this.hass, sp.entity_id);
           return html`<label class="dev">
