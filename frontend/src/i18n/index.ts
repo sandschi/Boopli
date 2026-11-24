@@ -1,0 +1,72 @@
+/// <reference types="vite/client" />
+/**
+ * Text for the panel. Every text the person reads goes through `t("some.key")`.
+ *
+ * - `en.json` is the source: nested keys like `settings.phone.title`.
+ * - Another language is a file with the same keys (`de.json`). A key it lacks shows the English text.
+ * - Values can hold `{name}` places that `t` fills in: t("today.stepOf", { n: 3, total: 8 }).
+ * - Words that change with a number use `count`: t("steps", { count: 3 }) looks up `steps_one`,
+ *   `steps_few`, `steps_other` and so on, by the plural rules of the language (`Intl.PluralRules`).
+ */
+import en from "./en.json";
+
+type Tree = { [key: string]: string | Tree };
+export type Params = Record<string, string | number>;
+
+function flatten(tree: Tree, prefix = "", out: Record<string, string> = {}): Record<string, string> {
+  for (const [key, value] of Object.entries(tree)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (typeof value === "string") out[path] = value;
+    else flatten(value, path, out);
+  }
+  return out;
+}
+
+// Every file next to this one (de.json, fr.json, ...) is a language. Only `en` is needed.
+const files = import.meta.glob<Tree>("./*.json", { eager: true, import: "default" });
+const catalogs: Record<string, Record<string, string>> = {};
+for (const [path, tree] of Object.entries(files)) {
+  const code = path.replace("./", "").replace(".json", "").toLowerCase();
+  catalogs[code] = flatten(tree);
+}
+catalogs.en = flatten(en as Tree);
+
+let current = "en";
+
+/** Pick the language to show: "de-AT" uses "de-at", else "de", else English. */
+export function setLanguage(language: string | undefined): void {
+  const wanted = (language || "en").toLowerCase();
+  current = [wanted, wanted.split("-")[0]].find((code) => catalogs[code]) ?? "en";
+}
+
+export function currentLanguage(): string {
+  return current;
+}
+
+/** The languages that have a file, English first. */
+export function languages(): string[] {
+  return ["en", ...Object.keys(catalogs).filter((c) => c !== "en").sort()];
+}
+
+function lookup(key: string, count: number | undefined): string | undefined {
+  const own = catalogs[current];
+  const fallback = catalogs.en;
+  if (count !== undefined) {
+    const rule = new Intl.PluralRules(current).select(count);
+    for (const k of [`${key}_${rule}`, `${key}_other`]) {
+      if (own[k] !== undefined) return own[k];
+    }
+    for (const k of [`${key}_${new Intl.PluralRules("en").select(count)}`, `${key}_other`]) {
+      if (fallback[k] !== undefined) return fallback[k];
+    }
+  }
+  return own[key] ?? fallback[key];
+}
+
+/** The text for a key in the current language, with the values filled in. */
+export function t(key: string, params?: Params): string {
+  const count = typeof params?.count === "number" ? params.count : undefined;
+  const text = lookup(key, count) ?? key; // a missing key shows itself, so it is easy to spot
+  if (!params) return text;
+  return text.replace(/\{(\w+)\}/g, (whole, name: string) => (name in params ? String(params[name]) : whole));
+}

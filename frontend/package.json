@@ -6,7 +6,8 @@
   "description": "The Boopli sidebar panel for Home Assistant (Lit web component).",
   "scripts": {
     "build": "vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "i18n:check": "node scripts/i18n-check.mjs"
   },
   "dependencies": {
     "lit": "^3.3.3"
