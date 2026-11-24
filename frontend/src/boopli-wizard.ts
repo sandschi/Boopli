@@ -122,80 +122,80 @@ const SEQUENCES: Record<WizardId, StepId[]> = {
 /** What "Set up speakers" adds to the first-run setup. */
 const SPEAKER_STEPS: StepId[] = ["spk_pick", "spk_ding", "spk_speech", "spk_alarm", "alarm_devices"];
 
-export const WIZARD_TITLES: Record<WizardId, string> = {
-  first: "First setup",
-  phone: "Phone setup",
-  quiet: "Quiet hours setup",
-  lights: "Reminder lights setup",
-  speakers: "Speaker setup",
-  alarms: "Alarm devices setup",
-  presence: "Where you are",
-  nudging: "Snooze and style",
-  pet: "Your pet",
+export const WIZARD_TITLES = (): Record<WizardId, string> => ({
+  first: t("wizard.first_setup"),
+  phone: t("wizard.phone_setup"),
+  quiet: t("wizard.quiet_hours_setup"),
+  lights: t("wizard.reminder_lights_setup"),
+  speakers: t("wizard.speaker_setup"),
+  alarms: t("wizard.alarm_devices_setup"),
+  presence: t("common.where_you_are"),
+  nudging: t("wizard.snooze_and_style"),
+  pet: t("common.your_pet"),
   ai: "AI help setup",
-  ladders: "Nudge it your way",
-  wall: "Wall board",
-};
+  ladders: t("common.nudge_it_your_way"),
+  wall: t("common.wall_board"),
+});
 
 const MAX_BOARDS = 10; // the most boards (the same as in the board editor)
 const MAX_LADDERS = 30; // the most ladders (the same as in the ladder editor and the backend)
 
-const TITLES: Record<StepId, string> = {
-  welcome: "Welcome",
-  phone: "Your phone",
-  phone_detail: "Phone details",
-  quiet: "Quiet hours",
-  nudging: "Snooze and style",
-  lights: "Reminder lights",
-  lights_detail: "Light details",
-  speaker_gate: "Speaker reminders",
-  spk_pick: "Pick a speaker",
-  spk_ding: "A small ding",
-  spk_speech: "A spoken sentence",
-  spk_alarm: "An alarm sound",
-  spk_when: "When it joins in",
-  alarm_devices: "Alarm devices",
-  alarm_detail: "Alarm device details",
-  presence: "Where you are",
-  pet: "Your pet",
+const TITLES = (): Record<StepId, string> => ({
+  welcome: t("wizard.welcome"),
+  phone: t("wizard.your_phone"),
+  phone_detail: t("wizard.phone_details"),
+  quiet: t("settings.quiet_hours"),
+  nudging: t("wizard.snooze_and_style"),
+  lights: t("settings.reminder_lights"),
+  lights_detail: t("wizard.light_details"),
+  speaker_gate: t("wizard.speaker_reminders"),
+  spk_pick: t("wizard.pick_a_speaker"),
+  spk_ding: t("wizard.a_small_ding"),
+  spk_speech: t("wizard.a_spoken_sentence"),
+  spk_alarm: t("wizard.an_alarm_sound"),
+  spk_when: t("wizard.when_it_joins_in"),
+  alarm_devices: t("speakers.alarm_devices"),
+  alarm_detail: t("wizard.alarm_device_details"),
+  presence: t("common.where_you_are"),
+  pet: t("common.your_pet"),
   ai_intro: "AI help",
-  ai_agent: "Your AI agent",
-  claude_intro: "Ask Claude (extra)",
-  claude_make: "Make the routine",
-  claude_paste: "Connect it",
-  chores: "First chores",
-  lad_start: "What do you want to do?",
-  lad_name: "Name your ladder",
+  ai_agent: t("wizard.your_ai_agent"),
+  claude_intro: t("settings.ask_claude_extra"),
+  claude_make: t("wizard.make_the_routine"),
+  claude_paste: t("wizard.connect_it"),
+  chores: t("wizard.first_chores"),
+  lad_start: t("wizard.what_do_you_want_to_do"),
+  lad_name: t("wizard.name_your_ladder"),
   lad_nudge: "A nudge",
-  lad_more: "Another nudge?",
-  lad_end: "How it ends",
-  lad_delete: "Delete a ladder",
-  wall_start: "Which board?",
-  done: "All set",
-};
+  lad_more: t("wizard.another_nudge"),
+  lad_end: t("wizard.how_it_ends"),
+  lad_delete: t("wizard.delete_a_ladder"),
+  wall_start: t("wizard.which_board"),
+  done: t("common.all_set"),
+});
 
 const OPTIONAL_STEPS: StepId[] = ["phone_detail", "lights_detail", "spk_when", "alarm_detail"];
 
-const STYLE_CHOICES: { value: NudgeStyle; label: string; text: string }[] = [
-  { value: "quiet", label: "Quiet", text: "Only shown in Boopli, never nudges." },
+const STYLE_CHOICES = (): { value: NudgeStyle; label: string; text: string }[] => [
+  { value: "quiet", label: t("common.quiet"), text: t("wizard.only_shown_in_boopli_never_nudges") },
 ];
 
-const LEVELS: { value: PhoneLevel; label: string }[] = [
-  { value: "normal", label: "Normal notification" },
-  { value: "high", label: "High priority (pops up)" },
-  { value: "alarm", label: "Alarm volume" },
-  { value: "alarm_max", label: "Max volume (not on every phone)" },
+const LEVELS = (): { value: PhoneLevel; label: string }[] => [
+  { value: "normal", label: t("common.normal_notification") },
+  { value: "high", label: t("common.high_priority_pops_up") },
+  { value: "alarm", label: t("common.alarm_volume") },
+  { value: "alarm_max", label: t("common.max_volume_not_on_every_phone") },
 ];
 
-const ROUTES: { value: SpeechRoute; label: string }[] = [
-  { value: "alexa_media", label: "Alexa Media Player" },
-  { value: "alexa_devices", label: "Alexa Devices (notify entity)" },
-  { value: "tts", label: "A TTS voice on this speaker" },
+const ROUTES = (): { value: SpeechRoute; label: string }[] => [
+  { value: "alexa_media", label: t("helpers.alexa_media_player") },
+  { value: "alexa_devices", label: t("common.alexa_devices_notify_entity") },
+  { value: "tts", label: t("common.a_tts_voice_on_this_speaker") },
 ];
 
-const SOUND_KINDS: { value: SoundKind; label: string }[] = [
-  { value: "alexa", label: "Alexa sound" },
-  { value: "file", label: "File in my media folder" },
+const SOUND_KINDS = (): { value: SoundKind; label: string }[] => [
+  { value: "alexa", label: t("common.alexa_sound") },
+  { value: "file", label: t("common.file_in_my_media_folder") },
 ];
 
 const SOUND_LIBRARY_URL =
@@ -300,7 +300,7 @@ export class BoopliWizard extends LitElement {
     }
     const at = this._steps.indexOf(resume);
     this._index = at >= 0 ? at : 0;
-    this._picked = TEMPLATES.filter(
+    this._picked = TEMPLATES().filter(
       (t) => !this.snapshot!.chores.some((c) => c.name === t.draft.name)
     ).map((t) => t.label);
     if (this.snapshot.settings.speakers.length === 1) {
@@ -481,7 +481,7 @@ export class BoopliWizard extends LitElement {
     try {
       await saveSettings(this.hass, this._draft);
       if (this._first) {
-        for (const t of TEMPLATES.filter((x) => this._picked.includes(x.label))) {
+        for (const t of TEMPLATES().filter((x) => this._picked.includes(x.label))) {
           // On demand: nothing nudges until you set a time or start it yourself.
           await saveChore(this.hass, {
             ...t.draft,
@@ -665,7 +665,7 @@ export class BoopliWizard extends LitElement {
   }
 
   private _title(id: StepId, index: number): string {
-    return id === "lad_nudge" ? `Nudge ${this._nudgesBefore(index) + 1}` : TITLES[id];
+    return id === "lad_nudge" ? `Nudge ${this._nudgesBefore(index) + 1}` : TITLES()[id];
   }
 
   private _renderLadStart(d: Settings) {
@@ -683,7 +683,7 @@ export class BoopliWizard extends LitElement {
       <span><b>${label}</b> <span class="muted small">${text}</span></span>
     </label>`;
     return html`
-      ${choice("create", t("wizard.create_a_ladder"), ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : "A new list of nudges.", ladders.length >= MAX_LADDERS)}
+      ${choice("create", t("wizard.create_a_ladder"), ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : t("wizard.a_new_list_of_nudges"), ladders.length >= MAX_LADDERS)}
       ${choice("edit", t("wizard.edit_a_ladder"), none ? t("wizard.you_have_no_ladders_yet") : t("wizard.change_its_name_its_nudges_or"), none)}
       ${choice("delete", t("wizard.delete_a_ladder"), own.length === 0 ? t("wizard.only_your_own_ladders_can_be") : t("wizard.remove_one_of_your_own_that"), own.length === 0)}
       ${this._ladderAction !== "create" && !none
@@ -765,7 +765,7 @@ export class BoopliWizard extends LitElement {
   private _renderLadMore() {
     const n = this._ladder()?.rungs.length ?? 0;
     return html`
-      <p>This ladder has ${n} ${n === 1 ? "nudge" : "nudges"} so far. Add another one, or are you done?</p>
+      <p>${t("wizard.this_ladder_has_nudges", { count: n })}</p>
       <div class="gate">
         <button type="button" class="primary big" ?disabled=${this._busy || n >= 12} @click=${() => this._go(1, "more")}>
           ${t("wizard.add_another_nudge")}
@@ -850,7 +850,7 @@ export class BoopliWizard extends LitElement {
   // --- tests -------------------------------------------------------------------
 
   private async _try(key: string, run: () => Promise<{ note: string }>): Promise<void> {
-    this._note(key, "Testing…");
+    this._note(key, t("common.testing"));
     try {
       this._note(key, (await run()).note);
     } catch (err) {
@@ -942,7 +942,7 @@ export class BoopliWizard extends LitElement {
           (p: PhoneCfg) => html`<div class="choice col">
             <b>${phoneName(p.service)}</b>
             <label class="num">
-              Notification level
+              ${t("settings.notification_level")}
               <select
                 @change=${(e: Event) =>
                   this._set({
@@ -951,7 +951,7 @@ export class BoopliWizard extends LitElement {
                     ),
                   })}
               >
-                ${LEVELS.map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
+                ${LEVELS().map((l) => html`<option value=${l.value} .selected=${l.value === p.level}>${l.label}</option>`)}
               </select>
             </label>
             <button type="button" @click=${() => this._try(`phone:${p.service}`, () => testPhone(this.hass!, p))}>${t("wizard.send_a_test")}</button>
@@ -974,7 +974,7 @@ export class BoopliWizard extends LitElement {
           .checked=${qh.enabled}
           @change=${(e: Event) => this._setQuiet((e.target as HTMLInputElement).checked)}
         />
-        Hold nudges outside the times below
+        ${t("wizard.hold_nudges_outside_the_times_below")}
       </label>
       ${qh.enabled
         ? html`
@@ -990,20 +990,20 @@ export class BoopliWizard extends LitElement {
                       @change=${(e: Event) =>
                         this._setDay(i, (e.target as HTMLInputElement).checked ? null : { ...DEFAULT_QUIET_DAY })}
                     />
-                    No limit
+                    ${t("common.no_limit")}
                   </label>
                   ${day
                     ? html`<span class="muted small">${t("common.from")}</span>
                         <input
                           type="time"
-                          aria-label="${WEEKDAY_NAMES[i]} from"
+                          aria-label=${t("wizard.from", { value: WEEKDAY_NAMES[i] })}
                           .value=${day.start}
                           @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
                         />
                         <span class="muted small">${t("common.until")}</span>
                         <input
                           type="time"
-                          aria-label="${WEEKDAY_NAMES[i]} until"
+                          aria-label=${t("wizard.until", { value: WEEKDAY_NAMES[i] })}
                           .value=${day.stop}
                           @input=${(e: Event) => this._setDay(i, { ...day, stop: (e.target as HTMLInputElement).value })}
                         />`
@@ -1041,7 +1041,7 @@ export class BoopliWizard extends LitElement {
       </div>
       <p>${t("wizard.how_should_new_chores_nudge_you")}</p>
       ${[
-        ...STYLE_CHOICES,
+        ...STYLE_CHOICES(),
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
           label: l.name,
@@ -1091,7 +1091,7 @@ export class BoopliWizard extends LitElement {
                         .checked=${cfg?.mode === mode}
                         @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
                       />
-                      ${mode === "blink" ? "Blinks" : t("wizard.status_light_stays_on_until_done")}
+                      ${mode === "blink" ? t("settings.blinks") : t("wizard.status_light_stays_on_until_done")}
                     </label>`
                   )}
                   <button type="button" ?disabled=${!cfg} @click=${() => cfg && this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>${t("common.test")}</button>
@@ -1117,7 +1117,7 @@ export class BoopliWizard extends LitElement {
             <b>${this._fn(l.entity_id)}</b>
             ${lightHasColor(this.hass, l.entity_id)
               ? html`<label class="num">
-                  Color
+                  ${t("settings.color")}
                   <input type="color" class="swatch" .value=${rgbToHex(l.color)} @input=${(e: Event) => patch({ color: hexToRgb((e.target as HTMLInputElement).value) })} />
                 </label>`
               : html`<span class="muted small">${t("wizard.this_light_only_goes_on_and")}</span>`}
@@ -1195,9 +1195,9 @@ export class BoopliWizard extends LitElement {
       <p>${t("wizard.which_nudge_plays_it_is_set", { intro })}</p>
       ${html`<div class="fields">
             <label class="num">
-              Sound type
+              ${t("common.sound_type")}
               <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
-                ${SOUND_KINDS.filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
+                ${SOUND_KINDS().filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -1206,13 +1206,11 @@ export class BoopliWizard extends LitElement {
             </label>
             ${sound.kind === "alexa"
               ? html`<div class="muted small">
-                  Pick a sound from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">${t("wizard.amazon_sound_library")}</a>. The id is
-                  <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example
-                  <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.
+                  ${rich("wizard.amazon_sound_hint", { library: html`<a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">${t("wizard.amazon_sound_library")}</a>` })}
                 </div>`
               : html`<div class="muted small">${rich("wizard.for_example_boopli_ding_mp3_in")}</div>`}
             ${which === "alarm"
-              ? html`${this._numField("Lasts (seconds)", sound.seconds, 3, 600, (n) => this._patchSound("alarm", { seconds: n }))}
+              ? html`${this._numField(t("wizard.lasts_seconds"), sound.seconds, 3, 600, (n) => this._patchSound("alarm", { seconds: n }))}
                 ${this._numField(t("wizard.repeats_every_seconds_0_once"), sound.repeat_s, 0, 60, (n) => this._patchSound("alarm", { repeat_s: n }))}`
               : nothing}
             <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>${t("common.test")}</button></div>
@@ -1229,7 +1227,7 @@ export class BoopliWizard extends LitElement {
       <p>${t("wizard.the_speaker_says_the_step_out")}</p>
       ${html`<div class="fields">
             <label class="num">
-              How
+              ${t("wizard.how")}
               <select
                 @change=${(e: Event) => {
                   const route = (e.target as HTMLSelectElement).value as SpeechRoute;
@@ -1238,18 +1236,18 @@ export class BoopliWizard extends LitElement {
                   this._patchSpeaker((x) => ({ ...x, cue: tone(x.cue), alarm: tone(x.alarm), speech: { ...x.speech, route, target: "", enabled: false } }));
                 }}
               >
-                ${ROUTES.map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}
+                ${ROUTES().map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}
               </select>
             </label>
             <label class="num">
-              ${sp.route === "tts" ? "Voice" : "Alexa device"}
+              ${sp.route === "tts" ? t("common.voice") : t("common.alexa_device")}
               <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value, enabled: !!(e.target as HTMLSelectElement).value })}>
                 <option value="" .selected=${sp.target === ""}>${t("common.choose")}</option>
                 ${targets.map((t) => html`<option value=${t.value} .selected=${t.value === sp.target}>${t.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
-              The sentence ({chore} and {step} are filled in)
+              ${t("wizard.the_sentence_chore_and_step_are")}
               <input .value=${d.speech_template} @input=${(e: Event) => this._set({ speech_template: (e.target as HTMLInputElement).value })} />
             </label>
             <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>${t("common.test")}</button></div>
@@ -1366,7 +1364,7 @@ export class BoopliWizard extends LitElement {
         ${t("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
-        ${TEMPLATES.map((t) => {
+        ${TEMPLATES().map((t) => {
           const taken = existing.has(t.draft.name);
           return html`<label class="inline option">
             <input
@@ -1402,7 +1400,7 @@ export class BoopliWizard extends LitElement {
           .checked=${d.ai.enabled}
           @change=${(e: Event) => this._set({ ai: { ...d.ai, enabled: (e.target as HTMLInputElement).checked } })}
         />
-        Switch AI help on
+        ${t("common.switch_ai_help_on")}
       </label>
     `;
   }
@@ -1462,7 +1460,7 @@ export class BoopliWizard extends LitElement {
           .checked=${!!d.ai.claude_enabled}
           @change=${(e: Event) => this._set({ ai: { ...d.ai, claude_enabled: (e.target as HTMLInputElement).checked } })}
         />
-        Switch Ask Claude on
+        ${t("common.switch_ask_claude_on")}
       </label>
       <p class="muted small">${t("wizard.not_interested_press_skip_or_go")}</p>
     `;
@@ -1471,7 +1469,7 @@ export class BoopliWizard extends LitElement {
   private async _copyRoutinePrompt(): Promise<void> {
     try {
       await navigator.clipboard.writeText(ROUTINE_PROMPT);
-      this._note("claude:copy", "Copied.");
+      this._note("claude:copy", t("wizard.copied"));
     } catch {
       this._note("claude:copy", t("wizard.your_browser_did_not_allow_copying"));
     }
@@ -1485,7 +1483,7 @@ export class BoopliWizard extends LitElement {
       <ol class="how">
         <li>${rich("wizard.make_a_new_routine_name_it", { t: t("wizard.boopli") })}</li>
         <li>
-          Paste this as its instructions:
+          ${t("wizard.paste_this_as_its_instructions")}
           <textarea class="code" rows="6" readonly aria-label=${t("wizard.routine_instructions")} .value=${ROUTINE_PROMPT}></textarea>
           <div class="actions inline-actions">
             <button type="button" @click=${() => this._copyRoutinePrompt()}>${t("wizard.copy_the_instructions")}</button>
@@ -1493,11 +1491,10 @@ export class BoopliWizard extends LitElement {
           ${this._noteLine("claude:copy")}
         </li>
         <li>
-          Make an <b>${t("wizard.environment")}</b> for it with network access <b>${t("wizard.limited")}</b>, and allow this address:
+          ${rich("wizard.make_an_environment")}
           ${host
             ? html`<code>${host}</code>`
-            : html`<b>${t("wizard.your_home_assistants_address_on_the")}</b>. Home Assistant does not know it yet: set the
-                external URL in Home Assistant, or fill in the address under Ask Claude in the next screen.`}
+            : html`${rich("wizard.home_assistant_address_unknown")}`}
         </li>
         <li>${rich("wizard.add_an_to_the_routine_and", { t: t("wizard.api_trigger"), t2: t("wizard.generate_token") })}</li>
         <li>${rich("wizard.leave_every_connector_gmail_calendar_and", { t: t("wizard.off") })}</li>
@@ -1536,7 +1533,7 @@ export class BoopliWizard extends LitElement {
 
   private _renderDone(d: Settings) {
     const changes = this._baseline ? diffSettings(this._baseline, d, this.hass) : [];
-    const adding = TEMPLATES.filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
+    const adding = TEMPLATES().filter((t) => this._picked.includes(t.label)).map((t) => t.draft.name);
     if (this._first && adding.length) changes.push(`Chores added: ${adding.join(", ")}`);
     return html`
       <p><b>${t("common.what_changed")}</b> ${this._first ? "from before this setup" : "in this setup"}:</p>
@@ -1588,12 +1585,12 @@ export class BoopliWizard extends LitElement {
       case "spk_pick":
         return this._renderSpkPick(d);
       case "spk_ding":
-        return s ? this._soundBlock("cue", s, "A short, friendly sound, the gentlest reminder.", "cue") : this._noSpeaker();
+        return s ? this._soundBlock("cue", s, t("wizard.a_short_friendly_sound_the_gentlest"), "cue") : this._noSpeaker();
       case "spk_speech":
         return s ? this._renderSpkSpeech(s, d) : this._noSpeaker();
       case "spk_alarm":
         return s
-          ? this._soundBlock("alarm", s, "A loud sound that repeats for a while, for when a step keeps being ignored.", "alarm")
+          ? this._soundBlock("alarm", s, t("wizard.a_loud_sound_that_repeats_for"), "alarm")
           : this._noSpeaker();
       case "spk_when":
         return s ? this._renderSpkWhen(s) : this._noSpeaker();
@@ -1634,7 +1631,7 @@ export class BoopliWizard extends LitElement {
     return html`
       <div class="shell">
         <nav class="rail" aria-label=${t("common.steps")}>
-          <div class="rail-title">${WIZARD_TITLES[this.wizard]}</div>
+          <div class="rail-title">${WIZARD_TITLES()[this.wizard]}</div>
           ${this._steps.map(
             (id, i) => html`<button
               type="button"
@@ -1653,7 +1650,7 @@ export class BoopliWizard extends LitElement {
             ${isDone && this._first
               ? nothing
               : html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._leave()}>
-                  ${this._first ? t("wizard.skip_for_now") : "Close"}
+                  ${this._first ? t("wizard.skip_for_now") : t("common.close")}
                 </button>`}
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / this._steps.length) * 100}%"></div></div>
@@ -1670,7 +1667,7 @@ export class BoopliWizard extends LitElement {
             <span class="spacer"></span>
             ${isDone
               ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
-                  ${this._first ? "Finish" : t("settings.save_and_close")}
+                  ${this._first ? t("wizard.finish") : t("settings.save_and_close")}
                 </button>`
               : isGate
                 ? nothing

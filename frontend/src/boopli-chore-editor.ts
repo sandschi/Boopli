@@ -27,10 +27,10 @@ const WAIT_PRESETS: { minutes: number; label: string }[] = [
   { minutes: 180, label: "3 h" },
 ];
 
-const REPEAT_OPTIONS: { value: RepeatType; label: string }[] = [
-  { value: "none", label: "On demand (I start it)" },
-  { value: "schedule", label: "On certain days and times" },
-  { value: "every_n_days", label: "Every N days after I finish" },
+const REPEAT_OPTIONS = (): { value: RepeatType; label: string }[] => [
+  { value: "none", label: t("chore_editor.on_demand_i_start_it") },
+  { value: "schedule", label: t("common.on_certain_days_and_times") },
+  { value: "every_n_days", label: t("chore_editor.every_n_days_after_i_finish") },
 ];
 
 const ALL_DAYS_AT_NINE: Record<string, string[]> = Object.fromEntries(
@@ -286,7 +286,7 @@ export class BoopliChoreEditor extends LitElement {
             this._updateRepeat({ type, days });
           }}
         >
-          ${REPEAT_OPTIONS.map(
+          ${REPEAT_OPTIONS().map(
             (o) => html`<option value=${o.value} ?selected=${o.value === r.type}>${o.label}</option>`
           )}
         </select>
@@ -338,13 +338,13 @@ export class BoopliChoreEditor extends LitElement {
         <div class="step-head">
           <span class="num">${index + 1}</span>
           <input
-            aria-label="Step ${index + 1} title"
+            aria-label=${t("chore_editor.step_title", { n: index + 1 })}
             placeholder=${t("chore_editor.what_to_do")}
             .value=${step.title}
             @input=${(e: Event) =>
               this._updateStep(index, { title: (e.target as HTMLInputElement).value })}
           />
-          <span class="sizes" role="group" aria-label="Size of step ${index + 1}">
+          <span class="sizes" role="group" aria-label=${t("chore_editor.size_of_step", { n: index + 1 })}>
             ${(["small", "medium", "big"] as StepSize[]).map(
               (z) => html`<button
                 type="button"
@@ -420,9 +420,9 @@ export class BoopliChoreEditor extends LitElement {
         </div>
         <details class="auto" ?open=${(step.wait_for ?? []).length > 0}>
           <summary>
-            Wait until this happens…
+            ${t("chore_editor.wait_until_this_happens")}
             ${(step.wait_for ?? []).length > 0
-              ? html`<span class="muted small">(${(step.wait_for ?? []).length} set)</span>`
+              ? html`<span class="muted small">${t("chore_editor.n_set", { n: (step.wait_for ?? []).length })}</span>`
               : nothing}
           </summary>
           <p class="muted small">
@@ -437,7 +437,7 @@ export class BoopliChoreEditor extends LitElement {
         </details>
         <details class="auto" ?open=${!!step.image}>
           <summary>
-            ${icon("camera-outline")} Picture…
+            ${icon("camera-outline")} ${t("chore_editor.picture")}
             ${step.image ? html`<span class="muted small">${t("chore_editor.set")}</span>` : nothing}
           </summary>
           <boopli-picture
@@ -448,9 +448,9 @@ export class BoopliChoreEditor extends LitElement {
         </details>
         <details class="auto" ?open=${(step.triggers ?? []).length > 0}>
           <summary>
-            Finishes by itself when…
+            ${t("chore_editor.finishes_by_itself_when")}
             ${(step.triggers ?? []).length > 0
-              ? html`<span class="muted small">(${(step.triggers ?? []).length} set)</span>`
+              ? html`<span class="muted small">${t("chore_editor.n_set", { n: (step.triggers ?? []).length })}</span>`
               : nothing}
           </summary>
           <boopli-triggers
@@ -494,7 +494,7 @@ export class BoopliChoreEditor extends LitElement {
     return html`
       <section class="card ${this._isDirty() ? "changed" : ""}">
         <h2>
-          ${d.id ? "Edit chore" : "New chore"}
+          ${d.id ? t("chore_editor.edit_chore") : t("chores.new_chore")}
           ${this._isDirty() ? html`<span class="unsaved-badge">${t("settings.unsaved")}</span>` : nothing}
         </h2>
 
@@ -581,7 +581,7 @@ export class BoopliChoreEditor extends LitElement {
               @change=${(e: Event) =>
                 this._update({ ignore_quiet_hours: (e.target as HTMLInputElement).checked })}
             />
-            Nudge even in quiet hours (for example pills)
+            ${t("chore_editor.nudge_even_in_quiet_hours_for")}
           </label>
         </div>
         <div class="field check">
@@ -591,7 +591,7 @@ export class BoopliChoreEditor extends LitElement {
               .checked=${d.keeps_going ?? false}
               @change=${(e: Event) => this._update({ keeps_going: (e.target as HTMLInputElement).checked })}
             />
-            Keeps going while I'm away (for example pills)
+            ${t("chore_editor.keeps_going_while_im_away_for")}
           </label>
         </div>
 
@@ -599,7 +599,7 @@ export class BoopliChoreEditor extends LitElement {
         <div class="col-b">
         <details class="auto questions" ?open=${(d.questions ?? []).length > 0}>
           <summary>
-            Questions before starting…
+            ${t("chore_editor.questions_before_starting")}
             ${(d.questions ?? []).length > 0
               ? html`<span class="muted small">(${(d.questions ?? []).length})</span>`
               : nothing}

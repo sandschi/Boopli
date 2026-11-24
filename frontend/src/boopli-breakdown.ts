@@ -20,10 +20,10 @@ export interface BreakdownResult {
   questions: ChoreQuestion[]; // asked every time the chore starts; steps point to them with only_if
 }
 
-const SIZES: { value: StepSize; letter: string; label: string; xp: number }[] = [
-  { value: "small", letter: "S", label: "Small: quick and easy", xp: 10 },
-  { value: "medium", letter: "M", label: "Medium: takes some effort", xp: 15 },
-  { value: "big", letter: "B", label: "Big: hard or long", xp: 20 },
+const SIZES = (): { value: StepSize; letter: string; label: string; xp: number }[] => [
+  { value: "small", letter: "S", label: t("breakdown.small_quick_and_easy"), xp: 10 },
+  { value: "medium", letter: "M", label: t("breakdown.medium_takes_some_effort"), xp: 15 },
+  { value: "big", letter: "B", label: t("breakdown.big_hard_or_long"), xp: 20 },
 ];
 const XP = { small: 10, medium: 15, big: 20 } as const;
 const FINISH_BONUS = 20;
@@ -226,7 +226,7 @@ export class BoopliBreakdown extends LitElement {
     const noted = this._notedRooms();
     if (noted.length === 0) {
       return html`<p class="muted small roomtip">
-        Tip: tell Boopli about your rooms and the steps will fit them.
+        ${t("breakdown.tip_tell_boopli_about_your_rooms")}
         <button type="button" class="link" @click=${() => this._fire("open-home")}>${t("breakdown.open_my_home")}</button>
       </p>`;
     }
@@ -341,8 +341,8 @@ export class BoopliBreakdown extends LitElement {
       <div class="thumbs">
         ${this._photos.map(
           (src, i) => html`<div class="thumb">
-            <img src=${src} alt="Photo ${i + 1}" />
-            <button type="button" class="x" aria-label="Remove photo ${i + 1}" @click=${() => (this._photos = this._photos.filter((_, k) => k !== i))}>×</button>
+            <img src=${src} alt=${t("breakdown.photo", { n: i + 1 })} />
+            <button type="button" class="x" aria-label=${t("breakdown.remove_photo", { n: i + 1 })} @click=${() => (this._photos = this._photos.filter((_, k) => k !== i))}>×</button>
           </div>`
         )}
       </div>
@@ -630,8 +630,7 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${claudeReady(this.snapshot)
         ? html`<div class="muted small">
-            Ask Claude uses your Claude routine: ${this.snapshot?.claude?.fires_left ?? 0} asks left this hour. Each question
-            round and the steps are one ask each.
+            ${t("breakdown.claude_asks_left", { count: this.snapshot?.claude?.fires_left ?? 0 })}
           </div>`
         : nothing}
     `;
@@ -688,8 +687,7 @@ export class BoopliBreakdown extends LitElement {
           </details>`
         : nothing}
       <p class="muted small">
-        ${this._round > 1 ? "A few more things, so the steps fit." : "A few questions so the steps fit your situation."}
-        Tap what fits, or write as much as you like. You can skip any question.
+        ${this._round > 1 ? t("breakdown.a_few_more_things_so_the") : t("breakdown.a_few_questions_so_the_steps")} ${t("common.tap_what_fits")}
       </p>
       ${this._renderRooms()}
       ${this._renderScene()}
@@ -717,7 +715,7 @@ export class BoopliBreakdown extends LitElement {
         ? t("common.asking_claude_this_takes_a_little")
         : this._answers.length || this._steps.length
           ? t("breakdown.writing_the_steps")
-          : "Thinking…"}
+          : t("common.thinking")}
       .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
       .max=${waitSeconds(this.snapshot, this._via)}
       @stop-waiting=${() => this._stopWaiting()}
@@ -736,17 +734,17 @@ export class BoopliBreakdown extends LitElement {
         <span class="num">${i + 1}</span>
         <input
           class="title"
-          aria-label="Step ${i + 1}"
+          aria-label=${t("breakdown.step", { n: i + 1 })}
           placeholder=${t("chore_editor.what_to_do")}
           .value=${s.title}
           @input=${(e: Event) => this._patchStep(i, { title: (e.target as HTMLInputElement).value })}
         />
         <span class="sizes" role="group" aria-label=${t("breakdown.size")}>
-          ${SIZES.map(
+          ${SIZES().map(
             (z) => html`<button
               type="button"
               class="chip size ${s.size === z.value ? "on" : ""}"
-              title="${z.label} (${z.xp} XP)"
+              title=${t("breakdown.xp", { label: z.label, xp: z.xp })}
               aria-pressed=${s.size === z.value}
               @click=${() => this._patchStep(i, { size: z.value })}
             >
@@ -768,7 +766,7 @@ export class BoopliBreakdown extends LitElement {
         ? html`<div class="only-if">
             <label>
               <span class="muted small">${t("breakdown.only_if")}</span>
-              <select aria-label="Only if, for step ${i + 1}" @change=${(e: Event) => this._patchStep(i, { only_if: (e.target as HTMLSelectElement).value })}>
+              <select aria-label=${t("breakdown.only_if_for_step", { n: i + 1 })} @change=${(e: Event) => this._patchStep(i, { only_if: (e.target as HTMLSelectElement).value })}>
                 <option value="" ?selected=${!s.only_if}>${t("common.always_there")}</option>
                 ${this._checks.map((q) => html`<option value=${q.id} ?selected=${s.only_if === q.id}>${t("breakdown.yes", { text: q.text })}</option>`)}
               </select>
@@ -841,7 +839,7 @@ export class BoopliBreakdown extends LitElement {
     if (!this._aiOn()) return this._renderOff();
     const titles: Record<Phase, string> = {
       task: this.kind === "recurring" ? t("today.break_down_a_recurring_chore") : t("common.break_it_down_now"),
-      interview: "A few questions",
+      interview: t("breakdown.a_few_questions"),
       working: this._task,
       review: this._task,
     };

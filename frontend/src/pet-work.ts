@@ -169,7 +169,7 @@ export function momentArt(moment: Moment, text: string, at: MomentAt = {}): SVGT
           svg`<g transform="translate(100 110)"><g class="burst" style="--dx:${dx}px;--dy:${dy}px;animation-delay:${0.45 + i * 0.04}s"><path d=${STAR} fill=${color} stroke=${INK} stroke-width="1.6" stroke-linejoin="round"/></g></g>`
       )}
       <g transform="translate(0 ${at.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${INK} stroke-width="3"/>
-        <text x="148" y="35" text-anchor="middle">${text || "Level up!"}</text></g></g>`;
+        <text x="148" y="35" text-anchor="middle">${text || t("pet_work.level_up")}</text></g></g>`;
     }
     case "done":
       return svg`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>

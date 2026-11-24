@@ -78,7 +78,7 @@ export class BoopliScheduleDays extends LitElement {
                     @change=${(e: Event) =>
                       this._setDay(day, (e.target as HTMLInputElement).checked ? [nextTime([])] : [])}
                   />
-                  Runs
+                  ${t("schedule_days.runs")}
                 </label>`}
             ${on
               ? html`<div class="times">
@@ -86,7 +86,7 @@ export class BoopliScheduleDays extends LitElement {
                     (tm, i) => html`<span class="time">
                       <input
                         type="time"
-                        aria-label="${WEEKDAY_NAMES[day]} time ${i + 1}"
+                        aria-label=${t("schedule_days.time_2", { value: WEEKDAY_NAMES[day], n: i + 1 })}
                         .value=${tm}
                         @change=${(e: Event) => this._setTime(day, i, (e.target as HTMLInputElement).value)}
                       />

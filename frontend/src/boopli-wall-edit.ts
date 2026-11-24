@@ -19,17 +19,17 @@ const ANY_DOMAINS = [
   "script", "scene", "button", "input_button", "automation", "person", "media_player",
 ];
 
-const NIGHT_CHOICES: [NightMode, string][] = [
-  ["dim", "Dim the screen"],
-  ["black", "Black, with a small clock"],
-  ["off", "Keep as it is"],
+const NIGHT_CHOICES = (): [NightMode, string][] => [
+  ["dim", t("wall_edit.dim_the_screen")],
+  ["black", t("wall_edit.black_with_a_small_clock")],
+  ["off", t("wall_edit.keep_as_it_is")],
 ];
 
 type View = "window" | "wide" | "tall";
-const VIEWS: [View, string, string][] = [
-  ["window", "This window", "Show the board in the shape of this window"],
-  ["wide", "16:9", "A TV or a tablet lying down"],
-  ["tall", "Upright", "A tablet hung upright (9:16)"],
+const VIEWS = (): [View, string, string][] => [
+  ["window", t("wall_edit.this_window"), t("wall_edit.show_the_board_in_the_shape")],
+  ["wide", "16:9", t("wall_edit.a_tv_or_a_tablet_lying")],
+  ["tall", t("wall_edit.upright"), t("wall_edit.a_tablet_hung_upright_9_16")],
 ];
 /** The size of the screen each view stands for. The board is drawn at that size and then scaled down to fit, so it looks exactly as it will. */
 const SCREEN: Record<Exclude<View, "window">, [number, number]> = {
@@ -444,11 +444,11 @@ export class BoopliWallEdit extends LitElement {
       <div class="mhead"><h2>${icon(def?.icon ?? "shape-outline")} ${def?.label ?? tile.type}</h2></div>
       ${def?.options.length ? html`<div class="opts">${def.options.map((f) => this._renderField(tile, f))}</div>` : nothing}
       <div class="srow">
-        ${this._numField("tw", "Cells wide", tile.w, 1, cur.columns - tile.x, (n) => {
+        ${this._numField("tw", t("wall_edit.cells_wide"), tile.w, 1, cur.columns - tile.x, (n) => {
           this._resize(n, tile.h);
           return this._tile?.w; // what it is now (the old width when there was no room)
         })}
-        ${this._numField("th", "Cells tall", tile.h, 1, cur.rows - tile.y, (n) => {
+        ${this._numField("th", t("wall_edit.cells_tall"), tile.h, 1, cur.rows - tile.y, (n) => {
           this._resize(tile.w, n);
           return this._tile?.h;
         })}
@@ -469,8 +469,8 @@ export class BoopliWallEdit extends LitElement {
         <input id="bname" maxlength=${NAME_MAX} .value=${cur.name} @change=${(e: Event) => this._edit((b) => (b.name = (e.target as HTMLInputElement).value.trim()))} />
       </div>
       <div class="srow">
-        ${this._numField("bcols", "Columns", cur.columns, COLUMNS_MIN, COLUMNS_MAX, (n) => this._setGrid(n, cur.rows).columns)}
-        ${this._numField("brows", "Rows", cur.rows, ROWS_MIN, ROWS_MAX, (n) => this._setGrid(cur.columns, n).rows)}
+        ${this._numField("bcols", t("wall_edit.columns"), cur.columns, COLUMNS_MIN, COLUMNS_MAX, (n) => this._setGrid(n, cur.rows).columns)}
+        ${this._numField("brows", t("wall_edit.rows"), cur.rows, ROWS_MIN, ROWS_MAX, (n) => this._setGrid(cur.columns, n).rows)}
         <button title=${t("wall_edit.choose_the_rows_that_make_the")} @click=${() => this._matchScreen()}>${t("wall_edit.match_this_screen")}</button>
       </div>
       <div class="srow">
@@ -481,7 +481,7 @@ export class BoopliWallEdit extends LitElement {
       <div class="field">
         <label for="bnight">${t("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e: Event) => this._edit((b) => (b.night = (e.target as HTMLSelectElement).value as NightMode))}>
-          ${NIGHT_CHOICES.map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
+          ${NIGHT_CHOICES().map(([v, l]) => html`<option value=${v} ?selected=${cur.night === v}>${l}</option>`)}
         </select>
       </div>
       <p class="muted small">${t("wall_edit.night_is_when_quiet_hours_are")}</p>
@@ -499,7 +499,7 @@ export class BoopliWallEdit extends LitElement {
     return html`
       <div class="mhead"><h2>${t("wall_edit.add_a_tile")}</h2></div>
       <div class="adds" role="group" aria-label=${t("wall_edit.add_a_tile_2")}>
-        ${TILE_DEFS.map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
+        ${TILE_DEFS().map((d) => html`<button class="addtile" @click=${() => this._addTile(d.type)}><span class="emoji">${icon(d.icon)}</span><b>${d.label}</b><span class="muted small">${d.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => (this._modal = "")}>${t("common.cancel")}</button></div>
     `;
@@ -522,7 +522,7 @@ export class BoopliWallEdit extends LitElement {
           <button @click=${() => (this._modal = "board")}>${icon("cog-outline")} ${t("wall_edit.board")}</button>
           <button @click=${() => (this._modal = "add")}>${t("wall_edit.add_tile")}</button>
           <div class="views" role="group" aria-label=${t("wall_edit.show_it_as")}>
-            ${VIEWS.map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
+            ${VIEWS().map(([v, label, tip]) => html`<button class=${this._view === v ? "on" : ""} title=${tip} aria-pressed=${this._view === v} @click=${() => (this._view = v)}>${label}</button>`)}
           </div>
           <span class="hint muted small">${t("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
@@ -531,7 +531,7 @@ export class BoopliWallEdit extends LitElement {
                 <button class="danger" @click=${() => this._exit(this._savedName())}>${t("wall_edit.yes_discard")}</button>
                 <button @click=${() => (this._askDiscard = false)}>${t("wall_edit.keep_editing")}</button>`
             : html`<button ?disabled=${this._busy} @click=${() => this._cancel()}>${t("common.cancel")}</button>
-                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? "Saving…" : "Save"}</button>`}
+                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? t("common.saving") : t("common.save")}</button>`}
         </div>
         <div class="stage" ?inert=${this._busy}>
           <div class="slot" style="width:${sw * scale}px;height:${sh * scale}px">

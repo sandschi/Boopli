@@ -41,7 +41,38 @@
     "break_it_down_now": "Break it down now",
     "make_a_cup_of_tea": "Make a cup of tea",
     "alexa_sound_id": "Alexa sound id",
-    "on_for_seconds": "On for (seconds)"
+    "on_for_seconds": "On for (seconds)",
+    "switch_ask_claude_on": "Switch Ask Claude on",
+    "no_limit": "No limit",
+    "switch_ai_help_on": "Switch AI help on",
+    "sound_type": "Sound type",
+    "tap_what_fits": "Tap what fits, or write as much as you like. You can skip any question.",
+    "yes": "Yes",
+    "no": "No",
+    "back_now": "Back now",
+    "cancel_it": "Cancel it",
+    "saving": "Saving…",
+    "thinking": "Thinking…",
+    "saved": "Saved.",
+    "sending": "Sending…",
+    "testing": "Testing…",
+    "alexa_device": "Alexa device",
+    "voice": "Voice",
+    "settings": "Settings",
+    "chores": "Chores",
+    "on_certain_days_and_times": "On certain days and times",
+    "normal_notification": "Normal notification",
+    "high_priority_pops_up": "High priority (pops up)",
+    "alarm_volume": "Alarm volume",
+    "all_set": "All set",
+    "where_you_are": "Where you are",
+    "wall_board": "Wall board",
+    "max_volume_not_on_every_phone": "Max volume (not on every phone)",
+    "alexa_sound": "Alexa sound",
+    "file_in_my_media_folder": "File in my media folder",
+    "alexa_devices_notify_entity": "Alexa Devices (notify entity)",
+    "a_tts_voice_on_this_speaker": "A TTS voice on this speaker",
+    "quiet": "Quiet"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Boopli rests: nothing starts and nothing nudges you, except the chores you tick below. Your pet stays just as it is, and when you are back it carries on from there.",
@@ -57,7 +88,8 @@
     "until": "Until",
     "until_i_turn_it_off": "Until I turn it off",
     "save_away_mode": "Save away mode",
-    "start_away_mode": "Start away mode"
+    "start_away_mode": "Start away mode",
+    "planned": "Planned"
   },
   "backup": {
     "what_to_include": "What to include",
@@ -77,7 +109,19 @@
     "and_more": "and {value} more.",
     "phones_not_found": "Phones not found: {join}.",
     "saved": "(saved {copyName})",
-    "choose_a_backup_file": "Choose a backup file ({EXTENSION})"
+    "choose_a_backup_file": "Choose a backup file ({EXTENSION})",
+    "saved_2": "· saved {toLocaleString}",
+    "boopli": "· Boopli {boopli_version}",
+    "runs_ending_one": "{count} running chore belongs to chores that are not in the file and will end.",
+    "runs_ending_other": "{count} running chores belong to chores that are not in the file and will end.",
+    "importing_replaces": "Importing <b>replaces</b> the ticked parts on this install, and it cannot be undone.",
+    "download_backup": "Download backup",
+    "working": "Working…",
+    "every_chore_with_its_steps_questions": "Every chore with its steps, questions and schedule.",
+    "rooms_and_notes": "Rooms and notes",
+    "the_rooms_of_my_home_and": "The rooms of My home and their notes.",
+    "pet_and_history": "Pet and history",
+    "your_pets_level_and_xp_and": "Your pet's level and XP, and what was done."
   },
   "breakdown": {
     "open_my_home": "Open My home",
@@ -130,7 +174,21 @@
     "what_you_told_me_so_far": "What you told me so far ({length})",
     "min": "⏳ {wait_minutes} min",
     "yes": "{text} → yes",
-    "worth_about_xp_when_all_are": "· worth about {xp} XP when all are done. Check them, change what does not fit."
+    "worth_about_xp_when_all_are": "· worth about {xp} XP when all are done. Check them, change what does not fit.",
+    "photo": "Photo {n}",
+    "remove_photo": "Remove photo {n}",
+    "xp": "{label} ({xp} XP)",
+    "only_if_for_step": "Only if, for step {n}",
+    "step": "Step {n}",
+    "tip_tell_boopli_about_your_rooms": "Tip: tell Boopli about your rooms and the steps will fit them.",
+    "a_few_more_things_so_the": "A few more things, so the steps fit.",
+    "a_few_questions_so_the_steps": "A few questions so the steps fit your situation.",
+    "a_few_questions": "A few questions",
+    "claude_asks_left_one": "Ask Claude uses your Claude routine: {count} ask left this hour. Each question round and the steps are one ask each.",
+    "claude_asks_left_other": "Ask Claude uses your Claude routine: {count} asks left this hour. Each question round and the steps are one ask each.",
+    "small_quick_and_easy": "Small: quick and easy",
+    "medium_takes_some_effort": "Medium: takes some effort",
+    "big_hard_or_long": "Big: hard or long"
   },
   "chore_editor": {
     "repeats": "Repeats",
@@ -170,7 +228,19 @@
     "longest_it_waits_0_as_long": "Longest it waits (0 = as long as it takes):",
     "wait_before_this_step": "Wait before this step:",
     "yes": "{value} → yes",
-    "you_have_unsaved_changes": "<b>●</b> You have unsaved changes"
+    "you_have_unsaved_changes": "<b>●</b> You have unsaved changes",
+    "step_title": "Step {n} title",
+    "size_of_step": "Size of step {n}",
+    "nudge_even_in_quiet_hours_for": "Nudge even in quiet hours (for example pills)",
+    "keeps_going_while_im_away_for": "Keeps going while I'm away (for example pills)",
+    "wait_until_this_happens": "Wait until this happens…",
+    "picture": "Picture…",
+    "finishes_by_itself_when": "Finishes by itself when…",
+    "questions_before_starting": "Questions before starting…",
+    "n_set": "({n} set)",
+    "edit_chore": "Edit chore",
+    "on_demand_i_start_it": "On demand (I start it)",
+    "every_n_days_after_i_finish": "Every N days after I finish"
   },
   "chores": {
     "a_quick_look_first_so_the": "A quick look first, so the list only has what needs doing today.",
@@ -180,7 +250,10 @@
     "start_from_a_template": "Start from a template:",
     "no_chores_yet_pick_a_template": "No chores yet. Pick a template above or create your own.",
     "set_a_schedule": "Set a schedule",
-    "edit": "Edit"
+    "edit": "Edit",
+    "in_progress": "In progress",
+    "anywhere": "Anywhere",
+    "not_scheduled": "Not scheduled"
   },
   "claude": {
     "the_routines_fire_address": "The routine's fire address",
@@ -197,7 +270,8 @@
     "token_saved_boopli_keeps_it_out": "Token saved. Boopli keeps it out of backups and never shows it again.",
     "asking_claude_this_can_take_up": "Asking Claude. This can take up to a minute…",
     "claude_is_an_extra_next_to": "Claude is an extra, next to your Home Assistant agent. Press <b>{t}</b> when you do not trust the agent's answer, when your free agent is down, or when you have no agent. It uses your own Claude account: every ask is one run of your routine. Claude's routines are a research preview, so they can change or stop working. Boopli sends the task text and your answers. If you turned on room notes, the notes of the rooms a task is about go along, and a room interview sends that room's name and its notes. Photos you choose go along too. Never device names, history or location.",
-    "of_asks_left_this_hour": "{fires_left} of {fires_per_hour} asks left this hour"
+    "of_asks_left_this_hour": "{fires_left} of {fires_per_hour} asks left this hour",
+    "token_removed": "Token removed."
   },
   "home": {
     "anything_else_about_this_room": "Anything else about this room?",
@@ -248,7 +322,25 @@
     "copy_the_prompt": "Copy the prompt",
     "read_the_notes": "Read the notes",
     "take_or_pick_up_to_photos": "Take or pick up to {MAX_PHOTOS} photos of this room. They go once to the helper you pick below (your AI agent, or Claude), which writes down what it sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.",
-    "with_the_chat_when_you_say": "<b>{t}</b> with the chat. When you say you are done, it answers with the notes."
+    "with_the_chat_when_you_say": "<b>{t}</b> with the chat. When you say you are done, it answers with the notes.",
+    "notes_for": "Notes for {name}",
+    "include_what_i_have_written_so": "Include what I have written so far",
+    "a_few_more_things": "A few more things.",
+    "a_few_quick_questions_about_this": "A few quick questions about this room.",
+    "room": "Room",
+    "room_let_me_ask": "{room}: let me ask",
+    "room_describe_it_from_photos": "{room}: describe it from photos",
+    "room_talk_it_out_in_your_own_ai_chat": "{room}: talk it out in your own AI chat",
+    "copy_this_and_paste_it": "<b>Copy this</b> and paste it into your chat.",
+    "copy_the_notes_it_gives_back": "<b>Copy the notes</b> it gives back and paste them here.",
+    "change_anything_that_is_wrong": "Change anything that is wrong.",
+    "nothing_is_saved_until_you_press": "Nothing is saved until you press Save afterwards.",
+    "use_rooms_one": "Use {count} room",
+    "use_rooms_other": "Use {count} rooms",
+    "hidden_rooms_one": "{count} hidden room",
+    "hidden_rooms_other": "{count} hidden rooms",
+    "reading": "Reading…",
+    "hide": "Hide"
   },
   "ladders": {
     "move_up": "Move up",
@@ -267,7 +359,13 @@
     "then_it_stops": "Then it stops.",
     "right_away_then_repeats_every": "Right away, then repeats every",
     "nudge": "Nudge {value}",
-    "of": "{length} of {MAX_NUDGES}"
+    "of": "{length} of {MAX_NUDGES}",
+    "minutes_before_nudge": "Minutes before nudge {n}",
+    "move_nudge_up": "Move nudge {n} up",
+    "move_nudge_down": "Move nudge {n} down",
+    "copy_nudge": "Copy nudge {n}",
+    "remove_nudge": "Remove nudge {n}",
+    "quiet_no_nudges": "Quiet (no nudges)"
   },
   "panel": {
     "you_have_unsaved_changes": "You have unsaved changes",
@@ -278,7 +376,8 @@
     "show_a_board_for_a_screen": "Show a board for a screen on the wall",
     "wall_view": "Wall view",
     "could_not_reach_boopli_is_the": "Could not reach Boopli. Is the integration set up?",
-    "away_mode_is_planned": "Away mode is planned"
+    "away_mode_is_planned": "Away mode is planned",
+    "back_now": "Back now"
   },
   "pet_preview": {
     "preview_your_pet": "▶ Preview your pet",
@@ -289,7 +388,16 @@
     "level": "Level",
     "the_room_grows_with_the_level": "The room grows with the level: a water bowl at 1, a food bowl at 2, a bed at 3. Sleepy or hibernating, the pet sleeps in the bed.",
     "has_no_animated_art_yet_so": "{label} has no animated art yet, so it shows its emoji.",
-    "preview": "{label}: preview"
+    "preview": "{label}: preview",
+    "away_mode_suitcase": "Away mode (suitcase)",
+    "level_n": "Level {n}",
+    "level_up": "Level up",
+    "waking_up": "Waking up",
+    "tap": "Tap",
+    "step_done": "Step done",
+    "nothing": "Nothing",
+    "housework": "Housework",
+    "typing": "Typing"
   },
   "picture": {
     "picture_in_the_phone_notification_optional": "Picture in the phone notification (optional):",
@@ -319,13 +427,23 @@
     "not_available_any_more": "(not available any more)",
     "use_the_normal_color": "Use the normal color",
     "speaks_with_chime": "Speaks with chime",
-    "no_sound_set_up": "No sound set up"
+    "no_sound_set_up": "No sound set up",
+    "at_nudge": "{phoneName} at nudge {n}",
+    "color_at_nudge": "{name} color at nudge {n}",
+    "at_nudge_2": "{name} at nudge {n}",
+    "minutes_after_the_previous_nudge": "minutes after the previous nudge",
+    "wait": "Wait",
+    "speaks": "Speaks",
+    "alarm": "Alarm",
+    "max_volume": "Max volume"
   },
   "schedule_days": {
     "time": "+ time",
     "no_run_this_day": "No run this day",
     "remove_this_time": "Remove this time",
-    "same_as": "Same as {value}"
+    "same_as": "Same as {value}",
+    "time_2": "{value} time {n}",
+    "runs": "Runs"
   },
   "schedule_wizard": {
     "tap_the_days_it_should_come": "Tap the days it should come up. You set the time for each day in the next step.",
@@ -344,8 +462,23 @@
     "days": "{n} days",
     "after_that_days_after_you_finish": "After that: {every_n_days} days after you finish it, at {time}.",
     "nothing_changed": "Nothing changed. {after}.",
-    "schedule": "Schedule: {before} → {after}",
-    "step_of": "Step {value} of {length}"
+    "schedule": "Schedule",
+    "step_of": "Step {value} of {length}",
+    "how_often_should_named": "How often should <b>{chore}</b> come up?",
+    "how_often_should_this_chore": "How often should this chore come up?",
+    "what_changed_for_named": "<b>What changed</b> for <b>{chore}</b>:",
+    "what_changed_for_this_chore": "<b>What changed</b> for this chore:",
+    "schedule_named": "Schedule: {chore}",
+    "save_schedule": "Save schedule",
+    "how_often": "How often",
+    "which_days": "Which days",
+    "what_time_on_each_day": "What time on each day",
+    "every_how_many_days": "Every how many days",
+    "the_next_runs": "The next runs",
+    "i_start_it_myself_when_i": "I start it myself, when I want.",
+    "pick_the_days_each_day_gets": "Pick the days. Each day gets its own time, or several (for example pills in the morning and evening).",
+    "every_few_days_after_i_finish": "Every few days, after I finish",
+    "it_comes_back_a_number_of": "It comes back a number of days after you finished it, for example every 90 days for a filter."
   },
   "settings": {
     "unsaved": "Unsaved",
@@ -420,7 +553,28 @@
     "quiet_hours": "Quiet hours",
     "not_found": "{entity_id} (not found)",
     "not_found_2": "{photo_entity_id} (not found)",
-    "ai_help": "AI help"
+    "ai_help": "AI help",
+    "nudges_start": "{name} nudges start",
+    "nudges_stop": "{name} nudges stop",
+    "guide_me_2": "Guide me: {title}",
+    "advanced_2": "Advanced: {title}",
+    "hold_nudges_outside_these_hours": "Hold nudges outside these hours",
+    "want_to_do_all_of_it": "Want to do all of it again from the start?",
+    "blinks": "Blinks",
+    "pause_between_ms": "Pause between (ms)",
+    "custom": "Custom",
+    "presence_note": "At home Boopli uses everything above. Away, it only uses your phone, and only for chores marked \"anywhere\".",
+    "claude_on_suffix": " · on",
+    "unsaved_changes_in": "Unsaved changes in:",
+    "questions_prompt": "Questions prompt",
+    "steps_prompt": "Steps prompt",
+    "phone": "Phone",
+    "snooze_and_timing": "Snooze and timing",
+    "your_pet_and_accent_colour": "Your pet and accent colour",
+    "devices": "Devices",
+    "timing": "Timing",
+    "extras": "Extras",
+    "indicator_lamp_on_until_done": "Indicator lamp (on until done)"
   },
   "speakers": {
     "alexa_sound_library": "Alexa sound library",
@@ -453,7 +607,18 @@
     "repeat_every_seconds_0_once": "Repeat every (seconds, 0 = once)",
     "not_one_of_your_sounds": "Not one of your sounds",
     "ding_and_alarm_sound": "Ding and alarm sound",
-    "your_own_sounds": "Your own sounds"
+    "your_own_sounds": "Your own sounds",
+    "remove_speaker_2": "Remove speaker {friendly}",
+    "from_nudge": "From nudge",
+    "sound_library_hint": "Pick an id from the {library}, for example <code>amzn_sfx_doorbell_chime_01</code>. Use a Test button to hear it. Some ids stay silent.",
+    "file_in_my_media_folder_for_example": "File in my media folder (for example boopli/{example}.mp3)",
+    "test_announcement": "Test announcement",
+    "test_talk": "Test talk",
+    "test_ding": "Test ding",
+    "test_alarm": "Test alarm",
+    "alexa_speakers": "Alexa speakers",
+    "ding": "Ding",
+    "alarm_sound": "Alarm sound"
   },
   "stage": {
     "your_pets_room": "Your pet's room"
@@ -499,7 +664,12 @@
     "and_more_in_the_chores_tab": "and {length} more in the Chores tab",
     "step_of_2": "{group}: step {min} of {total}",
     "snoozed_until": "Snoozed until {fmtTime}",
-    "boopli_checks_in_at": "· Boopli checks in at {fmtTime}"
+    "boopli_checks_in_at": "· Boopli checks in at {fmtTime}",
+    "since": "since {time}",
+    "in_progress": "In progress",
+    "nice_you_got_things_done_today": "Nice, you got things done today.",
+    "ready_now": "Ready now",
+    "upcoming": "Upcoming"
   },
   "triggers": {
     "which_entity": "Which entity?",
@@ -532,7 +702,9 @@
     "an_nfc_tag_is_scanned": "An NFC tag is scanned",
     "an_entity_changes_2": "An entity changes",
     "now": "{friendly}: now <b>{state}</b>",
-    "now_2": "now: {state}"
+    "now_2": "now: {state}",
+    "also_count_it_if_it_is": "Also count it if it is already true when the step starts",
+    "a_button_is_pressed": "A button is pressed"
   },
   "wait": {
     "waiting_time_used": "Waiting time used",
@@ -573,7 +745,19 @@
     "this_grid_cannot_be_made_coarser": "This grid cannot be made coarser evenly.",
     "some_tiles_do_not_line_up": "Some tiles do not line up with a coarser grid. Move or resize them first.",
     "was_not_found": "{value} was not found.",
-    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{boardLink}</code> (after you save)"
+    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{boardLink}</code> (after you save)",
+    "cells_wide": "Cells wide",
+    "cells_tall": "Cells tall",
+    "columns": "Columns",
+    "rows": "Rows",
+    "dim_the_screen": "Dim the screen",
+    "black_with_a_small_clock": "Black, with a small clock",
+    "keep_as_it_is": "Keep as it is",
+    "this_window": "This window",
+    "show_the_board_in_the_shape": "Show the board in the shape of this window",
+    "a_tv_or_a_tablet_lying": "A TV or a tablet lying down",
+    "upright": "Upright",
+    "a_tablet_hung_upright_9_16": "A tablet hung upright (9:16)"
   },
   "wall": {
     "away_mode_is_on": "Away mode is on",
@@ -583,7 +767,8 @@
     "edit_this_board": "Edit this board",
     "full_screen": "Full screen",
     "back_to_boopli": "Back to Boopli",
-    "no_board_yet_make_one_in": "No board yet. Make one in Settings, on the Wall board card."
+    "no_board_yet_make_one_in": "No board yet. Make one in Settings, on the Wall board card.",
+    "edit_this_tile": "Edit this tile: {replace}"
   },
   "wizard": {
     "a_board_is_a_grid_of": "A board is a grid of tiles for a screen on the wall: the clock, the pet, what is due, the weather and more.",
@@ -710,13 +895,59 @@
     "make_a_new_routine_name_it": "Make a new routine. Name it <b>{t}</b>.",
     "add_an_to_the_routine_and": "Add an <b>{t}</b> to the routine, and press <b>{t2}</b>. Copy the token now: Claude shows it only once.",
     "leave_every_connector_gmail_calendar_and": "Leave every connector (Gmail, calendar and so on) switched <b>{t}</b>. The routine does not need them.",
-    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{value}</code>"
+    "link_for_the_tablets_start_page": "Link for the tablet's start page: <code>{value}</code>",
+    "from": "{value} from",
+    "until": "{value} until",
+    "hold_nudges_outside_the_times_below": "Hold nudges outside the times below",
+    "paste_this_as_its_instructions": "Paste this as its instructions:",
+    "how": "How",
+    "the_sentence_chore_and_step_are": "The sentence ({chore} and {step} are filled in)",
+    "a_new_list_of_nudges": "A new list of nudges.",
+    "a_short_friendly_sound_the_gentlest": "A short, friendly sound, the gentlest reminder.",
+    "a_loud_sound_that_repeats_for": "A loud sound that repeats for a while, for when a step keeps being ignored.",
+    "this_ladder_has_nudges_one": "This ladder has {count} nudge so far. Add another one, or are you done?",
+    "this_ladder_has_nudges_other": "This ladder has {count} nudges so far. Add another one, or are you done?",
+    "amazon_sound_hint": "Pick a sound from the {library}. The id is <code>amzn_sfx_</code> plus the sound's name in lower case with underscores and a two-digit number, for example <code>amzn_sfx_doorbell_chime_01</code>. Some sounds stay silent on some Echo devices, so press Test.",
+    "make_an_environment": "Make an <b>environment</b> for it with network access <b>Limited</b>, and allow this address:",
+    "home_assistant_address_unknown": "<b>your Home Assistant's address on the internet</b>. Home Assistant does not know it yet: set the external URL in Home Assistant, or fill in the address under Ask Claude in the next screen.",
+    "lasts_seconds": "Lasts (seconds)",
+    "copied": "Copied.",
+    "finish": "Finish",
+    "first_setup": "First setup",
+    "phone_setup": "Phone setup",
+    "quiet_hours_setup": "Quiet hours setup",
+    "reminder_lights_setup": "Reminder lights setup",
+    "speaker_setup": "Speaker setup",
+    "alarm_devices_setup": "Alarm devices setup",
+    "snooze_and_style": "Snooze and style",
+    "welcome": "Welcome",
+    "your_phone": "Your phone",
+    "phone_details": "Phone details",
+    "light_details": "Light details",
+    "speaker_reminders": "Speaker reminders",
+    "pick_a_speaker": "Pick a speaker",
+    "a_small_ding": "A small ding",
+    "a_spoken_sentence": "A spoken sentence",
+    "an_alarm_sound": "An alarm sound",
+    "when_it_joins_in": "When it joins in",
+    "alarm_device_details": "Alarm device details",
+    "your_ai_agent": "Your AI agent",
+    "make_the_routine": "Make the routine",
+    "connect_it": "Connect it",
+    "first_chores": "First chores",
+    "what_do_you_want_to_do": "What do you want to do?",
+    "name_your_ladder": "Name your ladder",
+    "another_nudge": "Another nudge?",
+    "how_it_ends": "How it ends",
+    "only_shown_in_boopli_never_nudges": "Only shown in Boopli, never nudges."
   },
   "wall_tile_calendar": {
     "pick_a_calendar_in_the_board": "Pick a calendar in the board settings.",
     "calendar": "Calendar",
     "nothing_in_the_next_week": "Nothing in the next week.",
-    "could_not_read_the_calendar": "Could not read the calendar."
+    "could_not_read_the_calendar": "Could not read the calendar.",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
   },
   "wall_tile_camera": {
     "pick_a_camera_in_the_board": "Pick a camera in the board settings.",
@@ -725,10 +956,13 @@
   },
   "wall_tile_due": {
     "all_clear": "All clear",
-    "nothing_is_due_right_now": "Nothing is due right now."
+    "nothing_is_due_right_now": "Nothing is due right now.",
+    "not_yet": "Not yet"
   },
   "wall_tile_entity": {
-    "pick_an_entity_in_the_board": "Pick an entity in the board settings."
+    "pick_an_entity_in_the_board": "Pick an entity in the board settings.",
+    "tap_label": "{name}: {state}. Switch",
+    "not_found": "not found"
   },
   "wall_tile_next": {
     "coming_up": "Coming up",
@@ -749,10 +983,12 @@
     "turn_the_sound_off": "Turn the sound off"
   },
   "pet_picker": {
-    "art_soon": "art soon"
+    "art_soon": "art soon",
+    "in_every_mood": "{label} in every mood"
   },
   "pet_work": {
-    "text": "</>"
+    "text": "</>",
+    "level_up": "Level up!"
   },
   "diff": {
     "claude_routine_address_changed": "Claude routine address changed",
@@ -761,7 +997,10 @@
     "chat_prompt_for_the_whole_home": "Chat prompt for the whole home changed"
   },
   "helpers": {
-    "alexa_media_player": "Alexa Media Player"
+    "alexa_media_player": "Alexa Media Player",
+    "one_nudge": "One nudge",
+    "escalating": "Escalating",
+    "persistent": "Persistent"
   },
   "photos": {
     "this_photo_could_not_be_opened": "This photo could not be opened. Try a JPEG or PNG photo.",
@@ -769,5 +1008,64 @@
   },
   "time": {
     "no_days_yet": "No days yet"
+  },
+  "pet": {
+    "your_pet_is": "Your pet is {mood}"
+  },
+  "accent": {
+    "green": "Green",
+    "teal": "Teal",
+    "blue": "Blue",
+    "lilac": "Lilac",
+    "pink": "Pink",
+    "coral": "Coral",
+    "orange": "Orange",
+    "gold": "Gold"
+  },
+  "pets": {
+    "slime": "Slime",
+    "bear": "Bear",
+    "cat": "Cat",
+    "dog": "Dog",
+    "fox": "Fox"
+  },
+  "templates": {
+    "dishwasher": "Dishwasher",
+    "load_the_dishwasher": "Load the dishwasher",
+    "start_the_dishwasher": "Start the dishwasher",
+    "open_it_so_it_can_dry": "Open it so it can dry",
+    "empty_the_dishwasher": "Empty the dishwasher",
+    "laundry": "Laundry",
+    "start_the_washing_machine": "Start the washing machine",
+    "hang_the_laundry_up": "Hang the laundry up",
+    "take_the_laundry_down_and_put": "Take the laundry down and put it away",
+    "trash": "Trash",
+    "take_out_the_trash": "Take out the trash",
+    "pills": "Pills",
+    "take_pills": "Take pills",
+    "take_your_pills": "Take your pills"
+  },
+  "wall_tiles": {
+    "clock": "Clock",
+    "the_time_and_the_date": "The time and the date.",
+    "show_the_date": "Show the date",
+    "pet": "Pet",
+    "your_pet_in_its_room": "Your pet in its room.",
+    "due_now": "Due now",
+    "what_is_due_now_with_done": "What is due now, with Done, On it and Snooze.",
+    "what_comes_next": "What comes next.",
+    "how_many_to_show": "How many to show",
+    "entity": "Entity",
+    "any_sensor_or_switch_a_tap": "Any sensor or switch. A tap switches it.",
+    "name_optional": "Name (optional)",
+    "weather": "Weather",
+    "the_weather_now": "The weather now.",
+    "the_next_events": "The next events.",
+    "a_picture_from_a_camera": "A picture from a camera.",
+    "new_picture_every_seconds": "New picture every (seconds)",
+    "note": "Note",
+    "some_words_you_write": "Some words you write.",
+    "text": "Text",
+    "big_letters": "Big letters"
   }
 }

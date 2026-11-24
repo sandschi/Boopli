@@ -99,12 +99,12 @@ export const PHONE_LEVEL_LABEL: Record<string, string> = {
   alarm_max: "max volume",
 };
 
-export const STYLE_LABEL: Record<string, string> = {
-  quiet: "Quiet",
-  one: "One nudge",
-  escalating: "Escalating",
-  persistent: "Persistent",
-};
+export const STYLE_LABEL = (): Record<string, string> => ({
+  quiet: t("common.quiet"),
+  one: t("helpers.one_nudge"),
+  escalating: t("helpers.escalating"),
+  persistent: t("helpers.persistent"),
+});
 
 /**
  * Whether a light can show a color (the same test Boopli uses when it sends one). A light that cannot, only
@@ -134,9 +134,9 @@ export function normalizeStyle(style: string, ladders: Ladder[] | undefined): st
 
 export function styleLabel(style: string, ladders: Ladder[] | undefined): string {
   if (style.startsWith("ladder:")) {
-    return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? "A ladder that is gone";
+    return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? t("chore_editor.a_ladder_that_is_gone");
   }
-  return STYLE_LABEL[style] ?? style;
+  return STYLE_LABEL()[style] ?? style;
 }
 
 /**

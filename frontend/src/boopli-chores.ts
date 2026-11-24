@@ -185,7 +185,7 @@ export class BoopliChores extends LitElement {
 
       <div class="templates">
         <span class="muted small">${t("chores.start_from_a_template")}</span>
-        ${TEMPLATES.map(
+        ${TEMPLATES().map(
           (t) => html`<button
             class="chip"
             @click=${() => (this._editing = structuredClone(t.draft))}
@@ -206,17 +206,17 @@ export class BoopliChores extends LitElement {
                 <div class="chore-main">
                   <div class="name">${c.name}</div>
                   <div class="muted small">
-                    ${describeRepeat(c.repeat)} · ${c.where === "home" ? "Home only" : "Anywhere"}
+                    ${describeRepeat(c.repeat)} · ${c.where === "home" ? t("chore_editor.home_only") : t("chores.anywhere")}
                     · ${c.steps.length} ${c.steps.length === 1 ? "step" : "steps"}
                   </div>
                   <div class=${running.has(c.id) ? "status live" : "muted small status"}>
                     ${running.has(c.id)
-                      ? html`${icon("progress-clock")} In progress`
+                      ? html`${icon("progress-clock")} ${t("chores.in_progress")}`
                       : c.enabled && c.next_due
                         ? `Next: ${describeWhen(c.next_due, this.nowMs, tz)}`
                         : c.repeat.type === "none"
                           ? ""
-                          : "Not scheduled"}
+                          : t("chores.not_scheduled")}
                   </div>
                 </div>
                 <div class="chore-actions">

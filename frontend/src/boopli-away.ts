@@ -171,7 +171,7 @@ export class BoopliAway extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-          ${onNow ? "Back now" : "Cancel it"}
+          ${onNow ? t("common.back_now") : t("common.cancel_it")}
         </button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._change(away)}>${t("away.change")}</button>
       </div>
@@ -256,8 +256,8 @@ export class BoopliAway extends LitElement {
     const onNow = !!this.snapshot?.away_now;
     const open = this._expanded || this._changing;
     const status = away?.active
-      ? `${onNow ? "On" : "Planned"}: ${awayWhen(away, this.nowMs, tz, onNow)}`
-      : "Off";
+      ? `${onNow ? "On" : t("away.planned")}: ${awayWhen(away, this.nowMs, tz, onNow)}`
+      : t("rung.off");
     return html`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${open} @click=${() => this._toggle()}>
@@ -267,7 +267,7 @@ export class BoopliAway extends LitElement {
         </button>
         ${away?.active && !open
           ? html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-              ${onNow ? "Back now" : "Cancel it"}
+              ${onNow ? t("common.back_now") : t("common.cancel_it")}
             </button>`
           : nothing}
       </div>

@@ -112,7 +112,7 @@ export class BoopliWall extends LitElement {
   render() {
     const board = this._board();
     if (!this.snapshot || !board) {
-      return html`<div class="note">${this.snapshot ? t("wall.no_board_yet_make_one_in") : "Loading…"}</div>
+      return html`<div class="note">${this.snapshot ? t("wall.no_board_yet_make_one_in") : t("common.loading")}</div>
         ${this.preview ? nothing : html`<div class="controls"><button type="button" aria-label=${t("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button></div>`}`;
     }
     const tz = this.snapshot.time_zone;
@@ -144,7 +144,7 @@ export class BoopliWall extends LitElement {
               .options=${tl.options}
               .preview=${this.preview}
             ></${unsafeStatic(`wall-tile-${tl.type.replace(/_/g, "-")}`)}>`}${this.pickable
-              ? html`<button type="button" class="shield" data-id=${tl.id} aria-label="Edit this tile: ${tl.type.replace(/_/g, " ")}" @click=${(e: MouseEvent) => e.detail === 0 && this._pick(tl.id)}></button>
+              ? html`<button type="button" class="shield" data-id=${tl.id} aria-label=${t("wall.edit_this_tile", { replace: tl.type.replace(/_/g, " ") })} @click=${(e: MouseEvent) => e.detail === 0 && this._pick(tl.id)}></button>
                   <span class="handle" data-id=${tl.id} data-resize title=${t("wall.drag_to_resize")}></span>
                   <button type="button" class="del" aria-label=${t("wall.remove_this_tile")} title=${t("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", { detail: tl.id, bubbles: true, composed: true }))}>✕</button>`
               : nothing}</div>`

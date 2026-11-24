@@ -62,7 +62,7 @@ export class WallTileEntity extends WallTile {
       </div>`;
     // something a tap switches is a real button, so it can also be reached and used from a keyboard
     return tappable
-      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label="${name}: ${st?.state ?? "not found"}. Switch" @click=${() => this._tap()}>${inside}</button>`
+      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label=${t("wall_tile_entity.tap_label", { name, state: st?.state ?? t("wall_tile_entity.not_found") })} @click=${() => this._tap()}>${inside}</button>`
       : html`<div class="ent ${on ? "on" : ""}">${inside}</div>`;
   }
 

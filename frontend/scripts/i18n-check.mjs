@@ -95,7 +95,7 @@ for (const file of files) {
   // a sentence as a string literal: three or more words, starting with a capital letter
   for (const s of strings) {
     const v = s.text;
-    if (/^[A-Z][a-z'’]+( [\w'’,.!?:;…()-]+){2,}/.test(v) && !/^(Itim|Roboto)/.test(v)) {
+    if ((/^[A-Z][a-z'’]*( [\w'’,.!?:;…()-]+){2,}/.test(v) || /^[A-Z][a-z]{2,}[a-z '’,.!?:;…()-]*$/.test(v)) && !/^(Itim|Roboto)/.test(v)) {
       hard.push({ file: rel, line: lineOf(s.at), text: v, why: "string" });
     }
   }

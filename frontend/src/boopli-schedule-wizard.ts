@@ -4,7 +4,7 @@ import "./boopli-schedule-days";
 import { sharedStyles } from "./styles";
 import { describeRepeat, describeWhen, WEEKDAY_NAMES } from "./time";
 import type { Hass, Repeat, RepeatType } from "./types";
-import { t } from "./i18n";
+import { t, rich } from "./i18n";
 
 type Step = "how" | "days" | "times" | "interval" | "preview" | "done";
 
@@ -14,26 +14,26 @@ const STEPS: Record<RepeatType, Step[]> = {
   every_n_days: ["how", "interval", "preview", "done"],
 };
 
-const TITLES: Record<Step, string> = {
-  how: "How often",
-  days: "Which days",
-  times: "What time on each day",
-  interval: "Every how many days",
-  preview: "The next runs",
-  done: "All set",
-};
+const TITLES = (): Record<Step, string> => ({
+  how: t("schedule_wizard.how_often"),
+  days: t("schedule_wizard.which_days"),
+  times: t("schedule_wizard.what_time_on_each_day"),
+  interval: t("schedule_wizard.every_how_many_days"),
+  preview: t("schedule_wizard.the_next_runs"),
+  done: t("common.all_set"),
+});
 
-const HOW: { value: RepeatType; label: string; text: string }[] = [
-  { value: "none", label: "On demand", text: "I start it myself, when I want." },
+const HOW = (): { value: RepeatType; label: string; text: string }[] => [
+  { value: "none", label: "On demand", text: t("schedule_wizard.i_start_it_myself_when_i") },
   {
     value: "schedule",
-    label: "On certain days and times",
-    text: "Pick the days. Each day gets its own time, or several (for example pills in the morning and evening).",
+    label: t("common.on_certain_days_and_times"),
+    text: t("schedule_wizard.pick_the_days_each_day_gets"),
   },
   {
     value: "every_n_days",
-    label: "Every few days, after I finish",
-    text: "It comes back a number of days after you finished it, for example every 90 days for a filter.",
+    label: t("schedule_wizard.every_few_days_after_i_finish"),
+    text: t("schedule_wizard.it_comes_back_a_number_of"),
   },
 ];
 
@@ -155,8 +155,8 @@ export class BoopliScheduleWizard extends LitElement {
 
   private _renderHow(d: Repeat) {
     return html`
-      <p>How often should ${this.choreName ? html`<b>${this.choreName}</b>` : "this chore"} come up?</p>
-      ${HOW.map(
+      <p>${this.choreName ? rich("schedule_wizard.how_often_should_named", { chore: this.choreName }) : t("schedule_wizard.how_often_should_this_chore")}</p>
+      ${HOW().map(
         (o) => html`<label class="inline option">
           <input
             type="radio"
@@ -269,7 +269,7 @@ export class BoopliScheduleWizard extends LitElement {
     const after = describeRepeat(d);
     const same = JSON.stringify(this._before) === JSON.stringify(d);
     return html`
-      <p><b>${t("common.what_changed")}</b> for ${this.choreName ? html`<b>${this.choreName}</b>` : "this chore"}:</p>
+      <p>${this.choreName ? rich("schedule_wizard.what_changed_for_named", { chore: this.choreName }) : rich("schedule_wizard.what_changed_for_this_chore")}</p>
       ${same
         ? html`<p class="muted">${t("schedule_wizard.nothing_changed", { after })}</p>`
         : html`<ul><li>${t("schedule_wizard.schedule", { before, after })}</li></ul>`}
@@ -307,11 +307,11 @@ export class BoopliScheduleWizard extends LitElement {
     return html`
       <div class="shell">
         <nav class="rail" aria-label=${t("common.steps")}>
-          <div class="rail-title">Schedule${this.choreName ? `: ${this.choreName}` : ""}</div>
+          <div class="rail-title">${this.choreName ? t("schedule_wizard.schedule_named", { chore: this.choreName }) : t("schedule_wizard.schedule")}</div>
           ${steps.map(
             (id, i) => html`<div class="rail-item ${i === this._index ? "current" : ""} ${i < this._index ? "past" : ""}">
               <span class="mark">${i < this._index ? "✓" : i + 1}</span>
-              <span>${TITLES[id]}</span>
+              <span>${TITLES()[id]}</span>
             </div>`
           )}
         </nav>
@@ -321,7 +321,7 @@ export class BoopliScheduleWizard extends LitElement {
             <button type="button" class="link" @click=${() => this._cancel()}>${t("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${((this._index + 1) / steps.length) * 100}%"></div></div>
-          <h2>${TITLES[step]}</h2>
+          <h2>${TITLES()[step]}</h2>
           ${this._renderStep(d)}
           ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
           <div class="actions">
@@ -331,7 +331,7 @@ export class BoopliScheduleWizard extends LitElement {
             <span class="spacer"></span>
             ${last
               ? html`<button type="button" class="primary" @click=${() => this._apply()}>
-                  ${this.saves ? "Save schedule" : t("schedule_wizard.use_this_schedule")}
+                  ${this.saves ? t("schedule_wizard.save_schedule") : t("schedule_wizard.use_this_schedule")}
                 </button>`
               : html`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>${t("common.next")}</button>`}
           </div>

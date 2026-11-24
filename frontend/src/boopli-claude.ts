@@ -76,7 +76,7 @@ export class BoopliClaude extends LitElement {
 
   private async _removeToken(): Promise<void> {
     this._token = "";
-    if (await this._saveToken()) this._note = "Token removed.";
+    if (await this._saveToken()) this._note = t("claude.token_removed");
   }
 
   private async _test(): Promise<void> {
@@ -115,7 +115,7 @@ export class BoopliClaude extends LitElement {
           .checked=${!!ai.claude_enabled}
           @change=${(e: Event) => this._patch({ claude_enabled: (e.target as HTMLInputElement).checked })}
         />
-        Switch Ask Claude on
+        ${t("common.switch_ask_claude_on")}
       </label>
       <div class="field">
         <label for="claude-url">${t("claude.the_routines_fire_address")}</label>

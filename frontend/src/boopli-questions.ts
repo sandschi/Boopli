@@ -31,7 +31,7 @@ export class BoopliQuestions extends LitElement {
   constructor() {
     super();
     this.questions = [];
-    this.label = "Start";
+    this.label = t("chores.start");
     this.allLabel = "";
     this.busy = false;
     this.cancelable = true;
@@ -69,7 +69,7 @@ export class BoopliQuestions extends LitElement {
                 aria-pressed=${this._yes(q.id)}
                 @click=${() => this._set(q.id, true)}
               >
-                <span aria-hidden="true">✓</span> Yes
+                <span aria-hidden="true">✓</span> ${t("common.yes")}
               </button>
               <button
                 type="button"
@@ -77,7 +77,7 @@ export class BoopliQuestions extends LitElement {
                 aria-pressed=${!this._yes(q.id)}
                 @click=${() => this._set(q.id, false)}
               >
-                <span aria-hidden="true">✕</span> No
+                <span aria-hidden="true">✕</span> ${t("common.no")}
               </button>
             </div>
           </div>`

@@ -40,7 +40,7 @@ function partInfo(run: Run, step: StepRun): { done: number; total: number; canPa
 function moodLine(pet: Pet): string {
   if (pet.away) return `${pet.name} is resting while you are away.`;
   const lines: Record<Mood, string> = {
-    happy: "Nice, you got things done today.",
+    happy: t("today.nice_you_got_things_done_today"),
     content: t("today.ready_when_you_are"),
     sleepy: `${pet.name} is a bit sleepy.`,
     sad: `${pet.name} misses you. One step is enough.`,
@@ -371,7 +371,7 @@ export class BoopliToday extends LitElement {
       </div>
       <div class="away-actions">
         <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => awayEnd(this.hass!))}>
-          ${onNow ? "Back now" : "Cancel it"}
+          ${onNow ? t("common.back_now") : t("common.cancel_it")}
         </button>
         <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
           ${t("today.change_in_settings")}
@@ -435,7 +435,7 @@ export class BoopliToday extends LitElement {
     const count = model.ready.reduce((n, g) => n + g.steps.length, 0);
     if (count === 0) return nothing;
     return html`<section class="sec">
-      ${this._heading("Ready now", count)}
+      ${this._heading(t("today.ready_now"), count)}
       ${model.ready.map(
         (g) => html`<div class="group">
           <div class="group-name strong">${g.run.chore_name}</div>
@@ -479,7 +479,7 @@ export class BoopliToday extends LitElement {
     const tz = this.snapshot?.time_zone ?? "UTC";
     const shown = model.upcoming.slice(0, 8);
     return html`<section class="sec soft">
-      ${this._heading("Upcoming", model.upcoming.length)}
+      ${this._heading(t("today.upcoming"), model.upcoming.length)}
       ${shown.map(
         (d) => html`<div class="group">
           <div class="row">
@@ -606,7 +606,7 @@ export class BoopliToday extends LitElement {
                 : nothing}
               ${model.now.step.on_it_until
                 ? html`<div class="in-progress">
-                    ${icon("check-circle")} In progress${model.now.step.on_it_since ? html` since ${fmtTime(model.now.step.on_it_since, tz)}` : nothing}
+                    ${icon("check-circle")} ${t("today.in_progress")}${model.now.step.on_it_since ? html` ${t("today.since", { time: fmtTime(model.now.step.on_it_since, tz) })}` : nothing}
                     <span class="muted small">${t("today.boopli_checks_in_at", { fmtTime: fmtTime(model.now.step.on_it_until, tz) })}</span>
                   </div>`
                 : nothing}

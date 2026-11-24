@@ -21,12 +21,12 @@ import { t } from "./i18n";
 
 type Tab = "today" | "chores" | "home" | "settings";
 
-const TAB_LABELS: Record<Tab, string> = {
-  today: "Today",
-  chores: "Chores",
+const TAB_LABELS = (): Record<Tab, string> => ({
+  today: t("wall_tile_calendar.today"),
+  chores: t("common.chores"),
   home: "My home",
-  settings: "Settings",
-};
+  settings: t("common.settings"),
+});
 
 /** What the wizard should do, and where to start. */
 interface WizardRequest {
@@ -329,7 +329,7 @@ export class BoopliPanel extends LitElement {
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
       <span>${icon("bag-suitcase")} <b>${onNow ? t("wall.away_mode_is_on") : t("panel.away_mode_is_planned")}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
-      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? "Back now…" : "Change"}</button>
+      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>
     </div>`;
   }
 
@@ -391,12 +391,12 @@ export class BoopliPanel extends LitElement {
           : nothing}
         <h1>${t("wizard.boopli")}</h1>
         <nav>
-          ${(Object.keys(TAB_LABELS) as Tab[]).map(
+          ${(Object.keys(TAB_LABELS()) as Tab[]).map(
             (tab) => html`<button
               class="tab ${this._tab === tab && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(tab)}
             >
-              ${TAB_LABELS[tab]}
+              ${TAB_LABELS()[tab]}
               ${unsaved[tab] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
             </button>`
           )}

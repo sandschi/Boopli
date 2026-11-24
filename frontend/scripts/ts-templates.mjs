@@ -129,7 +129,7 @@ export function scanTemplates(src, withStrings = false) {
         map.push(e);
       }
     });
-    return { tag, body, map };
+    return { tag, body, map, range: [quasis[0][0], quasis[quasis.length - 1][1]] };
   });
   return withStrings ? { templates, strings } : templates;
 }

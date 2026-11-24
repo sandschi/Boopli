@@ -116,9 +116,9 @@ export class WallTileCalendar extends WallTile {
     const day = line.day;
     const name =
       day === today
-        ? "Today"
+        ? t("wall_tile_calendar.today")
         : day === nextDay(today)
-          ? "Tomorrow"
+          ? t("wall_tile_calendar.tomorrow")
           : new Intl.DateTimeFormat(undefined, { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${day}T12:00:00Z`));
     if (line.allDay) return name;
     return `${name} ${new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(line.at))}`;

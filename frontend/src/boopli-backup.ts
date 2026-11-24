@@ -17,12 +17,12 @@ import { t, rich } from "./i18n";
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // a backup is a few hundred kilobytes at most
 const EXTENSION = ".adhd";
 
-const PART_TEXT: Record<BackupPart, { title: string; text: string }> = {
-  settings: { title: "Settings", text: "Devices, timing, nudge ladders, wall boards, your pet's name and kind, AI help." },
-  chores: { title: "Chores", text: "Every chore with its steps, questions and schedule." },
-  home: { title: "Rooms and notes", text: "The rooms of My home and their notes." },
-  pet: { title: "Pet and history", text: "Your pet's level and XP, and what was done." },
-};
+const PART_TEXT = (): Record<BackupPart, { title: string; text: string }> => ({
+  settings: { title: t("common.settings"), text: "Devices, timing, nudge ladders, wall boards, your pet's name and kind, AI help." },
+  chores: { title: t("common.chores"), text: t("backup.every_chore_with_its_steps_questions") },
+  home: { title: t("backup.rooms_and_notes"), text: t("backup.the_rooms_of_my_home_and") },
+  pet: { title: t("backup.pet_and_history"), text: t("backup.your_pets_level_and_xp_and") },
+});
 
 /** Today as YYYY-MM-DD in this browser's time zone (for the name of the file). */
 function today(): string {
@@ -201,7 +201,7 @@ export class BoopliBackup extends LitElement {
     try {
       const r = await importBackup(this.hass, this._file.data, this._parts);
       this._done = [
-        `Imported: ${r.imported.map((p) => PART_TEXT[p].title.toLowerCase()).join(", ")}.`,
+        `Imported: ${r.imported.map((p) => PART_TEXT()[p].title.toLowerCase()).join(", ")}.`,
         ...(r.imported.includes("chores") ? [`${r.chores} ${r.chores === 1 ? "chore is" : "chores are"} set up now.`] : []),
         ...(r.runs_ended ? [`${r.runs_ended} running ${r.runs_ended === 1 ? "chore" : "chores"} ended with the chores that were replaced.`] : []),
       ];
@@ -216,8 +216,8 @@ export class BoopliBackup extends LitElement {
 
   private _renderParts(available: BackupPart[], counts?: BackupPreview["counts"]) {
     const line = (p: BackupPart): string => {
-      if (!counts) return PART_TEXT[p].text;
-      if (p === "settings") return `${counts.boards} wall ${counts.boards === 1 ? "board" : "boards"}. ${PART_TEXT[p].text}`;
+      if (!counts) return PART_TEXT()[p].text;
+      if (p === "settings") return `${counts.boards} wall ${counts.boards === 1 ? "board" : "boards"}. ${PART_TEXT()[p].text}`;
       if (p === "chores") return `${counts.chores} ${counts.chores === 1 ? "chore" : "chores"}.`;
       if (p === "home") return `${counts.rooms} ${counts.rooms === 1 ? "room" : "rooms"}.`;
       return `Level ${counts.level}, ${counts.history} things done on record.`;
@@ -226,7 +226,7 @@ export class BoopliBackup extends LitElement {
       ${BACKUP_PARTS.filter((p) => available.includes(p)).map(
         (p) => html`<label class="part">
           <input type="checkbox" .checked=${this._parts.includes(p)} ?disabled=${this._busy} @change=${(e: Event) => this._toggle(p, (e.target as HTMLInputElement).checked)} />
-          <span><b>${PART_TEXT[p].title}</b><br /><span class="muted small">${line(p)}</span></span>
+          <span><b>${PART_TEXT()[p].title}</b><br /><span class="muted small">${line(p)}</span></span>
         </label>`
       )}
     </div>`;
@@ -253,7 +253,7 @@ export class BoopliBackup extends LitElement {
         ${rich("backup.the_file_ends_in_and_is", { EXTENSION })}
       </p>
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? "Saving…" : "Download backup"}</button>
+        <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? t("common.saving") : t("backup.download_backup")}</button>
         <button ?disabled=${this._busy} @click=${this._close}>${t("common.close")}</button>
       </div>
     `;
@@ -271,7 +271,7 @@ export class BoopliBackup extends LitElement {
       ${pre && this._file
         ? html`
             <p class="muted small">
-              ${this._file.name}${pre.exported_at ? html` · saved ${new Date(pre.exported_at).toLocaleString()}` : nothing}${pre.boopli_version ? html` · Boopli ${pre.boopli_version}` : nothing}
+              ${this._file.name}${pre.exported_at ? html`${t("backup.saved_2", { toLocaleString: new Date(pre.exported_at).toLocaleString() })}` : nothing}${pre.boopli_version ? html`${t("backup.boopli", { boopli_version: pre.boopli_version })}` : nothing}
             </p>
             <p>${t("backup.pick_what_to_bring_in")}</p>
             ${this._renderParts(pre.parts, pre.counts)}
@@ -293,17 +293,17 @@ export class BoopliBackup extends LitElement {
                 </div>`
               : nothing}
             ${pre.runs_ended
-              ? html`<div class="warn" role="status">${pre.runs_ended} running ${pre.runs_ended === 1 ? "chore belongs" : "chores belong"} to chores that are not in the file and will end.</div>`
+              ? html`<div class="warn" role="status">${t("backup.runs_ending", { count: pre.runs_ended })}</div>`
               : nothing}
             <p class="small">
-              Importing <b>${t("backup.replaces")}</b> the ticked parts on this install, and it cannot be undone.
+              ${rich("backup.importing_replaces")}
               <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${t("backup.save_a_copy_of_what_i")}</button>
               ${this._copyName ? html`<span class="muted">${t("backup.saved", { copyName: this._copyName })}</span>` : nothing}
             </p>
           `
         : nothing}
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !pre || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? "Working…" : "Import"}</button>
+        <button class="primary" ?disabled=${this._busy || !pre || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? t("backup.working") : t("settings.import")}</button>
         <button ?disabled=${this._busy} @click=${this._close}>${t("common.cancel")}</button>
       </div>
     `;

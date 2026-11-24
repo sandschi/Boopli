@@ -42,7 +42,7 @@ export class BoopliWait extends LitElement {
 
   constructor() {
     super();
-    this.label = "Thinking…";
+    this.label = t("common.thinking");
     this.pet = "";
     this.max = 180;
     this.stoppable = true;

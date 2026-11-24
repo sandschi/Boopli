@@ -182,7 +182,7 @@ export class BoopliHome extends LitElement {
       await homeSave(this.hass, this._draft);
       this._justSaved = true;
       this._base = structuredClone(this._draft);
-      this._message = "Saved.";
+      this._message = t("common.saved");
       return true;
     } catch (err) {
       this._error = errorMessage(err);
@@ -542,13 +542,13 @@ export class BoopliHome extends LitElement {
     const room = this._room(iv.roomId);
     return html`<section class="card interview">
       <div class="top">
-        <h2>${room?.name ?? "Room"}: let me ask</h2>
+        <h2>${t("home.room_let_me_ask", { room: room?.name ?? t("home.room") })}</h2>
         <button type="button" class="link" @click=${() => ((this._run += 1), (this._iv = null))}>${t("common.cancel")}</button>
       </div>
       ${this._error ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       ${iv.phase === "working"
         ? html`<boopli-wait
-            .label=${iv.via === "claude" ? t("common.asking_claude_this_takes_a_little") : iv.answers.length ? t("home.writing_the_notes") : "Thinking…"}
+            .label=${iv.via === "claude" ? t("common.asking_claude_this_takes_a_little") : iv.answers.length ? t("home.writing_the_notes") : t("common.thinking")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
             .max=${waitSeconds(this.snapshot, iv.via)}
             @stop-waiting=${() => this._stopWaiting()}
@@ -557,8 +557,7 @@ export class BoopliHome extends LitElement {
       ${iv.phase === "questions"
         ? html`
             <p class="muted small">
-              ${iv.round > 1 ? "A few more things." : "A few quick questions about this room."} Tap what fits, or write as
-              much as you like. You can skip any question.
+              ${iv.round > 1 ? t("home.a_few_more_things") : t("home.a_few_quick_questions_about_this")} ${t("common.tap_what_fits")}
             </p>
             ${iv.questions.map((q, i) => this._renderQuestion(q, i, iv))}
             <div class="question">
@@ -589,9 +588,7 @@ export class BoopliHome extends LitElement {
                 : iv.source === "photos"
                   ? t("home.this_is_what_the_ai_saw")
                   : t("home.this_is_what_i_would_write")}
-              Change anything that is wrong.
-              ${room?.notes ? html`<b>${t("home.it_replaces_the_notes_you_have")}</b>` : nothing}
-              Nothing is saved until you press Save afterwards.
+              ${t("home.change_anything_that_is_wrong")} ${room?.notes ? html`<b>${t("home.it_replaces_the_notes_you_have")}</b>` : nothing} ${t("home.nothing_is_saved_until_you_press")}
             </p>
             <textarea
               rows="8"
@@ -623,7 +620,7 @@ export class BoopliHome extends LitElement {
     const full = tool.photos.length >= MAX_PHOTOS;
     return html`<section class="card interview">
       <div class="top">
-        <h2>${room?.name ?? "Room"}: describe it from photos</h2>
+        <h2>${t("home.room_describe_it_from_photos", { room: room?.name ?? t("home.room") })}</h2>
         <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>${t("common.cancel")}</button>
       </div>
       <p class="muted">
@@ -641,11 +638,11 @@ export class BoopliHome extends LitElement {
             <div class="thumbs">
               ${tool.photos.map(
                 (src, i) => html`<div class="thumb">
-                  <img src=${src} alt="Photo ${i + 1}" />
+                  <img src=${src} alt=${t("breakdown.photo", { n: i + 1 })} />
                   <button
                     type="button"
                     class="x"
-                    aria-label="Remove photo ${i + 1}"
+                    aria-label=${t("breakdown.remove_photo", { n: i + 1 })}
                     @click=${() => this._patchTool({ photos: tool.photos.filter((_, k) => k !== i) })}
                   >
                     ×
@@ -655,7 +652,7 @@ export class BoopliHome extends LitElement {
             </div>
             <div class="actions">
               <label class="filebtn big ${full || tool.working ? "off" : ""}">
-                ${tool.working ? "Preparing…" : tool.photos.length ? t("common.add_another_photo") : t("common.take_or_pick_photos")}
+                ${tool.working ? t("breakdown.preparing") : tool.photos.length ? t("common.add_another_photo") : t("common.take_or_pick_photos")}
                 <input
                   type="file"
                   accept="image/*"
@@ -698,7 +695,7 @@ export class BoopliHome extends LitElement {
     const whole = !tool.roomId;
     return html`<section class="card interview">
       <div class="top">
-        <h2>${whole ? t("home.my_whole_home") : room?.name ?? "Room"}: talk it out in your own AI chat</h2>
+        <h2>${t("home.room_talk_it_out_in_your_own_ai_chat", { room: whole ? t("home.my_whole_home") : room?.name ?? t("home.room") })}</h2>
         <button type="button" class="link" @click=${() => (this._tool = null)}>${t("common.cancel")}</button>
       </div>
       <p class="muted">
@@ -707,7 +704,7 @@ export class BoopliHome extends LitElement {
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       <ol class="stepslist">
         <li>
-          <b>${t("home.copy_this")}</b> and paste it into your chat.
+          ${rich("home.copy_this_and_paste_it")}
           ${this._hasNotes(tool.roomId)
             ? html`<label class="inline">
                 <input
@@ -719,7 +716,7 @@ export class BoopliHome extends LitElement {
                     void this._loadPrompt();
                   }}
                 />
-                Include what I have written so far
+                ${t("home.include_what_i_have_written_so")}
               </label>`
             : nothing}
           <textarea id="promptbox" class="promptbox" rows="7" readonly .value=${tool.prompt}></textarea>
@@ -733,7 +730,7 @@ export class BoopliHome extends LitElement {
           ${rich("home.with_the_chat_when_you_say", { t: t("home.talk_it_through") })}
         </li>
         <li>
-          <b>${t("home.copy_the_notes")}</b> it gives back and paste them here.
+          ${rich("home.copy_the_notes_it_gives_back")}
           <textarea
             class="pastebox"
             rows="6"
@@ -744,7 +741,7 @@ export class BoopliHome extends LitElement {
           ></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!tool.pasted.trim() || tool.working} @click=${() => this._readPasted()}>
-              ${tool.working ? "Reading…" : t("home.read_the_notes")}
+              ${tool.working ? t("home.reading") : t("home.read_the_notes")}
             </button>
           </div>
         </li>
@@ -774,7 +771,7 @@ export class BoopliHome extends LitElement {
           <textarea
             class="notes"
             rows="5"
-            aria-label="Notes for ${item.name}"
+            aria-label=${t("home.notes_for", { name: item.name })}
             .value=${item.notes}
             @input=${(e: Event) => this._patchFlat(i, { notes: (e.target as HTMLTextAreaElement).value })}
           ></textarea>
@@ -782,7 +779,7 @@ export class BoopliHome extends LitElement {
       })}
       <div class="actions">
         <button class="primary big" ?disabled=${used === 0} @click=${() => this._applyFlat()}>
-          Use ${used} ${used === 1 ? "room" : "rooms"}
+          ${t("home.use_rooms", { count: used })}
         </button>
         <button class="big" @click=${() => (this._tool = null)}>${t("home.throw_away")}</button>
       </div>
@@ -833,7 +830,7 @@ export class BoopliHome extends LitElement {
           ${icon("chat-outline")} ${t("home.in_my_own_chat")}
         </button>
         <span class="spacer"></span>
-        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? "Hide" : "Delete"}</button>
+        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(room)}>${room.area_id ? t("home.hide") : "Delete"}</button>
       </div>
     </section>`;
   }
@@ -899,7 +896,7 @@ export class BoopliHome extends LitElement {
       </div>
       ${hidden.length
         ? html`<details class="hiddenrooms" ?open=${this._showHidden} @toggle=${(e: Event) => (this._showHidden = (e.target as HTMLDetailsElement).open)}>
-            <summary>${hidden.length} hidden ${hidden.length === 1 ? "room" : "rooms"}</summary>
+            <summary>${t("home.hidden_rooms", { count: hidden.length })}</summary>
             ${hidden.map(
               (r) => html`<div class="hiddenrow">
                 <span>${r.name}</span>

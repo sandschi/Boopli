@@ -47,44 +47,44 @@ interface AreaDef {
   keys: (keyof Settings)[]; // the settings that belong to it (to see what has unsaved changes)
 }
 
-const AREAS: Record<Area, AreaDef> = {
-  phone: { icon: "cellphone", title: "Phone", wizard: "phone", keys: ["phones"] },
-  lights: { icon: "lightbulb-outline", title: "Reminder lights", wizard: "lights", keys: ["lights"] },
-  speakers: { icon: "volume-high", title: "Speakers", wizard: "speakers", keys: ["speakers", "speech_template", "sounds"] },
-  alarms: { icon: "bell-ring-outline", title: "Alarm devices", wizard: "alarms", keys: ["alarm_devices"] },
-  quiet: { icon: "weather-night", title: "Quiet hours", wizard: "quiet", keys: ["quiet_hours"] },
+const AREAS = (): Record<Area, AreaDef> => ({
+  phone: { icon: "cellphone", title: t("settings.phone"), wizard: "phone", keys: ["phones"] },
+  lights: { icon: "lightbulb-outline", title: t("settings.reminder_lights"), wizard: "lights", keys: ["lights"] },
+  speakers: { icon: "volume-high", title: t("speakers.speakers"), wizard: "speakers", keys: ["speakers", "speech_template", "sounds"] },
+  alarms: { icon: "bell-ring-outline", title: t("speakers.alarm_devices"), wizard: "alarms", keys: ["alarm_devices"] },
+  quiet: { icon: "weather-night", title: t("settings.quiet_hours"), wizard: "quiet", keys: ["quiet_hours"] },
   timing: {
     icon: "alarm",
-    title: "Snooze and timing",
+    title: t("settings.snooze_and_timing"),
     wizard: "nudging",
     keys: ["snooze_minutes", "question_wait_minutes", "check_in_minutes"],
   },
-  ladders: { icon: "stairs", title: "Nudge it your way", wizard: "ladders", keys: ["ladders", "default_style"] },
-  presence: { icon: "map-marker-outline", title: "Where you are", wizard: "presence", keys: ["presence_entity"] },
-  pet: { icon: "paw", title: "Your pet and accent colour", wizard: "pet", keys: ["pet_name", "pet_kind", "accent"] },
-  wall: { icon: "monitor-dashboard", title: "Wall board", wizard: "wall", keys: ["boards"] },
+  ladders: { icon: "stairs", title: t("common.nudge_it_your_way"), wizard: "ladders", keys: ["ladders", "default_style"] },
+  presence: { icon: "map-marker-outline", title: t("common.where_you_are"), wizard: "presence", keys: ["presence_entity"] },
+  pet: { icon: "paw", title: t("settings.your_pet_and_accent_colour"), wizard: "pet", keys: ["pet_name", "pet_kind", "accent"] },
+  wall: { icon: "monitor-dashboard", title: t("common.wall_board"), wizard: "wall", keys: ["boards"] },
   ai: { icon: "robot-outline", title: "AI help", wizard: "ai", keys: ["ai"] },
-  backup: { icon: "content-save-outline", title: "Backup", keys: [] },
-};
+  backup: { icon: "content-save-outline", title: t("backup.backup"), keys: [] },
+});
 
 /** The groups on the page, and the cards in each. */
-const GROUPS: { title: string; areas: Area[] }[] = [
-  { title: "Devices", areas: ["phone", "lights", "speakers", "alarms"] },
-  { title: "Timing", areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: "Extras", areas: ["pet", "wall", "ai", "backup"] },
+const GROUPS = (): { title: string; areas: Area[] }[] => [
+  { title: t("settings.devices"), areas: ["phone", "lights", "speakers", "alarms"] },
+  { title: t("settings.timing"), areas: ["quiet", "timing", "ladders", "presence"] },
+  { title: t("settings.extras"), areas: ["pet", "wall", "ai", "backup"] },
 ];
-const AREA_ORDER: Area[] = GROUPS.flatMap((g) => g.areas);
+const AREA_ORDER: Area[] = GROUPS().flatMap((g) => g.areas);
 
-const LEVELS: { value: PhoneLevel; label: string }[] = [
-  { value: "normal", label: "Normal notification" },
-  { value: "high", label: "High priority (pops up)" },
-  { value: "alarm", label: "Alarm volume" },
-  { value: "alarm_max", label: "Max volume (not on every phone)" },
+const LEVELS = (): { value: PhoneLevel; label: string }[] => [
+  { value: "normal", label: t("common.normal_notification") },
+  { value: "high", label: t("common.high_priority_pops_up") },
+  { value: "alarm", label: t("common.alarm_volume") },
+  { value: "alarm_max", label: t("common.max_volume_not_on_every_phone") },
 ];
 
-const LIGHT_MODES: { value: LightMode; label: string }[] = [
-  { value: "blink", label: "Blink" },
-  { value: "indicator", label: "Indicator lamp (on until done)" },
+const LIGHT_MODES = (): { value: LightMode; label: string }[] => [
+  { value: "blink", label: t("rung.blink") },
+  { value: "indicator", label: t("settings.indicator_lamp_on_until_done") },
 ];
 
 const DEFAULT_DAY: QuietDay = { start: "07:00", stop: "22:00" };
@@ -228,7 +228,7 @@ export class BoopliSettings extends LitElement {
       await saveSettings(this.hass, sent);
       this._justSaved = true;
       this._base = sent;
-      this._message = "Saved.";
+      this._message = t("common.saved");
       return true;
     } catch (err) {
       this._error = errorMessage(err);
@@ -315,7 +315,7 @@ export class BoopliSettings extends LitElement {
   private async _testPhone(service: string): Promise<void> {
     if (!this.hass || !this._draft) return;
     const level = this._draft.phones.find((p) => p.service === service)?.level ?? "normal";
-    this._note(`phone:${service}`, "Sending…");
+    this._note(`phone:${service}`, t("common.sending"));
     try {
       const result = await testPhone(this.hass, { service, level, start_at: 1 });
       this._note(`phone:${service}`, result.note);
@@ -383,7 +383,7 @@ export class BoopliSettings extends LitElement {
 
   private async _testLight(light: LightCfg): Promise<void> {
     if (!this.hass) return;
-    this._note(`light:${light.entity_id}`, "Testing…");
+    this._note(`light:${light.entity_id}`, t("common.testing"));
     try {
       const result = await testLight(this.hass, light);
       this._note(`light:${light.entity_id}`, result.note);
@@ -460,7 +460,7 @@ export class BoopliSettings extends LitElement {
                     @change=${(e: Event) =>
                       this._setPhoneLevel(service, (e.target as HTMLSelectElement).value as PhoneLevel)}
                   >
-                    ${LEVELS.map(
+                    ${LEVELS().map(
                       (l) => html`<option value=${l.value} ?selected=${l.value === (cfg?.level ?? "normal")}>${l.label}</option>`
                     )}
                   </select>
@@ -497,7 +497,7 @@ export class BoopliSettings extends LitElement {
                 @change=${(e: Event) =>
                   this._setLightMode(id, (e.target as HTMLSelectElement).value as LightMode)}
               >
-                ${LIGHT_MODES.map(
+                ${LIGHT_MODES().map(
                   (m) => html`<option value=${m.value} ?selected=${m.value === light.mode}>${m.label}</option>`
                 )}
               </select>
@@ -518,7 +518,7 @@ export class BoopliSettings extends LitElement {
               ? html`
                   <div class="blinkopts">
                     <label>
-                      Blink length (ms)
+                      ${t("wizard.blink_length_ms")}
                       <input
                         type="number"
                         min="100"
@@ -530,7 +530,7 @@ export class BoopliSettings extends LitElement {
                       />
                     </label>
                     <label>
-                      Blinks
+                      ${t("settings.blinks")}
                       <input
                         type="number"
                         min="1"
@@ -541,7 +541,7 @@ export class BoopliSettings extends LitElement {
                       />
                     </label>
                     <label>
-                      Pause between (ms)
+                      ${t("settings.pause_between_ms")}
                       <input
                         type="number"
                         min="0"
@@ -592,7 +592,7 @@ export class BoopliSettings extends LitElement {
             .checked=${qh.enabled}
             @change=${(e: Event) => this._setQuiet((e.target as HTMLInputElement).checked)}
           />
-          Hold nudges outside these hours
+          ${t("settings.hold_nudges_outside_these_hours")}
         </label>
         ${qh.enabled
           ? html`
@@ -608,21 +608,21 @@ export class BoopliSettings extends LitElement {
                         @change=${(e: Event) =>
                           this._setDay(i, (e.target as HTMLInputElement).checked ? null : { ...DEFAULT_DAY })}
                       />
-                      No limit
+                      ${t("common.no_limit")}
                     </label>
                     ${day
                       ? html`
                           <span class="muted small">${t("common.from")}</span>
                           <input
                             type="time"
-                            aria-label="${name} nudges start"
+                            aria-label=${t("settings.nudges_start", { name })}
                             .value=${day.start}
                             @input=${(e: Event) => this._setDay(i, { ...day, start: (e.target as HTMLInputElement).value })}
                           />
                           <span class="muted small">${t("common.until")}</span>
                           <input
                             type="time"
-                            aria-label="${name} nudges stop"
+                            aria-label=${t("settings.nudges_stop", { name })}
                             .value=${day.stop}
                             @input=${(e: Event) => this._setDay(i, { ...day, stop: (e.target as HTMLInputElement).value })}
                           />
@@ -654,8 +654,7 @@ export class BoopliSettings extends LitElement {
             )}
           </select>
           <div class="muted small">
-            At home Boopli uses everything above. Away, it only uses your phone,
-            and only for chores marked "anywhere".
+            ${t("settings.presence_note")}
             ${this.snapshot ? (this.snapshot.is_home ? t("settings.right_now_home") : t("settings.right_now_away")) : nothing}
           </div>
         </div>
@@ -707,7 +706,7 @@ export class BoopliSettings extends LitElement {
         >
           ${t("settings.pets_colour")}
         </button>
-        ${SWATCHES.map(
+        ${SWATCHES().map(
           (s) => html`<button
             type="button"
             class="acc dot ${picked === s.hex ? "on" : ""}"
@@ -719,7 +718,7 @@ export class BoopliSettings extends LitElement {
           ></button>`
         )}
         <label class="acc custom" title=${t("settings.pick_any_colour")}>
-          Custom
+          ${t("settings.custom")}
           <input
             type="color"
             .value=${picked || own}
@@ -841,11 +840,11 @@ export class BoopliSettings extends LitElement {
               .checked=${ai.enabled}
               @change=${(e: Event) => this._setAi({ enabled: (e.target as HTMLInputElement).checked })}
             />
-            Switch AI help on
+            ${t("common.switch_ai_help_on")}
           </label>
           <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>${t("settings.test_the_agent")}</button>
           <button type="button" @click=${() => (this._claudeOpen = true)}>
-            ${icon("creation")} Ask Claude (extra)${ai.claude_enabled ? " · on" : ""}
+            ${icon("creation")} ${t("settings.ask_claude_extra")}${ai.claude_enabled ? t("settings.claude_on_suffix") : ""}
           </button>
         </div>
         ${changed ? html`<div class="muted small">${t("settings.save_first_to_test")}</div>` : nothing}
@@ -911,7 +910,7 @@ export class BoopliSettings extends LitElement {
           <p class="muted small">
             ${t("settings.these_are_the_instructions_given_to")}
           </p>
-          ${prompt("questions_prompt", "Questions prompt")} ${prompt("steps_prompt", "Steps prompt")}
+          ${prompt("questions_prompt", t("settings.questions_prompt"))} ${prompt("steps_prompt", t("settings.steps_prompt"))}
           <h3>${t("settings.prompts_you_copy_into_your_own")}</h3>
           <p class="muted small">
             ${t("settings.these_are_the_texts_the_in")}
@@ -982,7 +981,7 @@ export class BoopliSettings extends LitElement {
   }
 
   private _card(area: Area, d: Settings) {
-    const a = AREAS[area];
+    const a = AREAS()[area];
     const changed = this._changed(...a.keys);
     return html`<section id="card-${area}" class="card area ${area === "pet" ? "accented" : ""} ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
       <div class="card-head">
@@ -995,19 +994,19 @@ export class BoopliSettings extends LitElement {
       <div class="summary">
         ${this._summary(area, d).map(
           (line) =>
-            html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith("Off") ? "muted" : ""}>${area === "pet" && line.startsWith("Accent colour") ? html`<span class="accent-dot"></span>` : nothing}${line}</div>`
+            html`<div class=${line.startsWith("No ") || line.startsWith("Not ") || line.startsWith(t("rung.off")) ? "muted" : ""}>${area === "pet" && line.startsWith(t("settings.accent_colour")) ? html`<span class="accent-dot"></span>` : nothing}${line}</div>`
         )}
       </div>
       <div class="buttons">
         ${area === "backup"
           ? html`<button type="button" class="textlink" aria-label=${t("common.export_a_backup")} @click=${() => (this._backup = "export")}>${t("settings.export")}</button>
               <button type="button" class="textlink quiet" aria-label=${t("common.import_a_backup")} ?disabled=${this._isDirty()} @click=${() => (this._backup = "import")}>${t("settings.import")}</button>`
-          : html`<button type="button" class="textlink" aria-label="Guide me: ${a.title}" @click=${() => this._openWizard(a.wizard)}>${t("settings.guide_me")}</button>`}
+          : html`<button type="button" class="textlink" aria-label=${t("settings.guide_me_2", { title: a.title })} @click=${() => this._openWizard(a.wizard)}>${t("settings.guide_me")}</button>`}
         ${area === "backup"
           ? nothing
           : area === "wall"
           ? html`<button type="button" class="textlink quiet" aria-label=${t("settings.edit_on_the_wall")} @click=${() => this._editWall()}>${t("settings.edit_on_the_wall")}</button>`
-          : html`<button type="button" class="textlink quiet" aria-label="Advanced: ${a.title}" ?disabled=${this._busy} @click=${() => this._openArea(area)}>${t("settings.advanced")}</button>`}
+          : html`<button type="button" class="textlink quiet" aria-label=${t("settings.advanced_2", { title: a.title })} ?disabled=${this._busy} @click=${() => this._openArea(area)}>${t("settings.advanced")}</button>`}
       </div>
       ${area === "backup" && this._isDirty() ? html`<p class="muted small">${t("settings.save_or_discard_your_unsaved_changes")}</p>` : nothing}
     </section>`;
@@ -1083,7 +1082,7 @@ export class BoopliSettings extends LitElement {
   }
 
   private _renderModal(d: Settings) {
-    const area = this._modal ? AREAS[this._modal] : null;
+    const area = this._modal ? AREAS()[this._modal] : null;
     return html`<dialog
       aria-labelledby="win-title"
       @cancel=${(e: Event) => {
@@ -1130,13 +1129,13 @@ export class BoopliSettings extends LitElement {
 
   private _renderSaveBar() {
     if (!this._isDirty()) return nothing;
-    const where = AREA_ORDER.filter((a) => this._changed(...AREAS[a].keys));
+    const where = AREA_ORDER.filter((a) => this._changed(...AREAS()[a].keys));
     return html`${this._error && !this._modal ? html`<div class="error" role="alert">${this._error}</div>` : nothing}
       <div class="savebar" role="status">
         <div class="where">
-          <b aria-hidden="true">●</b> Unsaved changes in:
+          <b aria-hidden="true">●</b> ${t("settings.unsaved_changes_in")}
           ${where.map(
-            (a) => html`<button type="button" class="chip where-chip" @click=${() => this._show(a)}>${AREAS[a].title}</button>`
+            (a) => html`<button type="button" class="chip where-chip" @click=${() => this._show(a)}>${AREAS()[a].title}</button>`
           )}
         </div>
         <span class="spacer"></span>
@@ -1152,12 +1151,12 @@ export class BoopliSettings extends LitElement {
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${GROUPS.map(
+      ${GROUPS().map(
         (g) => html`<h2 class="group">${g.title}</h2>
           <div class="cards">${g.areas.map((a) => this._card(a, d))}</div>`
       )}
       <p class="muted small">
-        Want to do all of it again from the start?
+        ${t("settings.want_to_do_all_of_it")}
         <button type="button" class="chip" @click=${() => this._openWizard("first")}>${t("settings.run_the_first_setup_again")}</button>
       </p>
       ${this._renderModal(d)} ${this._renderSaveBar()}

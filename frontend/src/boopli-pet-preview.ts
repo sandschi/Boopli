@@ -6,17 +6,17 @@ import { sharedStyles } from "./styles";
 import type { Mood } from "./types";
 import { t } from "./i18n";
 
-const MOMENTS: { value: Exclude<Moment, "">; label: string }[] = [
-  { value: "levelup", label: "Level up" },
-  { value: "wake", label: "Waking up" },
-  { value: "tap", label: "Tap" },
-  { value: "done", label: "Step done" },
+const MOMENTS = (): { value: Exclude<Moment, "">; label: string }[] => [
+  { value: "levelup", label: t("pet_preview.level_up") },
+  { value: "wake", label: t("pet_preview.waking_up") },
+  { value: "tap", label: t("pet_preview.tap") },
+  { value: "done", label: t("pet_preview.step_done") },
 ];
 
-const ACTIVITIES: { value: Activity; label: string }[] = [
-  { value: "", label: "Nothing" },
-  { value: "housework", label: "Housework" },
-  { value: "typing", label: "Typing" },
+const ACTIVITIES = (): { value: Activity; label: string }[] => [
+  { value: "", label: t("pet_preview.nothing") },
+  { value: "housework", label: t("pet_preview.housework") },
+  { value: "typing", label: t("pet_preview.typing") },
 ];
 
 /**
@@ -113,18 +113,18 @@ export class BoopliPetPreview extends LitElement {
           <div class="group">
             <div class="label">${t("pet_preview.busy_with")}</div>
             <div class="chips">
-              ${ACTIVITIES.map((a) => this._chip(a.label, this._activity === a.value, () => (this._activity = a.value)))}
+              ${ACTIVITIES().map((a) => this._chip(a.label, this._activity === a.value, () => (this._activity = a.value)))}
             </div>
           </div>
           <div class="group">
             <div class="label">${t("pet_preview.moments_they_play_once")}</div>
             <div class="chips">
-              ${MOMENTS.map((m) => html`<button type="button" class="chip" @click=${() => this._play(m.value)}>${m.label}</button>`)}
+              ${MOMENTS().map((m) => html`<button type="button" class="chip" @click=${() => this._play(m.value)}>${m.label}</button>`)}
             </div>
           </div>
           <div class="group row">
             <label class="inline">
-              Level ${this._level}
+              ${t("pet_preview.level_n", { n: this._level })}
               <input
                 type="range"
                 min="1"
@@ -137,7 +137,7 @@ export class BoopliPetPreview extends LitElement {
             </label>
             <label class="inline">
               <input type="checkbox" .checked=${this._away} @change=${(e: Event) => (this._away = (e.target as HTMLInputElement).checked)} />
-              Away mode (suitcase)
+              ${t("pet_preview.away_mode_suitcase")}
             </label>
           </div>
           <p class="muted small">${t("pet_preview.the_room_grows_with_the_level")}</p>

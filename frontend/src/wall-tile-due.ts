@@ -46,7 +46,7 @@ export class WallTileDue extends WallTile {
           ${t("common.done")}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => (working ? notOnIt : onIt)(this.hass!, run.id, step.step_id))}>
-          ${working ? "Not yet" : "On it"}
+          ${working ? t("wall_tile_due.not_yet") : "On it"}
         </button>
         <button ?disabled=${this._busy} @click=${() => this._act(() => snoozeStep(this.hass!, run.id, step.step_id))}>
           ${t("wizard.snooze")}

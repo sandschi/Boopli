@@ -84,10 +84,17 @@ const ALLOWED_TAG = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
  * escaped, and any other tag in a translation is shown as text, so a translation cannot
  * add markup.
  */
-export function rich(key: string, params?: Params): TemplateResult {
-  const safe = params
-    ? Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === "number" ? v : escapeHtml(String(v))]))
-    : undefined;
+export function rich(key: string, params?: Record<string, string | number | TemplateResult>): TemplateResult {
+  const safe: Params = {};
+  const slots: Record<string, TemplateResult> = {};
+  for (const [name, value] of Object.entries(params ?? {})) {
+    if (typeof value === "number") safe[name] = value;
+    else if (typeof value === "string") safe[name] = escapeHtml(value);
+    else slots[name] = value; // a link or another template: it goes in where {name} stands
+  }
   const text = t(key, safe).replace(/<[^>]*>/g, (tag) => (ALLOWED_TAG.test(tag) ? tag : escapeHtml(tag)));
-  return html`${unsafeHTML(text)}`;
+  if (Object.keys(slots).length === 0) return html`${unsafeHTML(text)}`;
+  // t() leaves {name} places it was not given, so the templates can be put in now
+  const parts = text.split(/\{(\w+)\}/);
+  return html`${parts.map((part, i) => (i % 2 ? (slots[part] ?? `{${part}}`) : unsafeHTML(part)))}`;
 }

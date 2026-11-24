@@ -13,8 +13,8 @@ const GAP_MIN = 1;
 const GAP_MAX = 720;
 const NAME_MAX = 40;
 
-const BUILT_IN: { value: NudgeStyle; label: string }[] = [
-  { value: "quiet", label: "Quiet (no nudges)" },
+const BUILT_IN = (): { value: NudgeStyle; label: string }[] => [
+  { value: "quiet", label: t("ladders.quiet_no_nudges") },
 ];
 
 function copyRung(r: Rung): Rung {
@@ -214,25 +214,25 @@ export class BoopliLadders extends LitElement {
         ${index === 0 && !(l.rungs.length === 1 && l.repeat_last)
           ? html`<span class="muted small">${t("ladders.right_away")}</span>`
           : html`<label class="gap">
-              ${index === 0 ? t("ladders.right_away_then_repeats_every") : "Wait"}
+              ${index === 0 ? t("ladders.right_away_then_repeats_every") : t("rung.wait")}
               <input
                 type="number"
                 min=${GAP_MIN}
                 max=${GAP_MAX}
                 .value=${String(r.gap)}
-                aria-label="Minutes before nudge ${index + 1}"
+                aria-label=${t("ladders.minutes_before_nudge", { n: index + 1 })}
                 @change=${(e: Event) => this._setGap(l.id, index, e.target as HTMLInputElement)}
               />
-              min
+              ${t("chore_editor.min")}
             </label>`}
         <span class="spacer"></span>
-        <button class="chip" title=${t("ladders.move_up")} aria-label="Move nudge ${index + 1} up" ?disabled=${index === 0}
+        <button class="chip" title=${t("ladders.move_up")} aria-label=${t("ladders.move_nudge_up", { n: index + 1 })} ?disabled=${index === 0}
           @click=${() => this._moveRung(l.id, index, -1)}>↑</button>
-        <button class="chip" title=${t("ladders.move_down")} aria-label="Move nudge ${index + 1} down" ?disabled=${index === l.rungs.length - 1}
+        <button class="chip" title=${t("ladders.move_down")} aria-label=${t("ladders.move_nudge_down", { n: index + 1 })} ?disabled=${index === l.rungs.length - 1}
           @click=${() => this._moveRung(l.id, index, 1)}>↓</button>
-        <button class="chip" title=${t("ladders.copy_this_nudge")} aria-label="Copy nudge ${index + 1}" ?disabled=${l.rungs.length >= MAX_NUDGES}
+        <button class="chip" title=${t("ladders.copy_this_nudge")} aria-label=${t("ladders.copy_nudge", { n: index + 1 })} ?disabled=${l.rungs.length >= MAX_NUDGES}
           @click=${() => this._duplicateRung(l.id, index)}>⧉</button>
-        <button class="chip" title=${t("ladders.remove_this_nudge")} aria-label="Remove nudge ${index + 1}" ?disabled=${!many}
+        <button class="chip" title=${t("ladders.remove_this_nudge")} aria-label=${t("ladders.remove_nudge", { n: index + 1 })} ?disabled=${!many}
           @click=${() => this._removeRung(l.id, index)}>✕</button>
       </div>
       <boopli-rung
@@ -294,7 +294,7 @@ export class BoopliLadders extends LitElement {
           id="default-style"
           @change=${(e: Event) => this._patch(ladders, { default_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
         >
-          ${BUILT_IN.map(
+          ${BUILT_IN().map(
             (o) => html`<option value=${o.value} ?selected=${o.value === s.default_style}>${o.label}</option>`
           )}
           ${ladders.map(
@@ -317,7 +317,7 @@ export class BoopliLadders extends LitElement {
                 <span class="muted small">${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"}</span>
                 <span class="spacer"></span>
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>
-                  ${open ? "Close" : "Edit"}
+                  ${open ? t("common.close") : t("chores.edit")}
                 </button>
                 ${l.id.startsWith("standard_") ? nothing : html`<button class="chip danger" @click=${() => this._delete(l)}>${t("chore_editor.delete")}</button>`}
               </div>

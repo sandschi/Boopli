@@ -286,7 +286,7 @@ export class BoopliTriggers extends LitElement {
             @change=${(e: Event) =>
               this._patch(index, { mode: (e.target as HTMLInputElement).checked ? "is" : "happens" })}
           />
-          Also count it if it is already true when the step starts
+          ${t("triggers.also_count_it_if_it_is")}
         </label>
         <div class="muted small">
           ${t("triggers.off_the_usual_it_has_to")}
@@ -368,7 +368,7 @@ export class BoopliTriggers extends LitElement {
 
   private _title(trig: Trigger): string {
     if (trig.kind === "tag") return t("triggers.an_nfc_tag_is_scanned");
-    if (trig.kind === "button") return "A button is pressed";
+    if (trig.kind === "button") return t("triggers.a_button_is_pressed");
     return t("triggers.an_entity_changes_2");
   }
 
