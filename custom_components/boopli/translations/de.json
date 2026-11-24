@@ -1,0 +1,116 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Boopli einrichten",
+        "description": "Boopli begleitet dich bei deinen Aufgaben. Du findest Boopli in der Seitenleiste. Alles bleibt in deinem Home Assistant. Boopli sendet nichts nach außen."
+      }
+    }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Nur zu Hause",
+        "anywhere": "Überall"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Aufgabe hinzufügen",
+      "description": "Legt eine einmalige Aufgabe an und startet sie sofort. Sobald sie erledigt ist, verschwindet sie.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Was möchtest du erledigen?"
+        },
+        "steps": {
+          "name": "Schritte",
+          "description": "Du kannst die Aufgabe in kleine Schritte aufteilen. Wenn du keine Schritte angibst, gibt es einen Schritt mit dem Titel der Aufgabe."
+        },
+        "where": {
+          "name": "Wo?",
+          "description": "Gib an, ob die Aufgabe nur zu Hause oder überall sinnvoll ist."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Aufgabe starten",
+      "description": "Startet eine Aufgabe sofort, zum Beispiel „Wäsche“ mit der Einstellung „Bei Bedarf (ich starte selbst)“.",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Schritt erledigen",
+      "description": "Markiert den Schritt als erledigt, der bei der Aufgabe gerade auf dich wartet.",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "snooze_step": {
+      "name": "Schritt verschieben",
+      "description": "Verschiebt den nächsten Stups für den Schritt, der gerade auf dich wartet. Der Schritt bleibt offen.",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "step_on_it": {
+      "name": "Schritt: Bin dran",
+      "description": "Damit sagst du Boopli, dass du am aktuellen Schritt arbeitest. Boopli lässt dich in Ruhe arbeiten. Nach der eingestellten Zeit fragt Boopli einmal „Noch dran?“",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Schritt: Bin nicht dran",
+      "description": "Nimmt „Bin dran“ zurück. Boopli stupst dich für den Schritt wieder wie gewohnt an.",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Aufgabe löschen",
+      "description": "Löscht die Aufgabe und alles, was dafür gerade läuft.",
+      "fields": {
+        "chore": {
+          "name": "Aufgabe",
+          "description": "Der Name oder die ID der Aufgabe."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Abwesenheitsmodus einstellen",
+      "description": "Boopli macht Pause. Geplante Aufgaben starten nur, wenn „Läuft weiter, wenn ich weg bin (zum Beispiel für Tabletten)“ eingeschaltet ist. Nur für Aufgaben mit dieser Einstellung bekommst du einen Stups. Dein Haustier bleibt, wie es ist.",
+      "fields": {
+        "start": {
+          "name": "Ab",
+          "description": "Datum und Uhrzeit für den Start in deiner Zeitzone, zum Beispiel 2026-11-28 08:00. Lass das Feld leer, wenn du jetzt starten möchtest."
+        },
+        "until": {
+          "name": "Bis",
+          "description": "Datum und Uhrzeit in deiner Zeitzone, zu denen der Abwesenheitsmodus von selbst endet. Wenn du ihn selbst ausschalten möchtest, lass das Feld leer."
+        }
+      }
+    },
+    "end_away": {
+      "name": "Abwesenheitsmodus beenden",
+      "description": "Mit „Bin wieder da“ macht Boopli weiter. Für die pausierten Aufgaben bekommst du wieder nacheinander einen Stups."
+    }
+  }
+}
