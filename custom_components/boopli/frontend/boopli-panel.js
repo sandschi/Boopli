@@ -835,11 +835,13 @@ var T = o`
   .dim {
     opacity: 0.6;
   }
+  /* No boxes: a thin line on top and space around. */
   .card {
-    background: var(--card-background-color, var(--primary-background-color));
-    border: 1px solid var(--divider-color);
-    border-radius: 14px;
-    padding: 16px;
+    background: none;
+    border: 0;
+    border-top: 2px solid var(--divider-color);
+    border-radius: 0;
+    padding: 14px 0 0;
   }
   button {
     font: inherit;
@@ -1030,7 +1032,7 @@ var T = o`
       .text {
         flex: 1 1 200px;
         min-width: 0;
-        font-size: 16px;
+        font-size: 18px;
       }
       .yn {
         display: flex;
@@ -3465,7 +3467,7 @@ var K = "#101010", Ir = _`<svg viewBox="0 0 72 48" aria-hidden="true">
         container-type: size;
         border-radius: 14px;
         overflow: hidden;
-        background: color-mix(in srgb, var(--primary-color, #03a9f4) 10%, var(--secondary-background-color, #2a2a2a));
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 10%, var(--secondary-background-color, #2a2a2a));
       }
       .floor {
         position: absolute;
@@ -5076,7 +5078,7 @@ var Ti = class extends S {
 	static {
 		this.styles = [T, o`
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .warn {
         color: var(--warning-color, #b26a00);
@@ -5126,13 +5128,13 @@ var Ti = class extends S {
       .advanced summary {
         cursor: pointer;
         color: var(--secondary-text-color);
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
         margin: 8px 0 4px;
       }
@@ -5264,7 +5266,7 @@ var ki = class extends S {
         min-width: 0;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
       .preview {
         display: block;
@@ -5279,7 +5281,7 @@ var ki = class extends S {
         color: var(--warning-color, #b26a00);
       }
       code {
-        font-size: 13px;
+        font-size: 15px;
       }
     `];
 	}
@@ -5422,7 +5424,7 @@ var Ni = class extends S {
         min-height: 32px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;
@@ -5730,7 +5732,7 @@ var Pi = {
         gap: 4px;
       }
       .rail-title {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -5761,11 +5763,11 @@ var Pi = {
         flex: 0 0 24px;
         border-radius: 50%;
         border: 1px solid var(--divider-color);
-        font-size: 12px;
+        font-size: 14px;
       }
       .past .mark {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
+        border-color: var(--boopli-accent, var(--primary-color));
         color: var(--text-primary-color, #fff);
       }
       .main {
@@ -5795,7 +5797,7 @@ var Pi = {
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         transition: width 0.3s ease;
       }
       h2 {
@@ -5808,13 +5810,13 @@ var Pi = {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 0;
       }
@@ -5841,7 +5843,7 @@ var Pi = {
       button.chip.big {
         min-width: 64px;
         min-height: 48px;
-        font-size: 16px;
+        font-size: 18px;
       }
       input.short {
         width: 90px;
@@ -5958,7 +5960,7 @@ var Vi = class extends S {
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 18px;
+      font-size: 20px;
       color: var(--primary-text-color);
     }
     .dots {
@@ -5976,7 +5978,7 @@ var Vi = class extends S {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       animation: bounce 1s infinite ease-in-out;
     }
     .dots i:nth-child(2) {
@@ -6008,19 +6010,19 @@ var Vi = class extends S {
     .fill {
       height: 100%;
       border-radius: 999px;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       transition: width 0.5s linear;
     }
     .time {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      font-size: 13px;
+      font-size: 15px;
       color: var(--secondary-text-color);
     }
     .hint {
       margin-top: 10px;
-      font-size: 14px;
+      font-size: 16px;
       color: var(--secondary-text-color);
     }
     .link {
@@ -6030,7 +6032,7 @@ var Vi = class extends S {
       color: var(--secondary-text-color);
       text-decoration: underline;
       font: inherit;
-      font-size: 14px;
+      font-size: 16px;
       padding: 8px 0;
       cursor: pointer;
     }
@@ -6252,7 +6254,7 @@ var Wi = [
         <button type="button" class="link" @click=${() => (this._scene = "", this._preview = null)}>Remove it</button>
       </div>`;
 		if (!this._photosOpen) return g`<div class="scene">
-        <button type="button" @click=${() => this._photosOpen = !0}>📷 Add photos of how it looks now (optional)</button>
+        <button type="button" @click=${() => this._photosOpen = !0}>${E("camera-outline")} Add photos of how it looks now (optional)</button>
       </div>`;
 		let e = this._photos.length >= 4;
 		return g`<div class="scene">
@@ -6649,7 +6651,7 @@ var Wi = [
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .link {
         border: 0;
@@ -6679,7 +6681,7 @@ var Wi = [
       button.big {
         min-height: 48px;
         padding: 0 22px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .question {
         padding: 14px 16px;
@@ -6703,7 +6705,7 @@ var Wi = [
       }
       .said {
         margin: 6px 0 12px;
-        font-size: 14px;
+        font-size: 16px;
       }
       .said summary {
         cursor: pointer;
@@ -6717,7 +6719,7 @@ var Wi = [
         align-items: center;
         gap: 14px;
         padding: 28px 4px;
-        font-size: 18px;
+        font-size: 20px;
       }
       .dots {
         display: inline-flex;
@@ -6727,7 +6729,7 @@ var Wi = [
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         animation: bounce 1s infinite ease-in-out;
       }
       .dots i:nth-child(2) {
@@ -6753,11 +6755,11 @@ var Wi = [
       }
       .group {
         margin: 16px 0 6px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       .step {
         display: flex;
@@ -6779,7 +6781,7 @@ var Wi = [
       .only-if select {
         flex: 1;
         min-width: 0;
-        font-size: 13px;
+        font-size: 15px;
       }
       .checks {
         margin: 12px 0;
@@ -6802,7 +6804,7 @@ var Wi = [
         width: 26px;
         text-align: right;
         color: var(--secondary-text-color);
-        font-size: 13px;
+        font-size: 15px;
         flex: 0 0 26px;
       }
       input.title {
@@ -6897,7 +6899,7 @@ var Wi = [
         height: 28px;
         padding: 0;
         border-radius: 50%;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
       }
       .filebtn {
@@ -6930,7 +6932,7 @@ var Wi = [
       .preview pre {
         white-space: pre-wrap;
         font: inherit;
-        font-size: 13px;
+        font-size: 15px;
         line-height: 1.45;
         background: var(--secondary-background-color);
         border: 1px solid var(--divider-color);
@@ -7336,7 +7338,7 @@ var Yi = 8, Xi = [
         </details>
         <details class="auto" ?open=${!!t.image}>
           <summary>
-            📷 Picture…
+            ${E("camera-outline")} Picture…
             ${t.image ? g`<span class="muted small">(set)</span>` : y}
           </summary>
           <boopli-picture
@@ -7499,7 +7501,7 @@ var Yi = 8, Xi = [
         ${e.steps.map((e, t) => this._renderStep(t))}
         <div class="step-buttons">
           <button type="button" @click=${() => this._addStep()}>+ Add a step</button>
-          <button type="button" @click=${() => this._openSuggest()}>✨ Suggest steps with AI</button>
+          <button type="button" @click=${() => this._openSuggest()}>${E("auto-fix")} Suggest steps with AI</button>
         </div>
         </div>
         </div>
@@ -7564,9 +7566,9 @@ var Yi = 8, Xi = [
       .tag {
         padding: 2px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 14px;
         background: var(--secondary-background-color);
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
         white-space: nowrap;
       }
       .sizes {
@@ -7593,7 +7595,7 @@ var Yi = 8, Xi = [
         margin-left: 8px;
         padding: 1px 8px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 500;
         color: #000;
         background: var(--warning-color, #ffa600);
@@ -7626,7 +7628,7 @@ var Yi = 8, Xi = [
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
         margin: 0;
       }
@@ -7635,7 +7637,7 @@ var Yi = 8, Xi = [
         min-height: 0;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .chips {
         display: flex;
@@ -7705,7 +7707,7 @@ var Yi = 8, Xi = [
       }
       details.auto summary {
         cursor: pointer;
-        font-size: 14px;
+        font-size: 16px;
       }
       .custom {
         display: inline-flex;
@@ -8125,11 +8127,12 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 			},
 			_addSpeaker: { state: !0 },
 			_addDevice: { state: !0 },
-			_notes: { state: !0 }
+			_notes: { state: !0 },
+			_open: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this._addSpeaker = "", this._addDevice = "", this._notes = {};
+		super(), this._addSpeaker = "", this._addDevice = "", this._notes = {}, this._open = {};
 	}
 	_patch(e) {
 		this.dispatchEvent(new CustomEvent("settings-patch", {
@@ -8149,6 +8152,12 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 		this._notes = {
 			...this._notes,
 			[e]: t
+		};
+	}
+	_toggle(e) {
+		this._open = {
+			...this._open,
+			[e]: !this._open[e]
 		};
 	}
 	_targets(e, t) {
@@ -8266,200 +8275,165 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 			sounds: (e.sounds ?? []).filter((e) => e.id !== t)
 		}));
 	}
-	_moreSounds(e) {
-		let t = e.entity_id, n = e.sounds ?? [];
-		return g`
-      <div class="level">
-        <strong>More sounds</strong>
-        <span class="muted small">
-          For your ladders (Nudge it your way): as many as you like, each with a name. Not part of the built-in styles.
-        </span>
-        ${n.map((n) => {
-			let r = `speaker:${t}:sound:${n.id}`;
-			return g`
-            <div class="fields">
-              <label class="num wide">
-                Name
-                <input
-                  type="text"
-                  maxlength="30"
-                  .value=${n.name}
-                  @change=${(e) => this._setExtra(t, n.id, { name: e.target.value.trim() })}
-                />
-              </label>
-              <label class="num wide">
-                Sound type
-                <select
-                  .value=${n.kind}
-                  @change=${(e) => this._setExtra(t, n.id, { kind: e.target.value })}
-                >
-                  ${la.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
-                </select>
-              </label>
-              <label class="num wide">
-                ${n.kind === "alexa" ? "Alexa sound id" : "File (for example boopli/fanfare.mp3)"}
-                <input
-                  type="text"
-                  .value=${n.sound}
-                  placeholder=${n.kind === "alexa" ? "amzn_sfx_…" : "boopli/fanfare.mp3"}
-                  @change=${(e) => this._setExtra(t, n.id, { sound: e.target.value.trim() })}
-                />
-              </label>
-              <button @click=${() => this._test(e, `sound:${n.id}`)}>Test</button>
-              <button aria-label="Remove the sound ${n.name}" @click=${() => this._removeExtra(t, n.id)}>✕</button>
-              ${this._notes[r] ? g`<div class="note muted small">${this._notes[r]}</div>` : y}
-            </div>
-          `;
-		})}
-        <div class="row">
-          <button type="button" class="chip" ?disabled=${n.length >= 30} @click=${() => this._addExtra(t)}>+ Add a sound</button>
-        </div>
-      </div>
-    `;
+	_soundSummary(e, t) {
+		return t ? e === "alexa" ? `Alexa sound: ${t.replace(/^amzn_sfx_/, "")}` : `File: ${t}` : "No sound chosen yet";
 	}
-	_startAt(e, t, n = "Starts at nudge #") {
+	_soundFields(e, t, n, r, i) {
 		return g`
-      <label class="num">
-        ${n}
+      <label class="num wide">
+        Sound type
+        <select .value=${e} @change=${(e) => r(e.target.value)}>
+          ${la.map((t) => g`<option value=${t.value} ?selected=${t.value === e}>${t.label}</option>`)}
+        </select>
+      </label>
+      <label class="num wide">
+        ${e === "alexa" ? "Alexa sound id" : `File (for example boopli/${n}.mp3)`}
         <input
-          type="number"
-          min="1"
-          max="20"
-          .value=${String(e)}
-          @change=${(e) => {
-			let n = this._num(e.target.value, 1, 20);
-			n !== void 0 && t(n);
-		}}
+          type="text"
+          .value=${t}
+          placeholder=${e === "alexa" ? "amzn_sfx_…" : `boopli/${n}.mp3`}
+          @change=${(e) => i(e.target.value.trim())}
         />
       </label>
+      ${e === "alexa" ? g`<div class="muted small libhint">
+            Pick an id from the <a href=${sa} target="_blank" rel="noopener noreferrer">Alexa sound library</a>,
+            for example <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
+          </div>` : y}
     `;
 	}
-	_soundRow(e, t) {
-		let n = e[t], r = e.entity_id, i = `speaker:${r}:${t}`, a = t === "alarm", o = a ? "Alarm sound (loud, repeats)" : "Ding (a small sound)";
+	_line(e) {
+		let t = e.enabled !== !1, n = !!this._open[e.key] && t;
 		return g`
-      <div class="level">
-        <label class="inline">
-          <input
-            type="checkbox"
-            .checked=${n.enabled}
-            @change=${(e) => this._setSound(r, t, { enabled: e.target.checked })}
-          />
-          ${o}
-        </label>
-        ${n.enabled ? g`
-              <div class="fields">
-                <label class="num wide">
-                  Sound type
-                  <select
-                    .value=${n.kind}
-                    @change=${(e) => this._setSound(r, t, { kind: e.target.value })}
-                  >
-                    ${la.map((e) => g`<option value=${e.value} ?selected=${e.value === n.kind}>${e.label}</option>`)}
-                  </select>
-                </label>
-                <label class="num wide">
-                  ${n.kind === "alexa" ? "Alexa sound id" : "File (for example boopli/ding.mp3)"}
-                  <input
-                    type="text"
-                    .value=${n.sound}
-                    placeholder=${n.kind === "alexa" ? "amzn_sfx_…" : "boopli/ding.mp3"}
-                    @change=${(e) => this._setSound(r, t, { sound: e.target.value.trim() })}
-                  />
-                </label>
-                ${n.kind === "alexa" ? g`<div class="muted small libhint">
-                      Pick a sound from the
-                      <a href=${sa} target="_blank" rel="noopener noreferrer">Alexa sound library</a>.
-                      The id is <code>amzn_sfx_</code> + the sound's name in lower case with underscores
-                      + a two-digit number, for example "Doorbell Chime (1)" is
-                      <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
-                    </div>` : y}
-                ${this._startAt(n.start_at, (e) => this._setSound(r, t, { start_at: e }))}
-                ${a ? g`
-                      <label class="num">
-                        Rings for (seconds)
-                        <input
-                          type="number"
-                          min="3"
-                          max="600"
-                          .value=${String(n.seconds)}
-                          @change=${(e) => {
-			let n = this._num(e.target.value, 3, 600);
-			n !== void 0 && this._setSound(r, t, { seconds: n });
+      <div class="line ${t ? "" : "off"}">
+        <div class="lmain">
+          ${e.onToggle ? g`<label class="switch">
+                <input type="checkbox" .checked=${!!e.enabled} @change=${(t) => e.onToggle(t.target.checked)} />
+                <span class="ltitle">${e.title}</span>
+              </label>` : g`<span class="ltitle">${e.nameInput ?? e.title}</span>`}
+          <span class="lsum muted">${t ? e.summary : "Off"}</span>
+          ${t ? g`<span class="lacts">
+                ${e.from !== void 0 && e.onFrom ? g`<label class="from">
+                      From nudge
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        .value=${String(e.from)}
+                        @change=${(t) => {
+			let n = this._num(t.target.value, 1, 20);
+			n !== void 0 && e.onFrom(n);
 		}}
-                        />
-                      </label>
-                      <label class="num">
-                        Repeat every (seconds, 0 = once)
-                        <input
-                          type="number"
-                          min="0"
-                          max="60"
-                          .value=${String(n.repeat_s)}
-                          @change=${(e) => {
-			let n = this._num(e.target.value, 0, 60);
-			n !== void 0 && this._setSound(r, t, { repeat_s: n });
-		}}
-                        />
-                      </label>
-                    ` : y}
-                <button @click=${() => this._test(e, t)}>Test</button>
-              </div>
-            ` : y}
-        ${this._notes[i] ? g`<div class="note muted small">${this._notes[i]}</div>` : y}
+                      />
+                    </label>` : y}
+                <button type="button" class="textlink" @click=${() => e.onTest()}>Test</button>
+                <button type="button" class="textlink quiet" aria-expanded=${n ? "true" : "false"} @click=${() => this._toggle(e.key)}>
+                  Details
+                </button>
+                ${e.onRemove ? g`<button type="button" class="textlink quiet" aria-label=${e.removeLabel ?? "Remove"} @click=${() => e.onRemove()}>Remove</button>` : y}
+              </span>` : y}
+        </div>
+        ${n ? g`<div class="fields">${e.details}</div>` : y}
+        ${this._notes[e.key] ? g`<div class="note muted small">${this._notes[e.key]}</div>` : y}
       </div>
     `;
 	}
-	_speechRow(e) {
-		let t = e.speech, n = e.entity_id, r = `speaker:${n}:speech`, i = this._targets(t.route, t.target);
-		return g`
-      <div class="level">
-        <label class="inline">
-          <input
-            type="checkbox"
-            .checked=${t.enabled}
-            @change=${(e) => this._setSpeech(n, { enabled: e.target.checked })}
-          />
-          Speak a sentence
+	_numField(e, t, n, r, i) {
+		return g`<label class="num">
+      ${e}
+      <input
+        type="number"
+        min=${n}
+        max=${r}
+        .value=${String(t)}
+        @change=${(e) => {
+			let t = this._num(e.target.value, n, r);
+			t !== void 0 && i(t);
+		}}
+      />
+    </label>`;
+	}
+	_soundLine(e, t) {
+		let n = e[t], r = e.entity_id, i = t === "alarm", a = `speaker:${r}:${t}`;
+		return this._line({
+			key: a,
+			title: i ? "Alarm sound" : "Ding",
+			enabled: n.enabled,
+			onToggle: (e) => this._setSound(r, t, { enabled: e }),
+			summary: i ? `${this._soundSummary(n.kind, n.sound)} · loud, rings ${n.seconds} s` : `${this._soundSummary(n.kind, n.sound)} · a small sound`,
+			from: n.start_at,
+			onFrom: (e) => this._setSound(r, t, { start_at: e }),
+			onTest: () => void this._test(e, t),
+			details: g`
+        ${this._soundFields(n.kind, n.sound, i ? "alarm" : "ding", (e) => this._setSound(r, t, { kind: e }), (e) => this._setSound(r, t, { sound: e }))}
+        ${i ? g`${this._numField("Rings for (seconds)", n.seconds, 3, 600, (e) => this._setSound(r, t, { seconds: e }))}
+            ${this._numField("Repeat every (seconds, 0 = once)", n.repeat_s, 0, 60, (e) => this._setSound(r, t, { repeat_s: e }))}` : y}
+      `
+		});
+	}
+	_speechLine(e) {
+		let t = e.speech, n = e.entity_id, r = this._targets(t.route, t.target), i = ua.find((e) => e.value === t.route)?.label ?? t.route, a = r.find((e) => e.value === t.target)?.label;
+		return this._line({
+			key: `speaker:${n}:speech`,
+			title: "Speak a sentence",
+			enabled: t.enabled,
+			onToggle: (e) => this._setSpeech(n, { enabled: e }),
+			summary: `${i} · ${a ?? "no device chosen yet"}`,
+			from: t.start_at,
+			onFrom: (e) => this._setSpeech(n, { start_at: e }),
+			onTest: () => void this._test(e, "speech"),
+			details: g`
+        <label class="num wide">
+          How
+          <select
+            .value=${t.route}
+            @change=${(e) => this._setSpeech(n, {
+				route: e.target.value,
+				target: ""
+			})}
+          >
+            ${ua.map((e) => g`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+          </select>
         </label>
-        ${t.enabled ? g`
-              <div class="fields">
-                <label class="num wide">
-                  How
-                  <select
-                    .value=${t.route}
-                    @change=${(e) => this._setSpeech(n, {
-			route: e.target.value,
-			target: ""
-		})}
-                  >
-                    ${ua.map((e) => g`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
-                  </select>
-                </label>
-                <label class="num wide">
-                  ${t.route === "tts" ? "Voice" : "Alexa device"}
-                  <select
-                    .value=${t.target}
-                    @change=${(e) => this._setSpeech(n, { target: e.target.value })}
-                  >
-                    <option value="" ?selected=${t.target === ""}>Choose…</option>
-                    ${i.map((e) => g`<option value=${e.value} ?selected=${e.value === t.target}>${e.label}</option>`)}
-                  </select>
-                </label>
-                ${t.route === "alexa_media" ? g`
-                      <label class="inline small">
-                        <input
-                          type="checkbox"
-                          .checked=${t.announce}
-                          @change=${(e) => this._setSpeech(n, { announce: e.target.checked })}
-                        />
-                        Announce (with chime). Some Alexas stay silent, so test it.
-                      </label>
-                    ` : y}
-                ${this._startAt(t.start_at, (e) => this._setSpeech(n, { start_at: e }))}
-                <button @click=${() => this._test(e, "speech")}>Test</button>
-              </div>
-            ` : y}
-        ${this._notes[r] ? g`<div class="note muted small">${this._notes[r]}</div>` : y}
+        <label class="num wide">
+          ${t.route === "tts" ? "Voice" : "Alexa device"}
+          <select .value=${t.target} @change=${(e) => this._setSpeech(n, { target: e.target.value })}>
+            <option value="" ?selected=${t.target === ""}>Choose…</option>
+            ${r.map((e) => g`<option value=${e.value} ?selected=${e.value === t.target}>${e.label}</option>`)}
+          </select>
+        </label>
+        ${t.route === "alexa_media" ? g`<label class="inline small libhint">
+              <input type="checkbox" .checked=${t.announce} @change=${(e) => this._setSpeech(n, { announce: e.target.checked })} />
+              Announce (with chime). Some Alexas stay silent, so test it.
+            </label>` : y}
+      `
+		});
+	}
+	_ownSounds(e) {
+		let t = e.entity_id, n = e.sounds ?? [];
+		return g`
+      <div class="own">
+        <h4>Your own sounds</h4>
+        <p class="muted small">For your own ladders (Nudge it your way). Give each a name.</p>
+        ${n.map((n) => this._line({
+			key: `speaker:${t}:sound:${n.id}`,
+			title: n.name,
+			nameInput: g`<input
+              class="soundname"
+              type="text"
+              maxlength="30"
+              aria-label="Name of the sound"
+              .value=${n.name}
+              @change=${(e) => this._setExtra(t, n.id, { name: e.target.value.trim() })}
+            />`,
+			summary: this._soundSummary(n.kind, n.sound),
+			onTest: () => void this._test(e, `sound:${n.id}`),
+			details: this._soundFields(n.kind, n.sound, "fanfare", (e) => this._setExtra(t, n.id, { kind: e }), (e) => this._setExtra(t, n.id, { sound: e })),
+			onRemove: () => this._removeExtra(t, n.id),
+			removeLabel: `Remove the sound ${n.name}`
+		}))}
+        <button type="button" class="textlink" ?disabled=${n.length >= 30} @click=${() => this._addExtra(t)}>
+          ${E("plus")} Add a sound
+        </button>
       </div>
     `;
 	}
@@ -8467,51 +8441,50 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 		let t = e.speakers.map((e) => e.entity_id), n = this._ids(["media_player"], t);
 		return g`
       <section class="card">
-        <h2>🔊 Speakers</h2>
+        <h2>${E("volume-high")} Speakers</h2>
         <p class="muted small">
-          Each speaker can play a small ding, speak a sentence, and sound an
-          alarm. In the built-in styles a speaker plays the highest level that has
-          been reached. Your ladders can also use more sounds you add here, and
-          "Speaks with chime" (an Alexa announcement). Press Test to hear each one.
+          Each speaker can play a ding, speak a sentence and sound an alarm. Press Test to hear one.
+          <b>From nudge</b> says when it starts in the built-in styles, which play the highest level reached.
+          Your own ladders choose per nudge, so it does not apply there.
         </p>
         ${e.speakers.map((t) => g`
             <div class="speaker">
-              <div class="row">
-                <div class="grow"><strong>${this._friendly(t.entity_id)}</strong></div>
+              <div class="shead">
+                <h3>${this._friendly(t.entity_id)}</h3>
                 <button
-                  aria-label="Remove speaker"
+                  type="button"
+                  class="textlink quiet"
+                  aria-label="Remove speaker ${this._friendly(t.entity_id)}"
                   @click=${() => this._patch({ speakers: e.speakers.filter((e) => e.entity_id !== t.entity_id) })}
                 >
-                  ✕
+                  Remove speaker
                 </button>
               </div>
-              ${this._soundRow(t, "cue")} ${this._speechRow(t)}
-              ${this._soundRow(t, "alarm")} ${this._moreSounds(t)}
+              ${this._soundLine(t, "cue")} ${this._speechLine(t)} ${this._soundLine(t, "alarm")}
+              ${this._ownSounds(t)}
             </div>
           `)}
-        <div class="row add">
+        <h3 class="sec">Add a speaker</h3>
+        <div class="row">
           <select
             aria-label="Add a speaker"
             .value=${this._addSpeaker}
             @change=${(e) => this._addSpeaker = e.target.value}
           >
-            <option value="">Add a speaker…</option>
+            <option value="">Choose a media player…</option>
             ${n.map((e) => g`<option value=${e} ?selected=${e === this._addSpeaker}>${this._friendly(e)}</option>`)}
           </select>
-          <button ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
+          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>Add</button>
         </div>
-        <div class="field">
-          <label for="sentence">What the speakers say</label>
-          <input
-            id="sentence"
-            type="text"
-            .value=${e.speech_template}
-            @change=${(e) => this._patch({ speech_template: e.target.value.trim() })}
-          />
-          <div class="muted small">
-            Use {chore} for the chore name and {step} for the step. Example: "{chore}: {step}".
-          </div>
-        </div>
+        <h3 class="sec">What the speakers say</h3>
+        <input
+          id="sentence"
+          type="text"
+          aria-label="What the speakers say"
+          .value=${e.speech_template}
+          @change=${(e) => this._patch({ speech_template: e.target.value.trim() })}
+        />
+        <div class="muted small hintline">Use {chore} for the chore name and {step} for the step. Example: "{chore}: {step}".</div>
       </section>
     `;
 	}
@@ -8535,52 +8508,34 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(ca, t);
 		return g`
       <section class="card">
-        <h2>🚨 Alarm devices</h2>
+        <h2>${E("bell-ring-outline")} Alarm devices</h2>
         <p class="muted small">
-          A siren, switch or script that sounds the alarm. Boopli switches it on
-          for the time you set and then off again, and off when you answer or
-          when Home Assistant restarts.
+          A siren, switch or script that sounds the alarm. Boopli switches it on for the time you set, then off again,
+          and also off when you answer or when Home Assistant restarts.
         </p>
-        ${e.alarm_devices.map((t) => {
-			let n = `device:${t.entity_id}`;
-			return g`
-            <div class="row">
-              <div class="grow">${this._friendly(t.entity_id)}</div>
-              ${this._startAt(t.start_at, (e) => this._updateDevice(t.entity_id, { start_at: e }))}
-              <label class="num">
-                On for (seconds)
-                <input
-                  type="number"
-                  min="3"
-                  max="600"
-                  .value=${String(t.seconds)}
-                  @change=${(e) => {
-				let n = this._num(e.target.value, 3, 600);
-				n !== void 0 && this._updateDevice(t.entity_id, { seconds: n });
-			}}
-                />
-              </label>
-              <button @click=${() => this._testDevice(t)}>Test</button>
-              <button
-                aria-label="Remove alarm device"
-                @click=${() => this._patch({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}
-              >
-                ✕
-              </button>
-            </div>
-            ${this._notes[n] ? g`<div class="note muted small">${this._notes[n]}</div>` : y}
-          `;
-		})}
-        <div class="row add">
+        ${e.alarm_devices.map((t) => this._line({
+			key: `device:${t.entity_id}`,
+			title: this._friendly(t.entity_id),
+			summary: `On for ${t.seconds} s`,
+			from: t.start_at,
+			onFrom: (e) => this._updateDevice(t.entity_id, { start_at: e }),
+			onTest: () => void this._testDevice(t),
+			details: this._numField("On for (seconds)", t.seconds, 3, 600, (e) => this._updateDevice(t.entity_id, { seconds: e })),
+			onRemove: () => this._patch({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) }),
+			removeLabel: `Remove alarm device ${this._friendly(t.entity_id)}`
+		}))}
+        <h3 class="sec">Add an alarm device</h3>
+        <div class="row">
           <select
             aria-label="Add an alarm device"
             .value=${this._addDevice}
             @change=${(e) => this._addDevice = e.target.value}
           >
-            <option value="">Add a siren, switch or script…</option>
+            <option value="">Choose a siren, switch or script…</option>
             ${n.map((e) => g`<option value=${e} ?selected=${e === this._addDevice}>${this._friendly(e)}</option>`)}
           </select>
           <button
+            type="button"
             ?disabled=${!this._addDevice}
             @click=${() => {
 			this._patch({ alarm_devices: [...e.alarm_devices, {
@@ -8625,53 +8580,119 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
         display: none;
       }
       h2 {
-        font-size: 18px;
+        font-size: 24px;
         margin-bottom: 6px;
       }
       .small {
-        font-size: 13px;
+        font-size: 16px;
       }
+      p.small {
+        margin: 0 0 12px;
+        line-height: 1.4;
+      }
+      /* One speaker: its name, three short lines, and its own sounds. */
       .speaker {
-        border-top: 1px solid var(--divider-color);
-        padding: 10px 0 4px;
+        border-top: 2px solid var(--divider-color);
+        padding: 12px 0 8px;
+        margin-bottom: 8px;
       }
-      .row {
+      .shead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      h3 {
+        font-size: 21px;
+        margin: 0;
+      }
+      h3.sec {
+        margin: 22px 0 8px;
+        padding-top: 12px;
+        border-top: 2px solid var(--divider-color);
+      }
+      h4 {
+        font-size: 18px;
+        font-weight: 400;
+        margin: 14px 0 2px;
+      }
+      .line {
+        padding: 8px 0;
+        border-top: 1px solid var(--divider-color);
+      }
+      .line.off .ltitle {
+        color: var(--secondary-text-color);
+      }
+      .lmain {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
         align-items: center;
-        padding: 6px 0;
+        gap: 4px 14px;
       }
-      .row.add {
-        border-top: 1px solid var(--divider-color);
+      label.switch {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        color: var(--primary-text-color);
+        min-width: 190px;
       }
-      .row select {
-        flex: 1 1 200px;
-        width: auto;
+      label.switch input {
+        width: 20px;
+        min-height: 20px;
+        height: 20px;
       }
-      .grow {
-        flex: 1 1 160px;
+      .ltitle {
+        font-size: 18px;
+        min-width: 190px;
       }
-      .level {
-        padding: 6px 0;
+      .lmain > .ltitle {
+        min-width: 190px;
+      }
+      .lsum {
+        flex: 1 1 120px;
+        font-size: 16px;
+        overflow-wrap: anywhere;
+      }
+      .lacts {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 14px;
+        margin-left: auto;
+      }
+      label.from {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        font-size: 16px;
+      }
+      label.from input {
+        width: 64px;
+        min-height: 36px;
+        padding: 4px 8px;
+      }
+      input.soundname {
+        width: 190px;
       }
       .fields {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
         align-items: flex-end;
-        padding: 6px 0 4px 28px;
+        padding: 10px 0 4px 30px;
       }
       label.num {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 16px;
         margin: 0;
-        width: 150px;
+        width: 170px;
       }
       label.num.wide {
-        width: 220px;
+        width: 240px;
       }
       label.inline {
         display: flex;
@@ -8685,19 +8706,57 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
         min-height: 0;
       }
       .note {
-        padding: 2px 0 6px 28px;
+        padding: 2px 0 4px 30px;
       }
       .libhint {
         flex: 1 1 100%;
       }
       .libhint a {
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       code {
-        font-size: 12px;
+        font-size: 15px;
       }
-      .field {
-        margin: 14px 0 4px;
+      .own {
+        margin-top: 10px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .row select {
+        flex: 1 1 220px;
+        width: auto;
+      }
+      .hintline {
+        margin-top: 6px;
+      }
+      /* A phone: the parts of a line stack. */
+      @media (max-width: 600px) {
+        .lacts {
+          margin-left: 0;
+        }
+        label.switch,
+        .ltitle,
+        .lmain > .ltitle {
+          min-width: 0;
+          flex: 1 1 100%;
+        }
+        .fields {
+          padding-left: 0;
+        }
+        label.num,
+        label.num.wide {
+          width: 100%;
+        }
+        .note {
+          padding-left: 0;
+        }
+        input.soundname {
+          width: 100%;
+        }
       }
     `];
 	}
@@ -8730,7 +8789,7 @@ function ha(e) {
 	});
 	for (let n of e.sounds ?? []) t.push({
 		value: `sound:${n.id}`,
-		label: `🔔 ${n.name}`
+		label: n.name
 	});
 	return e.speech?.enabled && (t.push({
 		value: "speech",
@@ -8830,7 +8889,7 @@ var ga = class extends S {
           </p>` : y}
       <div class="devs">
         ${e.phones.map((e) => g`<label class="dev">
-            <span>📱 ${Y(e.service)}</span>
+            <span>${E("cellphone")} ${Y(e.service)}</span>
             <select
               aria-label="${Y(e.service)} at nudge ${n}"
               @change=${(t) => this._setPhone(e.service, t.target.value)}
@@ -8843,7 +8902,7 @@ var ga = class extends S {
 			let r = t.lights[e.entity_id], i = q(this.hass, e.entity_id);
 			return g`<div class="devblock">
             <label class="dev">
-              <span>💡 ${i}</span>
+              <span>${E("lightbulb-outline")} ${i}</span>
               <select
                 aria-label="${i} at nudge ${n}"
                 @change=${(t) => this._setLight(e.entity_id, t.target.value)}
@@ -8872,7 +8931,7 @@ var ga = class extends S {
         ${e.speakers.map((e) => {
 			let r = ha(e), i = t.speakers[e.entity_id], a = q(this.hass, e.entity_id);
 			return g`<label class="dev">
-            <span>🔊 ${a}</span>
+            <span>${E("volume-high")} ${a}</span>
             <select
               aria-label="${a} at nudge ${n}"
               ?disabled=${!r.length && !i}
@@ -8890,7 +8949,7 @@ var ga = class extends S {
               .checked=${t.alarms.includes(e.entity_id)}
               @change=${(t) => this._toggle(e.entity_id, t.target.checked)}
             />
-            <span>🚨 ${q(this.hass, e.entity_id)}</span>
+            <span>${E("bell-ring-outline")} ${q(this.hass, e.entity_id)}</span>
           </label>`)}
       </div>
     `;
@@ -8901,7 +8960,7 @@ var ga = class extends S {
         display: block;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.gap {
         display: flex;
@@ -8909,7 +8968,7 @@ var ga = class extends S {
         align-items: center;
         gap: 6px;
         margin: 0 0 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
       }
       label.gap input {
@@ -8928,7 +8987,7 @@ var ga = class extends S {
         align-items: center;
         gap: 4px 10px;
         margin: 0;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
       }
       label.dev > span {
@@ -8952,7 +9011,7 @@ var ga = class extends S {
         align-items: center;
         gap: 6px 10px;
         padding-left: 4px;
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
       }
       .colorrow .swatch {
@@ -9109,7 +9168,7 @@ var wa = class extends S {
 		}
 		for (let [n, r] of Object.entries(e.speakers)) {
 			let e = this.settings?.speakers.find((e) => e.entity_id === n), i = ha(e ?? { entity_id: n }).find((e) => e.value === r)?.label ?? r;
-			t.push(`${q(this.hass, n)} (${i.replace("🔔 ", "").toLowerCase()})`);
+			t.push(`${q(this.hass, n)} (${i.toLowerCase()})`);
 		}
 		for (let n of e.alarms) t.push(`${q(this.hass, n)} (alarm)`);
 		return t.length ? t.join(", ") : "nothing";
@@ -9191,7 +9250,7 @@ var wa = class extends S {
 		if (!e) return y;
 		let t = this._ladders;
 		return g`<section class="card">
-      <h2>🪜 Nudge it your way</h2>
+      <h2>${E("stairs")} Nudge it your way</h2>
       <p class="muted small">
         Build your own ladder of nudges. For each nudge you choose how long Boopli waits, and exactly which phone,
         light, speaker or alarm acts, and how loud. A chore uses a ladder when you pick it as its nudge style.
@@ -9250,11 +9309,11 @@ var wa = class extends S {
         box-shadow: inset 4px 0 0 var(--warning-color, #ffa600);
       }
       h2 {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 6px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .spacer {
         flex: 1;
@@ -9401,8 +9460,8 @@ var Ta = class extends S {
         font: inherit;
       }
       .choice.on {
-        border-color: var(--primary-color, #03a9f4);
-        background: color-mix(in srgb, var(--primary-color, #03a9f4) 14%, transparent);
+        border-color: var(--boopli-accent, var(--primary-color, #03a9f4));
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 14%, transparent);
       }
       .pic {
         display: block;
@@ -9413,7 +9472,7 @@ var Ta = class extends S {
         font-weight: 500;
       }
       .soon {
-        font-size: 12px;
+        font-size: 14px;
         opacity: 0.65;
       }
       .moods {
@@ -9433,7 +9492,7 @@ var Ta = class extends S {
         height: 56px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
     `];
 	}
@@ -9601,13 +9660,13 @@ var Ea = [
       }
       h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 20px;
       }
       .close {
         border: 0;
         background: transparent;
         color: inherit;
-        font-size: 20px;
+        font-size: 22px;
         min-width: 40px;
         min-height: 40px;
         cursor: pointer;
@@ -9648,7 +9707,7 @@ var Ea = [
         margin-top: 14px;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
       /* A phone: the window fills the screen. */
       @media (max-width: 760px) {
@@ -9914,7 +9973,7 @@ var La = class extends S {
 	}
 	_renderExport() {
 		return g`
-      <h2>💾 Export a backup</h2>
+      <h2>${E("content-save-outline")} Export a backup</h2>
       <p>Save your setup to one file. Pick what goes in:</p>
       ${this._renderParts([...C])}
       <p class="muted small">
@@ -9930,7 +9989,7 @@ var La = class extends S {
 	_renderImport() {
 		let e = this._preview, t = this._changes();
 		return g`
-      <h2>💾 Import a backup</h2>
+      <h2>${E("content-save-outline")} Import a backup</h2>
       <div class="field">
         <label for="file">Choose a backup file (${Pa})</label>
         <input id="file" type="file" accept="${Pa},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
@@ -9972,7 +10031,7 @@ var La = class extends S {
       @click=${(e) => e.target === e.currentTarget && this._close()}
     >
       <div class="box">
-        ${this._done.length ? g`<h2>💾 Done</h2>
+        ${this._done.length ? g`<h2>${E("check-circle-outline")} Done</h2>
               ${this._done.map((e) => g`<p>${e}</p>`)}
               <div class="foot"><button class="primary" @click=${this._close}>Close</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
         ${this._error ? g`<div class="error" role="alert">${this._error}</div>` : y}
@@ -10005,7 +10064,7 @@ var La = class extends S {
       }
       h2 {
         margin: 0 0 10px;
-        font-size: 20px;
+        font-size: 22px;
       }
       .parts {
         display: grid;
@@ -10035,7 +10094,7 @@ var La = class extends S {
         margin: 8px 0;
       }
       .field label {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
       }
       .changes,
@@ -10064,7 +10123,7 @@ var La = class extends S {
         background: var(--card-background-color, var(--primary-background-color));
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .muted {
         color: var(--secondary-text-color);
@@ -10078,7 +10137,7 @@ var La = class extends S {
         border: none;
         padding: 0;
         min-height: 0;
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
         text-decoration: underline;
         cursor: pointer;
         font: inherit;
@@ -11255,7 +11314,7 @@ var Ja = {
         gap: 10px;
       }
       .acc {
-        --sw: var(--primary-color);
+        --sw: var(--boopli-accent, var(--primary-color));
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -12651,7 +12710,7 @@ var ro = class extends S {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         animation: bounce 1s infinite ease-in-out;
       }
       .dots i:nth-child(2) {
@@ -13003,20 +13062,20 @@ var co = {
 	button: ["button", "press"],
 	input_button: ["input_button", "press"]
 }, lo = {
-	light: "💡",
-	switch: "🔌",
-	input_boolean: "🔘",
-	fan: "🌀",
-	cover: "🪟",
-	lock: "🔒",
-	climate: "🌡️",
-	sensor: "📟",
-	binary_sensor: "👁️",
-	script: "▶️",
-	scene: "🎬",
-	button: "⏺️",
-	person: "🧑",
-	media_player: "🎵"
+	light: "lightbulb-outline",
+	switch: "power-plug-outline",
+	input_boolean: "toggle-switch-outline",
+	fan: "fan",
+	cover: "window-shutter",
+	lock: "lock-outline",
+	climate: "thermostat",
+	sensor: "gauge",
+	binary_sensor: "eye-outline",
+	script: "script-text-play-outline",
+	scene: "palette-outline",
+	button: "gesture-tap-button",
+	person: "account-outline",
+	media_player: "speaker"
 }, uo = class extends Z {
 	_tap() {
 		let e = this.text("entity_id"), t = co[e.split(".")[0]];
@@ -13027,7 +13086,7 @@ var co = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return g`<div class="center muted normal">Pick an entity in the board settings.</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!co[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = g`<div class="icon big">${lo[n] ?? "◻️"}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = !!co[n] && this.text("tap", "toggle") === "toggle" && !this.preview, s = g`<div class="icon big">${E(lo[n] ?? "shape-outline")}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : "not found"}</div>
@@ -13072,21 +13131,21 @@ var co = {
 customElements.define("wall-tile-entity", uo);
 // src/wall-tile-weather.ts
 var fo = {
-	"clear-night": "🌙",
-	cloudy: "☁️",
-	exceptional: "⚠️",
-	fog: "🌫️",
-	hail: "🌨️",
-	lightning: "🌩️",
-	"lightning-rainy": "⛈️",
-	partlycloudy: "⛅",
-	pouring: "🌧️",
-	rainy: "🌦️",
-	snowy: "❄️",
-	"snowy-rainy": "🌨️",
-	sunny: "☀️",
-	windy: "💨",
-	"windy-variant": "💨"
+	"clear-night": "weather-night",
+	cloudy: "weather-cloudy",
+	exceptional: "alert-outline",
+	fog: "weather-fog",
+	hail: "weather-hail",
+	lightning: "weather-lightning",
+	"lightning-rainy": "weather-lightning-rainy",
+	partlycloudy: "weather-partly-cloudy",
+	pouring: "weather-pouring",
+	rainy: "weather-rainy",
+	snowy: "weather-snowy",
+	"snowy-rainy": "weather-snowy-rainy",
+	sunny: "weather-sunny",
+	windy: "weather-windy",
+	"windy-variant": "weather-windy-variant"
 }, po = class extends Z {
 	render() {
 		let e = this.text("entity_id");
@@ -13095,7 +13154,7 @@ var fo = {
 		if (!t) return g`<div class="center muted normal">Weather not found.</div>`;
 		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : `${n.humidity} % humidity`;
 		return g`<div class="w">
-      <div class="huge sky">${fo[t.state] ?? "🌡️"}</div>
+      <div class="huge sky">${E(fo[t.state] ?? "thermometer")}</div>
       <div>
         <div class="big">${r}</div>
         <div class="normal">${t.state.replace(/-/g, " ")}</div>
@@ -13113,6 +13172,10 @@ var fo = {
       }
       .sky {
         line-height: 1;
+      }
+      .sky .ico {
+        --mdc-icon-size: 1em;
+        margin: 0;
       }
       .normal {
         text-transform: capitalize;
@@ -13355,7 +13418,7 @@ var Eo = [
 	{
 		type: "clock",
 		label: "Clock",
-		emoji: "🕒",
+		icon: "clock-outline",
 		blurb: "The time and the date.",
 		defaultW: 4,
 		defaultH: 2,
@@ -13375,7 +13438,7 @@ var Eo = [
 	{
 		type: "pet",
 		label: "Pet",
-		emoji: "🐾",
+		icon: "paw",
 		blurb: "Your pet in its room.",
 		defaultW: 6,
 		defaultH: 4,
@@ -13384,7 +13447,7 @@ var Eo = [
 	{
 		type: "due_now",
 		label: "Due now",
-		emoji: "✅",
+		icon: "check-circle-outline",
 		blurb: "What is due now, with Done, On it and Snooze.",
 		defaultW: 6,
 		defaultH: 4,
@@ -13393,7 +13456,7 @@ var Eo = [
 	{
 		type: "coming_up",
 		label: "Coming up",
-		emoji: "📅",
+		icon: "calendar-clock",
 		blurb: "What comes next.",
 		defaultW: 6,
 		defaultH: 3,
@@ -13409,7 +13472,7 @@ var Eo = [
 	{
 		type: "entity",
 		label: "Entity",
-		emoji: "🔘",
+		icon: "toggle-switch-outline",
 		blurb: "Any sensor or switch. A tap switches it.",
 		defaultW: 2,
 		defaultH: 2,
@@ -13438,7 +13501,7 @@ var Eo = [
 	{
 		type: "weather",
 		label: "Weather",
-		emoji: "⛅",
+		icon: "weather-partly-cloudy",
 		blurb: "The weather now.",
 		defaultW: 4,
 		defaultH: 2,
@@ -13453,7 +13516,7 @@ var Eo = [
 	{
 		type: "calendar",
 		label: "Calendar",
-		emoji: "🗓️",
+		icon: "calendar-month-outline",
 		blurb: "The next events.",
 		defaultW: 6,
 		defaultH: 4,
@@ -13475,7 +13538,7 @@ var Eo = [
 	{
 		type: "camera",
 		label: "Camera",
-		emoji: "📷",
+		icon: "camera-outline",
 		blurb: "A picture from a camera.",
 		defaultW: 6,
 		defaultH: 4,
@@ -13497,7 +13560,7 @@ var Eo = [
 	{
 		type: "note",
 		label: "Note",
-		emoji: "📝",
+		icon: "note-text-outline",
 		blurb: "Some words you write.",
 		defaultW: 4,
 		defaultH: 2,
@@ -14446,22 +14509,24 @@ var Mo = {
                   />
                   ${this._fn(t)}
                 </label>
-                ${n ? g`<div class="radios">
-                      ${["blink", "indicator"].map((r) => g`<label class="inline small">
-                          <input
-                            type="radio"
-                            name="mode-${t}"
-                            .checked=${n.mode === r}
-                            @change=${() => this._set({ lights: e.lights.map((e) => e.entity_id === t ? {
+                <!-- always shown (greyed out until the light is ticked), so every card is the same height -->
+                <div class="radios ${n ? "" : "off"}">
+                  ${["blink", "indicator"].map((r) => g`<label class="inline small">
+                      <input
+                        type="radio"
+                        name="mode-${t}"
+                        ?disabled=${!n}
+                        .checked=${n?.mode === r}
+                        @change=${() => this._set({ lights: e.lights.map((e) => e.entity_id === t ? {
 				...e,
 				mode: r
 			} : e) })}
-                          />
-                          ${r === "blink" ? "Blinks" : "Status light (stays on until done)"}
-                        </label>`)}
-                      <button type="button" @click=${() => this._try(`light:${t}`, () => ut(this.hass, n))}>Test</button>
-                    </div>
-                    ${this._noteLine(`light:${t}`)}` : y}
+                      />
+                      ${r === "blink" ? "Blinks" : "Status light (stays on until done)"}
+                    </label>`)}
+                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => ut(this.hass, n))}>Test</button>
+                </div>
+                ${n ? this._noteLine(`light:${t}`) : y}
               </div>`;
 		})}
           </div>`}
@@ -14941,7 +15006,7 @@ var Mo = {
         gap: 4px;
       }
       .rail-title {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -14984,11 +15049,11 @@ var Mo = {
         flex: 0 0 24px;
         border-radius: 50%;
         border: 1px solid var(--divider-color);
-        font-size: 12px;
+        font-size: 14px;
       }
       .past .mark {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
+        border-color: var(--boopli-accent, var(--primary-color));
         color: var(--text-primary-color, #fff);
       }
       .main {
@@ -15018,7 +15083,7 @@ var Mo = {
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         transition: width 0.3s ease;
       }
       h2 {
@@ -15031,7 +15096,7 @@ var Mo = {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .optional {
         margin-bottom: 8px;
@@ -15083,6 +15148,9 @@ var Mo = {
         gap: 6px;
         padding-left: 28px;
       }
+      .radios.off {
+        opacity: 0.45;
+      }
       .note {
         flex-basis: 100%;
       }
@@ -15090,12 +15158,12 @@ var Mo = {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 0;
       }
       label.inline.small {
-        font-size: 14px;
+        font-size: 16px;
       }
       label.inline input {
         width: auto;
@@ -15116,7 +15184,7 @@ var Mo = {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 15px;
         margin: 0;
       }
       label.num.wide {
@@ -15140,7 +15208,7 @@ var Mo = {
         border-radius: 5px;
       }
       a {
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       .days {
         display: flex;
@@ -15182,7 +15250,7 @@ var Mo = {
       button.big {
         min-height: 52px;
         padding: 0 24px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .actions {
         display: flex;
@@ -15376,7 +15444,7 @@ var Qo = 3e4, $o = class extends S {
 		}))}>✕</button></div>`}`;
 		let t = this.snapshot.time_zone, n = !this.preview && !!Jt(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Zo(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return g`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
-      ${a ? g`<div class="away" role="status">🧳 <b>Away mode is on</b> <span>${Kt(a, this.nowMs, t, !0)}</span></div>` : y}
+      ${a ? g`<div class="away" role="status">${E("bag-suitcase")} <b>Away mode is on</b> <span>${Kt(a, this.nowMs, t, !0)}</span></div>` : y}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : y}
@@ -15404,8 +15472,8 @@ var Qo = 3e4, $o = class extends S {
             <button type="button" aria-label="Edit this board" title="Edit this board" @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", {
 			bubbles: !0,
 			composed: !0
-		}))}>✎</button>
-            <button type="button" aria-label="Full screen" @click=${this._fullscreen}>⛶</button>
+		}))}>${E("pencil")}</button>
+            <button type="button" aria-label="Full screen" @click=${this._fullscreen}>${E("fullscreen")}</button>
             <button type="button" aria-label="Back to Boopli" @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
 			bubbles: !0,
 			composed: !0
@@ -15532,7 +15600,7 @@ var Qo = 3e4, $o = class extends S {
       width: 26px;
       height: 26px;
       border-radius: 8px;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       opacity: 0.8;
       cursor: nwse-resize;
       touch-action: none;
@@ -15561,7 +15629,7 @@ var Qo = 3e4, $o = class extends S {
       inset: 0;
       z-index: 1;
       width: 100%;
-      border: 2px dashed var(--primary-color);
+      border: 2px dashed var(--boopli-accent, var(--primary-color));
       border-radius: 18px;
       background: transparent;
       cursor: pointer;
@@ -15572,13 +15640,13 @@ var Qo = 3e4, $o = class extends S {
     .shield:hover,
     .shield:focus-visible {
       opacity: 1;
-      background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 12%, transparent);
     }
     .selected .shield {
       opacity: 1;
       border-style: solid;
       border-width: 4px;
-      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 15%, transparent);
     }
     .night-dim .grid {
       filter: brightness(0.3);
@@ -15927,7 +15995,7 @@ var es = 10, ts = 30, ns = 40, rs = [
 		if (!t) return y;
 		let n = Do(t.type);
 		return g`
-      <div class="mhead"><h2>${n?.emoji ?? "◻️"} ${n?.label ?? t.type}</h2></div>
+      <div class="mhead"><h2>${E(n?.icon ?? "shape-outline")} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? g`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : y}
       <div class="srow">
         ${this._numField("tw", "Cells wide", t.w, 1, e.columns - t.x, (e) => (this._resize(e, t.h), this._tile?.w))}
@@ -15942,7 +16010,7 @@ var es = 10, ts = 30, ns = 40, rs = [
 	}
 	_renderBoardModal(e) {
 		return g`
-      <div class="mhead"><h2>🖥️ This board</h2></div>
+      <div class="mhead"><h2>${E("monitor-dashboard")} This board</h2></div>
       <div class="field">
         <label for="bname">Name</label>
         <input id="bname" maxlength=${ns} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
@@ -15977,7 +16045,7 @@ var es = 10, ts = 30, ns = 40, rs = [
 		return g`
       <div class="mhead"><h2>＋ Add a tile</h2></div>
       <div class="adds" role="group" aria-label="Add a tile">
-        ${Eo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${e.emoji}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+        ${Eo.map((e) => g`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${E(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>Cancel</button></div>
     `;
@@ -15997,7 +16065,7 @@ var es = 10, ts = 30, ns = 40, rs = [
               ${this._boards.map((t) => g`<option value=${t.id} ?selected=${t.id === e.id}>${t.name || "(no name)"}</option>`)}
             </select>
           </label>
-          <button @click=${() => this._modal = "board"}>⚙ Board</button>
+          <button @click=${() => this._modal = "board"}>${E("cog-outline")} Board</button>
           <button @click=${() => this._modal = "add"}>＋ Add tile</button>
           <div class="views" role="group" aria-label="Show it as">
             ${as.map(([e, t, n]) => g`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
@@ -16119,12 +16187,12 @@ var es = 10, ts = 30, ns = 40, rs = [
       cursor: pointer;
     }
     button.on {
-      border-color: var(--primary-color);
-      background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+      border-color: var(--boopli-accent, var(--primary-color));
+      background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 18%, transparent);
     }
     button.primary {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
+      border-color: var(--boopli-accent, var(--primary-color));
       color: var(--text-primary-color, #fff);
     }
     button.danger {
@@ -16174,7 +16242,7 @@ var es = 10, ts = 30, ns = 40, rs = [
     }
     .mhead h2 {
       margin: 0 0 10px;
-      font-size: 20px;
+      font-size: 22px;
     }
     .mfoot,
     .srow {
@@ -16192,7 +16260,7 @@ var es = 10, ts = 30, ns = 40, rs = [
     }
     .field label,
     label.inline {
-      font-size: 13px;
+      font-size: 15px;
       color: var(--secondary-text-color);
     }
     label.inline {
@@ -16238,7 +16306,7 @@ var es = 10, ts = 30, ns = 40, rs = [
       color: var(--secondary-text-color);
     }
     .small {
-      font-size: 13px;
+      font-size: 15px;
     }
     .error {
       color: var(--error-color, #db4437);
@@ -16551,7 +16619,7 @@ var cs = {
         gap: 12px;
         min-height: 56px;
         padding: 0 16px;
-        background: var(--app-header-background-color, var(--primary-color));
+        background: var(--app-header-background-color, var(--boopli-accent, var(--primary-color)));
         color: var(--app-header-text-color, #fff);
       }
       header h1 {

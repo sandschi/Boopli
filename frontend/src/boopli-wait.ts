@@ -121,7 +121,7 @@ export class BoopliWait extends LitElement {
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 18px;
+      font-size: 20px;
       color: var(--primary-text-color);
     }
     .dots {
@@ -139,7 +139,7 @@ export class BoopliWait extends LitElement {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       animation: bounce 1s infinite ease-in-out;
     }
     .dots i:nth-child(2) {
@@ -171,19 +171,19 @@ export class BoopliWait extends LitElement {
     .fill {
       height: 100%;
       border-radius: 999px;
-      background: var(--primary-color);
+      background: var(--boopli-accent, var(--primary-color));
       transition: width 0.5s linear;
     }
     .time {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      font-size: 13px;
+      font-size: 15px;
       color: var(--secondary-text-color);
     }
     .hint {
       margin-top: 10px;
-      font-size: 14px;
+      font-size: 16px;
       color: var(--secondary-text-color);
     }
     .link {
@@ -193,7 +193,7 @@ export class BoopliWait extends LitElement {
       color: var(--secondary-text-color);
       text-decoration: underline;
       font: inherit;
-      font-size: 14px;
+      font-size: 16px;
       padding: 8px 0;
       cursor: pointer;
     }

@@ -33,7 +33,7 @@ export interface OptionField {
 export interface TileDef {
   type: string;
   label: string;
-  emoji: string;
+  icon: string; // a Material Design icon name
   blurb: string;
   defaultW: number; // the size a new tile starts with on a 16 x 9 grid (it grows with a finer grid)
   defaultH: number;
@@ -44,7 +44,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "clock",
     label: "Clock",
-    emoji: "🕒",
+    icon: "clock-outline",
     blurb: "The time and the date.",
     defaultW: 4,
     defaultH: 2,
@@ -53,12 +53,12 @@ export const TILE_DEFS: TileDef[] = [
       { key: "date", label: "Show the date", kind: "bool", default: true },
     ],
   },
-  { type: "pet", label: "Pet", emoji: "🐾", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
-  { type: "due_now", label: "Due now", emoji: "✅", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "pet", label: "Pet", icon: "paw", blurb: "Your pet in its room.", defaultW: 6, defaultH: 4, options: [] },
+  { type: "due_now", label: "Due now", icon: "check-circle-outline", blurb: "What is due now, with Done, On it and Snooze.", defaultW: 6, defaultH: 4, options: [] },
   {
     type: "coming_up",
     label: "Coming up",
-    emoji: "📅",
+    icon: "calendar-clock",
     blurb: "What comes next.",
     defaultW: 6,
     defaultH: 3,
@@ -67,7 +67,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "entity",
     label: "Entity",
-    emoji: "🔘",
+    icon: "toggle-switch-outline",
     blurb: "Any sensor or switch. A tap switches it.",
     defaultW: 2,
     defaultH: 2,
@@ -80,7 +80,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "weather",
     label: "Weather",
-    emoji: "⛅",
+    icon: "weather-partly-cloudy",
     blurb: "The weather now.",
     defaultW: 4,
     defaultH: 2,
@@ -89,7 +89,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "calendar",
     label: "Calendar",
-    emoji: "🗓️",
+    icon: "calendar-month-outline",
     blurb: "The next events.",
     defaultW: 6,
     defaultH: 4,
@@ -101,7 +101,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "camera",
     label: "Camera",
-    emoji: "📷",
+    icon: "camera-outline",
     blurb: "A picture from a camera.",
     defaultW: 6,
     defaultH: 4,
@@ -113,7 +113,7 @@ export const TILE_DEFS: TileDef[] = [
   {
     type: "note",
     label: "Note",
-    emoji: "📝",
+    icon: "note-text-outline",
     blurb: "Some words you write.",
     defaultW: 4,
     defaultH: 2,

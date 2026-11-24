@@ -99,8 +99,8 @@ export class BoopliPetPicker extends LitElement {
         font: inherit;
       }
       .choice.on {
-        border-color: var(--primary-color, #03a9f4);
-        background: color-mix(in srgb, var(--primary-color, #03a9f4) 14%, transparent);
+        border-color: var(--boopli-accent, var(--primary-color, #03a9f4));
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 14%, transparent);
       }
       .pic {
         display: block;
@@ -111,7 +111,7 @@ export class BoopliPetPicker extends LitElement {
         font-weight: 500;
       }
       .soon {
-        font-size: 12px;
+        font-size: 14px;
         opacity: 0.65;
       }
       .moods {
@@ -131,7 +131,7 @@ export class BoopliPetPicker extends LitElement {
         height: 56px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
     `,
   ];

@@ -112,7 +112,7 @@ export class BoopliQuestions extends LitElement {
       .text {
         flex: 1 1 200px;
         min-width: 0;
-        font-size: 16px;
+        font-size: 18px;
       }
       .yn {
         display: flex;

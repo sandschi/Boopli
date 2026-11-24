@@ -1201,7 +1201,7 @@ export class BoopliHome extends LitElement {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         animation: bounce 1s infinite ease-in-out;
       }
       .dots i:nth-child(2) {

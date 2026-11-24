@@ -187,7 +187,7 @@ export class BoopliPicture extends LitElement {
         min-width: 0;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
       .preview {
         display: block;
@@ -202,7 +202,7 @@ export class BoopliPicture extends LitElement {
         color: var(--warning-color, #b26a00);
       }
       code {
-        font-size: 13px;
+        font-size: 15px;
       }
     `,
   ];

@@ -416,7 +416,7 @@ export class BoopliTriggers extends LitElement {
     sharedStyles,
     css`
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .warn {
         color: var(--warning-color, #b26a00);
@@ -466,13 +466,13 @@ export class BoopliTriggers extends LitElement {
       .advanced summary {
         cursor: pointer;
         color: var(--secondary-text-color);
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
         margin: 8px 0 4px;
       }

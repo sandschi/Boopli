@@ -180,13 +180,13 @@ export class BoopliPetPreview extends LitElement {
       }
       h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 20px;
       }
       .close {
         border: 0;
         background: transparent;
         color: inherit;
-        font-size: 20px;
+        font-size: 22px;
         min-width: 40px;
         min-height: 40px;
         cursor: pointer;
@@ -227,7 +227,7 @@ export class BoopliPetPreview extends LitElement {
         margin-top: 14px;
       }
       .small {
-        font-size: 14px;
+        font-size: 16px;
       }
       /* A phone: the window fills the screen. */
       @media (max-width: 760px) {

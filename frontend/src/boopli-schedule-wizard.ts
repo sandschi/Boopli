@@ -356,7 +356,7 @@ export class BoopliScheduleWizard extends LitElement {
         gap: 4px;
       }
       .rail-title {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -387,11 +387,11 @@ export class BoopliScheduleWizard extends LitElement {
         flex: 0 0 24px;
         border-radius: 50%;
         border: 1px solid var(--divider-color);
-        font-size: 12px;
+        font-size: 14px;
       }
       .past .mark {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
+        border-color: var(--boopli-accent, var(--primary-color));
         color: var(--text-primary-color, #fff);
       }
       .main {
@@ -421,7 +421,7 @@ export class BoopliScheduleWizard extends LitElement {
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         transition: width 0.3s ease;
       }
       h2 {
@@ -434,13 +434,13 @@ export class BoopliScheduleWizard extends LitElement {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       label.inline {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 0;
       }
@@ -467,7 +467,7 @@ export class BoopliScheduleWizard extends LitElement {
       button.chip.big {
         min-width: 64px;
         min-height: 48px;
-        font-size: 16px;
+        font-size: 18px;
       }
       input.short {
         width: 90px;

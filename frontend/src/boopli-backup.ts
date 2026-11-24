@@ -1,4 +1,5 @@
 import { LitElement, css, html, nothing } from "lit";
+import { icon } from "./icon";
 import {
   BACKUP_PARTS,
   errorMessage,
@@ -244,7 +245,7 @@ export class BoopliBackup extends LitElement {
 
   private _renderExport() {
     return html`
-      <h2>💾 Export a backup</h2>
+      <h2>${icon("content-save-outline")} Export a backup</h2>
       <p>Save your setup to one file. Pick what goes in:</p>
       ${this._renderParts([...BACKUP_PARTS])}
       <p class="muted small">
@@ -262,7 +263,7 @@ export class BoopliBackup extends LitElement {
     const pre = this._preview;
     const changes = this._changes();
     return html`
-      <h2>💾 Import a backup</h2>
+      <h2>${icon("content-save-outline")} Import a backup</h2>
       <div class="field">
         <label for="file">Choose a backup file (${EXTENSION})</label>
         <input id="file" type="file" accept="${EXTENSION},.json,application/json" ?disabled=${this._busy} @change=${(e: Event) => void this._choose(e)} />
@@ -318,7 +319,7 @@ export class BoopliBackup extends LitElement {
     >
       <div class="box">
         ${this._done.length
-          ? html`<h2>💾 Done</h2>
+          ? html`<h2>${icon("check-circle-outline")} Done</h2>
               ${this._done.map((l) => html`<p>${l}</p>`)}
               <div class="foot"><button class="primary" @click=${this._close}>Close</button></div>`
           : this.mode === "export"
@@ -356,7 +357,7 @@ export class BoopliBackup extends LitElement {
       }
       h2 {
         margin: 0 0 10px;
-        font-size: 20px;
+        font-size: 22px;
       }
       .parts {
         display: grid;
@@ -386,7 +387,7 @@ export class BoopliBackup extends LitElement {
         margin: 8px 0;
       }
       .field label {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
       }
       .changes,
@@ -415,7 +416,7 @@ export class BoopliBackup extends LitElement {
         background: var(--card-background-color, var(--primary-background-color));
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .muted {
         color: var(--secondary-text-color);
@@ -429,7 +430,7 @@ export class BoopliBackup extends LitElement {
         border: none;
         padding: 0;
         min-height: 0;
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
         text-decoration: underline;
         cursor: pointer;
         font: inherit;

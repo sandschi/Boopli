@@ -1281,7 +1281,7 @@ export class BoopliSettings extends LitElement {
         gap: 10px;
       }
       .acc {
-        --sw: var(--primary-color);
+        --sw: var(--boopli-accent, var(--primary-color));
         display: inline-flex;
         align-items: center;
         gap: 8px;

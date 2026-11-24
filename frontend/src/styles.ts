@@ -29,11 +29,13 @@ export const sharedStyles = css`
   .dim {
     opacity: 0.6;
   }
+  /* No boxes: a thin line on top and space around. */
   .card {
-    background: var(--card-background-color, var(--primary-background-color));
-    border: 1px solid var(--divider-color);
-    border-radius: 14px;
-    padding: 16px;
+    background: none;
+    border: 0;
+    border-top: 2px solid var(--divider-color);
+    border-radius: 0;
+    padding: 14px 0 0;
   }
   button {
     font: inherit;

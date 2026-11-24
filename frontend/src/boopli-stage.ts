@@ -173,7 +173,7 @@ export class BoopliStage extends LitElement {
         container-type: size;
         border-radius: 14px;
         overflow: hidden;
-        background: color-mix(in srgb, var(--primary-color, #03a9f4) 10%, var(--secondary-background-color, #2a2a2a));
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 10%, var(--secondary-background-color, #2a2a2a));
       }
       .floor {
         position: absolute;

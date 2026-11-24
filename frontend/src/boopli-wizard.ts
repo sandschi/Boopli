@@ -1078,23 +1078,23 @@ export class BoopliWizard extends LitElement {
                   />
                   ${this._fn(id)}
                 </label>
-                ${cfg
-                  ? html`<div class="radios">
-                      ${(["blink", "indicator"] as const).map(
-                        (mode) => html`<label class="inline small">
-                          <input
-                            type="radio"
-                            name="mode-${id}"
-                            .checked=${cfg.mode === mode}
-                            @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
-                          />
-                          ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
-                        </label>`
-                      )}
-                      <button type="button" @click=${() => this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
-                    </div>
-                    ${this._noteLine(`light:${id}`)}`
-                  : nothing}
+                <!-- always shown (greyed out until the light is ticked), so every card is the same height -->
+                <div class="radios ${cfg ? "" : "off"}">
+                  ${(["blink", "indicator"] as const).map(
+                    (mode) => html`<label class="inline small">
+                      <input
+                        type="radio"
+                        name="mode-${id}"
+                        ?disabled=${!cfg}
+                        .checked=${cfg?.mode === mode}
+                        @change=${() => this._set({ lights: d.lights.map((l) => (l.entity_id === id ? { ...l, mode } : l)) })}
+                      />
+                      ${mode === "blink" ? "Blinks" : "Status light (stays on until done)"}
+                    </label>`
+                  )}
+                  <button type="button" ?disabled=${!cfg} @click=${() => cfg && this._try(`light:${id}`, () => testLight(this.hass!, cfg))}>Test</button>
+                </div>
+                ${cfg ? this._noteLine(`light:${id}`) : nothing}
               </div>`;
             })}
           </div>`}
@@ -1644,7 +1644,7 @@ export class BoopliWizard extends LitElement {
         gap: 4px;
       }
       .rail-title {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--secondary-text-color);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -1687,11 +1687,11 @@ export class BoopliWizard extends LitElement {
         flex: 0 0 24px;
         border-radius: 50%;
         border: 1px solid var(--divider-color);
-        font-size: 12px;
+        font-size: 14px;
       }
       .past .mark {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
+        border-color: var(--boopli-accent, var(--primary-color));
         color: var(--text-primary-color, #fff);
       }
       .main {
@@ -1721,7 +1721,7 @@ export class BoopliWizard extends LitElement {
       }
       .fill {
         height: 100%;
-        background: var(--primary-color);
+        background: var(--boopli-accent, var(--primary-color));
         transition: width 0.3s ease;
       }
       h2 {
@@ -1734,7 +1734,7 @@ export class BoopliWizard extends LitElement {
         max-width: 760px;
       }
       .small {
-        font-size: 13px;
+        font-size: 15px;
       }
       .optional {
         margin-bottom: 8px;
@@ -1786,6 +1786,9 @@ export class BoopliWizard extends LitElement {
         gap: 6px;
         padding-left: 28px;
       }
+      .radios.off {
+        opacity: 0.45;
+      }
       .note {
         flex-basis: 100%;
       }
@@ -1793,12 +1796,12 @@ export class BoopliWizard extends LitElement {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: var(--primary-text-color);
         margin: 0;
       }
       label.inline.small {
-        font-size: 14px;
+        font-size: 16px;
       }
       label.inline input {
         width: auto;
@@ -1819,7 +1822,7 @@ export class BoopliWizard extends LitElement {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        font-size: 13px;
+        font-size: 15px;
         margin: 0;
       }
       label.num.wide {
@@ -1843,7 +1846,7 @@ export class BoopliWizard extends LitElement {
         border-radius: 5px;
       }
       a {
-        color: var(--primary-color);
+        color: var(--boopli-accent, var(--primary-color));
       }
       .days {
         display: flex;
@@ -1885,7 +1888,7 @@ export class BoopliWizard extends LitElement {
       button.big {
         min-height: 52px;
         padding: 0 24px;
-        font-size: 16px;
+        font-size: 18px;
       }
       .actions {
         display: flex;

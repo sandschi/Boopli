@@ -467,7 +467,7 @@ export class BoopliPanel extends LitElement {
         gap: 12px;
         min-height: 56px;
         padding: 0 16px;
-        background: var(--app-header-background-color, var(--primary-color));
+        background: var(--app-header-background-color, var(--boopli-accent, var(--primary-color)));
         color: var(--app-header-text-color, #fff);
       }
       header h1 {
