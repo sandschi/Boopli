@@ -14,6 +14,10 @@ export default defineConfig({
 			logo: { src: './src/assets/slime.png', alt: '' },
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/boopli.css'],
+			components: {
+				ThemeProvider: './src/components/AlwaysDark.astro',
+				ThemeSelect: './src/components/NoThemeSelect.astro',
+			},
 			description: 'An ADHD-friendly chore and task companion that lives inside Home Assistant.',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/sandschi/Boopli' }],
 			editLink: { baseUrl: 'https://github.com/sandschi/Boopli/edit/main/docs-site/' },

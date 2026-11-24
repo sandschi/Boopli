@@ -27,9 +27,8 @@
 	--boopli-lilac: #a894e8;
 }
 
-/* dark (the default look) */
-:root,
-:root[data-theme='dark'] {
+/* the one look: dark */
+:root {
 	--sl-color-accent-low: #163a14;
 	--sl-color-accent: #3fa83c;
 	--sl-color-accent-high: #5ee05a;
@@ -46,24 +45,6 @@
 	--sl-color-hairline: #232920;
 	--sl-color-bg-nav: #101310;
 	--sl-color-bg-sidebar: #101310;
-}
-
-/* light */
-:root[data-theme='light'] {
-	--sl-color-accent-low: #d8f6d5;
-	--sl-color-accent: #2f8f2d;
-	--sl-color-accent-high: #1d6a1b;
-	--sl-color-white: #14210f;
-	--sl-color-gray-1: #1f2c1a;
-	--sl-color-gray-2: #384533;
-	--sl-color-gray-3: #5a6656;
-	--sl-color-gray-4: #7e8a7a;
-	--sl-color-gray-5: #c5cdc2;
-	--sl-color-gray-6: #e6ebe3;
-	--sl-color-gray-7: #f3f6f1;
-	--sl-color-black: #fbfdf9;
-	--sl-color-hairline-light: #d3dacf;
-	--sl-color-hairline: #e0e6dd;
 }
 
 h1,
