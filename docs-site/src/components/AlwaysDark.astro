@@ -1,0 +1,10 @@
+---
+// Boopli's site has one look: dark. This replaces Starlight's theme switch script.
+---
+
+<script is:inline>
+	document.documentElement.dataset.theme = 'dark';
+	try {
+		localStorage.setItem('starlight-theme', 'dark');
+	} catch {}
+</script>
