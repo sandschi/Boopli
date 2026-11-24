@@ -27,6 +27,7 @@ interface PhotosTool {
   photos: string[]; // shrunk JPEG data URLs
   working: boolean; // preparing or sending
   sending: boolean;
+  via: Via; // who is looking at the photos
 }
 
 /** Talking a room (or the whole home) out in the person's own AI chat. */
@@ -257,7 +258,7 @@ export class BoopliHome extends LitElement {
   private _openPhotos(room: Room): void {
     this._error = "";
     this._message = "";
-    this._tool = { kind: "photos", roomId: room.id, photos: [], working: false, sending: false };
+    this._tool = { kind: "photos", roomId: room.id, photos: [], working: false, sending: false, via: "agent" };
   }
 
   private _patchTool(patch: Partial<PhotosTool> | Partial<ChatTool> | Partial<FlatTool>): void {
@@ -286,15 +287,15 @@ export class BoopliHome extends LitElement {
     if (after?.kind === "photos" && after.roomId === roomId) this._patchTool({ working: false });
   }
 
-  private async _sendPhotos(): Promise<void> {
+  private async _sendPhotos(via: Via = "agent"): Promise<void> {
     const tool = this._tool;
     const room = tool?.kind === "photos" ? this._room(tool.roomId) : undefined;
     if (!this.hass || tool?.kind !== "photos" || !room || !tool.photos.length) return;
     this._error = "";
     const run = ++this._run;
-    this._patchTool({ working: true, sending: true });
+    this._patchTool({ working: true, sending: true, via });
     try {
-      const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos);
+      const result = await roomPhotos(this.hass, room.name, room.notes, tool.photos, via);
       if (run !== this._run) return; // the person stopped waiting
       this._review(room.id, "photos", result.notes); // the photos are gone with the tool
     } catch (err) {
@@ -617,15 +618,15 @@ export class BoopliHome extends LitElement {
         <button type="button" class="link" ?disabled=${tool.sending} @click=${() => (this._tool = null)}>Cancel</button>
       </div>
       <p class="muted">
-        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to your AI agent, which writes down what it
+        Take or pick up to ${MAX_PHOTOS} photos of this room. They go once to the helper you pick below (your AI agent, or Claude), which writes down what it
         sees. Boopli does not keep them: they are not saved anywhere, and later requests carry only the notes.
       </p>
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${tool.sending
         ? html`<boopli-wait
-            .label=${"The AI is looking at your photos…"}
+            .label=${tool.via === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, tool.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>`
         : html`
@@ -658,13 +659,27 @@ export class BoopliHome extends LitElement {
                   }}
                 />
               </label>
-              <button class="primary big" ?disabled=${!tool.photos.length || tool.working} @click=${() => this._sendPhotos()}>
-                Describe the room
-              </button>
+              ${agentOn(this.snapshot)
+                ? html`<button class="primary big" ?disabled=${!tool.photos.length || tool.working} @click=${() => this._sendPhotos("agent")}>
+                    Describe the room
+                  </button>`
+                : nothing}
+              ${claudeReady(this.snapshot)
+                ? html`<button
+                    class="${agentOn(this.snapshot) ? "" : "primary "}big"
+                    ?disabled=${!tool.photos.length || tool.working}
+                    @click=${() => this._sendPhotos("claude")}
+                  >
+                    ${icon("creation")} Ask Claude to describe it
+                  </button>`
+                : nothing}
             </div>
             <p class="muted small">
-              The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings
-              under AI help, Advanced.
+              ${agentOn(this.snapshot)
+                ? "The agent has to be able to read images. If it cannot, you can pick another one for photos in Settings under AI help, Advanced. "
+                : ""}${claudeReady(this.snapshot)
+                ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+                : ""}
             </p>
           `}
     </section>`;
@@ -795,11 +810,13 @@ export class BoopliHome extends LitElement {
       <div class="row-actions">
         ${aiOn
           ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room)}>
-                ${icon("auto-fix")} Let the AI ask me
-              </button>
-              <button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
-                ${icon("camera-outline")} From photos
-              </button>`
+              ${icon("auto-fix")} Let the AI ask me
+            </button>`
+          : nothing}
+        ${aiOn || claudeOn
+          ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._openPhotos(room)}>
+              ${icon("camera-outline")} From photos
+            </button>`
           : nothing}
         ${claudeOn
           ? html`<button type="button" class="textlink" ?disabled=${!room.name.trim() || this._busy} @click=${() => this._startInterview(room, "claude")}>

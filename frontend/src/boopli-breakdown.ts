@@ -104,6 +104,7 @@ export class BoopliBreakdown extends LitElement {
   private _askId = 0; // counts requests, so an answer the person stopped waiting for is dropped
   private _backPhase: Phase = "task";
   private _lookId = 0; // the same for the look at photos
+  private _lookVia: Via = "agent"; // who is looking at the photos right now
 
   constructor() {
     super();
@@ -275,16 +276,17 @@ export class BoopliBreakdown extends LitElement {
   }
 
   /** Send the photos once, keep only the text the agent writes about them. */
-  private async _look(): Promise<void> {
+  private async _look(via: Via = "agent"): Promise<void> {
     if (!this.hass || !this._photos.length || !this._task.trim()) return;
     this._error = "";
     const id = ++this._lookId;
+    this._lookVia = via;
     this._sending = true;
     this._looking = true;
     try {
       await this._guess();
       if (id !== this._lookId) return; // stopped while the rooms were being guessed: send nothing
-      const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms);
+      const result = await scenePhotos(this.hass, this._task.trim(), this._photos, this._rooms, via);
       if (id !== this._lookId) return; // the person stopped waiting
       this._scene = result.scene;
       this._photos = []; // the photos are gone; only the text goes on
@@ -307,7 +309,7 @@ export class BoopliBreakdown extends LitElement {
   }
 
   private _renderScene() {
-    if (!agentOn(this.snapshot)) return nothing; // photos go to the agent only
+    if (!anyAi(this.snapshot)) return nothing;
     if (this._scene) {
       return html`<div class="scene">
         <label for="scene">What the AI sees today (from your photos). Change anything that is wrong:</label>
@@ -333,7 +335,7 @@ export class BoopliBreakdown extends LitElement {
     const full = this._photos.length >= MAX_PHOTOS;
     return html`<div class="scene">
       <p class="muted small">
-        Take or pick up to ${MAX_PHOTOS} photos. They go once to your AI agent, which writes down what is out of place.
+        Take or pick up to ${MAX_PHOTOS} photos. They go once to the helper you pick below (your AI agent, or Claude), which writes down what is out of place.
         Boopli keeps no photo: you see the text it wrote, and only that text is used.
       </p>
       <div class="thumbs">
@@ -346,9 +348,9 @@ export class BoopliBreakdown extends LitElement {
       </div>
       ${this._sending
         ? html`<boopli-wait
-            .label=${"The AI is looking at your photos…"}
+            .label=${this._lookVia === "claude" ? "Claude is looking at your photos…" : "The AI is looking at your photos…"}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${this.snapshot?.ai_timeout ?? 180}
+            .max=${waitSeconds(this.snapshot, this._lookVia)}
             @stop-waiting=${() => this._stopLooking()}
           ></boopli-wait>`
         : this._looking
@@ -367,12 +369,29 @@ export class BoopliBreakdown extends LitElement {
                 }}
               />
             </label>
-            <button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look()}>
-              Look at the photos
-            </button>
+            ${agentOn(this.snapshot)
+              ? html`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
+                  Look at the photos
+                </button>`
+              : nothing}
+            ${claudeReady(this.snapshot)
+              ? html`<button
+                  class=${agentOn(this.snapshot) ? "" : "primary"}
+                  ?disabled=${!this._photos.length || !this._task.trim()}
+                  @click=${() => this._look("claude")}
+                >
+                  ${icon("creation")} Ask Claude to look
+                </button>`
+              : nothing}
             <button type="button" class="link" @click=${() => ((this._photosOpen = false), (this._photos = []))}>Cancel</button>
           </div>`}
-      <div class="muted small">The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced.</div>
+      <div class="muted small">
+        ${agentOn(this.snapshot)
+          ? "The agent has to be able to read images. You can pick another one for photos in Settings, under AI help, Advanced. "
+          : ""}${claudeReady(this.snapshot)
+          ? "Claude gets each photo through a link that stops working after a few minutes, and Boopli deletes the file right after the answer."
+          : ""}
+      </div>
     </div>`;
   }
 

@@ -22,6 +22,7 @@ from typing import Any
 from aiohttp import web
 
 from homeassistant.components import webhook
+from homeassistant.components.http.auth import async_sign_path
 from homeassistant.core import CALLBACK_TYPE, Event as HAEvent, HomeAssistant, callback
 from homeassistant.exceptions import (
     HomeAssistantError,
@@ -30,7 +31,7 @@ from homeassistant.exceptions import (
 )
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.network import NoURLAvailableError
+from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.helpers.event import (
     async_call_later,
     async_track_point_in_utc_time,
@@ -60,6 +61,7 @@ MAX_PHOTOS = 4  # per room, one time
 PHOTO_MAX_BYTES = 2_500_000  # each, after the panel shrank it
 VIA_AGENT = "agent"  # the user's Home Assistant AI agent (the normal way)
 VIA_CLAUDE = "claude"  # the optional Claude routine ("Ask Claude")
+PHOTO_LINK_SECONDS = 600  # how long the signed picture links Claude gets work
 PHOTO_DIR = "boopli_tmp"  # inside the media folder; emptied right after every request
 _PHOTO_KINDS = (  # (magic bytes, extension, mime type)
     (b"\xff\xd8\xff", ".jpg", "image/jpeg"),
@@ -1374,20 +1376,35 @@ class BoopliManager:
         await self._async_save_claude_secrets()
         self._notify()
 
-    def _claude_answer_url(self) -> str:
+    def _claude_base_url(self) -> str:
+        """The web address Claude reaches Home Assistant at (no slash at the end)."""
         base = self.settings.ai.claude_ha_url
         if base:
-            return f"{base.rstrip('/')}/api/webhook/{self._claude_webhook_id}"
+            return base.rstrip("/")
         try:
-            return webhook.async_generate_url(
-                self.hass, self._claude_webhook_id, allow_internal=False, allow_ip=False
-            )
+            return get_url(self.hass, allow_internal=False, prefer_external=True).rstrip("/")
         except NoURLAvailableError as err:
             raise BoopliError(
                 "Home Assistant has no web address that Claude can reach. "
                 "Fill in the Home Assistant address under Ask Claude, or set the "
                 "external URL in Home Assistant."
             ) from err
+
+    def _claude_answer_url(self) -> str:
+        return f"{self._claude_base_url()}/api/webhook/{self._claude_webhook_id}"
+
+    def _signed_photo_urls(self, dir_id: str, names: list[str]) -> list[str]:
+        """Links Claude can fetch the photos from. Each stops working after a few minutes."""
+        base = self._claude_base_url()
+        return [
+            base
+            + async_sign_path(
+                self.hass,
+                f"/media/{dir_id}/{PHOTO_DIR}/{name}",
+                timedelta(seconds=PHOTO_LINK_SECONDS),
+            )
+            for name in names
+        ]
 
     async def _handle_claude_webhook(
         self, hass: HomeAssistant, webhook_id: str, request: web.Request
@@ -1782,7 +1799,9 @@ class BoopliManager:
             raise
         return [(path, mime) for path, _data, mime in planned]
 
-    async def async_room_photos(self, room: str, notes: str, photos: Any) -> dict[str, Any]:
+    async def async_room_photos(
+        self, room: str, notes: str, photos: Any, via: str = VIA_AGENT
+    ) -> dict[str, Any]:
         """Ask the agent to describe a room from photos. The photos are never kept.
 
         They are written to a temporary file in the media folder only because Home
@@ -1794,12 +1813,12 @@ class BoopliManager:
             breakdown.ROOM_PHOTOS_PROMPT, name, None, notes
         )
         text = await self._ask_with_photos(
-            "Boopli: room photos", instructions, photos, breakdown.parse_room_notes
+            "Boopli: room photos", instructions, photos, breakdown.parse_room_notes, via
         )
         return {"notes": text}
 
     async def async_scene_from_photos(
-        self, task: str, photos: Any, rooms: list[str] | None = None
+        self, task: str, photos: Any, rooms: list[str] | None = None, via: str = VIA_AGENT
     ) -> dict[str, Any]:
         """Describe what a place looks like right now from photos, for one task.
 
@@ -1811,19 +1830,32 @@ class BoopliManager:
             raise BoopliError("Write what you want to get done first.")
         instructions = breakdown.scene_instructions(task, self.rooms_text(task, rooms)[0])
         text = await self._ask_with_photos(
-            "Boopli: what it looks like today", instructions, photos, breakdown.parse_room_notes
+            "Boopli: what it looks like today",
+            instructions,
+            photos,
+            breakdown.parse_room_notes,
+            via,
         )
         return {"scene": text[: breakdown.SCENE_MAX]}
 
     async def _ask_with_photos(
-        self, name: str, instructions: str, photos: Any, parse: Callable[[Any], str]
+        self,
+        name: str,
+        instructions: str,
+        photos: Any,
+        parse: Callable[[Any], str],
+        via: str = VIA_AGENT,
     ) -> str:
-        """Hand photos to the agent through temporary files, read its answer, delete the files.
+        """Hand photos to the agent (or Claude) through temporary files, read the answer, delete the files.
 
-        Home Assistant passes attachments as files in the media folder. Every file is
-        deleted right after the answer, also when the agent fails. Nothing is saved.
+        The agent gets the files as media-folder attachments. Claude gets short-lived signed
+        links to the same files and fetches them itself. Every file is deleted right after
+        the answer, also when the helper fails. Nothing is saved.
         """
+        via = self._check_via(via)
         decoded = self.decode_photos(photos)
+        if via == VIA_CLAUDE:
+            self._claude_base_url()  # fail early, before any file is written, when Claude cannot reach us
         dir_id, base = self._media_dir()
         folder = Path(base) / PHOTO_DIR
         planned = self._plan_photos(folder, decoded)
@@ -1851,13 +1883,19 @@ class BoopliManager:
         agent = self.settings.ai.photo_entity_id
         try:
             for attempt in (1, 2):
-                data = await self._run_agent(
-                    name,
-                    instructions,
-                    attachments=attachments,
-                    entity_id=agent,
-                    timeout=AI_PHOTO_TIMEOUT,
-                )
+                if via == VIA_CLAUDE:
+                    # New links for every try, so a slow first try cannot run them out.
+                    data = await self.async_ask_claude(
+                        instructions, self._signed_photo_urls(dir_id, [p.name for p, _ in written])
+                    )
+                else:
+                    data = await self._run_agent(
+                        name,
+                        instructions,
+                        attachments=attachments,
+                        entity_id=agent,
+                        timeout=AI_PHOTO_TIMEOUT,
+                    )
                 try:
                     return parse(data)
                 except breakdown.BreakdownError as err:

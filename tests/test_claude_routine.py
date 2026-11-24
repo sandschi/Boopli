@@ -354,3 +354,99 @@ def test_only_a_real_fire_address_is_saved():
 def test_the_extras_are_off_by_default():
     ai = engine.Settings().ai
     assert ai.claude_enabled is False and ai.claude_fire_url == "" and ai.claude_ha_url == ""
+
+
+# --- photos: Claude gets short-lived signed links, the files are deleted afterwards ----------------
+
+JPEG = b"\xff\xd8\xff\xe0" + b"fakejpegbytes" * 5
+
+
+def _photos(count=2):
+    import base64
+
+    return ["data:image/jpeg;base64," + base64.b64encode(JPEG + bytes([i])).decode() for i in range(count)]
+
+
+def with_media(coro_fn):
+    """Like run(), plus a media folder, a plain executor and a fake link signer."""
+    import tempfile
+
+    async def body(m, fake):
+        with tempfile.TemporaryDirectory() as media:
+            m.hass.config.media_dirs = {"local": media}
+
+            async def executor(fn, *args):
+                return fn(*args)
+
+            m.hass.async_add_executor_job = executor
+            signed = []
+
+            def sign(hass, path, expiration):
+                assert (Path(media) / manager_module.PHOTO_DIR / path.rsplit("/", 1)[1]).exists()  # the file is there when its link is made
+                signed.append((path, expiration.total_seconds()))
+                return path + "?authSig=SIGNED"
+
+            with patch.object(manager_module, "async_sign_path", sign):
+                await coro_fn(m, fake, Path(media), signed)
+
+    run(body)
+
+
+def test_claude_gets_signed_links_and_the_files_are_gone_afterwards():
+    async def body(m, fake, media, signed):
+        fake.answers = [{"notes": "A small kitchen with a sticky door."}]
+        result = await m.async_room_photos("Kitchen", "", _photos(2), via="claude")
+        assert result["notes"] == "A small kitchen with a sticky door."
+        text = fake.fires[0]["body"]["text"]
+        assert len(signed) == 2
+        for path, _seconds in signed:
+            assert f"https://ha.example.org{path}?authSig=SIGNED" in text
+            assert path.startswith(f"/media/local/{manager_module.PHOTO_DIR}/") and path.endswith(".jpg")
+        assert [s[1] for s in signed] == [manager_module.PHOTO_LINK_SECONDS] * 2  # a few minutes only
+        assert not (media / manager_module.PHOTO_DIR).exists()  # deleted (and the folder with them)
+        assert TOKEN not in text
+
+    with_media(body)
+
+
+def test_the_scene_from_photos_also_goes_to_claude():
+    async def body(m, fake, media, signed):
+        fake.answers = [{"notes": "Dishes in the sink."}]
+        result = await m.async_scene_from_photos("Tidy the kitchen", _photos(1), via="claude")
+        assert result["scene"] == "Dishes in the sink."
+        assert len(fake.fires) == 1
+
+    with_media(body)
+
+
+def test_files_are_deleted_also_when_claude_fails():
+    async def body(m, fake, media, signed):
+        fake.status = 401
+        with pytest.raises(manager_module.BoopliError):
+            await m.async_room_photos("Kitchen", "", _photos(2), via="claude")
+        assert not (media / manager_module.PHOTO_DIR).exists()
+
+    with_media(body)
+
+
+def test_nothing_is_written_when_claude_cannot_reach_home_assistant():
+    async def body(m, fake, media, signed):
+        m.settings.ai.claude_ha_url = ""
+        with patch.object(manager_module, "get_url", side_effect=manager_module.NoURLAvailableError):
+            with pytest.raises(manager_module.BoopliError) as err:
+                await m.async_room_photos("Kitchen", "", _photos(1), via="claude")
+        assert "web address" in str(err.value)
+        assert not (media / manager_module.PHOTO_DIR).exists()
+        assert fake.fires == []
+
+    with_media(body)
+
+
+def test_a_retry_after_an_unreadable_answer_gets_fresh_links():
+    async def body(m, fake, media, signed):
+        fake.answers = ["{ broken", {"notes": "Fine."}]
+        result = await m.async_room_photos("Kitchen", "", _photos(1), via="claude")
+        assert result["notes"] == "Fine."
+        assert len(fake.fires) == 2 and len(signed) == 2
+
+    with_media(body)

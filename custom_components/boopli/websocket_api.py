@@ -589,6 +589,7 @@ async def ws_ai_steps(
         vol.Required("room"): str,
         vol.Optional("notes", default=""): str,
         vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
+        vol.Optional("via", default="agent"): str,
     }
 )
 @websocket_api.async_response
@@ -601,7 +602,9 @@ async def ws_room_photos(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_room_photos(msg["room"], msg["notes"], msg["photos"])
+        result = await manager.async_room_photos(
+            msg["room"], msg["notes"], msg["photos"], msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return
@@ -614,6 +617,7 @@ async def ws_room_photos(
         vol.Required("task"): str,
         vol.Required("photos"): [str],  # base64, shrunk by the panel; never stored
         vol.Optional("rooms"): [str],  # the rooms whose notes help the agent
+        vol.Optional("via", default="agent"): str,
     }
 )
 @websocket_api.async_response
@@ -626,7 +630,9 @@ async def ws_scene_photos(
         _not_loaded(connection, msg)
         return
     try:
-        result = await manager.async_scene_from_photos(msg["task"], msg["photos"], msg.get("rooms"))
+        result = await manager.async_scene_from_photos(
+            msg["task"], msg["photos"], msg.get("rooms"), msg["via"]
+        )
     except BoopliError as err:
         connection.send_error(msg["id"], "ai_failed", str(err))
         return

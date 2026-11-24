@@ -299,9 +299,10 @@ export function roomPhotos(
   hass: Hass,
   room: string,
   notes: string,
-  photos: string[]
+  photos: string[],
+  via: Via = "agent"
 ): Promise<{ notes: string }> {
-  return hass.callWS({ type: "boopli/room_photos", room, notes, photos });
+  return hass.callWS({ type: "boopli/room_photos", room, notes, photos, via });
 }
 
 /** The text to copy into your own AI chat. An empty room means the whole home. */
@@ -363,8 +364,14 @@ export function partTime(hass: Hass, choreId: string, when: ParkWhen, at = ""): 
 }
 
 /** What a place looks like today, from a one-time look at photos. The photos are deleted right after. */
-export function scenePhotos(hass: Hass, task: string, photos: string[], rooms?: string[]): Promise<{ scene: string }> {
-  return hass.callWS({ type: "boopli/scene_photos", task, photos, ...(rooms ? { rooms } : {}) });
+export function scenePhotos(
+  hass: Hass,
+  task: string,
+  photos: string[],
+  rooms?: string[],
+  via: Via = "agent"
+): Promise<{ scene: string }> {
+  return hass.callWS({ type: "boopli/scene_photos", task, photos, via, ...(rooms ? { rooms } : {}) });
 }
 
 /** The Easter egg played. The first time it gives a small gift of XP. */
