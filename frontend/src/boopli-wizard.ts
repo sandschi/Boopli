@@ -1177,13 +1177,8 @@ export class BoopliWizard extends LitElement {
   private _soundBlock(which: "cue" | "alarm", s: SpeakerCfg, intro: string, level: SpeakerLevel) {
     const sound = s[which];
     return html`
-      <p>${intro}</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${sound.enabled} @change=${(e: Event) => this._patchSound(which, { enabled: (e.target as HTMLInputElement).checked })} />
-        Use this on ${this._fn(s.entity_id)}
-      </label>
-      ${sound.enabled
-        ? html`<div class="fields">
+      <p>${intro} Which nudge plays it is set in Nudge it your way.</p>
+      ${html`<div class="fields">
             <label class="num">
               Sound type
               <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
@@ -1207,8 +1202,7 @@ export class BoopliWizard extends LitElement {
               : nothing}
             <div><button type="button" @click=${() => this._try(`spk:${level}`, () => testSpeaker(this.hass!, s, level))}>Test</button></div>
             ${this._noteLine(`spk:${level}`)}
-          </div>`
-        : nothing}
+          </div>`}
     `;
   }
 
@@ -1218,39 +1212,34 @@ export class BoopliWizard extends LitElement {
     const targets = speechTargets(this.hass, sp.route, sp.target);
     return html`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${sp.enabled} @change=${(e: Event) => patch({ enabled: (e.target as HTMLInputElement).checked })} />
-        Say it on ${this._fn(s.entity_id)}
-      </label>
-      ${sp.enabled
-        ? html`<div class="fields">
+      ${html`<div class="fields">
             <label class="num">
               How
-              <select @change=${(e: Event) => patch({ route: (e.target as HTMLSelectElement).value as SpeechRoute, target: "" })}>
+              <select
+                @change=${(e: Event) => {
+                  const route = (e.target as HTMLSelectElement).value as SpeechRoute;
+                  // Another media player can only play files, not Amazon's sounds.
+                  const tone = (t: SpeakerCfg["cue"]) => (route === "tts" && t.kind === "alexa" ? { ...t, kind: "file" as SoundKind, sound: "" } : t);
+                  this._patchSpeaker((x) => ({ ...x, cue: tone(x.cue), alarm: tone(x.alarm), speech: { ...x.speech, route, target: "", enabled: false } }));
+                }}
+              >
                 ${ROUTES.map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}
               </select>
             </label>
             <label class="num">
               ${sp.route === "tts" ? "Voice" : "Alexa device"}
-              <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value })}>
+              <select @change=${(e: Event) => patch({ target: (e.target as HTMLSelectElement).value, enabled: !!(e.target as HTMLSelectElement).value })}>
                 <option value="" .selected=${sp.target === ""}>Choose…</option>
                 ${targets.map((t) => html`<option value=${t.value} .selected=${t.value === sp.target}>${t.label}</option>`)}
               </select>
             </label>
-            ${sp.route === "alexa_media"
-              ? html`<label class="inline small">
-                  <input type="checkbox" .checked=${sp.announce} @change=${(e: Event) => patch({ announce: (e.target as HTMLInputElement).checked })} />
-                  Announce with a chime (some Alexas stay silent, so test it)
-                </label>`
-              : nothing}
             <label class="num wide">
               The sentence ({chore} and {step} are filled in)
               <input .value=${d.speech_template} @input=${(e: Event) => this._set({ speech_template: (e.target as HTMLInputElement).value })} />
             </label>
             <div><button type="button" @click=${() => this._try("spk:speech", () => testSpeaker(this.hass!, s, "speech"))}>Test</button></div>
             ${this._noteLine("spk:speech")}
-          </div>`
-        : nothing}
+          </div>`}
     `;
   }
 

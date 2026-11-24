@@ -159,7 +159,7 @@ export class BoopliSpeakers extends LitElement {
   /** The ding and the alarm sound of a kind of speaker: the ones its speakers already have, or the first ones. */
   private _soundsFor(group: "alexa" | "other"): { cue: SoundCfg; alarm: SoundCfg } {
     const have = this._speakers().find((s) => this._group(s) === group);
-    if (have) return { cue: structuredClone(have.cue), alarm: structuredClone(have.alarm) };
+    if (have) return { cue: { ...structuredClone(have.cue), enabled: true }, alarm: { ...structuredClone(have.alarm), enabled: true } };
     const alexa = group === "alexa";
     return {
       cue: { enabled: true, kind: alexa ? "alexa" : "file", sound: alexa ? ALEXA_DING_SOUND : "", start_at: 1, seconds: 30, repeat_s: 5 },
@@ -273,7 +273,7 @@ export class BoopliSpeakers extends LitElement {
       ${kind === "alexa"
         ? html`<div class="muted small libhint">
             Pick an id from the <a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">Alexa sound library</a>,
-            for example <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
+            for example <code>amzn_sfx_doorbell_chime_01</code>. Use a Test button to hear it. Some ids stay silent.
           </div>`
         : nothing}
     `;

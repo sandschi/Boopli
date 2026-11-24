@@ -4670,7 +4670,7 @@ function ui(e) {
 	return {
 		entity_id: e,
 		cue: {
-			enabled: !1,
+			enabled: !0,
 			kind: "alexa",
 			sound: ai,
 			start_at: 1,
@@ -4685,7 +4685,7 @@ function ui(e) {
 			start_at: 2
 		},
 		alarm: {
-			enabled: !1,
+			enabled: !0,
 			kind: "alexa",
 			sound: ii,
 			start_at: 4,
@@ -4758,12 +4758,8 @@ function vi(e) {
 	return "Nudges allowed " + t.join(", ");
 }
 function yi(e) {
-	let t = [
-		e.cue.enabled ? `ding (from nudge ${e.cue.start_at})` : "",
-		e.speech.enabled ? `speech (from nudge ${e.speech.start_at})` : "",
-		e.alarm.enabled ? `alarm (from nudge ${e.alarm.start_at})` : ""
-	].filter(Boolean);
-	return t.length ? t.join(", ") : "nothing switched on yet";
+	let t = e.speech.route === "tts" ? "TTS voice" : e.speech.route === "alexa_devices" ? "Alexa Devices" : "Alexa Media Player";
+	return e.speech.target ? `${t}, speaks` : `${t}, no speaking device yet`;
 }
 function bi(e) {
 	return e.mode === "indicator" ? "status light (stays on until done)" : "blinks";
@@ -8184,8 +8180,14 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
 	_soundsFor(e) {
 		let t = this._speakers().find((t) => this._group(t) === e);
 		if (t) return {
-			cue: structuredClone(t.cue),
-			alarm: structuredClone(t.alarm)
+			cue: {
+				...structuredClone(t.cue),
+				enabled: !0
+			},
+			alarm: {
+				...structuredClone(t.alarm),
+				enabled: !0
+			}
 		};
 		let n = e === "alexa";
 		return {
@@ -8312,7 +8314,7 @@ var aa = "amzn_sfx_scifi_alarm_01", oa = "amzn_sfx_doorbell_chime_01", sa = "htt
       </label>
       ${e === "alexa" ? g`<div class="muted small libhint">
             Pick an id from the <a href=${sa} target="_blank" rel="noopener noreferrer">Alexa sound library</a>,
-            for example <code>amzn_sfx_doorbell_chime_01</code>. Press Test to hear it. Some ids stay silent.
+            for example <code>amzn_sfx_doorbell_chime_01</code>. Use a Test button to hear it. Some ids stay silent.
           </div>` : v}
     `;
 	}
@@ -14685,12 +14687,8 @@ var Mo = {
 	_soundBlock(e, t, n, r) {
 		let i = t[e];
 		return g`
-      <p>${n}</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${i.enabled} @change=${(t) => this._patchSound(e, { enabled: t.target.checked })} />
-        Use this on ${this._fn(t.entity_id)}
-      </label>
-      ${i.enabled ? g`<div class="fields">
+      <p>${n} Which nudge plays it is set in Nudge it your way.</p>
+      ${g`<div class="fields">
             <label class="num">
               Sound type
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
@@ -14710,7 +14708,7 @@ var Mo = {
                 ${this._numField("Repeats every (seconds, 0 = once)", i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : v}
             <div><button type="button" @click=${() => this._try(`spk:${r}`, () => ft(this.hass, t, r))}>Test</button></div>
             ${this._noteLine(`spk:${r}`)}
-          </div>` : v}
+          </div>`}
     `;
 	}
 	_renderSpkSpeech(e, t) {
@@ -14723,38 +14721,49 @@ var Mo = {
 		})), i = ci(this.hass, n.route, n.target);
 		return g`
       <p>The speaker says the step out loud, for example "Dishwasher: Empty it".</p>
-      <label class="inline option">
-        <input type="checkbox" .checked=${n.enabled} @change=${(e) => r({ enabled: e.target.checked })} />
-        Say it on ${this._fn(e.entity_id)}
-      </label>
-      ${n.enabled ? g`<div class="fields">
+      ${g`<div class="fields">
             <label class="num">
               How
-              <select @change=${(e) => r({
-			route: e.target.value,
-			target: ""
-		})}>
+              <select
+                @change=${(e) => {
+			let t = e.target.value, n = (e) => t === "tts" && e.kind === "alexa" ? {
+				...e,
+				kind: "file",
+				sound: ""
+			} : e;
+			this._patchSpeaker((e) => ({
+				...e,
+				cue: n(e.cue),
+				alarm: n(e.alarm),
+				speech: {
+					...e.speech,
+					route: t,
+					target: "",
+					enabled: !1
+				}
+			}));
+		}}
+              >
                 ${Bo.map((e) => g`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
               ${n.route === "tts" ? "Voice" : "Alexa device"}
-              <select @change=${(e) => r({ target: e.target.value })}>
+              <select @change=${(e) => r({
+			target: e.target.value,
+			enabled: !!e.target.value
+		})}>
                 <option value="" .selected=${n.target === ""}>Choose…</option>
                 ${i.map((e) => g`<option value=${e.value} .selected=${e.value === n.target}>${e.label}</option>`)}
               </select>
             </label>
-            ${n.route === "alexa_media" ? g`<label class="inline small">
-                  <input type="checkbox" .checked=${n.announce} @change=${(e) => r({ announce: e.target.checked })} />
-                  Announce with a chime (some Alexas stay silent, so test it)
-                </label>` : v}
             <label class="num wide">
               The sentence ({chore} and {step} are filled in)
               <input .value=${t.speech_template} @input=${(e) => this._set({ speech_template: e.target.value })} />
             </label>
             <div><button type="button" @click=${() => this._try("spk:speech", () => ft(this.hass, e, "speech"))}>Test</button></div>
             ${this._noteLine("spk:speech")}
-          </div>` : v}
+          </div>`}
     `;
 	}
 	_renderSpkWhen(e) {
