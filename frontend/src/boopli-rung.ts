@@ -22,7 +22,7 @@ export function speakerChoices(sp: SpeakerCfg, sounds: ExtraSound[] = []): { val
   const plays = (t?: { sound: string; kind: string }) => !!t?.sound && (t.kind !== "alexa" || alexa); // an Amazon sound needs an Alexa speaker
   if (plays(sp.cue)) out.push({ value: "cue", label: "A ding" });
   // your own sounds: a file plays on any speaker, an Alexa sound only on an Alexa one
-  for (const x of sounds) if (x.kind !== "alexa" || sp.speech?.route !== "tts") out.push({ value: `sound:${x.id}`, label: x.name });
+  for (const x of sounds) if (x.sound && (x.kind !== "alexa" || alexa)) out.push({ value: `sound:${x.id}`, label: x.name });
   if (sp.speech?.target) {
     out.push({ value: "speech", label: "Speaks" });
     // An announcement (starts with a chime) is something Alexa Media Player does.

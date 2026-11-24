@@ -125,6 +125,12 @@ export function newLadderId(): string {
 }
 
 /** The name of a nudge style, including one of your own ladders. A ladder that is gone is called that. */
+/** A stored built-in style ("escalating") as the standard ladder that replaced it, when there is one. */
+export function normalizeStyle(style: string, ladders: Ladder[] | undefined): string {
+  const id = { one: "standard_one", escalating: "standard_escalating", persistent: "standard_persistent" }[style];
+  return id && ladders?.some((l) => l.id === id) ? `ladder:${id}` : style;
+}
+
 export function styleLabel(style: string, ladders: Ladder[] | undefined): string {
   if (style.startsWith("ladder:")) {
     return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? "A ladder that is gone";

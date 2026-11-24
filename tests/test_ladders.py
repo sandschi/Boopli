@@ -282,6 +282,47 @@ def test_a_device_with_a_late_start_lengthens_the_persistent_ladder():
     assert "pixel" in persistent.rungs[4].phones
 
 
+def test_a_phones_new_level_reaches_the_standard_ladders():
+    old = engine.Settings(phones=[engine.PhoneCfg(service="pixel", level="normal", start_at=1)], standard_done=False)
+    engine.seed_standard_ladders(old)
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones[0].level = "alarm"
+    engine.sync_phone_levels_to_standard_ladders(old, new)
+    for ladder in new.ladders:
+        assert all(r.phones["pixel"] == "alarm" for r in ladder.rungs if "pixel" in r.phones)
+    assert any("pixel" in r.phones for l in new.ladders for r in l.rungs)
+
+
+def test_a_new_device_acts_in_every_later_persistent_nudge():
+    old = engine.Settings(standard_done=False)
+    old.phones.append(engine.PhoneCfg(service="old", level="normal", start_at=4))
+    engine.seed_standard_ladders(old)  # persistent has 4 nudges, the last one repeats
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.phones.append(engine.PhoneCfg(service="pixel", level="normal", start_at=1))
+    engine.add_new_devices_to_standard_ladders(old, new)
+    persistent = next(l for l in new.ladders if l.id == "standard_persistent")
+    assert all("pixel" in r.phones for r in persistent.rungs)
+
+
+def test_the_standard_ladders_cannot_be_deleted_but_your_own_can():
+    old = engine.Settings(standard_done=False)
+    engine.seed_standard_ladders(old)
+    old.ladders.append(engine.Ladder(id="mine", name="Mine", rungs=[engine.Rung()]))
+    new = engine.Settings.from_dict(engine.asdict(old))
+    new.ladders = [l for l in new.ladders if l.id != "mine"]
+    assert engine.deleted_standard_ladder(old, new) is None
+    new.ladders = [l for l in new.ladders if l.id != "standard_escalating"]
+    assert engine.deleted_standard_ladder(old, new) == "Escalating"
+
+
+def test_an_amazon_sound_cannot_be_tested_on_another_media_player():
+    tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_ALEXA, sound="amzn_sfx_x")
+    assert "only play files" in engine.validate_speaker_test(tv, engine.SPEAKER_CUE)
+    tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_FILE, sound="boopli/ding.mp3")
+    assert engine.validate_speaker_test(tv, engine.SPEAKER_CUE) is None
+
+
 def test_a_tts_speaker_can_be_saved_before_it_has_a_ding_file():
     tv = engine.SpeakerCfg(entity_id="media_player.tv", speech=engine.SpeechCfg(route=engine.SPEECH_TTS))
     tv.cue = engine.SoundCfg(enabled=True, kind=engine.SOUND_FILE, sound="")

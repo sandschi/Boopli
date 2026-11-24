@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { icon } from "./icon";
 import { deleteChore, errorMessage, saveChore } from "./api";
-import { hexToRgb, lightHasColor, rgbToHex } from "./helpers";
+import { hexToRgb, lightHasColor, normalizeStyle, rgbToHex } from "./helpers";
 import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
@@ -529,7 +529,7 @@ export class BoopliChoreEditor extends LitElement {
           <label for="style">How should Boopli nudge you?</label>
           <select
             id="style"
-            .value=${d.nudge_style ?? this.defaultStyle}
+            .value=${normalizeStyle(d.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
             @change=${(e: Event) =>
               this._update({ nudge_style: (e.target as HTMLSelectElement).value as NudgeStyle })}
           >
@@ -542,7 +542,7 @@ export class BoopliChoreEditor extends LitElement {
             ].map(
               (o) => html`<option
                 value=${o.value}
-                ?selected=${o.value === (d.nudge_style ?? this.defaultStyle)}
+                ?selected=${o.value === normalizeStyle(d.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
               >
                 ${o.label}
               </option>`

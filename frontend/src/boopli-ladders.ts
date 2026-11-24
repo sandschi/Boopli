@@ -3,7 +3,7 @@ import { icon } from "./icon";
 import { friendlyName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { speakerChoices } from "./boopli-rung";
 import { sharedStyles } from "./styles";
-import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot, SpeakerCfg } from "./types";
+import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot } from "./types";
 
 // The same limits as in the integration.
 const MAX_LADDERS = 20;
@@ -178,7 +178,11 @@ export class BoopliLadders extends LitElement {
     }
     for (const [id, choice] of Object.entries(r.speakers)) {
       const sp = this.settings?.speakers.find((x) => x.entity_id === id);
-      const label = speakerChoices(sp ?? ({ entity_id: id } as SpeakerCfg), this.settings?.sounds).find((c) => c.value === choice)?.label ?? choice;
+      if (!sp) {
+        parts.push(`${friendlyName(this.hass, id)} (not set up any more)`);
+        continue;
+      }
+      const label = speakerChoices(sp, this.settings?.sounds).find((c) => c.value === choice)?.label ?? choice;
       parts.push(`${friendlyName(this.hass, id)} (${label.toLowerCase()})`);
     }
     for (const id of r.alarms) parts.push(`${friendlyName(this.hass, id)} (alarm)`);
@@ -315,7 +319,7 @@ export class BoopliLadders extends LitElement {
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>
                   ${open ? "Close" : "Edit"}
                 </button>
-                <button class="chip danger" @click=${() => this._delete(l)}>Delete</button>
+                ${l.id.startsWith("standard_") ? nothing : html`<button class="chip danger" @click=${() => this._delete(l)}>Delete</button>`}
               </div>
               ${open
                 ? this._renderEditor(l)

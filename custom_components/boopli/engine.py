@@ -2171,6 +2171,31 @@ def seed_standard_ladders(settings: Settings) -> None:
     settings.standard_done = True
 
 
+STANDARD_LADDER_IDS = frozenset(ladder_id for ladder_id, _name in STANDARD_LADDERS.values())
+
+
+def deleted_standard_ladder(old: Settings, new: Settings) -> str | None:
+    """The name of a standard ladder (One nudge, Escalating, Persistent) that `new` lacks but `old` has: they cannot be deleted."""
+    kept = {ladder.id for ladder in new.ladders}
+    return next((l.name for l in old.ladders if l.id in STANDARD_LADDER_IDS and l.id not in kept), None)
+
+
+def sync_phone_levels_to_standard_ladders(old: Settings, new: Settings) -> None:
+    """A phone whose level was changed in the settings uses the new level in the standard ladders too."""
+    changed = {
+        p.service: p.level for p in new.phones if any(o.service == p.service and o.level != p.level for o in old.phones)
+    }
+    if not changed:
+        return
+    for ladder in new.ladders:
+        if ladder.id not in STANDARD_LADDER_IDS:
+            continue
+        for rung in ladder.rungs:
+            for service, level in changed.items():
+                if service in rung.phones:
+                    rung.phones[service] = level
+
+
 def add_new_devices_to_standard_ladders(old: Settings, new: Settings) -> None:
     """Devices added in `new` act in the standard ladders the way their "starts at nudge" says (the old behaviour)."""
     phones = [p for p in new.phones if all(o.service != p.service for o in old.phones)]
@@ -2190,7 +2215,10 @@ def add_new_devices_to_standard_ladders(old: Settings, new: Settings) -> None:
                 ladder.rungs.append(
                     Rung(gap=PERSISTENT_GAP, phones=dict(last.phones), lights=dict(last.lights), speakers=dict(last.speakers), alarms=list(last.alarms))
                 )
-        for rung, add in zip(ladder.rungs, extra):
+        pairs = list(zip(ladder.rungs, extra))
+        if style == STYLE_PERSISTENT and extra:  # the last nudge repeats, so the new devices keep acting in the rungs after it
+            pairs += [(rung, extra[-1]) for rung in ladder.rungs[len(extra):]]
+        for rung, add in pairs:
             rung.phones.update(add.phones)
             rung.lights.update(add.lights)
             rung.speakers.update(add.speakers)
@@ -2592,6 +2620,8 @@ def validate_speaker_test(speaker: SpeakerCfg, level: str, sounds: list[ExtraSou
     probe = speaker
     if level in (SPEAKER_CUE, SPEAKER_ALARM) and not (speaker.cue if level == SPEAKER_CUE else speaker.alarm).sound:
         return f"Choose the {level} sound for {speaker.entity_id} first."  # saving without one is fine; testing it is not
+    if level in (SPEAKER_CUE, SPEAKER_ALARM) and (speaker.cue if level == SPEAKER_CUE else speaker.alarm).kind == SOUND_ALEXA and not speaker_plays_alexa_sounds(speaker):
+        return "Another media player can only play files, not Amazon's sounds."
     if level == SPEAKER_CUE:
         probe = replace(speaker, cue=replace(speaker.cue, enabled=True))
     elif level in (SPEAKER_SPEECH, SPEAKER_SPEECH_CHIME):

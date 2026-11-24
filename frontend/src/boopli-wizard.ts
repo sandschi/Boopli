@@ -365,7 +365,15 @@ export class BoopliWizard extends LitElement {
   }
 
   private _patchSound(which: "cue" | "alarm", patch: Partial<SoundCfg>): void {
-    this._patchSpeaker((s) => ({ ...s, [which]: { ...s[which], ...patch } }));
+    // The ding and the alarm sound are one setting for each kind of speaker (Alexa, or another media player).
+    const cur = this._currentSpeaker();
+    if (!this._draft || !cur) return;
+    const alexa = cur.speech.route !== "tts";
+    this._set({
+      speakers: this._draft.speakers.map((s) =>
+        (s.speech.route !== "tts") === alexa ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s
+      ),
+    });
   }
 
   /** Called whenever a step is shown. */
@@ -654,6 +662,7 @@ export class BoopliWizard extends LitElement {
   private _renderLadStart(d: Settings) {
     const ladders = d.ladders ?? [];
     const none = ladders.length === 0;
+    const own = ladders.filter((l) => !l.id.startsWith("standard_")); // the standard ladders can be changed, not deleted
     const choice = (value: "create" | "edit" | "delete", label: string, text: string, disabled = false) => html`<label class="inline option">
       <input
         type="radio"
@@ -667,13 +676,13 @@ export class BoopliWizard extends LitElement {
     return html`
       ${choice("create", "Create a ladder", ladders.length >= MAX_LADDERS ? `You have ${MAX_LADDERS} ladders, the most.` : "A new list of nudges.", ladders.length >= MAX_LADDERS)}
       ${choice("edit", "Edit a ladder", none ? "You have no ladders yet." : "Change its name, its nudges or how it ends.", none)}
-      ${choice("delete", "Delete a ladder", none ? "You have no ladders yet." : "Remove one you do not need any more.", none)}
+      ${choice("delete", "Delete a ladder", own.length === 0 ? "Only your own ladders can be deleted. You have none." : "Remove one of your own that you do not need any more.", own.length === 0)}
       ${this._ladderAction !== "create" && !none
         ? html`<div class="field">
             <label for="ladpick">Which ladder?</label>
             <select id="ladpick" .value=${this._ladderPick} @change=${(e: Event) => (this._ladderPick = (e.target as HTMLSelectElement).value)}>
               <option value="" ?selected=${!this._ladderPick}>Pick a ladder…</option>
-              ${ladders.map(
+              ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
                   ${l.name} (${l.rungs.length} ${l.rungs.length === 1 ? "nudge" : "nudges"})
                 </option>`
@@ -1173,7 +1182,10 @@ export class BoopliWizard extends LitElement {
   private _adoptLadders(result: { ladders?: Settings["ladders"] } | void, sent: Settings): void {
     const ladders = result && result.ladders ? structuredClone(result.ladders) : sent.ladders;
     this._saved = { ...sent, ladders };
-    if (this._draft) this._draft = { ...this._draft, ladders: structuredClone(ladders) };
+    // Only if the ladders were not changed while the save was on its way (that edit would be lost).
+    if (this._draft && JSON.stringify(this._draft.ladders) === JSON.stringify(sent.ladders)) {
+      this._draft = { ...this._draft, ladders: structuredClone(ladders) };
+    }
   }
 
   private _noSpeaker() {
@@ -1188,7 +1200,7 @@ export class BoopliWizard extends LitElement {
             <label class="num">
               Sound type
               <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
-                ${SOUND_KINDS.map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
+                ${SOUND_KINDS.filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>
             <label class="num wide">

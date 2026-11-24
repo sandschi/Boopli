@@ -922,6 +922,8 @@ class BoopliManager:
     def save_settings(self, data: dict[str, Any]) -> None:
         """Replace the settings."""
         settings = engine.Settings.from_dict(data)
+        if (gone := engine.deleted_standard_ladder(self.settings, settings)) is not None:
+            raise BoopliError(f"The standard ladder '{gone}' can be changed but not deleted.")
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
@@ -937,6 +939,7 @@ class BoopliManager:
                     "Pick another nudge style for them first."
                 )
         # Devices added now act in the standard ladders the way they used to (their "starts at nudge").
+        engine.sync_phone_levels_to_standard_ladders(self.settings, settings)
         engine.add_new_devices_to_standard_ladders(self.settings, settings)
         settings.default_style = engine.normalize_style(settings.default_style, settings.ladders)
         self.settings = settings

@@ -230,7 +230,9 @@ export class BoopliSpeakers extends LitElement {
   /** Test one of your sounds on the first speaker that can play it. */
   private async _testExtra(sound: ExtraSound): Promise<void> {
     const key = `own:${sound.id}`;
-    const speaker = this._speakers().find((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
+    const fits = this._speakers().filter((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
+    // the first speaker that can play it and is there right now
+    const speaker = fits.find((s) => this.hass?.states[s.entity_id]?.state !== "unavailable") ?? fits[0];
     if (!speaker) {
       this._note(key, "Add a speaker that can play it first.");
       return;

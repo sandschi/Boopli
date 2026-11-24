@@ -51,6 +51,7 @@ export function inkFor(hex: string): string {
   const l = luminance(hex);
   const dark = (l + 0.05) / (luminance("#14210f") + 0.05);
   const white = 1.05 / (l + 0.05);
+  if (Math.max(dark, white) < 4.5) return "#000000"; // neither reads well enough: black is the strongest
   return dark >= white ? "#14210f" : "#ffffff";
 }
 

@@ -124,6 +124,9 @@ export const TILE_DEFS: TileDef[] = [
   },
 ];
 
+/** The smallest size (columns, rows) a new tile of a type is made at. Others can shrink to one cell. */
+const TILE_MIN_SIZE: Record<string, [number, number]> = { due_now: [3, 2] };
+
 export function tileDef(type: string): TileDef | undefined {
   return TILE_DEFS.find((d) => d.type === type);
 }
@@ -142,8 +145,10 @@ export function newTile(type: string, others: Tile[] = [], columns = 16, rows = 
   for (;;) {
     const spot = firstFit(others, columns, rows, w, h);
     if (spot) return { id: newLadderId(), type, ...spot, w, h, options };
-    if (w === 1 && h === 1) return null;
-    if (w >= h) w -= 1; // shrink the longer side first, so the shape stays about the same
+    // A tile never gets smaller than it can still be used at: "Due now" keeps its three buttons reachable.
+    const [minW, minH] = TILE_MIN_SIZE[type] ?? [1, 1];
+    if (w <= minW && h <= minH) return null;
+    if (w >= h ? w > minW : h <= minH) w -= 1; // shrink the longer side first, so the shape stays about the same
     else h -= 1;
   }
 }
