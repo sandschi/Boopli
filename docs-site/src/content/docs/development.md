@@ -18,3 +18,7 @@ pip install pytest
 pytest tests
 ```
 
+
+## Texts and translations
+
+The panel's texts are in `frontend/src/i18n/en.json` and are used with `t("key")`. Do not type a text directly into the code: `npm run i18n:check` (also part of `npm run build`) fails when it finds one. See [Translating Boopli](/Boopli/translating/).
