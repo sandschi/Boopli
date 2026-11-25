@@ -83,7 +83,14 @@
     "steps_count_one": "{count} step",
     "steps_count_other": "{count} steps",
     "nudges_count_one": "{count} nudge",
-    "nudges_count_other": "{count} nudges"
+    "nudges_count_other": "{count} nudges",
+    "alexa_sound_kind": "Kind of sound",
+    "alexa_sound_which": "Sound",
+    "alexa_sound_pick_kind": "Choose a kind of sound…",
+    "alexa_sound_own_in_use": "Your own ID is in use",
+    "alexa_sound_type_own": "Type an ID yourself",
+    "alexa_sound_library_name": "Alexa sound library",
+    "alexa_sound_library_hint": "These are the sounds from the {library} that play on Alexa speakers. Select Test to check whether your speaker can play the one you chose."
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Away mode pauses chores and nudges unless you select them below. Your pet rests until you come back.",
@@ -672,7 +679,6 @@
     "the_home_assistant_default_agent": "Home Assistant default agent"
   },
   "speakers": {
-    "alexa_sound_library": "Alexa sound library",
     "what_kind_of_speaker": "What kind of speaker",
     "no_alexa_devices_entities_found_is": "No Alexa Devices entities found. Is the integration installed?",
     "you_have_no_such_speaker_yet": "You have no such speaker yet.",
@@ -721,8 +727,7 @@
     "remove_alarm_device": "Remove alarm device {device}",
     "sound": "Sound {n}",
     "file": "File: {sound}",
-    "no_device_chosen_yet": "no device chosen yet",
-    "sound_library_hint": "Choose a sound ID from the {library}, for example <code>amzn_sfx_doorbell_chime_01</code>. Select Test to check whether your speaker can play it."
+    "no_device_chosen_yet": "no device chosen yet"
   },
   "stage": {
     "your_pets_room": "Your pet's room"
@@ -934,7 +939,6 @@
     "skip": "Skip",
     "which_speaker_do_you_want_to": "Which speaker do you want to set up? You can add more speakers afterwards.",
     "pick_a_speaker_first_press_back": "Select Back and choose a speaker first.",
-    "amazon_sound_library": "Amazon sound library",
     "the_speaker_says_the_step_out": "The speaker says the step out loud, for example \"Dishwasher: Empty it\".",
     "add_another_speaker": "Add another speaker",
     "optional_a_siren_switch_or_script": "Optional. Choose a siren, switch or script for the alarm. Boopli turns it off when the time runs out or you answer.",
@@ -1061,7 +1065,6 @@
     "which_phone_should_get_booplis_notifications": "Which phone should get Boopli's notifications? They have <b>{item}</b> and <b>{item2}</b> buttons, so you can answer without opening anything.",
     "which_lights_should_remind_you_each": "Choose the lights you want to use. <b>{item}</b> briefly flashes the light when a step is ready. <b>{item2}</b> stays on until you finish the step. This is optional.",
     "set_up": "<br />set up: {speaker}",
-    "amazon_sound_hint": "Copy a sound ID from the {library}. IDs start with <code>amzn_sfx_</code>, for example <code>amzn_sfx_doorbell_chime_01</code>. Select Test to check whether your speaker can play it.",
     "for_example_boopli_ding_mp3_in": "For example <code>boopli/ding.mp3</code> in your Home Assistant media folder.",
     "joins_the_standard_nudges_one_nudge": "{name} joins the standard nudges (One nudge, Escalating, Persistent) the way speakers always did: the ding first, then the spoken sentence, then the alarm. To change which nudge it acts at, open <b>{item}</b> in Settings.",
     "boopli_can_split_a_big_task": "Boopli can split a big chore into small steps. It asks a few questions first. AI agent: <b>{item}</b>.",

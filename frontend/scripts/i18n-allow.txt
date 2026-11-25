@@ -23,6 +23,8 @@ wall-night.ts: Fri
 wall-night.ts: Sat
 wall-night.ts: Sun
 boopli-egg.ts: MacIntel
+alexa-sound-picker.ts: amzn_sfx_…
+boopli-speakers.ts: Try the sounds
 helpers.ts: One nudge
 helpers.ts: Escalating
 helpers.ts: Persistent

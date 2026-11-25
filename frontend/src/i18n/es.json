@@ -83,7 +83,14 @@
     "steps_count_one": "{count} paso",
     "steps_count_other": "{count} pasos",
     "nudges_count_one": "{count} recordatorio",
-    "nudges_count_other": "{count} recordatorios"
+    "nudges_count_other": "{count} recordatorios",
+    "alexa_sound_kind": "Tipo de sonido",
+    "alexa_sound_which": "Sonido",
+    "alexa_sound_pick_kind": "Elige un tipo de sonido…",
+    "alexa_sound_own_in_use": "Se está usando tu propio ID",
+    "alexa_sound_type_own": "Escribir un ID tú mismo",
+    "alexa_sound_library_name": "biblioteca de sonidos de Alexa",
+    "alexa_sound_library_hint": "Estos son los sonidos de la {library} que suenan en los altavoces Alexa. Selecciona Probar para comprobar si tu altavoz puede reproducir el que elegiste."
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "El modo ausencia pausa las tareas y los recordatorios. Las tareas que selecciones abajo siguen activas y pueden enviarte recordatorios. Tu mascota descansa hasta que vuelvas.",
@@ -672,7 +679,6 @@
     "the_home_assistant_default_agent": "Agente predeterminado de Home Assistant"
   },
   "speakers": {
-    "alexa_sound_library": "Biblioteca de sonidos de Alexa",
     "what_kind_of_speaker": "Tipo de altavoz",
     "no_alexa_devices_entities_found_is": "Boopli no encuentra entidades de Alexa Devices. ¿Instalaste la integración?",
     "you_have_no_such_speaker_yet": "Aún no tienes altavoces de este tipo.",
@@ -721,8 +727,7 @@
     "remove_alarm_device": "Quitar el dispositivo de alarma {device}",
     "sound": "Sonido {n}",
     "file": "Archivo: {sound}",
-    "no_device_chosen_yet": "aún no se ha elegido un dispositivo",
-    "sound_library_hint": "Elige un ID de sonido de la {library}, por ejemplo, <code>amzn_sfx_doorbell_chime_01</code>. Selecciona «Probar» para comprobar si tu altavoz puede reproducirlo."
+    "no_device_chosen_yet": "aún no se ha elegido un dispositivo"
   },
   "stage": {
     "your_pets_room": "Habitación de tu mascota"
@@ -934,7 +939,6 @@
     "skip": "Saltar",
     "which_speaker_do_you_want_to": "¿Qué altavoz quieres configurar? Después puedes añadir más.",
     "pick_a_speaker_first_press_back": "Selecciona «Volver» y elige primero un altavoz.",
-    "amazon_sound_library": "Biblioteca de sonidos de Amazon",
     "the_speaker_says_the_step_out": "El altavoz lee el paso en voz alta, por ejemplo, «Lavavajillas: vaciarlo».",
     "add_another_speaker": "Añadir otro altavoz",
     "optional_a_siren_switch_or_script": "Opcional. Elige una sirena, un interruptor o un script para la alarma. Boopli lo desactiva cuando se acaba el tiempo o cuando respondes.",
@@ -1061,7 +1065,6 @@
     "which_phone_should_get_booplis_notifications": "¿En qué teléfono quieres recibir las notificaciones de Boopli? Tienen los botones <b>{item}</b> y <b>{item2}</b> para que puedas responder sin abrir nada.",
     "which_lights_should_remind_you_each": "Elige las luces que quieras usar. Con <b>{item}</b>, la luz parpadea un momento cuando el paso está listo. Con <b>{item2}</b>, se queda encendida hasta que termines el paso. Esto es opcional.",
     "set_up": "<br />Configurado: {speaker}",
-    "amazon_sound_hint": "Copia un ID de sonido de la {library}. Los ID empiezan por <code>amzn_sfx_</code>, por ejemplo, <code>amzn_sfx_doorbell_chime_01</code>. Selecciona «Probar» para comprobar si tu altavoz puede reproducirlo.",
     "for_example_boopli_ding_mp3_in": "Por ejemplo, <code>boopli/ding.mp3</code> en tu carpeta de medios de Home Assistant.",
     "joins_the_standard_nudges_one_nudge": "{name} se usa en las estilos de recordatorios estándar («Un recordatorio», «Recordatorios progresivos» y «Recordatorios repetidos»), como siempre con los altavoces: primero el sonido breve, luego la frase en voz alta y después la alarma. Para cambiar en qué recordatorio se usa, abre <b>{item}</b> en «Configuración».",
     "boopli_can_split_a_big_task": "Boopli puede dividir una tarea grande en pasos pequeños. Primero te hace unas preguntas. Agente de IA: <b>{item}</b>.",

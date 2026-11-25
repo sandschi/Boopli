@@ -83,7 +83,14 @@
     "steps_count_one": "{count} étape",
     "steps_count_other": "{count} étapes",
     "nudges_count_one": "{count} rappel",
-    "nudges_count_other": "{count} rappels"
+    "nudges_count_other": "{count} rappels",
+    "alexa_sound_kind": "Type de son",
+    "alexa_sound_which": "Son",
+    "alexa_sound_pick_kind": "Choisis un type de son…",
+    "alexa_sound_own_in_use": "Ton propre identifiant est utilisé",
+    "alexa_sound_type_own": "Saisir un identifiant toi-même",
+    "alexa_sound_library_name": "bibliothèque de sons Alexa",
+    "alexa_sound_library_hint": "Voici les sons de la {library} qui se jouent sur les enceintes Alexa. Sélectionne Tester pour vérifier que ton enceinte peut jouer le son choisi."
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Le mode absence met les tâches et les rappels en pause, sauf pour les tâches que tu sélectionnes ci-dessous. Ton animal se repose jusqu’à ton retour.",
@@ -672,7 +679,6 @@
     "the_home_assistant_default_agent": "agent par défaut de Home Assistant"
   },
   "speakers": {
-    "alexa_sound_library": "Bibliothèque de sons Alexa",
     "what_kind_of_speaker": "Type d’enceinte",
     "no_alexa_devices_entities_found_is": "Boopli ne trouve aucune entité Alexa Devices. L’intégration est-elle installée ?",
     "you_have_no_such_speaker_yet": "Tu n’as pas encore configuré d’enceinte de ce type.",
@@ -721,8 +727,7 @@
     "remove_alarm_device": "Retirer l’appareil d’alarme {device}",
     "sound": "Son {n}",
     "file": "Fichier : {sound}",
-    "no_device_chosen_yet": "aucun appareil choisi pour l’instant",
-    "sound_library_hint": "Choisis un ID de son dans la {library}, par exemple <code>amzn_sfx_doorbell_chime_01</code>. Sélectionne « Tester » pour vérifier si ton enceinte peut le jouer."
+    "no_device_chosen_yet": "aucun appareil choisi pour l’instant"
   },
   "stage": {
     "your_pets_room": "La pièce de ton animal"
@@ -934,7 +939,6 @@
     "skip": "Passer",
     "which_speaker_do_you_want_to": "Quelle enceinte veux-tu configurer ? Tu pourras en ajouter d’autres ensuite.",
     "pick_a_speaker_first_press_back": "Sélectionne « Retour » et choisis d’abord une enceinte.",
-    "amazon_sound_library": "bibliothèque de sons Amazon",
     "the_speaker_says_the_step_out": "L’enceinte lit l’étape à voix haute, par exemple « Lave-vaisselle : le vider ».",
     "add_another_speaker": "Ajouter une enceinte",
     "optional_a_siren_switch_or_script": "Facultatif. Choisis une sirène, un interrupteur ou un script pour l’alarme. Boopli désactive l’alarme quand le temps est écoulé ou quand tu réponds.",
@@ -1061,7 +1065,6 @@
     "which_phone_should_get_booplis_notifications": "Sur quel téléphone veux-tu recevoir les notifications de Boopli ? Tu pourras répondre avec les boutons <b>{item}</b> et <b>{item2}</b> sans rien ouvrir.",
     "which_lights_should_remind_you_each": "Choisis les lampes que tu veux utiliser. <b>{item}</b> : la lampe clignote brièvement quand une étape est prête. <b>{item2}</b> : elle reste allumée jusqu’à la fin de l’étape. Tu peux passer cette partie.",
     "set_up": "<br />Enceinte configurée : {speaker}",
-    "amazon_sound_hint": "Copie un ID de son dans la {library}. Les ID commencent par <code>amzn_sfx_</code>, par exemple <code>amzn_sfx_doorbell_chime_01</code>. Sélectionne « Tester » pour vérifier si ton enceinte peut jouer ce son.",
     "for_example_boopli_ding_mp3_in": "Par exemple <code>boopli/ding.mp3</code> dans ton dossier médias de Home Assistant.",
     "joins_the_standard_nudges_one_nudge": "{name} intervient dans les séries standard (« Un rappel », « Rappels progressifs », « Rappels répétés »). Comme d’habitude avec les enceintes, il y a d’abord le son bref, puis la phrase lue à voix haute, puis l’alarme. Pour changer le rappel auquel l’enceinte intervient, ouvre « <b>{item}</b> » dans « Paramètres ».",
     "boopli_can_split_a_big_task": "Boopli peut découper une grosse tâche en petites étapes. Il te pose d’abord quelques questions. Agent utilisé : <b>{item}</b>.",

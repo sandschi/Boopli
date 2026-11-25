@@ -17,7 +17,9 @@ function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) return name === "i18n" ? [] : walk(full);
-    return full.endsWith(".ts") ? [full] : [];
+    // alexa-sounds.ts is Amazon's sound list: names stay as Amazon writes them, so it is data, not interface text.
+    // boopli-sound-test.ts is a temporary tool for the maintainer (English only, to be deleted).
+    return full.endsWith(".ts") && name !== "alexa-sounds.ts" && name !== "boopli-sound-test.ts" ? [full] : [];
   });
 }
 

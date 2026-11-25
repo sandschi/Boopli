@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { alexaSoundPicker } from "./alexa-sound-picker";
 import {
   aiSteps,
   errorMessage,
@@ -201,8 +202,6 @@ const SOUND_KINDS = (): { value: SoundKind; label: string }[] => [
   { value: "file", label: t("common.file_in_my_media_folder") },
 ];
 
-const SOUND_LIBRARY_URL =
-  "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html";
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
 
 /**
@@ -1207,15 +1206,13 @@ export class BoopliWizard extends LitElement {
                 ${SOUND_KINDS().filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>
-            <label class="num wide">
-              ${sound.kind === "alexa" ? t("common.alexa_sound_id") : t("wizard.file_in_the_media_folder_or")}
-              <input .value=${sound.sound} @input=${(e: Event) => this._patchSound(which, { sound: (e.target as HTMLInputElement).value })} />
-            </label>
             ${sound.kind === "alexa"
-              ? html`<div class="muted small">
-                  ${rich("wizard.amazon_sound_hint", { library: html`<a href=${SOUND_LIBRARY_URL} target="_blank" rel="noreferrer">${t("wizard.amazon_sound_library")}</a>` })}
-                </div>`
-              : html`<div class="muted small">${rich("wizard.for_example_boopli_ding_mp3_in")}</div>`}
+              ? alexaSoundPicker(sound.sound, (id) => this._patchSound(which, { sound: id }))
+              : html`<label class="num wide">
+                    ${t("wizard.file_in_the_media_folder_or")}
+                    <input .value=${sound.sound} @input=${(e: Event) => this._patchSound(which, { sound: (e.target as HTMLInputElement).value })} />
+                  </label>
+                  <div class="muted small">${rich("wizard.for_example_boopli_ding_mp3_in")}</div>`}
             ${which === "alarm"
               ? html`${this._numField(t("wizard.lasts_seconds"), sound.seconds, 3, 600, (n) => this._patchSound("alarm", { seconds: n }))}
                 ${this._numField(t("wizard.repeats_every_seconds_0_once"), sound.repeat_s, 0, 60, (n) => this._patchSound("alarm", { repeat_s: n }))}`
