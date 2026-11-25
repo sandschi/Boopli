@@ -34,6 +34,32 @@
         }
       }
     },
+    "break_down": {
+      "name": "Break down chore",
+      "description": "Splits a chore into small steps with your Home Assistant AI agent and returns them. AI help must be switched on.",
+      "fields": {
+        "task": {
+          "name": "Chore",
+          "description": "What needs doing."
+        },
+        "kind": {
+          "name": "Kind",
+          "description": "now for a one-time chore, recurring for a chore with a schedule."
+        },
+        "answers": {
+          "name": "Answers",
+          "description": "Optional answers to the questions the AI asked, as a list of questions and answers."
+        },
+        "notes": {
+          "name": "Notes",
+          "description": "Optional notes about the room, sent along with the chore."
+        },
+        "rooms": {
+          "name": "Rooms",
+          "description": "Optional list of rooms whose notes are sent along. If you leave this out, Boopli guesses the rooms from the chore, like in the panel."
+        }
+      }
+    },
     "start_chore": {
       "name": "Start chore",
       "description": "Starts a chore now, for example an on-demand chore like laundry.",

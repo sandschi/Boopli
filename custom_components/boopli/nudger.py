@@ -18,6 +18,7 @@ from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 from homeassistant.util import dt as dt_util
 
 from . import engine
+from .phone_texts import phone_texts_for
 
 if TYPE_CHECKING:
     from .manager import BoopliManager
@@ -40,6 +41,10 @@ class BoopliNudger:
         self._blink_owner: dict[str, str] = {}  # light entity -> step key that started its blink
         # Alarms that are sounding: target entity -> (step key, task)
         self._alarms: dict[str, tuple[str, asyncio.Task[None]]] = {}
+
+    def _texts(self) -> dict[str, str]:
+        """The buttons and sentences phones and speakers get, in the language of Home Assistant."""
+        return phone_texts_for(self.hass.config.language)
 
     # --- lifecycle -------------------------------------------------------
 
@@ -131,6 +136,7 @@ class BoopliNudger:
                 settings.snooze_minutes,
                 image,
                 self.manager.media_id(),
+                self._texts(),
             )
             await self._notify(phone.service, payload)
 
@@ -183,6 +189,7 @@ class BoopliNudger:
                 settings.snooze_minutes,
                 image,
                 self.manager.media_id(),
+                self._texts(),
             )
             await self._notify(service, payload)
 
@@ -194,7 +201,7 @@ class BoopliNudger:
             return
         since = engine.parse_ts(step.on_it_since).astimezone(self.manager.tz).strftime("%H:%M")
         payload = engine.on_it_payload(
-            run.id, step.step_id, run.chore_name, step.title, since, step.image, self.manager.media_id()
+            run.id, step.step_id, run.chore_name, step.title, since, step.image, self.manager.media_id(), self._texts()
         )
         if step.nudge_count > 0:
             manager = self.manager
@@ -217,7 +224,7 @@ class BoopliNudger:
         shown the green notification, so every phone that has one gets it replaced.
         """
         payload = engine.check_in_payload(
-            run_id, step_id, chore_name, step_title, image, self.manager.media_id()
+            run_id, step_id, chore_name, step_title, image, self.manager.media_id(), self._texts()
         )
         manager = self.manager
         run = manager.runs.get(run_id)
@@ -239,7 +246,7 @@ class BoopliNudger:
         if not (chore and chore.ignore_quiet_hours):
             if engine.quiet_ends(now, manager.settings.quiet_hours, manager.tz) is not None:
                 return
-        payload = engine.questions_payload(run.id, run.chore_name, len(run.questions))
+        payload = engine.questions_payload(run.id, run.chore_name, len(run.questions), self._texts())
         for phone in engine.phones_reached(manager.settings, manager.style_for(run), 1):
             await self._notify(phone.service, payload)
 
@@ -508,30 +515,38 @@ class BoopliNudger:
         """Try a light with the settings on screen so the user sees the nudge."""
         state = self._light_info(light)
         if state is None:
-            return {"ok": False, "note": "That light is not available right now."}
+            return {"ok": False, "note": engine.Msg("That light is not available right now.")}
         if light.mode == engine.LIGHT_BLINK:
             if self._start_blink(light, state) is None:
-                return {"ok": True, "mode": light.mode, "note": "It is still blinking."}
+                return {"ok": True, "mode": light.mode, "note": engine.Msg("It is still blinking.")}
             return {
                 "ok": True,
                 "mode": light.mode,
-                "note": f"Blinking {light.repeats}x, about {light.blink_seconds():.1f} "
-                "seconds. The light goes back to how it was afterwards.",
+                "note": engine.Msg(
+                    "Blinking {repeats}x, about {seconds} seconds. The light goes back to how it was afterwards.",
+                    repeats=light.repeats,
+                    seconds=f"{light.blink_seconds():.1f}",
+                ),
             }
         if state.state == "on":
             return {
                 "ok": True,
                 "mode": light.mode,
-                "note": "An indicator lamp switches on in a color until you are done. "
-                "This light is on already, so turn it off and test again to see it.",
+                "note": engine.Msg(
+                    "An indicator lamp switches on in a color until you are done. "
+                    "This light is on already, so turn it off and test again to see it."
+                ),
             }
         await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
         self.hass.async_create_task(self._indicator_test_off(light.entity_id))
         return {
             "ok": True,
             "mode": light.mode,
-            "note": "An indicator lamp stays on in a color until you are done. "
-            f"For this test it switches on for {INDICATOR_TEST_SECONDS} seconds.",
+            "note": engine.Msg(
+                "An indicator lamp stays on in a color until you are done. "
+                "For this test it switches on for {seconds} seconds.",
+                seconds=INDICATOR_TEST_SECONDS,
+            ),
         }
 
     async def _indicator_test_off(self, entity_id: str) -> None:
@@ -545,9 +560,9 @@ class BoopliNudger:
         sounds = self.manager.settings.sounds if sounds is None else sounds
         extra = engine.find_sound(sounds, level)
         if extra is None and level not in engine.SPEAKER_LEVELS and level != engine.SPEAKER_SPEECH_CHIME:
-            return {"ok": False, "note": "Choose which speaker sound to test."}
+            return {"ok": False, "note": engine.Msg("Choose which speaker sound to test.")}
         if not self._speaker_available(speaker.entity_id):
-            return {"ok": False, "note": "That speaker is not available right now."}
+            return {"ok": False, "note": engine.Msg("That speaker is not available right now.")}
         if level == engine.SPEAKER_ALARM:
             # One play only, so a test never rings for long.
             ok = await self._call(
@@ -558,15 +573,22 @@ class BoopliNudger:
                     **engine.sound_play_data(speaker.alarm.kind, speaker.alarm.sound),
                 },
             )
-            note = "Playing the alarm sound once."
+            note = engine.Msg("Playing the alarm sound once.")
         else:
             announce = True if level == engine.SPEAKER_SPEECH_CHIME else None
+            texts = self._texts()
             ok = await self._play_speaker(
-                speaker, level, "Boopli test", "Dishwasher: empty it", "test", announce, sounds
+                speaker,
+                level,
+                engine.phone_text(texts, "test_title"),
+                engine.phone_text(texts, "test_speech"),
+                "test",
+                announce,
+                sounds,
             )
             playing = extra is not None or level == engine.SPEAKER_CUE
-            note = "Playing the sound." if playing else "Speaking."
-        return {"ok": ok, "note": note if ok else "Boopli could not send that."}
+            note = engine.Msg("Playing the sound.") if playing else engine.Msg("Speaking.")
+        return {"ok": ok, "note": note if ok else engine.Msg("Boopli could not send that.")}
 
     async def async_test_alarm_device(
         self, device: engine.AlarmDeviceCfg
@@ -574,28 +596,30 @@ class BoopliNudger:
         """Switch an alarm device on for a few seconds."""
         state = self.hass.states.get(device.entity_id)
         if state is None or state.state == "unavailable":
-            return {"ok": False, "note": "That device is not available right now."}
+            return {"ok": False, "note": engine.Msg("That device is not available right now.")}
         short = engine.AlarmDeviceCfg(device.entity_id, ALARM_TEST_SECONDS, device.start_at)
         started = self._start_device_alarm(short, "test")
         return {
             "ok": started,
-            "note": f"On for {ALARM_TEST_SECONDS} seconds, then off."
+            "note": engine.Msg("On for {seconds} seconds, then off.", seconds=ALARM_TEST_SECONDS)
             if started
-            else "It is already on.",
+            else engine.Msg("It is already on."),
         }
 
     async def async_test_phone(self, phone: engine.PhoneCfg) -> dict[str, Any]:
         """Send a test notification to a phone."""
+        texts = self._texts()
         payload = engine.phone_payload(
             phone.level,
             "test",
             "test",
-            "Boopli test",
-            "This is a test of your Boopli notification.",
+            engine.phone_text(texts, "test_title"),
+            engine.phone_text(texts, "test_message"),
             self.manager.settings.snooze_minutes,
+            texts=texts,
         )
         ok = await self._notify(phone.service, payload)
         return {
             "ok": ok,
-            "note": "Sent." if ok else "That phone service was not found.",
+            "note": engine.Msg("Sent.") if ok else engine.Msg("That phone service was not found."),
         }

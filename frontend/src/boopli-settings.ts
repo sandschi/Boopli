@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testPhone } from "./api";
+import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testNote, testPhone } from "./api";
 import type { WizardId } from "./boopli-wizard";
 import {
   describeQuiet,
@@ -326,7 +326,7 @@ export class BoopliSettings extends LitElement {
     this._note(`phone:${service}`, t("common.sending"));
     try {
       const result = await testPhone(this.hass, { service, level, start_at: 1 });
-      this._note(`phone:${service}`, result.note);
+      this._note(`phone:${service}`, testNote(result));
     } catch (err) {
       this._note(`phone:${service}`, errorMessage(err));
     }
@@ -394,7 +394,7 @@ export class BoopliSettings extends LitElement {
     this._note(`light:${light.entity_id}`, t("common.testing"));
     try {
       const result = await testLight(this.hass, light);
-      this._note(`light:${light.entity_id}`, result.note);
+      this._note(`light:${light.entity_id}`, testNote(result));
     } catch (err) {
       this._note(`light:${light.entity_id}`, errorMessage(err));
     }

@@ -725,9 +725,9 @@ var qe = {
 		a_few_questions: "Ein paar Fragen",
 		claude_asks_left_one: "In dieser Stunde ist noch {count} Anfrage an Claude frei. Jede Fragerunde und jede Schrittliste zählen jeweils als eine Anfrage.",
 		claude_asks_left_other: "In dieser Stunde sind noch {count} Anfragen an Claude frei. Jede Fragerunde und jede Schrittliste zählen jeweils als eine Anfrage.",
-		letter_small: "K",
+		letter_small: "S",
 		letter_medium: "M",
-		letter_big: "G",
+		letter_big: "L",
 		small_quick_and_easy: "Klein: geht schnell und leicht",
 		medium_takes_some_effort: "Mittel: etwas aufwendiger",
 		big_hard_or_long: "Groß: ist schwer oder dauert länger",
@@ -1636,7 +1636,7 @@ var qe = {
 		tap_switches_it: "Aktion der Entität ausführen",
 		tap_does_nothing: "Nur Zustand anzeigen"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Ein Backup kann höchstens {max_chores} Aufgaben enthalten.\",\"a_chore_can_ask_at_most_questions_61df\":\"Eine Aufgabe kann höchstens {max_questions} Fragen stellen.\",\"a_chore_can_have_at_most_steps_8780\":\"Eine Aufgabe kann höchstens {max_steps} Schritte haben.\",\"a_chore_needs_a_name_4f84\":\"Eine Aufgabe braucht einen Namen.\",\"a_chore_needs_at_least_one_step_2a00\":\"Eine Aufgabe braucht mindestens einen Schritt.\",\"a_day_can_have_1_to_times_e106\":\"Pro Tag sind 1 bis {max_times_per_day} Uhrzeiten möglich.\",\"a_light_can_blink_to_times_1a51\":\"Ein Licht kann {repeats_min} bis {repeats_max} Mal blinken.\",\"a_light_color_needs_three_values_from_e686\":\"Gib für die Lichtfarbe drei Werte von 0 bis 255 ein.\",\"a_light_must_be_a_light_entity_23fe\":\"Wähle eine light-Entität für das Licht.\",\"a_nudge_sequence_name_can_have_up_9261\":\"Der Name einer Stups-Kette darf höchstens {ladder_name_max} Zeichen lang sein.\",\"a_phone_must_be_a_notify_service_4918\":\"Gib für das Handy den Namen eines notify-Dienstes an.\",\"a_prompt_can_have_up_to_characters_5004\":\"Die KI-Anweisung darf höchstens {ai_prompt_max} Zeichen lang sein.\",\"a_question_can_have_up_to_characters_fb9e\":\"Eine Frage darf höchstens {question_max} Zeichen lang sein.\",\"a_sound_name_can_have_up_to_3055\":\"Der Name eines Tons darf höchstens {extra_sound_name_max} Zeichen lang sein.\",\"a_speaker_must_be_a_media_player_9b44\":\"Wähle eine media_player-Entität als Lautsprecher.\",\"a_step_can_have_up_to_conditions_676d\":\"Ein Schritt kann höchstens {max_triggers} Bedingungen haben, unter denen er sich von selbst erledigt.\",\"a_step_can_have_up_to_wait_30ad\":\"Ein Schritt kann auf höchstens {max_triggers} Bedingungen warten.\",\"a_step_is_small_medium_or_big_84cd\":\"Wähle für den Schritt „Klein“, „Mittel“ oder „Groß“.\",\"a_step_title_can_have_up_to_13b4\":\"Der Titel eines Schritts darf höchstens {step_title_max} Zeichen lang sein.\",\"a_tile_has_a_size_that_does_545b\":\"Eine Kachel vom Typ „{type}“ ist für „{name}“ zu groß oder zu klein.\",\"a_tile_has_an_unknown_56c1\":\"Eine Kachel vom Typ „{type}“ auf „{name}“ hat einen unbekannten Wert für „{key}“.\",\"a_tile_is_outside_the_board_dc7a\":\"Auf „{name}“ liegt eine Kachel vom Typ „{type}“ außerhalb des Wallboards.\",\"a_tile_needs_a_3f0b\":\"Auf „{name}“ braucht eine Kachel vom Typ „{type}“ eine passende Entität ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"Auf „{name}“ muss „{key}“ bei einer Kachel vom Typ „{type}“ zwischen {extra} und {extra2} liegen.\",\"a_wait_must_be_between_0_minutes_e904\":\"Die Wartezeit muss zwischen 0 Minuten und 7 Tagen liegen.\",\"a_wall_board_name_can_have_up_65cb\":\"Der Name eines Wallboards darf höchstens {board_name_max} Zeichen lang sein.\",\"ai_help_is_switched_off_turn_it_675e\":\"Die KI-Hilfe ist aus. Schalte sie zuerst in den Einstellungen ein.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Für die Alarmwiederholung sind 0 bis {alarm_repeat_max} Sekunden möglich.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Wähle für den Alarm eine Entität vom Typ siren, switch, input_boolean oder script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Stell für den Alarm eine Dauer von {seconds_min} bis {seconds_max} Sekunden ein.\",\"an_image_file_path_can_have_up_b43f\":\"Der Dateipfad für ein Bild darf höchstens {picture_max} Zeichen lang sein.\",\"another_media_player_can_only_play_files_6876\":\"Auf anderen Mediaplayern kannst du nur Dateien abspielen. Amazons Töne sind dort nicht verfügbar.\",\"ask_claude_is_not_set_up_yet_eefc\":\"„Claude fragen“ ist noch nicht eingerichtet. Trag die Auslöse-URL und den Token der Routine in den Einstellungen ein.\",\"ask_claude_is_switched_off_turn_it_899c\":\"„Claude fragen“ ist aus. Schalte die Funktion zuerst in den Einstellungen ein.\",\"at_most_rooms_9431\":\"Es sind höchstens {max_rooms} Räume möglich.\",\"blink_length_must_be_to_milliseconds_4188\":\"Stell für jedes Blinken {blink_ms_min} bis {blink_ms_max} Millisekunden ein.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli hat Claude nicht erreicht. Prüfe die Internetverbindung.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli konnte die gespeicherten Einstellungen für „Claude fragen“ nicht lesen. Sie bleiben erhalten. Schau im Protokoll von Home Assistant nach.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli konnte den Token nicht speichern. Der bisherige Token gilt weiter.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli konnte die Fotos nicht vorbereiten: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli ist noch nicht eingerichtet.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli hat das Limit von {limit} Claude-Anfragen pro Stunde erreicht. Versuch’s in etwa {wait} Minuten noch mal.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli hat aufgehört, auf Claudes Antwort zu warten. Die maximale Wartezeit beträgt {minutes} Minuten. Versuch’s noch mal.\",\"can_have_at_most_tiles_36be\":\"Auf „{name}“ passen höchstens {board_tiles_max} Kacheln.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Wähle eine Kamera oder eine Datei im Format JPEG (.jpg oder .jpeg), PNG oder GIF aus dem Medienordner.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Wähle zuerst ein Handy und die Priorität der Benachrichtigung.\",\"choose_a_supported_condition_type_acee\":\"Wähle eine Art von Bedingung, die Boopli unterstützt.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Wähle zum Vorlesen eine Vorlesestimme (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Wähle für die Fotos einen Agenten, der KI-Aufgaben unterstützt, oder wähle „Derselbe Agent wie oben“.\",\"choose_an_ai_task_agent_or_keep_0968\":\"Wähle einen Agenten, der KI-Aufgaben unterstützt, oder nutze weiter den Standardagenten von Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Wähle zum Vorlesen den notify-Dienst von Alexa Media Player.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Wähle zum Vorlesen die Alexa-Entität (notify.…).\",\"choose_the_sound_for_3f45\":\"Wähle den Ton für „{name}“.\",\"choose_the_sound_for_first_985f\":\"Wähle zuerst den Ton für „{level}“ auf {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Wähle aus, welchen Lautsprecherton du testen möchtest.\",\"choose_your_ai_agent_or_claude_de67\":\"Wähle deinen KI-Agenten oder Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude hat eine leere Antwort geschickt.\",\"claude_answered_with_an_error_267f\":\"Claude hat einen Fehler gemeldet ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude konnte die Routine nicht finden. Prüfe die Auslöse-URL der Routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude hat die Anfrage abgelehnt. Schau nach, ob die Routine eingeschaltet ist.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude hat auf die Anfrage zum Starten nicht geantwortet. Versuch’s noch mal.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude hat die Zahl der Anfragen vorübergehend begrenzt. Versuch’s in einer Weile noch mal.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Bei Claude hakt es gerade. Versuch’s in ein paar Minuten noch mal.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude hat den Token abgelehnt. Erstelle einen neuen Token für die Routine, füge ihn in Boopli ein und versuch’s noch mal.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Kopier die Auslöse-URL der Routine noch mal aus Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Gib für den Wochentag eine Zahl von 0 (Montag) bis 6 (Sonntag) an.\",\"ended_d64f\":\"beendet\",\"enter_1_to_365_days_after_the_2eb6\":\"Gib ein, wie viele Tage nach dem Erledigen die Aufgabe wieder dran sein soll (1 bis 365).\",\"enter_a_color_code_like_1a2b3c_42db\":\"Gib einen Farbcode ein, zum Beispiel #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Gib die Auslöse-URL der Routine in diesem Format ein: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Gib für diese Bedingung einen Zustand oder einen Grenzwert ein.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Gib eine Dauer von 0 Minuten bis 24 Stunden ein. So lange muss die Bedingung erfüllt bleiben.\",\"every_question_needs_some_text_5008\":\"Jede Frage braucht einen Text.\",\"every_room_needs_a_name_f6fe\":\"Jeder Raum braucht einen Namen.\",\"every_sound_needs_a_name_ffb2\":\"Jeder Ton braucht einen Namen.\",\"every_step_needs_a_title_5d77\":\"Jeder Schritt braucht einen Titel.\",\"every_time_must_look_like_09_30_0302\":\"Gib alle Uhrzeiten im Format 09:30 ein.\",\"for_a_range_set_above_to_the_0df7\":\"Gib für einen Bereich bei „Über“ die kleinere Zahl ein und bei „Unter“ die größere.\",\"give_each_nudge_sequence_a_name_b157\":\"Gib jeder Stups-Kette einen Namen.\",\"give_each_wall_board_a_name_4968\":\"Gib jedem Wallboard einen Namen.\",\"give_the_room_a_name_first_e276\":\"Gib dem Raum zuerst einen Namen.\",\"has_no_step_waiting_for_you_right_379f\":\"Bei „{name}“ wartet gerade kein Schritt auf dich.\",\"has_nothing_in_progress_5779\":\"Bei „{name}“ ist gerade nichts in Arbeit.\",\"has_two_tiles_with_the_same_id_7762\":\"„{name}“ hat zwei Kacheln mit derselben ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"In Home Assistant gibt es noch keine KI-Aufgabe. Richte zuerst einen KI-Agenten ein.\",\"home_assistant_has_no_web_address_that_c239\":\"Claude kann Home Assistant unter keiner Webadresse erreichen. Trag unter „Claude fragen“ die Adresse von Home Assistant ein oder leg die externe URL in Home Assistant fest.\",\"keep_between_1_and_wall_boards_f423\":\"Erlaubt sind 1 bis {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Mehrere Aufgaben heißen „{ref}“. Verwende die ID der gewünschten Aufgabe.\",\"needs_1_to_nudges_673d\":\"„{name}“ braucht 1 bis {ladder_max_nudges} Stupse.\",\"no_chore_called_b51e\":\"Es gibt keine Aufgabe namens „{ref}“.\",\"nudge_a_light_color_needs_three_values_cb55\":\"„{name}“, Stups {number}: Gib für die Lichtfarbe drei Werte von 0 bis 255 ein.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"„{name}“, Stups {number}: Die Wartezeit muss zwischen {ladder_gap_min} und {ladder_gap_max} Minuten liegen.\",\"nudge_unknown_light_mode_44c9\":\"„{name}“, Stups {number}: Unbekannter Lichtmodus.\",\"nudge_unknown_phone_notification_level_f7a6\":\"„{name}“, Stups {number}: Unbekannte Stufe für die Handy-Benachrichtigung.\",\"nudge_unknown_speaker_choice_a39c\":\"„{name}“, Stups {number}: Unbekannte Lautsprecherauswahl.\",\"nudges_must_start_before_they_stop_on_6b14\":\"An jedem Tag muss die Startzeit für Stupse vor der Endzeit liegen.\",\"on_the_field_for_this_tile_type_b19a\":\"Auf „{name}“ darf das Feld „{key}“ bei einer Kachel vom Typ „{type}“ höchstens {extra} Zeichen lang sein.\",\"one_of_the_photos_could_not_be_6c36\":\"Eins der Fotos lässt sich nicht öffnen.\",\"one_of_the_photos_is_too_big_1568\":\"Eins der Fotos ist zu groß. Versuch’s mit einem kleineren.\",\"only_jpeg_or_png_photos_work_045e\":\"Wähle ein Foto im JPEG- oder PNG-Format.\",\"pick_a_light_first_9a5b\":\"Wähle zuerst ein Licht.\",\"pick_a_pet_from_the_list_a356\":\"Wähle ein Haustier aus der Liste.\",\"pick_a_siren_switch_or_script_first_5318\":\"Wähle zuerst eine Sirene, einen Schalter oder ein Skript.\",\"pick_an_entity_cdc1\":\"Wähle eine Entität.\",\"pick_an_entity_for_the_entity_tile_e356\":\"Wähle auf „{name}“ eine Entität für die Entitätskachel.\",\"pick_an_nfc_tag_9bfb\":\"Wähle einen NFC-Tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Wähle mindestens einen Tag und eine Uhrzeit.\",\"pick_at_least_one_part_to_back_9368\":\"Wähle mindestens einen Bereich fürs Backup aus.\",\"pick_at_least_one_part_to_import_705d\":\"Wähle mindestens einen Bereich zum Importieren aus.\",\"pick_at_least_one_photo_2704\":\"Wähle mindestens ein Foto.\",\"pick_the_for_the_tile_60f7\":\"Wähle auf „{name}“ für die Kachel vom Typ „{type}“ eine passende Entität ({extra}).\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Gib für die Wochentage der Ruhezeiten Zahlen von 0 (Montag) bis 6 (Sonntag) an.\",\"quiet_hours_times_must_look_like_07_e804\":\"Gib die Uhrzeiten für die Ruhezeiten im Format 07:30 ein.\",\"set_up_a_home_assistant_media_folder_6798\":\"Richte in Home Assistant einen Medienordner ein, damit Boopli die Fotos vorbereiten kann.\",\"skip_557d\":\"überspringen\",\"snooze_must_be_between_1_minute_and_1914\":\"Beim Verschieben sind 1 Minute bis 12 Stunden möglich.\",\"start_558f\":\"starten\",\"started_96da\":\"gestartet\",\"starts_at_nudge_must_be_to_6549\":\"Bei „Ab Stups“ sind Werte von {start_at_min} bis {start_at_max} möglich.\",\"step_dd83\":\"Schritt „{title}“: {error}\",\"step_points_to_a_question_that_does_860a\":\"Schritt „{title}“ verweist auf eine Frage, die es nicht gibt.\",\"step_wait_until_c420\":\"Schritt „{title}“ (Warten bis): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Diese Aufgabe ist nicht mehr in Arbeit.\",\"that_does_not_look_like_a_routine_32ae\":\"Das sieht nicht wie der Token einer Routine aus. Kopier ihn noch mal.\",\"that_part_is_not_waiting_any_more_3180\":\"Dieser Teil steht nicht mehr unter „Für später“.\",\"the_ai_agent_answered_with_an_error_9042\":\"Der KI-Agent hat einen Fehler gemeldet: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"Der KI-Agent hat nicht geantwortet.\",\"the_ai_agent_took_too_long_over_bc02\":\"Der KI-Agent hat länger als {timeout} Sekunden gebraucht. Versuch’s noch mal.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"Die Kette „{name}“ fehlt im Backup. Diese Aufgaben nutzen sie: {users}. Importiere die Aufgaben mit oder wähle für sie zuerst einen anderen Stups-Stil.\",\"the_check_in_after_on_it_must_2b59\":\"Die Wartezeit für die Nachfrage nach „Bin dran“ muss zwischen 5 Minuten und 12 Stunden liegen.\",\"the_chore_does_not_fit_this_setup_692d\":\"Die Aufgabe „{name}“ passt nicht zu dieser Einrichtung: {error}\",\"the_chore_is_not_valid_6dd0\":\"Die Aufgabe „{name}“ ist ungültig: {error}\",\"the_columns_must_be_to_2cd0\":\"Wähle für „{name}“ {board_columns_min} bis {board_columns_max} Spalten.\",\"the_file_has_no_to_import_e300\":\"Der Bereich „{part}“ fehlt in der Datei und lässt sich nicht importieren.\",\"the_home_assistant_address_must_start_with_5b05\":\"Die Adresse von Home Assistant muss mit https:// oder http:// anfangen.\",\"the_kind_must_be_now_or_recurring_100d\":\"Für die Aufgabenart sind „now“ und „recurring“ möglich.\",\"the_next_due_time_cannot_be_read_f831\":\"Boopli kann den nächsten fälligen Zeitpunkt nicht lesen.\",\"the_next_due_time_needs_a_time_f91c\":\"Gib für den nächsten fälligen Zeitpunkt eine Zeitzone an.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Stell die Pause beim Blinken auf {gap_ms_min} bis {gap_ms_max} Millisekunden.\",\"the_presence_source_must_be_an_entity_ff79\":\"Gib unter „Wo du bist“ eine Entitäts-ID an.\",\"the_rooms_in_this_file_are_not_8661\":\"Die Räume in dieser Datei sind ungültig: {error}\",\"the_rows_must_be_to_1733\":\"Wähle für „{name}“ {board_rows_min} bis {board_rows_max} Zeilen.\",\"the_settings_in_this_file_are_not_5e54\":\"Die Einstellungen in dieser Datei sind ungültig: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"Der vorgelesene Satz muss {chore} oder {step} enthalten.\",\"the_time_must_look_like_09_30_87c6\":\"Gib die Uhrzeit im Format 09:30 ein.\",\"the_wait_for_the_questions_must_be_b79c\":\"Vor dem ersten Stups muss Boopli 5 Minuten bis 12 Stunden auf deine Antworten warten.\",\"there_are_more_than_chores_which_is_35dc\":\"Für ein Backup sind es zu viele Aufgaben. Es passen höchstens {max_chores} hinein.\",\"there_are_two_sounds_called_340c\":\"Zwei Töne heißen „{name}“.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Diese Aufgaben nutzen die Kette „{name}“: {users}. Wähle für sie zuerst einen anderen Stups-Stil.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Dieser KI-Agent kann keine Fotos auswerten. Wähle unter „Einstellungen“ → „KI-Hilfe“ → „Erweitert“ einen Agenten, der das kann. Du kannst auch ohne Fotos weitermachen.\",\"this_request_is_too_big_for_claude_01b9\":\"Die Anfrage ist zu groß für Claude. Versuch es mit weniger Fotos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Zwei Stups-Ketten heißen „{name}“. Gib ihnen unterschiedliche Namen.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Zwei Stups-Ketten haben dieselbe ID.\",\"two_questions_have_the_same_id_2b7f\":\"Zwei Fragen haben dieselbe ID.\",\"two_rooms_share_the_same_id_5997\":\"Zwei Räume haben dieselbe ID.\",\"two_steps_have_the_same_id_8a53\":\"Zwei Schritte haben dieselbe ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"Auf „{name}“ überlappen sich zwei Kacheln.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Zwei Wallboards heißen „{name}“. Gib ihnen unterschiedliche Namen.\",\"two_wall_boards_have_the_same_id_9875\":\"Zwei Wallboards haben dieselbe ID.\",\"unknown_default_nudge_style_b675\":\"Unbekannter Standard-Stups-Stil.\",\"unknown_light_mode_cbab\":\"Unbekannter Lichtmodus.\",\"unknown_mode_1943\":\"Unbekannter Modus.\",\"unknown_night_setting_a299\":\"Für „{name}“ ist ein unbekannter Nachtmodus eingestellt.\",\"unknown_nudge_style_9e66\":\"Unbekannter Stups-Stil.\",\"unknown_phone_notification_level_6ae9\":\"Unbekannte Stufe für die Handy-Benachrichtigung.\",\"unknown_repeat_type_10d7\":\"Unbekannte Wiederholungsart.\",\"unknown_setup_status_d393\":\"Unbekannter Stand der Einrichtung.\",\"unknown_setup_step_102b\":\"Unbekannter Schritt bei der Einrichtung.\",\"unknown_sound_type_91b7\":\"Unbekannte Tonart für „{name}“.\",\"unknown_test_9a31\":\"Unbekannter Test.\",\"unknown_tile_type_0a67\":\"Auf „{name}“ gibt es den unbekannten Kacheltyp „{type}“.\",\"unknown_type_for_the_sound_4d14\":\"Unbekannte Tonart für den Ton „{name}“.\",\"unknown_way_of_speaking_cbb3\":\"Unbekannte Vorleseoption.\",\"use_at_most_photos_4d47\":\"Wähle höchstens {max_photos} Fotos.\",\"use_either_a_state_or_a_number_6245\":\"Wähle einen Zustand oder einen Zahlenwert. Nur eins von beiden ist möglich.\",\"where_must_be_home_or_anywhere_fb12\":\"Für den Ort der Aufgabe sind „home“ und „anywhere“ möglich.\",\"write_what_you_want_to_get_done_70fd\":\"Schreib zuerst, was du erledigen möchtest.\",\"you_can_edit_the_built_in_nudge_e705\":\"Du kannst die voreingestellte Stups-Kette „{gone}“ bearbeiten. Lass sie in deiner Liste.\",\"you_can_have_at_most_sounds_of_0a92\":\"Du kannst höchstens {extra_sounds_max} eigene Töne haben.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Du kannst höchstens {ladder_max} Ketten haben.\",\"your_pet_s_name_can_have_up_2b26\":\"Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Ein Backup kann höchstens {max_chores} Aufgaben enthalten.\",\"a_chore_can_ask_at_most_questions_61df\":\"Eine Aufgabe kann höchstens {max_questions} Fragen stellen.\",\"a_chore_can_have_at_most_steps_8780\":\"Eine Aufgabe kann höchstens {max_steps} Schritte haben.\",\"a_chore_needs_a_name_4f84\":\"Eine Aufgabe braucht einen Namen.\",\"a_chore_needs_at_least_one_step_2a00\":\"Eine Aufgabe braucht mindestens einen Schritt.\",\"a_day_can_have_1_to_times_e106\":\"Pro Tag sind 1 bis {max_times_per_day} Uhrzeiten möglich.\",\"a_light_can_blink_to_times_1a51\":\"Ein Licht kann {repeats_min} bis {repeats_max} Mal blinken.\",\"a_light_color_needs_three_values_from_e686\":\"Gib für die Lichtfarbe drei Werte von 0 bis 255 ein.\",\"a_light_must_be_a_light_entity_23fe\":\"Wähle eine light-Entität für das Licht.\",\"a_nudge_sequence_name_can_have_up_9261\":\"Der Name einer Stups-Kette darf höchstens {ladder_name_max} Zeichen lang sein.\",\"a_phone_must_be_a_notify_service_4918\":\"Gib für das Handy den Namen eines notify-Dienstes an.\",\"a_prompt_can_have_up_to_characters_5004\":\"Die KI-Anweisung darf höchstens {ai_prompt_max} Zeichen lang sein.\",\"a_question_can_have_up_to_characters_fb9e\":\"Eine Frage darf höchstens {question_max} Zeichen lang sein.\",\"a_sound_name_can_have_up_to_3055\":\"Der Name eines Tons darf höchstens {extra_sound_name_max} Zeichen lang sein.\",\"a_speaker_must_be_a_media_player_9b44\":\"Wähle eine media_player-Entität als Lautsprecher.\",\"a_step_can_have_up_to_conditions_676d\":\"Ein Schritt kann höchstens {max_triggers} Bedingungen haben, unter denen er sich von selbst erledigt.\",\"a_step_can_have_up_to_wait_30ad\":\"Ein Schritt kann auf höchstens {max_triggers} Bedingungen warten.\",\"a_step_is_small_medium_or_big_84cd\":\"Wähle für den Schritt „Klein“, „Mittel“ oder „Groß“.\",\"a_step_title_can_have_up_to_13b4\":\"Der Titel eines Schritts darf höchstens {step_title_max} Zeichen lang sein.\",\"a_tile_has_a_size_that_does_545b\":\"Eine Kachel vom Typ „{type}“ ist für „{name}“ zu groß oder zu klein.\",\"a_tile_has_an_unknown_56c1\":\"Eine Kachel vom Typ „{type}“ auf „{name}“ hat einen unbekannten Wert für „{key}“.\",\"a_tile_is_outside_the_board_dc7a\":\"Auf „{name}“ liegt eine Kachel vom Typ „{type}“ außerhalb des Wallboards.\",\"a_tile_needs_a_3f0b\":\"Auf „{name}“ braucht eine Kachel vom Typ „{type}“ eine passende Entität ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"Auf „{name}“ muss „{key}“ bei einer Kachel vom Typ „{type}“ zwischen {extra} und {extra2} liegen.\",\"a_wait_must_be_between_0_minutes_e904\":\"Die Wartezeit muss zwischen 0 Minuten und 7 Tagen liegen.\",\"a_wall_board_name_can_have_up_65cb\":\"Der Name eines Wallboards darf höchstens {board_name_max} Zeichen lang sein.\",\"ai_help_is_switched_off_turn_it_675e\":\"Die KI-Hilfe ist aus. Schalte sie zuerst in den Einstellungen ein.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Für die Alarmwiederholung sind 0 bis {alarm_repeat_max} Sekunden möglich.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Wähle für den Alarm eine Entität vom Typ siren, switch, input_boolean oder script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Stell für den Alarm eine Dauer von {seconds_min} bis {seconds_max} Sekunden ein.\",\"an_image_file_path_can_have_up_b43f\":\"Der Dateipfad für ein Bild darf höchstens {picture_max} Zeichen lang sein.\",\"an_indicator_lamp_stays_on_in_a_aea9\":\"Ein Statuslicht leuchtet in einer Farbe, bis du fertig bist. Beim Test leuchtet es {seconds} Sekunden lang.\",\"an_indicator_lamp_switches_on_in_a_95a2\":\"Ein Statuslicht leuchtet in einer Farbe, bis du fertig bist. Die Lampe ist schon an. Schalte sie aus und teste noch mal.\",\"another_media_player_can_only_play_files_6876\":\"Auf anderen Mediaplayern kannst du nur Dateien abspielen. Amazons Töne sind dort nicht verfügbar.\",\"ask_claude_is_not_set_up_yet_eefc\":\"„Claude fragen“ ist noch nicht eingerichtet. Trag die Auslöse-URL und den Token der Routine in den Einstellungen ein.\",\"ask_claude_is_switched_off_turn_it_899c\":\"„Claude fragen“ ist aus. Schalte die Funktion zuerst in den Einstellungen ein.\",\"at_most_rooms_9431\":\"Es sind höchstens {max_rooms} Räume möglich.\",\"blink_length_must_be_to_milliseconds_4188\":\"Stell für jedes Blinken {blink_ms_min} bis {blink_ms_max} Millisekunden ein.\",\"blinking_x_about_seconds_the_light_goes_a4c4\":\"Die Lampe blinkt {repeats}-mal, insgesamt etwa {seconds} Sekunden lang. Danach ist sie wieder wie vorher.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli hat Claude nicht erreicht. Prüfe die Internetverbindung.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli konnte die gespeicherten Einstellungen für „Claude fragen“ nicht lesen. Sie bleiben erhalten. Schau im Protokoll von Home Assistant nach.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli konnte den Token nicht speichern. Der bisherige Token gilt weiter.\",\"boopli_could_not_send_that_66c0\":\"Boopli konnte das nicht senden.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli konnte die Fotos nicht vorbereiten: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli ist noch nicht eingerichtet.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli hat das Limit von {limit} Claude-Anfragen pro Stunde erreicht. Versuch’s in etwa {wait} Minuten noch mal.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli hat aufgehört, auf Claudes Antwort zu warten. Die maximale Wartezeit beträgt {minutes} Minuten. Versuch’s noch mal.\",\"can_have_at_most_tiles_36be\":\"Auf „{name}“ passen höchstens {board_tiles_max} Kacheln.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Wähle eine Kamera oder eine Datei im Format JPEG (.jpg oder .jpeg), PNG oder GIF aus dem Medienordner.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Wähle zuerst ein Handy und die Priorität der Benachrichtigung.\",\"choose_a_supported_condition_type_acee\":\"Wähle eine Art von Bedingung, die Boopli unterstützt.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Wähle zum Vorlesen eine Vorlesestimme (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Wähle für die Fotos einen Agenten, der KI-Aufgaben unterstützt, oder wähle „Derselbe Agent wie oben“.\",\"choose_an_ai_task_agent_or_keep_0968\":\"Wähle einen Agenten, der KI-Aufgaben unterstützt, oder nutze weiter den Standardagenten von Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Wähle zum Vorlesen den notify-Dienst von Alexa Media Player.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Wähle zum Vorlesen die Alexa-Entität (notify.…).\",\"choose_the_sound_for_3f45\":\"Wähle den Ton für „{name}“.\",\"choose_the_sound_for_first_985f\":\"Wähle zuerst den Ton für „{level}“ auf {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Wähle aus, welchen Lautsprecherton du testen möchtest.\",\"choose_your_ai_agent_or_claude_de67\":\"Wähle deinen KI-Agenten oder Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude hat eine leere Antwort geschickt.\",\"claude_answered_with_an_error_267f\":\"Claude hat einen Fehler gemeldet ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude konnte die Routine nicht finden. Prüfe die Auslöse-URL der Routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude hat die Anfrage abgelehnt. Schau nach, ob die Routine eingeschaltet ist.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude hat auf die Anfrage zum Starten nicht geantwortet. Versuch’s noch mal.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude hat die Zahl der Anfragen vorübergehend begrenzt. Versuch’s in einer Weile noch mal.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Bei Claude hakt es gerade. Versuch’s in ein paar Minuten noch mal.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude hat den Token abgelehnt. Erstelle einen neuen Token für die Routine, füge ihn in Boopli ein und versuch’s noch mal.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Kopier die Auslöse-URL der Routine noch mal aus Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Gib für den Wochentag eine Zahl von 0 (Montag) bis 6 (Sonntag) an.\",\"ended_d64f\":\"beendet\",\"enter_1_to_365_days_after_the_2eb6\":\"Gib ein, wie viele Tage nach dem Erledigen die Aufgabe wieder dran sein soll (1 bis 365).\",\"enter_a_color_code_like_1a2b3c_42db\":\"Gib einen Farbcode ein, zum Beispiel #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Gib die Auslöse-URL der Routine in diesem Format ein: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Gib für diese Bedingung einen Zustand oder einen Grenzwert ein.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Gib eine Dauer von 0 Minuten bis 24 Stunden ein. So lange muss die Bedingung erfüllt bleiben.\",\"every_question_needs_some_text_5008\":\"Jede Frage braucht einen Text.\",\"every_room_needs_a_name_f6fe\":\"Jeder Raum braucht einen Namen.\",\"every_sound_needs_a_name_ffb2\":\"Jeder Ton braucht einen Namen.\",\"every_step_needs_a_title_5d77\":\"Jeder Schritt braucht einen Titel.\",\"every_time_must_look_like_09_30_0302\":\"Gib alle Uhrzeiten im Format 09:30 ein.\",\"for_a_range_set_above_to_the_0df7\":\"Gib für einen Bereich bei „Über“ die kleinere Zahl ein und bei „Unter“ die größere.\",\"give_each_nudge_sequence_a_name_b157\":\"Gib jeder Stups-Kette einen Namen.\",\"give_each_wall_board_a_name_4968\":\"Gib jedem Wallboard einen Namen.\",\"give_the_room_a_name_first_e276\":\"Gib dem Raum zuerst einen Namen.\",\"has_no_step_waiting_for_you_right_379f\":\"Bei „{name}“ wartet gerade kein Schritt auf dich.\",\"has_nothing_in_progress_5779\":\"Bei „{name}“ ist gerade nichts in Arbeit.\",\"has_two_tiles_with_the_same_id_7762\":\"„{name}“ hat zwei Kacheln mit derselben ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"In Home Assistant gibt es noch keine KI-Aufgabe. Richte zuerst einen KI-Agenten ein.\",\"home_assistant_has_no_web_address_that_c239\":\"Claude kann Home Assistant unter keiner Webadresse erreichen. Trag unter „Claude fragen“ die Adresse von Home Assistant ein oder leg die externe URL in Home Assistant fest.\",\"it_is_already_on_62a3\":\"Das Alarmgerät ist schon an.\",\"it_is_still_blinking_13d1\":\"Die Lampe blinkt noch.\",\"keep_between_1_and_wall_boards_f423\":\"Erlaubt sind 1 bis {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Mehrere Aufgaben heißen „{ref}“. Verwende die ID der gewünschten Aufgabe.\",\"needs_1_to_nudges_673d\":\"„{name}“ braucht 1 bis {ladder_max_nudges} Stupse.\",\"no_chore_called_b51e\":\"Es gibt keine Aufgabe namens „{ref}“.\",\"nudge_a_light_color_needs_three_values_cb55\":\"„{name}“, Stups {number}: Gib für die Lichtfarbe drei Werte von 0 bis 255 ein.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"„{name}“, Stups {number}: Die Wartezeit muss zwischen {ladder_gap_min} und {ladder_gap_max} Minuten liegen.\",\"nudge_unknown_light_mode_44c9\":\"„{name}“, Stups {number}: Unbekannter Lichtmodus.\",\"nudge_unknown_phone_notification_level_f7a6\":\"„{name}“, Stups {number}: Unbekannte Stufe für die Handy-Benachrichtigung.\",\"nudge_unknown_speaker_choice_a39c\":\"„{name}“, Stups {number}: Unbekannte Lautsprecherauswahl.\",\"nudges_must_start_before_they_stop_on_6b14\":\"An jedem Tag muss die Startzeit für Stupse vor der Endzeit liegen.\",\"on_for_seconds_then_off_5fb1\":\"{seconds} Sekunden an, dann wieder aus.\",\"on_the_field_for_this_tile_type_b19a\":\"Auf „{name}“ darf das Feld „{key}“ bei einer Kachel vom Typ „{type}“ höchstens {extra} Zeichen lang sein.\",\"one_of_the_photos_could_not_be_6c36\":\"Eins der Fotos lässt sich nicht öffnen.\",\"one_of_the_photos_is_too_big_1568\":\"Eins der Fotos ist zu groß. Versuch’s mit einem kleineren.\",\"only_jpeg_or_png_photos_work_045e\":\"Wähle ein Foto im JPEG- oder PNG-Format.\",\"pick_a_light_first_9a5b\":\"Wähle zuerst ein Licht.\",\"pick_a_pet_from_the_list_a356\":\"Wähle ein Haustier aus der Liste.\",\"pick_a_siren_switch_or_script_first_5318\":\"Wähle zuerst eine Sirene, einen Schalter oder ein Skript.\",\"pick_an_entity_cdc1\":\"Wähle eine Entität.\",\"pick_an_entity_for_the_entity_tile_e356\":\"Wähle auf „{name}“ eine Entität für die Entitätskachel.\",\"pick_an_nfc_tag_9bfb\":\"Wähle einen NFC-Tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Wähle mindestens einen Tag und eine Uhrzeit.\",\"pick_at_least_one_part_to_back_9368\":\"Wähle mindestens einen Bereich fürs Backup aus.\",\"pick_at_least_one_part_to_import_705d\":\"Wähle mindestens einen Bereich zum Importieren aus.\",\"pick_at_least_one_photo_2704\":\"Wähle mindestens ein Foto.\",\"pick_the_for_the_tile_60f7\":\"Wähle auf „{name}“ für die Kachel vom Typ „{type}“ eine passende Entität ({extra}).\",\"playing_the_alarm_sound_once_c4b5\":\"Der Alarmton wird einmal abgespielt.\",\"playing_the_sound_ba6e\":\"Der Ton wird abgespielt.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Gib für die Wochentage der Ruhezeiten Zahlen von 0 (Montag) bis 6 (Sonntag) an.\",\"quiet_hours_times_must_look_like_07_e804\":\"Gib die Uhrzeiten für die Ruhezeiten im Format 07:30 ein.\",\"sent_1220\":\"Gesendet.\",\"set_up_a_home_assistant_media_folder_6798\":\"Richte in Home Assistant einen Medienordner ein, damit Boopli die Fotos vorbereiten kann.\",\"skip_557d\":\"überspringen\",\"snooze_must_be_between_1_minute_and_1914\":\"Beim Verschieben sind 1 Minute bis 12 Stunden möglich.\",\"speaking_af60\":\"Der Lautsprecher liest vor.\",\"start_558f\":\"starten\",\"started_96da\":\"gestartet\",\"starts_at_nudge_must_be_to_6549\":\"Bei „Ab Stups“ sind Werte von {start_at_min} bis {start_at_max} möglich.\",\"step_dd83\":\"Schritt „{title}“: {error}\",\"step_points_to_a_question_that_does_860a\":\"Schritt „{title}“ verweist auf eine Frage, die es nicht gibt.\",\"step_wait_until_c420\":\"Schritt „{title}“ (Warten bis): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Diese Aufgabe ist nicht mehr in Arbeit.\",\"that_device_is_not_available_right_now_f919\":\"Das Alarmgerät ist gerade nicht verfügbar.\",\"that_does_not_look_like_a_routine_32ae\":\"Das sieht nicht wie der Token einer Routine aus. Kopier ihn noch mal.\",\"that_light_is_not_available_right_now_cdb1\":\"Die Lampe ist gerade nicht verfügbar.\",\"that_part_is_not_waiting_any_more_3180\":\"Dieser Teil steht nicht mehr unter „Für später“.\",\"that_phone_service_was_not_found_0d85\":\"Boopli hat den notify-Dienst fürs Handy nicht gefunden.\",\"that_speaker_is_not_available_right_now_0bc5\":\"Der Lautsprecher ist gerade nicht verfügbar.\",\"the_ai_agent_answered_with_an_error_9042\":\"Der KI-Agent hat einen Fehler gemeldet: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"Der KI-Agent hat nicht geantwortet.\",\"the_ai_agent_took_too_long_over_bc02\":\"Der KI-Agent hat länger als {timeout} Sekunden gebraucht. Versuch’s noch mal.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"Die Kette „{name}“ fehlt im Backup. Diese Aufgaben nutzen sie: {users}. Importiere die Aufgaben mit oder wähle für sie zuerst einen anderen Stups-Stil.\",\"the_check_in_after_on_it_must_2b59\":\"Die Wartezeit für die Nachfrage nach „Bin dran“ muss zwischen 5 Minuten und 12 Stunden liegen.\",\"the_chore_does_not_fit_this_setup_692d\":\"Die Aufgabe „{name}“ passt nicht zu dieser Einrichtung: {error}\",\"the_chore_is_not_valid_6dd0\":\"Die Aufgabe „{name}“ ist ungültig: {error}\",\"the_columns_must_be_to_2cd0\":\"Wähle für „{name}“ {board_columns_min} bis {board_columns_max} Spalten.\",\"the_file_has_no_to_import_e300\":\"Der Bereich „{part}“ fehlt in der Datei und lässt sich nicht importieren.\",\"the_home_assistant_address_must_start_with_5b05\":\"Die Adresse von Home Assistant muss mit https:// oder http:// anfangen.\",\"the_kind_must_be_now_or_recurring_100d\":\"Für die Aufgabenart sind „now“ und „recurring“ möglich.\",\"the_next_due_time_cannot_be_read_f831\":\"Boopli kann den nächsten fälligen Zeitpunkt nicht lesen.\",\"the_next_due_time_needs_a_time_f91c\":\"Gib für den nächsten fälligen Zeitpunkt eine Zeitzone an.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Stell die Pause beim Blinken auf {gap_ms_min} bis {gap_ms_max} Millisekunden.\",\"the_presence_source_must_be_an_entity_ff79\":\"Gib unter „Wo du bist“ eine Entitäts-ID an.\",\"the_rooms_in_this_file_are_not_8661\":\"Die Räume in dieser Datei sind ungültig: {error}\",\"the_rows_must_be_to_1733\":\"Wähle für „{name}“ {board_rows_min} bis {board_rows_max} Zeilen.\",\"the_settings_in_this_file_are_not_5e54\":\"Die Einstellungen in dieser Datei sind ungültig: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"Der vorgelesene Satz muss {chore} oder {step} enthalten.\",\"the_time_must_look_like_09_30_87c6\":\"Gib die Uhrzeit im Format 09:30 ein.\",\"the_wait_for_the_questions_must_be_b79c\":\"Vor dem ersten Stups muss Boopli 5 Minuten bis 12 Stunden auf deine Antworten warten.\",\"there_are_more_than_chores_which_is_35dc\":\"Für ein Backup sind es zu viele Aufgaben. Es passen höchstens {max_chores} hinein.\",\"there_are_two_sounds_called_340c\":\"Zwei Töne heißen „{name}“.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Diese Aufgaben nutzen die Kette „{name}“: {users}. Wähle für sie zuerst einen anderen Stups-Stil.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Dieser KI-Agent kann keine Fotos auswerten. Wähle unter „Einstellungen“ → „KI-Hilfe“ → „Erweitert“ einen Agenten, der das kann. Du kannst auch ohne Fotos weitermachen.\",\"this_request_is_too_big_for_claude_01b9\":\"Die Anfrage ist zu groß für Claude. Versuch es mit weniger Fotos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Zwei Stups-Ketten heißen „{name}“. Gib ihnen unterschiedliche Namen.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Zwei Stups-Ketten haben dieselbe ID.\",\"two_questions_have_the_same_id_2b7f\":\"Zwei Fragen haben dieselbe ID.\",\"two_rooms_share_the_same_id_5997\":\"Zwei Räume haben dieselbe ID.\",\"two_steps_have_the_same_id_8a53\":\"Zwei Schritte haben dieselbe ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"Auf „{name}“ überlappen sich zwei Kacheln.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Zwei Wallboards heißen „{name}“. Gib ihnen unterschiedliche Namen.\",\"two_wall_boards_have_the_same_id_9875\":\"Zwei Wallboards haben dieselbe ID.\",\"unknown_default_nudge_style_b675\":\"Unbekannter Standard-Stups-Stil.\",\"unknown_light_mode_cbab\":\"Unbekannter Lichtmodus.\",\"unknown_mode_1943\":\"Unbekannter Modus.\",\"unknown_night_setting_a299\":\"Für „{name}“ ist ein unbekannter Nachtmodus eingestellt.\",\"unknown_nudge_style_9e66\":\"Unbekannter Stups-Stil.\",\"unknown_phone_notification_level_6ae9\":\"Unbekannte Stufe für die Handy-Benachrichtigung.\",\"unknown_repeat_type_10d7\":\"Unbekannte Wiederholungsart.\",\"unknown_setup_status_d393\":\"Unbekannter Stand der Einrichtung.\",\"unknown_setup_step_102b\":\"Unbekannter Schritt bei der Einrichtung.\",\"unknown_sound_type_91b7\":\"Unbekannte Tonart für „{name}“.\",\"unknown_test_9a31\":\"Unbekannter Test.\",\"unknown_tile_type_0a67\":\"Auf „{name}“ gibt es den unbekannten Kacheltyp „{type}“.\",\"unknown_type_for_the_sound_4d14\":\"Unbekannte Tonart für den Ton „{name}“.\",\"unknown_way_of_speaking_cbb3\":\"Unbekannte Vorleseoption.\",\"use_at_most_photos_4d47\":\"Wähle höchstens {max_photos} Fotos.\",\"use_either_a_state_or_a_number_6245\":\"Wähle einen Zustand oder einen Zahlenwert. Nur eins von beiden ist möglich.\",\"where_must_be_home_or_anywhere_fb12\":\"Für den Ort der Aufgabe sind „home“ und „anywhere“ möglich.\",\"write_what_you_want_to_get_done_70fd\":\"Schreib zuerst, was du erledigen möchtest.\",\"you_can_edit_the_built_in_nudge_e705\":\"Du kannst die voreingestellte Stups-Kette „{gone}“ bearbeiten. Lass sie in deiner Liste.\",\"you_can_have_at_most_sounds_of_0a92\":\"Du kannst höchstens {extra_sounds_max} eigene Töne haben.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Du kannst höchstens {ladder_max} Ketten haben.\",\"your_pet_s_name_can_have_up_2b26\":\"Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein.\"}")
 }, Je = {
 	common: {
 		delete: "Delete",
@@ -1857,7 +1857,7 @@ var qe = {
 		claude_asks_left_other: "{count} Claude requests left this hour. Each round of questions and each step list uses one request.",
 		letter_small: "S",
 		letter_medium: "M",
-		letter_big: "B",
+		letter_big: "L",
 		small_quick_and_easy: "Small: quick and easy",
 		medium_takes_some_effort: "Medium: takes some effort",
 		big_hard_or_long: "Big: hard or long",
@@ -2766,7 +2766,7 @@ var qe = {
 		tap_switches_it: "Use the entity’s action",
 		tap_does_nothing: "Show state only"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"A backup can have at most {max_chores} chores.\",\"a_chore_can_ask_at_most_questions_61df\":\"A chore can ask at most {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"A chore can have at most {max_steps} steps.\",\"a_chore_needs_a_name_4f84\":\"A chore needs a name.\",\"a_chore_needs_at_least_one_step_2a00\":\"A chore needs at least one step.\",\"a_day_can_have_1_to_times_e106\":\"A day can have 1 to {max_times_per_day} times.\",\"a_light_can_blink_to_times_1a51\":\"A light can blink {repeats_min} to {repeats_max} times.\",\"a_light_color_needs_three_values_from_e686\":\"A light color needs three values from 0 to 255.\",\"a_light_must_be_a_light_entity_23fe\":\"A light must be a light entity.\",\"a_nudge_sequence_name_can_have_up_9261\":\"A nudge sequence name can have up to {ladder_name_max} characters.\",\"a_phone_must_be_a_notify_service_4918\":\"A phone must be a notify service name.\",\"a_prompt_can_have_up_to_characters_5004\":\"A prompt can have up to {ai_prompt_max} characters.\",\"a_question_can_have_up_to_characters_fb9e\":\"A question can have up to {question_max} characters.\",\"a_sound_name_can_have_up_to_3055\":\"A sound name can have up to {extra_sound_name_max} characters.\",\"a_speaker_must_be_a_media_player_9b44\":\"A speaker must be a media player.\",\"a_step_can_have_up_to_conditions_676d\":\"A step can have up to {max_triggers} conditions for finishing automatically.\",\"a_step_can_have_up_to_wait_30ad\":\"A step can have up to {max_triggers} wait conditions.\",\"a_step_is_small_medium_or_big_84cd\":\"A step is small, medium or big.\",\"a_step_title_can_have_up_to_13b4\":\"A step title can have up to {step_title_max} characters.\",\"a_tile_has_a_size_that_does_545b\":\"'{name}': a {type} tile has a size that does not fit the board.\",\"a_tile_has_an_unknown_56c1\":\"'{name}': a {type} tile has an unknown {key}.\",\"a_tile_is_outside_the_board_dc7a\":\"'{name}': a {type} tile is outside the board.\",\"a_tile_needs_a_3f0b\":\"'{name}': a {type} tile needs a {extra}.\",\"a_tile_s_must_be_to_f1ac\":\"'{name}': a {type} tile's {key} must be {extra} to {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"A wait must be between 0 minutes and 7 days.\",\"a_wall_board_name_can_have_up_65cb\":\"A wall board name can have up to {board_name_max} characters.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI help is switched off. Turn it on in Settings first.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Alarm repeat must be 0 to {alarm_repeat_max} seconds.\",\"an_alarm_device_must_be_a_siren_81ed\":\"An alarm device must be a siren, switch, input_boolean or script.\",\"an_alarm_must_last_to_seconds_98c4\":\"An alarm must last {seconds_min} to {seconds_max} seconds.\",\"an_image_file_path_can_have_up_b43f\":\"An image file path can have up to {picture_max} characters.\",\"another_media_player_can_only_play_files_6876\":\"Another media player can only play files, not Amazon's sounds.\",\"ask_claude_is_not_set_up_yet_eefc\":\"Ask Claude is not set up yet. Add the routine trigger URL and token in Settings.\",\"ask_claude_is_switched_off_turn_it_899c\":\"Ask Claude is switched off. Turn it on in Settings first.\",\"at_most_rooms_9431\":\"At most {max_rooms} rooms.\",\"blink_length_must_be_to_milliseconds_4188\":\"Blink length must be {blink_ms_min} to {blink_ms_max} milliseconds.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli could not reach Claude. Check the internet connection.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli could not read its saved Ask Claude settings, so it will not overwrite them. Check the Home Assistant log.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli could not save the token. The old one is still in use.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli couldn’t prepare the photos: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli is not set up.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli reached its Claude limit of {limit} requests per hour. Time until you can retry (minutes): about {wait}.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli stopped waiting for Claude’s reply. Wait limit (minutes): {minutes}. Try again.\",\"can_have_at_most_tiles_36be\":\"'{name}' can have at most {board_tiles_max} tiles.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Choose a camera or a JPEG (.jpg or .jpeg), PNG or GIF file in the media folder.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Choose a phone and a notification level first.\",\"choose_a_supported_condition_type_acee\":\"Choose a supported condition type.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choose a TTS voice (tts.…) for speech.\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Choose an AI Task agent for photos, or select “The same agent as above.”\",\"choose_an_ai_task_agent_or_keep_0968\":\"Choose an AI Task agent, or keep the Home Assistant default.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choose the Alexa Media Player notify service for speech.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choose the Alexa notify entity (notify.…) for speech.\",\"choose_the_sound_for_3f45\":\"Choose the sound for '{name}'.\",\"choose_the_sound_for_first_985f\":\"Choose the {level} sound for {entity_id} first.\",\"choose_which_speaker_sound_to_test_d51c\":\"Choose which speaker sound to test.\",\"choose_your_ai_agent_or_claude_de67\":\"Choose your AI agent or Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude answered, but the answer was empty.\",\"claude_answered_with_an_error_267f\":\"Claude answered with an error ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude couldn’t find the routine. Check the routine trigger URL.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude did not accept the request. Check that the routine is switched on.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude did not answer the start request. Try again.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude has limited requests for now. Try again in a little while.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude is having trouble right now. Try again in a few minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude refused the token. Make a new token for the routine, paste it in Boopli and try again.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copy the routine trigger URL again from Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Days must be 0 (Monday) to 6 (Sunday).\",\"ended_d64f\":\"ended\",\"enter_1_to_365_days_after_the_2eb6\":\"Enter 1 to 365 days after the chore is finished.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Enter a color code like #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Enter a routine trigger URL in this format: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Enter a state or a number limit for this condition.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Enter how long the condition must stay true, from 0 minutes to 24 hours.\",\"every_question_needs_some_text_5008\":\"Every question needs some text.\",\"every_room_needs_a_name_f6fe\":\"Every room needs a name.\",\"every_sound_needs_a_name_ffb2\":\"Every sound needs a name.\",\"every_step_needs_a_title_5d77\":\"Every step needs a title.\",\"every_time_must_look_like_09_30_0302\":\"Every time must look like 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"For a range, set “Above” to the lower number and “Below” to the higher number.\",\"give_each_nudge_sequence_a_name_b157\":\"Give each nudge sequence a name.\",\"give_each_wall_board_a_name_4968\":\"Give each wall board a name.\",\"give_the_room_a_name_first_e276\":\"Give the room a name first.\",\"has_no_step_waiting_for_you_right_379f\":\"'{name}' has no step waiting for you right now.\",\"has_nothing_in_progress_5779\":\"'{name}' has nothing in progress.\",\"has_two_tiles_with_the_same_id_7762\":\"'{name}' has two tiles with the same id.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant has no AI Task yet. Set up an AI agent first.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant has no web address that Claude can reach. Fill in the Home Assistant address under Ask Claude, or set the external URL in Home Assistant.\",\"keep_between_1_and_wall_boards_f423\":\"Keep between 1 and {board_max} wall boards.\",\"more_than_one_chore_is_called_use_d4d6\":\"More than one chore is called '{ref}'. Use its id.\",\"needs_1_to_nudges_673d\":\"'{name}' needs 1 to {ladder_max_nudges} nudges.\",\"no_chore_called_b51e\":\"No chore called '{ref}'.\",\"nudge_a_light_color_needs_three_values_cb55\":\"'{name}', nudge {number}: a light color needs three values from 0 to 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"'{name}', nudge {number}: the wait must be {ladder_gap_min} to {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"'{name}', nudge {number}: unknown light mode.\",\"nudge_unknown_phone_notification_level_f7a6\":\"'{name}', nudge {number}: unknown phone notification level.\",\"nudge_unknown_speaker_choice_a39c\":\"'{name}', nudge {number}: unknown speaker choice.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Nudges must start before they stop on the same day.\",\"on_the_field_for_this_tile_type_b19a\":\"On “{name},” the {key} field for this tile (type: {type}) can have up to {extra} characters.\",\"one_of_the_photos_could_not_be_6c36\":\"One of the photos could not be read.\",\"one_of_the_photos_is_too_big_1568\":\"One of the photos is too big. Try a smaller one.\",\"only_jpeg_or_png_photos_work_045e\":\"Only JPEG or PNG photos work.\",\"pick_a_light_first_9a5b\":\"Pick a light first.\",\"pick_a_pet_from_the_list_a356\":\"Pick a pet from the list.\",\"pick_a_siren_switch_or_script_first_5318\":\"Pick a siren, switch or script first.\",\"pick_an_entity_cdc1\":\"Pick an entity.\",\"pick_an_entity_for_the_entity_tile_e356\":\"'{name}': pick an entity for the entity tile.\",\"pick_an_nfc_tag_9bfb\":\"Pick an NFC tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Pick at least one day and a time.\",\"pick_at_least_one_part_to_back_9368\":\"Pick at least one part to back up.\",\"pick_at_least_one_part_to_import_705d\":\"Pick at least one part to import.\",\"pick_at_least_one_photo_2704\":\"Pick at least one photo.\",\"pick_the_for_the_tile_60f7\":\"'{name}': pick the {extra} for the {type} tile.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Quiet hours days must be 0 (Monday) to 6 (Sunday).\",\"quiet_hours_times_must_look_like_07_e804\":\"Quiet hours times must look like 07:30.\",\"set_up_a_home_assistant_media_folder_6798\":\"Set up a Home Assistant media folder so Boopli can prepare the photos.\",\"skip_557d\":\"skip\",\"snooze_must_be_between_1_minute_and_1914\":\"Snooze must be between 1 minute and 12 hours.\",\"start_558f\":\"start\",\"started_96da\":\"started\",\"starts_at_nudge_must_be_to_6549\":\"'Starts at nudge' must be {start_at_min} to {start_at_max}.\",\"step_dd83\":\"Step '{title}': {error}\",\"step_points_to_a_question_that_does_860a\":\"Step '{title}' points to a question that does not exist.\",\"step_wait_until_c420\":\"Step '{title}' (wait until): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"That chore is no longer in progress.\",\"that_does_not_look_like_a_routine_32ae\":\"That does not look like a routine token. Copy it again.\",\"that_part_is_not_waiting_any_more_3180\":\"That part is not waiting any more.\",\"the_ai_agent_answered_with_an_error_9042\":\"The AI agent answered with an error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"The AI agent did not answer.\",\"the_ai_agent_took_too_long_over_bc02\":\"The AI agent took too long (over {timeout} seconds). Try again.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"The backup is missing the nudge sequence “{name},” which {users} use. Import the chores too, or choose another nudge style for them first.\",\"the_check_in_after_on_it_must_2b59\":\"The check-in after \\\"On it\\\" must be between 5 minutes and 12 hours.\",\"the_chore_does_not_fit_this_setup_692d\":\"The chore '{name}' does not fit this setup: {error}\",\"the_chore_is_not_valid_6dd0\":\"The chore '{name}' is not valid: {error}\",\"the_columns_must_be_to_2cd0\":\"'{name}': the columns must be {board_columns_min} to {board_columns_max}.\",\"the_file_has_no_to_import_e300\":\"The file has no {part} to import.\",\"the_home_assistant_address_must_start_with_5b05\":\"The Home Assistant address must start with https:// (or http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"The kind must be 'now' or 'recurring'.\",\"the_next_due_time_cannot_be_read_f831\":\"The next due time cannot be read.\",\"the_next_due_time_needs_a_time_f91c\":\"The next due time needs a time zone.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"The pause between blinks must be {gap_ms_min} to {gap_ms_max} milliseconds.\",\"the_presence_source_must_be_an_entity_ff79\":\"The presence source must be an entity id.\",\"the_rooms_in_this_file_are_not_8661\":\"The rooms in this file are not valid: {error}\",\"the_rows_must_be_to_1733\":\"'{name}': the rows must be {board_rows_min} to {board_rows_max}.\",\"the_settings_in_this_file_are_not_5e54\":\"The settings in this file are not valid: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"The spoken sentence must contain {chore} or {step}.\",\"the_time_must_look_like_09_30_87c6\":\"The time must look like 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"The wait for the questions must be between 5 minutes and 12 hours.\",\"there_are_more_than_chores_which_is_35dc\":\"There are more than {max_chores} chores, which is more than a backup can hold.\",\"there_are_two_sounds_called_340c\":\"There are two sounds called '{name}'.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"These chores use the nudge sequence “{name}”: {users}. Choose another nudge style for them first.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"This AI agent can’t analyze photos. Choose one that can in Settings → AI help → Advanced, or continue without photos.\",\"this_request_is_too_big_for_claude_01b9\":\"This request is too big for Claude. Try again with fewer photos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Two nudge sequences are named “{name}.” Give them different names.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Two nudge sequences have the same ID.\",\"two_questions_have_the_same_id_2b7f\":\"Two questions have the same id.\",\"two_rooms_share_the_same_id_5997\":\"Two rooms share the same id.\",\"two_steps_have_the_same_id_8a53\":\"Two steps have the same id.\",\"two_tiles_are_on_the_same_spot_2681\":\"'{name}': two tiles are on the same spot.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Two wall boards are named “{name}.” Give them different names.\",\"two_wall_boards_have_the_same_id_9875\":\"Two wall boards have the same ID.\",\"unknown_default_nudge_style_b675\":\"Unknown default nudge style.\",\"unknown_light_mode_cbab\":\"Unknown light mode.\",\"unknown_mode_1943\":\"Unknown mode.\",\"unknown_night_setting_a299\":\"'{name}': unknown night setting.\",\"unknown_nudge_style_9e66\":\"Unknown nudge style.\",\"unknown_phone_notification_level_6ae9\":\"Unknown phone notification level.\",\"unknown_repeat_type_10d7\":\"Unknown repeat type.\",\"unknown_setup_status_d393\":\"Unknown setup status.\",\"unknown_setup_step_102b\":\"Unknown setup step.\",\"unknown_sound_type_91b7\":\"Unknown {name} sound type.\",\"unknown_test_9a31\":\"Unknown test.\",\"unknown_tile_type_0a67\":\"'{name}': unknown tile type '{type}'.\",\"unknown_type_for_the_sound_4d14\":\"Unknown type for the sound '{name}'.\",\"unknown_way_of_speaking_cbb3\":\"Unknown way of speaking.\",\"use_at_most_photos_4d47\":\"Use at most {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Use either a state or a number, not both.\",\"where_must_be_home_or_anywhere_fb12\":\"Where must be 'home' or 'anywhere'.\",\"write_what_you_want_to_get_done_70fd\":\"Write what you want to get done first.\",\"you_can_edit_the_built_in_nudge_e705\":\"You can edit the built-in nudge sequence “{gone}.” Keep it in your list.\",\"you_can_have_at_most_sounds_of_0a92\":\"You can have at most {extra_sounds_max} sounds of your own.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"You can have up to {ladder_max} nudge sequences.\",\"your_pet_s_name_can_have_up_2b26\":\"Your pet’s name can have up to {pet_name_max} characters.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"A backup can have at most {max_chores} chores.\",\"a_chore_can_ask_at_most_questions_61df\":\"A chore can ask at most {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"A chore can have at most {max_steps} steps.\",\"a_chore_needs_a_name_4f84\":\"A chore needs a name.\",\"a_chore_needs_at_least_one_step_2a00\":\"A chore needs at least one step.\",\"a_day_can_have_1_to_times_e106\":\"A day can have 1 to {max_times_per_day} times.\",\"a_light_can_blink_to_times_1a51\":\"A light can blink {repeats_min} to {repeats_max} times.\",\"a_light_color_needs_three_values_from_e686\":\"A light color needs three values from 0 to 255.\",\"a_light_must_be_a_light_entity_23fe\":\"A light must be a light entity.\",\"a_nudge_sequence_name_can_have_up_9261\":\"A nudge sequence name can have up to {ladder_name_max} characters.\",\"a_phone_must_be_a_notify_service_4918\":\"A phone must be a notify service name.\",\"a_prompt_can_have_up_to_characters_5004\":\"A prompt can have up to {ai_prompt_max} characters.\",\"a_question_can_have_up_to_characters_fb9e\":\"A question can have up to {question_max} characters.\",\"a_sound_name_can_have_up_to_3055\":\"A sound name can have up to {extra_sound_name_max} characters.\",\"a_speaker_must_be_a_media_player_9b44\":\"A speaker must be a media player.\",\"a_step_can_have_up_to_conditions_676d\":\"A step can have up to {max_triggers} conditions for finishing automatically.\",\"a_step_can_have_up_to_wait_30ad\":\"A step can have up to {max_triggers} wait conditions.\",\"a_step_is_small_medium_or_big_84cd\":\"A step is small, medium or big.\",\"a_step_title_can_have_up_to_13b4\":\"A step title can have up to {step_title_max} characters.\",\"a_tile_has_a_size_that_does_545b\":\"'{name}': a {type} tile has a size that does not fit the board.\",\"a_tile_has_an_unknown_56c1\":\"'{name}': a {type} tile has an unknown {key}.\",\"a_tile_is_outside_the_board_dc7a\":\"'{name}': a {type} tile is outside the board.\",\"a_tile_needs_a_3f0b\":\"'{name}': a {type} tile needs a {extra}.\",\"a_tile_s_must_be_to_f1ac\":\"'{name}': a {type} tile's {key} must be {extra} to {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"A wait must be between 0 minutes and 7 days.\",\"a_wall_board_name_can_have_up_65cb\":\"A wall board name can have up to {board_name_max} characters.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI help is switched off. Turn it on in Settings first.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Alarm repeat must be 0 to {alarm_repeat_max} seconds.\",\"an_alarm_device_must_be_a_siren_81ed\":\"An alarm device must be a siren, switch, input_boolean or script.\",\"an_alarm_must_last_to_seconds_98c4\":\"An alarm must last {seconds_min} to {seconds_max} seconds.\",\"an_image_file_path_can_have_up_b43f\":\"An image file path can have up to {picture_max} characters.\",\"an_indicator_lamp_stays_on_in_a_aea9\":\"An indicator lamp stays on in a color until you are done. For this test it switches on for {seconds} seconds.\",\"an_indicator_lamp_switches_on_in_a_95a2\":\"An indicator lamp switches on in a color until you are done. This light is on already, so turn it off and test again to see it.\",\"another_media_player_can_only_play_files_6876\":\"Another media player can only play files, not Amazon's sounds.\",\"ask_claude_is_not_set_up_yet_eefc\":\"Ask Claude is not set up yet. Add the routine trigger URL and token in Settings.\",\"ask_claude_is_switched_off_turn_it_899c\":\"Ask Claude is switched off. Turn it on in Settings first.\",\"at_most_rooms_9431\":\"At most {max_rooms} rooms.\",\"blink_length_must_be_to_milliseconds_4188\":\"Blink length must be {blink_ms_min} to {blink_ms_max} milliseconds.\",\"blinking_x_about_seconds_the_light_goes_a4c4\":\"Blinking {repeats}x, about {seconds} seconds. The light goes back to how it was afterwards.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli could not reach Claude. Check the internet connection.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli could not read its saved Ask Claude settings, so it will not overwrite them. Check the Home Assistant log.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli could not save the token. The old one is still in use.\",\"boopli_could_not_send_that_66c0\":\"Boopli could not send that.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli couldn’t prepare the photos: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli is not set up.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli reached its Claude limit of {limit} requests per hour. Time until you can retry (minutes): about {wait}.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli stopped waiting for Claude’s reply. Wait limit (minutes): {minutes}. Try again.\",\"can_have_at_most_tiles_36be\":\"'{name}' can have at most {board_tiles_max} tiles.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Choose a camera or a JPEG (.jpg or .jpeg), PNG or GIF file in the media folder.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Choose a phone and a notification level first.\",\"choose_a_supported_condition_type_acee\":\"Choose a supported condition type.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choose a TTS voice (tts.…) for speech.\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Choose an AI Task agent for photos, or select “The same agent as above.”\",\"choose_an_ai_task_agent_or_keep_0968\":\"Choose an AI Task agent, or keep the Home Assistant default.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choose the Alexa Media Player notify service for speech.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choose the Alexa notify entity (notify.…) for speech.\",\"choose_the_sound_for_3f45\":\"Choose the sound for '{name}'.\",\"choose_the_sound_for_first_985f\":\"Choose the {level} sound for {entity_id} first.\",\"choose_which_speaker_sound_to_test_d51c\":\"Choose which speaker sound to test.\",\"choose_your_ai_agent_or_claude_de67\":\"Choose your AI agent or Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude answered, but the answer was empty.\",\"claude_answered_with_an_error_267f\":\"Claude answered with an error ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude couldn’t find the routine. Check the routine trigger URL.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude did not accept the request. Check that the routine is switched on.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude did not answer the start request. Try again.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude has limited requests for now. Try again in a little while.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude is having trouble right now. Try again in a few minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude refused the token. Make a new token for the routine, paste it in Boopli and try again.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copy the routine trigger URL again from Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Days must be 0 (Monday) to 6 (Sunday).\",\"ended_d64f\":\"ended\",\"enter_1_to_365_days_after_the_2eb6\":\"Enter 1 to 365 days after the chore is finished.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Enter a color code like #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Enter a routine trigger URL in this format: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Enter a state or a number limit for this condition.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Enter how long the condition must stay true, from 0 minutes to 24 hours.\",\"every_question_needs_some_text_5008\":\"Every question needs some text.\",\"every_room_needs_a_name_f6fe\":\"Every room needs a name.\",\"every_sound_needs_a_name_ffb2\":\"Every sound needs a name.\",\"every_step_needs_a_title_5d77\":\"Every step needs a title.\",\"every_time_must_look_like_09_30_0302\":\"Every time must look like 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"For a range, set “Above” to the lower number and “Below” to the higher number.\",\"give_each_nudge_sequence_a_name_b157\":\"Give each nudge sequence a name.\",\"give_each_wall_board_a_name_4968\":\"Give each wall board a name.\",\"give_the_room_a_name_first_e276\":\"Give the room a name first.\",\"has_no_step_waiting_for_you_right_379f\":\"'{name}' has no step waiting for you right now.\",\"has_nothing_in_progress_5779\":\"'{name}' has nothing in progress.\",\"has_two_tiles_with_the_same_id_7762\":\"'{name}' has two tiles with the same id.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant has no AI Task yet. Set up an AI agent first.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant has no web address that Claude can reach. Fill in the Home Assistant address under Ask Claude, or set the external URL in Home Assistant.\",\"it_is_already_on_62a3\":\"It is already on.\",\"it_is_still_blinking_13d1\":\"It is still blinking.\",\"keep_between_1_and_wall_boards_f423\":\"Keep between 1 and {board_max} wall boards.\",\"more_than_one_chore_is_called_use_d4d6\":\"More than one chore is called '{ref}'. Use its id.\",\"needs_1_to_nudges_673d\":\"'{name}' needs 1 to {ladder_max_nudges} nudges.\",\"no_chore_called_b51e\":\"No chore called '{ref}'.\",\"nudge_a_light_color_needs_three_values_cb55\":\"'{name}', nudge {number}: a light color needs three values from 0 to 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"'{name}', nudge {number}: the wait must be {ladder_gap_min} to {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"'{name}', nudge {number}: unknown light mode.\",\"nudge_unknown_phone_notification_level_f7a6\":\"'{name}', nudge {number}: unknown phone notification level.\",\"nudge_unknown_speaker_choice_a39c\":\"'{name}', nudge {number}: unknown speaker choice.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Nudges must start before they stop on the same day.\",\"on_for_seconds_then_off_5fb1\":\"On for {seconds} seconds, then off.\",\"on_the_field_for_this_tile_type_b19a\":\"On “{name},” the {key} field for this tile (type: {type}) can have up to {extra} characters.\",\"one_of_the_photos_could_not_be_6c36\":\"One of the photos could not be read.\",\"one_of_the_photos_is_too_big_1568\":\"One of the photos is too big. Try a smaller one.\",\"only_jpeg_or_png_photos_work_045e\":\"Only JPEG or PNG photos work.\",\"pick_a_light_first_9a5b\":\"Pick a light first.\",\"pick_a_pet_from_the_list_a356\":\"Pick a pet from the list.\",\"pick_a_siren_switch_or_script_first_5318\":\"Pick a siren, switch or script first.\",\"pick_an_entity_cdc1\":\"Pick an entity.\",\"pick_an_entity_for_the_entity_tile_e356\":\"'{name}': pick an entity for the entity tile.\",\"pick_an_nfc_tag_9bfb\":\"Pick an NFC tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Pick at least one day and a time.\",\"pick_at_least_one_part_to_back_9368\":\"Pick at least one part to back up.\",\"pick_at_least_one_part_to_import_705d\":\"Pick at least one part to import.\",\"pick_at_least_one_photo_2704\":\"Pick at least one photo.\",\"pick_the_for_the_tile_60f7\":\"'{name}': pick the {extra} for the {type} tile.\",\"playing_the_alarm_sound_once_c4b5\":\"Playing the alarm sound once.\",\"playing_the_sound_ba6e\":\"Playing the sound.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Quiet hours days must be 0 (Monday) to 6 (Sunday).\",\"quiet_hours_times_must_look_like_07_e804\":\"Quiet hours times must look like 07:30.\",\"sent_1220\":\"Sent.\",\"set_up_a_home_assistant_media_folder_6798\":\"Set up a Home Assistant media folder so Boopli can prepare the photos.\",\"skip_557d\":\"skip\",\"snooze_must_be_between_1_minute_and_1914\":\"Snooze must be between 1 minute and 12 hours.\",\"speaking_af60\":\"Speaking.\",\"start_558f\":\"start\",\"started_96da\":\"started\",\"starts_at_nudge_must_be_to_6549\":\"'Starts at nudge' must be {start_at_min} to {start_at_max}.\",\"step_dd83\":\"Step '{title}': {error}\",\"step_points_to_a_question_that_does_860a\":\"Step '{title}' points to a question that does not exist.\",\"step_wait_until_c420\":\"Step '{title}' (wait until): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"That chore is no longer in progress.\",\"that_device_is_not_available_right_now_f919\":\"That device is not available right now.\",\"that_does_not_look_like_a_routine_32ae\":\"That does not look like a routine token. Copy it again.\",\"that_light_is_not_available_right_now_cdb1\":\"That light is not available right now.\",\"that_part_is_not_waiting_any_more_3180\":\"That part is not waiting any more.\",\"that_phone_service_was_not_found_0d85\":\"That phone service was not found.\",\"that_speaker_is_not_available_right_now_0bc5\":\"That speaker is not available right now.\",\"the_ai_agent_answered_with_an_error_9042\":\"The AI agent answered with an error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"The AI agent did not answer.\",\"the_ai_agent_took_too_long_over_bc02\":\"The AI agent took too long (over {timeout} seconds). Try again.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"The backup is missing the nudge sequence “{name},” which {users} use. Import the chores too, or choose another nudge style for them first.\",\"the_check_in_after_on_it_must_2b59\":\"The check-in after \\\"On it\\\" must be between 5 minutes and 12 hours.\",\"the_chore_does_not_fit_this_setup_692d\":\"The chore '{name}' does not fit this setup: {error}\",\"the_chore_is_not_valid_6dd0\":\"The chore '{name}' is not valid: {error}\",\"the_columns_must_be_to_2cd0\":\"'{name}': the columns must be {board_columns_min} to {board_columns_max}.\",\"the_file_has_no_to_import_e300\":\"The file has no {part} to import.\",\"the_home_assistant_address_must_start_with_5b05\":\"The Home Assistant address must start with https:// (or http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"The kind must be 'now' or 'recurring'.\",\"the_next_due_time_cannot_be_read_f831\":\"The next due time cannot be read.\",\"the_next_due_time_needs_a_time_f91c\":\"The next due time needs a time zone.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"The pause between blinks must be {gap_ms_min} to {gap_ms_max} milliseconds.\",\"the_presence_source_must_be_an_entity_ff79\":\"The presence source must be an entity id.\",\"the_rooms_in_this_file_are_not_8661\":\"The rooms in this file are not valid: {error}\",\"the_rows_must_be_to_1733\":\"'{name}': the rows must be {board_rows_min} to {board_rows_max}.\",\"the_settings_in_this_file_are_not_5e54\":\"The settings in this file are not valid: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"The spoken sentence must contain {chore} or {step}.\",\"the_time_must_look_like_09_30_87c6\":\"The time must look like 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"The wait for the questions must be between 5 minutes and 12 hours.\",\"there_are_more_than_chores_which_is_35dc\":\"There are more than {max_chores} chores, which is more than a backup can hold.\",\"there_are_two_sounds_called_340c\":\"There are two sounds called '{name}'.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"These chores use the nudge sequence “{name}”: {users}. Choose another nudge style for them first.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"This AI agent can’t analyze photos. Choose one that can in Settings → AI help → Advanced, or continue without photos.\",\"this_request_is_too_big_for_claude_01b9\":\"This request is too big for Claude. Try again with fewer photos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Two nudge sequences are named “{name}.” Give them different names.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Two nudge sequences have the same ID.\",\"two_questions_have_the_same_id_2b7f\":\"Two questions have the same id.\",\"two_rooms_share_the_same_id_5997\":\"Two rooms share the same id.\",\"two_steps_have_the_same_id_8a53\":\"Two steps have the same id.\",\"two_tiles_are_on_the_same_spot_2681\":\"'{name}': two tiles are on the same spot.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Two wall boards are named “{name}.” Give them different names.\",\"two_wall_boards_have_the_same_id_9875\":\"Two wall boards have the same ID.\",\"unknown_default_nudge_style_b675\":\"Unknown default nudge style.\",\"unknown_light_mode_cbab\":\"Unknown light mode.\",\"unknown_mode_1943\":\"Unknown mode.\",\"unknown_night_setting_a299\":\"'{name}': unknown night setting.\",\"unknown_nudge_style_9e66\":\"Unknown nudge style.\",\"unknown_phone_notification_level_6ae9\":\"Unknown phone notification level.\",\"unknown_repeat_type_10d7\":\"Unknown repeat type.\",\"unknown_setup_status_d393\":\"Unknown setup status.\",\"unknown_setup_step_102b\":\"Unknown setup step.\",\"unknown_sound_type_91b7\":\"Unknown {name} sound type.\",\"unknown_test_9a31\":\"Unknown test.\",\"unknown_tile_type_0a67\":\"'{name}': unknown tile type '{type}'.\",\"unknown_type_for_the_sound_4d14\":\"Unknown type for the sound '{name}'.\",\"unknown_way_of_speaking_cbb3\":\"Unknown way of speaking.\",\"use_at_most_photos_4d47\":\"Use at most {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Use either a state or a number, not both.\",\"where_must_be_home_or_anywhere_fb12\":\"Where must be 'home' or 'anywhere'.\",\"write_what_you_want_to_get_done_70fd\":\"Write what you want to get done first.\",\"you_can_edit_the_built_in_nudge_e705\":\"You can edit the built-in nudge sequence “{gone}.” Keep it in your list.\",\"you_can_have_at_most_sounds_of_0a92\":\"You can have at most {extra_sounds_max} sounds of your own.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"You can have up to {ladder_max} nudge sequences.\",\"your_pet_s_name_can_have_up_2b26\":\"Your pet’s name can have up to {pet_name_max} characters.\"}")
 }, Ye = {
 	common: {
 		delete: "Eliminar",
@@ -2985,9 +2985,9 @@ var qe = {
 		a_few_questions: "Unas preguntas",
 		claude_asks_left_one: "Te queda {count} consulta a Claude en esta hora. Cada ronda de preguntas y cada lista de pasos usa una consulta.",
 		claude_asks_left_other: "Te quedan {count} consultas a Claude en esta hora. Cada ronda de preguntas y cada lista de pasos usa una consulta.",
-		letter_small: "P",
+		letter_small: "S",
 		letter_medium: "M",
-		letter_big: "G",
+		letter_big: "L",
 		small_quick_and_easy: "Pequeño: rápido y fácil",
 		medium_takes_some_effort: "Mediano: requiere algo de esfuerzo",
 		big_hard_or_long: "Grande: difícil o largo",
@@ -3896,7 +3896,7 @@ var qe = {
 		tap_switches_it: "Usar la acción de la entidad",
 		tap_does_nothing: "Mostrar solo el estado"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Una copia de seguridad admite hasta {max_chores} tareas.\",\"a_chore_can_ask_at_most_questions_61df\":\"Una tarea puede hacer hasta {max_questions} preguntas.\",\"a_chore_can_have_at_most_steps_8780\":\"Una tarea puede tener hasta {max_steps} pasos.\",\"a_chore_needs_a_name_4f84\":\"Ponle un nombre a la tarea.\",\"a_chore_needs_at_least_one_step_2a00\":\"Añade al menos un paso a la tarea.\",\"a_day_can_have_1_to_times_e106\":\"Cada día puede tener entre 1 y {max_times_per_day} horas.\",\"a_light_can_blink_to_times_1a51\":\"Una luz puede parpadear entre {repeats_min} y {repeats_max} veces.\",\"a_light_color_needs_three_values_from_e686\":\"Para el color de la luz, escribe tres valores entre 0 y 255.\",\"a_light_must_be_a_light_entity_23fe\":\"Elige una entidad light para la luz.\",\"a_nudge_sequence_name_can_have_up_9261\":\"El nombre de una cadena de recordatorios puede tener hasta {ladder_name_max} caracteres.\",\"a_phone_must_be_a_notify_service_4918\":\"Para el teléfono, escribe el nombre de un servicio notify.\",\"a_prompt_can_have_up_to_characters_5004\":\"Una instrucción para la IA puede tener hasta {ai_prompt_max} caracteres.\",\"a_question_can_have_up_to_characters_fb9e\":\"Una pregunta puede tener hasta {question_max} caracteres.\",\"a_sound_name_can_have_up_to_3055\":\"El nombre de un sonido puede tener hasta {extra_sound_name_max} caracteres.\",\"a_speaker_must_be_a_media_player_9b44\":\"Elige una entidad media_player para el altavoz.\",\"a_step_can_have_up_to_conditions_676d\":\"Puedes añadir hasta {max_triggers} condiciones para que un paso se complete automáticamente.\",\"a_step_can_have_up_to_wait_30ad\":\"Un paso puede tener hasta {max_triggers} condiciones de espera.\",\"a_step_is_small_medium_or_big_84cd\":\"Elige «Pequeño», «Mediano» o «Grande» para el paso.\",\"a_step_title_can_have_up_to_13b4\":\"El título de un paso puede tener hasta {step_title_max} caracteres.\",\"a_tile_has_a_size_that_does_545b\":\"«{name}»: hay una tarjeta de tipo «{type}» cuyo tamaño no encaja en el Wallboard.\",\"a_tile_has_an_unknown_56c1\":\"«{name}»: hay una tarjeta de tipo «{type}» con un valor desconocido para «{key}».\",\"a_tile_is_outside_the_board_dc7a\":\"«{name}»: hay una tarjeta de tipo «{type}» fuera del Wallboard.\",\"a_tile_needs_a_3f0b\":\"«{name}»: una tarjeta de tipo «{type}» necesita una entidad compatible ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"«{name}»: el valor de «{key}» en una tarjeta de tipo «{type}» debe estar entre {extra} y {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"La espera debe durar entre 0 minutos y 7 días.\",\"a_wall_board_name_can_have_up_65cb\":\"El nombre de un Wallboard puede tener hasta {board_name_max} caracteres.\",\"ai_help_is_switched_off_turn_it_675e\":\"La ayuda con IA está desactivada. Actívala primero en «Configuración».\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"El intervalo para repetir la alarma debe estar entre 0 y {alarm_repeat_max} segundos.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Para la alarma, elige una entidad siren, switch, input_boolean o script.\",\"an_alarm_must_last_to_seconds_98c4\":\"La alarma debe durar entre {seconds_min} y {seconds_max} segundos.\",\"an_image_file_path_can_have_up_b43f\":\"La ruta de un archivo de imagen puede tener hasta {picture_max} caracteres.\",\"another_media_player_can_only_play_files_6876\":\"Los otros reproductores multimedia solo pueden reproducir archivos. Los sonidos de Amazon no están disponibles en ellos.\",\"ask_claude_is_not_set_up_yet_eefc\":\"Aún falta configurar «Preguntar a Claude». Añade la dirección para iniciar la rutina y su token en «Configuración».\",\"ask_claude_is_switched_off_turn_it_899c\":\"«Preguntar a Claude» está desactivado. Activa la opción primero en «Configuración».\",\"at_most_rooms_9431\":\"Puedes tener hasta {max_rooms} espacios.\",\"blink_length_must_be_to_milliseconds_4188\":\"Cada parpadeo debe durar entre {blink_ms_min} y {blink_ms_max} milisegundos.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli no pudo conectarse con Claude. Revisa la conexión a internet.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli no pudo leer la configuración guardada de «Preguntar a Claude», así que la dejará tal como está. Revisa el registro de Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli no pudo guardar el token. El anterior sigue en uso.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli no pudo preparar las fotos: {error}\",\"boopli_is_not_set_up_d962\":\"Aún falta configurar Boopli.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli alcanzó el límite de {limit} consultas a Claude por hora. Puedes intentarlo de nuevo en unos {wait} minutos.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli dejó de esperar la respuesta de Claude. El tiempo máximo de espera es de {minutes} minutos. Inténtalo de nuevo.\",\"can_have_at_most_tiles_36be\":\"En «{name}» caben hasta {board_tiles_max} tarjetas.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Elige una cámara o un archivo JPEG (.jpg o .jpeg), PNG o GIF de la carpeta de medios.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Elige primero un teléfono y la «Prioridad de la notificación».\",\"choose_a_supported_condition_type_acee\":\"Elige un tipo de condición compatible.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Elige una voz de lectura (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Elige un agente de AI Task para las fotos o selecciona «El mismo agente de arriba».\",\"choose_an_ai_task_agent_or_keep_0968\":\"Elige un agente de AI Task o conserva el agente predeterminado de Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Elige el servicio notify de Alexa Media Player para leer en voz alta.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Elige la entidad de Alexa (notify.…) para leer en voz alta.\",\"choose_the_sound_for_3f45\":\"Elige el sonido para «{name}».\",\"choose_the_sound_for_first_985f\":\"Elige primero el sonido «{level}» para {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Elige qué sonido del altavoz quieres probar.\",\"choose_your_ai_agent_or_claude_de67\":\"Elige tu agente de IA o Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"La respuesta de Claude llegó vacía.\",\"claude_answered_with_an_error_267f\":\"Claude devolvió un error ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude no encontró la rutina. Revisa la dirección para iniciarla.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude no aceptó la solicitud. Revisa que la rutina esté activada.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude no respondió a la solicitud de inicio. Inténtalo de nuevo.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude ha limitado las consultas por ahora. Inténtalo de nuevo en un rato.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude tiene problemas en este momento. Inténtalo de nuevo en unos minutos.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude rechazó el token. Crea uno nuevo para la rutina, pégalo en Boopli e inténtalo de nuevo.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copia de nuevo desde Claude la dirección para iniciar la rutina.\",\"days_must_be_0_monday_to_6_0b64\":\"Usa un número del 0 (lunes) al 6 (domingo) para cada día.\",\"ended_d64f\":\"terminó\",\"enter_1_to_365_days_after_the_2eb6\":\"Indica cuántos días deben pasar después de terminar la tarea (entre 1 y 365).\",\"enter_a_color_code_like_1a2b3c_42db\":\"Escribe un código de color como #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Escribe la dirección para iniciar la rutina con este formato: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Indica un estado o un límite numérico para esta condición.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Indica cuánto tiempo debe mantenerse cumplida la condición, entre 0 minutos y 24 horas.\",\"every_question_needs_some_text_5008\":\"Escribe el texto de cada pregunta.\",\"every_room_needs_a_name_f6fe\":\"Ponle un nombre a cada espacio.\",\"every_sound_needs_a_name_ffb2\":\"Ponle un nombre a cada sonido.\",\"every_step_needs_a_title_5d77\":\"Ponle un título a cada paso.\",\"every_time_must_look_like_09_30_0302\":\"Escribe todas las horas en el formato 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Para indicar un intervalo, pon el número menor en «Por encima de» y el mayor en «Por debajo de».\",\"give_each_nudge_sequence_a_name_b157\":\"Ponle un nombre a cada cadena de recordatorios.\",\"give_each_wall_board_a_name_4968\":\"Ponle un nombre a cada Wallboard.\",\"give_the_room_a_name_first_e276\":\"Ponle primero un nombre al espacio.\",\"has_no_step_waiting_for_you_right_379f\":\"Ahora mismo no hay ningún paso pendiente en «{name}».\",\"has_nothing_in_progress_5779\":\"No hay nada en curso en «{name}».\",\"has_two_tiles_with_the_same_id_7762\":\"«{name}» tiene dos tarjetas con el mismo ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant aún no tiene una entidad de AI Task. Configura primero un agente de IA.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant no tiene una dirección web a la que Claude pueda conectarse. Añade la dirección en «Preguntar a Claude» o configura la URL externa en Home Assistant.\",\"keep_between_1_and_wall_boards_f423\":\"Conserva entre 1 y {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Hay varias tareas que se llaman «{ref}». Usa el ID de la que buscas.\",\"needs_1_to_nudges_673d\":\"«{name}» necesita entre 1 y {ladder_max_nudges} recordatorios.\",\"no_chore_called_b51e\":\"No hay ninguna tarea que se llame «{ref}».\",\"nudge_a_light_color_needs_three_values_cb55\":\"«{name}», recordatorio {number}: para el color de la luz, escribe tres valores entre 0 y 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"«{name}», recordatorio {number}: la espera debe durar entre {ladder_gap_min} y {ladder_gap_max} minutos.\",\"nudge_unknown_light_mode_44c9\":\"«{name}», recordatorio {number}: no se reconoce el modo de luz.\",\"nudge_unknown_phone_notification_level_f7a6\":\"«{name}», recordatorio {number}: no se reconoce el valor de «Prioridad de la notificación» del teléfono.\",\"nudge_unknown_speaker_choice_a39c\":\"«{name}», recordatorio {number}: no se reconoce la opción elegida para el altavoz.\",\"nudges_must_start_before_they_stop_on_6b14\":\"La hora de inicio de los recordatorios debe ser anterior a la hora de fin del mismo día.\",\"on_the_field_for_this_tile_type_b19a\":\"En «{name}», el campo «{key}» de esta tarjeta (tipo: {type}) puede tener hasta {extra} caracteres.\",\"one_of_the_photos_could_not_be_6c36\":\"No se pudo abrir una de las fotos.\",\"one_of_the_photos_is_too_big_1568\":\"Una de las fotos es demasiado grande. Prueba con una más pequeña.\",\"only_jpeg_or_png_photos_work_045e\":\"Solo puedes usar fotos en formato JPEG o PNG.\",\"pick_a_light_first_9a5b\":\"Elige primero una luz.\",\"pick_a_pet_from_the_list_a356\":\"Elige una mascota de la lista.\",\"pick_a_siren_switch_or_script_first_5318\":\"Elige primero una sirena, un interruptor o un script.\",\"pick_an_entity_cdc1\":\"Elige una entidad.\",\"pick_an_entity_for_the_entity_tile_e356\":\"«{name}»: elige una entidad para la tarjeta de entidad.\",\"pick_an_nfc_tag_9bfb\":\"Elige una etiqueta NFC.\",\"pick_at_least_one_day_and_a_74e6\":\"Elige al menos un día y una hora.\",\"pick_at_least_one_part_to_back_9368\":\"Elige al menos una sección para guardar en la copia de seguridad.\",\"pick_at_least_one_part_to_import_705d\":\"Elige al menos una sección para importar.\",\"pick_at_least_one_photo_2704\":\"Elige al menos una foto.\",\"pick_the_for_the_tile_60f7\":\"«{name}»: elige una entidad compatible ({extra}) para la tarjeta de tipo «{type}».\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"En «Horas de silencio», usa un número del 0 (lunes) al 6 (domingo) para cada día.\",\"quiet_hours_times_must_look_like_07_e804\":\"Escribe las horas de «Horas de silencio» en el formato 07:30.\",\"set_up_a_home_assistant_media_folder_6798\":\"Configura una carpeta de medios en Home Assistant para que Boopli pueda preparar las fotos.\",\"skip_557d\":\"saltar\",\"snooze_must_be_between_1_minute_and_1914\":\"Puedes posponerlo entre 1 minuto y 12 horas.\",\"start_558f\":\"empezar\",\"started_96da\":\"empezó\",\"starts_at_nudge_must_be_to_6549\":\"El valor de «Desde el recordatorio» debe estar entre {start_at_min} y {start_at_max}.\",\"step_dd83\":\"Paso «{title}»: {error}\",\"step_points_to_a_question_that_does_860a\":\"El paso «{title}» hace referencia a una pregunta que no existe.\",\"step_wait_until_c420\":\"Paso «{title}» («Esperar a que pase esto…»): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"La tarea ya no está en curso.\",\"that_does_not_look_like_a_routine_32ae\":\"No parece un token de rutina. Cópialo de nuevo.\",\"that_part_is_not_waiting_any_more_3180\":\"Esa parte ya no está en «Para más tarde».\",\"the_ai_agent_answered_with_an_error_9042\":\"El agente de IA devolvió un error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"El agente de IA no respondió.\",\"the_ai_agent_took_too_long_over_bc02\":\"El agente de IA tardó más de {timeout} segundos. Inténtalo de nuevo.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"La cadena de recordatorios «{name}» no está en la copia de seguridad. La usan estas tareas: {users}. Importa también esas tareas o elige primero otro estilo de recordatorios para ellas.\",\"the_check_in_after_on_it_must_2b59\":\"Después de marcar «Estoy en ello», Boopli debe esperar entre 5 minutos y 12 horas para preguntarte cómo vas.\",\"the_chore_does_not_fit_this_setup_692d\":\"La tarea «{name}» no encaja con esta configuración: {error}\",\"the_chore_is_not_valid_6dd0\":\"La tarea «{name}» no es válida: {error}\",\"the_columns_must_be_to_2cd0\":\"«{name}»: elige entre {board_columns_min} y {board_columns_max} columnas.\",\"the_file_has_no_to_import_e300\":\"El archivo no contiene la sección «{part}» para importar.\",\"the_home_assistant_address_must_start_with_5b05\":\"La dirección de Home Assistant debe empezar por https:// o http://.\",\"the_kind_must_be_now_or_recurring_100d\":\"El tipo de tarea debe ser «now» o «recurring».\",\"the_next_due_time_cannot_be_read_f831\":\"No se pudo leer la próxima fecha y hora programadas.\",\"the_next_due_time_needs_a_time_f91c\":\"Indica la zona horaria de la próxima fecha y hora programadas.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"La pausa entre parpadeos debe durar entre {gap_ms_min} y {gap_ms_max} milisegundos.\",\"the_presence_source_must_be_an_entity_ff79\":\"En «Dónde estás», escribe el ID de una entidad.\",\"the_rooms_in_this_file_are_not_8661\":\"Los espacios de este archivo no son válidos: {error}\",\"the_rows_must_be_to_1733\":\"«{name}»: elige entre {board_rows_min} y {board_rows_max} filas.\",\"the_settings_in_this_file_are_not_5e54\":\"La configuración de este archivo no es válida: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"La frase que se lee en voz alta debe incluir {chore} o {step}.\",\"the_time_must_look_like_09_30_87c6\":\"Escribe la hora en el formato 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Boopli debe esperar entre 5 minutos y 12 horas a que respondas las preguntas.\",\"there_are_more_than_chores_which_is_35dc\":\"Hay demasiadas tareas para una copia de seguridad. El límite es de {max_chores}.\",\"there_are_two_sounds_called_340c\":\"Hay dos sonidos que se llaman «{name}».\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Estas tareas usan la cadena de recordatorios «{name}»: {users}. Elige primero otro estilo de recordatorios para ellas.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Este agente de IA no puede analizar fotos. Elige uno que pueda en «Configuración» → «Ayuda con IA» → «Opciones avanzadas» o continúa sin fotos.\",\"this_request_is_too_big_for_claude_01b9\":\"La consulta es demasiado grande para Claude. Prueba con menos fotos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Hay dos cadenas de recordatorios que se llaman «{name}». Ponles nombres distintos.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Hay dos cadenas de recordatorios con el mismo ID.\",\"two_questions_have_the_same_id_2b7f\":\"Hay dos preguntas con el mismo ID.\",\"two_rooms_share_the_same_id_5997\":\"Hay dos espacios con el mismo ID.\",\"two_steps_have_the_same_id_8a53\":\"Hay dos pasos con el mismo ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"«{name}»: hay dos tarjetas que se superponen.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Hay dos Wallboards que se llaman «{name}». Ponles nombres distintos.\",\"two_wall_boards_have_the_same_id_9875\":\"Hay dos Wallboards con el mismo ID.\",\"unknown_default_nudge_style_b675\":\"No se reconoce el estilo de recordatorios predeterminado.\",\"unknown_light_mode_cbab\":\"No se reconoce el modo de luz.\",\"unknown_mode_1943\":\"No se reconoce el modo.\",\"unknown_night_setting_a299\":\"«{name}»: no se reconoce el modo nocturno.\",\"unknown_nudge_style_9e66\":\"No se reconoce el estilo de recordatorios.\",\"unknown_phone_notification_level_6ae9\":\"No se reconoce el valor de «Prioridad de la notificación» del teléfono.\",\"unknown_repeat_type_10d7\":\"No se reconoce el tipo de repetición.\",\"unknown_setup_status_d393\":\"No se reconoce el estado de la configuración.\",\"unknown_setup_step_102b\":\"No se reconoce el paso de la configuración.\",\"unknown_sound_type_91b7\":\"No se reconoce el tipo de sonido de «{name}».\",\"unknown_test_9a31\":\"No se reconoce la prueba.\",\"unknown_tile_type_0a67\":\"«{name}»: no se reconoce el tipo de tarjeta «{type}».\",\"unknown_type_for_the_sound_4d14\":\"No se reconoce el tipo del sonido «{name}».\",\"unknown_way_of_speaking_cbb3\":\"No se reconoce la opción de lectura en voz alta.\",\"use_at_most_photos_4d47\":\"Usa como máximo {max_photos} fotos.\",\"use_either_a_state_or_a_number_6245\":\"Elige solo uno: un estado o un valor numérico.\",\"where_must_be_home_or_anywhere_fb12\":\"El lugar de la tarea debe ser «home» o «anywhere».\",\"write_what_you_want_to_get_done_70fd\":\"Escribe primero qué quieres hacer.\",\"you_can_edit_the_built_in_nudge_e705\":\"Puedes editar la cadena de recordatorios «{gone}» que viene con Boopli. Consérvala en tu lista.\",\"you_can_have_at_most_sounds_of_0a92\":\"Puedes tener hasta {extra_sounds_max} sonidos propios.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Puedes tener hasta {ladder_max} cadenas de recordatorios.\",\"your_pet_s_name_can_have_up_2b26\":\"El nombre de tu mascota puede tener hasta {pet_name_max} caracteres.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Una copia de seguridad admite hasta {max_chores} tareas.\",\"a_chore_can_ask_at_most_questions_61df\":\"Una tarea puede hacer hasta {max_questions} preguntas.\",\"a_chore_can_have_at_most_steps_8780\":\"Una tarea puede tener hasta {max_steps} pasos.\",\"a_chore_needs_a_name_4f84\":\"Ponle un nombre a la tarea.\",\"a_chore_needs_at_least_one_step_2a00\":\"Añade al menos un paso a la tarea.\",\"a_day_can_have_1_to_times_e106\":\"Cada día puede tener entre 1 y {max_times_per_day} horas.\",\"a_light_can_blink_to_times_1a51\":\"Una luz puede parpadear entre {repeats_min} y {repeats_max} veces.\",\"a_light_color_needs_three_values_from_e686\":\"Para el color de la luz, escribe tres valores entre 0 y 255.\",\"a_light_must_be_a_light_entity_23fe\":\"Elige una entidad light para la luz.\",\"a_nudge_sequence_name_can_have_up_9261\":\"El nombre de una cadena de recordatorios puede tener hasta {ladder_name_max} caracteres.\",\"a_phone_must_be_a_notify_service_4918\":\"Para el teléfono, escribe el nombre de un servicio notify.\",\"a_prompt_can_have_up_to_characters_5004\":\"Una instrucción para la IA puede tener hasta {ai_prompt_max} caracteres.\",\"a_question_can_have_up_to_characters_fb9e\":\"Una pregunta puede tener hasta {question_max} caracteres.\",\"a_sound_name_can_have_up_to_3055\":\"El nombre de un sonido puede tener hasta {extra_sound_name_max} caracteres.\",\"a_speaker_must_be_a_media_player_9b44\":\"Elige una entidad media_player para el altavoz.\",\"a_step_can_have_up_to_conditions_676d\":\"Puedes añadir hasta {max_triggers} condiciones para que un paso se complete automáticamente.\",\"a_step_can_have_up_to_wait_30ad\":\"Un paso puede tener hasta {max_triggers} condiciones de espera.\",\"a_step_is_small_medium_or_big_84cd\":\"Elige «Pequeño», «Mediano» o «Grande» para el paso.\",\"a_step_title_can_have_up_to_13b4\":\"El título de un paso puede tener hasta {step_title_max} caracteres.\",\"a_tile_has_a_size_that_does_545b\":\"«{name}»: hay una tarjeta de tipo «{type}» cuyo tamaño no encaja en el Wallboard.\",\"a_tile_has_an_unknown_56c1\":\"«{name}»: hay una tarjeta de tipo «{type}» con un valor desconocido para «{key}».\",\"a_tile_is_outside_the_board_dc7a\":\"«{name}»: hay una tarjeta de tipo «{type}» fuera del Wallboard.\",\"a_tile_needs_a_3f0b\":\"«{name}»: una tarjeta de tipo «{type}» necesita una entidad compatible ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"«{name}»: el valor de «{key}» en una tarjeta de tipo «{type}» debe estar entre {extra} y {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"La espera debe durar entre 0 minutos y 7 días.\",\"a_wall_board_name_can_have_up_65cb\":\"El nombre de un Wallboard puede tener hasta {board_name_max} caracteres.\",\"ai_help_is_switched_off_turn_it_675e\":\"La ayuda con IA está desactivada. Actívala primero en «Configuración».\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"El intervalo para repetir la alarma debe estar entre 0 y {alarm_repeat_max} segundos.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Para la alarma, elige una entidad siren, switch, input_boolean o script.\",\"an_alarm_must_last_to_seconds_98c4\":\"La alarma debe durar entre {seconds_min} y {seconds_max} segundos.\",\"an_image_file_path_can_have_up_b43f\":\"La ruta de un archivo de imagen puede tener hasta {picture_max} caracteres.\",\"an_indicator_lamp_stays_on_in_a_aea9\":\"La luz de estado se queda encendida de un color hasta que termines. En esta prueba se enciende durante {seconds} segundos.\",\"an_indicator_lamp_switches_on_in_a_95a2\":\"La luz de estado se enciende de un color hasta que termines. La luz ya está encendida. Apágala y vuelve a probar para ver el color.\",\"another_media_player_can_only_play_files_6876\":\"Los otros reproductores multimedia solo pueden reproducir archivos. Los sonidos de Amazon no están disponibles en ellos.\",\"ask_claude_is_not_set_up_yet_eefc\":\"Aún falta configurar «Preguntar a Claude». Añade la dirección para iniciar la rutina y su token en «Configuración».\",\"ask_claude_is_switched_off_turn_it_899c\":\"«Preguntar a Claude» está desactivado. Activa la opción primero en «Configuración».\",\"at_most_rooms_9431\":\"Puedes tener hasta {max_rooms} espacios.\",\"blink_length_must_be_to_milliseconds_4188\":\"Cada parpadeo debe durar entre {blink_ms_min} y {blink_ms_max} milisegundos.\",\"blinking_x_about_seconds_the_light_goes_a4c4\":\"La luz parpadea {repeats} veces en unos {seconds} segundos. Después vuelve a su estado anterior.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli no pudo conectarse con Claude. Revisa la conexión a internet.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli no pudo leer la configuración guardada de «Preguntar a Claude», así que la dejará tal como está. Revisa el registro de Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli no pudo guardar el token. El anterior sigue en uso.\",\"boopli_could_not_send_that_66c0\":\"Boopli no pudo enviarlo.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli no pudo preparar las fotos: {error}\",\"boopli_is_not_set_up_d962\":\"Aún falta configurar Boopli.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli alcanzó el límite de {limit} consultas a Claude por hora. Puedes intentarlo de nuevo en unos {wait} minutos.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli dejó de esperar la respuesta de Claude. El tiempo máximo de espera es de {minutes} minutos. Inténtalo de nuevo.\",\"can_have_at_most_tiles_36be\":\"En «{name}» caben hasta {board_tiles_max} tarjetas.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Elige una cámara o un archivo JPEG (.jpg o .jpeg), PNG o GIF de la carpeta de medios.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Elige primero un teléfono y la «Prioridad de la notificación».\",\"choose_a_supported_condition_type_acee\":\"Elige un tipo de condición compatible.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Elige una voz de lectura (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Elige un agente de AI Task para las fotos o selecciona «El mismo agente de arriba».\",\"choose_an_ai_task_agent_or_keep_0968\":\"Elige un agente de AI Task o conserva el agente predeterminado de Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Elige el servicio notify de Alexa Media Player para leer en voz alta.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Elige la entidad de Alexa (notify.…) para leer en voz alta.\",\"choose_the_sound_for_3f45\":\"Elige el sonido para «{name}».\",\"choose_the_sound_for_first_985f\":\"Elige primero el sonido «{level}» para {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Elige qué sonido del altavoz quieres probar.\",\"choose_your_ai_agent_or_claude_de67\":\"Elige tu agente de IA o Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"La respuesta de Claude llegó vacía.\",\"claude_answered_with_an_error_267f\":\"Claude devolvió un error ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude no encontró la rutina. Revisa la dirección para iniciarla.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude no aceptó la solicitud. Revisa que la rutina esté activada.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude no respondió a la solicitud de inicio. Inténtalo de nuevo.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude ha limitado las consultas por ahora. Inténtalo de nuevo en un rato.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude tiene problemas en este momento. Inténtalo de nuevo en unos minutos.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude rechazó el token. Crea uno nuevo para la rutina, pégalo en Boopli e inténtalo de nuevo.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copia de nuevo desde Claude la dirección para iniciar la rutina.\",\"days_must_be_0_monday_to_6_0b64\":\"Usa un número del 0 (lunes) al 6 (domingo) para cada día.\",\"ended_d64f\":\"terminó\",\"enter_1_to_365_days_after_the_2eb6\":\"Indica cuántos días deben pasar después de terminar la tarea (entre 1 y 365).\",\"enter_a_color_code_like_1a2b3c_42db\":\"Escribe un código de color como #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Escribe la dirección para iniciar la rutina con este formato: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Indica un estado o un límite numérico para esta condición.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Indica cuánto tiempo debe mantenerse cumplida la condición, entre 0 minutos y 24 horas.\",\"every_question_needs_some_text_5008\":\"Escribe el texto de cada pregunta.\",\"every_room_needs_a_name_f6fe\":\"Ponle un nombre a cada espacio.\",\"every_sound_needs_a_name_ffb2\":\"Ponle un nombre a cada sonido.\",\"every_step_needs_a_title_5d77\":\"Ponle un título a cada paso.\",\"every_time_must_look_like_09_30_0302\":\"Escribe todas las horas en el formato 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Para indicar un intervalo, pon el número menor en «Por encima de» y el mayor en «Por debajo de».\",\"give_each_nudge_sequence_a_name_b157\":\"Ponle un nombre a cada cadena de recordatorios.\",\"give_each_wall_board_a_name_4968\":\"Ponle un nombre a cada Wallboard.\",\"give_the_room_a_name_first_e276\":\"Ponle primero un nombre al espacio.\",\"has_no_step_waiting_for_you_right_379f\":\"Ahora mismo no hay ningún paso pendiente en «{name}».\",\"has_nothing_in_progress_5779\":\"No hay nada en curso en «{name}».\",\"has_two_tiles_with_the_same_id_7762\":\"«{name}» tiene dos tarjetas con el mismo ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant aún no tiene una entidad de AI Task. Configura primero un agente de IA.\",\"home_assistant_has_no_web_address_that_c239\":\"Home Assistant no tiene una dirección web a la que Claude pueda conectarse. Añade la dirección en «Preguntar a Claude» o configura la URL externa en Home Assistant.\",\"it_is_already_on_62a3\":\"Ya está encendido.\",\"it_is_still_blinking_13d1\":\"Sigue parpadeando.\",\"keep_between_1_and_wall_boards_f423\":\"Conserva entre 1 y {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Hay varias tareas que se llaman «{ref}». Usa el ID de la que buscas.\",\"needs_1_to_nudges_673d\":\"«{name}» necesita entre 1 y {ladder_max_nudges} recordatorios.\",\"no_chore_called_b51e\":\"No hay ninguna tarea que se llame «{ref}».\",\"nudge_a_light_color_needs_three_values_cb55\":\"«{name}», recordatorio {number}: para el color de la luz, escribe tres valores entre 0 y 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"«{name}», recordatorio {number}: la espera debe durar entre {ladder_gap_min} y {ladder_gap_max} minutos.\",\"nudge_unknown_light_mode_44c9\":\"«{name}», recordatorio {number}: no se reconoce el modo de luz.\",\"nudge_unknown_phone_notification_level_f7a6\":\"«{name}», recordatorio {number}: no se reconoce el valor de «Prioridad de la notificación» del teléfono.\",\"nudge_unknown_speaker_choice_a39c\":\"«{name}», recordatorio {number}: no se reconoce la opción elegida para el altavoz.\",\"nudges_must_start_before_they_stop_on_6b14\":\"La hora de inicio de los recordatorios debe ser anterior a la hora de fin del mismo día.\",\"on_for_seconds_then_off_5fb1\":\"Se enciende durante {seconds} segundos y luego se apaga.\",\"on_the_field_for_this_tile_type_b19a\":\"En «{name}», el campo «{key}» de esta tarjeta (tipo: {type}) puede tener hasta {extra} caracteres.\",\"one_of_the_photos_could_not_be_6c36\":\"No se pudo abrir una de las fotos.\",\"one_of_the_photos_is_too_big_1568\":\"Una de las fotos es demasiado grande. Prueba con una más pequeña.\",\"only_jpeg_or_png_photos_work_045e\":\"Solo puedes usar fotos en formato JPEG o PNG.\",\"pick_a_light_first_9a5b\":\"Elige primero una luz.\",\"pick_a_pet_from_the_list_a356\":\"Elige una mascota de la lista.\",\"pick_a_siren_switch_or_script_first_5318\":\"Elige primero una sirena, un interruptor o un script.\",\"pick_an_entity_cdc1\":\"Elige una entidad.\",\"pick_an_entity_for_the_entity_tile_e356\":\"«{name}»: elige una entidad para la tarjeta de entidad.\",\"pick_an_nfc_tag_9bfb\":\"Elige una etiqueta NFC.\",\"pick_at_least_one_day_and_a_74e6\":\"Elige al menos un día y una hora.\",\"pick_at_least_one_part_to_back_9368\":\"Elige al menos una sección para guardar en la copia de seguridad.\",\"pick_at_least_one_part_to_import_705d\":\"Elige al menos una sección para importar.\",\"pick_at_least_one_photo_2704\":\"Elige al menos una foto.\",\"pick_the_for_the_tile_60f7\":\"«{name}»: elige una entidad compatible ({extra}) para la tarjeta de tipo «{type}».\",\"playing_the_alarm_sound_once_c4b5\":\"El sonido de alarma se reproduce una vez.\",\"playing_the_sound_ba6e\":\"Se está reproduciendo el sonido.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"En «Horas de silencio», usa un número del 0 (lunes) al 6 (domingo) para cada día.\",\"quiet_hours_times_must_look_like_07_e804\":\"Escribe las horas de «Horas de silencio» en el formato 07:30.\",\"sent_1220\":\"Notificación enviada.\",\"set_up_a_home_assistant_media_folder_6798\":\"Configura una carpeta de medios en Home Assistant para que Boopli pueda preparar las fotos.\",\"skip_557d\":\"saltar\",\"snooze_must_be_between_1_minute_and_1914\":\"Puedes posponerlo entre 1 minuto y 12 horas.\",\"speaking_af60\":\"El altavoz está leyendo en voz alta.\",\"start_558f\":\"empezar\",\"started_96da\":\"empezó\",\"starts_at_nudge_must_be_to_6549\":\"El valor de «Desde el recordatorio» debe estar entre {start_at_min} y {start_at_max}.\",\"step_dd83\":\"Paso «{title}»: {error}\",\"step_points_to_a_question_that_does_860a\":\"El paso «{title}» hace referencia a una pregunta que no existe.\",\"step_wait_until_c420\":\"Paso «{title}» («Esperar a que pase esto…»): {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"La tarea ya no está en curso.\",\"that_device_is_not_available_right_now_f919\":\"El dispositivo de alarma no está disponible ahora mismo.\",\"that_does_not_look_like_a_routine_32ae\":\"No parece un token de rutina. Cópialo de nuevo.\",\"that_light_is_not_available_right_now_cdb1\":\"La luz no está disponible ahora mismo.\",\"that_part_is_not_waiting_any_more_3180\":\"Esa parte ya no está en «Para más tarde».\",\"that_phone_service_was_not_found_0d85\":\"No se encontró el servicio de notificaciones del teléfono.\",\"that_speaker_is_not_available_right_now_0bc5\":\"El altavoz no está disponible ahora mismo.\",\"the_ai_agent_answered_with_an_error_9042\":\"El agente de IA devolvió un error: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"El agente de IA no respondió.\",\"the_ai_agent_took_too_long_over_bc02\":\"El agente de IA tardó más de {timeout} segundos. Inténtalo de nuevo.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"La cadena de recordatorios «{name}» no está en la copia de seguridad. La usan estas tareas: {users}. Importa también esas tareas o elige primero otro estilo de recordatorios para ellas.\",\"the_check_in_after_on_it_must_2b59\":\"Después de marcar «Estoy en ello», Boopli debe esperar entre 5 minutos y 12 horas para preguntarte cómo vas.\",\"the_chore_does_not_fit_this_setup_692d\":\"La tarea «{name}» no encaja con esta configuración: {error}\",\"the_chore_is_not_valid_6dd0\":\"La tarea «{name}» no es válida: {error}\",\"the_columns_must_be_to_2cd0\":\"«{name}»: elige entre {board_columns_min} y {board_columns_max} columnas.\",\"the_file_has_no_to_import_e300\":\"El archivo no contiene la sección «{part}» para importar.\",\"the_home_assistant_address_must_start_with_5b05\":\"La dirección de Home Assistant debe empezar por https:// o http://.\",\"the_kind_must_be_now_or_recurring_100d\":\"El tipo de tarea debe ser «now» o «recurring».\",\"the_next_due_time_cannot_be_read_f831\":\"No se pudo leer la próxima fecha y hora programadas.\",\"the_next_due_time_needs_a_time_f91c\":\"Indica la zona horaria de la próxima fecha y hora programadas.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"La pausa entre parpadeos debe durar entre {gap_ms_min} y {gap_ms_max} milisegundos.\",\"the_presence_source_must_be_an_entity_ff79\":\"En «Dónde estás», escribe el ID de una entidad.\",\"the_rooms_in_this_file_are_not_8661\":\"Los espacios de este archivo no son válidos: {error}\",\"the_rows_must_be_to_1733\":\"«{name}»: elige entre {board_rows_min} y {board_rows_max} filas.\",\"the_settings_in_this_file_are_not_5e54\":\"La configuración de este archivo no es válida: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"La frase que se lee en voz alta debe incluir {chore} o {step}.\",\"the_time_must_look_like_09_30_87c6\":\"Escribe la hora en el formato 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Boopli debe esperar entre 5 minutos y 12 horas a que respondas las preguntas.\",\"there_are_more_than_chores_which_is_35dc\":\"Hay demasiadas tareas para una copia de seguridad. El límite es de {max_chores}.\",\"there_are_two_sounds_called_340c\":\"Hay dos sonidos que se llaman «{name}».\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Estas tareas usan la cadena de recordatorios «{name}»: {users}. Elige primero otro estilo de recordatorios para ellas.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Este agente de IA no puede analizar fotos. Elige uno que pueda en «Configuración» → «Ayuda con IA» → «Opciones avanzadas» o continúa sin fotos.\",\"this_request_is_too_big_for_claude_01b9\":\"La consulta es demasiado grande para Claude. Prueba con menos fotos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Hay dos cadenas de recordatorios que se llaman «{name}». Ponles nombres distintos.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Hay dos cadenas de recordatorios con el mismo ID.\",\"two_questions_have_the_same_id_2b7f\":\"Hay dos preguntas con el mismo ID.\",\"two_rooms_share_the_same_id_5997\":\"Hay dos espacios con el mismo ID.\",\"two_steps_have_the_same_id_8a53\":\"Hay dos pasos con el mismo ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"«{name}»: hay dos tarjetas que se superponen.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Hay dos Wallboards que se llaman «{name}». Ponles nombres distintos.\",\"two_wall_boards_have_the_same_id_9875\":\"Hay dos Wallboards con el mismo ID.\",\"unknown_default_nudge_style_b675\":\"No se reconoce el estilo de recordatorios predeterminado.\",\"unknown_light_mode_cbab\":\"No se reconoce el modo de luz.\",\"unknown_mode_1943\":\"No se reconoce el modo.\",\"unknown_night_setting_a299\":\"«{name}»: no se reconoce el modo nocturno.\",\"unknown_nudge_style_9e66\":\"No se reconoce el estilo de recordatorios.\",\"unknown_phone_notification_level_6ae9\":\"No se reconoce el valor de «Prioridad de la notificación» del teléfono.\",\"unknown_repeat_type_10d7\":\"No se reconoce el tipo de repetición.\",\"unknown_setup_status_d393\":\"No se reconoce el estado de la configuración.\",\"unknown_setup_step_102b\":\"No se reconoce el paso de la configuración.\",\"unknown_sound_type_91b7\":\"No se reconoce el tipo de sonido de «{name}».\",\"unknown_test_9a31\":\"No se reconoce la prueba.\",\"unknown_tile_type_0a67\":\"«{name}»: no se reconoce el tipo de tarjeta «{type}».\",\"unknown_type_for_the_sound_4d14\":\"No se reconoce el tipo del sonido «{name}».\",\"unknown_way_of_speaking_cbb3\":\"No se reconoce la opción de lectura en voz alta.\",\"use_at_most_photos_4d47\":\"Usa como máximo {max_photos} fotos.\",\"use_either_a_state_or_a_number_6245\":\"Elige solo uno: un estado o un valor numérico.\",\"where_must_be_home_or_anywhere_fb12\":\"El lugar de la tarea debe ser «home» o «anywhere».\",\"write_what_you_want_to_get_done_70fd\":\"Escribe primero qué quieres hacer.\",\"you_can_edit_the_built_in_nudge_e705\":\"Puedes editar la cadena de recordatorios «{gone}» que viene con Boopli. Consérvala en tu lista.\",\"you_can_have_at_most_sounds_of_0a92\":\"Puedes tener hasta {extra_sounds_max} sonidos propios.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Puedes tener hasta {ladder_max} cadenas de recordatorios.\",\"your_pet_s_name_can_have_up_2b26\":\"El nombre de tu mascota puede tener hasta {pet_name_max} caracteres.\"}")
 }, Xe = {
 	common: {
 		delete: "Supprimer",
@@ -4115,9 +4115,9 @@ var qe = {
 		a_few_questions: "Quelques questions",
 		claude_asks_left_one: "Il te reste {count} demande à Claude pour l’heure en cours. Tu utilises une demande par série de questions et par liste d’étapes.",
 		claude_asks_left_other: "Il te reste {count} demandes à Claude pour l’heure en cours. Tu utilises une demande par série de questions et par liste d’étapes.",
-		letter_small: "P",
+		letter_small: "S",
 		letter_medium: "M",
-		letter_big: "G",
+		letter_big: "L",
 		small_quick_and_easy: "Petite\xA0: rapide et facile",
 		medium_takes_some_effort: "Moyenne\xA0: demande un peu d’effort",
 		big_hard_or_long: "Grande\xA0: difficile ou longue",
@@ -5026,7 +5026,7 @@ var qe = {
 		tap_switches_it: "Utiliser l’action de l’entité",
 		tap_does_nothing: "Afficher seulement l’état"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Une sauvegarde peut contenir au maximum {max_chores} tâches.\",\"a_chore_can_ask_at_most_questions_61df\":\"Une tâche peut poser au maximum {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"Une tâche peut avoir au maximum {max_steps} étapes.\",\"a_chore_needs_a_name_4f84\":\"Donne un nom à la tâche.\",\"a_chore_needs_at_least_one_step_2a00\":\"Une tâche doit avoir au moins une étape.\",\"a_day_can_have_1_to_times_e106\":\"Tu peux choisir de 1 à {max_times_per_day} horaires par jour.\",\"a_light_can_blink_to_times_1a51\":\"Une lampe peut clignoter de {repeats_min} à {repeats_max} fois.\",\"a_light_color_needs_three_values_from_e686\":\"Pour la couleur de la lampe, saisis trois valeurs entre 0 et 255.\",\"a_light_must_be_a_light_entity_23fe\":\"Choisis une entité de type light pour la lampe.\",\"a_nudge_sequence_name_can_have_up_9261\":\"Le nom d’une série de rappels est limité à {ladder_name_max} caractères.\",\"a_phone_must_be_a_notify_service_4918\":\"Pour le téléphone, saisis le nom d’un service notify.\",\"a_prompt_can_have_up_to_characters_5004\":\"Une consigne pour l’IA est limitée à {ai_prompt_max} caractères.\",\"a_question_can_have_up_to_characters_fb9e\":\"Une question est limitée à {question_max} caractères.\",\"a_sound_name_can_have_up_to_3055\":\"Le nom d’un son est limité à {extra_sound_name_max} caractères.\",\"a_speaker_must_be_a_media_player_9b44\":\"Choisis une entité de type media_player comme enceinte.\",\"a_step_can_have_up_to_conditions_676d\":\"Tu peux définir jusqu’à {max_triggers} conditions pour terminer automatiquement une étape.\",\"a_step_can_have_up_to_wait_30ad\":\"Tu peux ajouter jusqu’à {max_triggers} conditions d’attente à une étape.\",\"a_step_is_small_medium_or_big_84cd\":\"Choisis une taille pour l’étape\xA0: «\xA0Petite\xA0», «\xA0Moyenne\xA0» ou «\xA0Grande\xA0».\",\"a_step_title_can_have_up_to_13b4\":\"Le titre d’une étape est limité à {step_title_max} caractères.\",\"a_tile_has_a_size_that_does_545b\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» a une taille qui ne convient pas à ce Wallboard.\",\"a_tile_has_an_unknown_56c1\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» a une valeur inconnue pour «\xA0{key}\xA0».\",\"a_tile_is_outside_the_board_dc7a\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» est en dehors du Wallboard.\",\"a_tile_needs_a_3f0b\":\"«\xA0{name}\xA0»\xA0: la tuile de type «\xA0{type}\xA0» a besoin d’une entité compatible ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"«\xA0{name}\xA0»\xA0: pour une tuile de type «\xA0{type}\xA0», «\xA0{key}\xA0» doit être compris entre {extra} et {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"Le temps d’attente doit être compris entre 0 minute et 7 jours.\",\"a_wall_board_name_can_have_up_65cb\":\"Le nom d’un Wallboard est limité à {board_name_max} caractères.\",\"ai_help_is_switched_off_turn_it_675e\":\"L’aide de l’IA est désactivée. Active-la d’abord dans «\xA0Paramètres\xA0».\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Pour répéter l’alarme, saisis un intervalle de 0 à {alarm_repeat_max} secondes.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Pour l’alarme, choisis une entité de type siren, switch, input_boolean ou script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Règle la durée de l’alarme entre {seconds_min} et {seconds_max} secondes.\",\"an_image_file_path_can_have_up_b43f\":\"Le chemin d’un fichier image est limité à {picture_max} caractères.\",\"another_media_player_can_only_play_files_6876\":\"Les autres lecteurs multimédias peuvent seulement lire des fichiers. Les sons d’Amazon n’y sont pas disponibles.\",\"ask_claude_is_not_set_up_yet_eefc\":\"«\xA0Demander à Claude\xA0» n’est pas encore configuré. Dans «\xA0Paramètres\xA0», ajoute l’URL de lancement de la routine et son jeton.\",\"ask_claude_is_switched_off_turn_it_899c\":\"«\xA0Demander à Claude\xA0» est désactivé. Active d’abord cette option dans «\xA0Paramètres\xA0».\",\"at_most_rooms_9431\":\"Tu peux ajouter au maximum {max_rooms} pièces.\",\"blink_length_must_be_to_milliseconds_4188\":\"Règle la durée de chaque clignotement entre {blink_ms_min} et {blink_ms_max} millisecondes.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli n’a pas pu joindre Claude. Vérifie la connexion Internet.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli n’a pas pu lire les paramètres enregistrés de «\xA0Demander à Claude\xA0» et les laissera tels quels. Consulte le journal de Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli n’a pas pu enregistrer le jeton. Le précédent est toujours utilisé.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli n’a pas pu préparer les photos\xA0: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli n’est pas encore configuré.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli a atteint sa limite de {limit} demandes à Claude par heure. Tu peux réessayer dans environ {wait} minutes.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli a arrêté d’attendre la réponse de Claude. Temps d’attente maximal (en minutes)\xA0: {minutes}. Réessaie.\",\"can_have_at_most_tiles_36be\":\"«\xA0{name}\xA0» peut contenir au maximum {board_tiles_max} tuiles.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Choisis une caméra ou un fichier JPEG (.jpg ou .jpeg), PNG ou GIF dans le dossier médias.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Choisis d’abord un téléphone et la priorité de la notification.\",\"choose_a_supported_condition_type_acee\":\"Choisis un type de condition pris en charge.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choisis une voix de synthèse (tts.…) pour la lecture à voix haute.\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Pour les photos, choisis un agent AI Task ou sélectionne «\xA0Le même agent que ci-dessus\xA0».\",\"choose_an_ai_task_agent_or_keep_0968\":\"Choisis un agent AI Task ou garde l’agent par défaut de Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choisis le service notify d’Alexa Media Player pour la lecture à voix haute.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choisis l’entité Alexa (notify.…) pour la lecture à voix haute.\",\"choose_the_sound_for_3f45\":\"Choisis le son pour «\xA0{name}\xA0».\",\"choose_the_sound_for_first_985f\":\"Choisis d’abord le son «\xA0{level}\xA0» pour {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Choisis le son à tester sur l’enceinte.\",\"choose_your_ai_agent_or_claude_de67\":\"Choisis ton agent IA ou Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude a envoyé une réponse vide.\",\"claude_answered_with_an_error_267f\":\"Claude a répondu avec une erreur ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude n’a pas trouvé la routine. Vérifie l’URL de lancement de la routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude a refusé la demande. Vérifie que la routine est activée.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude n’a pas répondu à la demande de démarrage. Réessaie.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude limite les demandes pour le moment. Réessaie dans un instant.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude a un souci en ce moment. Réessaie dans quelques minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude a refusé le jeton. Crée un nouveau jeton pour la routine, colle-le dans Boopli et réessaie.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copie à nouveau l’URL de lancement de la routine depuis Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Indique le jour de la semaine par un nombre de 0 (lundi) à 6 (dimanche).\",\"ended_d64f\":\"terminé\",\"enter_1_to_365_days_after_the_2eb6\":\"Saisis un délai de 1 à 365 jours après la fin de la tâche.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Saisis un code couleur comme #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Saisis une URL de lancement de la routine dans ce format\xA0: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Saisis un état ou un seuil numérique pour cette condition.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Indique combien de temps la condition doit rester remplie, de 0 minute à 24 heures.\",\"every_question_needs_some_text_5008\":\"Écris le texte de chaque question.\",\"every_room_needs_a_name_f6fe\":\"Chaque pièce a besoin d’un nom.\",\"every_sound_needs_a_name_ffb2\":\"Chaque son a besoin d’un nom.\",\"every_step_needs_a_title_5d77\":\"Chaque étape a besoin d’un titre.\",\"every_time_must_look_like_09_30_0302\":\"Saisis toutes les heures au format 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Pour définir une plage, mets le plus petit nombre dans «\xA0Au-dessus de\xA0» et le plus grand dans «\xA0En dessous de\xA0».\",\"give_each_nudge_sequence_a_name_b157\":\"Donne un nom à chaque série de rappels.\",\"give_each_wall_board_a_name_4968\":\"Donne un nom à chaque Wallboard.\",\"give_the_room_a_name_first_e276\":\"Donne d’abord un nom à la pièce.\",\"has_no_step_waiting_for_you_right_379f\":\"Aucune étape de «\xA0{name}\xA0» ne t’attend pour l’instant.\",\"has_nothing_in_progress_5779\":\"Rien n’est en cours dans «\xA0{name}\xA0».\",\"has_two_tiles_with_the_same_id_7762\":\"Deux tuiles de «\xA0{name}\xA0» ont le même ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant n’a pas encore de tâche IA. Configure d’abord un agent IA.\",\"home_assistant_has_no_web_address_that_c239\":\"Claude n’a pas d’adresse web pour accéder à Home Assistant. Renseigne l’adresse de Home Assistant dans «\xA0Demander à Claude\xA0» ou définis l’URL externe dans Home Assistant.\",\"keep_between_1_and_wall_boards_f423\":\"Garde entre 1 et {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Plusieurs tâches s’appellent «\xA0{ref}\xA0». Utilise l’ID de celle que tu veux.\",\"needs_1_to_nudges_673d\":\"«\xA0{name}\xA0» doit contenir de 1 à {ladder_max_nudges} rappels.\",\"no_chore_called_b51e\":\"Aucune tâche ne s’appelle «\xA0{ref}\xA0».\",\"nudge_a_light_color_needs_three_values_cb55\":\"«\xA0{name}\xA0», rappel {number}\xA0: pour la couleur de la lampe, saisis trois valeurs entre 0 et 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"«\xA0{name}\xA0», rappel {number}\xA0: le temps d’attente doit être compris entre {ladder_gap_min} et {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"«\xA0{name}\xA0», rappel {number}\xA0: valeur inconnue pour «\xA0Mode de la lampe\xA0».\",\"nudge_unknown_phone_notification_level_f7a6\":\"«\xA0{name}\xA0», rappel {number}\xA0: valeur inconnue pour «\xA0Priorité de la notification\xA0».\",\"nudge_unknown_speaker_choice_a39c\":\"«\xA0{name}\xA0», rappel {number}\xA0: choix d’enceinte inconnu.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Pour une même journée, les rappels doivent commencer avant l’heure de fin.\",\"on_the_field_for_this_tile_type_b19a\":\"Dans «\xA0{name}\xA0», le champ {key} de cette tuile (type\xA0: {type}) est limité à {extra} caractères.\",\"one_of_the_photos_could_not_be_6c36\":\"Impossible d’ouvrir l’une des photos.\",\"one_of_the_photos_is_too_big_1568\":\"L’une des photos est trop volumineuse. Essaie avec une photo plus légère.\",\"only_jpeg_or_png_photos_work_045e\":\"Choisis une photo au format JPEG ou PNG.\",\"pick_a_light_first_9a5b\":\"Choisis d’abord une lampe.\",\"pick_a_pet_from_the_list_a356\":\"Choisis un animal dans la liste.\",\"pick_a_siren_switch_or_script_first_5318\":\"Choisis d’abord une sirène, un interrupteur ou un script.\",\"pick_an_entity_cdc1\":\"Choisis une entité.\",\"pick_an_entity_for_the_entity_tile_e356\":\"«\xA0{name}\xA0»\xA0: choisis une entité pour la tuile «\xA0Entité\xA0».\",\"pick_an_nfc_tag_9bfb\":\"Choisis une étiquette NFC.\",\"pick_at_least_one_day_and_a_74e6\":\"Choisis au moins un jour et une heure.\",\"pick_at_least_one_part_to_back_9368\":\"Choisis au moins une section à sauvegarder.\",\"pick_at_least_one_part_to_import_705d\":\"Choisis au moins une section à importer.\",\"pick_at_least_one_photo_2704\":\"Choisis au moins une photo.\",\"pick_the_for_the_tile_60f7\":\"«\xA0{name}\xA0»\xA0: pour la tuile de type «\xA0{type}\xA0», choisis une entité compatible ({extra}).\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Pour les jours des heures calmes, saisis des nombres entre 0 (lundi) et 6 (dimanche).\",\"quiet_hours_times_must_look_like_07_e804\":\"Saisis les heures calmes au format 07:30.\",\"set_up_a_home_assistant_media_folder_6798\":\"Configure un dossier médias dans Home Assistant pour que Boopli puisse préparer les photos.\",\"skip_557d\":\"passer\",\"snooze_must_be_between_1_minute_and_1914\":\"Tu peux reporter de 1 minute à 12 heures.\",\"start_558f\":\"démarrer\",\"started_96da\":\"démarré\",\"starts_at_nudge_must_be_to_6549\":\"La valeur «\xA0À partir du rappel\xA0» doit être comprise entre {start_at_min} et {start_at_max}.\",\"step_dd83\":\"Étape «\xA0{title}\xA0»\xA0: {error}\",\"step_points_to_a_question_that_does_860a\":\"L’étape «\xA0{title}\xA0» est liée à une question qui n’existe pas.\",\"step_wait_until_c420\":\"Étape «\xA0{title}\xA0» («\xA0Attendre que ça arrive…\xA0»)\xA0: {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Cette tâche n’est plus en cours.\",\"that_does_not_look_like_a_routine_32ae\":\"Ce jeton ne ressemble pas à celui d’une routine. Copie-le à nouveau.\",\"that_part_is_not_waiting_any_more_3180\":\"Cette partie n’est plus dans «\xA0Pour plus tard\xA0».\",\"the_ai_agent_answered_with_an_error_9042\":\"L’agent IA a répondu avec une erreur\xA0: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"L’agent IA n’a pas répondu.\",\"the_ai_agent_took_too_long_over_bc02\":\"L’agent IA a mis trop de temps à répondre (plus de {timeout} secondes). Réessaie.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"La série de rappels «\xA0{name}\xA0» ne figure pas dans la sauvegarde. Ces tâches l’utilisent\xA0: {users}. Importe aussi les tâches ou choisis d’abord une autre option dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0» pour chacune.\",\"the_check_in_after_on_it_must_2b59\":\"Après «\xA0Je m’y mets\xA0», Boopli doit attendre entre 5 minutes et 12 heures avant de revenir te voir.\",\"the_chore_does_not_fit_this_setup_692d\":\"La tâche «\xA0{name}\xA0» ne convient pas à cette configuration\xA0: {error}\",\"the_chore_is_not_valid_6dd0\":\"La tâche «\xA0{name}\xA0» n’est pas valide\xA0: {error}\",\"the_columns_must_be_to_2cd0\":\"«\xA0{name}\xA0»\xA0: choisis entre {board_columns_min} et {board_columns_max} colonnes.\",\"the_file_has_no_to_import_e300\":\"Le fichier ne contient aucune section «\xA0{part}\xA0» à importer.\",\"the_home_assistant_address_must_start_with_5b05\":\"L’adresse de Home Assistant doit commencer par https:// (ou http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"Le type de tâche doit être «\xA0now\xA0» ou «\xA0recurring\xA0».\",\"the_next_due_time_cannot_be_read_f831\":\"Impossible de lire la date et l’heure prévues pour la prochaine fois.\",\"the_next_due_time_needs_a_time_f91c\":\"Indique un fuseau horaire pour la date et l’heure prévues pour la prochaine fois.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Prévois une pause de {gap_ms_min} à {gap_ms_max} millisecondes entre deux clignotements.\",\"the_presence_source_must_be_an_entity_ff79\":\"Saisis un ID d’entité dans «\xA0Où tu es\xA0».\",\"the_rooms_in_this_file_are_not_8661\":\"Les pièces de ce fichier ne sont pas valides\xA0: {error}\",\"the_rows_must_be_to_1733\":\"«\xA0{name}\xA0»\xA0: choisis entre {board_rows_min} et {board_rows_max} lignes.\",\"the_settings_in_this_file_are_not_5e54\":\"Les paramètres de ce fichier ne sont pas valides\xA0: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"La phrase lue à voix haute doit contenir {chore} ou {step}.\",\"the_time_must_look_like_09_30_87c6\":\"Saisis l’heure au format 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Boopli doit attendre tes réponses entre 5 minutes et 12 heures avant le premier rappel.\",\"there_are_more_than_chores_which_is_35dc\":\"Il y a plus de {max_chores} tâches. C’est trop pour une seule sauvegarde.\",\"there_are_two_sounds_called_340c\":\"Deux sons s’appellent «\xA0{name}\xA0».\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Ces tâches utilisent la série de rappels «\xA0{name}\xA0»\xA0: {users}. Pour chacune, choisis d’abord une autre option dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0».\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Cet agent IA ne peut pas analyser les photos. Dans «\xA0Paramètres\xA0» → «\xA0Aide de l’IA\xA0» → «\xA0Avancé\xA0», choisis un agent qui sait le faire. Tu peux aussi continuer sans photos.\",\"this_request_is_too_big_for_claude_01b9\":\"La demande est trop volumineuse pour Claude. Essaie avec moins de photos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Deux séries de rappels s’appellent «\xA0{name}\xA0». Donne-leur des noms différents.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Deux séries de rappels ont le même ID.\",\"two_questions_have_the_same_id_2b7f\":\"Deux questions ont le même ID.\",\"two_rooms_share_the_same_id_5997\":\"Deux pièces ont le même ID.\",\"two_steps_have_the_same_id_8a53\":\"Deux étapes ont le même ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"«\xA0{name}\xA0»\xA0: deux tuiles se chevauchent.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Deux Wallboards s’appellent «\xA0{name}\xA0». Donne-leur des noms différents.\",\"two_wall_boards_have_the_same_id_9875\":\"Deux Wallboards ont le même ID.\",\"unknown_default_nudge_style_b675\":\"Type de rappel par défaut inconnu.\",\"unknown_light_mode_cbab\":\"Valeur inconnue pour «\xA0Mode de la lampe\xA0».\",\"unknown_mode_1943\":\"Mode inconnu.\",\"unknown_night_setting_a299\":\"«\xA0{name}\xA0»\xA0: valeur inconnue pour «\xA0La nuit\xA0».\",\"unknown_nudge_style_9e66\":\"Type de rappel inconnu dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0».\",\"unknown_phone_notification_level_6ae9\":\"Valeur inconnue pour «\xA0Priorité de la notification\xA0».\",\"unknown_repeat_type_10d7\":\"Type de répétition inconnu.\",\"unknown_setup_status_d393\":\"État de la configuration inconnu.\",\"unknown_setup_step_102b\":\"Étape de configuration inconnue.\",\"unknown_sound_type_91b7\":\"Type de son inconnu pour «\xA0{name}\xA0».\",\"unknown_test_9a31\":\"Test inconnu.\",\"unknown_tile_type_0a67\":\"«\xA0{name}\xA0»\xA0: type de tuile inconnu «\xA0{type}\xA0».\",\"unknown_type_for_the_sound_4d14\":\"Type inconnu pour le son «\xA0{name}\xA0».\",\"unknown_way_of_speaking_cbb3\":\"Option de lecture à voix haute inconnue.\",\"use_at_most_photos_4d47\":\"Choisis au maximum {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Choisis une seule option\xA0: un état ou une valeur numérique.\",\"where_must_be_home_or_anywhere_fb12\":\"Le lieu de la tâche doit être «\xA0home\xA0» ou «\xA0anywhere\xA0».\",\"write_what_you_want_to_get_done_70fd\":\"Écris d’abord ce que tu veux faire.\",\"you_can_edit_the_built_in_nudge_e705\":\"Tu peux modifier la série de rappels prédéfinie «\xA0{gone}\xA0». Garde-la dans ta liste.\",\"you_can_have_at_most_sounds_of_0a92\":\"Tu peux avoir au maximum {extra_sounds_max} sons personnalisés.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Tu peux avoir au maximum {ladder_max} séries de rappels.\",\"your_pet_s_name_can_have_up_2b26\":\"Le nom de ton animal est limité à {pet_name_max} caractères.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"Une sauvegarde peut contenir au maximum {max_chores} tâches.\",\"a_chore_can_ask_at_most_questions_61df\":\"Une tâche peut poser au maximum {max_questions} questions.\",\"a_chore_can_have_at_most_steps_8780\":\"Une tâche peut avoir au maximum {max_steps} étapes.\",\"a_chore_needs_a_name_4f84\":\"Donne un nom à la tâche.\",\"a_chore_needs_at_least_one_step_2a00\":\"Une tâche doit avoir au moins une étape.\",\"a_day_can_have_1_to_times_e106\":\"Tu peux choisir de 1 à {max_times_per_day} horaires par jour.\",\"a_light_can_blink_to_times_1a51\":\"Une lampe peut clignoter de {repeats_min} à {repeats_max} fois.\",\"a_light_color_needs_three_values_from_e686\":\"Pour la couleur de la lampe, saisis trois valeurs entre 0 et 255.\",\"a_light_must_be_a_light_entity_23fe\":\"Choisis une entité de type light pour la lampe.\",\"a_nudge_sequence_name_can_have_up_9261\":\"Le nom d’une série de rappels est limité à {ladder_name_max} caractères.\",\"a_phone_must_be_a_notify_service_4918\":\"Pour le téléphone, saisis le nom d’un service notify.\",\"a_prompt_can_have_up_to_characters_5004\":\"Une consigne pour l’IA est limitée à {ai_prompt_max} caractères.\",\"a_question_can_have_up_to_characters_fb9e\":\"Une question est limitée à {question_max} caractères.\",\"a_sound_name_can_have_up_to_3055\":\"Le nom d’un son est limité à {extra_sound_name_max} caractères.\",\"a_speaker_must_be_a_media_player_9b44\":\"Choisis une entité de type media_player comme enceinte.\",\"a_step_can_have_up_to_conditions_676d\":\"Tu peux définir jusqu’à {max_triggers} conditions pour terminer automatiquement une étape.\",\"a_step_can_have_up_to_wait_30ad\":\"Tu peux ajouter jusqu’à {max_triggers} conditions d’attente à une étape.\",\"a_step_is_small_medium_or_big_84cd\":\"Choisis une taille pour l’étape\xA0: «\xA0Petite\xA0», «\xA0Moyenne\xA0» ou «\xA0Grande\xA0».\",\"a_step_title_can_have_up_to_13b4\":\"Le titre d’une étape est limité à {step_title_max} caractères.\",\"a_tile_has_a_size_that_does_545b\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» a une taille qui ne convient pas à ce Wallboard.\",\"a_tile_has_an_unknown_56c1\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» a une valeur inconnue pour «\xA0{key}\xA0».\",\"a_tile_is_outside_the_board_dc7a\":\"«\xA0{name}\xA0»\xA0: une tuile de type «\xA0{type}\xA0» est en dehors du Wallboard.\",\"a_tile_needs_a_3f0b\":\"«\xA0{name}\xA0»\xA0: la tuile de type «\xA0{type}\xA0» a besoin d’une entité compatible ({extra}).\",\"a_tile_s_must_be_to_f1ac\":\"«\xA0{name}\xA0»\xA0: pour une tuile de type «\xA0{type}\xA0», «\xA0{key}\xA0» doit être compris entre {extra} et {extra2}.\",\"a_wait_must_be_between_0_minutes_e904\":\"Le temps d’attente doit être compris entre 0 minute et 7 jours.\",\"a_wall_board_name_can_have_up_65cb\":\"Le nom d’un Wallboard est limité à {board_name_max} caractères.\",\"ai_help_is_switched_off_turn_it_675e\":\"L’aide de l’IA est désactivée. Active-la d’abord dans «\xA0Paramètres\xA0».\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Pour répéter l’alarme, saisis un intervalle de 0 à {alarm_repeat_max} secondes.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Pour l’alarme, choisis une entité de type siren, switch, input_boolean ou script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Règle la durée de l’alarme entre {seconds_min} et {seconds_max} secondes.\",\"an_image_file_path_can_have_up_b43f\":\"Le chemin d’un fichier image est limité à {picture_max} caractères.\",\"an_indicator_lamp_stays_on_in_a_aea9\":\"Un voyant reste allumé dans une couleur jusqu’à ce que tu aies terminé. Pour ce test, il s’allume pendant {seconds} secondes.\",\"an_indicator_lamp_switches_on_in_a_95a2\":\"Un voyant s’allume dans une couleur et reste allumé jusqu’à ce que tu aies terminé. Cette lampe est déjà allumée. Éteins-la et relance le test pour voir le résultat.\",\"another_media_player_can_only_play_files_6876\":\"Les autres lecteurs multimédias peuvent seulement lire des fichiers. Les sons d’Amazon n’y sont pas disponibles.\",\"ask_claude_is_not_set_up_yet_eefc\":\"«\xA0Demander à Claude\xA0» n’est pas encore configuré. Dans «\xA0Paramètres\xA0», ajoute l’URL de lancement de la routine et son jeton.\",\"ask_claude_is_switched_off_turn_it_899c\":\"«\xA0Demander à Claude\xA0» est désactivé. Active d’abord cette option dans «\xA0Paramètres\xA0».\",\"at_most_rooms_9431\":\"Tu peux ajouter au maximum {max_rooms} pièces.\",\"blink_length_must_be_to_milliseconds_4188\":\"Règle la durée de chaque clignotement entre {blink_ms_min} et {blink_ms_max} millisecondes.\",\"blinking_x_about_seconds_the_light_goes_a4c4\":\"La lampe clignote {repeats} fois, pendant environ {seconds} secondes, puis revient à son état précédent.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli n’a pas pu joindre Claude. Vérifie la connexion Internet.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli n’a pas pu lire les paramètres enregistrés de «\xA0Demander à Claude\xA0» et les laissera tels quels. Consulte le journal de Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli n’a pas pu enregistrer le jeton. Le précédent est toujours utilisé.\",\"boopli_could_not_send_that_66c0\":\"Boopli n’a pas pu envoyer le test.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli n’a pas pu préparer les photos\xA0: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli n’est pas encore configuré.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli a atteint sa limite de {limit} demandes à Claude par heure. Tu peux réessayer dans environ {wait} minutes.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli a arrêté d’attendre la réponse de Claude. Temps d’attente maximal (en minutes)\xA0: {minutes}. Réessaie.\",\"can_have_at_most_tiles_36be\":\"«\xA0{name}\xA0» peut contenir au maximum {board_tiles_max} tuiles.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Choisis une caméra ou un fichier JPEG (.jpg ou .jpeg), PNG ou GIF dans le dossier médias.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Choisis d’abord un téléphone et la priorité de la notification.\",\"choose_a_supported_condition_type_acee\":\"Choisis un type de condition pris en charge.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Choisis une voix de synthèse (tts.…) pour la lecture à voix haute.\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Pour les photos, choisis un agent AI Task ou sélectionne «\xA0Le même agent que ci-dessus\xA0».\",\"choose_an_ai_task_agent_or_keep_0968\":\"Choisis un agent AI Task ou garde l’agent par défaut de Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Choisis le service notify d’Alexa Media Player pour la lecture à voix haute.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Choisis l’entité Alexa (notify.…) pour la lecture à voix haute.\",\"choose_the_sound_for_3f45\":\"Choisis le son pour «\xA0{name}\xA0».\",\"choose_the_sound_for_first_985f\":\"Choisis d’abord le son «\xA0{level}\xA0» pour {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Choisis le son à tester sur l’enceinte.\",\"choose_your_ai_agent_or_claude_de67\":\"Choisis ton agent IA ou Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude a envoyé une réponse vide.\",\"claude_answered_with_an_error_267f\":\"Claude a répondu avec une erreur ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude n’a pas trouvé la routine. Vérifie l’URL de lancement de la routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude a refusé la demande. Vérifie que la routine est activée.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude n’a pas répondu à la demande de démarrage. Réessaie.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude limite les demandes pour le moment. Réessaie dans un instant.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Claude a un souci en ce moment. Réessaie dans quelques minutes.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude a refusé le jeton. Crée un nouveau jeton pour la routine, colle-le dans Boopli et réessaie.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Copie à nouveau l’URL de lancement de la routine depuis Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Indique le jour de la semaine par un nombre de 0 (lundi) à 6 (dimanche).\",\"ended_d64f\":\"terminé\",\"enter_1_to_365_days_after_the_2eb6\":\"Saisis un délai de 1 à 365 jours après la fin de la tâche.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Saisis un code couleur comme #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Saisis une URL de lancement de la routine dans ce format\xA0: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Saisis un état ou un seuil numérique pour cette condition.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Indique combien de temps la condition doit rester remplie, de 0 minute à 24 heures.\",\"every_question_needs_some_text_5008\":\"Écris le texte de chaque question.\",\"every_room_needs_a_name_f6fe\":\"Chaque pièce a besoin d’un nom.\",\"every_sound_needs_a_name_ffb2\":\"Chaque son a besoin d’un nom.\",\"every_step_needs_a_title_5d77\":\"Chaque étape a besoin d’un titre.\",\"every_time_must_look_like_09_30_0302\":\"Saisis toutes les heures au format 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Pour définir une plage, mets le plus petit nombre dans «\xA0Au-dessus de\xA0» et le plus grand dans «\xA0En dessous de\xA0».\",\"give_each_nudge_sequence_a_name_b157\":\"Donne un nom à chaque série de rappels.\",\"give_each_wall_board_a_name_4968\":\"Donne un nom à chaque Wallboard.\",\"give_the_room_a_name_first_e276\":\"Donne d’abord un nom à la pièce.\",\"has_no_step_waiting_for_you_right_379f\":\"Aucune étape de «\xA0{name}\xA0» ne t’attend pour l’instant.\",\"has_nothing_in_progress_5779\":\"Rien n’est en cours dans «\xA0{name}\xA0».\",\"has_two_tiles_with_the_same_id_7762\":\"Deux tuiles de «\xA0{name}\xA0» ont le même ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant n’a pas encore de tâche IA. Configure d’abord un agent IA.\",\"home_assistant_has_no_web_address_that_c239\":\"Claude n’a pas d’adresse web pour accéder à Home Assistant. Renseigne l’adresse de Home Assistant dans «\xA0Demander à Claude\xA0» ou définis l’URL externe dans Home Assistant.\",\"it_is_already_on_62a3\":\"L’appareil d’alarme est déjà activé.\",\"it_is_still_blinking_13d1\":\"La lampe clignote encore.\",\"keep_between_1_and_wall_boards_f423\":\"Garde entre 1 et {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Plusieurs tâches s’appellent «\xA0{ref}\xA0». Utilise l’ID de celle que tu veux.\",\"needs_1_to_nudges_673d\":\"«\xA0{name}\xA0» doit contenir de 1 à {ladder_max_nudges} rappels.\",\"no_chore_called_b51e\":\"Aucune tâche ne s’appelle «\xA0{ref}\xA0».\",\"nudge_a_light_color_needs_three_values_cb55\":\"«\xA0{name}\xA0», rappel {number}\xA0: pour la couleur de la lampe, saisis trois valeurs entre 0 et 255.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"«\xA0{name}\xA0», rappel {number}\xA0: le temps d’attente doit être compris entre {ladder_gap_min} et {ladder_gap_max} minutes.\",\"nudge_unknown_light_mode_44c9\":\"«\xA0{name}\xA0», rappel {number}\xA0: valeur inconnue pour «\xA0Mode de la lampe\xA0».\",\"nudge_unknown_phone_notification_level_f7a6\":\"«\xA0{name}\xA0», rappel {number}\xA0: valeur inconnue pour «\xA0Priorité de la notification\xA0».\",\"nudge_unknown_speaker_choice_a39c\":\"«\xA0{name}\xA0», rappel {number}\xA0: choix d’enceinte inconnu.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Pour une même journée, les rappels doivent commencer avant l’heure de fin.\",\"on_for_seconds_then_off_5fb1\":\"L’appareil d’alarme s’active pendant {seconds} secondes, puis se désactive.\",\"on_the_field_for_this_tile_type_b19a\":\"Dans «\xA0{name}\xA0», le champ {key} de cette tuile (type\xA0: {type}) est limité à {extra} caractères.\",\"one_of_the_photos_could_not_be_6c36\":\"Impossible d’ouvrir l’une des photos.\",\"one_of_the_photos_is_too_big_1568\":\"L’une des photos est trop volumineuse. Essaie avec une photo plus légère.\",\"only_jpeg_or_png_photos_work_045e\":\"Choisis une photo au format JPEG ou PNG.\",\"pick_a_light_first_9a5b\":\"Choisis d’abord une lampe.\",\"pick_a_pet_from_the_list_a356\":\"Choisis un animal dans la liste.\",\"pick_a_siren_switch_or_script_first_5318\":\"Choisis d’abord une sirène, un interrupteur ou un script.\",\"pick_an_entity_cdc1\":\"Choisis une entité.\",\"pick_an_entity_for_the_entity_tile_e356\":\"«\xA0{name}\xA0»\xA0: choisis une entité pour la tuile «\xA0Entité\xA0».\",\"pick_an_nfc_tag_9bfb\":\"Choisis une étiquette NFC.\",\"pick_at_least_one_day_and_a_74e6\":\"Choisis au moins un jour et une heure.\",\"pick_at_least_one_part_to_back_9368\":\"Choisis au moins une section à sauvegarder.\",\"pick_at_least_one_part_to_import_705d\":\"Choisis au moins une section à importer.\",\"pick_at_least_one_photo_2704\":\"Choisis au moins une photo.\",\"pick_the_for_the_tile_60f7\":\"«\xA0{name}\xA0»\xA0: pour la tuile de type «\xA0{type}\xA0», choisis une entité compatible ({extra}).\",\"playing_the_alarm_sound_once_c4b5\":\"L’enceinte joue le son de l’alarme une seule fois.\",\"playing_the_sound_ba6e\":\"L’enceinte joue le son.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Pour les jours des heures calmes, saisis des nombres entre 0 (lundi) et 6 (dimanche).\",\"quiet_hours_times_must_look_like_07_e804\":\"Saisis les heures calmes au format 07:30.\",\"sent_1220\":\"Test envoyé.\",\"set_up_a_home_assistant_media_folder_6798\":\"Configure un dossier médias dans Home Assistant pour que Boopli puisse préparer les photos.\",\"skip_557d\":\"passer\",\"snooze_must_be_between_1_minute_and_1914\":\"Tu peux reporter de 1 minute à 12 heures.\",\"speaking_af60\":\"L’enceinte lit le message.\",\"start_558f\":\"démarrer\",\"started_96da\":\"démarré\",\"starts_at_nudge_must_be_to_6549\":\"La valeur «\xA0À partir du rappel\xA0» doit être comprise entre {start_at_min} et {start_at_max}.\",\"step_dd83\":\"Étape «\xA0{title}\xA0»\xA0: {error}\",\"step_points_to_a_question_that_does_860a\":\"L’étape «\xA0{title}\xA0» est liée à une question qui n’existe pas.\",\"step_wait_until_c420\":\"Étape «\xA0{title}\xA0» («\xA0Attendre que ça arrive…\xA0»)\xA0: {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Cette tâche n’est plus en cours.\",\"that_device_is_not_available_right_now_f919\":\"Cet appareil d’alarme est indisponible pour l’instant.\",\"that_does_not_look_like_a_routine_32ae\":\"Ce jeton ne ressemble pas à celui d’une routine. Copie-le à nouveau.\",\"that_light_is_not_available_right_now_cdb1\":\"Cette lampe est indisponible pour l’instant.\",\"that_part_is_not_waiting_any_more_3180\":\"Cette partie n’est plus dans «\xA0Pour plus tard\xA0».\",\"that_phone_service_was_not_found_0d85\":\"Boopli n’a pas trouvé le service de notification de ce téléphone.\",\"that_speaker_is_not_available_right_now_0bc5\":\"Cette enceinte est indisponible pour l’instant.\",\"the_ai_agent_answered_with_an_error_9042\":\"L’agent IA a répondu avec une erreur\xA0: {error}\",\"the_ai_agent_did_not_answer_d5af\":\"L’agent IA n’a pas répondu.\",\"the_ai_agent_took_too_long_over_bc02\":\"L’agent IA a mis trop de temps à répondre (plus de {timeout} secondes). Réessaie.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"La série de rappels «\xA0{name}\xA0» ne figure pas dans la sauvegarde. Ces tâches l’utilisent\xA0: {users}. Importe aussi les tâches ou choisis d’abord une autre option dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0» pour chacune.\",\"the_check_in_after_on_it_must_2b59\":\"Après «\xA0Je m’y mets\xA0», Boopli doit attendre entre 5 minutes et 12 heures avant de revenir te voir.\",\"the_chore_does_not_fit_this_setup_692d\":\"La tâche «\xA0{name}\xA0» ne convient pas à cette configuration\xA0: {error}\",\"the_chore_is_not_valid_6dd0\":\"La tâche «\xA0{name}\xA0» n’est pas valide\xA0: {error}\",\"the_columns_must_be_to_2cd0\":\"«\xA0{name}\xA0»\xA0: choisis entre {board_columns_min} et {board_columns_max} colonnes.\",\"the_file_has_no_to_import_e300\":\"Le fichier ne contient aucune section «\xA0{part}\xA0» à importer.\",\"the_home_assistant_address_must_start_with_5b05\":\"L’adresse de Home Assistant doit commencer par https:// (ou http://).\",\"the_kind_must_be_now_or_recurring_100d\":\"Le type de tâche doit être «\xA0now\xA0» ou «\xA0recurring\xA0».\",\"the_next_due_time_cannot_be_read_f831\":\"Impossible de lire la date et l’heure prévues pour la prochaine fois.\",\"the_next_due_time_needs_a_time_f91c\":\"Indique un fuseau horaire pour la date et l’heure prévues pour la prochaine fois.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Prévois une pause de {gap_ms_min} à {gap_ms_max} millisecondes entre deux clignotements.\",\"the_presence_source_must_be_an_entity_ff79\":\"Saisis un ID d’entité dans «\xA0Où tu es\xA0».\",\"the_rooms_in_this_file_are_not_8661\":\"Les pièces de ce fichier ne sont pas valides\xA0: {error}\",\"the_rows_must_be_to_1733\":\"«\xA0{name}\xA0»\xA0: choisis entre {board_rows_min} et {board_rows_max} lignes.\",\"the_settings_in_this_file_are_not_5e54\":\"Les paramètres de ce fichier ne sont pas valides\xA0: {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"La phrase lue à voix haute doit contenir {chore} ou {step}.\",\"the_time_must_look_like_09_30_87c6\":\"Saisis l’heure au format 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Boopli doit attendre tes réponses entre 5 minutes et 12 heures avant le premier rappel.\",\"there_are_more_than_chores_which_is_35dc\":\"Il y a plus de {max_chores} tâches. C’est trop pour une seule sauvegarde.\",\"there_are_two_sounds_called_340c\":\"Deux sons s’appellent «\xA0{name}\xA0».\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Ces tâches utilisent la série de rappels «\xA0{name}\xA0»\xA0: {users}. Pour chacune, choisis d’abord une autre option dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0».\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Cet agent IA ne peut pas analyser les photos. Dans «\xA0Paramètres\xA0» → «\xA0Aide de l’IA\xA0» → «\xA0Avancé\xA0», choisis un agent qui sait le faire. Tu peux aussi continuer sans photos.\",\"this_request_is_too_big_for_claude_01b9\":\"La demande est trop volumineuse pour Claude. Essaie avec moins de photos.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Deux séries de rappels s’appellent «\xA0{name}\xA0». Donne-leur des noms différents.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Deux séries de rappels ont le même ID.\",\"two_questions_have_the_same_id_2b7f\":\"Deux questions ont le même ID.\",\"two_rooms_share_the_same_id_5997\":\"Deux pièces ont le même ID.\",\"two_steps_have_the_same_id_8a53\":\"Deux étapes ont le même ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"«\xA0{name}\xA0»\xA0: deux tuiles se chevauchent.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Deux Wallboards s’appellent «\xA0{name}\xA0». Donne-leur des noms différents.\",\"two_wall_boards_have_the_same_id_9875\":\"Deux Wallboards ont le même ID.\",\"unknown_default_nudge_style_b675\":\"Type de rappel par défaut inconnu.\",\"unknown_light_mode_cbab\":\"Valeur inconnue pour «\xA0Mode de la lampe\xA0».\",\"unknown_mode_1943\":\"Mode inconnu.\",\"unknown_night_setting_a299\":\"«\xA0{name}\xA0»\xA0: valeur inconnue pour «\xA0La nuit\xA0».\",\"unknown_nudge_style_9e66\":\"Type de rappel inconnu dans «\xA0Comment veux-tu que Boopli te rappelle cette tâche\xA0?\xA0».\",\"unknown_phone_notification_level_6ae9\":\"Valeur inconnue pour «\xA0Priorité de la notification\xA0».\",\"unknown_repeat_type_10d7\":\"Type de répétition inconnu.\",\"unknown_setup_status_d393\":\"État de la configuration inconnu.\",\"unknown_setup_step_102b\":\"Étape de configuration inconnue.\",\"unknown_sound_type_91b7\":\"Type de son inconnu pour «\xA0{name}\xA0».\",\"unknown_test_9a31\":\"Test inconnu.\",\"unknown_tile_type_0a67\":\"«\xA0{name}\xA0»\xA0: type de tuile inconnu «\xA0{type}\xA0».\",\"unknown_type_for_the_sound_4d14\":\"Type inconnu pour le son «\xA0{name}\xA0».\",\"unknown_way_of_speaking_cbb3\":\"Option de lecture à voix haute inconnue.\",\"use_at_most_photos_4d47\":\"Choisis au maximum {max_photos} photos.\",\"use_either_a_state_or_a_number_6245\":\"Choisis une seule option\xA0: un état ou une valeur numérique.\",\"where_must_be_home_or_anywhere_fb12\":\"Le lieu de la tâche doit être «\xA0home\xA0» ou «\xA0anywhere\xA0».\",\"write_what_you_want_to_get_done_70fd\":\"Écris d’abord ce que tu veux faire.\",\"you_can_edit_the_built_in_nudge_e705\":\"Tu peux modifier la série de rappels prédéfinie «\xA0{gone}\xA0». Garde-la dans ta liste.\",\"you_can_have_at_most_sounds_of_0a92\":\"Tu peux avoir au maximum {extra_sounds_max} sons personnalisés.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Tu peux avoir au maximum {ladder_max} séries de rappels.\",\"your_pet_s_name_can_have_up_2b26\":\"Le nom de ton animal est limité à {pet_name_max} caractères.\"}")
 }, Ze = {
 	common: {
 		delete: "Wissen",
@@ -5245,9 +5245,9 @@ var qe = {
 		a_few_questions: "Een paar vragen",
 		claude_asks_left_one: "Je hebt dit uur nog {count} verzoek aan Claude over. Elke ronde met vragen en elke lijst met stappen kost één verzoek.",
 		claude_asks_left_other: "Je hebt dit uur nog {count} verzoeken aan Claude over. Elke ronde met vragen en elke lijst met stappen kost één verzoek.",
-		letter_small: "K",
+		letter_small: "S",
 		letter_medium: "M",
-		letter_big: "G",
+		letter_big: "L",
 		small_quick_and_easy: "Klein (snel en makkelijk)",
 		medium_takes_some_effort: "Middelgroot (kost wat moeite)",
 		big_hard_or_long: "Groot (lastig of duurt lang)",
@@ -6156,7 +6156,7 @@ var qe = {
 		tap_switches_it: "Actie van de entiteit gebruiken",
 		tap_does_nothing: "Alleen status tonen"
 	},
-	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"In een back-up passen maximaal {max_chores} taken.\",\"a_chore_can_ask_at_most_questions_61df\":\"Je kunt per taak maximaal {max_questions} vragen stellen.\",\"a_chore_can_have_at_most_steps_8780\":\"Een taak kan maximaal {max_steps} stappen hebben.\",\"a_chore_needs_a_name_4f84\":\"Geef de taak een naam.\",\"a_chore_needs_at_least_one_step_2a00\":\"Voeg minstens één stap toe aan de taak.\",\"a_day_can_have_1_to_times_e106\":\"Kies 1 tot {max_times_per_day} tijden per dag.\",\"a_light_can_blink_to_times_1a51\":\"Een lamp kan {repeats_min} tot {repeats_max} keer knipperen.\",\"a_light_color_needs_three_values_from_e686\":\"Vul voor de kleur van de lamp drie waarden van 0 tot 255 in.\",\"a_light_must_be_a_light_entity_23fe\":\"Kies een light-entiteit voor de lamp.\",\"a_nudge_sequence_name_can_have_up_9261\":\"De naam van een reeks seintjes mag maximaal {ladder_name_max} tekens lang zijn.\",\"a_phone_must_be_a_notify_service_4918\":\"Vul voor de telefoon de naam van een notify-dienst in.\",\"a_prompt_can_have_up_to_characters_5004\":\"Een prompt mag maximaal {ai_prompt_max} tekens lang zijn.\",\"a_question_can_have_up_to_characters_fb9e\":\"Een vraag mag maximaal {question_max} tekens lang zijn.\",\"a_sound_name_can_have_up_to_3055\":\"De naam van een geluid mag maximaal {extra_sound_name_max} tekens lang zijn.\",\"a_speaker_must_be_a_media_player_9b44\":\"Kies een media_player-entiteit als luidspreker.\",\"a_step_can_have_up_to_conditions_676d\":\"Een stap mag maximaal {max_triggers} voorwaarden hebben om vanzelf af te ronden.\",\"a_step_can_have_up_to_wait_30ad\":\"Een stap kan op maximaal {max_triggers} voorwaarden wachten.\",\"a_step_is_small_medium_or_big_84cd\":\"Kies “Klein”, “Middelgroot” of “Groot” voor de stap.\",\"a_step_title_can_have_up_to_13b4\":\"De titel van een stap mag maximaal {step_title_max} tekens lang zijn.\",\"a_tile_has_a_size_that_does_545b\":\"Op “{name}” past het formaat van een tegel van het type “{type}” niet.\",\"a_tile_has_an_unknown_56c1\":\"Op “{name}” heeft een tegel van het type “{type}” een onbekende waarde bij “{key}”.\",\"a_tile_is_outside_the_board_dc7a\":\"Op “{name}” valt een tegel van het type “{type}” buiten het Wallboard.\",\"a_tile_needs_a_3f0b\":\"Kies op “{name}” een passende entiteit ({extra}) voor de tegel van het type “{type}”.\",\"a_tile_s_must_be_to_f1ac\":\"Op “{name}” moet “{key}” bij een tegel van het type “{type}” tussen {extra} en {extra2} liggen.\",\"a_wait_must_be_between_0_minutes_e904\":\"Kies een wachttijd tussen 0 minuten en 7 dagen.\",\"a_wall_board_name_can_have_up_65cb\":\"De naam van een Wallboard mag maximaal {board_name_max} tekens lang zijn.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI-hulp staat uit. Zet die eerst aan in Instellingen.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Vul voor de tijd tussen alarmen 0 tot {alarm_repeat_max} seconden in.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Kies voor het alarm een entiteit van het type siren, switch, input_boolean of script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Stel het alarm in op {seconds_min} tot {seconds_max} seconden.\",\"an_image_file_path_can_have_up_b43f\":\"Het bestandspad van een afbeelding mag maximaal {picture_max} tekens lang zijn.\",\"another_media_player_can_only_play_files_6876\":\"Deze mediaspeler kan alleen bestanden afspelen. Amazon-geluiden werken hier niet.\",\"ask_claude_is_not_set_up_yet_eefc\":\"“Vraag Claude” is nog niet ingesteld. Vul de start-URL van de routine en het bijbehorende token in bij Instellingen.\",\"ask_claude_is_switched_off_turn_it_899c\":\"“Vraag Claude” staat uit. Zet het eerst aan in Instellingen.\",\"at_most_rooms_9431\":\"Je kunt maximaal {max_rooms} kamers toevoegen.\",\"blink_length_must_be_to_milliseconds_4188\":\"Stel de knipperduur in op {blink_ms_min} tot {blink_ms_max} milliseconden.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli kon Claude niet bereiken. Controleer je internetverbinding.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli kon de opgeslagen instellingen voor “Vraag Claude” niet lezen. Ze blijven bewaard. Kijk in het logboek van Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli kon het token niet opslaan. Het vorige token blijft in gebruik.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli kon de foto’s niet voorbereiden: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli is nog niet ingesteld.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli heeft de limiet van {limit} verzoeken aan Claude per uur bereikt. Je kunt het over ongeveer {wait} minuten opnieuw proberen.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli wacht niet langer op antwoord van Claude. Maximale wachttijd: {minutes} minuten. Probeer het opnieuw.\",\"can_have_at_most_tiles_36be\":\"Op “{name}” passen maximaal {board_tiles_max} tegels.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Kies een camera of een JPEG-bestand (.jpg of .jpeg), PNG-bestand of GIF-bestand uit de mediamap.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Kies eerst een telefoon en de prioriteit van de melding.\",\"choose_a_supported_condition_type_acee\":\"Kies een type voorwaarde dat Boopli ondersteunt.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Kies een voorleesstem (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Kies voor foto’s een agent die AI Task ondersteunt of kies “Dezelfde agent als hierboven”.\",\"choose_an_ai_task_agent_or_keep_0968\":\"Kies een agent die AI Task ondersteunt of behoud de standaardagent van Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Kies voor het voorlezen de notify-dienst van Alexa Media Player.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Kies voor het voorlezen de notify-entiteit van Alexa (notify.…).\",\"choose_the_sound_for_3f45\":\"Kies het geluid voor “{name}”.\",\"choose_the_sound_for_first_985f\":\"Kies eerst bij “{level}” een geluid voor {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Kies welk geluid je op de luidspreker wilt testen.\",\"choose_your_ai_agent_or_claude_de67\":\"Kies je AI-agent of Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude stuurde een leeg antwoord.\",\"claude_answered_with_an_error_267f\":\"Claude meldde een fout ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude kon de routine niet vinden. Controleer de start-URL van de routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude heeft het verzoek geweigerd. Kijk of de routine aanstaat.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude reageerde niet op het verzoek om te starten. Probeer het opnieuw.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude beperkt tijdelijk het aantal verzoeken. Probeer het over een tijdje opnieuw.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Bij Claude gaat er iets mis. Probeer het over een paar minuten opnieuw.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude heeft het token geweigerd. Maak een nieuw token voor de routine, plak het in Boopli en probeer het opnieuw.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Kopieer de start-URL van de routine opnieuw uit Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Gebruik voor de dag een getal van 0 (maandag) tot 6 (zondag).\",\"ended_d64f\":\"afgelopen\",\"enter_1_to_365_days_after_the_2eb6\":\"Vul in hoeveel dagen na het afronden van de taak je wilt wachten. Kies een getal van 1 tot 365.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Vul een kleurcode in, bijvoorbeeld #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Vul de start-URL van de routine in dit formaat in: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Vul voor deze voorwaarde een status of een grenswaarde in.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Vul in hoe lang de voorwaarde moet blijven kloppen. Kies een tijd van 0 minuten tot 24 uur.\",\"every_question_needs_some_text_5008\":\"Vul bij elke vraag tekst in.\",\"every_room_needs_a_name_f6fe\":\"Geef elke kamer een naam.\",\"every_sound_needs_a_name_ffb2\":\"Geef elk geluid een naam.\",\"every_step_needs_a_title_5d77\":\"Geef elke stap een titel.\",\"every_time_must_look_like_09_30_0302\":\"Vul alle tijden in zoals 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Wil je een bereik instellen? Vul bij “Boven” het laagste getal in en bij “Onder” het hoogste.\",\"give_each_nudge_sequence_a_name_b157\":\"Geef elke reeks seintjes een naam.\",\"give_each_wall_board_a_name_4968\":\"Geef elk Wallboard een naam.\",\"give_the_room_a_name_first_e276\":\"Geef de kamer eerst een naam.\",\"has_no_step_waiting_for_you_right_379f\":\"Bij “{name}” wacht er nu geen stap op je.\",\"has_nothing_in_progress_5779\":\"Je bent nu niet bezig met een stap van “{name}”.\",\"has_two_tiles_with_the_same_id_7762\":\"Op “{name}” hebben twee tegels dezelfde ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant heeft nog geen agent voor AI Task. Stel er eerst een in.\",\"home_assistant_has_no_web_address_that_c239\":\"Er is nog geen adres ingesteld waarop Claude Home Assistant kan bereiken. Vul het adres in bij “Vraag Claude” of stel de externe URL in Home Assistant in.\",\"keep_between_1_and_wall_boards_f423\":\"Houd minimaal 1 en maximaal {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Er zijn meerdere taken met de naam “{ref}”. Gebruik de ID van de taak die je bedoelt.\",\"needs_1_to_nudges_673d\":\"Voeg 1 tot {ladder_max_nudges} seintjes toe aan “{name}”.\",\"no_chore_called_b51e\":\"Er is geen taak met de naam “{ref}”.\",\"nudge_a_light_color_needs_three_values_cb55\":\"“{name}”, seintje {number}: Vul voor de kleur van de lamp drie waarden van 0 tot 255 in.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"“{name}”, seintje {number}: kies een wachttijd van {ladder_gap_min} tot {ladder_gap_max} minuten.\",\"nudge_unknown_light_mode_44c9\":\"“{name}”, seintje {number}: Onbekende stand van de lamp.\",\"nudge_unknown_phone_notification_level_f7a6\":\"“{name}”, seintje {number}: onbekende prioriteit van de melding voor de telefoon.\",\"nudge_unknown_speaker_choice_a39c\":\"“{name}”, seintje {number}: Boopli herkent de keuze voor de luidspreker niet.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Kies per dag een begintijd voor seintjes die vóór de eindtijd ligt.\",\"on_the_field_for_this_tile_type_b19a\":\"Op “{name}” mag het veld {key} bij deze tegel (type: {type}) maximaal {extra} tekens lang zijn.\",\"one_of_the_photos_could_not_be_6c36\":\"Een van de foto’s kan niet worden geopend.\",\"one_of_the_photos_is_too_big_1568\":\"Een van de foto’s is te groot. Probeer een kleinere foto.\",\"only_jpeg_or_png_photos_work_045e\":\"Kies een JPEG- of PNG-foto.\",\"pick_a_light_first_9a5b\":\"Kies eerst een lamp.\",\"pick_a_pet_from_the_list_a356\":\"Kies een huisdier uit de lijst.\",\"pick_a_siren_switch_or_script_first_5318\":\"Kies eerst een sirene, schakelaar of script.\",\"pick_an_entity_cdc1\":\"Kies een entiteit.\",\"pick_an_entity_for_the_entity_tile_e356\":\"Kies op “{name}” een entiteit voor de entiteitstegel.\",\"pick_an_nfc_tag_9bfb\":\"Kies een NFC-tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Kies minstens één dag en een tijd.\",\"pick_at_least_one_part_to_back_9368\":\"Kies minstens één onderdeel voor je back-up.\",\"pick_at_least_one_part_to_import_705d\":\"Kies minstens één onderdeel om te importeren.\",\"pick_at_least_one_photo_2704\":\"Kies minstens één foto.\",\"pick_the_for_the_tile_60f7\":\"Kies op “{name}” een passende entiteit ({extra}) voor de tegel van het type “{type}”.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Gebruik bij “Stille uren” voor elke dag een getal van 0 (maandag) tot 6 (zondag).\",\"quiet_hours_times_must_look_like_07_e804\":\"Vul bij “Stille uren” de tijden in zoals 07:30.\",\"set_up_a_home_assistant_media_folder_6798\":\"Stel een mediamap in voor Home Assistant, zodat Boopli de foto’s kan voorbereiden.\",\"skip_557d\":\"overslaan\",\"snooze_must_be_between_1_minute_and_1914\":\"Je kunt een seintje tussen 1 minuut en 12 uur uitstellen.\",\"start_558f\":\"starten\",\"started_96da\":\"gestart\",\"starts_at_nudge_must_be_to_6549\":\"Vul bij “Vanaf seintje” een getal van {start_at_min} tot {start_at_max} in.\",\"step_dd83\":\"Stap “{title}” – {error}\",\"step_points_to_a_question_that_does_860a\":\"Stap “{title}” verwijst naar een vraag die niet bestaat.\",\"step_wait_until_c420\":\"Stap “{title}” (Wacht tot dit gebeurt) – {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Die taak loopt niet meer.\",\"that_does_not_look_like_a_routine_32ae\":\"Dit lijkt geen token voor een routine. Kopieer het opnieuw.\",\"that_part_is_not_waiting_any_more_3180\":\"Dit deel staat niet meer onder “Voor later”.\",\"the_ai_agent_answered_with_an_error_9042\":\"De AI-agent meldde een fout. {error}\",\"the_ai_agent_did_not_answer_d5af\":\"De AI-agent heeft niet geantwoord.\",\"the_ai_agent_took_too_long_over_bc02\":\"De AI-agent had meer dan {timeout} seconden nodig. Probeer het opnieuw.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"De reeks “{name}” ontbreekt in de back-up. De reeks wordt gebruikt door {users}. Importeer die taken ook of pas bij die taken eerst “Hoe wil je dat Boopli je een seintje geeft?” aan.\",\"the_check_in_after_on_it_must_2b59\":\"Stel in dat Boopli 5 minuten tot 12 uur na “Ik ben bezig” vraagt of je nog bezig bent.\",\"the_chore_does_not_fit_this_setup_692d\":\"De taak “{name}” past niet bij deze instellingen. {error}\",\"the_chore_is_not_valid_6dd0\":\"Er klopt iets niet aan de taak “{name}”. {error}\",\"the_columns_must_be_to_2cd0\":\"Kies voor “{name}” {board_columns_min} tot {board_columns_max} kolommen.\",\"the_file_has_no_to_import_e300\":\"Het onderdeel “{part}” ontbreekt in het bestand.\",\"the_home_assistant_address_must_start_with_5b05\":\"Het adres van Home Assistant moet met https:// of http:// beginnen.\",\"the_kind_must_be_now_or_recurring_100d\":\"Kies voor het taaktype “now” of “recurring”.\",\"the_next_due_time_cannot_be_read_f831\":\"Boopli kan het volgende geplande tijdstip niet lezen.\",\"the_next_due_time_needs_a_time_f91c\":\"Geef een tijdzone op voor het volgende geplande tijdstip.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Stel de pauze tussen knippersignalen in op {gap_ms_min} tot {gap_ms_max} milliseconden.\",\"the_presence_source_must_be_an_entity_ff79\":\"Vul bij “Waar je bent” een entiteits-ID in.\",\"the_rooms_in_this_file_are_not_8661\":\"Er klopt iets niet aan de kamers in dit bestand. {error}\",\"the_rows_must_be_to_1733\":\"Kies voor “{name}” {board_rows_min} tot {board_rows_max} rijen.\",\"the_settings_in_this_file_are_not_5e54\":\"Er klopt iets niet aan de instellingen in dit bestand. {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"Zet {chore} of {step} in de zin die Boopli voorleest.\",\"the_time_must_look_like_09_30_87c6\":\"Vul de tijd in zoals 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Stel in dat Boopli vóór het eerste seintje 5 minuten tot 12 uur op je antwoorden wacht.\",\"there_are_more_than_chores_which_is_35dc\":\"Er zijn te veel taken voor een back-up. Er passen maximaal {max_chores} taken in.\",\"there_are_two_sounds_called_340c\":\"Twee geluiden heten “{name}”.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Deze taken gebruiken de reeks “{name}”: {users}. Pas bij die taken eerst “Hoe wil je dat Boopli je een seintje geeft?” aan.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Deze AI-agent kan geen foto’s bekijken. Kies een agent die dat wel kan via “Instellingen” → “AI-hulp” → “Geavanceerd: AI-agent voor foto’s en prompts”, of ga verder zonder foto’s.\",\"this_request_is_too_big_for_claude_01b9\":\"Het verzoek is te groot voor Claude. Probeer het met minder foto’s.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Twee reeksen heten “{name}”. Geef ze verschillende namen.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Twee reeksen seintjes hebben dezelfde ID.\",\"two_questions_have_the_same_id_2b7f\":\"Twee vragen hebben dezelfde ID.\",\"two_rooms_share_the_same_id_5997\":\"Twee kamers hebben dezelfde ID.\",\"two_steps_have_the_same_id_8a53\":\"Twee stappen hebben dezelfde ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"Op “{name}” overlappen twee tegels.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Twee Wallboards heten “{name}”. Geef ze verschillende namen.\",\"two_wall_boards_have_the_same_id_9875\":\"Twee Wallboards hebben dezelfde ID.\",\"unknown_default_nudge_style_b675\":\"Boopli herkent de standaard voor seintjes niet.\",\"unknown_light_mode_cbab\":\"Onbekende stand van de lamp.\",\"unknown_mode_1943\":\"Onbekende modus.\",\"unknown_night_setting_a299\":\"Onbekende nachtstand voor “{name}”.\",\"unknown_nudge_style_9e66\":\"Boopli herkent de keuze bij “Hoe wil je dat Boopli je een seintje geeft?” niet.\",\"unknown_phone_notification_level_6ae9\":\"Onbekende prioriteit voor de melding op je telefoon.\",\"unknown_repeat_type_10d7\":\"Boopli herkent de gekozen manier van herhalen niet.\",\"unknown_setup_status_d393\":\"Onbekende status bij het instellen.\",\"unknown_setup_step_102b\":\"Boopli herkent deze stap bij het instellen niet.\",\"unknown_sound_type_91b7\":\"Onbekend soort geluid voor “{name}”.\",\"unknown_test_9a31\":\"Boopli herkent deze test niet.\",\"unknown_tile_type_0a67\":\"Op “{name}” staat een tegel van het onbekende type “{type}”.\",\"unknown_type_for_the_sound_4d14\":\"Onbekend soort geluid voor “{name}”.\",\"unknown_way_of_speaking_cbb3\":\"Boopli herkent de gekozen voorleesoptie niet.\",\"use_at_most_photos_4d47\":\"Kies maximaal {max_photos} foto’s.\",\"use_either_a_state_or_a_number_6245\":\"Vul een status of een getal in, niet allebei.\",\"where_must_be_home_or_anywhere_fb12\":\"Kies als locatie voor de taak “home” of “anywhere”.\",\"write_what_you_want_to_get_done_70fd\":\"Schrijf eerst wat je voor elkaar wilt krijgen.\",\"you_can_edit_the_built_in_nudge_e705\":\"Je kunt de standaardreeks “{gone}” bewerken. Laat die in je lijst staan.\",\"you_can_have_at_most_sounds_of_0a92\":\"Je kunt maximaal {extra_sounds_max} eigen geluiden hebben.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Je kunt maximaal {ladder_max} reeksen hebben.\",\"your_pet_s_name_can_have_up_2b26\":\"De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn.\"}")
+	errors: /* @__PURE__ */ JSON.parse("{\"a_backup_can_have_at_most_chores_efae\":\"In een back-up passen maximaal {max_chores} taken.\",\"a_chore_can_ask_at_most_questions_61df\":\"Je kunt per taak maximaal {max_questions} vragen stellen.\",\"a_chore_can_have_at_most_steps_8780\":\"Een taak kan maximaal {max_steps} stappen hebben.\",\"a_chore_needs_a_name_4f84\":\"Geef de taak een naam.\",\"a_chore_needs_at_least_one_step_2a00\":\"Voeg minstens één stap toe aan de taak.\",\"a_day_can_have_1_to_times_e106\":\"Kies 1 tot {max_times_per_day} tijden per dag.\",\"a_light_can_blink_to_times_1a51\":\"Een lamp kan {repeats_min} tot {repeats_max} keer knipperen.\",\"a_light_color_needs_three_values_from_e686\":\"Vul voor de kleur van de lamp drie waarden van 0 tot 255 in.\",\"a_light_must_be_a_light_entity_23fe\":\"Kies een light-entiteit voor de lamp.\",\"a_nudge_sequence_name_can_have_up_9261\":\"De naam van een reeks seintjes mag maximaal {ladder_name_max} tekens lang zijn.\",\"a_phone_must_be_a_notify_service_4918\":\"Vul voor de telefoon de naam van een notify-dienst in.\",\"a_prompt_can_have_up_to_characters_5004\":\"Een prompt mag maximaal {ai_prompt_max} tekens lang zijn.\",\"a_question_can_have_up_to_characters_fb9e\":\"Een vraag mag maximaal {question_max} tekens lang zijn.\",\"a_sound_name_can_have_up_to_3055\":\"De naam van een geluid mag maximaal {extra_sound_name_max} tekens lang zijn.\",\"a_speaker_must_be_a_media_player_9b44\":\"Kies een media_player-entiteit als luidspreker.\",\"a_step_can_have_up_to_conditions_676d\":\"Een stap mag maximaal {max_triggers} voorwaarden hebben om vanzelf af te ronden.\",\"a_step_can_have_up_to_wait_30ad\":\"Een stap kan op maximaal {max_triggers} voorwaarden wachten.\",\"a_step_is_small_medium_or_big_84cd\":\"Kies “Klein”, “Middelgroot” of “Groot” voor de stap.\",\"a_step_title_can_have_up_to_13b4\":\"De titel van een stap mag maximaal {step_title_max} tekens lang zijn.\",\"a_tile_has_a_size_that_does_545b\":\"Op “{name}” past het formaat van een tegel van het type “{type}” niet.\",\"a_tile_has_an_unknown_56c1\":\"Op “{name}” heeft een tegel van het type “{type}” een onbekende waarde bij “{key}”.\",\"a_tile_is_outside_the_board_dc7a\":\"Op “{name}” valt een tegel van het type “{type}” buiten het Wallboard.\",\"a_tile_needs_a_3f0b\":\"Kies op “{name}” een passende entiteit ({extra}) voor de tegel van het type “{type}”.\",\"a_tile_s_must_be_to_f1ac\":\"Op “{name}” moet “{key}” bij een tegel van het type “{type}” tussen {extra} en {extra2} liggen.\",\"a_wait_must_be_between_0_minutes_e904\":\"Kies een wachttijd tussen 0 minuten en 7 dagen.\",\"a_wall_board_name_can_have_up_65cb\":\"De naam van een Wallboard mag maximaal {board_name_max} tekens lang zijn.\",\"ai_help_is_switched_off_turn_it_675e\":\"AI-hulp staat uit. Zet die eerst aan in Instellingen.\",\"alarm_repeat_must_be_0_to_seconds_3ded\":\"Vul voor de tijd tussen alarmen 0 tot {alarm_repeat_max} seconden in.\",\"an_alarm_device_must_be_a_siren_81ed\":\"Kies voor het alarm een entiteit van het type siren, switch, input_boolean of script.\",\"an_alarm_must_last_to_seconds_98c4\":\"Stel het alarm in op {seconds_min} tot {seconds_max} seconden.\",\"an_image_file_path_can_have_up_b43f\":\"Het bestandspad van een afbeelding mag maximaal {picture_max} tekens lang zijn.\",\"an_indicator_lamp_stays_on_in_a_aea9\":\"Een statuslampje blijft in een kleur branden tot je klaar bent. Bij deze test brandt het {seconds} seconden.\",\"an_indicator_lamp_switches_on_in_a_95a2\":\"Een statuslampje gaat in een kleur aan en blijft branden tot je klaar bent. Deze lamp staat al aan. Zet de lamp uit en test opnieuw.\",\"another_media_player_can_only_play_files_6876\":\"Deze mediaspeler kan alleen bestanden afspelen. Amazon-geluiden werken hier niet.\",\"ask_claude_is_not_set_up_yet_eefc\":\"“Vraag Claude” is nog niet ingesteld. Vul de start-URL van de routine en het bijbehorende token in bij Instellingen.\",\"ask_claude_is_switched_off_turn_it_899c\":\"“Vraag Claude” staat uit. Zet het eerst aan in Instellingen.\",\"at_most_rooms_9431\":\"Je kunt maximaal {max_rooms} kamers toevoegen.\",\"blink_length_must_be_to_milliseconds_4188\":\"Stel de knipperduur in op {blink_ms_min} tot {blink_ms_max} milliseconden.\",\"blinking_x_about_seconds_the_light_goes_a4c4\":\"De lamp knippert {repeats} keer, in ongeveer {seconds} seconden. Daarna gaat de lamp terug naar de vorige stand.\",\"boopli_could_not_reach_claude_check_the_f5eb\":\"Boopli kon Claude niet bereiken. Controleer je internetverbinding.\",\"boopli_could_not_read_its_saved_ask_6852\":\"Boopli kon de opgeslagen instellingen voor “Vraag Claude” niet lezen. Ze blijven bewaard. Kijk in het logboek van Home Assistant.\",\"boopli_could_not_save_the_token_the_feb2\":\"Boopli kon het token niet opslaan. Het vorige token blijft in gebruik.\",\"boopli_could_not_send_that_66c0\":\"Boopli kon dit niet versturen.\",\"boopli_couldn_t_prepare_the_photos_0700\":\"Boopli kon de foto’s niet voorbereiden: {error}\",\"boopli_is_not_set_up_d962\":\"Boopli is nog niet ingesteld.\",\"boopli_reached_its_claude_limit_of_requests_80af\":\"Boopli heeft de limiet van {limit} verzoeken aan Claude per uur bereikt. Je kunt het over ongeveer {wait} minuten opnieuw proberen.\",\"boopli_stopped_waiting_for_claude_s_reply_4954\":\"Boopli wacht niet langer op antwoord van Claude. Maximale wachttijd: {minutes} minuten. Probeer het opnieuw.\",\"can_have_at_most_tiles_36be\":\"Op “{name}” passen maximaal {board_tiles_max} tegels.\",\"choose_a_camera_or_a_jpeg_jpg_dadf\":\"Kies een camera of een JPEG-bestand (.jpg of .jpeg), PNG-bestand of GIF-bestand uit de mediamap.\",\"choose_a_phone_and_a_notification_level_3b21\":\"Kies eerst een telefoon en de prioriteit van de melding.\",\"choose_a_supported_condition_type_acee\":\"Kies een type voorwaarde dat Boopli ondersteunt.\",\"choose_a_tts_voice_tts_for_speech_975b\":\"Kies een voorleesstem (tts.…).\",\"choose_an_ai_task_agent_for_photos_94cc\":\"Kies voor foto’s een agent die AI Task ondersteunt of kies “Dezelfde agent als hierboven”.\",\"choose_an_ai_task_agent_or_keep_0968\":\"Kies een agent die AI Task ondersteunt of behoud de standaardagent van Home Assistant.\",\"choose_the_alexa_media_player_notify_service_0d23\":\"Kies voor het voorlezen de notify-dienst van Alexa Media Player.\",\"choose_the_alexa_notify_entity_notify_for_f709\":\"Kies voor het voorlezen de notify-entiteit van Alexa (notify.…).\",\"choose_the_sound_for_3f45\":\"Kies het geluid voor “{name}”.\",\"choose_the_sound_for_first_985f\":\"Kies eerst bij “{level}” een geluid voor {entity_id}.\",\"choose_which_speaker_sound_to_test_d51c\":\"Kies welk geluid je op de luidspreker wilt testen.\",\"choose_your_ai_agent_or_claude_de67\":\"Kies je AI-agent of Claude.\",\"claude_answered_but_the_answer_was_empty_4bf7\":\"Claude stuurde een leeg antwoord.\",\"claude_answered_with_an_error_267f\":\"Claude meldde een fout ({status}).\",\"claude_couldn_t_find_the_routine_check_b7f1\":\"Claude kon de routine niet vinden. Controleer de start-URL van de routine.\",\"claude_did_not_accept_the_request_check_0a9a\":\"Claude heeft het verzoek geweigerd. Kijk of de routine aanstaat.\",\"claude_did_not_answer_the_start_request_9a46\":\"Claude reageerde niet op het verzoek om te starten. Probeer het opnieuw.\",\"claude_has_limited_requests_for_now_try_502f\":\"Claude beperkt tijdelijk het aantal verzoeken. Probeer het over een tijdje opnieuw.\",\"claude_is_having_trouble_right_now_try_b4e4\":\"Bij Claude gaat er iets mis. Probeer het over een paar minuten opnieuw.\",\"claude_refused_the_token_make_a_new_cdcb\":\"Claude heeft het token geweigerd. Maak een nieuw token voor de routine, plak het in Boopli en probeer het opnieuw.\",\"copy_the_routine_trigger_url_again_from_7817\":\"Kopieer de start-URL van de routine opnieuw uit Claude.\",\"days_must_be_0_monday_to_6_0b64\":\"Gebruik voor de dag een getal van 0 (maandag) tot 6 (zondag).\",\"ended_d64f\":\"afgelopen\",\"enter_1_to_365_days_after_the_2eb6\":\"Vul in hoeveel dagen na het afronden van de taak je wilt wachten. Kies een getal van 1 tot 365.\",\"enter_a_color_code_like_1a2b3c_42db\":\"Vul een kleurcode in, bijvoorbeeld #1A2B3C.\",\"enter_a_routine_trigger_url_in_this_b03b\":\"Vul de start-URL van de routine in dit formaat in: {prefix}trig_…{suffix}\",\"enter_a_state_or_a_number_limit_014a\":\"Vul voor deze voorwaarde een status of een grenswaarde in.\",\"enter_how_long_the_condition_must_stay_fa16\":\"Vul in hoe lang de voorwaarde moet blijven kloppen. Kies een tijd van 0 minuten tot 24 uur.\",\"every_question_needs_some_text_5008\":\"Vul bij elke vraag tekst in.\",\"every_room_needs_a_name_f6fe\":\"Geef elke kamer een naam.\",\"every_sound_needs_a_name_ffb2\":\"Geef elk geluid een naam.\",\"every_step_needs_a_title_5d77\":\"Geef elke stap een titel.\",\"every_time_must_look_like_09_30_0302\":\"Vul alle tijden in zoals 09:30.\",\"for_a_range_set_above_to_the_0df7\":\"Wil je een bereik instellen? Vul bij “Boven” het laagste getal in en bij “Onder” het hoogste.\",\"give_each_nudge_sequence_a_name_b157\":\"Geef elke reeks seintjes een naam.\",\"give_each_wall_board_a_name_4968\":\"Geef elk Wallboard een naam.\",\"give_the_room_a_name_first_e276\":\"Geef de kamer eerst een naam.\",\"has_no_step_waiting_for_you_right_379f\":\"Bij “{name}” wacht er nu geen stap op je.\",\"has_nothing_in_progress_5779\":\"Je bent nu niet bezig met een stap van “{name}”.\",\"has_two_tiles_with_the_same_id_7762\":\"Op “{name}” hebben twee tegels dezelfde ID.\",\"home_assistant_has_no_ai_task_yet_6931\":\"Home Assistant heeft nog geen agent voor AI Task. Stel er eerst een in.\",\"home_assistant_has_no_web_address_that_c239\":\"Er is nog geen adres ingesteld waarop Claude Home Assistant kan bereiken. Vul het adres in bij “Vraag Claude” of stel de externe URL in Home Assistant in.\",\"it_is_already_on_62a3\":\"Staat al aan.\",\"it_is_still_blinking_13d1\":\"Knippert nog.\",\"keep_between_1_and_wall_boards_f423\":\"Houd minimaal 1 en maximaal {board_max} Wallboards.\",\"more_than_one_chore_is_called_use_d4d6\":\"Er zijn meerdere taken met de naam “{ref}”. Gebruik de ID van de taak die je bedoelt.\",\"needs_1_to_nudges_673d\":\"Voeg 1 tot {ladder_max_nudges} seintjes toe aan “{name}”.\",\"no_chore_called_b51e\":\"Er is geen taak met de naam “{ref}”.\",\"nudge_a_light_color_needs_three_values_cb55\":\"“{name}”, seintje {number}: Vul voor de kleur van de lamp drie waarden van 0 tot 255 in.\",\"nudge_the_wait_must_be_to_minutes_4998\":\"“{name}”, seintje {number}: kies een wachttijd van {ladder_gap_min} tot {ladder_gap_max} minuten.\",\"nudge_unknown_light_mode_44c9\":\"“{name}”, seintje {number}: Onbekende stand van de lamp.\",\"nudge_unknown_phone_notification_level_f7a6\":\"“{name}”, seintje {number}: onbekende prioriteit van de melding voor de telefoon.\",\"nudge_unknown_speaker_choice_a39c\":\"“{name}”, seintje {number}: Boopli herkent de keuze voor de luidspreker niet.\",\"nudges_must_start_before_they_stop_on_6b14\":\"Kies per dag een begintijd voor seintjes die vóór de eindtijd ligt.\",\"on_for_seconds_then_off_5fb1\":\"{seconds} seconden aan, daarna uit.\",\"on_the_field_for_this_tile_type_b19a\":\"Op “{name}” mag het veld {key} bij deze tegel (type: {type}) maximaal {extra} tekens lang zijn.\",\"one_of_the_photos_could_not_be_6c36\":\"Een van de foto’s kan niet worden geopend.\",\"one_of_the_photos_is_too_big_1568\":\"Een van de foto’s is te groot. Probeer een kleinere foto.\",\"only_jpeg_or_png_photos_work_045e\":\"Kies een JPEG- of PNG-foto.\",\"pick_a_light_first_9a5b\":\"Kies eerst een lamp.\",\"pick_a_pet_from_the_list_a356\":\"Kies een huisdier uit de lijst.\",\"pick_a_siren_switch_or_script_first_5318\":\"Kies eerst een sirene, schakelaar of script.\",\"pick_an_entity_cdc1\":\"Kies een entiteit.\",\"pick_an_entity_for_the_entity_tile_e356\":\"Kies op “{name}” een entiteit voor de entiteitstegel.\",\"pick_an_nfc_tag_9bfb\":\"Kies een NFC-tag.\",\"pick_at_least_one_day_and_a_74e6\":\"Kies minstens één dag en een tijd.\",\"pick_at_least_one_part_to_back_9368\":\"Kies minstens één onderdeel voor je back-up.\",\"pick_at_least_one_part_to_import_705d\":\"Kies minstens één onderdeel om te importeren.\",\"pick_at_least_one_photo_2704\":\"Kies minstens één foto.\",\"pick_the_for_the_tile_60f7\":\"Kies op “{name}” een passende entiteit ({extra}) voor de tegel van het type “{type}”.\",\"playing_the_alarm_sound_once_c4b5\":\"Het alarmgeluid speelt één keer af.\",\"playing_the_sound_ba6e\":\"Het geluid speelt af.\",\"quiet_hours_days_must_be_0_monday_1c5b\":\"Gebruik bij “Stille uren” voor elke dag een getal van 0 (maandag) tot 6 (zondag).\",\"quiet_hours_times_must_look_like_07_e804\":\"Vul bij “Stille uren” de tijden in zoals 07:30.\",\"sent_1220\":\"Verstuurd.\",\"set_up_a_home_assistant_media_folder_6798\":\"Stel een mediamap in voor Home Assistant, zodat Boopli de foto’s kan voorbereiden.\",\"skip_557d\":\"overslaan\",\"snooze_must_be_between_1_minute_and_1914\":\"Je kunt een seintje tussen 1 minuut en 12 uur uitstellen.\",\"speaking_af60\":\"Bezig met voorlezen.\",\"start_558f\":\"starten\",\"started_96da\":\"gestart\",\"starts_at_nudge_must_be_to_6549\":\"Vul bij “Vanaf seintje” een getal van {start_at_min} tot {start_at_max} in.\",\"step_dd83\":\"Stap “{title}” – {error}\",\"step_points_to_a_question_that_does_860a\":\"Stap “{title}” verwijst naar een vraag die niet bestaat.\",\"step_wait_until_c420\":\"Stap “{title}” (Wacht tot dit gebeurt) – {error}\",\"that_chore_is_no_longer_in_progress_4ad4\":\"Die taak loopt niet meer.\",\"that_device_is_not_available_right_now_f919\":\"Dit alarmapparaat is nu niet beschikbaar.\",\"that_does_not_look_like_a_routine_32ae\":\"Dit lijkt geen token voor een routine. Kopieer het opnieuw.\",\"that_light_is_not_available_right_now_cdb1\":\"Deze lamp is nu niet beschikbaar.\",\"that_part_is_not_waiting_any_more_3180\":\"Dit deel staat niet meer onder “Voor later”.\",\"that_phone_service_was_not_found_0d85\":\"Boopli kan de notify-dienst voor deze telefoon niet vinden.\",\"that_speaker_is_not_available_right_now_0bc5\":\"Deze luidspreker is nu niet beschikbaar.\",\"the_ai_agent_answered_with_an_error_9042\":\"De AI-agent meldde een fout. {error}\",\"the_ai_agent_did_not_answer_d5af\":\"De AI-agent heeft niet geantwoord.\",\"the_ai_agent_took_too_long_over_bc02\":\"De AI-agent had meer dan {timeout} seconden nodig. Probeer het opnieuw.\",\"the_backup_is_missing_the_nudge_sequence_1ba6\":\"De reeks “{name}” ontbreekt in de back-up. De reeks wordt gebruikt door {users}. Importeer die taken ook of pas bij die taken eerst “Hoe wil je dat Boopli je een seintje geeft?” aan.\",\"the_check_in_after_on_it_must_2b59\":\"Stel in dat Boopli 5 minuten tot 12 uur na “Ik ben bezig” vraagt of je nog bezig bent.\",\"the_chore_does_not_fit_this_setup_692d\":\"De taak “{name}” past niet bij deze instellingen. {error}\",\"the_chore_is_not_valid_6dd0\":\"Er klopt iets niet aan de taak “{name}”. {error}\",\"the_columns_must_be_to_2cd0\":\"Kies voor “{name}” {board_columns_min} tot {board_columns_max} kolommen.\",\"the_file_has_no_to_import_e300\":\"Het onderdeel “{part}” ontbreekt in het bestand.\",\"the_home_assistant_address_must_start_with_5b05\":\"Het adres van Home Assistant moet met https:// of http:// beginnen.\",\"the_kind_must_be_now_or_recurring_100d\":\"Kies voor het taaktype “now” of “recurring”.\",\"the_next_due_time_cannot_be_read_f831\":\"Boopli kan het volgende geplande tijdstip niet lezen.\",\"the_next_due_time_needs_a_time_f91c\":\"Geef een tijdzone op voor het volgende geplande tijdstip.\",\"the_pause_between_blinks_must_be_to_cc9b\":\"Stel de pauze tussen knippersignalen in op {gap_ms_min} tot {gap_ms_max} milliseconden.\",\"the_presence_source_must_be_an_entity_ff79\":\"Vul bij “Waar je bent” een entiteits-ID in.\",\"the_rooms_in_this_file_are_not_8661\":\"Er klopt iets niet aan de kamers in dit bestand. {error}\",\"the_rows_must_be_to_1733\":\"Kies voor “{name}” {board_rows_min} tot {board_rows_max} rijen.\",\"the_settings_in_this_file_are_not_5e54\":\"Er klopt iets niet aan de instellingen in dit bestand. {error}\",\"the_spoken_sentence_must_contain_or_414c\":\"Zet {chore} of {step} in de zin die Boopli voorleest.\",\"the_time_must_look_like_09_30_87c6\":\"Vul de tijd in zoals 09:30.\",\"the_wait_for_the_questions_must_be_b79c\":\"Stel in dat Boopli vóór het eerste seintje 5 minuten tot 12 uur op je antwoorden wacht.\",\"there_are_more_than_chores_which_is_35dc\":\"Er zijn te veel taken voor een back-up. Er passen maximaal {max_chores} taken in.\",\"there_are_two_sounds_called_340c\":\"Twee geluiden heten “{name}”.\",\"these_chores_use_the_nudge_sequence_choose_6c4e\":\"Deze taken gebruiken de reeks “{name}”: {users}. Pas bij die taken eerst “Hoe wil je dat Boopli je een seintje geeft?” aan.\",\"this_ai_agent_can_t_analyze_photos_f0a5\":\"Deze AI-agent kan geen foto’s bekijken. Kies een agent die dat wel kan via “Instellingen” → “AI-hulp” → “Geavanceerd: AI-agent voor foto’s en prompts”, of ga verder zonder foto’s.\",\"this_request_is_too_big_for_claude_01b9\":\"Het verzoek is te groot voor Claude. Probeer het met minder foto’s.\",\"two_nudge_sequences_are_named_give_them_080c\":\"Twee reeksen heten “{name}”. Geef ze verschillende namen.\",\"two_nudge_sequences_have_the_same_id_392b\":\"Twee reeksen seintjes hebben dezelfde ID.\",\"two_questions_have_the_same_id_2b7f\":\"Twee vragen hebben dezelfde ID.\",\"two_rooms_share_the_same_id_5997\":\"Twee kamers hebben dezelfde ID.\",\"two_steps_have_the_same_id_8a53\":\"Twee stappen hebben dezelfde ID.\",\"two_tiles_are_on_the_same_spot_2681\":\"Op “{name}” overlappen twee tegels.\",\"two_wall_boards_are_named_give_them_1d6e\":\"Twee Wallboards heten “{name}”. Geef ze verschillende namen.\",\"two_wall_boards_have_the_same_id_9875\":\"Twee Wallboards hebben dezelfde ID.\",\"unknown_default_nudge_style_b675\":\"Boopli herkent de standaard voor seintjes niet.\",\"unknown_light_mode_cbab\":\"Onbekende stand van de lamp.\",\"unknown_mode_1943\":\"Onbekende modus.\",\"unknown_night_setting_a299\":\"Onbekende nachtstand voor “{name}”.\",\"unknown_nudge_style_9e66\":\"Boopli herkent de keuze bij “Hoe wil je dat Boopli je een seintje geeft?” niet.\",\"unknown_phone_notification_level_6ae9\":\"Onbekende prioriteit voor de melding op je telefoon.\",\"unknown_repeat_type_10d7\":\"Boopli herkent de gekozen manier van herhalen niet.\",\"unknown_setup_status_d393\":\"Onbekende status bij het instellen.\",\"unknown_setup_step_102b\":\"Boopli herkent deze stap bij het instellen niet.\",\"unknown_sound_type_91b7\":\"Onbekend soort geluid voor “{name}”.\",\"unknown_test_9a31\":\"Boopli herkent deze test niet.\",\"unknown_tile_type_0a67\":\"Op “{name}” staat een tegel van het onbekende type “{type}”.\",\"unknown_type_for_the_sound_4d14\":\"Onbekend soort geluid voor “{name}”.\",\"unknown_way_of_speaking_cbb3\":\"Boopli herkent de gekozen voorleesoptie niet.\",\"use_at_most_photos_4d47\":\"Kies maximaal {max_photos} foto’s.\",\"use_either_a_state_or_a_number_6245\":\"Vul een status of een getal in, niet allebei.\",\"where_must_be_home_or_anywhere_fb12\":\"Kies als locatie voor de taak “home” of “anywhere”.\",\"write_what_you_want_to_get_done_70fd\":\"Schrijf eerst wat je voor elkaar wilt krijgen.\",\"you_can_edit_the_built_in_nudge_e705\":\"Je kunt de standaardreeks “{gone}” bewerken. Laat die in je lijst staan.\",\"you_can_have_at_most_sounds_of_0a92\":\"Je kunt maximaal {extra_sounds_max} eigen geluiden hebben.\",\"you_can_have_up_to_nudge_sequences_bd4a\":\"Je kunt maximaal {ladder_max} reeksen hebben.\",\"your_pet_s_name_can_have_up_2b26\":\"De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn.\"}")
 }, Qe = {
 	ATTRIBUTE: 1,
 	CHILD: 2,
@@ -6276,8 +6276,16 @@ function ht() {
 function gt() {
 	return ["en", ...Object.keys(x).filter((e) => e !== "en").sort()];
 }
-function _t(e) {
+var _t = {
+	en: "English",
+	de: "Deutsch",
+	nl: "Nederlands",
+	fr: "Français",
+	es: "Español"
+};
+function vt(e) {
 	if (e === "fancy") return ct("Fancy English");
+	if (_t[e]) return _t[e];
 	try {
 		let t = new Intl.DisplayNames([e], { type: "language" }).of(e) ?? e;
 		return t.charAt(0).toLocaleUpperCase(e) + t.slice(1);
@@ -6285,7 +6293,7 @@ function _t(e) {
 		return e;
 	}
 }
-function vt(e, t) {
+function yt(e, t) {
 	let n = lt(S) ? x.en : x[S], r = x.en;
 	if (t !== void 0) {
 		let i = new Intl.PluralRules(lt(S) ? "en" : S).select(t);
@@ -6295,7 +6303,7 @@ function vt(e, t) {
 	}
 	return n[e] ?? r[e];
 }
-function yt(e) {
+function bt(e) {
 	let t = S;
 	S = "en";
 	try {
@@ -6304,7 +6312,7 @@ function yt(e) {
 		S = t;
 	}
 }
-function bt(e) {
+function xt(e) {
 	let t = S;
 	try {
 		return gt().map((t) => (S = t, e()));
@@ -6313,23 +6321,23 @@ function bt(e) {
 	}
 }
 function C(e, t) {
-	let n = vt(e, typeof t?.count == "number" ? t.count : void 0), r = n ?? e;
+	let n = yt(e, typeof t?.count == "number" ? t.count : void 0), r = n ?? e;
 	return n !== void 0 && lt(S) && (r = S === ot ? `[${ct(n)}]` : ct(n)), t ? r.replace(/\{(\w+)\}/g, (e, n) => n in t ? String(t[n] ?? "") : e) : r;
 }
-var xt = {
+var St = {
 	"&": "&amp;",
 	"<": "&lt;",
 	">": "&gt;",
 	"\"": "&quot;",
 	"'": "&#39;"
-}, St = (e) => e.replace(/[&<>"']/g, (e) => xt[e]), Ct = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
+}, Ct = (e) => e.replace(/[&<>"']/g, (e) => St[e]), wt = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
 function w(e, t) {
 	let n = {}, r = {};
-	for (let [e, i] of Object.entries(t ?? {})) typeof i == "number" ? n[e] = i : typeof i == "string" ? n[e] = St(i) : r[e] = i;
-	let i = C(e, n).replace(/<[^>]*>/g, (e) => Ct.test(e) ? e : St(e));
+	for (let [e, i] of Object.entries(t ?? {})) typeof i == "number" ? n[e] = i : typeof i == "string" ? n[e] = Ct(i) : r[e] = i;
+	let i = C(e, n).replace(/<[^>]*>/g, (e) => wt.test(e) ? e : Ct(e));
 	return Object.keys(r).length === 0 ? h`${nt(i)}` : h`${i.split(/\{(\w+)\}/).map((e, t) => t % 2 ? r[e] ?? `{${e}}` : nt(e))}`;
 }
-function wt(e) {
+function Tt(e) {
 	return x[S]?.[e] !== void 0 || x.en[e] !== void 0;
 }
 // src/api.ts
@@ -6339,33 +6347,33 @@ function T(e, t) {
 		settings: t
 	});
 }
-var Tt = [
+var Et = [
 	"settings",
 	"chores",
 	"home",
 	"pet"
 ];
-function Et(e, t) {
+function Dt(e, t) {
 	return e.callWS({
 		type: "boopli/backup_export",
 		parts: t
 	});
 }
-function Dt(e, t, n) {
+function Ot(e, t, n) {
 	return e.callWS({
 		type: "boopli/backup_preview",
 		backup: t,
 		parts: n
 	});
 }
-function Ot(e, t, n) {
+function kt(e, t, n) {
 	return e.callWS({
 		type: "boopli/backup_import",
 		backup: t,
 		parts: n
 	});
 }
-function kt(e, t, n, r, i = "", a, o = "", s = "agent") {
+function At(e, t, n, r, i = "", a, o = "", s = "agent") {
 	return e.callWS({
 		type: "boopli/ai_questions",
 		task: t,
@@ -6377,7 +6385,7 @@ function kt(e, t, n, r, i = "", a, o = "", s = "agent") {
 		...a ? { rooms: a } : {}
 	});
 }
-function At(e, t, n, r, i = "", a, o = "", s = "agent") {
+function jt(e, t, n, r, i = "", a, o = "", s = "agent") {
 	return e.callWS({
 		type: "boopli/ai_steps",
 		task: t,
@@ -6389,7 +6397,7 @@ function At(e, t, n, r, i = "", a, o = "", s = "agent") {
 		...a ? { rooms: a } : {}
 	});
 }
-function jt(e, t, n, r, i, a, o = "") {
+function Mt(e, t, n, r, i, a, o = "") {
 	return e.callWS({
 		type: "boopli/ai_preview",
 		task: t,
@@ -6400,22 +6408,22 @@ function jt(e, t, n, r, i, a, o = "") {
 		scene: o
 	});
 }
-async function Mt(e, t) {
+async function Nt(e, t) {
 	return (await e.callWS({
 		type: "boopli/rooms_guess",
 		task: t
 	})).rooms;
 }
-function Nt(e, t) {
+function Pt(e, t) {
 	return e.callWS({
 		type: "boopli/home_save",
 		home: t
 	});
 }
-function Pt(e) {
+function Ft(e) {
 	return e.callWS({ type: "boopli/home_sync" });
 }
-function Ft(e, t, n, r, i = "agent") {
+function It(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_questions",
 		room: t,
@@ -6424,7 +6432,7 @@ function Ft(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-function It(e, t, n, r, i = "agent") {
+function Lt(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_notes",
 		room: t,
@@ -6433,10 +6441,10 @@ function It(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-function Lt(e) {
+function Rt(e) {
 	return e.callWS({ type: "boopli/ai_defaults" });
 }
-function Rt(e, t, n, r = "") {
+function zt(e, t, n, r = "") {
 	return e.callWS({
 		type: "boopli/task_add",
 		title: t,
@@ -6444,56 +6452,56 @@ function Rt(e, t, n, r = "") {
 		notes: r
 	});
 }
-async function zt(e, t, n = 5) {
+async function Bt(e, t, n = 5) {
 	return (await e.callWS({
 		type: "boopli/schedule_preview",
 		repeat: t,
 		count: n
 	})).times;
 }
-function Bt(e, t, n = "") {
+function Vt(e, t, n = "") {
 	return e.callWS({
 		type: "boopli/setup_save",
 		status: t,
 		step: n
 	});
 }
-function Vt(e, t, n) {
+function Ht(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_snooze",
 		run_id: t,
 		step_id: n
 	});
 }
-function Ht(e, t, n) {
+function Ut(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_on_it",
 		run_id: t,
 		step_id: n
 	});
 }
-function Ut(e, t, n) {
+function Wt(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_not_on_it",
 		run_id: t,
 		step_id: n
 	});
 }
-function Wt(e, t) {
+function Gt(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "light",
 		light: t
 	});
 }
-function Gt(e, t) {
+function Kt(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "phone",
 		phone: t
 	});
 }
-function Kt(e, t, n, r) {
+function qt(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "speaker",
@@ -6502,36 +6510,36 @@ function Kt(e, t, n, r) {
 		...r ? { sounds: r } : {}
 	});
 }
-function qt(e, t) {
+function Jt(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "alarm_device",
 		alarm_device: t
 	});
 }
-function Jt(e, t) {
+function Yt(e, t) {
 	return e.connection.subscribeMessage(t, { type: "boopli/subscribe" });
 }
-function Yt(e, t) {
+function Xt(e, t) {
 	return e.callWS({
 		type: "boopli/chore_save",
 		chore: t
 	});
 }
-function Xt(e, t) {
+function Zt(e, t) {
 	return e.callWS({
 		type: "boopli/chore_delete",
 		chore_id: t
 	});
 }
-function Zt(e, t, n) {
+function Qt(e, t, n) {
 	return e.callWS({
 		type: "boopli/chore_start",
 		chore_id: t,
 		...n ? { answers: n } : {}
 	});
 }
-function Qt(e, t, n, r) {
+function $t(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/away_set",
 		start: t,
@@ -6539,40 +6547,43 @@ function Qt(e, t, n, r) {
 		keep_going: r
 	});
 }
-function $t(e) {
+function en(e) {
 	return e.callWS({ type: "boopli/away_end" });
 }
-function en(e, t, n) {
+function tn(e, t, n) {
 	return e.callWS({
 		type: "boopli/questions_answer",
 		run_id: t,
 		answers: n
 	});
 }
-function tn(e, t, n) {
+function nn(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_complete",
 		run_id: t,
 		step_id: n
 	});
 }
-function nn(e) {
+function rn(e) {
 	let t = {};
 	for (let [n, r] of Object.entries(e)) {
 		let e = r;
-		t[n] = e && typeof e == "object" && typeof e.key == "string" ? wt(`errors.${e.key}`) ? C(`errors.${e.key}`, nn(e.params ?? {})) : String(e.text ?? "") : r;
+		t[n] = e && typeof e == "object" && typeof e.key == "string" ? Tt(`errors.${e.key}`) ? C(`errors.${e.key}`, rn(e.params ?? {})) : String(e.text ?? "") : r;
 	}
 	return t;
+}
+function an(e) {
+	return e.note_key && Tt(`errors.${e.note_key}`) ? C(`errors.${e.note_key}`, rn(e.note_params ?? {})) : e.note;
 }
 function E(e) {
 	if (e && typeof e == "object") {
 		let t = e;
-		if (typeof t.translation_key == "string" && wt(`errors.${t.translation_key}`)) return C(`errors.${t.translation_key}`, nn(t.translation_placeholders ?? {}));
+		if (typeof t.translation_key == "string" && Tt(`errors.${t.translation_key}`)) return C(`errors.${t.translation_key}`, rn(t.translation_placeholders ?? {}));
 		if ("message" in t) return String(t.message);
 	}
 	return C("common.something_went_wrong");
 }
-function rn(e, t, n, r, i = "agent") {
+function on(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_photos",
 		room: t,
@@ -6581,7 +6592,7 @@ function rn(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-async function an(e, t, n = "", r = "", i) {
+async function sn(e, t, n = "", r = "", i) {
 	return (await e.callWS({
 		type: "boopli/chat_prompt",
 		room: n,
@@ -6590,13 +6601,13 @@ async function an(e, t, n = "", r = "", i) {
 		...i ? { rooms: i } : {}
 	})).prompt;
 }
-function on(e, t) {
+function cn(e, t) {
 	return e.callWS({
 		type: "boopli/paste_notes",
 		text: t
 	});
 }
-async function sn(e, t, n) {
+async function ln(e, t, n) {
 	return (await e.callWS({
 		type: "boopli/paste_notes",
 		text: t,
@@ -6604,7 +6615,7 @@ async function sn(e, t, n) {
 		rooms: n
 	})).rooms;
 }
-function cn(e, t, n, r, i = "") {
+function un(e, t, n, r, i = "") {
 	return e.callWS({
 		type: "boopli/part_park",
 		run_id: t,
@@ -6613,7 +6624,7 @@ function cn(e, t, n, r, i = "") {
 		at: i
 	});
 }
-function ln(e, t, n, r = "") {
+function dn(e, t, n, r = "") {
 	return e.callWS({
 		type: "boopli/part_time",
 		chore_id: t,
@@ -6621,7 +6632,7 @@ function ln(e, t, n, r = "") {
 		at: r
 	});
 }
-function un(e, t, n, r, i = "agent") {
+function fn(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/scene_photos",
 		task: t,
@@ -6630,31 +6641,31 @@ function un(e, t, n, r, i = "agent") {
 		...r ? { rooms: r } : {}
 	});
 }
-function dn(e) {
+function pn(e) {
 	return e.callWS({ type: "boopli/egg_found" });
 }
-function fn(e, t) {
+function mn(e, t) {
 	return e.callWS({
 		type: "boopli/claude_token",
 		token: t
 	});
 }
-function pn(e) {
+function hn(e) {
 	return e.callWS({ type: "boopli/claude_test" });
 }
 // src/fonts.ts
-var mn = [{
+var gn = [{
 	file: "Itim-latin.woff2",
 	range: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
 }, {
 	file: "Itim-latin-ext.woff2",
 	range: "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF"
-}], hn = "\"Itim\", var(--paper-font-body1_-_font-family, Roboto, sans-serif)", gn = !1;
-function _n() {
-	if (gn || typeof FontFace > "u" || !document.fonts) return;
-	gn = !0;
+}], _n = "\"Itim\", var(--paper-font-body1_-_font-family, Roboto, sans-serif)", vn = !1;
+function yn() {
+	if (vn || typeof FontFace > "u" || !document.fonts) return;
+	vn = !0;
 	let e = import.meta.url.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-	for (let { file: t, range: n } of mn) new FontFace("Itim", `url(${e}fonts/${t}) format("woff2")`, {
+	for (let { file: t, range: n } of gn) new FontFace("Itim", `url(${e}fonts/${t}) format("woff2")`, {
 		style: "normal",
 		weight: "400",
 		unicodeRange: n,
@@ -6666,7 +6677,7 @@ var D = o`
   :host {
     display: block;
     color: var(--primary-text-color);
-    font-family: ${a(hn)};
+    font-family: ${a(_n)};
     font-size: 16px; /* Itim reads small, and Home Assistant's own 14px is too little for it */
   }
   button,
@@ -6800,7 +6811,7 @@ var D = o`
     font-size: 17px;
     margin: 8px 0;
   }
-`, vn = class extends b {
+`, bn = class extends b {
 	static {
 		this.properties = {
 			questions: { attribute: !1 },
@@ -6925,7 +6936,7 @@ var D = o`
     `];
 	}
 };
-customElements.define("boopli-questions", vn);
+customElements.define("boopli-questions", bn);
 // src/claude.ts
 function O(e) {
 	return !!e?.settings.ai?.enabled;
@@ -6934,26 +6945,26 @@ function k(e) {
 	let t = e?.settings.ai;
 	return !!(t?.claude_enabled && t.claude_fire_url && e?.claude?.token_set && e.claude.callback_host);
 }
-function yn(e) {
+function xn(e) {
 	return O(e) || k(e);
 }
-function bn(e, t) {
+function Sn(e, t) {
 	return t === "claude" ? e?.claude?.wait_seconds ?? 120 : e?.ai_timeout ?? 180;
 }
-function xn(e, t) {
+function Cn(e, t) {
 	if (e?.trim()) try {
 		return new URL(e.trim()).hostname;
 	} catch {}
 	return t?.claude?.callback_host || "";
 }
-var Sn = () => yt(() => C("claude.you_are_the_answering_side_of"));
+var wn = () => bt(() => C("claude.you_are_the_answering_side_of"));
 // src/icon.ts
 function A(e) {
 	return h`<ha-icon class="ico" icon="mdi:${e}" aria-hidden="true"></ha-icon>`;
 }
 // src/time.ts
 function j() {
-	let e = new Intl.DateTimeFormat(Tn(), {
+	let e = new Intl.DateTimeFormat(N(), {
 		weekday: "short",
 		timeZone: "UTC"
 	});
@@ -6975,7 +6986,7 @@ function M(e, t) {
 		hourCycle: "h23"
 	}).format(new Date(e));
 }
-function Cn(e, t) {
+function Tn(e, t) {
 	return new Intl.DateTimeFormat("en-CA", {
 		timeZone: t,
 		year: "numeric",
@@ -6983,27 +6994,27 @@ function Cn(e, t) {
 		day: "2-digit"
 	}).format(e);
 }
-function wn(e) {
+function En(e) {
 	let [t, n, r] = e.split("-").map(Number);
 	return Math.round(Date.UTC(t, n - 1, r) / 864e5);
 }
-function Tn() {
+function N() {
 	let e = ht();
 	return e === "en" || e === "fancy" || e === "pseudo" ? "en-GB" : e;
 }
-function N(e, t, n) {
-	let r = new Date(e), i = wn(Cn(r, n)) - wn(Cn(new Date(t), n)), a = M(e, n);
-	return i === 0 ? C("time.today", { time: a }) : i === 1 ? C("time.tomorrow", { time: a }) : `${new Intl.DateTimeFormat(Tn(), {
+function P(e, t, n) {
+	let r = new Date(e), i = En(Tn(r, n)) - En(Tn(new Date(t), n)), a = M(e, n);
+	return i === 0 ? C("time.today", { time: a }) : i === 1 ? C("time.tomorrow", { time: a }) : `${new Intl.DateTimeFormat(N(), {
 		timeZone: n,
 		weekday: "short",
 		day: "numeric",
 		month: "short"
 	}).format(r)}, ${a}`;
 }
-function En(e, t, n) {
-	return Cn(new Date(e), n) === Cn(new Date(t), n);
+function Dn(e, t, n) {
+	return Tn(new Date(e), n) === Tn(new Date(t), n);
 }
-function Dn(e) {
+function On(e) {
 	let t = Math.max(0, Math.round(e));
 	if (t < 1) return C("time.less_than_a_minute");
 	if (t < 60) return C("wizard.min", { m: t });
@@ -7013,14 +7024,14 @@ function Dn(e) {
 		m: r
 	});
 }
-function On(e, t) {
-	let n = (new Date(e).getTime() - t) / 6e4;
-	return n <= .5 ? C("time.any_moment_now") : C("time.in_duration", { duration: Dn(n) });
-}
 function kn(e, t) {
+	let n = (new Date(e).getTime() - t) / 6e4;
+	return n <= .5 ? C("time.any_moment_now") : C("time.in_duration", { duration: On(n) });
+}
+function An(e, t) {
 	return C("time.since", { time: M(e, t) });
 }
-function An(e) {
+function jn(e) {
 	return e.length === 1 ? e[0] : e.length === 2 ? C("time.and_2", {
 		value: e[0],
 		value2: e[1]
@@ -7029,7 +7040,7 @@ function An(e) {
 		value: e[e.length - 1]
 	});
 }
-function jn(e) {
+function Mn(e) {
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e[String(n)] ?? [];
@@ -7046,14 +7057,14 @@ function jn(e) {
 			from: a[n],
 			to: a[i]
 		});
-		t.push(`${o} ${An(r)}`), n = i + 1;
+		t.push(`${o} ${jn(r)}`), n = i + 1;
 	}
 	return t.length ? t.join(", ") : C("time.no_days_yet");
 }
-function Mn(e) {
+function Nn(e) {
 	switch (e.type) {
 		case "none": return C("common.on_demand");
-		case "schedule": return jn(e.days);
+		case "schedule": return Mn(e.days);
 		case "every_n_days": return e.every_n_days === 1 ? C("time.every_day_after_you_finish_at", { time: e.time }) : C("time.days_after_you_finish_at", {
 			every_n_days: e.every_n_days,
 			time: e.time
@@ -7061,11 +7072,11 @@ function Mn(e) {
 	}
 }
 // src/boopli-away.ts
-function Nn(e, t, n) {
-	let [r, i, a] = Cn(/* @__PURE__ */ new Date(), n).split("-").map(Number);
+function Pn(e, t, n) {
+	let [r, i, a] = Tn(/* @__PURE__ */ new Date(), n).split("-").map(Number);
 	return `${new Date(Date.UTC(r, i - 1, a + e)).toISOString().slice(0, 10)}T${String(t).padStart(2, "0")}:00`;
 }
-function Pn(e, t) {
+function Fn(e, t) {
 	let n = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
 		timeZone: t,
 		year: "numeric",
@@ -7077,14 +7088,14 @@ function Pn(e, t) {
 	}).formatToParts(new Date(e)).map((e) => [e.type, e.value]));
 	return `${n.year}-${n.month}-${n.day}T${n.hour}:${n.minute}`;
 }
-function Fn(e, t, n, r) {
-	let i = e.until ? C("away.until_2", { when: N(e.until, t, n) }) : C("away.until_you_turn_it_off");
+function In(e, t, n, r) {
+	let i = e.until ? C("away.until_2", { when: P(e.until, t, n) }) : C("away.until_you_turn_it_off");
 	return r || !e.start ? i : C("away.from_2", {
-		when: N(e.start, t, n),
+		when: P(e.start, t, n),
 		until: i
 	});
 }
-var In = class extends b {
+var Ln = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -7105,10 +7116,10 @@ var In = class extends b {
 		return this._changing;
 	}
 	constructor() {
-		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Nn(1, 8, "UTC"), this._open = !1, this._until = Nn(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
+		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Pn(1, 8, "UTC"), this._open = !1, this._until = Pn(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
 	}
 	willUpdate() {
-		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Nn(1, 8, this.snapshot.time_zone), this._until = Nn(7, 18, this.snapshot.time_zone), this._seedKeep());
+		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Pn(1, 8, this.snapshot.time_zone), this._until = Pn(7, 18, this.snapshot.time_zone), this._seedKeep());
 	}
 	_seedKeep() {
 		this._keep = Object.fromEntries(this._chores().map((e) => [e.id, e.keeps_going ?? !1]));
@@ -7118,7 +7129,7 @@ var In = class extends b {
 	}
 	_change(e) {
 		let t = this.snapshot?.time_zone ?? "UTC";
-		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Pn(e.start, t)), this._open = !e.until, e.until && (this._until = Pn(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
+		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Fn(e.start, t)), this._open = !e.until, e.until && (this._until = Fn(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
 	}
 	_toggle() {
 		let e = this._expanded || this._changing;
@@ -7128,7 +7139,7 @@ var In = class extends b {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await Qt(this.hass, this._later ? this._start : "", this._open ? "" : this._until, this._keep), this._changing = !1, this._expanded = !1;
+				await $t(this.hass, this._later ? this._start : "", this._open ? "" : this._until, this._keep), this._changing = !1, this._expanded = !1;
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -7140,7 +7151,7 @@ var In = class extends b {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await $t(this.hass), this._changing = !1, this._expanded = !1;
+				await en(this.hass), this._changing = !1, this._expanded = !1;
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -7151,7 +7162,7 @@ var In = class extends b {
 	_renderOn(e) {
 		let t = !!this.snapshot?.away_now, n = this.snapshot?.time_zone ?? "UTC";
 		return h`
-      <p>${Fn(e, this.nowMs, n, t)}</p>
+      <p>${In(e, this.nowMs, n, t)}</p>
       <p class="muted small">
         ${C(t ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
       </p>
@@ -7229,7 +7240,7 @@ var In = class extends b {
     `;
 	}
 	render() {
-		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${C(n ? "away.on" : "away.planned")}: ${Fn(e, this.nowMs, t, n)}` : C("rung.off");
+		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${C(n ? "away.on" : "away.planned")}: ${In(e, this.nowMs, t, n)}` : C("rung.off");
 		return h`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${r} @click=${() => this._toggle()}>
@@ -7337,9 +7348,9 @@ var In = class extends b {
     `];
 	}
 };
-customElements.define("boopli-away", In);
+customElements.define("boopli-away", Ln);
 // src/today.ts
-function Ln(e, t) {
+function Rn(e, t) {
 	let n = e.time_zone, r = e.runs.flatMap((e) => e.steps.filter((e) => e.status === "active").map((t) => ({
 		run: e,
 		step: t,
@@ -7347,7 +7358,7 @@ function Ln(e, t) {
 		total: e.steps.length
 	}))).sort((e, t) => (e.step.active_at ? Date.parse(e.step.active_at) : Infinity) - (t.step.active_at ? Date.parse(t.step.active_at) : Infinity))[0] ?? null, i = [...e.runs].sort((e, t) => Date.parse(e.started_at) - Date.parse(t.started_at)), a = (e, t) => !(r && r.run.id === e.id && r.step.step_id === t.step_id), o = (e) => {
 		let n = "";
-		return e.status === "active" ? n = C("common.ready_now_hint") : e.status === "waiting" && e.active_at ? n = On(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = C("today.waits_for_something_to_happen") : e.wait_minutes > 0 && (n = C("today.after_the_step_before", { duration: Dn(e.wait_minutes) })), {
+		return e.status === "active" ? n = C("common.ready_now_hint") : e.status === "waiting" && e.active_at ? n = kn(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = C("today.waits_for_something_to_happen") : e.wait_minutes > 0 && (n = C("today.after_the_step_before", { duration: On(e.wait_minutes) })), {
 			title: e.title,
 			status: e.status,
 			hint: n
@@ -7366,78 +7377,78 @@ function Ln(e, t) {
 		now: r,
 		ready: s,
 		groups: c,
-		dueToday: u.filter((e) => En(e.at, t, n)),
-		upcoming: u.filter((e) => !En(e.at, t, n) && Date.parse(e.at) > t)
+		dueToday: u.filter((e) => Dn(e.at, t, n)),
+		upcoming: u.filter((e) => !Dn(e.at, t, n) && Date.parse(e.at) > t)
 	};
 }
 // src/pet-work.ts
-var P = "#101010", Rn = {
+var F = "#101010", zn = {
 	levelup: 2800,
 	wake: 2600,
 	tap: 700,
 	done: 1700
 };
-function zn() {
+function Bn() {
 	return g`
     <ellipse class="smudge" cx="26" cy="191" rx="20" ry="4.5" fill="#6B4A2E" opacity="0.85"/>
-    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${P} stroke-width="3"/></g>
-    <g transform="translate(198 144)"><g class="bagfall">${Vn()}</g></g>`;
-}
-function Bn() {
-	return g`<g class="tub">
-    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${P} stroke-width="3" stroke-linejoin="round"/>
-    <path d="M9 186 Q10 193 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${P} stroke-width="1.6"/>
-    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${P} stroke-width="1.6"/>
-    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${P} stroke-width="1.6"/>
-    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${P} stroke-width="1.4"/>
-  </g>`;
+    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${F} stroke-width="3"/></g>
+    <g transform="translate(198 144)"><g class="bagfall">${Hn()}</g></g>`;
 }
 function Vn() {
-	return g`<circle r="9" fill="#3F4A5A" stroke=${P} stroke-width="2.5"/>
-    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${P} stroke-width="2.2" stroke-linejoin="round"/>
+	return g`<g class="tub">
+    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${F} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M9 186 Q10 193 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${F} stroke-width="1.6"/>
+    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${F} stroke-width="1.6"/>
+    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${F} stroke-width="1.6"/>
+    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${F} stroke-width="1.4"/>
+  </g>`;
+}
+function Hn() {
+	return g`<circle r="9" fill="#3F4A5A" stroke=${F} stroke-width="2.5"/>
+    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${F} stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M-5 -2 Q-3 2 -5 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>`;
 }
-function Hn(e) {
+function Un(e) {
 	let t = e.shoulders?.l ?? [46, 150], n = e.shoulders?.r ?? [154, 150], r = e.armD?.l ?? "M46 150 Q28 160 22 180", i = e.armD?.r ?? "M154 150 Q168 158 170 176";
 	return g`
     <g class="arm armL" style="transform-origin:${t[0]}px ${t[1]}px">
-      <path d=${r} fill="none" stroke=${e.ink ?? P} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${r} fill="none" stroke=${e.ink ?? F} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${r} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? P} stroke-width="3"/>
-      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${P} stroke-width="2.5"/>
+      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? F} stroke-width="3"/>
+      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${F} stroke-width="2.5"/>
         <path d="M14 184 Q22 181 30 184" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/></g>
       <g class="sock" transform="translate(22 174)">
-        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${P} stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${F} stroke-width="2.2" stroke-linejoin="round"/>
         <path d="M-5 -9 h10 M-5 -5 h10" stroke="#E5484D" stroke-width="2"/>
       </g>
       <circle class="pop p1" cx="8" cy="172" r="4" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p2" cx="36" cy="170" r="3" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p3" cx="24" cy="164" r="5" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
-      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${P} stroke-width="1.2" stroke-linejoin="round"/>
+      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${F} stroke-width="1.2" stroke-linejoin="round"/>
     </g>
     <g class="arm armR" style="transform-origin:${n[0]}px ${n[1]}px">
-      <path d=${i} fill="none" stroke=${e.ink ?? P} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${i} fill="none" stroke=${e.ink ?? F} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${i} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? P} stroke-width="3"/>
-      <g class="bagarm" transform="translate(170 176)">${Vn()}</g>
+      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? F} stroke-width="3"/>
+      <g class="bagarm" transform="translate(170 176)">${Hn()}</g>
     </g>`;
 }
-function Un() {
-	return g`${Bn()}<g class="bin" transform="translate(184 160)">
-    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${P} stroke-width="3" stroke-linejoin="round"/>
-    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${P} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
-    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${P} stroke-width="2.5"/></g>
+function Wn() {
+	return g`${Vn()}<g class="bin" transform="translate(184 160)">
+    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${F} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${F} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
+    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${F} stroke-width="2.5"/></g>
   </g>`;
 }
-function Wn(e) {
-	let t = g`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? P} stroke-width="3"/>
-    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? P} stroke-width="3"/>`;
+function Gn(e) {
+	let t = g`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? F} stroke-width="3"/>
+    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? F} stroke-width="3"/>`;
 	return g`
     ${e.typingBehind ? t : g``}
     <g class="laptop">
-      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${P} stroke-width="2.5"/>
-      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${P} stroke-width="3"/>
+      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${F} stroke-width="2.5"/>
+      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${F} stroke-width="3"/>
       <path d="M100 160 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#8FA3BF" opacity="0.9"/>
     </g>
     ${e.typingBehind ? g`` : t}
@@ -7447,17 +7458,17 @@ function Wn(e) {
       <text class="c3" x="122" y="62">01</text>
     </g>`;
 }
-function Gn(e) {
-	return e === "housework" ? zn() : g``;
-}
-function Kn(e, t) {
-	return e === "housework" ? Hn(t) : g``;
+function Kn(e) {
+	return e === "housework" ? Bn() : g``;
 }
 function qn(e, t) {
-	return e === "housework" ? Un() : e === "typing" ? Wn(t) : g``;
+	return e === "housework" ? Un(t) : g``;
 }
-var Jn = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
-function Yn(e, t, n = {}) {
+function Jn(e, t) {
+	return e === "housework" ? Wn() : e === "typing" ? Gn(t) : g``;
+}
+var Yn = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
+function Xn(e, t, n = {}) {
 	let r = n.mouth ?? [100, 153];
 	switch (e) {
 		case "levelup": return g`${[
@@ -7496,47 +7507,47 @@ function Yn(e, t, n = {}) {
 				-84,
 				"#7CFF5B"
 			]
-		].map(([e, t, n], r) => g`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${Jn} fill=${n} stroke=${P} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
-      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${P} stroke-width="3"/>
+		].map(([e, t, n], r) => g`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${Yn} fill=${n} stroke=${F} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
+      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${F} stroke-width="3"/>
         <text x="148" y="35" text-anchor="middle">${t || C("pet_work.level_up")}</text></g></g>`;
 		case "done": return g`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark d2" d="M170 80 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <g transform="translate(0 ${n.xpDy ?? 0})"><text class="xp" x="100" y="70" text-anchor="middle">${t}</text></g>`;
-		case "tap": return g`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${P} stroke-width="2" stroke-linejoin="round"/></g>`;
-		case "wake": return g`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${P}/>
+		case "tap": return g`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${F} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "wake": return g`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${F}/>
         <g transform="translate(${r[0] - 100} ${r[1] - 153})"><path class="yawn tongue" d="M93 160 Q100 152 107 160 Q100 168 93 160 Z" fill="#FF6B8A"/></g>`;
 		default: return g``;
 	}
 }
-var F = 12;
-function I(e, t) {
+var I = 12;
+function L(e, t) {
 	return `@keyframes ${e}{${t.map(([e, t]) => `${e}%{${t}}`).join("")}}`;
 }
-function Xn(e, t, n, r, i) {
+function Zn(e, t, n, r, i) {
 	let a = [], o = 0;
 	for (let s = e; s <= t + .001; s += n) a.push([Math.round(s * 100) / 100, o++ % 2 ? i : r]);
 	return a;
 }
-var L = "transform:translate(0px,0px) rotate(0deg)", Zn = [
-	[0, L],
-	...Xn(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
-	[32, L],
-	[34, L],
-	...Xn(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
-	[64, L],
-	[100, L]
-], Qn = [
-	[0, `${L};opacity:0`],
-	[64, `${L};opacity:0`],
-	[66, `${L};opacity:1`],
-	[72, `${L};opacity:1`],
+var R = "transform:translate(0px,0px) rotate(0deg)", Qn = [
+	[0, R],
+	...Zn(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
+	[32, R],
+	[34, R],
+	...Zn(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
+	[64, R],
+	[100, R]
+], $n = [
+	[0, `${R};opacity:0`],
+	[64, `${R};opacity:0`],
+	[66, `${R};opacity:1`],
+	[72, `${R};opacity:1`],
 	[78, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
 	[84, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
-	[90, `${L};opacity:1`],
-	[98, `${L};opacity:1`],
-	[100, `${L};opacity:0`]
+	[90, `${R};opacity:1`],
+	[98, `${R};opacity:1`],
+	[100, `${R};opacity:0`]
 ];
-function $n(e, t) {
+function er(e, t) {
 	return [
 		[0, "opacity:0"],
 		[Math.max(.1, e - 1), "opacity:0"],
@@ -7546,7 +7557,7 @@ function $n(e, t) {
 		[100, "opacity:0"]
 	];
 }
-function er(e) {
+function tr(e) {
 	return [
 		[0, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
 		[e, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
@@ -7555,15 +7566,15 @@ function er(e) {
 		[100, "opacity:0;transform:scale(1.5) translate(0px,-9px)"]
 	];
 }
-var tr = o`
+var nr = o`
   ${a([
-	I("arm-l", Zn),
-	I("arm-r", Qn),
-	I("vis-cloth", $n(1, 31)),
-	I("vis-sock", $n(35, 63)),
-	I("vis-bagarm", $n(66, 79.5)),
-	I("vis-bin", $n(63, 98)),
-	I("vis-tub", [
+	L("arm-l", Qn),
+	L("arm-r", $n),
+	L("vis-cloth", er(1, 31)),
+	L("vis-sock", er(35, 63)),
+	L("vis-bagarm", er(66, 79.5)),
+	L("vis-bin", er(63, 98)),
+	L("vis-tub", [
 		[0, "opacity:0;transform:scale(0.6)"],
 		[32, "opacity:0;transform:scale(0.6)"],
 		[34, "opacity:1;transform:scale(1)"],
@@ -7571,7 +7582,7 @@ var tr = o`
 		[66, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.6)"]
 	]),
-	I("vis-smudge", [
+	L("vis-smudge", [
 		[0, "opacity:0.85"],
 		[8, "opacity:0.85"],
 		[30, "opacity:0"],
@@ -7579,17 +7590,17 @@ var tr = o`
 		[99, "opacity:0.85"],
 		[100, "opacity:0.85"]
 	]),
-	I("pop-1", er(4)),
-	I("pop-2", er(12)),
-	I("pop-3", er(20)),
-	I("clean-star", [
+	L("pop-1", tr(4)),
+	L("pop-2", tr(12)),
+	L("pop-3", tr(20)),
+	L("clean-star", [
 		[0, "opacity:0;transform:scale(0.2)"],
 		[59, "opacity:0;transform:scale(0.2)"],
 		[61, "opacity:1;transform:scale(1.1)"],
 		[64, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.2)"]
 	]),
-	I("bag-fall", [
+	L("bag-fall", [
 		[0, "opacity:0;transform:translateY(0px)"],
 		[79.4, "opacity:0;transform:translateY(0px)"],
 		[79.5, "opacity:1;transform:translateY(0px)"],
@@ -7597,7 +7608,7 @@ var tr = o`
 		[84, "opacity:0;transform:translateY(24px)"],
 		[100, "opacity:0;transform:translateY(24px)"]
 	]),
-	I("lid", [
+	L("lid", [
 		[0, "transform:rotate(0deg)"],
 		[76, "transform:rotate(0deg)"],
 		[79, "transform:rotate(-38deg)"],
@@ -7605,14 +7616,14 @@ var tr = o`
 		[89, "transform:rotate(0deg)"],
 		[100, "transform:rotate(0deg)"]
 	]),
-	I("look-work", [
+	L("look-work", [
 		[0, "transform:translateX(-4px)"],
 		[64, "transform:translateX(-4px)"],
 		[67, "transform:translateX(4px)"],
 		[98, "transform:translateX(4px)"],
 		[100, "transform:translateX(-4px)"]
 	]),
-	I("work-bounce", [
+	L("work-bounce", [
 		[0, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[31, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[33, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
@@ -7666,52 +7677,52 @@ var tr = o`
 
   /* The housework routine: every part runs on the same 12 second loop. */
   .housework .armL {
-    animation: arm-l ${a(String(F))}s ease-in-out infinite;
+    animation: arm-l ${a(String(I))}s ease-in-out infinite;
   }
   .housework .armR {
-    animation: arm-r ${a(String(F))}s ease-in-out infinite;
+    animation: arm-r ${a(String(I))}s ease-in-out infinite;
   }
   .housework .cloth {
-    animation: vis-cloth ${a(String(F))}s linear infinite;
+    animation: vis-cloth ${a(String(I))}s linear infinite;
   }
   .housework .sock {
-    animation: vis-sock ${a(String(F))}s linear infinite;
+    animation: vis-sock ${a(String(I))}s linear infinite;
   }
   .housework .bagarm {
-    animation: vis-bagarm ${a(String(F))}s linear infinite;
+    animation: vis-bagarm ${a(String(I))}s linear infinite;
   }
   .housework .bin {
-    animation: vis-bin ${a(String(F))}s linear infinite;
+    animation: vis-bin ${a(String(I))}s linear infinite;
   }
   .housework .tub {
-    animation: vis-tub ${a(String(F))}s ease-out infinite;
+    animation: vis-tub ${a(String(I))}s ease-out infinite;
   }
   .housework .smudge {
-    animation: vis-smudge ${a(String(F))}s linear infinite;
+    animation: vis-smudge ${a(String(I))}s linear infinite;
   }
   .housework .pop.p1 {
-    animation: pop-1 ${a(String(F))}s linear infinite;
+    animation: pop-1 ${a(String(I))}s linear infinite;
   }
   .housework .pop.p2 {
-    animation: pop-2 ${a(String(F))}s linear infinite;
+    animation: pop-2 ${a(String(I))}s linear infinite;
   }
   .housework .pop.p3 {
-    animation: pop-3 ${a(String(F))}s linear infinite;
+    animation: pop-3 ${a(String(I))}s linear infinite;
   }
   .housework .clean {
-    animation: clean-star ${a(String(F))}s linear infinite;
+    animation: clean-star ${a(String(I))}s linear infinite;
   }
   .housework .bagfall {
-    animation: bag-fall ${a(String(F))}s linear infinite;
+    animation: bag-fall ${a(String(I))}s linear infinite;
   }
   .housework .lid {
-    animation: lid ${a(String(F))}s ease-in-out infinite;
+    animation: lid ${a(String(I))}s ease-in-out infinite;
   }
   .housework .eyes {
-    animation: look-work ${a(String(F))}s ease-in-out infinite;
+    animation: look-work ${a(String(I))}s ease-in-out infinite;
   }
   .housework .jelly {
-    animation: work-bounce ${a(String(F))}s ease-in-out infinite;
+    animation: work-bounce ${a(String(I))}s ease-in-out infinite;
   }
   .suds {
     transform-box: fill-box;
@@ -7850,7 +7861,7 @@ var tr = o`
   }
   .badge text {
     font: 800 17px system-ui, sans-serif;
-    fill: ${a(P)};
+    fill: ${a(F)};
   }
   @keyframes badge {
     0% {
@@ -7895,7 +7906,7 @@ var tr = o`
   .xp {
     font: 800 19px system-ui, sans-serif;
     fill: #fff;
-    stroke: ${a(P)};
+    stroke: ${a(F)};
     stroke-width: 4px;
     paint-order: stroke;
     animation: xp-rise 1.6s ease-out 1 both;
@@ -8003,20 +8014,20 @@ var tr = o`
   .d2 {
     animation-delay: 0.2s;
   }
-`, nr = "#101010";
-function rr(e, t = {}) {
+`, rr = "#101010";
+function ir(e, t = {}) {
 	let n = t.z ?? [0, 0], r = t.tear ?? [0, 0];
 	switch (e) {
 		case "sleepy": return g`<g class="zzz" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text></g>`;
 		case "hibernating": return g`<g class="zzz slow" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text><text class="z z3" x="170" y="42">Z</text></g>`;
-		case "sad": return g`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${nr} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "sad": return g`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${rr} stroke-width="2" stroke-linejoin="round"/></g>`;
 		case "happy": return g`<path class="spark s1" d="M26 84 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5 z" fill="#FFE45C"/>
         <path class="spark s2" d="M176 70 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark s3" d="M168 118 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2 z" fill="#fff"/>`;
 		default: return g``;
 	}
 }
-var ir = o`
+var ar = o`
   .pet-art {
     width: 100%;
     height: 100%;
@@ -8315,15 +8326,15 @@ var ir = o`
       transform: translate(8px, -16px) scale(1.1);
     }
   }
-`, R = "#3A1204", z = "#8A2A0B", ar = "#6E1F07", or = "#D79563", B = "#190703", sr = {
+`, or = "#3A1204", z = "#8A2A0B", sr = "#6E1F07", cr = "#D79563", B = "#190703", lr = {
 	l: "M54 130 C40 138 38 158 46 170",
 	r: "M146 130 C160 138 162 158 154 170"
 };
-function cr(e) {
-	return g`<path d=${e} fill="none" stroke=${R} stroke-width="19.5" stroke-linecap="round"/>
+function ur(e) {
+	return g`<path d=${e} fill="none" stroke=${or} stroke-width="19.5" stroke-linecap="round"/>
     <path d=${e} fill="none" stroke=${z} stroke-width="10.5" stroke-linecap="round"/>`;
 }
-var lr = {
+var dr = {
 	color: z,
 	thick: 1.5,
 	shoulders: {
@@ -8336,8 +8347,8 @@ var lr = {
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, ur = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", dr = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
-function fr(e) {
+}, fr = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", pr = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
+function mr(e) {
 	switch (e) {
 		case "happy": return g`<path d="M72 72 Q80 61 88 72" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
         <path d="M112 72 Q120 61 128 72" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
@@ -8357,12 +8368,12 @@ function fr(e) {
       </g>`;
 	}
 }
-function pr(e) {
+function hr(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .75;
 	return g`<ellipse cx="66" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>
     <ellipse cx="134" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>`;
 }
-function mr(e) {
+function gr(e) {
 	let t = g`<path d="M100 93 V98" stroke=${B} stroke-width="3.2" stroke-linecap="round"/>`;
 	switch (e) {
 		case "happy": return g`${t}<path d="M90 98 Q100 118 110 98 Z" fill=${B} stroke=${B} stroke-width="3.2" stroke-linejoin="round"/>
@@ -8373,44 +8384,44 @@ function mr(e) {
 		default: return g`${t}<path d="M91 98 Q100 108 109 98" fill="none" stroke=${B} stroke-width="3.6" stroke-linecap="round"/>`;
 	}
 }
-function hr(e) {
+function _r(e) {
 	return e === "hibernating" ? g`<g class="snore"><circle cx="112" cy="94" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="91.5" r="1.8" fill="#fff"/></g>` : g``;
 }
-function gr(e, t = {}) {
+function vr(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, g`<svg class="pet-art bear ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="bear-body-clip"><path d=${ur}/></clipPath>
+      <clipPath id="bear-body-clip"><path d=${fr}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="62" ry="8" fill="#000" opacity="0.22"/>
-    ${Gn(n)} ${Kn(n, lr)}
+    ${Kn(n)} ${qn(n, dr)}
     <g class="jelly">
-      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${z} stroke=${R} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${or}/></g>
-      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${z} stroke=${R} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${or}/></g>
-      ${n ? g`` : g`${cr(sr.l)}${cr(sr.r)}`}
-      <path d=${ur} fill=${z}/>
+      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${z} stroke=${or} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${cr}/></g>
+      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${z} stroke=${or} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${cr}/></g>
+      ${n ? g`` : g`${ur(lr.l)}${ur(lr.r)}`}
+      <path d=${fr} fill=${z}/>
       <g clip-path="url(#bear-body-clip)">
-        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${ar} opacity="0.55"/>
-        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${or}/>
+        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${sr} opacity="0.55"/>
+        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${cr}/>
       </g>
-      <path d=${ur} fill="none" stroke=${R} stroke-width="4" stroke-linejoin="round"/>
-      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${z} stroke=${R} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${or}/></g>
-      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${z} stroke=${R} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${or}/></g>
-      <path d=${dr} fill=${z} stroke=${R} stroke-width="4" stroke-linejoin="round"/>
+      <path d=${fr} fill="none" stroke=${or} stroke-width="4" stroke-linejoin="round"/>
+      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${z} stroke=${or} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${cr}/></g>
+      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${z} stroke=${or} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${cr}/></g>
+      <path d=${pr} fill=${z} stroke=${or} stroke-width="4" stroke-linejoin="round"/>
       <path d="M60 70 C60 58 70 50 82 48" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.16"/>
-      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${or}/>
-      ${pr(e)} ${fr(e)}
+      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${cr}/>
+      ${hr(e)} ${mr(e)}
       <rect x="88" y="80" width="24" height="14" rx="7" fill=${B}/>
       <ellipse cx="94" cy="84" rx="4.5" ry="2" fill="#fff" opacity="0.8"/>
-      ${r === "wake" ? g`<path d="M100 93 V98" stroke=${B} stroke-width="3.2" stroke-linecap="round"/>` : mr(e)}
-      ${hr(e)}
+      ${r === "wake" ? g`<path d="M100 93 V98" stroke=${B} stroke-width="3.2" stroke-linecap="round"/>` : gr(e)}
+      ${_r(e)}
     </g>
-    ${qn(n, lr)}
-    ${n ? g`` : rr(e, {
+    ${Jn(n, dr)}
+    ${n ? g`` : ir(e, {
 		z: [10, -30],
 		tear: [-8, -68]
 	})}
-    ${Yn(r, t.text ?? "", {
+    ${Xn(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -16,
 		xpDy: -42,
@@ -8418,7 +8429,7 @@ function gr(e, t = {}) {
 	})}
   </svg>`;
 }
-var _r = o`
+var yr = o`
   /* A bear is heavy: it only squashes a third as much as the slime. */
   .bear {
     --k: 0.3;
@@ -8451,7 +8462,7 @@ var _r = o`
   .bear.sad .ear {
     animation: none;
   }
-`, V = "#8C78CC", vr = "#1B1133", yr = "#2F2054", br = "#170E2E", xr = "#3C2C70", H = "#C4B6F0", Sr = "#D69AE8", Cr = "#1F9C7C", wr = "#0E5C48", Tr = {
+`, V = "#8C78CC", br = "#1B1133", xr = "#2F2054", Sr = "#170E2E", Cr = "#3C2C70", H = "#C4B6F0", wr = "#D69AE8", Tr = "#1F9C7C", Er = "#0E5C48", Dr = {
 	color: "#2A1B4A",
 	ink: V,
 	thick: 1.4,
@@ -8465,8 +8476,8 @@ var _r = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Er = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", Dr = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", Or = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
-function kr(e) {
+}, Or = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", kr = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", Ar = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
+function jr(e) {
 	switch (e) {
 		case "happy": return g`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
         <path d="M111 84 Q120 71 129 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
@@ -8475,21 +8486,21 @@ function kr(e) {
 		case "hibernating": return g`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
         <path d="M112 79 Q120 88 128 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
 		case "sad": return g`<g class="eyes">
-          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${H}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${vr}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
-          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${H}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${vr}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
+          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${H}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${br}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
+          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${H}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${br}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
         </g>
         <path d="M69 69 L90 63" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>
         <path d="M131 69 L110 63" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>`;
 		default: return g`<g class="eyes look">
-        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${H}/><circle cx="80" cy="80" r="5" fill=${vr}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
-        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${H}/><circle cx="120" cy="80" r="5" fill=${vr}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${H}/><circle cx="80" cy="80" r="5" fill=${br}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${H}/><circle cx="120" cy="80" r="5" fill=${br}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Ar(e) {
+function Mr(e) {
 	let t = g`<path d="M100 95 V98" stroke=${H} stroke-width="2.8" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return g`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${vr} stroke=${H} stroke-width="2.8" stroke-linejoin="round"/>
+		case "happy": return g`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${br} stroke=${H} stroke-width="2.8" stroke-linejoin="round"/>
         <path d="M95 106 Q100 101 105 106 Q100 111 95 106 Z" fill="#FF7FA3"/>`;
 		case "sleepy": return g`${t}<ellipse cx="100" cy="104" rx="3.2" ry="2.6" fill=${H}/>`;
 		case "sad": return g`${t}<path d="M92 107 Q100 99 108 107" fill="none" stroke=${H} stroke-width="3" stroke-linecap="round"/>`;
@@ -8497,61 +8508,61 @@ function Ar(e) {
 		default: return g`${t}<path d="M92 100 Q96 106 100 98 Q104 106 108 100" fill="none" stroke=${H} stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function jr() {
+function Nr() {
 	return g`<g class="whiskers" fill="none" stroke=${H} stroke-width="2" stroke-linecap="round" opacity="0.85">
     <path d="M68 92 L34 84"/><path d="M68 97 L32 98"/><path d="M70 102 L38 112"/>
     <path d="M132 92 L166 84"/><path d="M132 97 L168 98"/><path d="M130 102 L162 112"/>
   </g>`;
 }
-function Mr(e) {
+function Pr(e) {
 	return e === "hibernating" ? g`<g class="snore"><circle cx="113" cy="98" r="7" fill="#E9E0FF" fill-opacity="0.45" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="95.5" r="1.8" fill="#fff"/></g>` : g``;
 }
-function Nr(e, t = {}) {
+function Fr(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, g`<svg class="pet-art cat ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <linearGradient id="cat-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color=${yr}/>
-        <stop offset="1" stop-color=${br}/>
+        <stop offset="0" stop-color=${xr}/>
+        <stop offset="1" stop-color=${Sr}/>
       </linearGradient>
-      <clipPath id="cat-body-clip"><path d=${Er}/></clipPath>
+      <clipPath id="cat-body-clip"><path d=${Or}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.3"/>
-    ${Gn(n)} ${Kn(n, Tr)}
+    ${Kn(n)} ${qn(n, Dr)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Or} fill="none" stroke=${V} stroke-width="17" stroke-linecap="round"/>
-        <path d=${Or} fill="none" stroke=${vr} stroke-width="10.5" stroke-linecap="round"/>
+        <path d=${Ar} fill="none" stroke=${V} stroke-width="17" stroke-linecap="round"/>
+        <path d=${Ar} fill="none" stroke=${br} stroke-width="10.5" stroke-linecap="round"/>
       </g>
       <g class="ear earL"><path d="M56 72 C52 52 52 36 56 22 C70 28 84 38 92 50 Z" fill="url(#cat-fill)" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M63 58 C61 48 61 40 63 33 C70 37 77 42 81 48 Z" fill="#6E5AA8"/></g>
       <g class="ear earR"><path d="M144 72 C148 52 148 36 144 22 C130 28 116 38 108 50 Z" fill="url(#cat-fill)" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M137 58 C139 48 139 40 137 33 C130 37 123 42 119 48 Z" fill="#6E5AA8"/></g>
-      <path d=${Er} fill="url(#cat-fill)"/>
+      <path d=${Or} fill="url(#cat-fill)"/>
       <g clip-path="url(#cat-body-clip)">
-        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${xr}/>
+        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${Cr}/>
         <path d="M100 128 V176" stroke="#2A1C52" stroke-width="2.4"/>
         <ellipse cx="100" cy="198" rx="70" ry="22" fill="#000" opacity="0.25"/>
       </g>
-      <path d=${Er} fill="none" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${xr} stroke=${V} stroke-width="3.5"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${xr} stroke=${V} stroke-width="3.5"/>
-      <path d=${Dr} fill="url(#cat-fill)" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
+      <path d=${Or} fill="none" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${Cr} stroke=${V} stroke-width="3.5"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${Cr} stroke=${V} stroke-width="3.5"/>
+      <path d=${kr} fill="url(#cat-fill)" stroke=${V} stroke-width="3.5" stroke-linejoin="round"/>
       <path d="M62 70 C62 60 70 54 82 52" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.14"/>
-      ${jr()} ${kr(e)}
-      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${Sr} stroke=${Sr} stroke-width="2" stroke-linejoin="round"/>
-      ${r === "wake" ? g`<path d="M100 95 V98" stroke=${H} stroke-width="2.8" stroke-linecap="round"/>` : Ar(e)}
-      ${Mr(e)}
-      <g><path d="M100 121 L80 112 L80 130 Z" fill=${Cr} stroke=${wr} stroke-width="2.4" stroke-linejoin="round"/>
-        <path d="M100 121 L120 112 L120 130 Z" fill=${Cr} stroke=${wr} stroke-width="2.4" stroke-linejoin="round"/>
-        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${wr} stroke-width="2.4"/></g>
+      ${Nr()} ${jr(e)}
+      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${wr} stroke=${wr} stroke-width="2" stroke-linejoin="round"/>
+      ${r === "wake" ? g`<path d="M100 95 V98" stroke=${H} stroke-width="2.8" stroke-linecap="round"/>` : Mr(e)}
+      ${Pr(e)}
+      <g><path d="M100 121 L80 112 L80 130 Z" fill=${Tr} stroke=${Er} stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M100 121 L120 112 L120 130 Z" fill=${Tr} stroke=${Er} stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${Er} stroke-width="2.4"/></g>
     </g>
-    ${qn(n, Tr)}
-    ${n ? g`` : rr(e, {
+    ${Jn(n, Dr)}
+    ${n ? g`` : ir(e, {
 		z: [10, -30],
 		tear: [-10, -62]
 	})}
-    ${Yn(r, t.text ?? "", {
+    ${Xn(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -18,
 		xpDy: -46,
@@ -8559,7 +8570,7 @@ function Nr(e, t = {}) {
 	})}
   </svg>`;
 }
-var Pr = o`
+var Ir = o`
   /* A cat is graceful: it squashes a bit less than the slime. */
   .cat {
     --k: 0.4;
@@ -8637,8 +8648,8 @@ var Pr = o`
       transform: scaleY(1.12);
     }
   }
-`, U = "#2F2E5C", Fr = "#F9A03B", Ir = "#E0821F", Lr = "#FFF4E2", Rr = "#9C6A57", zr = "#B8826C", Br = "#FF8FA3", Vr = "#FF6B8A", Hr = {
-	color: Fr,
+`, U = "#2F2E5C", Lr = "#F9A03B", Rr = "#E0821F", zr = "#FFF4E2", Br = "#9C6A57", Vr = "#B8826C", Hr = "#FF8FA3", Ur = "#FF6B8A", Wr = {
+	color: Lr,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -8650,8 +8661,8 @@ var Pr = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Ur = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", Wr = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", Gr = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", Kr = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
-function qr(e) {
+}, Gr = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", Kr = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", qr = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", Jr = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
+function Yr(e) {
 	switch (e) {
 		case "happy": return g`<path d="M73 85 Q82 72 91 85" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
         <path d="M109 85 Q118 72 127 85" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
@@ -8671,75 +8682,75 @@ function qr(e) {
       </g>`;
 	}
 }
-function Jr(e) {
+function Xr(e) {
 	let t = e === "sad" || e === "hibernating" ? .55 : .9;
-	return g`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${Br} opacity=${t}/>
-    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${Br} opacity=${t}/>`;
+	return g`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${Hr} opacity=${t}/>
+    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${Hr} opacity=${t}/>`;
 }
-function Yr(e) {
+function Zr(e) {
 	let t = g`<path d="M100 97 V101" stroke=${U} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
 		case "happy": return g`${t}<path d="M88 101 Q100 122 112 101 Z" fill=${U} stroke=${U} stroke-width="3.2" stroke-linejoin="round"/>
-        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${Vr}/>`;
+        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${Ur}/>`;
 		case "sleepy": return g`${t}<ellipse cx="100" cy="106" rx="3.6" ry="3" fill=${U}/>`;
 		case "sad": return g`${t}<path d="M91 110 Q100 101 109 110" fill="none" stroke=${U} stroke-width="3.6" stroke-linecap="round"/>`;
 		case "hibernating": return g`${t}<path d="M94 104 Q100 108 106 104" fill="none" stroke=${U} stroke-width="3.4" stroke-linecap="round"/>`;
 		default: return g`${t}<path d="M90 102 Q95 109 100 101 Q105 109 110 102" fill="none" stroke=${U} stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function Xr(e) {
+function Qr(e) {
 	return e === "hibernating" ? g`<g class="snore"><circle cx="112" cy="97" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="94.5" r="1.8" fill="#fff"/></g>` : g``;
 }
-function Zr(e, t = {}) {
+function $r(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, g`<svg class="pet-art dog ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="dog-body-clip"><path d=${Wr}/></clipPath>
-      <clipPath id="dog-tail-clip"><path d=${Ur}/></clipPath>
-      <clipPath id="dog-head-clip"><path d=${Gr}/></clipPath>
+      <clipPath id="dog-body-clip"><path d=${Kr}/></clipPath>
+      <clipPath id="dog-tail-clip"><path d=${Gr}/></clipPath>
+      <clipPath id="dog-head-clip"><path d=${qr}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${Gn(n)} ${Kn(n, Hr)}
+    ${Kn(n)} ${qn(n, Wr)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Ur} fill=${Fr}/>
+        <path d=${Gr} fill=${Lr}/>
         <g clip-path="url(#dog-tail-clip)">
-          <circle cx="158" cy="118" r="15" fill=${Lr}/>
-          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Ir} stroke-width="8" opacity="0.45"/>
+          <circle cx="158" cy="118" r="15" fill=${zr}/>
+          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Rr} stroke-width="8" opacity="0.45"/>
         </g>
-        <path d=${Ur} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${Gr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${Rr} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${zr} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${Rr} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${zr} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <path d=${Wr} fill=${Fr}/>
+      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${Br} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${Vr} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${Br} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${Vr} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <path d=${Kr} fill=${Lr}/>
       <g clip-path="url(#dog-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Ir} opacity="0.5"/>
-        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${Lr}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Rr} opacity="0.5"/>
+        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${zr}/>
       </g>
-      <path d=${Wr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      <path d=${Kr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
       ${n ? g`` : g`<path d="M97 140 V178 M103 140 V178" stroke=${U} stroke-width="3" stroke-linecap="round"/>`}
       <ellipse cx="86" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${U} stroke-width="4"/>
       <ellipse cx="114" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${U} stroke-width="4"/>
-      <path d=${Gr} fill=${Fr}/>
+      <path d=${qr} fill=${Lr}/>
       <g clip-path="url(#dog-head-clip)">
-        <path d=${Kr} fill=${Lr}/>
+        <path d=${Jr} fill=${zr}/>
         <ellipse cx="100" cy="53" rx="7" ry="4" fill="#FFD9A0"/>
       </g>
-      <path d=${Gr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
-      ${Jr(e)} ${qr(e)}
+      <path d=${qr} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      ${Xr(e)} ${Yr(e)}
       <ellipse cx="100" cy="93" rx="6" ry="4.4" fill=${U}/>
       <ellipse cx="98" cy="91.6" rx="1.8" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? g`<path d="M100 97 V101" stroke=${U} stroke-width="3" stroke-linecap="round"/>` : Yr(e)}
-      ${Xr(e)}
+      ${r === "wake" ? g`<path d="M100 97 V101" stroke=${U} stroke-width="3" stroke-linecap="round"/>` : Zr(e)}
+      ${Qr(e)}
     </g>
-    ${qn(n, Hr)}
-    ${n ? g`` : rr(e, {
+    ${Jn(n, Wr)}
+    ${n ? g`` : ir(e, {
 		z: [10, -30],
 		tear: [-8, -58]
 	})}
-    ${Yn(r, t.text ?? "", {
+    ${Xn(r, t.text ?? "", {
 		mouth: [100, 110],
 		badgeDy: -14,
 		xpDy: -42,
@@ -8747,7 +8758,7 @@ function Zr(e, t = {}) {
 	})}
   </svg>`;
 }
-var Qr = o`
+var ei = o`
   /* A puppy is lively: it squashes about half as much as the slime. */
   .dog {
     --k: 0.5;
@@ -8827,8 +8838,8 @@ var Qr = o`
       transform: rotate(9deg);
     }
   }
-`, W = "#3B2A3F", $r = "#F28A30", ei = "#D96E1B", ti = "#F6EDD6", ni = "#4B2E3A", ri = "#FF6B8A", ii = {
-	color: $r,
+`, W = "#3B2A3F", ti = "#F28A30", ni = "#D96E1B", ri = "#F6EDD6", ii = "#4B2E3A", ai = "#FF6B8A", oi = {
+	color: ti,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -8840,8 +8851,8 @@ var Qr = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, ai = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", oi = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", si = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", ci = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
-function li(e) {
+}, si = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", ci = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", li = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", ui = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
+function di(e) {
 	switch (e) {
 		case "happy": return g`<path d="M70 84 Q78 72 86 84" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>
         <path d="M114 84 Q122 72 130 84" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
@@ -8861,74 +8872,74 @@ function li(e) {
       </g>`;
 	}
 }
-function ui(e) {
+function fi(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .7;
 	return g`<ellipse cx="66" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>
     <ellipse cx="134" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>`;
 }
-function di(e) {
+function pi(e) {
 	let t = g`<path d="M100 109 V112" stroke=${W} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
 		case "happy": return g`${t}<path d="M92 112 Q100 126 108 112 Z" fill=${W} stroke=${W} stroke-width="3" stroke-linejoin="round"/>
-        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${ri}/>`;
+        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${ai}/>`;
 		case "sleepy": return g`${t}<ellipse cx="100" cy="117" rx="3.4" ry="2.8" fill=${W}/>`;
 		case "sad": return g`${t}<path d="M93 119 Q100 112 107 119" fill="none" stroke=${W} stroke-width="3.4" stroke-linecap="round"/>`;
 		case "hibernating": return g`${t}<path d="M95 115 Q100 119 105 115" fill="none" stroke=${W} stroke-width="3.2" stroke-linecap="round"/>`;
 		default: return g`${t}<path d="M92 114 Q96 120 100 112 Q104 120 108 114" fill="none" stroke=${W} stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function fi(e) {
+function mi(e) {
 	return e === "hibernating" ? g`<g class="snore"><circle cx="113" cy="108" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="105.5" r="1.8" fill="#fff"/></g>` : g``;
 }
-function pi(e, t = {}) {
+function hi(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, g`<svg class="pet-art fox ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="fox-body-clip"><path d=${ai}/></clipPath>
-      <clipPath id="fox-head-clip"><path d=${oi}/></clipPath>
-      <clipPath id="fox-tail-clip"><path d=${ci}/></clipPath>
+      <clipPath id="fox-body-clip"><path d=${si}/></clipPath>
+      <clipPath id="fox-head-clip"><path d=${ci}/></clipPath>
+      <clipPath id="fox-tail-clip"><path d=${ui}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${Gn(n)} ${Kn(n, ii)}
+    ${Kn(n)} ${qn(n, oi)}
     <g class="jelly">
       <g class="tail">
-        <path d=${ci} fill=${$r}/>
+        <path d=${ui} fill=${ti}/>
         <g clip-path="url(#fox-tail-clip)">
-          <circle cx="166" cy="86" r="20" fill=${ti}/>
-          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${ei} stroke-width="9" opacity="0.5"/>
+          <circle cx="166" cy="86" r="20" fill=${ri}/>
+          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${ni} stroke-width="9" opacity="0.5"/>
         </g>
-        <path d=${ci} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${ui} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${$r} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${ni}/></g>
-      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${$r} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${ni}/></g>
-      <path d=${ai} fill=${$r}/>
+      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${ti} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${ii}/></g>
+      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${ti} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${ii}/></g>
+      <path d=${si} fill=${ti}/>
       <g clip-path="url(#fox-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${ei} opacity="0.5"/>
-        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${ti}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${ni} opacity="0.5"/>
+        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${ri}/>
       </g>
-      <path d=${ai} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+      <path d=${si} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
       ${n ? g`` : g`<path d="M97 144 V166 M103 144 V166" stroke=${W} stroke-width="3" stroke-linecap="round"/>`}
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${ni} stroke=${W} stroke-width="4"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${ni} stroke=${W} stroke-width="4"/>
-      <path d=${oi} fill=${$r}/>
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${ii} stroke=${W} stroke-width="4"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${ii} stroke=${W} stroke-width="4"/>
+      <path d=${ci} fill=${ti}/>
       <g clip-path="url(#fox-head-clip)">
-        <path d=${si} fill=${ti}/>
+        <path d=${li} fill=${ri}/>
       </g>
-      <path d=${oi} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
-      ${ui(e)} ${li(e)}
+      <path d=${ci} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+      ${fi(e)} ${di(e)}
       <ellipse cx="100" cy="105" rx="6.4" ry="4.6" fill=${W}/>
       <ellipse cx="98" cy="103.4" rx="1.9" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? g`<path d="M100 109 V112" stroke=${W} stroke-width="3" stroke-linecap="round"/>` : di(e)}
-      ${fi(e)}
+      ${r === "wake" ? g`<path d="M100 109 V112" stroke=${W} stroke-width="3" stroke-linecap="round"/>` : pi(e)}
+      ${mi(e)}
     </g>
-    ${qn(n, ii)}
-    ${n ? g`` : rr(e, {
+    ${Jn(n, oi)}
+    ${n ? g`` : ir(e, {
 		z: [14, -30],
 		tear: [-8, -60]
 	})}
-    ${Yn(r, t.text ?? "", {
+    ${Xn(r, t.text ?? "", {
 		mouth: [100, 118],
 		badgeDy: -16,
 		xpDy: -46,
@@ -8936,7 +8947,7 @@ function pi(e, t = {}) {
 	})}
   </svg>`;
 }
-var mi = o`
+var gi = o`
   /* A fox is light and quick: it squashes a bit less than the slime. */
   .fox {
     --k: 0.4;
@@ -8999,12 +9010,12 @@ var mi = o`
       transform: rotate(6deg);
     }
   }
-`, G = "#101010", hi = {
+`, G = "#101010", _i = {
 	color: "#4DFF2B",
 	thick: 1,
 	typingBehind: !0
-}, gi = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
-function _i(e) {
+}, vi = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
+function yi(e) {
 	switch (e) {
 		case "happy": return g`<path d="M70 137 Q80 119 90 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
         <path d="M110 137 Q120 119 130 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
@@ -9024,12 +9035,12 @@ function _i(e) {
       </g>`;
 	}
 }
-function vi(e) {
+function bi(e) {
 	let t = e === "sad" || e === "hibernating" ? .45 : .85;
 	return g`<ellipse cx="61" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>
     <ellipse cx="139" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>`;
 }
-function yi(e) {
+function xi(e) {
 	switch (e) {
 		case "happy": return g`<path d="M87 147 Q100 176 113 147 Z" fill=${G} stroke=${G} stroke-width="4" stroke-linejoin="round"/>
         <path d="M93 162 Q100 154 107 162 Q100 170 93 162 Z" fill="#FF6B8A"/>`;
@@ -9039,10 +9050,10 @@ function yi(e) {
 		default: return g`<path d="M90 150 Q100 161 110 150" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
 	}
 }
-function bi(e) {
+function Si(e) {
 	return e === "hibernating" ? g`<g class="snore"><circle cx="113" cy="152" r="7" fill="#D8FFE2" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="149.5" r="1.8" fill="#fff"/></g>` : g``;
 }
-function xi(e, t = {}) {
+function Ci(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
 	return e = n ? "content" : e, g`<svg class="pet-art slime ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
@@ -9052,13 +9063,13 @@ function xi(e, t = {}) {
         <stop offset="0.62" stop-color="#39FF14"/>
         <stop offset="1" stop-color="#10B83A"/>
       </radialGradient>
-      <clipPath id="slime-clip"><path d=${gi}/></clipPath>
+      <clipPath id="slime-clip"><path d=${vi}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
     <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
-    ${Gn(n)} ${Kn(n, hi)}
+    ${Kn(n)} ${qn(n, _i)}
     <g class="jelly">
-      <path class="body" d=${gi} fill="url(#slime-fill)"/>
+      <path class="body" d=${vi} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
         <ellipse cx="100" cy="196" rx="84" ry="34" fill="#047A28" opacity="0.38"/>
         <ellipse cx="160" cy="132" rx="14" ry="48" fill="#fff" opacity="0.13"/>
@@ -9066,20 +9077,20 @@ function xi(e, t = {}) {
         <circle class="bubble b2" cx="132" cy="176" r="3" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.5"/>
         <circle class="bubble b3" cx="54" cy="172" r="4" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.6"/>
       </g>
-      <path class="body-line" d=${gi} fill="none" stroke=${G} stroke-width="5" stroke-linejoin="round"/>
+      <path class="body-line" d=${vi} fill="none" stroke=${G} stroke-width="5" stroke-linejoin="round"/>
       <ellipse cx="76" cy="100" rx="17" ry="9" transform="rotate(-32 76 100)" fill="#fff" opacity="0.4"/>
       <path d="M50 128 C49 108 60 92 78 86" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
       <circle cx="49" cy="143" r="3.6" fill="#fff" opacity="0.65"/>
-      ${vi(e)} ${_i(e)}
-      ${r === "wake" ? g`` : yi(e)} ${bi(e)}
+      ${bi(e)} ${yi(e)}
+      ${r === "wake" ? g`` : xi(e)} ${Si(e)}
     </g>
-    ${qn(n, hi)}
-    ${n ? g`` : rr(e)}
-    ${Yn(r, t.text ?? "")}
+    ${Jn(n, _i)}
+    ${n ? g`` : ir(e)}
+    ${Xn(r, t.text ?? "")}
   </svg>`;
 }
 // src/pets.ts
-var Si = () => [
+var wi = () => [
 	{
 		kind: "slime",
 		label: C("pets.slime"),
@@ -9110,24 +9121,24 @@ var Si = () => [
 		emoji: "🦊",
 		art: !0
 	}
-], Ci = [
+], Ti = [
 	"happy",
 	"content",
 	"sleepy",
 	"sad",
 	"hibernating"
 ];
-function wi(e) {
-	return Si().find((t) => t.kind === e) ?? Si()[0];
+function Ei(e) {
+	return wi().find((t) => t.kind === e) ?? wi()[0];
 }
 // src/boopli-pet.ts
-var Ti = {
+var Di = {
 	happy: "✨",
 	content: "",
 	sleepy: "💤",
 	sad: "💧",
 	hibernating: "🌙💤"
-}, Ei = class extends b {
+}, Oi = class extends b {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -9169,16 +9180,16 @@ var Ti = {
 		e.has("momentSeq") && this.moment && this._play(this.moment, this.momentText);
 	}
 	async _play(e, t = "") {
-		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = Rn[e], document.hidden || this._startMomentTimer();
+		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = zn[e], document.hidden || this._startMomentTimer();
 	}
 	_art() {
-		let e = wi(this.kind), t = {
+		let e = Ei(this.kind), t = {
 			activity: this.activity,
 			moment: this._playing,
 			text: this._text
 		};
-		return e.art && e.kind === "slime" ? xi(this.mood, t) : e.art && e.kind === "bear" ? gr(this.mood, t) : e.art && e.kind === "dog" ? Zr(this.mood, t) : e.art && e.kind === "cat" ? Nr(this.mood, t) : e.art && e.kind === "fox" ? pi(this.mood, t) : h`<span class="emoji" aria-hidden="true">${e.emoji}</span>
-      <span class="badge" aria-hidden="true">${this.away ? "🧳" : Ti[this.mood]}</span>`;
+		return e.art && e.kind === "slime" ? Ci(this.mood, t) : e.art && e.kind === "bear" ? vr(this.mood, t) : e.art && e.kind === "dog" ? $r(this.mood, t) : e.art && e.kind === "cat" ? Fr(this.mood, t) : e.art && e.kind === "fox" ? hi(this.mood, t) : h`<span class="emoji" aria-hidden="true">${e.emoji}</span>
+      <span class="badge" aria-hidden="true">${this.away ? "🧳" : Di[this.mood]}</span>`;
 	}
 	_tap() {
 		!this._playing && !this.still && this._play("tap");
@@ -9200,12 +9211,12 @@ var Ti = {
 	}
 	static {
 		this.styles = [
-			ir,
-			_r,
-			Pr,
-			Qr,
-			mi,
-			tr,
+			ar,
+			yr,
+			Ir,
+			ei,
+			gi,
+			nr,
 			o`
       :host {
         display: block;
@@ -9262,9 +9273,9 @@ var Ti = {
 		];
 	}
 };
-customElements.define("boopli-pet", Ei);
+customElements.define("boopli-pet", Oi);
 // src/boopli-stage.ts
-var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
+var K = "#101010", ki = g`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${K} stroke-width="2.5"/>
   <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
   <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#5B8DEF"/>
@@ -9275,7 +9286,7 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="36" cy="19.5" rx="22" ry="5" fill="#7FD8FF"/>
   <ellipse class="ripple" cx="36" cy="19.5" rx="7" ry="1.8" fill="none" stroke="#fff" stroke-width="1.4"/>
   <path d="M20 18.5 Q26 16.5 32 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
-</svg>`, Oi = g`<svg viewBox="0 0 72 48" aria-hidden="true">
+</svg>`, Ai = g`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${K} stroke-width="2.5"/>
   <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
   <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#FF9F5A"/>
@@ -9293,7 +9304,7 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
     <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/>
     <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${K} stroke-width="1.6"/>
   </g>
-</svg>`, ki = g`<svg viewBox="0 0 120 64" aria-hidden="true">
+</svg>`, ji = g`<svg viewBox="0 0 120 64" aria-hidden="true">
   <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
   <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${K} stroke-width="3" stroke-linejoin="round"/>
   <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
@@ -9303,7 +9314,7 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${K} stroke-width="2.5"/>
   <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${K} stroke-width="2.5"/>
   <path d="M18 34 H37" stroke=${K} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
-</svg>`, Ai = g`<svg viewBox="0 0 120 64" aria-hidden="true">
+</svg>`, Mi = g`<svg viewBox="0 0 120 64" aria-hidden="true">
   <g class="blanket">
     <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${K} stroke-width="2.5" stroke-linejoin="round"/>
     <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
@@ -9311,12 +9322,12 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
   </g>
   <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${K} stroke-width="3" stroke-linejoin="round"/>
   <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-</svg>`, ji = g`<svg viewBox="0 0 50 50" aria-hidden="true">
+</svg>`, Ni = g`<svg viewBox="0 0 50 50" aria-hidden="true">
   <path d="M17 17 V11 Q17 7 21 7 H29 Q33 7 33 11 V17" fill="none" stroke=${K} stroke-width="3" stroke-linecap="round"/>
   <rect x="5" y="16" width="40" height="30" rx="6" fill="#FF8A3D" stroke=${K} stroke-width="3"/>
   <path d="M17 16 V46 M33 16 V46" stroke=${K} stroke-width="2.5" opacity="0.55"/>
   <rect x="22" y="28" width="6" height="5" rx="1.5" fill="#FFD166" stroke=${K} stroke-width="2"/>
-</svg>`, Mi = class extends b {
+</svg>`, Pi = class extends b {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -9344,9 +9355,9 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
 		let e = this.level >= 3, t = this.away ? "hibernating" : this.mood, n = this.away ? "" : this.activity, r = e && !n && (t === "sleepy" || t === "hibernating");
 		return h`<div class="scene ${r ? "sleeping" : ""} ${r && t === "hibernating" ? "deep" : ""}" role="group" aria-label=${C("stage.your_pets_room")}>
       <div class="floor"></div>
-      <div class="prop water">${Di}</div>
-      ${this.level >= 2 ? h`<div class="prop food">${Oi}</div>` : v}
-      ${e ? h`<div class="prop bed">${ki}</div>` : v}
+      <div class="prop water">${ki}</div>
+      ${this.level >= 2 ? h`<div class="prop food">${Ai}</div>` : v}
+      ${e ? h`<div class="prop bed">${ji}</div>` : v}
       <div class="actor">
         <boopli-pet
           .kind=${this.kind}
@@ -9359,8 +9370,8 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
           .momentText=${this.momentText}
         ></boopli-pet>
       </div>
-      ${e ? h`<div class="prop bed front">${Ai}</div>` : v}
-      ${this.away ? h`<div class="prop suitcase">${ji}</div>` : v}
+      ${e ? h`<div class="prop bed front">${Mi}</div>` : v}
+      ${this.away ? h`<div class="prop suitcase">${Ni}</div>` : v}
     </div>`;
 	}
 	static {
@@ -9506,14 +9517,14 @@ var K = "#101010", Di = g`<svg viewBox="0 0 72 48" aria-hidden="true">
     `];
 	}
 };
-customElements.define("boopli-stage", Mi);
+customElements.define("boopli-stage", Pi);
 // src/boopli-egg.ts
-var Ni = 30, Pi = 1.5, Fi = .55, Ii = 6.1, Li = 60 / 140, Ri = 260, zi = 227, Bi = new URL("./easter-egg.mp3", "" + import.meta.url).href, Vi = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, Hi = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Ui = 12;
-function Wi() {
+var Fi = 30, Ii = 1.5, Li = .55, Ri = 6.1, zi = 60 / 140, Bi = 260, Vi = 227, Hi = new URL("./easter-egg.mp3", "" + import.meta.url).href, Ui = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, Wi = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Gi = 12;
+function Ki() {
 	let e = navigator.userAgent, t = /iPhone|iPad|iPod/.test(e) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1, n = /safari/i.test(e) && !/chrome|chromium|crios|fxios|edg|android/i.test(e);
 	return t || n;
 }
-var Gi = class extends b {
+var qi = class extends b {
 	static {
 		this.properties = {
 			_muted: { state: !0 },
@@ -9525,15 +9536,15 @@ var Gi = class extends b {
 		super(), this._started = 0, this._lastHop = -1, this._hasSound = !1, this._over = !1, this._muted = !1, this._cat = !1, this._note = !1;
 	}
 	connectedCallback() {
-		if (super.connectedCallback(), Wi()) {
-			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Ui * 1e3);
+		if (super.connectedCallback(), Ki()) {
+			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Gi * 1e3);
 			return;
 		}
 		let e = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? !1;
 		this._cat = !e && document.createElement("video").canPlayType("video/webm; codecs=\"vp9\"") !== "", this._started = performance.now();
 		try {
-			let e = new Audio(Bi);
-			e.volume = Fi, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
+			let e = new Audio(Hi);
+			e.volume = Li, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
 		} catch {}
 		this.dispatchEvent(new CustomEvent("egg-started", {
 			bubbles: !0,
@@ -9551,18 +9562,18 @@ var Gi = class extends b {
 		e && e.play().catch(() => void 0);
 		let i = !1;
 		if (n) {
-			let e = (window.innerWidth - Ri) / 2, t = (window.innerHeight - zi) / 2;
+			let e = (window.innerWidth - Bi) / 2, t = (window.innerHeight - Vi) / 2;
 			n.style.transform = `translate(${e}px, ${t}px) scale(1)`;
 		}
 		let a = () => {
-			let o = this._time(), s = Ni - o, c = Math.max(0, Math.min(1, s / Pi));
-			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Fi * c), s <= 0) this._stop(!0);
+			let o = this._time(), s = Fi - o, c = Math.max(0, Math.min(1, s / Ii));
+			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Li * c), s <= 0) this._stop(!0);
 			else {
-				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Ii) {
-					let e = Math.floor((o - Ii) / Li);
+				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Ri) {
+					let e = Math.floor((o - Ri) / zi);
 					if (e !== this._lastHop) {
 						this._lastHop = e;
-						let t = .75 + Math.random() * .7, r = Ri * t, i = zi * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
+						let t = .75 + Math.random() * .7, r = Bi * t, i = Vi * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
 						n.style.transform = `translate(${a}px, ${o}px) scale(${t})`;
 					}
 				}
@@ -9588,8 +9599,8 @@ var Gi = class extends b {
         <button type="button" class="ctl" aria-label=${C("common.close")} @click=${() => this._stop(!0)}>✕</button>
       </div>` : h`${this._cat ? h`<div class="egg-layer" aria-hidden="true">
             <div class="egg-cat">
-              <video class="intro" src=${Vi} muted playsinline preload="auto"></video>
-              <video class="loop" src=${Hi} muted playsinline loop preload="auto" hidden></video>
+              <video class="intro" src=${Ui} muted playsinline preload="auto"></video>
+              <video class="loop" src=${Wi} muted playsinline loop preload="auto" hidden></video>
             </div>
           </div>` : ""}
       <div class="controls">
@@ -9676,9 +9687,9 @@ var Gi = class extends b {
   `;
 	}
 };
-customElements.define("boopli-egg", Gi);
+customElements.define("boopli-egg", qi);
 // src/boopli-today.ts
-function Ki(e, t) {
+function Ji(e, t) {
 	if (!t.group) return null;
 	let n = e.steps.filter((e) => e.group === t.group), r = e.steps.some((e) => e.group !== t.group && e.status !== "done");
 	return {
@@ -9687,7 +9698,7 @@ function Ki(e, t) {
 		canPark: r
 	};
 }
-function qi(e) {
+function Yi(e) {
 	return e.away ? C("today.is_resting_while_you_are_away", { name: e.name }) : {
 		happy: C("today.nice_you_got_things_done_today"),
 		content: C("today.ready_when_you_are"),
@@ -9696,7 +9707,7 @@ function qi(e) {
 		hibernating: C("today.is_curled_up_resting_until_you", { name: e.name })
 	}[e.mood];
 }
-var Ji = class extends b {
+var Xi = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -9741,7 +9752,7 @@ var Ji = class extends b {
 		})), this._quick = "";
 	}
 	_renderQuick() {
-		let e = yn(this.snapshot);
+		let e = xn(this.snapshot);
 		return h`
       <section class="card quick">
         <h3>${C("today.what_do_you_want_to_get")}</h3>
@@ -9800,7 +9811,7 @@ var Ji = class extends b {
 			xp: e.xp_in_level,
 			xp_needed: e.xp_for_level
 		})}</div>
-          <div class="small">${qi(e)}</div>
+          <div class="small">${Yi(e)}</div>
         </div>
       </section>
       ${this._toast ? h`<div class="toast" role="status">${this._toast}</div>` : v}
@@ -9841,7 +9852,7 @@ var Ji = class extends b {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await tn(this.hass, e, t);
+				await nn(this.hass, e, t);
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -9853,7 +9864,7 @@ var Ji = class extends b {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await (n ? Ht : Ut)(this.hass, e, t);
+				await (n ? Ut : Wt)(this.hass, e, t);
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -9882,7 +9893,7 @@ var Ji = class extends b {
 			else {
 				this._busy = !0, this._error = "";
 				try {
-					t.choreId ? await ln(this.hass, t.choreId, e, t.at) : await cn(this.hass, t.runId ?? "", t.group ?? "", e, t.at), this._park = null;
+					t.choreId ? await dn(this.hass, t.choreId, e, t.at) : await un(this.hass, t.runId ?? "", t.group ?? "", e, t.at), this._park = null;
 				} catch (e) {
 					this._error = E(e);
 				} finally {
@@ -9924,13 +9935,13 @@ var Ji = class extends b {
       <div class="away-icon" aria-hidden="true">${A("bag-suitcase")}</div>
       <div class="away-text">
         <div class="away-title">${C(n ? "today.away_mode_is_on" : "today.away_mode_is_planned")}</div>
-        <div class="away-when">${Fn(t, this.nowMs, e, n)}</div>
+        <div class="away-when">${In(t, this.nowMs, e, n)}</div>
         <div class="away-note">
           ${C(n ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
         </div>
       </div>
       <div class="away-actions">
-        <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => $t(this.hass))}>
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => en(this.hass))}>
           ${C(n ? "common.back_now" : "common.cancel_it")}
         </button>
         <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", {
@@ -9955,8 +9966,8 @@ var Ji = class extends b {
           .cancelable=${!1}
           label=${C("common.done")}
           allLabel=${C("today.keep_all_steps")}
-          @answered=${(t) => this._partAction(() => en(this.hass, e.id, t.detail.answers))}
-          @all-steps=${() => this._partAction(() => en(this.hass, e.id, {}))}
+          @answered=${(t) => this._partAction(() => tn(this.hass, e.id, t.detail.answers))}
+          @all-steps=${() => this._partAction(() => tn(this.hass, e.id, {}))}
         ></boopli-questions>
       </section>`);
 	}
@@ -10016,7 +10027,7 @@ var Ji = class extends b {
       ${n.map((e) => h`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
-            <span class="hint">${N(e.at, this.nowMs, t)}</span>
+            <span class="hint">${P(e.at, this.nowMs, t)}</span>
           </div>
         </div>`)}
       ${e.upcoming.length > n.length ? h`<div class="muted small more">${C("today.and_more_in_the_chores_tab", { count: e.upcoming.length - n.length })}</div>` : v}
@@ -10032,10 +10043,10 @@ var Ji = class extends b {
           <div class="part-name">${e.name}</div>
           <div class="muted small">
             ${C("common.steps_count", { count: e.steps.length })} ·
-            ${e.next_due ? C("today.comes_back", { when: N(e.next_due, this.nowMs, t) }) : C("today.waiting_until_you_start_it")}
+            ${e.next_due ? C("today.comes_back", { when: P(e.next_due, this.nowMs, t) }) : C("today.waiting_until_you_start_it")}
           </div>
           ${this._park?.choreId === e.id ? this._renderParkAsk() : h`<div class="part-actions">
-                <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => Zt(this.hass, e.id))}>
+                <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => Qt(this.hass, e.id))}>
                   ${C("common.start_now")}
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${C("today.change_time")}</button>
@@ -10043,7 +10054,7 @@ var Ji = class extends b {
                       <button
                         ?disabled=${this._busy}
                         @click=${() => this._partAction(async () => {
-			await Xt(this.hass, e.id), this._removing = "";
+			await Zt(this.hass, e.id), this._removing = "";
 		})}
                       >
                         ${C("today.yes_remove")}
@@ -10069,7 +10080,7 @@ var Ji = class extends b {
 	}
 	render() {
 		if (!this.snapshot) return h`<p class="muted">${C("common.loading")}</p>`;
-		let e = this.snapshot.time_zone, t = Ln(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
+		let e = this.snapshot.time_zone, t = Rn(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
 		return h`
       ${this._renderAway(e)}
       <div class="cols"><div class="col">
@@ -10095,7 +10106,7 @@ var Ji = class extends b {
               <h2>${t.now.step.title}</h2>
               ${t.now.total > 1 ? this._renderTrail(t.now) : v}
               ${(() => {
-			let e = Ki(t.now.run, t.now.step);
+			let e = Ji(t.now.run, t.now.step);
 			return e && e.total > 1 ? h`<div class="muted small">${C("today.step_of_2", {
 				group: t.now.step.group ?? "",
 				min: Math.min(e.done + 1, e.total),
@@ -10103,7 +10114,7 @@ var Ji = class extends b {
 			})}</div>` : v;
 		})()}
               ${t.now.step.active_at ? h`<div class="muted small">
-                    ${kn(t.now.step.active_at, e)}
+                    ${An(t.now.step.active_at, e)}
                   </div>` : v}
               ${t.now.step.snoozed_until && Date.parse(t.now.step.snoozed_until) > this.nowMs ? h`<div class="muted small">
                     ${C("today.snoozed_until", { time: M(t.now.step.snoozed_until, e) })}
@@ -10134,7 +10145,7 @@ var Ji = class extends b {
                       ${C("today.on_it")}
                     </button>`}
               </div>
-              ${Ki(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : h`<button
+              ${Ji(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : h`<button
                   class="link later-btn"
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({
@@ -10534,14 +10545,14 @@ var Ji = class extends b {
     `];
 	}
 };
-customElements.define("boopli-today", Ji);
+customElements.define("boopli-today", Xi);
 // src/helpers.ts
-var Yi = "amzn_sfx_scifi_alarm_01", Xi = "amzn_sfx_doorbell_chime_01", Zi = [
+var Zi = "amzn_sfx_scifi_alarm_01", Qi = "amzn_sfx_doorbell_chime_01", $i = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], Qi = {
+], ea = {
 	start: "07:00",
 	stop: "22:00"
 };
@@ -10552,7 +10563,7 @@ function q(e, t) {
 function J(e, t, n = []) {
 	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => q(e, t).localeCompare(q(e, n)));
 }
-function $i(e, t, n) {
+function ta(e, t, n) {
 	let r;
 	return r = t === "alexa_media" ? Object.keys(e?.services?.notify ?? {}).filter((e) => e.startsWith("alexa_media_") && e !== "alexa_media").sort().map((e) => ({
 		value: e,
@@ -10568,7 +10579,7 @@ function $i(e, t, n) {
 		label: C("speakers.not_found", { current: n })
 	}), r;
 }
-function ea(e) {
+function na(e) {
 	return {
 		entity_id: e,
 		mode: "blink",
@@ -10583,13 +10594,13 @@ function ea(e) {
 		start_at: 1
 	};
 }
-function ta(e) {
+function ra(e) {
 	return {
 		entity_id: e,
 		cue: {
 			enabled: !0,
 			kind: "alexa",
-			sound: Xi,
+			sound: Qi,
 			start_at: 1,
 			seconds: 30,
 			repeat_s: 5
@@ -10604,21 +10615,21 @@ function ta(e) {
 		alarm: {
 			enabled: !0,
 			kind: "alexa",
-			sound: Yi,
+			sound: Zi,
 			start_at: 4,
 			seconds: 30,
 			repeat_s: 5
 		}
 	};
 }
-function na(e) {
+function ia(e) {
 	return {
 		entity_id: e,
 		seconds: 30,
 		start_at: 4
 	};
 }
-function ra(e) {
+function aa(e) {
 	let t = parseInt(e.replace("#", ""), 16);
 	return [
 		t >> 16 & 255,
@@ -10626,24 +10637,24 @@ function ra(e) {
 		t & 255
 	];
 }
-function ia(e) {
+function oa(e) {
 	return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 }
 function Y(e) {
 	return e.replace("mobile_app_", "");
 }
-var aa = () => ({
+var sa = () => ({
 	normal: C("helpers.level_normal"),
 	high: C("helpers.level_high"),
 	alarm: C("helpers.level_alarm"),
 	alarm_max: C("helpers.level_alarm_max")
-}), oa = () => ({
+}), ca = () => ({
 	quiet: C("common.quiet"),
 	one: C("helpers.one_nudge"),
 	escalating: C("helpers.escalating"),
 	persistent: C("helpers.persistent")
 });
-function sa(e, t) {
+function la(e, t) {
 	let n = e?.states[t]?.attributes?.supported_color_modes;
 	return !Array.isArray(n) || n.some((e) => [
 		"rgb",
@@ -10653,14 +10664,14 @@ function sa(e, t) {
 		"hs"
 	].includes(String(e)));
 }
-function ca() {
+function ua() {
 	try {
 		return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 	} catch {
 		return Math.random().toString(16).slice(2, 14).padEnd(12, "0");
 	}
 }
-function la(e, t) {
+function da(e, t) {
 	let n = {
 		one: "standard_one",
 		escalating: "standard_escalating",
@@ -10676,14 +10687,14 @@ function X(e) {
 	}[e.id];
 	return t && e.name === t[0] ? t[1]() : e.name;
 }
-function ua(e, t) {
+function fa(e, t) {
 	if (e.startsWith("ladder:")) {
 		let n = t?.find((t) => `ladder:${t.id}` === e);
 		return n ? X(n) : C("chore_editor.a_ladder_that_is_gone");
 	}
-	return oa()[e] ?? e;
+	return ca()[e] ?? e;
 }
-function da(e) {
+function pa(e) {
 	if (!e.enabled) return C("helpers.off_boopli_nudges_at_any_time");
 	let t = [], n = 0;
 	for (; n < 7;) {
@@ -10701,15 +10712,15 @@ function da(e) {
 	}
 	return C("helpers.nudges_allowed", { hours: t.join(", ") });
 }
-function fa(e) {
+function ma(e) {
 	let t = e.speech.route === "tts" ? C("helpers.tts_voice") : e.speech.route === "alexa_devices" ? C("helpers.alexa_devices") : C("helpers.alexa_media_player");
 	return e.speech.target && e.speech.enabled ? C("helpers.speaks", { kind: t }) : C("helpers.no_speaking_device_yet", { kind: t });
 }
-function pa(e) {
+function ha(e) {
 	return e.mode === "indicator" ? C("helpers.status_light_stays_on") : C("helpers.blinks");
 }
 // src/boopli-triggers.ts
-var ma = {
+var ga = {
 	binary_sensor: ["on", "off"],
 	switch: ["on", "off"],
 	input_boolean: ["on", "off"],
@@ -10718,15 +10729,15 @@ var ma = {
 	lock: ["locked", "unlocked"],
 	person: ["home", "not_home"],
 	device_tracker: ["home", "not_home"]
-}, ha = [
+}, _a = [
 	"event",
 	"input_button",
 	"button"
 ];
-function ga(e) {
+function va(e) {
 	return e.state ? "state" : e.above !== null && e.below !== null ? "between" : e.below === null ? e.above === null ? "state" : "above" : "below";
 }
-function _a(e) {
+function ya(e) {
 	return {
 		kind: e,
 		entity_id: "",
@@ -10739,7 +10750,7 @@ function _a(e) {
 		press: ""
 	};
 }
-var va = class extends b {
+var ba = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -10781,7 +10792,7 @@ var va = class extends b {
 		} : n));
 	}
 	_add(e) {
-		this._emit([...this.triggers, _a(e)]);
+		this._emit([...this.triggers, ya(e)]);
 	}
 	_remove(e) {
 		this._cancelScan(), this._emit(this.triggers.filter((t, n) => n !== e));
@@ -10836,7 +10847,7 @@ var va = class extends b {
 		}
 	}
 	_renderState(e, t) {
-		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = ma[n] ?? [], a = ga(e);
+		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = ga[n] ?? [], a = va(e);
 		return h`
       <div class="field">
         <label>${C("triggers.which_entity")}</label>
@@ -10996,7 +11007,7 @@ var va = class extends b {
         ${this._entityIds().map((e) => h`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       <datalist id="buttons-list">
-        ${this._entityIds(ha).map((e) => h`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds(_a).map((e) => h`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       ${this.triggers.length === 0 ? h`<div class="muted small">
             ${C(this.purpose === "wait" ? "triggers.add_a_condition_that_makes_this_step_ready" : "triggers.nothing_yet_only_you_finish_this")}
@@ -11088,13 +11099,13 @@ var va = class extends b {
     `];
 	}
 };
-customElements.define("boopli-triggers", va);
+customElements.define("boopli-triggers", ba);
 // src/boopli-picture.ts
-var ya = /\.(jpe?g|png|gif)$/i, ba = /^camera\.[a-z0-9_]+$/;
-function xa(e) {
-	return ba.test(e) && !ya.test(e);
+var xa = /\.(jpe?g|png|gif)$/i, Sa = /^camera\.[a-z0-9_]+$/;
+function Ca(e) {
+	return Sa.test(e) && !xa.test(e);
 }
-var Sa = class extends b {
+var wa = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11108,7 +11119,7 @@ var Sa = class extends b {
 		super(), this._timer = 0, this._seq = 0, this._seeded = !1, this._emitted = null, this.value = "", this._mode = "none", this._src = "", this._note = "";
 	}
 	willUpdate(e) {
-		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = xa(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? xa(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
+		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = Ca(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? Ca(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
 	}
 	disconnectedCallback() {
 		window.clearTimeout(this._timer), super.disconnectedCallback();
@@ -11131,7 +11142,7 @@ var Sa = class extends b {
 			if (this._mode === "camera") {
 				let e = this.hass?.states[t]?.attributes?.entity_picture;
 				typeof e == "string" && e ? this._src = e : this._note = C("picture.this_camera_gives_no_picture_right");
-			} else ya.test(t) ? this._timer = window.setTimeout(async () => {
+			} else xa.test(t) ? this._timer = window.setTimeout(async () => {
 				try {
 					let n = await this.hass?.callWS({
 						type: "media_source/resolve_media",
@@ -11146,7 +11157,7 @@ var Sa = class extends b {
 		}
 	}
 	render() {
-		let e = J(this.hass, ["camera"]), t = e.length > 0 || xa(this.value);
+		let e = J(this.hass, ["camera"]), t = e.length > 0 || Ca(this.value);
 		return h`
       <div class="row">
         <span class="muted small">${C("picture.picture_in_the_phone_notification_optional")}</span>
@@ -11228,9 +11239,9 @@ var Sa = class extends b {
     `];
 	}
 };
-customElements.define("boopli-picture", Sa);
+customElements.define("boopli-picture", wa);
 // src/boopli-schedule-days.ts
-var Ca = [
+var Ta = [
 	0,
 	1,
 	2,
@@ -11238,13 +11249,13 @@ var Ca = [
 	4,
 	5,
 	6
-], wa = 6;
-function Ta(e) {
+], Ea = 6;
+function Da(e) {
 	if (e.length === 0) return "09:00";
 	let [t, n] = e[e.length - 1].split(":").map(Number);
 	return `${String(Math.min(23, (t || 0) + 4)).padStart(2, "0")}:${String(n || 0).padStart(2, "0")}`;
 }
-var Ea = class extends b {
+var Oa = class extends b {
 	static {
 		this.properties = {
 			days: { attribute: !1 },
@@ -11275,7 +11286,7 @@ var Ea = class extends b {
 		n && this._setDay(e, this._times(e).map((e, r) => r === t ? n : e));
 	}
 	_shownDays() {
-		return this.onlyActive ? Ca.filter((e) => this._times(e).length > 0) : Ca;
+		return this.onlyActive ? Ta.filter((e) => this._times(e).length > 0) : Ta;
 	}
 	render() {
 		let e = this._shownDays();
@@ -11289,7 +11300,7 @@ var Ea = class extends b {
                   <input
                     type="checkbox"
                     .checked=${a}
-                    @change=${(e) => this._setDay(t, e.target.checked ? [Ta([])] : [])}
+                    @change=${(e) => this._setDay(t, e.target.checked ? [Da([])] : [])}
                   />
                   ${C("schedule_days.runs")}
                 </label>`}
@@ -11313,7 +11324,7 @@ var Ea = class extends b {
                             ✕
                           </button>` : v}
                     </span>`)}
-                  ${r.length < wa ? h`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Ta(r)])}>${C("schedule_days.time")}</button>` : v}
+                  ${r.length < Ea ? h`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Da(r)])}>${C("schedule_days.time")}</button>` : v}
                 </div>` : h`<span class="muted small">${C("schedule_days.no_run_this_day")}</span>`}
             ${i === null ? v : h`<button
                   type="button"
@@ -11388,9 +11399,9 @@ var Ea = class extends b {
     `];
 	}
 };
-customElements.define("boopli-schedule-days", Ea);
+customElements.define("boopli-schedule-days", Oa);
 // src/boopli-schedule-wizard.ts
-var Da = {
+var ka = {
 	none: ["how", "done"],
 	schedule: [
 		"how",
@@ -11405,14 +11416,14 @@ var Da = {
 		"preview",
 		"done"
 	]
-}, Oa = () => ({
+}, Aa = () => ({
 	how: C("schedule_wizard.how_often"),
 	days: C("schedule_wizard.which_days"),
 	times: C("schedule_wizard.what_time_on_each_day"),
 	interval: C("schedule_wizard.every_how_many_days"),
 	preview: C("schedule_wizard.the_next_runs"),
 	done: C("common.all_set")
-}), ka = () => [
+}), ja = () => [
 	{
 		value: "none",
 		label: C("common.on_demand"),
@@ -11428,7 +11439,7 @@ var Da = {
 		label: C("schedule_wizard.every_few_days_after_i_finish"),
 		text: C("schedule_wizard.it_comes_back_a_number_of")
 	}
-], Aa = [
+], Ma = [
 	0,
 	1,
 	2,
@@ -11436,7 +11447,7 @@ var Da = {
 	4,
 	5,
 	6
-], ja = class extends b {
+], Na = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11458,7 +11469,7 @@ var Da = {
 		!this._draft && this.repeat && (this._before = structuredClone(this.repeat), this._draft = structuredClone(this.repeat));
 	}
 	get _steps() {
-		return Da[this._draft?.type ?? "none"];
+		return ka[this._draft?.type ?? "none"];
 	}
 	get _step() {
 		return this._steps[Math.min(this._index, this._steps.length - 1)];
@@ -11475,7 +11486,7 @@ var Da = {
 		(t[String(e)] ?? []).length > 0 ? delete t[String(e)] : t[String(e)] = ["09:00"], this._patch({ days: t });
 	}
 	_activeDays() {
-		return Aa.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
+		return Ma.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
 	}
 	async _next() {
 		if (!this.hass || !this._draft || this._busy) return;
@@ -11487,7 +11498,7 @@ var Da = {
 		if (this._steps[e] === "preview") {
 			this._busy = !0;
 			try {
-				this._preview = await zt(this.hass, this._draft, 5);
+				this._preview = await Bt(this.hass, this._draft, 5);
 			} catch (e) {
 				this._error = E(e);
 				return;
@@ -11516,7 +11527,7 @@ var Da = {
 	_renderHow(e) {
 		return h`
       <p>${this.choreName ? w("schedule_wizard.how_often_should_named", { chore: this.choreName }) : C("schedule_wizard.how_often_should_this_chore")}</p>
-      ${ka().map((t) => h`<label class="inline option">
+      ${ja().map((t) => h`<label class="inline option">
           <input
             type="radio"
             name="how"
@@ -11532,7 +11543,7 @@ var Da = {
 		return h`
       <p>${C("schedule_wizard.tap_the_days_it_should_come")}</p>
       <div class="chips">
-        ${Aa.map((e) => h`<button
+        ${Ma.map((e) => h`<button
             type="button"
             class="chip big ${t.includes(e) ? "on" : ""}"
             aria-pressed=${t.includes(e)}
@@ -11545,7 +11556,7 @@ var Da = {
         <button
           type="button"
           class="chip"
-          @click=${() => this._patch({ days: Object.fromEntries(Aa.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
+          @click=${() => this._patch({ days: Object.fromEntries(Ma.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
         >
           ${C("schedule_wizard.every_day")}
         </button>
@@ -11604,7 +11615,7 @@ var Da = {
       <p>
         ${e.type === "every_n_days" ? C("schedule_wizard.the_first_time_and_then_every") : C("schedule_wizard.this_is_when_it_comes_up")}
       </p>
-      ${t.length === 0 ? h`<p class="muted">${C("schedule_wizard.nothing_is_scheduled")}</p>` : h`<ul>${t.map((e) => h`<li>${N(e, n, this.timeZone)}</li>`)}</ul>`}
+      ${t.length === 0 ? h`<p class="muted">${C("schedule_wizard.nothing_is_scheduled")}</p>` : h`<ul>${t.map((e) => h`<li>${P(e, n, this.timeZone)}</li>`)}</ul>`}
       ${e.type === "every_n_days" ? h`<p class="muted small">${C("schedule_wizard.after_that_days_after_you_finish", {
 			count: e.every_n_days,
 			every_n_days: e.every_n_days,
@@ -11613,7 +11624,7 @@ var Da = {
     `;
 	}
 	_renderDone(e) {
-		let t = this._before ? Mn(this._before) : "", n = Mn(e), r = JSON.stringify(this._before) === JSON.stringify(e);
+		let t = this._before ? Nn(this._before) : "", n = Nn(e), r = JSON.stringify(this._before) === JSON.stringify(e);
 		return h`
       <p>${this.choreName ? w("schedule_wizard.what_changed_for_named", { chore: this.choreName }) : w("schedule_wizard.what_changed_for_this_chore")}</p>
       ${r ? h`<p class="muted">${C("schedule_wizard.nothing_changed", { after: n })}</p>` : h`<ul><li>${C("schedule_wizard.schedule_changed", {
@@ -11645,7 +11656,7 @@ var Da = {
           <div class="rail-title">${this.choreName ? C("schedule_wizard.schedule_named", { chore: this.choreName }) : C("schedule_wizard.schedule")}</div>
           ${t.map((e, t) => h`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${Oa()[e]}</span>
+              <span>${Aa()[e]}</span>
             </div>`)}
         </nav>
         <section class="card main">
@@ -11657,7 +11668,7 @@ var Da = {
             <button type="button" class="link" @click=${() => this._cancel()}>${C("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
-          <h2>${Oa()[n]}</h2>
+          <h2>${Aa()[n]}</h2>
           ${this._renderStep(e)}
           ${this._error ? h`<div class="error">${this._error}</div>` : v}
           <div class="actions">
@@ -11838,14 +11849,14 @@ var Da = {
     `];
 	}
 };
-customElements.define("boopli-schedule-wizard", ja);
+customElements.define("boopli-schedule-wizard", Na);
 // src/boopli-wait.ts
-var Ma = 30;
-function Na(e) {
+var Pa = 30;
+function Fa(e) {
 	let t = Math.max(0, Math.round(e));
 	return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 }
-var Pa = class extends b {
+var Ia = class extends b {
 	static {
 		this.properties = {
 			label: { type: String },
@@ -11861,7 +11872,7 @@ var Pa = class extends b {
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._since = Date.now(), this._elapsed = 0, this._timer = window.setInterval(() => {
-			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Ma && (this._eggShown = !0, this._egg = !0);
+			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Pa && (this._eggShown = !0, this._egg = !0);
 		}, 500);
 	}
 	disconnectedCallback() {
@@ -11876,7 +11887,7 @@ var Pa = class extends b {
 		return h`<div class="wait" role="status" aria-live="polite">
       ${this._egg ? h`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : v}
       <div class="head">
-        ${this.pet && wi(this.pet).art ? h`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : h`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
+        ${this.pet && Ei(this.pet).art ? h`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : h`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>
       <div
@@ -11890,8 +11901,8 @@ var Pa = class extends b {
         <div class="fill" style="width:${e * 100}%"></div>
       </div>
       <div class="time">
-        <span>${C("wait.so_far", { time: Na(this._elapsed) })}</span>
-        <span>${C("wait.gives_up_after", { time: Na(this.max) })}</span>
+        <span>${C("wait.so_far", { time: Fa(this._elapsed) })}</span>
+        <span>${C("wait.gives_up_after", { time: Fa(this.max) })}</span>
       </div>
       <div class="hint">${this._hint()}</div>
       ${this.stoppable ? h`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
@@ -12000,10 +12011,10 @@ var Pa = class extends b {
   `;
 	}
 };
-customElements.define("boopli-wait", Pa);
+customElements.define("boopli-wait", Ia);
 // src/photos.ts
-var Fa = 8e5;
-async function Ia(e) {
+var La = 8e5;
+async function Ra(e) {
 	let t = URL.createObjectURL(e);
 	try {
 		let e = await new Promise((e, n) => {
@@ -12019,7 +12030,7 @@ async function Ia(e) {
 			a.width = Math.max(1, Math.round(e.naturalWidth * i)), a.height = Math.max(1, Math.round(e.naturalHeight * i));
 			let o = a.getContext("2d");
 			if (!o) throw Error(C("photos.this_browser_cannot_prepare_photos"));
-			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Fa) break;
+			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= La) break;
 		}
 		return n;
 	} finally {
@@ -12027,7 +12038,7 @@ async function Ia(e) {
 	}
 }
 // src/boopli-breakdown.ts
-var La = () => [
+var za = () => [
 	{
 		value: "small",
 		letter: C("breakdown.letter_small"),
@@ -12046,11 +12057,11 @@ var La = () => [
 		label: C("breakdown.big_hard_or_long"),
 		xp: 20
 	}
-], Ra = {
+], Ba = {
 	small: 10,
 	medium: 15,
 	big: 20
-}, za = 20, Ba = 50, Va = class extends b {
+}, Va = 20, Ha = 50, Ua = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -12107,7 +12118,7 @@ var La = () => [
 		let e = this._task.trim();
 		return !this.hass || !e || this._roomsTouched || !this._homeOn() ? Promise.resolve() : (this._guessedFor === e && this._guessing || (this._guessedFor = e, this._guessing = (async () => {
 			try {
-				let t = await Mt(this.hass, e);
+				let t = await Nt(this.hass, e);
 				if (this._roomsTouched || this._task.trim() !== e) return;
 				let n = new Set(this._notedRooms().map((e) => e.id));
 				this._rooms = t.filter((e) => n.has(e)), this._preview = null;
@@ -12126,7 +12137,7 @@ var La = () => [
 		if (this.hass) {
 			if (this._preview) this._preview = null;
 			else try {
-				this._preview = await jt(this.hass, this._task.trim() || C("breakdown.your_task"), this.kind, this._answers, this._notes, this._rooms, this._scene);
+				this._preview = await Mt(this.hass, this._task.trim() || C("breakdown.your_task"), this.kind, this._answers, this._notes, this._rooms, this._scene);
 			} catch (e) {
 				this._error = E(e);
 			}
@@ -12168,7 +12179,7 @@ var La = () => [
 		this._error = "", this._looking = !0;
 		try {
 			let n = [];
-			for (let r of Array.from(e).slice(0, t)) n.push(await Ia(r));
+			for (let r of Array.from(e).slice(0, t)) n.push(await Ra(r));
 			this._photos = [...this._photos, ...n], e.length > t && (this._error = C("breakdown.up_to_photos_the_rest_were", { max_photos: 4 }));
 		} catch (e) {
 			this._error = E(e);
@@ -12182,7 +12193,7 @@ var La = () => [
 		this._lookVia = e, this._sending = !0, this._looking = !0;
 		try {
 			if (await this._guess(), t !== this._lookId) return;
-			let n = await un(this.hass, this._task.trim(), this._photos, this._rooms, e);
+			let n = await fn(this.hass, this._task.trim(), this._photos, this._rooms, e);
 			if (t !== this._lookId) return;
 			this._scene = n.scene, this._photos = [], this._photosOpen = !1, this._preview = null;
 		} catch (e) {
@@ -12194,7 +12205,7 @@ var La = () => [
 		this._lookId++, this._looking = !1, this._sending = !1, this._error = C("common.you_stopped_waiting_your_photos_are");
 	}
 	_renderScene() {
-		if (!yn(this.snapshot)) return v;
+		if (!xn(this.snapshot)) return v;
 		if (this._scene) return h`<div class="scene">
         <label for="scene">${C("breakdown.what_the_ai_sees_today_from")}</label>
         <textarea
@@ -12226,7 +12237,7 @@ var La = () => [
       ${this._sending ? h`<boopli-wait
             .label=${this._lookVia === "claude" ? C("common.claude_is_looking_at_your_photos") : C("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${bn(this.snapshot, this._lookVia)}
+            .max=${Sn(this.snapshot, this._lookVia)}
             @stop-waiting=${() => this._stopLooking()}
           ></boopli-wait>` : this._looking ? h`<div class="muted" role="status">${C("breakdown.preparing")}</div>` : h`<div class="actions">
             <label class="filebtn ${e ? "off" : ""}">
@@ -12260,7 +12271,7 @@ var La = () => [
     </div>`;
 	}
 	_aiOn() {
-		return yn(this.snapshot);
+		return xn(this.snapshot);
 	}
 	_choose(e) {
 		this._via = e ?? (O(this.snapshot) ? this._via : "claude");
@@ -12294,7 +12305,7 @@ var La = () => [
 		this._answers = [], this._round = 0, this._phase = "working", this._backPhase = "task";
 		let n = ++this._askId;
 		if (await this._guess(), n !== this._askId) return;
-		let r = await this._ask(() => kt(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, t), "task");
+		let r = await this._ask(() => At(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, t), "task");
 		r && this._showQuestions(r.enough, r.questions);
 	}
 	_showQuestions(e, t) {
@@ -12317,7 +12328,7 @@ var La = () => [
 		if (!this.hass) return;
 		let e = [...this._answers, ...this._currentAnswers()];
 		this._answers = e, this._phase = "working";
-		let t = await this._ask(() => kt(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene, this._via), "interview");
+		let t = await this._ask(() => At(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene, this._via), "interview");
 		t && this._showQuestions(t.enough, t.questions);
 	}
 	async _enough() {
@@ -12330,8 +12341,8 @@ var La = () => [
 		this._phase = "working", this._backPhase = this._questions.length ? "interview" : "task";
 		let n = ++this._askId;
 		if (await this._guess(), n !== this._askId) return;
-		let r = await this._ask(() => At(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, t), this._questions.length ? "interview" : "task");
-		r && (this._steps = r.steps.slice(0, Ba), this._checks = this.kind === "recurring" ? r.questions ?? [] : [], r.summary && !this._notes.includes(r.summary) && (this._notes = [this._notes, r.summary].filter(Boolean).join("\n")), this._phase = "review");
+		let r = await this._ask(() => jt(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, t), this._questions.length ? "interview" : "task");
+		r && (this._steps = r.steps.slice(0, Ha), this._checks = this.kind === "recurring" ? r.questions ?? [] : [], r.summary && !this._notes.includes(r.summary) && (this._notes = [this._notes, r.summary].filter(Boolean).join("\n")), this._phase = "review");
 	}
 	_patchStep(e, t) {
 		this._steps = this._steps.map((n, r) => r === e ? {
@@ -12355,7 +12366,7 @@ var La = () => [
 			group: t,
 			size: "small",
 			wait_minutes: 0
-		}), this._steps = n.slice(0, Ba);
+		}), this._steps = n.slice(0, Ha);
 	}
 	_finish(e) {
 		let t = this._steps.filter((e) => e.title.trim()).map((e) => ({
@@ -12504,12 +12515,12 @@ var La = () => [
 		return h`<boopli-wait
       .label=${this._via === "claude" ? C("common.asking_claude_this_takes_a_little") : this._answers.length || this._steps.length ? C("breakdown.writing_the_steps") : C("common.thinking")}
       .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-      .max=${bn(this.snapshot, this._via)}
+      .max=${Sn(this.snapshot, this._via)}
       @stop-waiting=${() => this._stopWaiting()}
     ></boopli-wait>`;
 	}
 	_xp() {
-		return this._steps.reduce((e, t) => e + Ra[t.size], 0) + za;
+		return this._steps.reduce((e, t) => e + Ba[t.size], 0) + Va;
 	}
 	_renderStep(e, t) {
 		return h`
@@ -12524,7 +12535,7 @@ var La = () => [
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
         <span class="sizes" role="group" aria-label=${C("breakdown.size")}>
-          ${La().map((n) => h`<button
+          ${za().map((n) => h`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
               title=${C("breakdown.xp", {
@@ -12944,12 +12955,12 @@ var La = () => [
     `];
 	}
 };
-customElements.define("boopli-breakdown", Va);
+customElements.define("boopli-breakdown", Ua);
 // src/boopli-chore-editor.ts
-var Ha = 8, Ua = () => [{
+var Wa = 8, Ga = () => [{
 	value: "quiet",
 	label: C("chore_editor.quiet_only_shown_in_boopli_no")
-}], Wa = () => [
+}], Ka = () => [
 	{
 		minutes: 0,
 		label: C("chore_editor.no_wait")
@@ -12970,7 +12981,7 @@ var Ha = 8, Ua = () => [{
 		minutes: 180,
 		label: C("chore_editor.wait_h", { n: 3 })
 	}
-], Ga = () => [
+], qa = () => [
 	{
 		value: "none",
 		label: C("chore_editor.on_demand_i_start_it")
@@ -12983,7 +12994,7 @@ var Ha = 8, Ua = () => [{
 		value: "every_n_days",
 		label: C("chore_editor.every_n_days_after_i_finish")
 	}
-], Ka = Object.fromEntries([
+], Ja = Object.fromEntries([
 	0,
 	1,
 	2,
@@ -12991,7 +13002,7 @@ var Ha = 8, Ua = () => [{
 	4,
 	5,
 	6
-].map((e) => [String(e), ["09:00"]])), qa = class extends b {
+].map((e) => [String(e), ["09:00"]])), Ya = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13089,7 +13100,7 @@ var Ha = 8, Ua = () => [{
 		})), o = [...n, ...(e.questions ?? []).map((e) => ({
 			...e,
 			id: i.get(e.id) ?? e.id
-		}))].slice(0, Ha), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
+		}))].slice(0, Wa), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
 		this._update({
 			steps: c.slice(0, 50),
 			notes: e.notes,
@@ -13098,7 +13109,7 @@ var Ha = 8, Ua = () => [{
 	}
 	_addQuestion() {
 		let e = [...this.draft.questions ?? []];
-		e.length >= Ha || (e.push({
+		e.length >= Wa || (e.push({
 			id: `q${Math.random().toString(36).slice(2, 8)}`,
 			text: ""
 		}), this._update({ questions: e }));
@@ -13135,7 +13146,7 @@ var Ha = 8, Ua = () => [{
 				...e,
 				text: e.text.trim()
 			})).filter((e) => e.text), t = new Set(e.map((e) => e.id));
-			return await Yt(this.hass, {
+			return await Xt(this.hass, {
 				...this.draft,
 				nudge_style: this.draft.nudge_style ?? this.defaultStyle,
 				ignore_quiet_hours: this.draft.ignore_quiet_hours ?? !1,
@@ -13159,7 +13170,7 @@ var Ha = 8, Ua = () => [{
 		if (this.hass && this.draft.id && !this._busy) {
 			this._busy = !0;
 			try {
-				await Xt(this.hass, this.draft.id), this._close();
+				await Zt(this.hass, this.draft.id), this._close();
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -13176,14 +13187,14 @@ var Ha = 8, Ua = () => [{
           id="repeat"
           .value=${e.type}
           @change=${(t) => {
-			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? Ka : e.days;
+			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? Ja : e.days;
 			this._updateRepeat({
 				type: n,
 				days: r
 			});
 		}}
         >
-          ${Ga().map((t) => h`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
+          ${qa().map((t) => h`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
         </select>
       </div>
       ${e.type === "schedule" ? h`<div class="field">
@@ -13192,7 +13203,7 @@ var Ha = 8, Ua = () => [{
               .days=${e.days}
               @days-change=${(e) => this._updateRepeat({ days: e.detail })}
             ></boopli-schedule-days>
-            <div class="muted small summary">${Mn(e)}</div>
+            <div class="muted small summary">${Nn(e)}</div>
           </div>` : v}
       ${e.type === "every_n_days" ? h`<div class="field">
               <label for="n">${C("chore_editor.number_of_days")}</label>
@@ -13278,7 +13289,7 @@ var Ha = 8, Ua = () => [{
             ${(t.wait_for ?? []).length > 0 ? C("chore_editor.longest_it_waits_0_as_long") : C("chore_editor.wait_before_this_step")}
           </span>
           <div class="chips">
-            ${Wa().map((n) => h`<button
+            ${Ka().map((n) => h`<button
                 type="button"
                 class="chip ${t.wait_minutes === n.minutes ? "on" : ""}"
                 @click=${() => this._updateStep(e, { wait_minutes: n.minutes })}
@@ -13388,34 +13399,34 @@ var Ha = 8, Ua = () => [{
           <label for="style">${C("chore_editor.how_should_boopli_nudge_you")}</label>
           <select
             id="style"
-            .value=${la(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
+            .value=${da(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
             @change=${(e) => this._update({ nudge_style: e.target.value })}
           >
-            ${[...Ua(), ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
+            ${[...Ga(), ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.id.startsWith("standard_") ? X(e) : C("chore_editor.my_own_ladder", { name: e.name })
 		}))].map((t) => h`<option
                 value=${t.value}
-                ?selected=${t.value === la(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
+                ?selected=${t.value === da(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
               >
                 ${t.label}
               </option>`)}
             ${(e.nudge_style ?? this.defaultStyle).startsWith("ladder:") && !(this.snapshot?.settings?.ladders ?? []).some((t) => `ladder:${t.id}` === (e.nudge_style ?? this.defaultStyle)) ? h`<option value=${e.nudge_style ?? this.defaultStyle} selected>${C("chore_editor.a_ladder_that_is_gone")}</option>` : v}
           </select>
         </div>
-        ${(this.snapshot?.settings?.lights ?? []).some((e) => sa(this.hass, e.entity_id)) ? h`<div class="field">
+        ${(this.snapshot?.settings?.lights ?? []).some((e) => la(this.hass, e.entity_id)) ? h`<div class="field">
           <label for="lightcolor">${C("chore_editor.light_color_for_this_chore_optional")}</label>
           <div class="colorrow">
             <input
               id="lightcolor"
               type="color"
               class="swatch"
-              .value=${e.light_color ? ia(e.light_color) : ia(this.snapshot?.settings?.lights?.[0]?.color ?? [
+              .value=${e.light_color ? oa(e.light_color) : oa(this.snapshot?.settings?.lights?.[0]?.color ?? [
 			255,
 			90,
 			0
 		])}
-              @input=${(e) => this._update({ light_color: ra(e.target.value) })}
+              @input=${(e) => this._update({ light_color: aa(e.target.value) })}
             />
             <button type="button" class="chip" ?disabled=${!e.light_color} @click=${() => this._update({ light_color: void 0 })}>
               ${C("chore_editor.use_the_lights_own_color")}
@@ -13466,7 +13477,7 @@ var Ha = 8, Ua = () => [{
               />
               <button type="button" aria-label=${C("chore_editor.remove_this_question")} @click=${() => this._removeQuestion(e.id)}>✕</button>
             </div>`)}
-          <button type="button" ?disabled=${(e.questions ?? []).length >= Ha} @click=${() => this._addQuestion()}>
+          <button type="button" ?disabled=${(e.questions ?? []).length >= Wa} @click=${() => this._addQuestion()}>
             ${C("chore_editor.add_a_question")}
           </button>
         </details>
@@ -13703,16 +13714,16 @@ var Ha = 8, Ua = () => [{
     `];
 	}
 };
-customElements.define("boopli-chore-editor", qa);
+customElements.define("boopli-chore-editor", Ya);
 // src/templates.ts
-function Ja(e) {
-	let t = new Set(e), n = Z().map((e) => e.draft.name), r = bt(() => Z().map((e) => e.draft.name));
+function Xa(e) {
+	let t = new Set(e), n = Z().map((e) => e.draft.name), r = xt(() => Z().map((e) => e.draft.name));
 	return (e) => {
 		let i = n.indexOf(e);
 		return t.has(e) || i >= 0 && r.some((e) => t.has(e[i]));
 	};
 }
-var Ya = {
+var Za = {
 	type: "none",
 	time: "09:00",
 	every_n_days: 1,
@@ -13726,7 +13737,7 @@ var Ya = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Ya,
+				...Za,
 				days: {}
 			},
 			steps: [
@@ -13757,7 +13768,7 @@ var Ya = {
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Ya,
+				...Za,
 				days: {}
 			},
 			steps: [
@@ -13826,7 +13837,7 @@ var Ya = {
 		}
 	}
 ];
-function Xa() {
+function Qa() {
 	return {
 		name: "",
 		where: "home",
@@ -13845,7 +13856,7 @@ function Xa() {
 	};
 }
 // src/boopli-chores.ts
-var Za = class extends b {
+var $a = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13913,7 +13924,7 @@ var Za = class extends b {
 			else {
 				this._busy = !0;
 				try {
-					await Zt(this.hass, e.id, t), this._asking = null;
+					await Qt(this.hass, e.id, t), this._asking = null;
 				} catch (e) {
 					this._error = E(e);
 				} finally {
@@ -13960,7 +13971,7 @@ var Za = class extends b {
 		let e = this.snapshot.time_zone, t = new Set(this.snapshot.runs.map((e) => e.chore_id)), n = [...this.snapshot.chores].sort((e, t) => e.name.localeCompare(t.name));
 		return h`
       <div class="toolbar">
-        <button class="primary" @click=${() => this._editing = Xa()}>
+        <button class="primary" @click=${() => this._editing = Qa()}>
           ${A("plus")} ${C("chores.new_chore")}
         </button>
         <button
@@ -13992,11 +14003,11 @@ var Za = class extends b {
                 <div class="chore-main">
                   <div class="name">${n.name}</div>
                   <div class="muted small">
-                    ${Mn(n.repeat)} · ${n.where === "home" ? C("chore_editor.home_only") : C("chores.anywhere")}
+                    ${Nn(n.repeat)} · ${n.where === "home" ? C("chore_editor.home_only") : C("chores.anywhere")}
                     · ${C("common.steps_count", { count: n.steps.length })}
                   </div>
                   <div class=${t.has(n.id) ? "status live" : "muted small status"}>
-                    ${t.has(n.id) ? h`${A("progress-clock")} ${C("chores.in_progress")}` : n.enabled && n.next_due ? C("chores.next", { when: N(n.next_due, this.nowMs, e) }) : n.repeat.type === "none" ? "" : C("chores.not_scheduled")}
+                    ${t.has(n.id) ? h`${A("progress-clock")} ${C("chores.in_progress")}` : n.enabled && n.next_due ? C("chores.next", { when: P(n.next_due, this.nowMs, e) }) : n.repeat.type === "none" ? "" : C("chores.not_scheduled")}
                   </div>
                 </div>
                 <div class="chore-actions">
@@ -14073,20 +14084,20 @@ var Za = class extends b {
     `];
 	}
 };
-customElements.define("boopli-chores", Za);
+customElements.define("boopli-chores", $a);
 // src/boopli-speakers.ts
-var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", to = [
+var eo = "amzn_sfx_scifi_alarm_01", to = "amzn_sfx_doorbell_chime_01", no = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", ro = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], no = () => [{
+], io = () => [{
 	value: "alexa",
 	label: C("common.alexa_sound")
 }, {
 	value: "file",
 	label: C("common.file_in_my_media_folder")
-}], ro = () => [
+}], ao = () => [
 	{
 		value: "alexa_media",
 		label: C("helpers.alexa_media_player")
@@ -14099,7 +14110,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 		value: "tts",
 		label: C("common.a_tts_voice_on_this_speaker")
 	}
-], io = class extends b {
+], oo = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14194,7 +14205,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 			cue: {
 				enabled: !0,
 				kind: n ? "alexa" : "file",
-				sound: n ? $a : "",
+				sound: n ? to : "",
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -14202,7 +14213,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 			alarm: {
 				enabled: !0,
 				kind: n ? "alexa" : "file",
-				sound: n ? Qa : "",
+				sound: n ? eo : "",
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -14253,7 +14264,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 		let n = `speaker:${e.entity_id}:${t}`;
 		this._note(n, C("common.sending"));
 		try {
-			this._note(n, (await Kt(this.hass, e, t)).note);
+			this._note(n, an(await qt(this.hass, e, t)));
 		} catch (e) {
 			this._note(n, E(e));
 		}
@@ -14271,7 +14282,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 		let e = new Set(this._sounds().map((e) => e.name.toLowerCase())), t = this._sounds().length + 1;
 		for (; e.has(C("speakers.sound", { n: t }).toLowerCase());) t++;
 		this._patch({ sounds: [...this._sounds(), {
-			id: ca(),
+			id: ua(),
 			name: C("speakers.sound", { n: t }),
 			kind: "alexa",
 			sound: ""
@@ -14289,7 +14300,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 		else if (this.hass) {
 			this._note(t, C("common.sending"));
 			try {
-				this._note(t, (await Kt(this.hass, r, `sound:${e.id}`, this._sounds())).note);
+				this._note(t, an(await qt(this.hass, r, `sound:${e.id}`, this._sounds())));
 			} catch (e) {
 				this._note(t, E(e));
 			}
@@ -14303,7 +14314,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
       <label class="num wide">
         ${C("common.sound_type")}
         <select .value=${e} @change=${(e) => r(e.target.value)}>
-          ${no().map((t) => h`<option value=${t.value} ?selected=${t.value === e}>${t.label}</option>`)}
+          ${io().map((t) => h`<option value=${t.value} ?selected=${t.value === e}>${t.label}</option>`)}
         </select>
       </label>
       <label class="num wide">
@@ -14316,7 +14327,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
         />
       </label>
       ${e === "alexa" ? h`<div class="muted small libhint">
-            ${w("speakers.sound_library_hint", { library: h`<a href=${eo} target="_blank" rel="noopener noreferrer">${C("speakers.alexa_sound_library")}</a>` })}
+            ${w("speakers.sound_library_hint", { library: h`<a href=${no} target="_blank" rel="noopener noreferrer">${C("speakers.alexa_sound_library")}</a>` })}
           </div>` : v}
     `;
 	}
@@ -14372,7 +14383,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
     </label>`;
 	}
 	_speakerBody(e) {
-		let t = e.speech, n = e.entity_id, r = t.route !== "tts", i = this._targets(t.route, t.target), a = ro().find((e) => e.value === t.route)?.label ?? t.route, o = i.find((e) => e.value === t.target)?.label ?? C("speakers.no_device_chosen_yet"), s = !!this._open["spk:" + n], c = [
+		let t = e.speech, n = e.entity_id, r = t.route !== "tts", i = this._targets(t.route, t.target), a = ao().find((e) => e.value === t.route)?.label ?? t.route, o = i.find((e) => e.value === t.target)?.label ?? C("speakers.no_device_chosen_yet"), s = !!this._open["spk:" + n], c = [
 			...t.route === "alexa_media" ? [{
 				level: "speech_chime",
 				label: C("speakers.test_announcement")
@@ -14408,7 +14419,7 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
                 <label class="num wide">
                   ${C("speakers.what_kind_of_speaker")}
                   <select aria-label=${C("speakers.what_kind_of_speaker")} @change=${(e) => this._setRoute(n, e.target.value)}>
-                    ${ro().map((e) => h`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                    ${ao().map((e) => h`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
@@ -14597,13 +14608,13 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
 		let t = `device:${e.entity_id}`;
 		this._note(t, C("common.sending"));
 		try {
-			this._note(t, (await qt(this.hass, e)).note);
+			this._note(t, an(await Jt(this.hass, e)));
 		} catch (e) {
 			this._note(t, E(e));
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(to, t);
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(ro, t);
 		return h`
       <section class="card">
         <h2>${A("bell-ring-outline")} ${C("speakers.alarm_devices")}</h2>
@@ -14910,9 +14921,9 @@ var Qa = "amzn_sfx_scifi_alarm_01", $a = "amzn_sfx_doorbell_chime_01", eo = "htt
     `];
 	}
 };
-customElements.define("boopli-speakers", io);
+customElements.define("boopli-speakers", oo);
 // src/boopli-rung.ts
-var ao = 1, oo = 720, so = () => [
+var so = 1, co = 720, lo = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -14930,7 +14941,7 @@ var ao = 1, oo = 720, so = () => [
 		label: C("rung.max_volume")
 	}
 ];
-function co(e, t = []) {
+function uo(e, t = []) {
 	let n = [], r = e.speech?.route !== "tts", i = (e) => !!e?.sound && (e.kind !== "alexa" || r);
 	i(e.cue) && n.push({
 		value: "cue",
@@ -14951,7 +14962,7 @@ function co(e, t = []) {
 		label: C("rung.alarm")
 	}), n;
 }
-var lo = class extends b {
+var fo = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15010,10 +15021,10 @@ var lo = class extends b {
 	_setGap(e) {
 		let t = Math.round(Number(e.value));
 		if (e.value.trim() === "" || Number.isNaN(t)) {
-			e.value = String(this.rung?.gap ?? ao);
+			e.value = String(this.rung?.gap ?? so);
 			return;
 		}
-		let n = Math.min(oo, Math.max(ao, t));
+		let n = Math.min(co, Math.max(so, t));
 		e.value = String(n), this._change((e) => e.gap = n);
 	}
 	render() {
@@ -15025,8 +15036,8 @@ var lo = class extends b {
             ${C("rung.wait")}
             <input
               type="number"
-              min=${ao}
-              max=${oo}
+              min=${so}
+              max=${co}
               .value=${String(t.gap)}
               aria-label=${C("ladders.minutes_before_nudge", { n })}
               @change=${(e) => this._setGap(e.target)}
@@ -15047,7 +15058,7 @@ var lo = class extends b {
               @change=${(t) => this._setPhone(e.service, t.target.value)}
             >
               <option value="" ?selected=${!t.phones[e.service]}>${C("rung.off")}</option>
-              ${so().map((n) => h`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
+              ${lo().map((n) => h`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
             </select>
           </label>`)}
         ${e.lights.map((e) => {
@@ -15068,7 +15079,7 @@ var lo = class extends b {
                 <option value="own" ?selected=${r?.mode === ""}>${C("rung.as_set_for_the_light")}</option>
               </select>
             </label>
-            ${r && sa(this.hass, e.entity_id) ? h`<div class="dev colorrow">
+            ${r && la(this.hass, e.entity_id) ? h`<div class="dev colorrow">
                   <span>${C("settings.color")}</span>
                   <input
                     type="color"
@@ -15077,8 +15088,8 @@ var lo = class extends b {
 				name: i,
 				n
 			})}
-                    .value=${ia(r.color ?? e.color)}
-                    @input=${(t) => this._setLightColor(e.entity_id, ra(t.target.value))}
+                    .value=${oa(r.color ?? e.color)}
+                    @input=${(t) => this._setLightColor(e.entity_id, aa(t.target.value))}
                   />
                   <button type="button" class="chip" ?disabled=${!r.color} @click=${() => this._setLightColor(e.entity_id, null)}>
                     ${C("rung.use_the_normal_color")}
@@ -15087,7 +15098,7 @@ var lo = class extends b {
           </div>`;
 		})}
         ${e.speakers.map((r) => {
-			let i = co(r, e.sounds), a = t.speakers[r.entity_id], o = q(this.hass, r.entity_id);
+			let i = uo(r, e.sounds), a = t.speakers[r.entity_id], o = q(this.hass, r.entity_id);
 			return h`<label class="dev">
             <span>${A("volume-high")} ${o}</span>
             <select
@@ -15194,16 +15205,16 @@ var lo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-rung", lo);
+customElements.define("boopli-rung", fo);
 // src/boopli-ladders.ts
-var uo = 30, fo = 12, po = 1, mo = 720, ho = 40, go = () => [{
+var po = 30, mo = 12, ho = 1, go = 720, _o = 40, vo = () => [{
 	value: "quiet",
 	label: C("ladders.quiet_no_nudges")
 }];
-function _o(e) {
+function yo(e) {
 	return structuredClone(e);
 }
-var vo = class extends b {
+var bo = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15248,7 +15259,7 @@ var vo = class extends b {
 	}
 	_add() {
 		let e = this.settings;
-		if (!e || this._ladders.length >= uo) return;
+		if (!e || this._ladders.length >= po) return;
 		let t = {
 			gap: 5,
 			phones: Object.fromEntries(e.phones.map((e) => [e.service, e.level])),
@@ -15256,7 +15267,7 @@ var vo = class extends b {
 			speakers: {},
 			alarms: []
 		}, n = {
-			id: ca(),
+			id: ua(),
 			name: this._uniqueName(C("ladders.my_ladder")),
 			rungs: [t],
 			repeat_last: !1
@@ -15272,9 +15283,9 @@ var vo = class extends b {
 	}
 	_addRung(e) {
 		this._edit(e, (e) => {
-			if (e.rungs.length >= fo) return;
+			if (e.rungs.length >= mo) return;
 			let t = e.rungs[e.rungs.length - 1];
-			e.rungs.push(t ? _o(t) : {
+			e.rungs.push(t ? yo(t) : {
 				gap: 5,
 				phones: {},
 				lights: {},
@@ -15285,7 +15296,7 @@ var vo = class extends b {
 	}
 	_duplicateRung(e, t) {
 		this._edit(e, (e) => {
-			e.rungs.length >= fo || e.rungs.splice(t + 1, 0, _o(e.rungs[t]));
+			e.rungs.length >= mo || e.rungs.splice(t + 1, 0, yo(e.rungs[t]));
 		});
 	}
 	_removeRung(e, t) {
@@ -15306,12 +15317,12 @@ var vo = class extends b {
 			r && (n.value = String(r.gap));
 			return;
 		}
-		let i = Math.min(mo, Math.max(po, r));
+		let i = Math.min(go, Math.max(ho, r));
 		n.value = String(i), this._editRung(e, t, (e) => e.gap = i);
 	}
 	_who(e) {
 		let t = [];
-		for (let [n, r] of Object.entries(e.phones)) t.push(`${Y(n)} (${aa()[r] ?? r})`);
+		for (let [n, r] of Object.entries(e.phones)) t.push(`${Y(n)} (${sa()[r] ?? r})`);
 		for (let [n, r] of Object.entries(e.lights)) {
 			let e = r.mode === "indicator" ? C("ladders.how_status_light") : r.mode === "blink" ? C("ladders.how_blink") : "";
 			t.push(`${q(this.hass, n)}${e ? ` (${e}${r.color ? C("ladders.how_own_color") : ""})` : ""}`);
@@ -15322,7 +15333,7 @@ var vo = class extends b {
 				t.push(C("ladders.not_set_up_any_more", { device: q(this.hass, n) }));
 				continue;
 			}
-			let i = co(e, this.settings?.sounds).find((e) => e.value === r)?.label ?? r;
+			let i = uo(e, this.settings?.sounds).find((e) => e.value === r)?.label ?? r;
 			t.push(`${q(this.hass, n)} (${i.toLowerCase()})`);
 		}
 		for (let n of e.alarms) t.push(C("ladders.alarm", { device: q(this.hass, n) }));
@@ -15345,8 +15356,8 @@ var vo = class extends b {
               ${C(n === 0 ? "ladders.right_away_then_repeats_every" : "rung.wait")}
               <input
                 type="number"
-                min=${po}
-                max=${mo}
+                min=${ho}
+                max=${go}
                 .value=${String(t.gap)}
                 aria-label=${C("ladders.minutes_before_nudge", { n: n + 1 })}
                 @change=${(t) => this._setGap(e.id, n, t.target)}
@@ -15358,7 +15369,7 @@ var vo = class extends b {
           @click=${() => this._moveRung(e.id, n, -1)}>↑</button>
         <button class="chip" title=${C("ladders.move_down")} aria-label=${C("ladders.move_nudge_down", { n: n + 1 })} ?disabled=${n === e.rungs.length - 1}
           @click=${() => this._moveRung(e.id, n, 1)}>↓</button>
-        <button class="chip" title=${C("ladders.copy_this_nudge")} aria-label=${C("ladders.copy_nudge", { n: n + 1 })} ?disabled=${e.rungs.length >= fo}
+        <button class="chip" title=${C("ladders.copy_this_nudge")} aria-label=${C("ladders.copy_nudge", { n: n + 1 })} ?disabled=${e.rungs.length >= mo}
           @click=${() => this._duplicateRung(e.id, n)}>⧉</button>
         <button class="chip" title=${C("ladders.remove_this_nudge")} aria-label=${C("ladders.remove_nudge", { n: n + 1 })} ?disabled=${!r}
           @click=${() => this._removeRung(e.id, n)}>✕</button>
@@ -15378,17 +15389,17 @@ var vo = class extends b {
         <label for="name-${e.id}">${C("common.name")}</label>
         <input
           id="name-${e.id}"
-          maxlength=${ho}
+          maxlength=${_o}
           .value=${X(e)}
           @input=${(t) => this._edit(e.id, (e) => e.name = t.target.value)}
         />
       </div>
       ${e.rungs.map((t, n) => this._renderRung(e, t, n))}
       <div class="row">
-        <button ?disabled=${e.rungs.length >= fo} @click=${() => this._addRung(e.id)}>${C("ladders.add_a_nudge")}</button>
+        <button ?disabled=${e.rungs.length >= mo} @click=${() => this._addRung(e.id)}>${C("ladders.add_a_nudge")}</button>
         <span class="muted small">${C("ladders.of", {
 			count: e.rungs.length,
-			max_nudges: fo
+			max_nudges: mo
 		})}</span>
       </div>
       <div class="field">
@@ -15422,12 +15433,12 @@ var vo = class extends b {
           id="default-style"
           @change=${(e) => this._patch(t, { default_style: e.target.value })}
         >
-          ${go().map((t) => h`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+          ${vo().map((t) => h`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           ${t.map((t) => h`<option value=${`ladder:${t.id}`} ?selected=${`ladder:${t.id}` === e.default_style}>
               ${X(t) || C("ladders.no_name")}
 
             </option>`)}
-          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? h`<option value=${e.default_style} selected>${ua(e.default_style, t)}</option>` : v}
+          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? h`<option value=${e.default_style} selected>${fa(e.default_style, t)}</option>` : v}
         </select>
       </div>
       ${t.length === 0 ? h`<p class="muted">${C("ladders.no_ladders_yet_the_built_in")}</p>` : t.map((e) => {
@@ -15447,7 +15458,7 @@ var vo = class extends b {
 		})}
       ${this._note ? h`<div class="error" role="alert">${this._note}</div>` : v}
       <div class="row">
-        <button class="primary" ?disabled=${t.length >= uo} @click=${() => this._add()}>${C("ladders.new_ladder")}</button>
+        <button class="primary" ?disabled=${t.length >= po} @click=${() => this._add()}>${C("ladders.new_ladder")}</button>
       </div>
     </section>`;
 	}
@@ -15544,9 +15555,9 @@ var vo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-ladders", vo);
+customElements.define("boopli-ladders", bo);
 // src/boopli-pet-picker.ts
-var yo = class extends b {
+var xo = class extends b {
 	static {
 		this.properties = {
 			value: { type: String },
@@ -15564,19 +15575,19 @@ var yo = class extends b {
 		}));
 	}
 	_key(e, t) {
-		let n = Si().length - 1, r = t;
+		let n = wi().length - 1, r = t;
 		if (e.key === "ArrowRight" || e.key === "ArrowDown") r = t === n ? 0 : t + 1;
 		else if (e.key === "ArrowLeft" || e.key === "ArrowUp") r = t === 0 ? n : t - 1;
 		else if (e.key === "Home") r = 0;
 		else if (e.key === "End") r = n;
 		else return;
-		e.preventDefault(), this._pick(Si()[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
+		e.preventDefault(), this._pick(wi()[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
 	}
 	render() {
-		let e = wi(this.value);
+		let e = Ei(this.value);
 		return h`
       <div class="grid" role="radiogroup" aria-label=${C("common.your_pet")}>
-        ${Si().map((t, n) => h`<button
+        ${wi().map((t, n) => h`<button
             type="button"
             role="radio"
             class="choice ${t.kind === e.kind ? "on" : ""}"
@@ -15591,7 +15602,7 @@ var yo = class extends b {
           </button>`)}
       </div>
       ${this.moods ? h`<div class="moods" aria-label=${C("pet_picker.in_every_mood", { label: e.label })}>
-            ${Ci.map((t) => h`<div class="mood">
+            ${Ti.map((t) => h`<div class="mood">
                 <span class="pic"><boopli-pet .kind=${e.kind} .mood=${t} still></boopli-pet></span>
                 <span class="small muted">${t}</span>
               </div>`)}
@@ -15659,9 +15670,9 @@ var yo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-pet-picker", yo);
+customElements.define("boopli-pet-picker", xo);
 // src/boopli-pet-preview.ts
-var bo = () => [
+var So = () => [
 	{
 		value: "levelup",
 		label: C("pet_preview.level_up")
@@ -15678,7 +15689,7 @@ var bo = () => [
 		value: "done",
 		label: C("pet_preview.step_done")
 	}
-], xo = () => [
+], Co = () => [
 	{
 		value: "",
 		label: C("pet_preview.nothing")
@@ -15691,7 +15702,7 @@ var bo = () => [
 		value: "typing",
 		label: C("pet_preview.typing")
 	}
-], So = class extends b {
+], wo = class extends b {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -15723,7 +15734,7 @@ var bo = () => [
 		return h`<button type="button" class="chip ${t ? "on" : ""}" aria-pressed=${t} @click=${n}>${e}</button>`;
 	}
 	render() {
-		let e = wi(this.kind);
+		let e = Ei(this.kind);
 		return h`
       <button type="button" class="open" @click=${() => this._open()}>${C("pet_preview.preview_your_pet")}</button>
       <dialog
@@ -15751,18 +15762,18 @@ var bo = () => [
 
           <div class="group">
             <div class="label">${C("pet_preview.mood")}</div>
-            <div class="chips">${Ci.map((e) => this._chip(C(`pet.mood_${e}`), this._mood === e, () => this._mood = e))}</div>
+            <div class="chips">${Ti.map((e) => this._chip(C(`pet.mood_${e}`), this._mood === e, () => this._mood = e))}</div>
           </div>
           <div class="group">
             <div class="label">${C("pet_preview.busy_with")}</div>
             <div class="chips">
-              ${xo().map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
+              ${Co().map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
             </div>
           </div>
           <div class="group">
             <div class="label">${C("pet_preview.moments_they_play_once")}</div>
             <div class="chips">
-              ${bo().map((e) => h`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
+              ${So().map((e) => h`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
             </div>
           </div>
           <div class="group row">
@@ -15885,9 +15896,9 @@ var bo = () => [
     `];
 	}
 };
-customElements.define("boopli-pet-preview", So);
+customElements.define("boopli-pet-preview", wo);
 // src/diff.ts
-function Co(e, t, n) {
+function To(e, t, n) {
 	let r = new Map(e.map((e) => [n(e), e])), i = new Map(t.map((e) => [n(e), e]));
 	return {
 		added: [...i].filter(([e]) => !r.has(e)).map(([, e]) => e),
@@ -15898,7 +15909,7 @@ function Co(e, t, n) {
 		}))
 	};
 }
-function wo(e, t, n, r) {
+function Eo(e, t, n, r) {
 	let i = [];
 	return t.enabled !== n.enabled && i.push(C("diff.sound_state", {
 		name: e,
@@ -15921,14 +15932,14 @@ function wo(e, t, n, r) {
 		after: n.repeat_s
 	}))), i;
 }
-function To(e, t) {
-	let n = [...wo(C("diff.sound_ding"), e.cue, t.cue, !1), ...wo(C("diff.sound_alarm"), e.alarm, t.alarm, !0)];
+function Do(e, t) {
+	let n = [...Eo(C("diff.sound_ding"), e.cue, t.cue, !1), ...Eo(C("diff.sound_alarm"), e.alarm, t.alarm, !0)];
 	return e.speech.enabled !== t.speech.enabled && n.push(C("diff.speech_state", { state: t.speech.enabled ? C("common.state_on") : C("common.state_off") })), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(C("diff.speech_goes_to", { target: t.speech.target || C("diff.nothing") })), e.speech.start_at !== t.speech.start_at && n.push(C("diff.speech_starts_at_nudge", {
 		before: e.speech.start_at,
 		after: t.speech.start_at
 	}))), n;
 }
-function Eo(e, t, n) {
+function Oo(e, t, n) {
 	let r = (e) => q(n, e), i = [];
 	e.pet_name !== t.pet_name && i.push(C("diff.pet_name", {
 		before: e.pet_name,
@@ -15940,15 +15951,15 @@ function Eo(e, t, n) {
 		before: e.accent || C("diff.the_pets_own"),
 		after: t.accent || C("diff.the_pets_own")
 	}));
-	let a = Co(e.phones, t.phones, (e) => e.service);
+	let a = To(e.phones, t.phones, (e) => e.service);
 	a.added.forEach((e) => i.push(C("diff.phone_added", {
 		phone: Y(e.service),
-		level: aa()[e.level] ?? e.level
+		level: sa()[e.level] ?? e.level
 	}))), a.removed.forEach((e) => i.push(C("diff.phone_removed", { phone: Y(e.service) }))), a.kept.forEach(({ before: e, after: t }) => {
 		e.level !== t.level && i.push(C("diff.level", {
 			phone: Y(t.service),
-			before: aa()[e.level],
-			after: aa()[t.level]
+			before: sa()[e.level],
+			after: sa()[t.level]
 		})), e.start_at !== t.start_at && i.push(C("diff.starts_at_nudge_2", {
 			phone: Y(t.service),
 			before: e.start_at,
@@ -15982,8 +15993,8 @@ function Eo(e, t, n) {
 		before: e.check_in_minutes ?? 30,
 		after: t.check_in_minutes ?? 30
 	})), e.default_style !== t.default_style && i.push(C("diff.default_style", {
-		before: ua(e.default_style, e.ladders),
-		after: ua(t.default_style, t.ladders)
+		before: fa(e.default_style, e.ladders),
+		after: fa(t.default_style, t.ladders)
 	}));
 	let c = new Map((e.sounds ?? []).map((e) => [e.id, e.name])), l = new Map((t.sounds ?? []).map((e) => [e.id, e.name]));
 	for (let [e, t] of l) c.has(e) || i.push(C("diff.sound_added", { label: t }));
@@ -15992,7 +16003,7 @@ function Eo(e, t, n) {
 		let t = (e.sounds ?? []).find((e) => e.id === n.id);
 		t && (t.name !== n.name || t.kind !== n.kind || t.sound !== n.sound) && i.push(C("diff.sound_changed", { name: n.name }));
 	}
-	let u = Co(e.boards ?? [], t.boards ?? [], (e) => e.id);
+	let u = To(e.boards ?? [], t.boards ?? [], (e) => e.id);
 	u.added.forEach((e) => i.push(C("diff.wall_board_added_tiles", {
 		name: e.name,
 		count: e.tiles.length
@@ -16012,7 +16023,7 @@ function Eo(e, t, n) {
 			t: t.tiles
 		}) && i.push(C("diff.wall_board_changed", { name: t.name }));
 	});
-	let d = Co(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
+	let d = To(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
 	d.added.forEach((e) => i.push(C("diff.nudge_ladder_added_nudges", {
 		name: X(e),
 		count: e.rungs.length
@@ -16028,13 +16039,13 @@ function Eo(e, t, n) {
 			x: t.repeat_last
 		}) && i.push(C("diff.nudge_ladder_changed", { name: t.name }));
 	});
-	let ee = Co(e.lights, t.lights, (e) => e.entity_id);
+	let ee = To(e.lights, t.lights, (e) => e.entity_id);
 	ee.added.forEach((e) => i.push(C("diff.reminder_light_added", {
 		name: r(e.entity_id),
-		light: pa(e)
+		light: ha(e)
 	}))), ee.removed.forEach((e) => i.push(C("diff.reminder_light_removed", { name: r(e.entity_id) }))), ee.kept.forEach(({ before: e, after: t }) => {
 		let n = r(t.entity_id);
-		e.mode !== t.mode && i.push(`${n}: ${pa(e)} → ${pa(t)}`), e.color.join() !== t.color.join() && i.push(C("diff.color_changed", { n })), e.blink_ms !== t.blink_ms && i.push(C("diff.blink_length_ms", {
+		e.mode !== t.mode && i.push(`${n}: ${ha(e)} → ${ha(t)}`), e.color.join() !== t.color.join() && i.push(C("diff.color_changed", { n })), e.blink_ms !== t.blink_ms && i.push(C("diff.blink_length_ms", {
 			n,
 			before: e.blink_ms,
 			after: t.blink_ms
@@ -16052,12 +16063,12 @@ function Eo(e, t, n) {
 			after: t.start_at
 		}));
 	});
-	let te = Co(e.speakers, t.speakers, (e) => e.entity_id);
-	te.added.forEach((e) => i.push(C("diff.speaker_added", { name: r(e.entity_id) }))), te.removed.forEach((e) => i.push(C("diff.speaker_removed", { name: r(e.entity_id) }))), te.kept.forEach(({ before: e, after: t }) => To(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(C("diff.spoken_sentence", {
+	let te = To(e.speakers, t.speakers, (e) => e.entity_id);
+	te.added.forEach((e) => i.push(C("diff.speaker_added", { name: r(e.entity_id) }))), te.removed.forEach((e) => i.push(C("diff.speaker_removed", { name: r(e.entity_id) }))), te.kept.forEach(({ before: e, after: t }) => Do(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(C("diff.spoken_sentence", {
 		before: e.speech_template,
 		after: t.speech_template
 	}));
-	let ne = Co(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
+	let ne = To(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
 	if (ne.added.forEach((e) => i.push(C("diff.alarm_device_added", { name: r(e.entity_id) }))), ne.removed.forEach((e) => i.push(C("diff.alarm_device_removed", { name: r(e.entity_id) }))), ne.kept.forEach(({ before: e, after: t }) => {
 		e.seconds !== t.seconds && i.push(C("diff.on_for_s", {
 			name: r(t.entity_id),
@@ -16098,7 +16109,7 @@ function Eo(e, t, n) {
 	return i;
 }
 // src/boopli-backup.ts
-var Do = 8388608, Oo = ".adhd", ko = () => ({
+var ko = 8388608, Ao = ".adhd", jo = () => ({
 	settings: {
 		title: C("common.settings"),
 		text: C("backup.devices_timing_nudge_ladders_wall_boards")
@@ -16116,11 +16127,11 @@ var Do = 8388608, Oo = ".adhd", ko = () => ({
 		text: C("backup.your_pets_level_and_xp_and")
 	}
 });
-function Ao() {
+function Mo() {
 	let e = /* @__PURE__ */ new Date(), t = (e) => String(e).padStart(2, "0");
 	return `${e.getFullYear()}-${t(e.getMonth() + 1)}-${t(e.getDate())}`;
 }
-var jo = class extends b {
+var No = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -16142,17 +16153,17 @@ var jo = class extends b {
 				bubbles: !0,
 				composed: !0
 			}));
-		}, this._copyName = "", this.mode = "export", this._parts = [...Tt], this._file = null, this._preview = null, this._busy = !1, this._error = "", this._done = [];
+		}, this._copyName = "", this.mode = "export", this._parts = [...Et], this._file = null, this._preview = null, this._busy = !1, this._error = "", this._done = [];
 	}
 	firstUpdated() {
 		this.renderRoot.querySelector("dialog")?.showModal();
 	}
 	_toggle(e, t) {
-		this._parts = Tt.filter((n) => n === e ? t : this._parts.includes(n)), this._error = "", this.mode === "import" && this._file && this._look();
+		this._parts = Et.filter((n) => n === e ? t : this._parts.includes(n)), this._error = "", this.mode === "import" && this._file && this._look();
 	}
 	async _download(e) {
 		if (!this.hass) return null;
-		let t = await Et(this.hass, e), n = `boopli-backup-${Ao()}${Oo}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
+		let t = await Dt(this.hass, e), n = `boopli-backup-${Mo()}${Ao}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
 		return i.href = r, i.download = n, document.body.appendChild(i), i.click(), i.remove(), window.setTimeout(() => URL.revokeObjectURL(r), 1e4), n;
 	}
 	async _export() {
@@ -16172,7 +16183,7 @@ var jo = class extends b {
 		if (!this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				let e = await this._download([...Tt]);
+				let e = await this._download([...Et]);
 				this._error = "", this._copyName = e ?? "";
 			} catch (e) {
 				this._error = E(e);
@@ -16184,7 +16195,7 @@ var jo = class extends b {
 	async _choose(e) {
 		let t = e.target.files?.[0];
 		if (!t || !this.hass) return;
-		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > Do) {
+		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > ko) {
 			this._error = C("backup.this_file_is_too_big_to");
 			return;
 		}
@@ -16198,13 +16209,13 @@ var jo = class extends b {
 		typeof n != "object" || !n || Array.isArray(n) ? this._error = C("backup.this_is_not_a_boopli_backup") : (this._file = {
 			name: t.name,
 			data: n
-		}, this._parts = [...Tt], await this._look(!0));
+		}, this._parts = [...Et], await this._look(!0));
 	}
 	async _look(e = !1) {
 		if (this.hass && this._file) {
 			this._busy = !0;
 			try {
-				let t = e ? [] : this._parts, n = await Dt(this.hass, this._file.data, t);
+				let t = e ? [] : this._parts, n = await Ot(this.hass, this._file.data, t);
 				this._preview = n, e && (this._parts = [...n.parts]), this._error = n.selection_error;
 			} catch (t) {
 				this._error = E(t), e && (this._preview = null, this._file = null);
@@ -16217,9 +16228,9 @@ var jo = class extends b {
 		if (!this._busy && this.hass && this._file && this._parts.length) {
 			this._busy = !0, this._error = "";
 			try {
-				let e = await Ot(this.hass, this._file.data, this._parts);
+				let e = await kt(this.hass, this._file.data, this._parts);
 				this._done = [
-					C("backup.imported_list", { list: e.imported.map((e) => ko()[e].title.toLowerCase()).join(", ") }),
+					C("backup.imported_list", { list: e.imported.map((e) => jo()[e].title.toLowerCase()).join(", ") }),
 					...e.imported.includes("chores") ? [C("backup.chores_set_up_now", { count: e.chores })] : [],
 					...e.runs_ended ? [C("backup.runs_ended_with_replaced", { count: e.runs_ended })] : []
 				];
@@ -16233,15 +16244,15 @@ var jo = class extends b {
 	_renderParts(e, t) {
 		let n = (e) => t ? e === "settings" ? C("backup.wall_boards_and_text", {
 			count: t.boards,
-			text: ko()[e].text
+			text: jo()[e].text
 		}) : e === "chores" ? C("backup.count_chores", { count: t.chores }) : e === "home" ? C("backup.count_rooms", { count: t.rooms }) : C("backup.level_things_done_on_record", {
 			level: t.level,
 			history: t.history
-		}) : ko()[e].text;
+		}) : jo()[e].text;
 		return h`<div class="parts" role="group" aria-label=${C("backup.what_to_include")}>
-      ${Tt.filter((t) => e.includes(t)).map((e) => h`<label class="part">
+      ${Et.filter((t) => e.includes(t)).map((e) => h`<label class="part">
           <input type="checkbox" .checked=${this._parts.includes(e)} ?disabled=${this._busy} @change=${(t) => this._toggle(e, t.target.checked)} />
-          <span><b>${ko()[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
+          <span><b>${jo()[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
         </label>`)}
     </div>`;
 	}
@@ -16249,7 +16260,7 @@ var jo = class extends b {
 		let e = this.snapshot?.settings, t = this._preview?.settings;
 		if (!e || !t || !this._parts.includes("settings")) return [];
 		try {
-			return Eo(e, t, this.hass);
+			return Oo(e, t, this.hass);
 		} catch {
 			return null;
 		}
@@ -16258,9 +16269,9 @@ var jo = class extends b {
 		return h`
       <h2>${A("content-save-outline")} ${C("common.export_a_backup")}</h2>
       <p>${C("backup.save_your_setup_to_one_file")}</p>
-      ${this._renderParts([...Tt])}
+      ${this._renderParts([...Et])}
       <p class="muted small">
-        ${w("backup.the_file_ends_in_and_is", { extension: Oo })}
+        ${w("backup.the_file_ends_in_and_is", { extension: Ao })}
       </p>
       <div class="foot">
         <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? C("common.saving") : C("backup.download_backup")}</button>
@@ -16273,8 +16284,8 @@ var jo = class extends b {
 		return h`
       <h2>${A("content-save-outline")} ${C("common.import_a_backup")}</h2>
       <div class="field">
-        <label for="file">${C("backup.choose_a_backup_file", { extension: Oo })}</label>
-        <input id="file" type="file" accept="${Oo},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
+        <label for="file">${C("backup.choose_a_backup_file", { extension: Ao })}</label>
+        <input id="file" type="file" accept="${Ao},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
       </div>
       ${e && this._file ? h`
             <p class="muted small">
@@ -16430,9 +16441,9 @@ var jo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-backup", jo);
+customElements.define("boopli-backup", No);
 // src/boopli-claude.ts
-var Mo = class extends b {
+var Po = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -16462,7 +16473,7 @@ var Mo = class extends b {
 		if (!this.hass) return !1;
 		this._busy = !0, this._bad = !1;
 		try {
-			return await fn(this.hass, this._token), this._token = "", this._changing = !1, this._note = C("claude.token_saved_boopli_keeps_it_out"), !0;
+			return await mn(this.hass, this._token), this._token = "", this._changing = !1, this._note = C("claude.token_saved_boopli_keeps_it_out"), !0;
 		} catch (e) {
 			return this._bad = !0, this._note = E(e), !1;
 		} finally {
@@ -16477,7 +16488,7 @@ var Mo = class extends b {
 			this._busy = !0, this._bad = !1, this._note = C("claude.asking_claude_this_can_take_up");
 			try {
 				this.beforeTest && await this.beforeTest();
-				let e = await pn(this.hass);
+				let e = await hn(this.hass);
 				this._note = C("claude.it_works_claude_answered_in_seconds", { seconds: e.seconds });
 			} catch (e) {
 				this._bad = !0, this._note = E(e);
@@ -16604,15 +16615,15 @@ var Mo = class extends b {
     `];
 	}
 };
-customElements.define("boopli-claude", Mo);
+customElements.define("boopli-claude", Po);
 // src/accent.ts
-var No = {
+var Fo = {
 	slime: "#5ee05a",
 	bear: "#d79563",
 	dog: "#f5b544",
 	fox: "#f28a30",
 	cat: "#a894e8"
-}, Po = () => [
+}, Io = () => [
 	{
 		name: C("accent.green"),
 		hex: "#5ee05a"
@@ -16645,45 +16656,45 @@ var No = {
 		name: C("accent.gold"),
 		hex: "#f5b544"
 	}
-], Fo = /^#[0-9a-f]{6}$/i;
-function Io(e) {
-	return typeof e == "string" && Fo.test(e);
-}
-function Lo(e, t) {
-	return Io(t) ? t.toLowerCase() : No[e ?? "slime"] ?? No.slime;
-}
+], Lo = /^#[0-9a-f]{6}$/i;
 function Ro(e) {
+	return typeof e == "string" && Lo.test(e);
+}
+function zo(e, t) {
+	return Ro(t) ? t.toLowerCase() : Fo[e ?? "slime"] ?? Fo.slime;
+}
+function Bo(e) {
 	return [
 		1,
 		3,
 		5
 	].map((t) => parseInt(e.slice(t, t + 2), 16));
 }
-function zo(e) {
-	let [t, n, r] = Ro(e).map((e) => {
+function Vo(e) {
+	let [t, n, r] = Bo(e).map((e) => {
 		let t = e / 255;
 		return t <= .03928 ? t / 12.92 : ((t + .055) / 1.055) ** 2.4;
 	});
 	return .2126 * t + .7152 * n + .0722 * r;
 }
-function Bo(e) {
-	let t = zo(e), n = (t + .05) / (zo("#14210f") + .05), r = 1.05 / (t + .05);
+function Ho(e) {
+	let t = Vo(e), n = (t + .05) / (Vo("#14210f") + .05), r = 1.05 / (t + .05);
 	return Math.max(n, r) < 4.5 ? "#000000" : n >= r ? "#14210f" : "#ffffff";
 }
-function Vo(e) {
-	let [t, n, r] = Ro(e).map((e) => Math.round(e * .62));
+function Uo(e) {
+	let [t, n, r] = Bo(e).map((e) => Math.round(e * .62));
 	return `#${[
 		t,
 		n,
 		r
 	].map((e) => e.toString(16).padStart(2, "0")).join("")}`;
 }
-function Ho(e, t, n) {
-	let r = Lo(t, n);
-	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", Bo(r)), e.style.setProperty("--boopli-accent-deep", Vo(r));
+function Wo(e, t, n) {
+	let r = zo(t, n);
+	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", Ho(r)), e.style.setProperty("--boopli-accent-deep", Uo(r));
 }
 // src/boopli-settings.ts
-var Uo = "@address", Wo = () => ({
+var Go = "@address", Ko = () => ({
 	phone: {
 		icon: "cellphone",
 		title: C("settings.phone"),
@@ -16772,7 +16783,7 @@ var Uo = "@address", Wo = () => ({
 		title: C("settings.language"),
 		keys: []
 	}
-}), Go = () => [
+}), qo = () => [
 	{
 		title: C("settings.devices"),
 		areas: [
@@ -16801,7 +16812,7 @@ var Uo = "@address", Wo = () => ({
 			"language"
 		]
 	}
-], Ko = Go().flatMap((e) => e.areas), qo = () => [
+], Jo = qo().flatMap((e) => e.areas), Yo = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -16818,16 +16829,16 @@ var Uo = "@address", Wo = () => ({
 		value: "alarm_max",
 		label: C("common.max_volume_not_on_every_phone")
 	}
-], Jo = () => [{
+], Xo = () => [{
 	value: "blink",
 	label: C("rung.blink")
 }, {
 	value: "indicator",
 	label: C("settings.indicator_lamp_on_until_done")
-}], Yo = {
+}], Zo = {
 	start: "07:00",
 	stop: "22:00"
-}, Xo = class extends b {
+}, Qo = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -16851,7 +16862,7 @@ var Uo = "@address", Wo = () => ({
 		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._languageNote = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._backup = "";
 	}
 	willUpdate() {
-		this._draft && Ho(this, this._draft.pet_kind, this._draft.accent);
+		this._draft && Wo(this, this._draft.pet_kind, this._draft.accent);
 		let e = this.snapshot?.settings;
 		if (e) {
 			if (!this._draft || !this._base) this._base = structuredClone(e), this._draft = structuredClone(e);
@@ -16961,12 +16972,12 @@ var Uo = "@address", Wo = () => ({
 		let t = this._draft.phones.find((t) => t.service === e)?.level ?? "normal";
 		this._note(`phone:${e}`, C("common.sending"));
 		try {
-			let n = await Gt(this.hass, {
+			let n = await Kt(this.hass, {
 				service: e,
 				level: t,
 				start_at: 1
 			});
-			this._note(`phone:${e}`, n.note);
+			this._note(`phone:${e}`, an(n));
 		} catch (t) {
 			this._note(`phone:${e}`, E(t));
 		}
@@ -17019,8 +17030,8 @@ var Uo = "@address", Wo = () => ({
 		if (this.hass) {
 			this._note(`light:${e.entity_id}`, C("common.testing"));
 			try {
-				let t = await Wt(this.hass, e);
-				this._note(`light:${e.entity_id}`, t.note);
+				let t = await Gt(this.hass, e);
+				this._note(`light:${e.entity_id}`, an(t));
 			} catch (t) {
 				this._note(`light:${e.entity_id}`, E(t));
 			}
@@ -17029,7 +17040,7 @@ var Uo = "@address", Wo = () => ({
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(j().map((e, t) => [String(t), { ...Yo }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(j().map((e, t) => [String(t), { ...Zo }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -17082,7 +17093,7 @@ var Uo = "@address", Wo = () => ({
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${qo().map((e) => h`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${Yo().map((e) => h`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
                   <button @click=${() => this._testPhone(t)}>${C("common.test")}</button>
                 </div>
@@ -17113,9 +17124,9 @@ var Uo = "@address", Wo = () => ({
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${Jo().map((t) => h`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${Xo().map((t) => h`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
-              ${sa(this.hass, n) ? h`<input
+              ${la(this.hass, n) ? h`<input
                     type="color"
                     class="swatch"
                     aria-label=${C("settings.color")}
@@ -17207,7 +17218,7 @@ var Uo = "@address", Wo = () => ({
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Yo })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Zo })}
                       />
                       ${C("common.no_limit")}
                     </label>
@@ -17288,7 +17299,7 @@ var Uo = "@address", Wo = () => ({
     `;
 	}
 	_renderAccent(e) {
-		let t = Lo(e.pet_kind, ""), n = Io(e.accent) ? e.accent.toLowerCase() : "", r = (e) => this._set({ accent: e });
+		let t = zo(e.pet_kind, ""), n = Ro(e.accent) ? e.accent.toLowerCase() : "", r = (e) => this._set({ accent: e });
 		return h`<div class="field">
       <label id="accent-label">${C("settings.accent_colour")}</label>
       <div class="swatches" role="group" aria-labelledby="accent-label">
@@ -17302,7 +17313,7 @@ var Uo = "@address", Wo = () => ({
         >
           ${C("settings.pets_colour")}
         </button>
-        ${Po().map((e) => h`<button
+        ${Io().map((e) => h`<button
             type="button"
             class="acc dot ${n === e.hex ? "on" : ""}"
             style="--sw:${e.hex}"
@@ -17376,7 +17387,7 @@ var Uo = "@address", Wo = () => ({
 	}
 	async _loadDefaults() {
 		if (!this._defaults && this.hass) try {
-			this._defaults = await Lt(this.hass);
+			this._defaults = await Rt(this.hass);
 		} catch {
 			this._defaults = {
 				questions_prompt: "",
@@ -17390,7 +17401,7 @@ var Uo = "@address", Wo = () => ({
 		if (this.hass) {
 			this._aiNote = C("settings.asking_the_agent");
 			try {
-				let e = await At(this.hass, C("common.make_a_cup_of_tea"), "now", []);
+				let e = await jt(this.hass, C("common.make_a_cup_of_tea"), "now", []);
 				this._aiNote = C("common.agent_test_works", {
 					count: e.steps.length,
 					first: e.steps[0]?.title ?? C("common.none")
@@ -17516,14 +17527,14 @@ var Uo = "@address", Wo = () => ({
 	_summary(e, t) {
 		let n = (e) => q(this.hass, e);
 		switch (e) {
-			case "phone": return t.phones.length ? t.phones.map((e) => `${Y(e.service)}: ${aa()[e.level] ?? e.level}`) : [C("settings.no_phone_set_up_yet")];
-			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${pa(e)}`) : [C("settings.no_reminder_lights_yet")];
-			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${fa(e)}`) : [C("settings.no_speakers_yet")];
+			case "phone": return t.phones.length ? t.phones.map((e) => `${Y(e.service)}: ${sa()[e.level] ?? e.level}`) : [C("settings.no_phone_set_up_yet")];
+			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${ha(e)}`) : [C("settings.no_reminder_lights_yet")];
+			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${ma(e)}`) : [C("settings.no_speakers_yet")];
 			case "alarms": return t.alarm_devices.length ? t.alarm_devices.map((e) => C("settings.on_for_s", {
 				name: n(e.entity_id),
 				seconds: e.seconds
 			})) : [C("settings.no_alarm_devices_yet")];
-			case "quiet": return [da(t.quiet_hours)];
+			case "quiet": return [pa(t.quiet_hours)];
 			case "timing": return [
 				C("settings.snooze_minutes", { snooze_minutes: t.snooze_minutes }),
 				C("settings.still_on_it_after_minutes", { value: t.check_in_minutes ?? 30 }),
@@ -17532,7 +17543,7 @@ var Uo = "@address", Wo = () => ({
 			case "ladders": {
 				let e = t.ladders ?? [];
 				return [
-					C("settings.new_chores", { style: ua(t.default_style, e) }),
+					C("settings.new_chores", { style: fa(t.default_style, e) }),
 					...e.map((e) => C("settings.ladder_nudges", {
 						name: X(e),
 						count: e.rungs.length
@@ -17555,15 +17566,15 @@ var Uo = "@address", Wo = () => ({
 			case "presence": return [t.presence_entity ? n(t.presence_entity) : C("settings.not_set_boopli_assumes_you_are")];
 			case "pet": return [C("settings.the", {
 				pet_name: t.pet_name,
-				value: wi(t.pet_kind).label
-			}), Io(t.accent) ? C("settings.accent_colour_2", { value: t.accent.toLowerCase() }) : C("settings.accent_colour_your_pets_own")];
+				value: Ei(t.pet_kind).label
+			}), Ro(t.accent) ? C("settings.accent_colour_2", { value: t.accent.toLowerCase() }) : C("settings.accent_colour_your_pets_own")];
 			case "backup": return [C("settings.save_your_whole_setup_to_one")];
 			case "language": return [];
 			case "ai": return [t.ai?.enabled ? C("settings.on_using", { agent: t.ai.entity_id ? n(t.ai.entity_id) : C("settings.the_home_assistant_default_agent") }) : C("settings.off_splits_big_tasks_into_tiny"), ...t.ai?.claude_enabled ? [C("settings.ask_claude_is_on")] : []];
 		}
 	}
 	_renderLanguageCard() {
-		let e = Wo().language, t = dt(), n = [...gt(), at], r = new URLSearchParams(location.search).get("lang") ?? "", i = r ? Uo : t;
+		let e = Ko().language, t = dt(), n = [...gt(), at], r = new URLSearchParams(location.search).get("lang") ?? "", i = r ? Go : t;
 		return h`<section id="card-language" class="card area">
       <div class="card-head">
         <span class="card-icon">${A(e.icon)}</span>
@@ -17576,7 +17587,7 @@ var Uo = "@address", Wo = () => ({
           .value=${i}
           @change=${(e) => {
 			let t = e.target, n = t.value;
-			if (n === Uo) return;
+			if (n === Go) return;
 			if (this.renderRoot.querySelector("boopli-away")?.editing) {
 				t.value = i, this._languageNote = C("settings.language_save_first");
 				return;
@@ -17589,9 +17600,9 @@ var Uo = "@address", Wo = () => ({
 			r.searchParams.delete("lang"), history.replaceState(null, "", r), location.reload();
 		}}
         >
-          ${r ? h`<option value=${Uo} selected>${C("settings.language_from_address", { code: r })}</option>` : v}
+          ${r ? h`<option value=${Go} selected>${C("settings.language_from_address", { code: r })}</option>` : v}
           <option value="" ?selected=${i === ""}>${C("settings.language_same_as_home_assistant")}</option>
-          ${n.map((e) => h`<option value=${e} ?selected=${i === e}>${_t(e)}</option>`)}
+          ${n.map((e) => h`<option value=${e} ?selected=${i === e}>${vt(e)}</option>`)}
         </select>
         <div class="muted small">${this._isDirty() ? C("settings.language_save_first") : this._languageNote || C("settings.language_note")}</div>
       </div>
@@ -17599,7 +17610,7 @@ var Uo = "@address", Wo = () => ({
 	}
 	_card(e, t) {
 		if (e === "language") return this._renderLanguageCard();
-		let n = Wo()[e], r = this._changed(...n.keys);
+		let n = Ko()[e], r = this._changed(...n.keys);
 		return h`<section id="card-${e}" class="card area ${e === "pet" ? "accented" : ""} ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
       <div class="card-head">
         <span class="card-icon">${A(n.icon)}</span>
@@ -17609,7 +17620,7 @@ var Uo = "@address", Wo = () => ({
         </h3>
       </div>
       <div class="summary">
-        ${this._summary(e, t).map((n) => h`<div class=${this._dimLines().includes(n) ? "muted" : ""}>${e === "pet" && Io(t.accent) && n === this._summary(e, t)[1] ? h`<span class="accent-dot"></span>` : v}${n}</div>`)}
+        ${this._summary(e, t).map((n) => h`<div class=${this._dimLines().includes(n) ? "muted" : ""}>${e === "pet" && Ro(t.accent) && n === this._summary(e, t)[1] ? h`<span class="accent-dot"></span>` : v}${n}</div>`)}
       </div>
       <div class="buttons">
         ${e === "backup" ? h`<button type="button" class="textlink" aria-label=${C("common.export_a_backup")} @click=${() => this._backup = "export"}>${C("settings.export")}</button>
@@ -17666,7 +17677,7 @@ var Uo = "@address", Wo = () => ({
 		}
 	}
 	_renderModal(e) {
-		let t = this._modal ? Wo()[this._modal] : null;
+		let t = this._modal ? Ko()[this._modal] : null;
 		return h`<dialog
       aria-labelledby="win-title"
       @cancel=${(e) => {
@@ -17704,12 +17715,12 @@ var Uo = "@address", Wo = () => ({
 	}
 	_renderSaveBar() {
 		if (!this._isDirty()) return v;
-		let e = Ko.filter((e) => this._changed(...Wo()[e].keys));
+		let e = Jo.filter((e) => this._changed(...Ko()[e].keys));
 		return h`${this._error && !this._modal ? h`<div class="error" role="alert">${this._error}</div>` : v}
       <div class="savebar" role="status">
         <div class="where">
           <b aria-hidden="true">●</b> ${C("settings.unsaved_changes_in")}
-          ${e.map((e) => h`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Wo()[e].title}</button>`)}
+          ${e.map((e) => h`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Ko()[e].title}</button>`)}
         </div>
         <span class="spacer"></span>
         <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${C("common.save")}</button>
@@ -17722,7 +17733,7 @@ var Uo = "@address", Wo = () => ({
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${Go().map((t) => h`<h2 class="group">${t.title}</h2>
+      ${qo().map((t) => h`<h2 class="group">${t.title}</h2>
           <div class="cards">${t.areas.map((t) => this._card(t, e))}</div>`)}
       <p class="muted small">
         ${C("settings.want_to_do_all_of_it")}
@@ -18236,13 +18247,13 @@ var Uo = "@address", Wo = () => ({
     `];
 	}
 };
-customElements.define("boopli-settings", Xo);
+customElements.define("boopli-settings", Qo);
 // src/boopli-home.ts
-var Zo = 2e3;
-function Qo() {
+var $o = 2e3;
+function es() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var $o = class extends b {
+var ts = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -18266,7 +18277,7 @@ var $o = class extends b {
 		e && (!this._draft || !this._base ? (this._base = structuredClone(e), this._draft = structuredClone(e)) : this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base) && (this._base = structuredClone(e), this._draft = structuredClone(e), this._justSaved = !1));
 	}
 	updated() {
-		!this._synced && this.hass && (this._synced = !0, Pt(this.hass).then((e) => {
+		!this._synced && this.hass && (this._synced = !0, Ft(this.hass).then((e) => {
 			this._isDirty() || (this._base = structuredClone(e), this._draft = structuredClone(e));
 		}).catch(() => void 0));
 		let e = this._isDirty();
@@ -18290,7 +18301,7 @@ var $o = class extends b {
 		if (!this.hass || !this._draft || this._busy) return !1;
 		this._busy = !0, this._error = "", this._message = "";
 		try {
-			return await Nt(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = C("common.saved"), !0;
+			return await Pt(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = C("common.saved"), !0;
 		} catch (e) {
 			return this._error = E(e), !1;
 		} finally {
@@ -18314,7 +18325,7 @@ var $o = class extends b {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: Qo(),
+				id: es(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -18329,7 +18340,7 @@ var $o = class extends b {
 		});
 	}
 	_aiOn() {
-		return yn(this.snapshot);
+		return xn(this.snapshot);
 	}
 	_room(e) {
 		return this._draft?.rooms.find((t) => t.id === e);
@@ -18389,7 +18400,7 @@ var $o = class extends b {
 		this._patchTool({ working: !0 });
 		try {
 			let t = [];
-			for (let r of Array.from(e).slice(0, n)) t.push(await Ia(r));
+			for (let r of Array.from(e).slice(0, n)) t.push(await Ra(r));
 			let i = this._tool;
 			if (i?.kind !== "photos" || i.roomId !== r) return;
 			this._patchTool({ photos: [...i.photos, ...t] }), e.length > n && (this._error = C("home.up_to_photos_per_room_the", { max_photos: 4 }));
@@ -18410,7 +18421,7 @@ var $o = class extends b {
 			via: e
 		});
 		try {
-			let i = await rn(this.hass, n.name, n.notes, t.photos, e);
+			let i = await on(this.hass, n.name, n.notes, t.photos, e);
 			if (r !== this._run) return;
 			this._review(n.id, "photos", i.notes, e);
 		} catch (e) {
@@ -18449,7 +18460,7 @@ var $o = class extends b {
 		if (!this.hass || e?.kind !== "chat") return;
 		let t = e.roomId ? this._room(e.roomId) : void 0, n = ++this._promptAsk;
 		try {
-			let r = await an(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
+			let r = await sn(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
 				name: e.name,
 				notes: e.notes
 			})));
@@ -18480,10 +18491,10 @@ var $o = class extends b {
 			this._error = "", this._patchTool({ working: !0 });
 			try {
 				if (e.roomId) {
-					let t = await on(this.hass, e.pasted);
+					let t = await cn(this.hass, e.pasted);
 					this._review(e.roomId, "paste", t.notes);
 				} else {
-					let t = await sn(this.hass, e.pasted, this._liveRooms().map((e) => ({
+					let t = await ln(this.hass, e.pasted, this._liveRooms().map((e) => ({
 						id: e.id,
 						name: e.name
 					})));
@@ -18512,12 +18523,12 @@ var $o = class extends b {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, Zo);
+			let e = r.notes.trim().slice(0, $o);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: Qo(),
+				id: es(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -18540,7 +18551,7 @@ var $o = class extends b {
 		};
 		let i = ++this._run;
 		try {
-			let a = await Ft(this.hass, n.name, n.notes, e, t.via);
+			let a = await It(this.hass, n.name, n.notes, e, t.via);
 			if (i !== this._run) return;
 			if (a.enough || a.questions.length === 0) {
 				await this._writeNotes(e, r);
@@ -18572,7 +18583,7 @@ var $o = class extends b {
 		};
 		let a = ++this._run;
 		try {
-			let t = await It(this.hass, r.name, r.notes, e, n.via);
+			let t = await Lt(this.hass, r.name, r.notes, e, n.via);
 			if (a !== this._run) return;
 			this._iv = {
 				...n,
@@ -18606,7 +18617,7 @@ var $o = class extends b {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Zo) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, $o) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
@@ -18648,7 +18659,7 @@ var $o = class extends b {
       ${e.phase === "working" ? h`<boopli-wait
             .label=${e.via === "claude" ? C("common.asking_claude_this_takes_a_little") : e.answers.length ? C("home.writing_the_notes") : C("common.thinking")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${bn(this.snapshot, e.via)}
+            .max=${Sn(this.snapshot, e.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>` : v}
       ${e.phase === "questions" ? h`
@@ -18712,7 +18723,7 @@ var $o = class extends b {
       ${e.sending ? h`<boopli-wait
             .label=${e.via === "claude" ? C("common.claude_is_looking_at_your_photos") : C("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${bn(this.snapshot, e.via)}
+            .max=${Sn(this.snapshot, e.via)}
             @stop-waiting=${() => this._stopWaiting()}
           ></boopli-wait>` : h`
             <div class="thumbs">
@@ -18869,7 +18880,7 @@ var $o = class extends b {
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${Zo}
+        maxlength=${$o}
         placeholder=${C("home.for_example_dishwasher_is_under_the")}
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
@@ -19298,7 +19309,7 @@ var $o = class extends b {
     `];
 	}
 };
-customElements.define("boopli-home", $o);
+customElements.define("boopli-home", ts);
 // src/wall-tile.ts
 var Q = class extends b {
 	static {
@@ -19338,7 +19349,7 @@ var Q = class extends b {
     border-top: 3px solid var(--divider-color);
     border-radius: 0;
     padding: 12px 8px 0;
-    font-family: ${a(hn)};
+    font-family: ${a(_n)};
   }
   :host([hidden]) {
     display: none;
@@ -19408,14 +19419,14 @@ var Q = class extends b {
     color: var(--error-color, #db4437);
     font-size: clamp(12px, 3.2cqw, 18px);
   }
-`, es = class extends Q {
+`, ns = class extends Q {
 	render() {
-		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(Tn(), {
+		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(N(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
 			hour12: this.text("format", "24h") === "12h"
-		}).format(t), r = new Intl.DateTimeFormat(Tn(), {
+		}).format(t), r = new Intl.DateTimeFormat(N(), {
 			timeZone: e,
 			weekday: "long",
 			day: "numeric",
@@ -19432,9 +19443,9 @@ var Q = class extends b {
 		this.styles = [$, o``];
 	}
 };
-customElements.define("wall-tile-clock", es);
+customElements.define("wall-tile-clock", ns);
 // src/wall-tile-pet.ts
-var ts = class extends Q {
+var rs = class extends Q {
 	render() {
 		let e = this.snapshot?.pet;
 		if (!e) return h`<div class="center muted normal">${C("common.loading")}</div>`;
@@ -19473,9 +19484,9 @@ var ts = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-pet", ts);
+customElements.define("wall-tile-pet", rs);
 // src/wall-tile-due.ts
-var ns = class extends Q {
+var is = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -19500,7 +19511,7 @@ var ns = class extends Q {
 	}
 	render() {
 		if (!this.snapshot) return h`<div class="center muted normal">${C("common.loading")}</div>`;
-		let e = Ln(this.snapshot, this.nowMs).now;
+		let e = Rn(this.snapshot, this.nowMs).now;
 		if (!e) return h`<div class="center"><div><div class="big">${C("wall_tile_due.all_clear")}</div><div class="normal muted">${C("wall_tile_due.nothing_is_due_right_now")}</div></div></div>`;
 		let { run: t, step: n } = e, r = !!n.on_it_until;
 		return h`<div class="due">
@@ -19511,13 +19522,13 @@ var ns = class extends Q {
 			total: e.total
 		})}</div>` : v}
       <div class="actions">
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => tn(this.hass, t.id, n.step_id))}>
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => nn(this.hass, t.id, n.step_id))}>
           ${C("common.done")}
         </button>
-        <button ?disabled=${this._busy} @click=${() => this._act(() => (r ? Ut : Ht)(this.hass, t.id, n.step_id))}>
+        <button ?disabled=${this._busy} @click=${() => this._act(() => (r ? Wt : Ut)(this.hass, t.id, n.step_id))}>
           ${C(r ? "wall_tile_due.not_yet" : "today.on_it")}
         </button>
-        <button ?disabled=${this._busy} @click=${() => this._act(() => Vt(this.hass, t.id, n.step_id))}>
+        <button ?disabled=${this._busy} @click=${() => this._act(() => Ht(this.hass, t.id, n.step_id))}>
           ${C("wizard.snooze")}
         </button>
       </div>
@@ -19569,12 +19580,12 @@ var ns = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-due-now", ns);
+customElements.define("wall-tile-due-now", is);
 // src/wall-tile-next.ts
-var rs = class extends Q {
+var as = class extends Q {
 	render() {
 		if (!this.snapshot) return h`<div class="center muted normal">${C("common.loading")}</div>`;
-		let e = this.snapshot.time_zone, t = Ln(this.snapshot, this.nowMs), n = [
+		let e = this.snapshot.time_zone, t = Rn(this.snapshot, this.nowMs), n = [
 			...t.ready.flatMap((e) => e.steps.map((t) => ({
 				title: `${e.run.chore_name}: ${t.title}`,
 				when: C("common.ready_now_hint")
@@ -19589,7 +19600,7 @@ var rs = class extends Q {
 			})),
 			...t.upcoming.map((t) => ({
 				title: t.chore.name,
-				when: N(t.at, this.nowMs, e)
+				when: P(t.at, this.nowMs, e)
 			}))
 		].slice(0, this.num("count", 3));
 		return h`<div class="label">${C("wall_tile_next.coming_up")}</div>
@@ -19614,9 +19625,9 @@ var rs = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-coming-up", rs);
+customElements.define("wall-tile-coming-up", as);
 // src/wall-tile-entity.ts
-var is = {
+var os = {
 	light: ["homeassistant", "toggle"],
 	switch: ["homeassistant", "toggle"],
 	input_boolean: ["homeassistant", "toggle"],
@@ -19628,7 +19639,7 @@ var is = {
 	scene: ["scene", "turn_on"],
 	button: ["button", "press"],
 	input_button: ["input_button", "press"]
-}, as = {
+}, ss = {
 	light: "lightbulb-outline",
 	switch: "power-plug-outline",
 	input_boolean: "toggle-switch-outline",
@@ -19643,9 +19654,9 @@ var is = {
 	button: "gesture-tap-button",
 	person: "account-outline",
 	media_player: "speaker"
-}, os = class extends Q {
+}, cs = class extends Q {
 	_tap() {
-		let e = this.text("entity_id"), t = is[e.split(".")[0]];
+		let e = this.text("entity_id"), t = os[e.split(".")[0]];
 		if (this.preview || !this.hass?.callService || !t || this.text("tap", "toggle") !== "toggle") return;
 		let [n, r] = t;
 		this.hass.callService(n, r, { entity_id: e });
@@ -19653,7 +19664,7 @@ var is = {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return h`<div class="center muted normal">${C("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = is[n]?.[1], s = !!o && this.text("tap", "toggle") === "toggle" && !this.preview, c = h`<div class="icon big">${A(as[n] ?? "shape-outline")}</div>
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || q(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = os[n]?.[1], s = !!o && this.text("tap", "toggle") === "toggle" && !this.preview, c = h`<div class="icon big">${A(ss[n] ?? "shape-outline")}</div>
       <div>
         <div class="label">${r}</div>
         <div class="big">${t ? `${t.state}${i}` : C("wall_tile_entity.not_found")}</div>
@@ -19700,9 +19711,9 @@ var is = {
     `];
 	}
 };
-customElements.define("wall-tile-entity", os);
+customElements.define("wall-tile-entity", cs);
 // src/wall-tile-weather.ts
-var ss = {
+var ls = {
 	"clear-night": "weather-night",
 	cloudy: "weather-cloudy",
 	exceptional: "alert-outline",
@@ -19718,7 +19729,7 @@ var ss = {
 	sunny: "weather-sunny",
 	windy: "weather-windy",
 	"windy-variant": "weather-windy-variant"
-}, cs = class extends Q {
+}, us = class extends Q {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return h`<div class="center muted normal">${C("wall_tile_weather.pick_a_weather_entity_in_the")}</div>`;
@@ -19726,7 +19737,7 @@ var ss = {
 		if (!t) return h`<div class="center muted normal">${C("wall_tile_weather.weather_not_found")}</div>`;
 		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : C("wall_tile_weather.humidity", { percent: n.humidity });
 		return h`<div class="w">
-      <div class="huge sky">${A(ss[t.state] ?? "thermometer")}</div>
+      <div class="huge sky">${A(ls[t.state] ?? "thermometer")}</div>
       <div>
         <div class="big">${r}</div>
         <div class="normal">${t.state.replace(/-/g, " ")}</div>
@@ -19755,9 +19766,9 @@ var ss = {
     `];
 	}
 };
-customElements.define("wall-tile-weather", cs);
+customElements.define("wall-tile-weather", us);
 // src/wall-tile-calendar.ts
-function ls(e, t) {
+function ds(e, t) {
 	let n = new Intl.DateTimeFormat("en-US", {
 		timeZone: t,
 		year: "numeric",
@@ -19772,7 +19783,7 @@ function ls(e, t) {
 		time: `${n.hour}:${n.minute}`
 	};
 }
-var us = 6e5, ds = 7, fs = class extends Q {
+var fs = 6e5, ps = 7, ms = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -19784,7 +19795,7 @@ var us = 6e5, ds = 7, fs = class extends Q {
 		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), us);
+		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), fs);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer);
@@ -19800,7 +19811,7 @@ var us = 6e5, ds = 7, fs = class extends Q {
 		}
 		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
-		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + ds * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + ps * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
@@ -19819,7 +19830,7 @@ var us = 6e5, ds = 7, fs = class extends Q {
 				}
 				let n = Date.parse(e.start.dateTime);
 				if (Number.isNaN(n)) return null;
-				let { day: r, time: i } = ls(n, a);
+				let { day: r, time: i } = ds(n, a);
 				return {
 					title: t,
 					at: n,
@@ -19836,13 +19847,13 @@ var us = 6e5, ds = 7, fs = class extends Q {
 		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, r = ls(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(Tn(), {
+		}, r = ds(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? C("wall_tile_calendar.today") : i === n(r) ? C("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(N(), {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
 			month: "short"
 		}).format(/* @__PURE__ */ new Date(`${i}T12:00:00Z`));
-		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(Tn(), {
+		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(N(), {
 			timeZone: t,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -19851,7 +19862,7 @@ var us = 6e5, ds = 7, fs = class extends Q {
 	}
 	render() {
 		if (!this.text("entity_id")) return h`<div class="center muted normal">${C("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
-		let e = ls(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
+		let e = ds(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
 		return h`<div class="label">${C("wall_tile_calendar.calendar")}</div>
       ${this._error ? h`<div class="error">${this._error}</div>` : t.length ? t.map((e) => h`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : h`<div class="normal muted">${C("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
 	}
@@ -19874,9 +19885,9 @@ var us = 6e5, ds = 7, fs = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-calendar", fs);
+customElements.define("wall-tile-calendar", ms);
 // src/wall-tile-camera.ts
-var ps = class extends Q {
+var hs = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -19917,9 +19928,9 @@ var ps = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-camera", ps);
+customElements.define("wall-tile-camera", hs);
 // src/wall-tile-note.ts
-var ms = class extends Q {
+var gs = class extends Q {
 	render() {
 		let e = this.text("text").trim();
 		return e ? h`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : h`<div class="center muted normal">${C("wall_tile_note.write_a_note_in_the_board")}</div>`;
@@ -19928,18 +19939,18 @@ var ms = class extends Q {
 		this.styles = [$, o`.center div { white-space: pre-line; }`];
 	}
 };
-customElements.define("wall-tile-note", ms);
+customElements.define("wall-tile-note", gs);
 // src/wall-layout.ts
-function hs(e, t) {
+function _s(e, t) {
 	return e.x < t.x + t.w && t.x < e.x + e.w && e.y < t.y + t.h && t.y < e.y + e.h;
 }
-function gs(e) {
+function vs(e) {
 	return e.reduce((e, t) => Math.max(e, t.y + t.h), 0);
 }
-function _s(e) {
+function ys(e) {
 	return e.reduce((e, t) => Math.max(e, t.x + t.w), 0);
 }
-function vs(e, t, n = "") {
+function bs(e, t, n = "") {
 	let r = e.map((e) => ({
 		...e,
 		options: e.options
@@ -19948,7 +19959,7 @@ function vs(e, t, n = "") {
 	let o = r.filter((e) => e !== a).sort((e, t) => e.y - t.y || e.x - t.x);
 	for (let e of o) {
 		for (;;) {
-			let t = i.filter((t) => hs(t, e));
+			let t = i.filter((t) => _s(t, e));
 			if (!t.length) break;
 			e.y = Math.max(...t.map((e) => e.y + e.h));
 		}
@@ -19957,9 +19968,9 @@ function vs(e, t, n = "") {
 	}
 	return r;
 }
-function ys(e, t, n, r, i) {
+function xs(e, t, n, r, i) {
 	r = Math.min(r, t);
-	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => hs({
+	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => _s({
 		x: n,
 		y: a,
 		w: r,
@@ -19970,7 +19981,7 @@ function ys(e, t, n, r, i) {
 	};
 	return null;
 }
-function bs(e, t) {
+function Ss(e, t) {
 	return t === 2 ? e.map((e) => ({
 		...e,
 		x: e.x * 2,
@@ -19986,7 +19997,7 @@ function bs(e, t) {
 	}));
 }
 // src/wall-tiles.ts
-var xs = () => [
+var Cs = () => [
 	{
 		type: "clock",
 		label: C("wall_tiles.clock"),
@@ -20149,20 +20160,20 @@ var xs = () => [
 			default: !1
 		}]
 	}
-], Ss = { due_now: [3, 2] };
-function Cs(e) {
-	return xs().find((t) => t.type === e);
+], ws = { due_now: [3, 2] };
+function Ts(e) {
+	return Cs().find((t) => t.type === e);
 }
-function ws(e, t = [], n = 16, r = 9) {
-	let i = Cs(e), a = {};
+function Es(e, t = [], n = 16, r = 9) {
+	let i = Ts(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let [o, s] = Ss[e] ?? [1, 1];
+	let [o, s] = ws[e] ?? [1, 1];
 	if (n < o || r < s) return null;
 	let c = Math.max(o, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), l = Math.max(s, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
 	for (;;) {
-		let i = ys(t, n, r, c, l);
+		let i = xs(t, n, r, c, l);
 		if (i) return {
-			id: ca(),
+			id: ua(),
 			type: e,
 			...i,
 			w: c,
@@ -20173,19 +20184,19 @@ function ws(e, t = [], n = 16, r = 9) {
 		(c >= l ? c > o : l <= s) ? --c : --l;
 	}
 }
-function Ts(e = 16, t = 9) {
-	let n = ws("clock", [], e, t), r = ws("due_now", [n], e, t);
+function Ds(e = 16, t = 9) {
+	let n = Es("clock", [], e, t), r = Es("due_now", [n], e, t);
 	return r ? [n, r] : [n];
 }
-function Es(e, t) {
+function Os(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
 	return r && n.find((e) => e.name.toLowerCase() === r || e.id === t) || n[0];
 }
-function Ds(e) {
+function ks(e) {
 	return `${location.origin}${location.pathname}?wall=${encodeURIComponent(e.name)}`;
 }
 // src/boopli-wizard.ts
-var Os = {
+var As = {
 	first: [
 		"welcome",
 		"phone",
@@ -20234,13 +20245,13 @@ var Os = {
 	],
 	ladders: ["lad_start", "done"],
 	wall: ["wall_start", "done"]
-}, ks = [
+}, js = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], As = () => ({
+], Ms = () => ({
 	first: C("wizard.first_setup"),
 	phone: C("wizard.phone_setup"),
 	quiet: C("wizard.quiet_hours_setup"),
@@ -20253,7 +20264,7 @@ var Os = {
 	ai: C("wizard.ai_help_setup"),
 	ladders: C("common.nudge_it_your_way"),
 	wall: C("common.wall_board")
-}), js = 10, Ms = 30, Ns = () => ({
+}), Ns = 10, Ps = 30, Fs = () => ({
 	welcome: C("wizard.welcome"),
 	phone: C("wizard.your_phone"),
 	phone_detail: C("wizard.phone_details"),
@@ -20285,16 +20296,16 @@ var Os = {
 	lad_delete: C("wizard.delete_a_ladder"),
 	wall_start: C("wizard.which_board"),
 	done: C("common.all_set")
-}), Ps = [
+}), Is = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], Fs = () => [{
+], Ls = () => [{
 	value: "quiet",
 	label: C("common.quiet"),
 	text: C("wizard.only_shown_in_boopli_never_nudges")
-}], Is = () => [
+}], Rs = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -20311,7 +20322,7 @@ var Os = {
 		value: "alarm_max",
 		label: C("common.max_volume_not_on_every_phone")
 	}
-], Ls = () => [
+], zs = () => [
 	{
 		value: "alexa_media",
 		label: C("helpers.alexa_media_player")
@@ -20324,13 +20335,13 @@ var Os = {
 		value: "tts",
 		label: C("common.a_tts_voice_on_this_speaker")
 	}
-], Rs = () => [{
+], Bs = () => [{
 	value: "alexa",
 	label: C("common.alexa_sound")
 }, {
 	value: "file",
 	label: C("common.file_in_my_media_folder")
-}], zs = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Bs = [
+}], Vs = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Hs = [
 	0,
 	1,
 	2,
@@ -20338,7 +20349,7 @@ var Os = {
 	4,
 	5,
 	6
-], Vs = class extends b {
+], Us = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -20374,15 +20385,15 @@ var Os = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...Os[this.wizard]];
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = [...As[this.wizard]];
 		let e = this.startAt;
-		if (this._first && ks.includes(e)) {
+		if (this._first && js.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...ks);
+			this._steps.splice(e + 1, 0, ...js);
 		}
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0;
-		let n = Ja(this.snapshot.chores.map((e) => e.name));
+		let n = Xa(this.snapshot.chores.map((e) => e.name));
 		this._picked = Z().filter((e) => !n(e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
 	}
 	_set(e) {
@@ -20472,11 +20483,11 @@ var Os = {
 					...this._steps.slice(this._index + 1)
 				]), this._rungAt(this._nudgesBefore(this._index + 1))), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...ks,
+					...js,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
-				this._steps[n] === "lad_nudge" && this._rungAt(this._nudgesBefore(n)), this._first && await Bt(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
+				this._steps[n] === "lad_nudge" && this._rungAt(this._nudgesBefore(n)), this._first && await Vt(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -20497,7 +20508,7 @@ var Os = {
 		if (this.hass && !this._busy) {
 			this._busy = !0;
 			try {
-				this._first && await Bt(this.hass, "skipped", this._step), this._close();
+				this._first && await Vt(this.hass, "skipped", this._step), this._close();
 			} catch (e) {
 				this._error = E(e);
 			} finally {
@@ -20510,7 +20521,7 @@ var Os = {
 			this._busy = !0, this._error = "";
 			try {
 				if (await T(this.hass, this._draft), this._first) {
-					for (let e of Z().filter((e) => this._picked.includes(e.label))) await Yt(this.hass, {
+					for (let e of Z().filter((e) => this._picked.includes(e.label))) await Xt(this.hass, {
 						...e.draft,
 						repeat: {
 							type: "none",
@@ -20519,7 +20530,7 @@ var Os = {
 							days: {}
 						}
 					}), this._picked = this._picked.filter((t) => t !== e.label);
-					await Bt(this.hass, "done", "");
+					await Vt(this.hass, "done", "");
 				}
 				this._close();
 			} catch (e) {
@@ -20563,15 +20574,15 @@ var Os = {
 		}
 		let n = this._boardName.trim();
 		if (!n) throw Error(C("wizard.give_the_new_board_a_name"));
-		if (t.length >= js) throw Error(C("wizard.you_have_boards_the_most_edit", { max_boards: js }));
+		if (t.length >= Ns) throw Error(C("wizard.you_have_boards_the_most_edit", { max_boards: Ns }));
 		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(C("wizard.there_is_already_a_board_called", { name: n }));
 		let r = {
-			id: ca(),
+			id: ua(),
 			name: n,
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: Ts(16, 9)
+			tiles: Ds(16, 9)
 		};
 		this._boardId = r.id, this._boardPick = r.id, this._set({ boards: [...t, r] });
 	}
@@ -20607,7 +20618,7 @@ var Os = {
 				];
 				return;
 			}
-			if (e.length >= Ms) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ms }));
+			if (e.length >= Ps) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ps }));
 			this._ladderId = "", this._ladderName = "", this._steps = [
 				"lad_start",
 				"lad_name",
@@ -20670,8 +20681,8 @@ var Os = {
 			}));
 			return;
 		}
-		if ((e.ladders ?? []).length >= Ms) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ms }));
-		let n = ca();
+		if ((e.ladders ?? []).length >= Ps) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ps }));
+		let n = ua();
 		this._ladderId = n, this._createdId = n, this._set({ ladders: [...e.ladders ?? [], {
 			id: n,
 			name: t,
@@ -20697,7 +20708,7 @@ var Os = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Ns()[e];
+		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Fs()[e];
 	}
 	_renderLadStart(e) {
 		let t = e.ladders ?? [], n = t.length === 0, r = t.filter((e) => !e.id.startsWith("standard_")), i = (e, t, n, r = !1) => h`<label class="inline option">
@@ -20711,7 +20722,7 @@ var Os = {
       <span><b>${t}</b> <span class="muted small">${n}</span></span>
     </label>`;
 		return h`
-      ${i("create", C("wizard.create_a_ladder"), t.length >= Ms ? C("wizard.you_have_ladders_the_most", { max_ladders: Ms }) : C("wizard.a_new_list_of_nudges"), t.length >= Ms)}
+      ${i("create", C("wizard.create_a_ladder"), t.length >= Ps ? C("wizard.you_have_ladders_the_most", { max_ladders: Ps }) : C("wizard.a_new_list_of_nudges"), t.length >= Ps)}
       ${i("edit", C("wizard.edit_a_ladder"), C(n ? "wizard.you_have_no_ladders_yet" : "wizard.change_its_name_its_nudges_or"), n)}
       ${i("delete", C("wizard.delete_a_ladder"), r.length === 0 ? C("wizard.only_your_own_ladders_can_be") : C("wizard.remove_one_of_your_own_that"), r.length === 0)}
       ${this._ladderAction !== "create" && !n ? h`<div class="field">
@@ -20826,7 +20837,7 @@ var Os = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Bs.map((e) => [String(e), { ...Qi }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Hs.map((e) => [String(e), { ...ea }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -20852,7 +20863,7 @@ var Os = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(Bs.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(Hs.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -20923,7 +20934,7 @@ var Os = {
                   />
                   ${Y(t)}
                 </label>
-                <button type="button" @click=${() => this._try(`phone:${t}`, () => Gt(this.hass, {
+                <button type="button" @click=${() => this._try(`phone:${t}`, () => Kt(this.hass, {
 				service: t,
 				level: n?.level ?? "normal",
 				start_at: 1
@@ -20952,10 +20963,10 @@ var Os = {
 			level: n.target.value
 		} : e) })}
               >
-                ${Is().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${Rs().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
-            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Gt(this.hass, t))}>${C("wizard.send_a_test")}</button>
+            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Kt(this.hass, t))}>${C("wizard.send_a_test")}</button>
             ${this._noteLine(`phone:${t.service}`)}
           </div>`)}
       </div>
@@ -20977,7 +20988,7 @@ var Os = {
       </label>
       ${t.enabled ? h`
             <div class="days">
-              ${Bs.map((e) => {
+              ${Hs.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return h`<div class="dayrow">
                   <span class="dayname">${j()[e]}</span>
@@ -20985,7 +20996,7 @@ var Os = {
                     <input
                       type="checkbox"
                       .checked=${n === null}
-                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...Qi })}
+                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...ea })}
                     />
                     ${C("common.no_limit")}
                   </label>
@@ -21040,7 +21051,7 @@ var Os = {
         </div>
       </div>
       <p>${C("wizard.how_should_new_chores_nudge_you")}</p>
-      ${[...Fs(), ...(e.ladders ?? []).map((e) => ({
+      ${[...Ls(), ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
 			text: h`
@@ -21072,7 +21083,7 @@ var Os = {
                     .checked=${!!n}
                     @change=${(n) => {
 				let r = n.target.checked, i = e.lights.filter((e) => e.entity_id !== t);
-				this._set({ lights: r ? [...i, ea(t)] : i });
+				this._set({ lights: r ? [...i, na(t)] : i });
 			}}
                   />
                   ${this._fn(t)}
@@ -21092,7 +21103,7 @@ var Os = {
                       />
                       ${C(r === "blink" ? "settings.blinks" : "wizard.status_light_stays_on_until_done")}
                     </label>`)}
-                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => Wt(this.hass, n))}>${C("common.test")}</button>
+                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => Gt(this.hass, n))}>${C("common.test")}</button>
                 </div>
                 ${n ? this._noteLine(`light:${t}`) : v}
               </div>`;
@@ -21113,14 +21124,14 @@ var Os = {
 			} : e) });
 			return h`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
-            ${sa(this.hass, t.entity_id) ? h`<label class="num">
+            ${la(this.hass, t.entity_id) ? h`<label class="num">
                   ${C("settings.color")}
-                  <input type="color" class="swatch" .value=${ia(t.color)} @input=${(e) => n({ color: ra(e.target.value) })} />
+                  <input type="color" class="swatch" .value=${oa(t.color)} @input=${(e) => n({ color: aa(e.target.value) })} />
                 </label>` : h`<span class="muted small">${C("wizard.this_light_only_goes_on_and")}</span>`}
             ${t.mode === "blink" ? h`${this._numField(C("wizard.blink_length_ms"), t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
                 ${this._numField(C("wizard.number_of_blinks"), t.repeats, 1, 5, (e) => n({ repeats: e }))}
                 ${this._numField(C("wizard.pause_between_blinks_ms"), t.gap_ms, 0, 3e4, (e) => n({ gap_ms: e }), 100)}` : h`<span class="muted small">${C("wizard.a_status_light_has_no_blink")}</span>`}
-            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => Wt(this.hass, t))}>${C("common.test")}</button>
+            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => Gt(this.hass, t))}>${C("common.test")}</button>
             ${this._noteLine(`light:${t.entity_id}`)}
           </div>`;
 		})}
@@ -21151,12 +21162,12 @@ var Os = {
                   name="speaker"
                   .checked=${this._speaker === t}
                   @change=${() => {
-				this._speaker = t, n || this._set({ speakers: [...e.speakers, ta(t)] });
+				this._speaker = t, n || this._set({ speakers: [...e.speakers, ra(t)] });
 			}}
                 />
                 <span>
                   ${this._fn(t)}
-                  ${n ? h`<span class="muted small">${w("wizard.set_up", { speaker: fa(n) })}</span>` : v}
+                  ${n ? h`<span class="muted small">${w("wizard.set_up", { speaker: ma(n) })}</span>` : v}
                 </span>
               </label>`;
 		})}
@@ -21184,7 +21195,7 @@ var Os = {
             <label class="num">
               ${C("common.sound_type")}
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${Rs().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${Bs().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -21192,11 +21203,11 @@ var Os = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? h`<div class="muted small">
-                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${zs} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
+                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${Vs} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
                 </div>` : h`<div class="muted small">${w("wizard.for_example_boopli_ding_mp3_in")}</div>`}
             ${e === "alarm" ? h`${this._numField(C("wizard.lasts_seconds"), i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
                 ${this._numField(C("wizard.repeats_every_seconds_0_once"), i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : v}
-            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => Kt(this.hass, t, r))}>${C("common.test")}</button></div>
+            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => qt(this.hass, t, r))}>${C("common.test")}</button></div>
             ${this._noteLine(`spk:${r}`)}
           </div>`}
     `;
@@ -21208,7 +21219,7 @@ var Os = {
 				...t.speech,
 				...e
 			}
-		})), i = $i(this.hass, n.route, n.target);
+		})), i = ta(this.hass, n.route, n.target);
 		return h`
       <p>${C("wizard.the_speaker_says_the_step_out")}</p>
       ${h`<div class="fields">
@@ -21234,7 +21245,7 @@ var Os = {
 			}));
 		}}
               >
-                ${Ls().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${zs().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -21251,7 +21262,7 @@ var Os = {
               ${C("wizard.the_sentence_chore_and_step_are")}
               <input .value=${t.speech_template} @input=${(e) => this._set({ speech_template: e.target.value })} />
             </label>
-            <div><button type="button" @click=${() => this._try("spk:speech", () => Kt(this.hass, e, "speech"))}>${C("common.test")}</button></div>
+            <div><button type="button" @click=${() => this._try("spk:speech", () => qt(this.hass, e, "speech"))}>${C("common.test")}</button></div>
             ${this._noteLine("spk:speech")}
           </div>`}
     `;
@@ -21283,7 +21294,7 @@ var Os = {
 		}
 	}
 	_renderAlarmDevices(e) {
-		let t = J(this.hass, Zi, e.alarm_devices.map((e) => e.entity_id));
+		let t = J(this.hass, $i, e.alarm_devices.map((e) => e.entity_id));
 		return h`
       <p>
         ${C("wizard.optional_a_siren_switch_or_script")}
@@ -21291,7 +21302,7 @@ var Os = {
       <div class="list">
         ${e.alarm_devices.map((t) => h`<div class="choice">
             <span class="grow">${this._fn(t.entity_id)}</span>
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => qt(this.hass, t))}>${C("wizard.test_3_s")}</button>
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => Jt(this.hass, t))}>${C("wizard.test_3_s")}</button>
             <button type="button" aria-label=${C("common.remove")} @click=${() => this._set({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}>✕</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`)}
@@ -21305,7 +21316,7 @@ var Os = {
           type="button"
           ?disabled=${!this._addDevice}
           @click=${() => {
-			this._set({ alarm_devices: [...e.alarm_devices, na(this._addDevice)] }), this._addDevice = "";
+			this._set({ alarm_devices: [...e.alarm_devices, ia(this._addDevice)] }), this._addDevice = "";
 		}}
         >
           ${C("common.add")}
@@ -21325,7 +21336,7 @@ var Os = {
 			return h`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
             ${this._numField(C("common.on_for_seconds"), t.seconds, 1, 600, (e) => n({ seconds: e }))}
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => qt(this.hass, t))}>${C("wizard.test_3_s")}</button>
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => Jt(this.hass, t))}>${C("wizard.test_3_s")}</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`;
 		})}
@@ -21348,7 +21359,7 @@ var Os = {
     `;
 	}
 	_renderChores() {
-		let e = Ja((this.snapshot?.chores ?? []).map((e) => e.name));
+		let e = Xa((this.snapshot?.chores ?? []).map((e) => e.name));
 		return h`
       <p>
         ${C("wizard.some_chores_to_start_with_untick")}
@@ -21429,7 +21440,7 @@ var Os = {
 			try {
 				let t = structuredClone(e);
 				this._adoptLadders(await T(this.hass, t), t);
-				let n = await At(this.hass, C("common.make_a_cup_of_tea"), "now", []);
+				let n = await jt(this.hass, C("common.make_a_cup_of_tea"), "now", []);
 				this._note("ai:test", C("common.agent_test_works", {
 					count: n.steps.length,
 					first: n.steps[0]?.title ?? C("common.none")
@@ -21463,21 +21474,21 @@ var Os = {
 	}
 	async _copyRoutinePrompt() {
 		try {
-			await navigator.clipboard.writeText(Sn()), this._note("claude:copy", C("wizard.copied"));
+			await navigator.clipboard.writeText(wn()), this._note("claude:copy", C("wizard.copied"));
 		} catch {
 			this._note("claude:copy", C("wizard.your_browser_did_not_allow_copying"));
 		}
 	}
 	_renderClaudeMake(e) {
 		if (!e.ai.claude_enabled) return h`<p class="muted">${C("wizard.ask_claude_is_off_go_back")}</p>`;
-		let t = xn(e.ai.claude_ha_url, this.snapshot);
+		let t = Cn(e.ai.claude_ha_url, this.snapshot);
 		return h`
       <p>${w("wizard.do_this_once_on_claude_ai")}</p>
       <ol class="how">
         <li>${w("wizard.make_a_new_routine_name_it", { item: C("wizard.boopli") })}</li>
         <li>
           ${C("wizard.paste_this_as_its_instructions")}
-          <textarea class="code" rows="6" readonly aria-label=${C("wizard.routine_instructions")} .value=${Sn()}></textarea>
+          <textarea class="code" rows="6" readonly aria-label=${C("wizard.routine_instructions")} .value=${wn()}></textarea>
           <div class="actions inline-actions">
             <button type="button" @click=${() => this._copyRoutinePrompt()}>${C("wizard.copy_the_instructions")}</button>
           </div>
@@ -21529,13 +21540,13 @@ var Os = {
 		})));
 	}
 	_renderDone(e) {
-		let t = this._baseline ? Eo(this._baseline, e, this.hass) : [], n = Z().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		let t = this._baseline ? Oo(this._baseline, e, this.hass) : [], n = Z().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(C("wizard.chores_added", { join: n.join(", ") })), h`
       <p>${w(this._first ? "wizard.what_changed_before_setup" : "wizard.what_changed_in_setup")}</p>
       ${t.length === 0 ? h`<p class="muted">${C("wizard.nothing_changed")}</p>` : h`<ul>${t.map((e) => h`<li>${e}</li>`)}</ul>`}
       ${this.wizard === "wall" && this._board() ? h`<p>${C("wizard.next_put_the_tiles_where_you")}</p>
             <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${C("wizard.edit_it_on_the_wall")}</button></p>
-            <p class="small">${w("wizard.link_for_the_tablets_start_page", { value: Ds(this._board()) })}</p>` : v}
+            <p class="small">${w("wizard.link_for_the_tablets_start_page", { value: ks(this._board()) })}</p>` : v}
       <p class="muted small">
         ${C("wizard.everything_can_be_changed_again_in")}
       </p>
@@ -21584,7 +21595,7 @@ var Os = {
 		return h`
       <div class="shell">
         <nav class="rail" aria-label=${C("common.steps")}>
-          <div class="rail-title">${As()[this.wizard]}</div>
+          <div class="rail-title">${Ms()[this.wizard]}</div>
           ${this._steps.map((e, t) => h`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
@@ -21607,7 +21618,7 @@ var Os = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${Ps.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
+          ${Is.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
           ${this._renderStep(e)}
           ${this._error ? h`<div class="error">${this._error}</div>` : v}
           <div class="actions">
@@ -21941,31 +21952,31 @@ var Os = {
     `];
 	}
 };
-customElements.define("boopli-wizard", Vs);
+customElements.define("boopli-wizard", Us);
 // node_modules/lit-html/static.js
-var Hs = Symbol.for(""), Us = (e) => {
-	if (e?.r === Hs) return e?._$litStatic$;
-}, Ws = (e) => ({
+var Ws = Symbol.for(""), Gs = (e) => {
+	if (e?.r === Ws) return e?._$litStatic$;
+}, Ks = (e) => ({
 	_$litStatic$: e,
-	r: Hs
-}), Gs = /* @__PURE__ */ new Map(), Ks = ((e) => (t, ...n) => {
+	r: Ws
+}), qs = /* @__PURE__ */ new Map(), Js = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = Us(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = Gs(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = Gs.get(e)) === void 0 && (o.raw = o, Gs.set(e, t = o)), n = s;
+		(t = qs.get(e)) === void 0 && (o.raw = o, qs.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
 })(h);
 // src/wall-night.ts
-function qs(e) {
+function Ys(e) {
 	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
 	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function Js(e, t, n) {
+function Xs(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -21983,11 +21994,11 @@ function Js(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = qs(o.start), l = qs(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = Ys(o.start), l = Ys(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Ys = 3e4, Xs = class extends b {
+var Zs = 3e4, Qs = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -22009,7 +22020,7 @@ var Ys = 3e4, Xs = class extends b {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Ys, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Zs, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -22045,7 +22056,7 @@ var Ys = 3e4, Xs = class extends b {
 				...i,
 				w: Math.max(1, Math.min(r.cx - i.x + 1, r.cols - i.x)),
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
-			}, o = vs(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
+			}, o = bs(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
 		}, this._up = (e) => {
 			let t = this._drag;
@@ -22088,7 +22099,7 @@ var Ys = 3e4, Xs = class extends b {
 		} catch {}
 	}
 	_board() {
-		return this.board ?? Es(this.snapshot?.settings?.boards, this.boardName);
+		return this.board ?? Os(this.snapshot?.settings?.boards, this.boardName);
 	}
 	render() {
 		let e = this._board();
@@ -22097,22 +22108,22 @@ var Ys = 3e4, Xs = class extends b {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Ln(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Js(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Rn(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Xs(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return h`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
-      ${a ? h`<div class="away" role="status">${A("bag-suitcase")} <b>${C("wall.away_mode_is_on")}</b> <span>${Fn(a, this.nowMs, t, !0)}</span></div>` : v}
+      ${a ? h`<div class="away" role="status">${A("bag-suitcase")} <b>${C("wall.away_mode_is_on")}</b> <span>${In(a, this.nowMs, t, !0)}</span></div>` : v}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
         ${this.pickable ? this._ghosts(e) : v}
-        ${(this._live ?? e.tiles).filter((e) => !!Cs(e.type)).map((e) => h`<div
+        ${(this._live ?? e.tiles).filter((e) => !!Ts(e.type)).map((e) => h`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${Ks`<${Ws(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${Js`<${Ks(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${Ws(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+            ></${Ks(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
                   <span class="handle" data-id=${e.id} data-resize title=${C("wall.drag_to_resize")}></span>
                   <button type="button" class="del" aria-label=${C("wall.remove_this_tile")} title=${C("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
@@ -22167,7 +22178,7 @@ var Ys = 3e4, Xs = class extends b {
 		};
 	}
 	_time(e) {
-		return new Intl.DateTimeFormat(Tn(), {
+		return new Intl.DateTimeFormat(N(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -22178,7 +22189,7 @@ var Ys = 3e4, Xs = class extends b {
 		this.styles = o`
     :host {
       display: block;
-      font-family: ${a(hn)};
+      font-family: ${a(_n)};
       color: var(--primary-text-color);
     }
     * {
@@ -22362,9 +22373,9 @@ var Ys = 3e4, Xs = class extends b {
   `;
 	}
 };
-customElements.define("boopli-wall", Xs);
+customElements.define("boopli-wall", Qs);
 // src/boopli-wall-edit.ts
-var Zs = 10, Qs = 30, $s = 40, ec = [
+var $s = 10, ec = 30, tc = 40, nc = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -22381,11 +22392,11 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 	"automation",
 	"person",
 	"media_player"
-], tc = () => [
+], rc = () => [
 	["dim", C("wall_edit.dim_the_screen")],
 	["black", C("wall_edit.black_with_a_small_clock")],
 	["off", C("wall_edit.keep_as_it_is")]
-], nc = () => [
+], ic = () => [
 	[
 		"window",
 		C("wall_edit.this_window"),
@@ -22401,10 +22412,10 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 		C("wall_edit.upright"),
 		C("wall_edit.a_tablet_hung_upright_9_16")
 	]
-], rc = {
+], ac = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, ic = class extends b {
+}, oc = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -22439,7 +22450,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 		let e = this.snapshot.settings.boards ?? [];
 		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
 		let t = structuredClone(e), n = this._boards ? this._id : "";
-		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || Es(t, this.boardName)?.id || t[0]?.id || "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || Os(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
 		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
@@ -22485,7 +22496,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : rc[this._view];
+		return this._view === "window" ? this._win : ac[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -22502,7 +22513,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 	_pick(e) {
 		this._sel = e.detail;
 		let t = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
-		this._modal = Cs(t)?.options.length ? "tile" : "";
+		this._modal = Ts(t)?.options.length ? "tile" : "";
 	}
 	_uniqueName(e) {
 		let t = new Set((this._boards ?? []).map((e) => e.name.toLowerCase()));
@@ -22512,14 +22523,14 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= Zs) return;
+		if (!this._boards || this._boards.length >= $s) return;
 		let e = {
-			id: ca(),
+			id: ua(),
 			name: this._uniqueName(C("wall_edit.my_board")),
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: Ts(16, 9)
+			tiles: Ds(16, 9)
 		};
 		this._boards = [...this._boards, e], this._id = e.id, this._sel = "";
 	}
@@ -22530,12 +22541,12 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= Qs) {
-			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: Qs }), this._modal = "";
+		if (t.tiles.length >= ec) {
+			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: ec }), this._modal = "";
 			return;
 		}
-		let n = ws(e, t.tiles, t.columns, t.rows);
-		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = Cs(e)?.options.length ? "tile" : "") : (this._error = C("wall_edit.every_cell_of_this_board_is"), this._modal = "");
+		let n = Es(e, t.tiles, t.columns, t.rows);
+		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = Ts(e)?.options.length ? "tile" : "") : (this._error = C("wall_edit.every_cell_of_this_board_is"), this._modal = "");
 	}
 	_remove(e = this._sel) {
 		this._edit((t) => t.tiles = t.tiles.filter((t) => t.id !== e)), e === this._sel && (this._sel = ""), this._modal = "";
@@ -22546,7 +22557,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 	_resize(e, t) {
 		let n = this._cur, r = this._tile;
 		if (!n || !r) return;
-		let i = vs(n.tiles.map((i) => i.id === r.id ? {
+		let i = bs(n.tiles.map((i) => i.id === r.id ? {
 			...i,
 			w: Math.max(1, Math.min(e, n.columns - i.x)),
 			h: Math.max(1, Math.min(t, n.rows - i.y))
@@ -22559,7 +22570,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 			columns: e,
 			rows: t
 		};
-		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = _s(n.tiles), o = gs(n.tiles);
+		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = ys(n.tiles), o = vs(n.tiles);
 		return r < a || i < o ? (this._error = C("wall_edit.some_tiles_reach_to_column_and", {
 			columns: a,
 			rows: o
@@ -22576,7 +22587,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 	_scaleGrid(e) {
 		let t = this._cur;
 		if (!t) return;
-		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = bs(t.tiles, n);
+		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = Ss(t.tiles, n);
 		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? C("wall_edit.by_is_the_finest_grid", {
 			columns_max: 32,
 			rows_max: 18
@@ -22641,7 +22652,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = J(this.hass, t.domains ?? ec), a = `dl-${e.id}-${t.key}`;
+				let i = J(this.hass, t.domains ?? nc), a = `dl-${e.id}-${t.key}`;
 				return h`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder=${C("wall_edit.start_typing_a_name")} .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
@@ -22649,13 +22660,13 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
           ${n && !this.hass?.states[String(n)] ? h`<div class="error small">${C("wall_edit.was_not_found", { value: String(n) })}</div>` : v}</div>`;
 			}
 			default: return h`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${$s} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${tc} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
 		let t = this._tile;
 		if (!t) return v;
-		let n = Cs(t.type);
+		let n = Ts(t.type);
 		return h`
       <div class="mhead"><h2>${A(n?.icon ?? "shape-outline")} ${n?.label ?? t.type}</h2></div>
       ${n?.options.length ? h`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : v}
@@ -22675,7 +22686,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
       <div class="mhead"><h2>${A("monitor-dashboard")} ${C("wall_edit.this_board")}</h2></div>
       <div class="field">
         <label for="bname">${C("common.name")}</label>
-        <input id="bname" maxlength=${$s} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${tc} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", C("wall_edit.columns"), e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -22690,13 +22701,13 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
       <div class="field">
         <label for="bnight">${C("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${tc().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${rc().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">${C("wall_edit.night_is_when_quiet_hours_are")}</p>
-      <p class="small">${w("wall_edit.link_for_the_tablets_start_page", { link: Ds(e) })}</p>
+      <p class="small">${w("wall_edit.link_for_the_tablets_start_page", { link: ks(e) })}</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= Zs} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= $s} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${C("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>${C("common.done")}</button>
@@ -22707,7 +22718,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
 		return h`
       <div class="mhead"><h2>${C("wall_edit.add_a_tile")}</h2></div>
       <div class="adds" role="group" aria-label=${C("wall_edit.add_a_tile_2")}>
-        ${xs().map((e) => h`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${A(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+        ${Cs().map((e) => h`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${A(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
       <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>${C("common.cancel")}</button></div>
     `;
@@ -22730,7 +22741,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
           <button @click=${() => this._modal = "board"}>${A("cog-outline")} ${C("wall_edit.board")}</button>
           <button @click=${() => this._modal = "add"}>${C("wall_edit.add_tile")}</button>
           <div class="views" role="group" aria-label=${C("wall_edit.show_it_as")}>
-            ${nc().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${ic().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">${C("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
@@ -22784,7 +22795,7 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
       display: block;
       color: var(--primary-text-color);
       background: var(--primary-background-color);
-      font-family: ${a(hn)};
+      font-family: ${a(_n)};
     }
     * {
       box-sizing: border-box;
@@ -23001,14 +23012,14 @@ var Zs = 10, Qs = 30, $s = 40, ec = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", ic);
+customElements.define("boopli-wall-edit", oc);
 // src/boopli-panel.ts
-var ac = () => ({
+var sc = () => ({
 	today: C("wall_tile_calendar.today"),
 	chores: C("common.chores"),
 	home: C("panel.my_home"),
 	settings: C("common.settings")
-}), oc = class extends b {
+}), cc = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -23055,7 +23066,7 @@ var ac = () => ({
 			let t = e.detail;
 			this._breakdownError = "";
 			try {
-				t.action === "start" ? (await Rt(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await Yt(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
+				t.action === "start" ? (await zt(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await Xt(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
 					id: ++this._requestId,
 					draft: this._draftFrom(t),
 					schedule: !0
@@ -23102,7 +23113,7 @@ var ac = () => ({
 		(e !== this._tab || this._wizard) && await this._guard() && (this._wizard = null, this._breakdown = null, this._tab = e);
 	}
 	_openWizard(e) {
-		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && Bt(this.hass, "in_progress", e.startAt).catch(() => void 0);
+		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && Vt(this.hass, "in_progress", e.startAt).catch(() => void 0);
 	}
 	_draftFrom(e) {
 		return {
@@ -23128,7 +23139,7 @@ var ac = () => ({
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback(), _n(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
+		super.connectedCallback(), yn(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer), window.removeEventListener("beforeunload", this._beforeUnload), this._unsub?.(), this._unsub = void 0, this._subscribing = !1;
@@ -23136,11 +23147,11 @@ var ac = () => ({
 	willUpdate(e) {
 		if (e.has("hass") && this.hass && mt(this.hass.language), e.has("_snapshot")) {
 			let e = this._snapshot?.settings;
-			Ho(this, e?.pet_kind, e?.accent);
+			Wo(this, e?.pet_kind, e?.accent);
 		}
 	}
 	updated() {
-		this.hass && !this._unsub && !this._subscribing && (this._subscribing = !0, Jt(this.hass, (e) => {
+		this.hass && !this._unsub && !this._subscribing && (this._subscribing = !0, Yt(this.hass, (e) => {
 			this._snapshot = e, this._nowMs = Date.now(), this._connectionError = "", this._autoChecked || (this._autoChecked = !0, e.setup?.status === "new" && this._openWizard({
 				wizard: "first",
 				startAt: ""
@@ -23179,7 +23190,7 @@ var ac = () => ({
 		if (!e?.active || (this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown) return v;
 		let t = !!this._snapshot?.away_now, n = this._snapshot?.time_zone ?? "UTC";
 		return h`<div class="away-bar" role="status">
-      <span>${A("bag-suitcase")} <b>${C(t ? "wall.away_mode_is_on" : "panel.away_mode_is_planned")}</b> ${Fn(e, this._nowMs, n, t)}</span>
+      <span>${A("bag-suitcase")} <b>${C(t ? "wall.away_mode_is_on" : "panel.away_mode_is_planned")}</b> ${In(e, this._nowMs, n, t)}</span>
       <button type="button" @click=${() => this._selectTab("settings")}>${C(t ? "panel.back_now" : "away.change")}</button>
     </div>`;
 	}
@@ -23220,16 +23231,16 @@ var ac = () => ({
         ${this.narrow ? h`<button class="menu" aria-label=${C("panel.open_sidebar")} @click=${this._toggleSidebar}>${A("menu")}</button>` : v}
         <h1>${C("wizard.boopli")}</h1>
         <nav>
-          ${Object.keys(ac()).map((t) => h`<button
+          ${Object.keys(sc()).map((t) => h`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${ac()[t]}
+              ${sc()[t]}
               ${e[t] ? h`<span class="dot" title=${C("panel.unsaved_changes")} aria-label=${C("panel.unsaved_changes")}></span>` : v}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title=${C("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(Es(this._snapshot?.settings?.boards, "")?.name ?? "")}>${A("monitor-dashboard")} ${C("panel.wall_view")}</button>
+        <button class="wallbtn" title=${C("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(Os(this._snapshot?.settings?.boards, "")?.name ?? "")}>${A("monitor-dashboard")} ${C("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -23241,7 +23252,7 @@ var ac = () => ({
 			let t = e.detail ?? {};
 			this._openWall(t.name ?? "", !!t.edit);
 		}}
-        @egg-started=${() => this.hass && void dn(this.hass).catch(() => void 0)}
+        @egg-started=${() => this.hass && void pn(this.hass).catch(() => void 0)}
         @dirty-change=${this._onDirty}
       >
         ${this._connectionError ? h`<p class="error">${this._connectionError}</p>` : this._wizard ? h`<boopli-wizard
@@ -23420,5 +23431,5 @@ var ac = () => ({
     `];
 	}
 };
-customElements.define("boopli-panel", oc);
-export { oc as BoopliPanel };
+customElements.define("boopli-panel", cc);
+export { cc as BoopliPanel };

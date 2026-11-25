@@ -34,6 +34,32 @@
         }
       }
     },
+    "break_down": {
+      "name": "Aufgabe aufteilen",
+      "description": "Teilt eine Aufgabe mit deinem KI-Agenten in Home Assistant in kleine Schritte auf und gibt die Schritte zurück. Die KI-Hilfe muss eingeschaltet sein.",
+      "fields": {
+        "task": {
+          "name": "Aufgabe",
+          "description": "Was möchtest du erledigen?"
+        },
+        "kind": {
+          "name": "Art",
+          "description": "Gib „now“ für eine einmalige Aufgabe oder „recurring“ für eine Aufgabe mit Zeitplan ein."
+        },
+        "answers": {
+          "name": "Antworten",
+          "description": "Du kannst die Fragen der KI und deine Antworten darauf als Liste angeben."
+        },
+        "notes": {
+          "name": "Notizen",
+          "description": "Du kannst Notizen zum Raum angeben. Boopli schickt sie zusammen mit der Aufgabe."
+        },
+        "rooms": {
+          "name": "Räume",
+          "description": "Du kannst die Räume auflisten, deren Notizen Boopli mitschicken soll. Wenn du das Feld leer lässt, schätzt Boopli wie in der Oberfläche anhand der Aufgabe, welche Räume gemeint sind."
+        }
+      }
+    },
     "start_chore": {
       "name": "Aufgabe starten",
       "description": "Startet eine Aufgabe sofort, zum Beispiel „Wäsche“ mit der Einstellung „Bei Bedarf (ich starte selbst)“.",

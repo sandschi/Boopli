@@ -34,6 +34,32 @@
         }
       }
     },
+    "break_down": {
+      "name": "Taak opdelen",
+      "description": "Deelt een taak met je Home Assistant AI-agent op in kleine stappen en geeft je die stappen terug. AI-hulp moet aanstaan.",
+      "fields": {
+        "task": {
+          "name": "Taak",
+          "description": "Wat wil je doen?"
+        },
+        "kind": {
+          "name": "Soort",
+          "description": "Vul now in voor een eenmalige taak of recurring voor een taak met een planning."
+        },
+        "answers": {
+          "name": "Antwoorden",
+          "description": "Je kunt de vragen van de AI met je antwoorden als lijst meegeven."
+        },
+        "notes": {
+          "name": "Notities",
+          "description": "Je kunt notities over de kamer meesturen met de taak."
+        },
+        "rooms": {
+          "name": "Kamers",
+          "description": "Je kunt een lijst met kamers meegeven. Boopli stuurt de notities van die kamers mee. Laat je dit leeg? Dan schat Boopli net als in het paneel op basis van de taak om welke kamers het gaat."
+        }
+      }
+    },
     "start_chore": {
       "name": "Taak starten",
       "description": "Start meteen een taak, bijvoorbeeld de was als je die normaal zelf start.",

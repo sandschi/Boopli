@@ -34,6 +34,32 @@
         }
       }
     },
+    "break_down": {
+      "name": "Découper une tâche",
+      "description": "Découpe une tâche en petites étapes avec ton agent IA Home Assistant et te renvoie ces étapes. L’aide de l’IA doit être activée.",
+      "fields": {
+        "task": {
+          "name": "Tâche",
+          "description": "Qu’est-ce que tu veux faire ?"
+        },
+        "kind": {
+          "name": "Type",
+          "description": "Saisis now pour une tâche ponctuelle ou recurring pour une tâche planifiée."
+        },
+        "answers": {
+          "name": "Réponses",
+          "description": "Tu peux ajouter les réponses aux questions de l’IA sous forme de liste de questions et de réponses."
+        },
+        "notes": {
+          "name": "Notes",
+          "description": "Tu peux ajouter des notes sur la pièce. Boopli les envoie avec la tâche."
+        },
+        "rooms": {
+          "name": "Pièces",
+          "description": "Tu peux lister les pièces dont tu veux envoyer les notes. Si tu laisses ce champ vide, Boopli choisit les pièces d’après la tâche, comme dans le panneau."
+        }
+      }
+    },
     "start_chore": {
       "name": "Lancer une tâche",
       "description": "Démarre une tâche tout de suite, par exemple une lessive que tu lances à la demande.",

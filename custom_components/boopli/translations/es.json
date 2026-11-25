@@ -34,6 +34,32 @@
         }
       }
     },
+    "break_down": {
+      "name": "Dividir tarea",
+      "description": "Divide una tarea en pasos pequeños con tu agente de IA de Home Assistant y devuelve los pasos. Activa la ayuda con IA para usar esta acción.",
+      "fields": {
+        "task": {
+          "name": "Tarea",
+          "description": "¿Qué necesitas hacer?"
+        },
+        "kind": {
+          "name": "Tipo",
+          "description": "Usa now para una tarea que se hace una sola vez o recurring para una tarea con horario."
+        },
+        "answers": {
+          "name": "Respuestas",
+          "description": "Puedes incluir tus respuestas en una lista con las preguntas de la IA y sus respuestas."
+        },
+        "notes": {
+          "name": "Notas",
+          "description": "Puedes incluir notas sobre el espacio. Se envían junto con la tarea."
+        },
+        "rooms": {
+          "name": "Espacios",
+          "description": "Puedes indicar de qué espacios se envían las notas. Si dejas este campo vacío, Boopli deduce los espacios a partir de la tarea, igual que en el panel."
+        }
+      }
+    },
     "start_chore": {
       "name": "Iniciar tarea",
       "description": "Inicia una tarea enseguida, por ejemplo, «Lavar la ropa» si la configuraste para hacerla cuando quieras.",
