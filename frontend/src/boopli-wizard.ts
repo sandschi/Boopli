@@ -19,6 +19,7 @@ import {
   entityIds,
   friendlyName,
   hexToRgb,
+  ladderName,
   lightHasColor,
   newLadderId,
   newAlarmDevice,
@@ -620,11 +621,11 @@ export class BoopliWizard extends LitElement {
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     if (users.length) {
-      this._error = t("ladders.is_used_by_pick_another_nudge", { name: l.name, join: users.join(", ") });
+      this._error = t("ladders.is_used_by_pick_another_nudge", { name: ladderName(l), join: users.join(", ") });
       return;
     }
     if (d.default_style === style) {
-      this._error = t("ladders.is_the_style_for_new_chores", { name: l.name });
+      this._error = t("ladders.is_the_style_for_new_chores", { name: ladderName(l) });
       return;
     }
     const before = d;
@@ -709,7 +710,7 @@ export class BoopliWizard extends LitElement {
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     return html`
-      <p>${rich("wizard.delete_the_ladder_this_cannot_be", { name: l.name })}</p>
+      <p>${rich("wizard.delete_the_ladder_this_cannot_be", { name: ladderName(l) })}</p>
       ${users.length
         ? html`<p class="muted">${t("wizard.it_is_used_by_pick_another", { join: users.join(", ") })}</p>`
         : nothing}

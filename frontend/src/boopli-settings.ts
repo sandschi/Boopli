@@ -10,6 +10,7 @@ import {
   lightKind,
   phoneName,
   PHONE_LEVEL_LABEL,
+  ladderName,
   styleLabel,
 } from "./helpers";
 import { weekdayNames } from "./time";
@@ -974,7 +975,7 @@ export class BoopliSettings extends LitElement {
         const ladders = d.ladders ?? [];
         return [
           t("settings.new_chores", { style: styleLabel(d.default_style, ladders) }),
-          ...ladders.map((l) => t("settings.ladder_nudges", { name: l.name, count: l.rungs.length })),
+          ...ladders.map((l) => t("settings.ladder_nudges", { name: ladderName(l), count: l.rungs.length })),
           ...(ladders.length ? [] : [t("settings.no_ladders_of_your_own_yet")]),
         ];
       }
@@ -986,7 +987,7 @@ export class BoopliSettings extends LitElement {
         return [d.presence_entity ? fn(d.presence_entity) : t("settings.not_set_boopli_assumes_you_are")];
       case "pet":
         return [
-          t("settings.the", { pet_name: d.pet_name, value: petInfo(d.pet_kind).label.toLowerCase() }),
+          t("settings.the", { pet_name: d.pet_name, value: petInfo(d.pet_kind).label }),
           isHex(d.accent) ? t("settings.accent_colour_2", { value: d.accent.toLowerCase() }) : t("settings.accent_colour_your_pets_own"),
         ];
       case "backup":

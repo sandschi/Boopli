@@ -1,4 +1,4 @@
-import { friendlyName, lightKind, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
+import { friendlyName, ladderName, lightKind, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { weekdayNames } from "./time";
 import type { Hass, Settings, SoundCfg, SpeakerCfg } from "./types";
 import { t } from "./i18n";
@@ -114,8 +114,8 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   });
 
   const ladders = byKey(before.ladders ?? [], after.ladders ?? [], (l) => l.id);
-  ladders.added.forEach((l) => out.push(t("diff.nudge_ladder_added_nudges", { name: l.name, count: l.rungs.length })));
-  ladders.removed.forEach((l) => out.push(t("diff.nudge_ladder_removed", { name: l.name })));
+  ladders.added.forEach((l) => out.push(t("diff.nudge_ladder_added_nudges", { name: ladderName(l), count: l.rungs.length })));
+  ladders.removed.forEach((l) => out.push(t("diff.nudge_ladder_removed", { name: ladderName(l) })));
   ladders.kept.forEach(({ before: b, after: a }) => {
     if (b.name !== a.name) out.push(t("diff.nudge_ladder_renamed", { before: b.name, after: a.name }));
     if (JSON.stringify({ r: b.rungs, x: b.repeat_last }) !== JSON.stringify({ r: a.rungs, x: a.repeat_last }))

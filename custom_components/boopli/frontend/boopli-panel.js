@@ -10668,8 +10668,20 @@ function la(e, t) {
 	}[e];
 	return n && t?.some((e) => e.id === n) ? `ladder:${n}` : e;
 }
+function X(e) {
+	let t = {
+		standard_one: ["One nudge", () => C("helpers.one_nudge")],
+		standard_escalating: ["Escalating", () => C("helpers.escalating")],
+		standard_persistent: ["Persistent", () => C("helpers.persistent")]
+	}[e.id];
+	return t && e.name === t[0] ? t[1]() : e.name;
+}
 function ua(e, t) {
-	return e.startsWith("ladder:") ? t?.find((t) => `ladder:${t.id}` === e)?.name ?? C("chore_editor.a_ladder_that_is_gone") : oa()[e] ?? e;
+	if (e.startsWith("ladder:")) {
+		let n = t?.find((t) => `ladder:${t.id}` === e);
+		return n ? X(n) : C("chore_editor.a_ladder_that_is_gone");
+	}
+	return oa()[e] ?? e;
 }
 function da(e) {
 	if (!e.enabled) return C("helpers.off_boopli_nudges_at_any_time");
@@ -13381,7 +13393,7 @@ var Ha = 8, Ua = () => [{
           >
             ${[...Ua(), ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
-			label: e.id.startsWith("standard_") ? e.name : C("chore_editor.my_own_ladder", { name: e.name })
+			label: e.id.startsWith("standard_") ? X(e) : C("chore_editor.my_own_ladder", { name: e.name })
 		}))].map((t) => h`<option
                 value=${t.value}
                 ?selected=${t.value === la(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
@@ -13694,7 +13706,7 @@ var Ha = 8, Ua = () => [{
 customElements.define("boopli-chore-editor", qa);
 // src/templates.ts
 function Ja(e) {
-	let t = new Set(e), n = X().map((e) => e.draft.name), r = bt(() => X().map((e) => e.draft.name));
+	let t = new Set(e), n = Z().map((e) => e.draft.name), r = bt(() => Z().map((e) => e.draft.name));
 	return (e) => {
 		let i = n.indexOf(e);
 		return t.has(e) || i >= 0 && r.some((e) => t.has(e[i]));
@@ -13705,7 +13717,7 @@ var Ya = {
 	time: "09:00",
 	every_n_days: 1,
 	days: {}
-}, X = () => [
+}, Z = () => [
 	{
 		label: C("templates.dishwasher"),
 		draft: {
@@ -13964,7 +13976,7 @@ var Za = class extends b {
 
       <div class="templates">
         <span class="muted small">${C("chores.start_from_a_template")}</span>
-        ${X().map((e) => h`<button
+        ${Z().map((e) => h`<button
             class="chip"
             @click=${() => this._editing = structuredClone(e.draft)}
           >
@@ -15367,7 +15379,7 @@ var vo = class extends b {
         <input
           id="name-${e.id}"
           maxlength=${ho}
-          .value=${e.name}
+          .value=${X(e)}
           @input=${(t) => this._edit(e.id, (e) => e.name = t.target.value)}
         />
       </div>
@@ -15412,7 +15424,7 @@ var vo = class extends b {
         >
           ${go().map((t) => h`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
           ${t.map((t) => h`<option value=${`ladder:${t.id}`} ?selected=${`ladder:${t.id}` === e.default_style}>
-              ${t.name || C("ladders.no_name")}
+              ${X(t) || C("ladders.no_name")}
 
             </option>`)}
           ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? h`<option value=${e.default_style} selected>${ua(e.default_style, t)}</option>` : v}
@@ -15422,7 +15434,7 @@ var vo = class extends b {
 			let t = this._open === e.id;
 			return h`<div class="ladder">
               <div class="lhead">
-                <b class="lname">${e.name || C("ladders.no_name")}</b>
+                <b class="lname">${X(e) || C("ladders.no_name")}</b>
                 <span class="muted small">${C("common.nudges_count", { count: e.rungs.length })}</span>
                 <span class="spacer"></span>
                 <button class="chip" aria-expanded=${t ? "true" : "false"} @click=${() => this._open = t ? "" : e.id}>
@@ -16002,9 +16014,9 @@ function Eo(e, t, n) {
 	});
 	let d = Co(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
 	d.added.forEach((e) => i.push(C("diff.nudge_ladder_added_nudges", {
-		name: e.name,
+		name: X(e),
 		count: e.rungs.length
-	}))), d.removed.forEach((e) => i.push(C("diff.nudge_ladder_removed", { name: e.name }))), d.kept.forEach(({ before: e, after: t }) => {
+	}))), d.removed.forEach((e) => i.push(C("diff.nudge_ladder_removed", { name: X(e) }))), d.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(C("diff.nudge_ladder_renamed", {
 			before: e.name,
 			after: t.name
@@ -17522,7 +17534,7 @@ var Uo = "@address", Wo = () => ({
 				return [
 					C("settings.new_chores", { style: ua(t.default_style, e) }),
 					...e.map((e) => C("settings.ladder_nudges", {
-						name: e.name,
+						name: X(e),
 						count: e.rungs.length
 					})),
 					...e.length ? [] : [C("settings.no_ladders_of_your_own_yet")]
@@ -17543,7 +17555,7 @@ var Uo = "@address", Wo = () => ({
 			case "presence": return [t.presence_entity ? n(t.presence_entity) : C("settings.not_set_boopli_assumes_you_are")];
 			case "pet": return [C("settings.the", {
 				pet_name: t.pet_name,
-				value: wi(t.pet_kind).label.toLowerCase()
+				value: wi(t.pet_kind).label
 			}), Io(t.accent) ? C("settings.accent_colour_2", { value: t.accent.toLowerCase() }) : C("settings.accent_colour_your_pets_own")];
 			case "backup": return [C("settings.save_your_whole_setup_to_one")];
 			case "language": return [];
@@ -19288,7 +19300,7 @@ var $o = class extends b {
 };
 customElements.define("boopli-home", $o);
 // src/wall-tile.ts
-var Z = class extends b {
+var Q = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -19313,7 +19325,7 @@ var Z = class extends b {
 		let n = this.options[e];
 		return typeof n == "boolean" ? n : t;
 	}
-}, Q = o`
+}, $ = o`
   :host {
     display: block;
     container-type: size; /* the text grows with the width and shrinks with the height of the tile */
@@ -19396,14 +19408,14 @@ var Z = class extends b {
     color: var(--error-color, #db4437);
     font-size: clamp(12px, 3.2cqw, 18px);
   }
-`, es = class extends Z {
+`, es = class extends Q {
 	render() {
-		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(void 0, {
+		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(Tn(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
 			hour12: this.text("format", "24h") === "12h"
-		}).format(t), r = new Intl.DateTimeFormat(void 0, {
+		}).format(t), r = new Intl.DateTimeFormat(Tn(), {
 			timeZone: e,
 			weekday: "long",
 			day: "numeric",
@@ -19417,12 +19429,12 @@ var Z = class extends b {
     </div>`;
 	}
 	static {
-		this.styles = [Q, o``];
+		this.styles = [$, o``];
 	}
 };
 customElements.define("wall-tile-clock", es);
 // src/wall-tile-pet.ts
-var ts = class extends Z {
+var ts = class extends Q {
 	render() {
 		let e = this.snapshot?.pet;
 		if (!e) return h`<div class="center muted normal">${C("common.loading")}</div>`;
@@ -19439,7 +19451,7 @@ var ts = class extends Z {
     </div>`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       :host {
         padding: 8px;
       }
@@ -19463,10 +19475,10 @@ var ts = class extends Z {
 };
 customElements.define("wall-tile-pet", ts);
 // src/wall-tile-due.ts
-var ns = class extends Z {
+var ns = class extends Q {
 	static {
 		this.properties = {
-			...Z.properties,
+			...Q.properties,
 			_busy: { state: !0 },
 			_error: { state: !0 }
 		};
@@ -19513,7 +19525,7 @@ var ns = class extends Z {
     </div>`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       .due {
         height: 100%;
         display: flex;
@@ -19559,7 +19571,7 @@ var ns = class extends Z {
 };
 customElements.define("wall-tile-due-now", ns);
 // src/wall-tile-next.ts
-var rs = class extends Z {
+var rs = class extends Q {
 	render() {
 		if (!this.snapshot) return h`<div class="center muted normal">${C("common.loading")}</div>`;
 		let e = this.snapshot.time_zone, t = Ln(this.snapshot, this.nowMs), n = [
@@ -19584,7 +19596,7 @@ var rs = class extends Z {
       ${n.length ? n.map((e) => h`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${e.when}</span></div>`) : h`<div class="normal muted">${C("wall_tile_next.nothing_planned")}</div>`}`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       .row {
         display: flex;
         justify-content: space-between;
@@ -19631,7 +19643,7 @@ var is = {
 	button: "gesture-tap-button",
 	person: "account-outline",
 	media_player: "speaker"
-}, os = class extends Z {
+}, os = class extends Q {
 	_tap() {
 		let e = this.text("entity_id"), t = is[e.split(".")[0]];
 		if (this.preview || !this.hass?.callService || !t || this.text("tap", "toggle") !== "toggle") return;
@@ -19654,7 +19666,7 @@ var is = {
 		return h`<button type="button" class="ent tap ${a ? "on" : ""}" aria-label=${u} @click=${() => this._tap()}>${c}</button>`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       .ent {
         height: 100%;
         display: flex;
@@ -19706,7 +19718,7 @@ var ss = {
 	sunny: "weather-sunny",
 	windy: "weather-windy",
 	"windy-variant": "weather-windy-variant"
-}, cs = class extends Z {
+}, cs = class extends Q {
 	render() {
 		let e = this.text("entity_id");
 		if (!e) return h`<div class="center muted normal">${C("wall_tile_weather.pick_a_weather_entity_in_the")}</div>`;
@@ -19723,7 +19735,7 @@ var ss = {
     </div>`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       .w {
         height: 100%;
         display: flex;
@@ -19760,10 +19772,10 @@ function ls(e, t) {
 		time: `${n.hour}:${n.minute}`
 	};
 }
-var us = 6e5, ds = 7, fs = class extends Z {
+var us = 6e5, ds = 7, fs = class extends Q {
 	static {
 		this.properties = {
-			...Z.properties,
+			...Q.properties,
 			_events: { state: !0 },
 			_error: { state: !0 }
 		};
@@ -19844,7 +19856,7 @@ var us = 6e5, ds = 7, fs = class extends Z {
       ${this._error ? h`<div class="error">${this._error}</div>` : t.length ? t.map((e) => h`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : h`<div class="normal muted">${C("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       .row {
         display: flex;
         justify-content: space-between;
@@ -19864,10 +19876,10 @@ var us = 6e5, ds = 7, fs = class extends Z {
 };
 customElements.define("wall-tile-calendar", fs);
 // src/wall-tile-camera.ts
-var ps = class extends Z {
+var ps = class extends Q {
 	static {
 		this.properties = {
-			...Z.properties,
+			...Q.properties,
 			_tick: { state: !0 }
 		};
 	}
@@ -19892,7 +19904,7 @@ var ps = class extends Z {
 		return typeof t == "string" ? h`<img src=${`${t}${t.includes("?") ? "&" : "?"}t=${this._tick}`} alt=${C("wall_tile_camera.camera_picture")} />` : h`<div class="center muted normal">${C("wall_tile_camera.no_picture_from_this_camera")}</div>`;
 	}
 	static {
-		this.styles = [Q, o`
+		this.styles = [$, o`
       :host {
         padding: 0;
       }
@@ -19907,13 +19919,13 @@ var ps = class extends Z {
 };
 customElements.define("wall-tile-camera", ps);
 // src/wall-tile-note.ts
-var ms = class extends Z {
+var ms = class extends Q {
 	render() {
 		let e = this.text("text").trim();
 		return e ? h`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : h`<div class="center muted normal">${C("wall_tile_note.write_a_note_in_the_board")}</div>`;
 	}
 	static {
-		this.styles = [Q, o`.center div { white-space: pre-line; }`];
+		this.styles = [$, o`.center div { white-space: pre-line; }`];
 	}
 };
 customElements.define("wall-tile-note", ms);
@@ -20241,7 +20253,7 @@ var Os = {
 	ai: C("wizard.ai_help_setup"),
 	ladders: C("common.nudge_it_your_way"),
 	wall: C("common.wall_board")
-}), js = 10, $ = 30, Ms = () => ({
+}), js = 10, Ms = 30, Ns = () => ({
 	welcome: C("wizard.welcome"),
 	phone: C("wizard.your_phone"),
 	phone_detail: C("wizard.phone_details"),
@@ -20273,16 +20285,16 @@ var Os = {
 	lad_delete: C("wizard.delete_a_ladder"),
 	wall_start: C("wizard.which_board"),
 	done: C("common.all_set")
-}), Ns = [
+}), Ps = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], Ps = () => [{
+], Fs = () => [{
 	value: "quiet",
 	label: C("common.quiet"),
 	text: C("wizard.only_shown_in_boopli_never_nudges")
-}], Fs = () => [
+}], Is = () => [
 	{
 		value: "normal",
 		label: C("common.normal_notification")
@@ -20299,7 +20311,7 @@ var Os = {
 		value: "alarm_max",
 		label: C("common.max_volume_not_on_every_phone")
 	}
-], Is = () => [
+], Ls = () => [
 	{
 		value: "alexa_media",
 		label: C("helpers.alexa_media_player")
@@ -20312,13 +20324,13 @@ var Os = {
 		value: "tts",
 		label: C("common.a_tts_voice_on_this_speaker")
 	}
-], Ls = () => [{
+], Rs = () => [{
 	value: "alexa",
 	label: C("common.alexa_sound")
 }, {
 	value: "file",
 	label: C("common.file_in_my_media_folder")
-}], Rs = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", zs = [
+}], zs = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html", Bs = [
 	0,
 	1,
 	2,
@@ -20326,7 +20338,7 @@ var Os = {
 	4,
 	5,
 	6
-], Bs = class extends b {
+], Vs = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -20371,7 +20383,7 @@ var Os = {
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0;
 		let n = Ja(this.snapshot.chores.map((e) => e.name));
-		this._picked = X().filter((e) => !n(e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
+		this._picked = Z().filter((e) => !n(e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
 	}
 	_set(e) {
 		this._draft &&= {
@@ -20498,7 +20510,7 @@ var Os = {
 			this._busy = !0, this._error = "";
 			try {
 				if (await T(this.hass, this._draft), this._first) {
-					for (let e of X().filter((e) => this._picked.includes(e.label))) await Yt(this.hass, {
+					for (let e of Z().filter((e) => this._picked.includes(e.label))) await Yt(this.hass, {
 						...e.draft,
 						repeat: {
 							type: "none",
@@ -20595,7 +20607,7 @@ var Os = {
 				];
 				return;
 			}
-			if (e.length >= $) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: $ }));
+			if (e.length >= Ms) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ms }));
 			this._ladderId = "", this._ladderName = "", this._steps = [
 				"lad_start",
 				"lad_name",
@@ -20634,13 +20646,13 @@ var Os = {
 		let n = `ladder:${e.id}`, r = (this.snapshot?.chores ?? []).filter((e) => e.nudge_style === n).map((e) => e.name).sort();
 		if (r.length) {
 			this._error = C("ladders.is_used_by_pick_another_nudge", {
-				name: e.name,
+				name: X(e),
 				join: r.join(", ")
 			});
 			return;
 		}
 		if (t.default_style === n) {
-			this._error = C("ladders.is_the_style_for_new_chores", { name: e.name });
+			this._error = C("ladders.is_the_style_for_new_chores", { name: X(e) });
 			return;
 		}
 		let i = t;
@@ -20658,7 +20670,7 @@ var Os = {
 			}));
 			return;
 		}
-		if ((e.ladders ?? []).length >= $) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: $ }));
+		if ((e.ladders ?? []).length >= Ms) throw Error(C("wizard.you_have_ladders_the_most_edit", { max_ladders: Ms }));
 		let n = ca();
 		this._ladderId = n, this._createdId = n, this._set({ ladders: [...e.ladders ?? [], {
 			id: n,
@@ -20685,7 +20697,7 @@ var Os = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Ms()[e];
+		return e === "lad_nudge" ? C("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Ns()[e];
 	}
 	_renderLadStart(e) {
 		let t = e.ladders ?? [], n = t.length === 0, r = t.filter((e) => !e.id.startsWith("standard_")), i = (e, t, n, r = !1) => h`<label class="inline option">
@@ -20699,7 +20711,7 @@ var Os = {
       <span><b>${t}</b> <span class="muted small">${n}</span></span>
     </label>`;
 		return h`
-      ${i("create", C("wizard.create_a_ladder"), t.length >= $ ? C("wizard.you_have_ladders_the_most", { max_ladders: $ }) : C("wizard.a_new_list_of_nudges"), t.length >= $)}
+      ${i("create", C("wizard.create_a_ladder"), t.length >= Ms ? C("wizard.you_have_ladders_the_most", { max_ladders: Ms }) : C("wizard.a_new_list_of_nudges"), t.length >= Ms)}
       ${i("edit", C("wizard.edit_a_ladder"), C(n ? "wizard.you_have_no_ladders_yet" : "wizard.change_its_name_its_nudges_or"), n)}
       ${i("delete", C("wizard.delete_a_ladder"), r.length === 0 ? C("wizard.only_your_own_ladders_can_be") : C("wizard.remove_one_of_your_own_that"), r.length === 0)}
       ${this._ladderAction !== "create" && !n ? h`<div class="field">
@@ -20718,7 +20730,7 @@ var Os = {
 		if (!e) return h`<p class="muted">${C("wizard.pick_a_ladder_first")}</p>`;
 		let t = `ladder:${e.id}`, n = (this.snapshot?.chores ?? []).filter((e) => e.nudge_style === t).map((e) => e.name).sort();
 		return h`
-      <p>${w("wizard.delete_the_ladder_this_cannot_be", { name: e.name })}</p>
+      <p>${w("wizard.delete_the_ladder_this_cannot_be", { name: X(e) })}</p>
       ${n.length ? h`<p class="muted">${C("wizard.it_is_used_by_pick_another", { join: n.join(", ") })}</p>` : v}
       <div class="gate">
         <button type="button" class="danger big" ?disabled=${this._busy || n.length > 0} @click=${() => this._deleteLadder()}>
@@ -20814,7 +20826,7 @@ var Os = {
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(zs.map((e) => [String(e), { ...Qi }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Bs.map((e) => [String(e), { ...Qi }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -20840,7 +20852,7 @@ var Os = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(zs.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(Bs.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
@@ -20940,7 +20952,7 @@ var Os = {
 			level: n.target.value
 		} : e) })}
               >
-                ${Fs().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${Is().map((e) => h`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
             <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Gt(this.hass, t))}>${C("wizard.send_a_test")}</button>
@@ -20965,7 +20977,7 @@ var Os = {
       </label>
       ${t.enabled ? h`
             <div class="days">
-              ${zs.map((e) => {
+              ${Bs.map((e) => {
 			let n = t.days[String(e)] ?? null;
 			return h`<div class="dayrow">
                   <span class="dayname">${j()[e]}</span>
@@ -21028,7 +21040,7 @@ var Os = {
         </div>
       </div>
       <p>${C("wizard.how_should_new_chores_nudge_you")}</p>
-      ${[...Ps(), ...(e.ladders ?? []).map((e) => ({
+      ${[...Fs(), ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: e.name,
 			text: h`
@@ -21172,7 +21184,7 @@ var Os = {
             <label class="num">
               ${C("common.sound_type")}
               <select @change=${(t) => this._patchSound(e, { kind: t.target.value })}>
-                ${Ls().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${Rs().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => h`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
@@ -21180,7 +21192,7 @@ var Os = {
               <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
             </label>
             ${i.kind === "alexa" ? h`<div class="muted small">
-                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${Rs} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
+                  ${w("wizard.amazon_sound_hint", { library: h`<a href=${zs} target="_blank" rel="noreferrer">${C("wizard.amazon_sound_library")}</a>` })}
                 </div>` : h`<div class="muted small">${w("wizard.for_example_boopli_ding_mp3_in")}</div>`}
             ${e === "alarm" ? h`${this._numField(C("wizard.lasts_seconds"), i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
                 ${this._numField(C("wizard.repeats_every_seconds_0_once"), i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : v}
@@ -21222,7 +21234,7 @@ var Os = {
 			}));
 		}}
               >
-                ${Is().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${Ls().map((e) => h`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
@@ -21342,7 +21354,7 @@ var Os = {
         ${C("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
-        ${X().map((t) => {
+        ${Z().map((t) => {
 			let n = e(t.draft.name);
 			return h`<label class="inline option">
             <input
@@ -21517,7 +21529,7 @@ var Os = {
 		})));
 	}
 	_renderDone(e) {
-		let t = this._baseline ? Eo(this._baseline, e, this.hass) : [], n = X().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		let t = this._baseline ? Eo(this._baseline, e, this.hass) : [], n = Z().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
 		return this._first && n.length && t.push(C("wizard.chores_added", { join: n.join(", ") })), h`
       <p>${w(this._first ? "wizard.what_changed_before_setup" : "wizard.what_changed_in_setup")}</p>
       ${t.length === 0 ? h`<p class="muted">${C("wizard.nothing_changed")}</p>` : h`<ul>${t.map((e) => h`<li>${e}</li>`)}</ul>`}
@@ -21595,7 +21607,7 @@ var Os = {
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${Ns.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
+          ${Ps.includes(t) ? h`<div class="muted small optional">${C("wizard.optional_details_skip_if_the_defaults")}</div>` : v}
           ${this._renderStep(e)}
           ${this._error ? h`<div class="error">${this._error}</div>` : v}
           <div class="actions">
@@ -21929,31 +21941,31 @@ var Os = {
     `];
 	}
 };
-customElements.define("boopli-wizard", Bs);
+customElements.define("boopli-wizard", Vs);
 // node_modules/lit-html/static.js
-var Vs = Symbol.for(""), Hs = (e) => {
-	if (e?.r === Vs) return e?._$litStatic$;
-}, Us = (e) => ({
+var Hs = Symbol.for(""), Us = (e) => {
+	if (e?.r === Hs) return e?._$litStatic$;
+}, Ws = (e) => ({
 	_$litStatic$: e,
-	r: Vs
-}), Ws = /* @__PURE__ */ new Map(), Gs = ((e) => (t, ...n) => {
+	r: Hs
+}), Gs = /* @__PURE__ */ new Map(), Ks = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = Hs(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = Us(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = Ws.get(e)) === void 0 && (o.raw = o, Ws.set(e, t = o)), n = s;
+		(t = Gs.get(e)) === void 0 && (o.raw = o, Gs.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
 })(h);
 // src/wall-night.ts
-function Ks(e) {
+function qs(e) {
 	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
 	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function qs(e, t, n) {
+function Js(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -21971,11 +21983,11 @@ function qs(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = Ks(o.start), l = Ks(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = qs(o.start), l = qs(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Js = 3e4, Ys = class extends b {
+var Ys = 3e4, Xs = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -21997,7 +22009,7 @@ var Js = 3e4, Ys = class extends b {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Js, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + Ys, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -22085,7 +22097,7 @@ var Js = 3e4, Ys = class extends b {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Ln(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && qs(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		let t = this.snapshot.time_zone, n = !this.preview && !!Ln(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Js(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
 		return h`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
       ${a ? h`<div class="away" role="status">${A("bag-suitcase")} <b>${C("wall.away_mode_is_on")}</b> <span>${Fn(a, this.nowMs, t, !0)}</span></div>` : v}
       <div class="stage">
@@ -22094,13 +22106,13 @@ var Js = 3e4, Ys = class extends b {
         ${(this._live ?? e.tiles).filter((e) => !!Cs(e.type)).map((e) => h`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${Gs`<${Us(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${Ks`<${Ws(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${Us(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+            ></${Ws(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? h`<button type="button" class="shield" data-id=${e.id} aria-label=${C("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
                   <span class="handle" data-id=${e.id} data-resize title=${C("wall.drag_to_resize")}></span>
                   <button type="button" class="del" aria-label=${C("wall.remove_this_tile")} title=${C("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
@@ -22350,9 +22362,9 @@ var Js = 3e4, Ys = class extends b {
   `;
 	}
 };
-customElements.define("boopli-wall", Ys);
+customElements.define("boopli-wall", Xs);
 // src/boopli-wall-edit.ts
-var Xs = 10, Zs = 30, Qs = 40, $s = [
+var Zs = 10, Qs = 30, $s = 40, ec = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -22369,11 +22381,11 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 	"automation",
 	"person",
 	"media_player"
-], ec = () => [
+], tc = () => [
 	["dim", C("wall_edit.dim_the_screen")],
 	["black", C("wall_edit.black_with_a_small_clock")],
 	["off", C("wall_edit.keep_as_it_is")]
-], tc = () => [
+], nc = () => [
 	[
 		"window",
 		C("wall_edit.this_window"),
@@ -22389,10 +22401,10 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 		C("wall_edit.upright"),
 		C("wall_edit.a_tablet_hung_upright_9_16")
 	]
-], nc = {
+], rc = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, rc = class extends b {
+}, ic = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -22473,7 +22485,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : nc[this._view];
+		return this._view === "window" ? this._win : rc[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -22500,7 +22512,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= Xs) return;
+		if (!this._boards || this._boards.length >= Zs) return;
 		let e = {
 			id: ca(),
 			name: this._uniqueName(C("wall_edit.my_board")),
@@ -22518,8 +22530,8 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= Zs) {
-			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: Zs }), this._modal = "";
+		if (t.tiles.length >= Qs) {
+			this._error = C("wall_edit.a_board_can_have_tiles_at", { max_tiles: Qs }), this._modal = "";
 			return;
 		}
 		let n = ws(e, t.tiles, t.columns, t.rows);
@@ -22629,7 +22641,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = J(this.hass, t.domains ?? $s), a = `dl-${e.id}-${t.key}`;
+				let i = J(this.hass, t.domains ?? ec), a = `dl-${e.id}-${t.key}`;
 				return h`<div class="field"><label for=${r}>${t.label}</label>
           <input id=${r} list=${a} placeholder=${C("wall_edit.start_typing_a_name")} .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
@@ -22637,7 +22649,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
           ${n && !this.hass?.states[String(n)] ? h`<div class="error small">${C("wall_edit.was_not_found", { value: String(n) })}</div>` : v}</div>`;
 			}
 			default: return h`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${Qs} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+          ${t.long ? h`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : h`<input id=${r} maxlength=${$s} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
@@ -22663,7 +22675,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
       <div class="mhead"><h2>${A("monitor-dashboard")} ${C("wall_edit.this_board")}</h2></div>
       <div class="field">
         <label for="bname">${C("common.name")}</label>
-        <input id="bname" maxlength=${Qs} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <input id="bname" maxlength=${$s} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
         ${this._numField("bcols", C("wall_edit.columns"), e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
@@ -22678,13 +22690,13 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
       <div class="field">
         <label for="bnight">${C("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${ec().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${tc().map(([t, n]) => h`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
       <p class="muted small">${C("wall_edit.night_is_when_quiet_hours_are")}</p>
       <p class="small">${w("wall_edit.link_for_the_tablets_start_page", { link: Ds(e) })}</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= Xs} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= Zs} @click=${() => this._newBoard()}>${C("wall_edit.new_board")}</button>
         <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${C("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
         <button class="primary" @click=${() => this._modal = ""}>${C("common.done")}</button>
@@ -22718,7 +22730,7 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
           <button @click=${() => this._modal = "board"}>${A("cog-outline")} ${C("wall_edit.board")}</button>
           <button @click=${() => this._modal = "add"}>${C("wall_edit.add_tile")}</button>
           <div class="views" role="group" aria-label=${C("wall_edit.show_it_as")}>
-            ${tc().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+            ${nc().map(([e, t, n]) => h`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
           <span class="hint muted small">${C("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
@@ -22989,14 +23001,14 @@ var Xs = 10, Zs = 30, Qs = 40, $s = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", rc);
+customElements.define("boopli-wall-edit", ic);
 // src/boopli-panel.ts
-var ic = () => ({
+var ac = () => ({
 	today: C("wall_tile_calendar.today"),
 	chores: C("common.chores"),
 	home: C("panel.my_home"),
 	settings: C("common.settings")
-}), ac = class extends b {
+}), oc = class extends b {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -23208,11 +23220,11 @@ var ic = () => ({
         ${this.narrow ? h`<button class="menu" aria-label=${C("panel.open_sidebar")} @click=${this._toggleSidebar}>${A("menu")}</button>` : v}
         <h1>${C("wizard.boopli")}</h1>
         <nav>
-          ${Object.keys(ic()).map((t) => h`<button
+          ${Object.keys(ac()).map((t) => h`<button
               class="tab ${this._tab === t && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(t)}
             >
-              ${ic()[t]}
+              ${ac()[t]}
               ${e[t] ? h`<span class="dot" title=${C("panel.unsaved_changes")} aria-label=${C("panel.unsaved_changes")}></span>` : v}
             </button>`)}
         </nav>
@@ -23408,5 +23420,5 @@ var ic = () => ({
     `];
 	}
 };
-customElements.define("boopli-panel", ac);
-export { ac as BoopliPanel };
+customElements.define("boopli-panel", oc);
+export { oc as BoopliPanel };
