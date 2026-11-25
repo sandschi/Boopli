@@ -1,5 +1,5 @@
 {
-  "site_description": "Eine Hilfe für Aufgaben und Alltag mit ADHS, direkt in Home Assistant.",
+  "site_description": "Ein ADHS-freundlicher Aufgabenbegleiter direkt in Home Assistant.",
   "sidebar": {
     "start_here": "Erste Schritte",
     "everyday_use": "Im Alltag",
@@ -9,7 +9,7 @@
   "landing": {
     "hero_line_1": "Aufgaben in winzigen Schritten.",
     "hero_line_2": "Ein Haustier, das dich anfeuert.",
-    "lead": "Boopli hilft dir mit ADHS bei deinen Aufgaben und läuft direkt in <b>Home Assistant</b>. Es stupst dich mit den Lampen, Lautsprechern und dem Handy an, die du schon hast. Boopli braucht kein eigenes Konto und keinen eigenen Server. Solange die KI-Hilfe ausgeschaltet ist, wird nichts nach außen geschickt. Auf Englisch, Deutsch, Niederländisch, Französisch und Spanisch verfügbar.",
+    "lead": "Boopli ist ein ADHS-freundlicher Aufgabenbegleiter und läuft direkt in <b>Home Assistant</b>. Es stupst dich mit den Lampen, Lautsprechern und dem Handy an, die du schon hast. Boopli braucht kein eigenes Konto und keinen eigenen Server. Solange die KI-Hilfe ausgeschaltet ist, wird nichts nach außen geschickt. Auf Englisch, Deutsch, Niederländisch, Französisch und Spanisch verfügbar.",
     "badge_hacs_alt": "Öffne deine Home-Assistant-Instanz und rufe dieses Repository in HACS auf.",
     "badge_setup_alt": "Öffne deine Home-Assistant-Instanz und beginne mit der Einrichtung von Boopli.",
     "install_button": "Boopli installieren",
@@ -26,10 +26,10 @@
     "feature_1_text": "Aus einer großen Aufgabe werden ein paar sehr kleine Schritte. Boopli zeigt nur den Schritt, der gerade dran ist, mit einer großen Schaltfläche „Fertig“. Schritte können auf einen Sensor, einen NFC-Tag oder eine Taste warten und sich von selbst erledigen.",
     "feature_1_alt": "Die Ansicht „Heute“ in Boopli",
     "feature_2_title": "Stupse, die deutlicher werden",
-    "feature_2_text": "Eine Lampe blinkt. Ein Lautsprecher spielt einen kurzen Ton und liest dann etwas vor. Wenn du es wirklich brauchst, ertönt eine Sirene. Erstelle für einzelne Aufgaben eigene Stups-Ketten und lass dein Handy mitmachen. Ruhezeiten und der Abwesenheitsmodus sorgen für Pausen.",
+    "feature_2_text": "Eine Lampe blinkt. Ein Lautsprecher spielt einen kurzen Ton und liest dann etwas vor. Wenn du es wirklich brauchst, ertönt eine Sirene. Erstelle für einzelne Aufgaben eigene Stups-Ketten und lass dein Handy mitmachen. Mit Ruhezeiten und dem Abwesenheitsmodus bleibt es ruhig.",
     "feature_2_alt": "Die Einstellungen in Boopli",
     "feature_3_title": "KI, die Aufgaben aufteilt",
-    "feature_3_text": "Sag „Mein Zimmer aufräumen“. Dein eigener KI-Agent in Home Assistant oder als Extra dein eigenes Claude stellt dir ein paar Fragen und teilt die Aufgabe in winzige Schritte, die zu deinem Zuhause passen. Fotos helfen der KI zu sehen, was herumliegt.",
+    "feature_3_text": "Sag „Mein Zimmer aufräumen“. Dein eigener KI-Agent in Home Assistant oder als Extra dein eigenes Claude stellt dir ein paar Fragen und teilt die Aufgabe in winzige Schritte, die zu deinem Zuhause passen. Fotos helfen der KI zu sehen, was nicht an seinem Platz ist.",
     "feature_3_alt": "Das Fenster für die KI-Hilfe",
     "feature_4_title": "Ein Wallboard fürs Tablet",
     "feature_4_text": "Ein Bildschirm an der Wand zeigt den aktuellen Schritt, die Uhrzeit, das Wetter und dein Haustier. Verschiebe die Kacheln und ändere ihre Größe direkt auf dem Wallboard, wie auf einem Dashboard in Home Assistant.",

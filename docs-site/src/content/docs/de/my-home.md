@@ -15,7 +15,7 @@ Wähle auf einer Raumkarte **Aus Fotos**, um bis zu 4 Fotos aufzunehmen oder aus
 
 ### Fotos davon, wie es gerade aussieht
 
-Wenn du eine Aufgabe aufteilst, kannst du mit **Aktuelle Fotos hinzufügen (optional)** bis zu 4 Fotos teilen. Der gewählte KI-Dienst erhält die Fotos zusammen mit der Aufgabe und den ausgewählten Raumnotizen. Er schreibt auf, was herumliegt, etwa „Couchtisch: Flaschen und Papier“. Boopli löscht nach der Anfrage seine eigenen temporären Fotodateien. Ein Cloud-Anbieter kann speichern, was er erhalten hat. Du kannst die Beschreibung bearbeiten, bevor Boopli sie mit den nächsten Fragen oder Schritten mitschickt. Die Beschreibung wird nicht mit der Aufgabe gespeichert.
+Wenn du eine Aufgabe aufteilst, kannst du mit **Aktuelle Fotos hinzufügen (optional)** bis zu 4 Fotos teilen. Der gewählte KI-Dienst erhält die Fotos zusammen mit der Aufgabe und den ausgewählten Raumnotizen. Er schreibt auf, was nicht an seinem Platz ist, etwa „Couchtisch: Flaschen und Papier“. Boopli löscht nach der Anfrage seine eigenen temporären Fotodateien. Ein Cloud-Anbieter kann speichern, was er erhalten hat. Du kannst die Beschreibung bearbeiten, bevor Boopli sie mit den nächsten Fragen oder Schritten mitschickt. Die Beschreibung wird nicht mit der Aufgabe gespeichert.
 
 
 

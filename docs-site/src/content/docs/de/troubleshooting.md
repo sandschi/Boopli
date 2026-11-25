@@ -36,7 +36,7 @@ Boopli nutzt die eingebaute Blinkfunktion einer Lampe nicht. Manche Lampen melde
 | Claude kann Home Assistant unter keiner Webadresse erreichen. Trag unter „Claude fragen“ die Adresse von Home Assistant ein oder leg die externe URL in Home Assistant fest. | Lege die externe URL in Home Assistant fest oder nutze **Webadresse von Home Assistant (erweitert)** unter „Claude fragen“. |
 | Boopli hat das Limit von 20 Claude-Anfragen pro Stunde erreicht. Versuch’s in etwa 5 Minuten noch mal. | Warte die angezeigte Zahl von Minuten. |
 
-**Die Routine läuft, aber es kommt keine Antwort an.** Die Umgebung der Routine muss deine Home-Assistant-Adresse erlauben. Wähle **eingeschränkten Netzwerkzugriff** und erlaube den Hostnamen. Die Adresse muss aus dem Internet erreichbar sein, auch von außerhalb deines Zuhauses. Öffne den Durchlauf auf claude.ai, um zu sehen, was die Routine getan hat.
+**Die Routine läuft, aber es kommt keine Antwort an.** Die Umgebung der Routine muss deine Home-Assistant-Adresse erlauben. Wähle **eingeschränkten Netzwerkzugriff** („Limited“) und erlaube den Hostnamen. Die Adresse muss aus dem Internet erreichbar sein, auch von außerhalb deines Zuhauses. Öffne den Durchlauf auf claude.ai, um zu sehen, was die Routine getan hat.
 
 **Der Test klappt, aber Fotos kommen nicht an.** Die Routine ruft Fotos über einen Link zu deiner Home-Assistant-Adresse ab. Deshalb muss die Adresse auch in der Umgebung erlaubt sein.
 

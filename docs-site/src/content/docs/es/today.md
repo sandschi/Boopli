@@ -15,7 +15,7 @@ El panel también se adapta al teléfono. Puedes usarlo desde la aplicación de 
 
 - El paso actual muestra su grupo, una barra de progreso y un contador como «Paso 3 de 8». Cuando terminas una tarea, aparece una celebración.
 - **Listo**. Marca el paso como completado y detiene sus recordatorios.
-- **Estoy en ello**. Le dice a Boopli que ya estás trabajando en el paso. Pausa los recordatorios. Tras el tiempo de espera, Boopli puede enviarte una notificación al teléfono para preguntarte cómo vas. Selecciona **Reanudar recordatorios** para deshacer la pausa. Consulta [Tareas y horarios](/Boopli/es/chores/).
+- **Estoy en ello**. Le dice a Boopli que ya estás trabajando en el paso. Pausa los recordatorios. Pasado el tiempo configurado, Boopli puede enviarte una notificación al teléfono para preguntarte cómo vas. Selecciona **Reanudar recordatorios** para deshacer la pausa. Consulta [Tareas y horarios](/Boopli/es/chores/).
 - **Posponer** en el teléfono o el Wallboard retrasa el próximo recordatorio. El paso sigue pendiente y Hoy muestra cuándo termina la pausa.
 - **Para hacer ahora**. Otros pasos que ya puedes hacer, agrupados por tarea.
 - **Pendiente para hoy**. El resto de lo que hay para hoy. Incluye los pasos en espera de las tareas en curso y las tareas programadas para más tarde, con su hora.

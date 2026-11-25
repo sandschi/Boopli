@@ -3,7 +3,7 @@ title: Boopli installeren
 description: Installeer Boopli met HACS of met de hand en voeg de integratie daarna toe aan Home Assistant.
 ---
 
-Boopli is een aangepaste integratie voor Home Assistant. Je kunt klussen en seintjes gebruiken met je bestaande Home Assistant-installatie.
+Boopli is een aangepaste integratie voor Home Assistant. Je kunt taken en seintjes gebruiken met je bestaande Home Assistant-installatie.
 
 ## Met HACS
 
@@ -23,4 +23,4 @@ Ga naar **Instellingen, Apparaten en diensten, Integratie toevoegen** en kies **
 
 [![Open je Home Assistant-installatie en begin met het instellen van Boopli.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli)
 
-Boopli verschijnt daarna als paneel in de zijbalk van Home Assistant. Als je het voor het eerst opent, helpt Boopli je stap voor stap op weg. Het paneel, het instelvenster en de dienstbeschrijvingen zijn beschikbaar in het Engels (en), Duits (de), Nederlands (nl), Frans (fr) en Spaans (es). Ga verder met [Boopli instellen](/Boopli/nl/setup/).
+Boopli verschijnt daarna als paneel in de zijbalk van Home Assistant. Als je het voor het eerst opent, helpt Boopli je stap voor stap op weg. Het paneel, het instelvenster en de beschrijvingen van acties zijn beschikbaar in het Engels (en), Duits (de), Nederlands (nl), Frans (fr) en Spaans (es). Ga verder met [Boopli instellen](/Boopli/nl/setup/).

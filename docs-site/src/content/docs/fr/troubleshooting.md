@@ -36,7 +36,7 @@ Boopli n’utilise pas le clignotement intégré à la lampe. Certaines lampes d
 | Claude n’a pas d’adresse web pour accéder à Home Assistant. Renseigne l’adresse de Home Assistant dans « Demander à Claude » ou définis l’URL externe dans Home Assistant. | Définis l’URL externe dans Home Assistant ou utilise **Avancé : adresse web de Home Assistant** dans Demander à Claude. |
 | Boopli a atteint sa limite de 20 demandes à Claude par heure. Tu peux réessayer dans environ 5 minutes. | Attends le nombre de minutes indiqué. |
 
-**La routine tourne, mais aucune réponse n’arrive.** L’environnement de la routine doit autoriser ton adresse Home Assistant. Règle l’accès réseau sur **Limité** et autorise cet hôte. L’adresse doit être accessible depuis Internet, même hors de chez toi. Ouvre l’exécution de la routine sur claude.ai pour voir ce qu’elle a fait.
+**La routine tourne, mais aucune réponse n’arrive.** L’environnement de la routine doit autoriser ton adresse Home Assistant. Règle l’accès réseau sur **Limité** (« Limited ») et autorise cet hôte. L’adresse doit être accessible depuis Internet, même hors de chez toi. Ouvre l’exécution de la routine sur claude.ai pour voir ce qu’elle a fait.
 
 **Le test marche, mais pas les photos.** La routine récupère les photos à partir d’un lien sur ton adresse Home Assistant. Cette adresse doit donc aussi être autorisée dans l’environnement.
 

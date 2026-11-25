@@ -23,7 +23,7 @@ Each step is one concrete action, the first one is the easiest possible start, s
 
 ### Step sizes and XP
 
-Every step is small, medium or big (S, M, B), worth 10, 15 or 20 XP (steps you write yourself are small). Today shows the group, "Step 3 of 8" with a progress bar, and a celebration when a chore is finished.
+Every step is small, medium or big (S, M, L), worth 10, 15 or 20 XP (steps you write yourself are small). Today shows the group, "Step 3 of 8" with a progress bar, and a celebration when a chore is finished.
 
 ### Kept for next time
 
@@ -37,9 +37,9 @@ While the agent works, Boopli shows an animation, the time so far, the longest i
 
 **In my own chat** (per room) and **Talk through my whole home in my own chat** give you a ready-made prompt to copy into any chat, for example one you can talk to by voice. When you say you are done, the chat answers with plain notes. Paste them back: Boopli strips bullets, markdown and code fences, splits a whole-home answer into rooms by their `## Room` headings, and shows everything for a last look before you save. You choose what to send when you paste into your own chat. This works with AI help switched off.
 
-### Service
+### Action
 
-`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) returns the steps, for your own automations and voice assistants. Without `rooms`, the rooms are guessed from the chore, like in the panel. See also [Services, events and sensors](/Boopli/automations/).
+`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) returns the steps, for your own automations and voice assistants. Without `rooms`, the rooms are guessed from the chore, like in the panel. See also [Actions, events and sensors](/Boopli/automations/).
 
 ### The prompts are yours
 

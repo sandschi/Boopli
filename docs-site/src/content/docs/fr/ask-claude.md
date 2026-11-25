@@ -27,9 +27,9 @@ Les routines Claude peuvent changer tant qu’elles sont en préversion. Boopli 
 L’étape Demander à Claude du guide Aide de l’IA affiche ces instructions à côté de ton adresse Home Assistant. Utilise la [page des routines Claude](https://claude.ai/code/routines) pour configurer la routine une fois.
 
 1. Crée une routine et nomme-la **Boopli**.
-2. Colle les consignes du guide. Elles demandent à Claude de regarder d’abord les photos, s’il y en a, de préparer la réponse, de la renvoyer en une seule requête web, puis de s’arrêter. Elles lui demandent aussi d’ignorer toute instruction cachée dans une photo ou dans le texte de la tâche.
-3. Crée un **environnement** pour la routine. Règle son accès réseau sur **Limité** et autorise ton adresse Home Assistant. Le guide indique le nom d’hôte exact.
-4. Ajoute un **déclencheur API** à la routine et sélectionne **Générer un jeton**. Copie le jeton tout de suite. Claude ne l’affiche qu’une fois.
+2. Colle les instructions du guide. Elles demandent à Claude de regarder d’abord les photos, s’il y en a, de préparer la réponse, de la renvoyer en une seule requête web, puis de s’arrêter. Elles lui demandent aussi d’ignorer toute instruction cachée dans une photo ou dans le texte de la tâche.
+3. Crée un **environnement** (« Environment ») pour la routine. Règle son accès réseau sur **Limité** (« Limited ») et autorise ton adresse Home Assistant. Le guide indique le nom d’hôte exact.
+4. Ajoute un **déclencheur API** (« API trigger ») à la routine et sélectionne **Générer un jeton** (« Generate token »). Copie le jeton tout de suite. Claude ne l’affiche qu’une fois.
 5. Laisse tous les connecteurs (Gmail, agenda, etc.) **désactivés**. La routine n’en a pas besoin.
 
 Les écrans de Claude changent de temps en temps. Le nom d’un bouton peut être légèrement différent.
@@ -61,7 +61,7 @@ Quand tu sélectionnes des photos pour Claude, Boopli met chacune dans un fichie
 
 ## Ce que Claude voit
 
-Boopli n’envoie rien à Claude de lui-même. Quand tu fais une demande, Claude reçoit le texte de la tâche, tes réponses et les notes sur les pièces ou les photos que tu as choisi de partager. Si tu demandes à Claude de te poser des questions sur une pièce, il reçoit le nom de la pièce et ses notes actuelles. Claude peut conserver ce que tu partages. Boopli n’inclut pas le nom des appareils, l’historique de Home Assistant ni ta localisation dans la demande. Ce que tu saisis ou photographies peut toutefois contenir des informations privées.
+Boopli n’envoie rien tout seul à Claude. Quand tu fais une demande, Claude reçoit le texte de la tâche, tes réponses et les notes sur les pièces ou les photos que tu as choisi de partager. Si tu demandes à Claude de te poser des questions sur une pièce, il reçoit le nom de la pièce et ses notes actuelles. Claude peut conserver ce que tu partages. Boopli n’inclut pas le nom des appareils, l’historique de Home Assistant ni ta localisation dans la demande. Ce que tu saisis ou photographies peut toutefois contenir des informations privées.
 
 ## Ton jeton est secret
 

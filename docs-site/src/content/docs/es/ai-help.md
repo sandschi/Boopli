@@ -19,11 +19,11 @@ Una tarea clara como «sacar la basura» pasa directamente a los pasos. Si la ta
 
 ### Pasos pequeños y en orden
 
-Cada paso es una acción concreta. El primero es el más fácil para empezar. Los pasos se agrupan por zona (mesa, sillas, piso…) y la IA puede indicar si hay que esperar un tiempo. Una tarea puede tener hasta 50 pasos. La tarea solo se crea cuando revisas los pasos, haces los cambios que necesites y eliges usarlos.
+Cada paso es una acción concreta. El primero es el más fácil para empezar. Los pasos se agrupan por zona (mesa, sillas, suelo…) y la IA puede indicar si hay que esperar un tiempo. Una tarea puede tener hasta 50 pasos. La tarea solo se crea cuando revisas los pasos, haces los cambios que necesites y eliges usarlos.
 
 ### Tamaños de los pasos y XP
 
-Cada paso es pequeño, mediano o grande (P, M, G) y vale 10, 15 o 20 XP. Los pasos que escribes tú son pequeños. Hoy muestra el grupo, un contador como «Paso 3 de 8» con una barra de progreso y una celebración cuando terminas la tarea.
+Cada paso es pequeño, mediano o grande (S, M, L) y vale 10, 15 o 20 XP. Los pasos que escribes tú son pequeños. Hoy muestra el grupo, un contador como «Paso 3 de 8» con una barra de progreso y una celebración cuando terminas la tarea.
 
 ### Se guarda para la próxima vez
 
@@ -37,9 +37,9 @@ Mientras el agente trabaja, Boopli muestra una animación, el tiempo que ha pasa
 
 **En mi chat con IA** (para un espacio) y **Hablar de todo mi hogar en mi chat con IA** te dan instrucciones listas para copiar en cualquier chat. Por ejemplo, puedes usar uno con el que puedas hablar por voz. Cuando le dices que terminaste, el chat responde con notas en texto sencillo. Pégalas de vuelta en Boopli. Boopli quita las viñetas, el formato de Markdown y las marcas de los bloques de código. Si las notas son de todo tu hogar, las separa por los encabezados `## Room` y te muestra todo para que lo revises antes de guardar. Tú decides qué compartes al pegar el texto en tu propio chat. Esto funciona con la ayuda con IA desactivada.
 
-### Servicio
+### Acción
 
-`boopli.break_down` (`task` y, como campos opcionales, `kind`, `answers`, `notes` y `rooms`) devuelve los pasos para tus propias automatizaciones y asistentes de voz. Si omites `rooms`, Boopli deduce los espacios a partir de la tarea, igual que en el panel. Consulta también [Servicios, eventos y sensores](/Boopli/es/automations/).
+`boopli.break_down` (`task` y, como campos opcionales, `kind`, `answers`, `notes` y `rooms`) devuelve los pasos para tus propias automatizaciones y asistentes de voz. Si omites `rooms`, Boopli deduce los espacios a partir de la tarea, igual que en el panel. Consulta también [Acciones, eventos y sensores](/Boopli/es/automations/).
 
 ### Tú decides qué instrucciones usar
 

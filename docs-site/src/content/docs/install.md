@@ -23,4 +23,4 @@ Go to **Settings, Devices & services, Add integration** and select **Boopli**, o
 
 [![Open your Home Assistant instance and start setting up Boopli.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli)
 
-Boopli then shows up as a panel in the Home Assistant sidebar, and its setup wizard opens the first time you open it. The panel, setup dialog and service descriptions are available in English (en), German (de), Dutch (nl), French (fr) and Spanish (es). Go on with [Set up Boopli](/Boopli/setup/).
+Boopli then shows up as a panel in the Home Assistant sidebar, and its setup wizard opens the first time you open it. The panel, setup dialog and action descriptions are available in English (en), German (de), Dutch (nl), French (fr) and Spanish (es). Go on with [Set up Boopli](/Boopli/setup/).

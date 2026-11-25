@@ -5,7 +5,7 @@ sidebar:
 description: Par où commencer et où trouver ce que tu cherches.
 ---
 
-Boopli découpe les tâches en petites étapes. Il t’envoie des rappels avec les lampes, les enceintes et le téléphone que tu as déjà. Boopli fonctionne dans Home Assistant et ne demande aucun compte Boopli. Il n’envoie rien à un service d’IA de lui-même. Si tu utilises l’aide de l’IA ou **Demander à Claude**, le service d’IA que tu choisis reçoit ta tâche, tes réponses et les notes sur les pièces ou les photos que tu partages. Un fournisseur dans le cloud peut conserver ces données. Consulte [Aide de l’IA](/Boopli/fr/ai-help/) pour savoir ce qui est partagé.
+Boopli découpe les tâches en petites étapes. Il t’envoie des rappels avec les lampes, les enceintes et le téléphone que tu as déjà. Boopli fonctionne dans Home Assistant et ne demande aucun compte Boopli. Boopli n’envoie rien tout seul à un service d’IA. Si tu utilises l’aide de l’IA ou **Demander à Claude**, le service d’IA que tu choisis reçoit ta tâche, tes réponses et les notes sur les pièces ou les photos que tu partages. Un fournisseur dans le cloud peut conserver ces données. Consulte [Aide de l’IA](/Boopli/fr/ai-help/) pour savoir ce qui est partagé.
 
 Ces pages expliquent comment configurer Boopli et utiliser chaque fonction. Tu peux les lire dans l’ordre qui te convient. Utilise le menu à gauche ou la recherche en haut.
 
@@ -24,7 +24,7 @@ Le panneau est disponible en anglais (en), en allemand (de), en néerlandais (nl
 - **Découper une grosse tâche en toutes petites étapes :** [Aide de l’IA](/Boopli/fr/ai-help/) et, en plus, [Demander à Claude](/Boopli/fr/ask-claude/)
 - **Un écran au mur :** [Wallboard](/Boopli/fr/wall-board/)
 - **Faire une pause :** [Mode absence](/Boopli/fr/away-mode/)
-- **Tes propres automatisations :** [Services, événements et capteurs](/Boopli/fr/automations/)
+- **Tes propres automatisations :** [Actions, événements et capteurs](/Boopli/fr/automations/)
 - **Quelque chose ne marche pas :** [Dépannage](/Boopli/fr/troubleshooting/)
 - **Ce qui est prévu :** [Feuille de route](/Boopli/roadmap/)
 

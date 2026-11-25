@@ -12,12 +12,12 @@ De stemming hangt af van hoelang geleden je voor het laatst een stap afrondde:
 | Stemming | Wanneer |
 |---|---|
 | Vrolijk | Je hebt vandaag een stap afgerond. |
-| Tevreden | Je laatste stap was gisteren of je hebt nog geen klussen. |
+| Tevreden | Je laatste stap was gisteren of je hebt nog geen taken. |
 | Slaperig | 2 dagen zonder een stap af te ronden. |
 | Verdrietig | 3 tot 6 dagen. |
 | In diepe slaap | 7 dagen of langer. |
 
-Zolang de [Afwezigheidsmodus](/Boopli/nl/away-mode/) aanstaat, blijft de stemming gelijk. De stemming, het level en de XP zijn ook beschikbaar als [sensoren](/Boopli/nl/automations/).
+Zolang de [Afwezigheidsmodus](/Boopli/nl/away-mode/) aanstaat, blijft de stemming gelijk. Je vindt deze gegevens ook bij de [sensoren](/Boopli/nl/automations/) **Mood** (stemming), **Level** en **XP**.
 
 ## Accentkleur
 

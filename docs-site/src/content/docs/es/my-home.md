@@ -11,7 +11,7 @@ La pestaña **Mi hogar** muestra tus espacios: los de las áreas de Home Assista
 
 ### Describir un espacio a partir de fotos
 
-En la tarjeta de un espacio, selecciona **Con fotos** para tomar o elegir hasta 4 fotos. Boopli envía las fotos, el nombre del espacio y sus notas actuales al servicio de IA que elijas. Revisa las notas que escribe antes de guardarlas. Para usar otro agente de IA con las fotos, abre **Opciones avanzadas** en la tarjeta **Ayuda con IA**. En **Opciones avanzadas: agente de IA para fotos e instrucciones**, selecciona un **Agente de IA para fotos** que pueda analizarlas. Si el servicio funciona en la nube, el proveedor puede conservar los datos que recibe. Boopli borra sus propios archivos temporales de la carpeta multimedia (`boopli_tmp`) al terminar la consulta, aunque falle. Al arrancar, borra los archivos temporales que queden. Las notas guardadas se pueden usar en consultas posteriores.
+En la tarjeta de un espacio, selecciona **Con fotos** para tomar o elegir hasta 4 fotos. Boopli envía las fotos, el nombre del espacio y sus notas actuales al servicio de IA que elijas. Revisa las notas que escribe antes de guardarlas. Para usar otro agente de IA con las fotos, abre **Opciones avanzadas** en la tarjeta **Ayuda con IA**. En **Opciones avanzadas: agente de IA para fotos e instrucciones**, selecciona un **Agente de IA para fotos** que pueda analizarlas. Si el servicio funciona en la nube, el proveedor puede conservar los datos que recibe. Boopli borra sus propios archivos temporales de la carpeta de medios (`boopli_tmp`) al terminar la consulta, aunque falle. Al arrancar, borra los archivos temporales que queden. Las notas guardadas se pueden usar en consultas posteriores.
 
 ### Fotos de cómo está el espacio ahora
 

@@ -7,7 +7,7 @@ Wenn ein Schritt dran ist, stupst Boopli dich über die Geräte an, die du unter
 
 ### Lampen
 
-Für jede Lampe wählst du **Blinken** oder **Statuslicht (an, bis du fertig bist)**. Beim Blinken merkt sich Boopli den aktuellen Zustand der Lampe. Sie leuchtet für die eingestellte Dauer in deiner Farbe (in Millisekunden). Das wiederholt sich 1 bis 5 Mal mit der Pause, die du einstellst. Danach stellt Boopli den ursprünglichen Zustand wieder her. Als Statuslicht leuchtet die Lampe in einer Farbe, bis du fertig bist. Boopli schaltet das Blinken selbst, weil manche Lampen ihre eingebaute Blinkfunktion melden und den Befehl dafür trotzdem ignorieren. Wähle **Testen**, um zu sehen, wie deine Lampe reagiert. Eine lokal verbundene Lampe kann schon nach ein paar Hundert Millisekunden reagieren. Eine Lampe mit Cloud-Anbindung braucht etwa eine Sekunde oder länger.
+Für jede Lampe wählst du **Blinken** oder **Statuslicht (an, bis du fertig bist)**. Beim Blinken merkt sich Boopli den aktuellen Zustand der Lampe. Die Lampe leuchtet in deiner Farbe. Die Leuchtdauer stellst du in Millisekunden ein. Das wiederholt sich 1 bis 5 Mal mit der Pause, die du einstellst. Danach stellt Boopli den ursprünglichen Zustand wieder her. Als Statuslicht leuchtet die Lampe in einer Farbe, bis du fertig bist. Manche Lampen melden eine eingebaute Blinkfunktion und ignorieren den Blinkbefehl trotzdem. Darum lässt Boopli die Lampe selbst blinken. Wähle **Testen**, um zu sehen, wie deine Lampe reagiert. Eine lokal verbundene Lampe kann schon nach ein paar Hundert Millisekunden reagieren. Eine Lampe mit Cloud-Anbindung braucht etwa eine Sekunde oder länger.
 
 ### Lautsprecher
 
@@ -23,7 +23,7 @@ Die Geräteeinstellungen geben vor, wann die Stupse kommen. Bei einem Lautsprech
 
 ### Handys
 
-Die Home-Assistant-App schickt eine Benachrichtigung mit **Fertig** und **Verschieben**. Du legst die Stufe fest: **Normale Benachrichtigung**, **Benachrichtigung mit hoher Priorität**, **Alarmlautstärke** oder **Maximale Alarmlautstärke (nur auf unterstützten Handys)**.
+Die Home-Assistant-App schickt eine Benachrichtigung mit **Fertig** und **Verschieben**. Die Texte richten sich nach der Sprache von Home Assistant. Du legst die Stufe fest: **Normale Benachrichtigung**, **Benachrichtigung mit hoher Priorität**, **Alarmlautstärke** oder **Maximale Alarmlautstärke (nur auf unterstützten Handys)**.
 
 ### Stups-Stil pro Aufgabe
 
@@ -47,7 +47,7 @@ Zu Hause nutzt Boopli alle Geräte, die du eingeschaltet hast. Unterwegs nutzt B
 
 ### Verschieben
 
-Das verschiebt den nächsten Stups (standardmäßig um 15 Minuten). Der Schritt bleibt offen. Eine Schaltfläche zum Wegklicken gibt es nicht.
+Mit **Verschieben** schiebst du den nächsten Stups auf (standardmäßig um 15 Minuten). Der Schritt bleibt offen. Eine Schaltfläche zum Wegklicken gibt es nicht.
 
 
 ### Standardstile und eigene Töne

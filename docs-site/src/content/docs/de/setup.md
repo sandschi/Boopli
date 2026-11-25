@@ -25,9 +25,9 @@ Jeder Assistent endet mit **Alles bereit**. Dort siehst du, was sich geändert h
 
 ## Ungespeicherte Änderungen bleiben sichtbar
 
-Sobald du in den Einstellungen oder beim Bearbeiten einer Aufgabe etwas änderst, erscheint unten eine Leiste. In den Einstellungen zeigt sie die Karten mit ungespeicherten Änderungen. Wähle einen Namen aus. Die Seite springt zu dieser Karte und hebt sie hervor. Geänderte Karten bekommen die orange Markierung „Ungespeichert“. Bei „Einstellungen“ und „Aufgaben“ erscheint ein Punkt. Wenn du mit ungespeicherten Änderungen den Bereich wechselst, einen Assistenten öffnest oder die Seite schließt, kannst du **Speichern**, **Verwerfen** oder **Hierbleiben** wählen.
+Sobald du in den Einstellungen oder beim Bearbeiten einer Aufgabe etwas änderst, erscheint unten eine Leiste. In den Einstellungen zeigt sie die Karten mit ungespeicherten Änderungen. Wähle einen Namen aus. Die Seite springt zu dieser Karte und hebt sie hervor. Geänderte Karten bekommen die orange Markierung „Ungespeichert“. Bei „Einstellungen“ und „Aufgaben“ erscheint ein Punkt. Wenn du mit ungespeicherten Änderungen zu einem anderen Menüpunkt wechselst, einen Assistenten öffnest oder die Seite schließt, kannst du **Speichern**, **Verwerfen** oder **Hierbleiben** wählen.
 
-## Alle Einstellungen auf einer übersichtlichen Seite
+## Eine ruhige Seite für deine Einstellungen
 
 Die Karten sind in drei Gruppen aufgeteilt. Unter **Geräte** findest du **Handy**, **Lampen für Stupse**, **Lautsprecher** und **Alarmgeräte**. Unter **Zeiten** stehen **Ruhezeiten**, **Verschieben und Zeiten**, **Stups-Ketten** und **Wo du bist**. Unter **Extras** findest du **Dein Haustier und die Akzentfarbe**, **Wallboard**, **KI-Hilfe**, **Backup** und **Sprache**. Die meisten Karten haben zwei Schaltflächen. **Schritt für Schritt** öffnet den Assistenten und **Erweitert** öffnet das Fenster für die Karte. Auf der Karte **Wallboard** öffnet **Wallboard bearbeiten** das Wallboard direkt zum Bearbeiten. Im Fenster „Erweitert“ gibt es **Speichern und schließen**, **Verwerfen und schließen** (verwirft die Änderungen aus diesem Fenster) und **Für später behalten** (schließt das Fenster und behält deine Änderungen als ungespeicherten Entwurf).
 

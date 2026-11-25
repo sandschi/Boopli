@@ -19,11 +19,11 @@ Bei einer klaren Aufgabe wie „Müll rausbringen“ kommen direkt die Schritte.
 
 ### Kleine Schritte in sinnvoller Reihenfolge
 
-Jeder Schritt ist eine konkrete Handlung. Der erste Schritt macht den Einstieg so leicht wie möglich. Die Schritte sind nach Bereichen geordnet, etwa Tisch, Stühle und Boden. Die KI kann auch eine Wartezeit vorschlagen. Eine Aufgabe kann bis zu 50 Schritte haben. Boopli legt erst etwas an, wenn du die Schritte geprüft, angepasst und zur Übernahme ausgewählt hast.
+Jeder Schritt ist eine konkrete Handlung. Der erste Schritt macht den Einstieg so leicht wie möglich. Die Schritte sind nach Teilen der Aufgabe geordnet, etwa Tisch, Stühle und Boden. Die KI kann auch eine Wartezeit vorschlagen. Eine Aufgabe kann bis zu 50 Schritte haben. Boopli legt erst etwas an, wenn du die Schritte geprüft, bei Bedarf angepasst und übernommen hast.
 
 ### Schrittgrößen und XP
 
-Jeder Schritt ist klein, mittel oder groß (K, M, G) und bringt 10, 15 oder 20 XP. Schritte, die du selbst schreibst, sind klein. Unter „Heute“ siehst du den Teil der Aufgabe, „Schritt 3 von 8“ und einen Fortschrittsbalken. Wenn du eine Aufgabe erledigst, gibt es eine kleine Feier.
+Jeder Schritt ist klein, mittel oder groß (S, M, L) und bringt 10, 15 oder 20 XP. Schritte, die du selbst schreibst, sind klein. Unter „Heute“ siehst du den Teil der Aufgabe, „Schritt 3 von 8“ und einen Fortschrittsbalken. Wenn du eine Aufgabe erledigst, gibt es eine kleine Feier.
 
 ### Fürs nächste Mal gespeichert
 
@@ -35,11 +35,11 @@ Während der KI-Agent arbeitet, zeigt Boopli eine Animation, die verstrichene Ze
 
 ### Im eigenen KI-Chat darüber sprechen
 
-Mit **Im eigenen Chat** (für einen Raum) oder **Mein ganzes Zuhause im eigenen Chat besprechen** bekommst du eine fertige Anweisung. Kopiere sie in einen Chat deiner Wahl, zum Beispiel einen, mit dem du sprechen kannst. Wenn du sagst, dass du fertig bist, antwortet der Chat mit einfachen Notizen. Füge sie wieder in Boopli ein. Boopli entfernt Aufzählungszeichen und Markdown-Markierungen, auch die für Codeblöcke. Eine Antwort zum ganzen Zuhause teilt Boopli anhand der Überschriften `## Room` in Räume auf. Vor dem Speichern kannst du alles noch einmal ansehen. Du entscheidest, was du beim Einfügen in deinen eigenen Chat teilst. Das funktioniert auch bei ausgeschalteter KI-Hilfe.
+Mit **Im eigenen Chat** (für einen Raum) oder **Mein ganzes Zuhause im eigenen Chat besprechen** bekommst du eine fertige Anweisung. Kopiere sie in einen Chat deiner Wahl, zum Beispiel einen, den du per Sprache bedienen kannst. Wenn du sagst, dass du fertig bist, antwortet der Chat mit einfachen Notizen. Füge sie wieder in Boopli ein. Boopli entfernt Aufzählungszeichen und Markdown-Markierungen, auch die für Codeblöcke. Eine Antwort zum ganzen Zuhause teilt Boopli anhand der Überschriften `## Room` in Räume auf. Vor dem Speichern kannst du alles noch einmal ansehen. Du entscheidest, was du beim Einfügen in deinen eigenen Chat teilst. Das funktioniert auch bei ausgeschalteter KI-Hilfe.
 
-### Dienst
+### Aktion
 
-`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) liefert die Schritte für deine Automatisierungen und Sprachassistenten zurück. Ohne `rooms` leitet Boopli die Räume aus der Aufgabe ab, wie im Panel. Siehe auch [Dienste, Ereignisse und Sensoren](/Boopli/de/automations/).
+`boopli.break_down` (`task`, optional `kind`, `answers`, `notes`, `rooms`) liefert die Schritte für deine Automatisierungen und Sprachassistenten zurück. Ohne `rooms` leitet Boopli die Räume aus der Aufgabe ab, wie im Panel. Siehe auch [Aktionen, Ereignisse und Sensoren](/Boopli/de/automations/).
 
 ### Du kannst die Anweisungen ändern
 

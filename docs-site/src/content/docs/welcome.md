@@ -24,7 +24,7 @@ The panel is available in English (en), German (de), Dutch (nl), French (fr) and
 - **Splitting a big chore into tiny steps:** [AI help](/Boopli/ai-help/), and [Ask Claude](/Boopli/ask-claude/) as an extra
 - **A screen on the wall:** [Wall board](/Boopli/wall-board/)
 - **Resting for a while:** [Away mode](/Boopli/away-mode/)
-- **Your own automations:** [Services, events and sensors](/Boopli/automations/)
+- **Your own automations:** [Actions, events and sensors](/Boopli/automations/)
 - **Something does not work:** [Troubleshooting](/Boopli/troubleshooting/)
 - **What comes next:** [Roadmap](/Boopli/roadmap/)
 

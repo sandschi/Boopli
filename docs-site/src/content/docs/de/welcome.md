@@ -14,7 +14,7 @@ Das Panel gibt es auf Englisch (en), Deutsch (de), Niederländisch (nl), Franzö
 ## Wenn du neu hier bist
 
 1. [Installiere Boopli](/Boopli/de/install/) mit HACS oder von Hand.
-2. [Richte Boopli ein](/Boopli/de/setup/). Du siehst pro Seite eine Frage und kannst jeden Schritt überspringen.
+2. [Richte Boopli ein](/Boopli/de/setup/). Ein Assistent stellt dir pro Seite eine Frage. Du kannst jeden Schritt überspringen.
 3. Schau dir [„Heute“](/Boopli/de/today/) an. Dort erledigst du deine Aufgaben.
 4. Erstelle unter [Aufgaben und Zeitpläne](/Boopli/de/chores/) deine erste Aufgabe.
 
@@ -24,7 +24,7 @@ Das Panel gibt es auf Englisch (en), Deutsch (de), Niederländisch (nl), Franzö
 - **Eine große Aufgabe in winzige Schritte teilen:** [KI-Hilfe](/Boopli/de/ai-help/) und als Extra [Claude fragen](/Boopli/de/ask-claude/)
 - **Ein Bildschirm an der Wand:** [Wallboard](/Boopli/de/wall-board/)
 - **Eine Weile Pause machen:** [Abwesenheitsmodus](/Boopli/de/away-mode/)
-- **Eigene Automatisierungen:** [Dienste, Ereignisse und Sensoren](/Boopli/de/automations/)
+- **Eigene Automatisierungen:** [Aktionen, Ereignisse und Sensoren](/Boopli/de/automations/)
 - **Etwas funktioniert nicht:** [Fehlersuche](/Boopli/de/troubleshooting/)
 - **Was als Nächstes kommt:** [Entwicklungsplan](/Boopli/roadmap/)
 

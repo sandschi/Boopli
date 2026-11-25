@@ -23,4 +23,4 @@ Gehe zu **Einstellungen → Geräte & Dienste → Integration hinzufügen** und 
 
 [![Öffne deine Home-Assistant-Instanz und beginne mit der Einrichtung von Boopli.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli)
 
-Boopli erscheint danach als Panel in der Seitenleiste von Home Assistant. Beim ersten Öffnen startet der Assistent zur Einrichtung. Das Panel, der Einrichtungsdialog und die Dienstbeschreibungen sind auf Englisch (en), Deutsch (de), Niederländisch (nl), Französisch (fr) und Spanisch (es) verfügbar. Weiter geht’s mit [Boopli einrichten](/Boopli/de/setup/).
+Boopli erscheint danach als Panel in der Seitenleiste von Home Assistant. Beim ersten Öffnen startet der Assistent zur Einrichtung. Das Panel, der Einrichtungsdialog und die Aktionsbeschreibungen sind auf Englisch (en), Deutsch (de), Niederländisch (nl), Französisch (fr) und Spanisch (es) verfügbar. Weiter geht’s mit [Boopli einrichten](/Boopli/de/setup/).

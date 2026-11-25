@@ -3,7 +3,7 @@ title: Preguntar a Claude
 description: Una opción extra que puedes usar junto a tu agente de IA de Home Assistant mediante una rutina en tu cuenta de Claude.
 ---
 
-**Preguntar a Claude** es un botón extra junto al botón habitual de [Ayuda con IA](/Boopli/es/ai-help/). Puedes conservar tu agente de IA de Home Assistant. Usa esta opción cuando:
+**Preguntar a Claude** es un botón extra junto al botón habitual de [Ayuda con IA](/Boopli/es/ai-help/). No sustituye a tu agente de IA de Home Assistant. Usa esta opción cuando:
 
 - quieras una segunda opinión porque tienes dudas sobre la respuesta de tu agente,
 - tu agente gratuito no esté disponible o haya alcanzado su límite de consultas,
@@ -57,7 +57,7 @@ Cualquier persona con acceso al panel puede seleccionar **Preguntar a Claude**. 
 
 ## Fotos
 
-Cuando seleccionas fotos para Claude, Boopli guarda cada una en un archivo temporal en la carpeta multimedia de Home Assistant. Le da a la rutina un enlace firmado que dura hasta 10 minutos. La rutina descarga las fotos. Boopli borra sus propios archivos temporales al terminar la consulta, aunque falle. Claude puede conservar las fotos que recibió.
+Cuando seleccionas fotos para Claude, Boopli guarda cada una en un archivo temporal en la carpeta de medios de Home Assistant. Le da a la rutina un enlace firmado que dura hasta 10 minutos. La rutina descarga las fotos. Boopli borra sus propios archivos temporales al terminar la consulta, aunque falle. Claude puede conservar las fotos que recibió.
 
 ## Qué ve Claude
 
@@ -67,6 +67,6 @@ Por su cuenta, Boopli no envía nada a Claude. Cuando haces una consulta, Claude
 
 Boopli guarda el token en un archivo privado dentro del almacenamiento de Home Assistant. El token queda fuera de los ajustes y de las copias de seguridad (`.adhd`). El panel solo sabe si hay un token guardado. Si crees que alguien pudo acceder a él, crea uno nuevo en claude.ai y pégalo en Boopli con **Reemplazar**.
 
-Si Boopli no puede guardar el token, te avisa y sigue usando el anterior. Si al arrancar no puede leer el archivo privado, Boopli sigue funcionando con Preguntar a Claude desactivado. Deja el archivo intacto y anota el motivo en el registro de Home Assistant.
+Si Boopli no puede guardar el token, te avisa y sigue usando el anterior. Si al arrancar no puede leer el archivo privado, Boopli sigue funcionando con Preguntar a Claude desactivado, conserva el archivo tal como está y anota el motivo en el registro de Home Assistant.
 
 Consulta [Solución de problemas](/Boopli/es/troubleshooting/) si algo falla.

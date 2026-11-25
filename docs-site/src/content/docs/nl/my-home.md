@@ -7,7 +7,7 @@ description: Kamernotities, een kamer beschrijven aan de hand van foto’s en fo
 
 ### Mijn huis
 
-Op het tabblad **Mijn huis** staan je kamers met notities. Denk aan waar de vaatwasser staat of welke deur klemt. Boopli neemt de ruimtes uit Home Assistant over en voegt de kamers toe die je zelf aanmaakt. Kies **Vragen van de AI beantwoorden**. Je krijgt een paar korte vragen en daarna een voorstel voor de notities. Je kunt die bekijken en aanpassen voordat je iets opslaat. Als je een klus opdeelt, leidt Boopli uit de tekst af om welke kamers het gaat. Je ziet een selectie die je zelf kunt aanpassen. Staat **Kamernotities meesturen met mijn taken** aan? Dan krijgt de gekozen AI-dienst de notities van de geselecteerde kamers. Kies **Wat krijgt de AI te zien?** om de tekst vooraf te bekijken. Vraag je de AI-dienst om een kamer te beschrijven? Dan krijgt die dienst de naam en de huidige notities van de kamer.
+Op het tabblad **Mijn huis** staan je kamers met notities. Denk aan waar de vaatwasser staat of welke deur klemt. Boopli neemt de ruimtes uit Home Assistant over en voegt de kamers toe die je zelf aanmaakt. Kies **Vragen van de AI beantwoorden**. Je krijgt een paar korte vragen en daarna een voorstel voor de notities. Je kunt die bekijken en aanpassen voordat je iets opslaat. Als je een taak opdeelt, leidt Boopli uit de tekst af om welke kamers het gaat. Je ziet een selectie die je zelf kunt aanpassen. Staat **Kamernotities meesturen met mijn taken** aan? Dan krijgt de gekozen AI-dienst de notities van de geselecteerde kamers. Kies **Wat krijgt de AI te zien?** om de tekst vooraf te bekijken. Vraag je de AI-dienst om een kamer te beschrijven? Dan krijgt die dienst de naam en de huidige notities van de kamer.
 
 ### Een kamer beschrijven aan de hand van foto’s
 
@@ -15,7 +15,7 @@ Kies op een kamerkaart **Met foto’s** om maximaal 4 foto’s te maken of te ki
 
 ### Foto’s van hoe het er nu uitziet
 
-Kies bij het opdelen van een klus **Foto’s van nu toevoegen (optioneel)** om maximaal 4 foto’s te delen. De AI-dienst die je kiest, krijgt de foto’s samen met je klus en eventuele geselecteerde kamernotities. De AI-dienst beschrijft wat er niet op zijn plek ligt, bijvoorbeeld “Salontafel: flessen en papieren”. Boopli wist zijn eigen tijdelijke fotobestanden na het verzoek. Een cloudaanbieder kan bewaren wat die heeft ontvangen. Je kunt de beschrijving aanpassen voordat Boopli die bij de volgende vragen of stappen meestuurt. Boopli laat de beschrijving weg uit de opgeslagen klus.
+Kies bij het opdelen van een taak **Foto’s van nu toevoegen (optioneel)** om maximaal 4 foto’s te delen. De AI-dienst die je kiest, krijgt de foto’s samen met je taak en eventuele geselecteerde kamernotities. De AI-dienst beschrijft wat er niet op zijn plek ligt, bijvoorbeeld “Salontafel: flessen en papieren”. Boopli wist zijn eigen tijdelijke fotobestanden na het verzoek. Een cloudaanbieder kan bewaren wat die heeft ontvangen. Je kunt de beschrijving aanpassen voordat Boopli die bij de volgende vragen of stappen meestuurt. Boopli laat de beschrijving weg uit de opgeslagen taak.
 
 
 

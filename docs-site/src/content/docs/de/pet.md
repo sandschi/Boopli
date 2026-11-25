@@ -17,7 +17,7 @@ Die Stimmung hängt davon ab, wie lange dein letzter erledigter Schritt her ist:
 | Traurig | Seit 3 bis 6 Tagen. |
 | Im Tiefschlaf | Seit 7 Tagen oder länger. |
 
-Solange der [Abwesenheitsmodus](/Boopli/de/away-mode/) aktiv ist, bleibt die Stimmung gleich. Die Stimmung, das Level und die XP gibt es auch als [Sensoren](/Boopli/de/automations/).
+Solange der [Abwesenheitsmodus](/Boopli/de/away-mode/) aktiv ist, bleibt die Stimmung gleich. In Home Assistant findest du dafür die [Sensoren **Mood** (Stimmung), **Level** und **XP**](/Boopli/de/automations/).
 
 ## Akzentfarbe
 

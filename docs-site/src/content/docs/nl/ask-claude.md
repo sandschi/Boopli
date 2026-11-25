@@ -27,7 +27,7 @@ Routines van Claude kunnen nog veranderen. Boopli stopt bij 20 verzoeken per uur
 Bij de stap Vraag Claude in de begeleide instelling voor AI-hulp zie je de volgende stappen naast je eigen Home Assistant-adres. Stel de routine één keer in op de [pagina met Claude-routines](https://claude.ai/code/routines).
 
 1. Maak een nieuwe routine en noem die **Boopli**.
-2. Plak de instructies uit de begeleide instelling. Die vragen Claude om eerst eventuele foto’s te bekijken, het antwoord uit te werken, het met één webverzoek terug te sturen en dan te stoppen. Claude krijgt ook de instructie om opdrachten te negeren die in een foto of de tekst van de klus verstopt zitten.
+2. Plak de instructies uit de begeleide instelling. Die vragen Claude om eerst eventuele foto’s te bekijken, het antwoord uit te werken, het met één webverzoek terug te sturen en dan te stoppen. Claude krijgt ook de instructie om opdrachten te negeren die in een foto of de tekst van de taak verstopt zitten.
 3. Maak een **omgeving** voor de routine. Zet de netwerktoegang op **Beperkt** en geef toegang tot je Home Assistant-adres. De begeleide instelling toont de exacte hostnaam.
 4. Voeg een **API-trigger** toe aan de routine en kies **Token aanmaken**. Kopieer het token meteen. Claude laat het maar één keer zien.
 5. Laat alle koppelingen, zoals die met Gmail of je agenda, **uit**. De routine heeft ze niet nodig.
@@ -47,7 +47,7 @@ Wil je instellen of aanpassen waar Claude het antwoord naartoe stuurt? Open **We
 
 ## Hoe het werkt
 
-1. Kies **Vraag Claude**. Boopli stuurt de tekst van je klus, je antwoorden en de kamernotities of foto’s die je wilt delen naar je routine.
+1. Kies **Vraag Claude**. Boopli stuurt de tekst van je taak, je antwoorden en de kamernotities of foto’s die je wilt delen naar je routine.
 2. De routine werkt het antwoord uit en stuurt het terug via een webhook die Boopli in Home Assistant heeft aangemaakt.
 3. Boopli toont het antwoord. Per verzoek wacht Boopli maximaal 2 minuten. Als Boopli het antwoord niet kan lezen, stuurt Boopli nog één verzoek.
 
@@ -61,7 +61,7 @@ Als je foto’s voor Claude kiest, slaat Boopli elke foto tijdelijk op in de med
 
 ## Wat Claude te zien krijgt
 
-Boopli stuurt uit zichzelf niets naar Claude. Als je een verzoek doet, krijgt Claude de tekst van je klus, je antwoorden en eventuele kamernotities of foto’s die je wilt delen. Bij vragen over een kamer krijgt Claude de naam en de huidige notities van die kamer. Claude kan bewaren wat je deelt. Boopli stuurt geen apparaatnamen, Home Assistant-geschiedenis of locatie mee. De tekst die je invult en de foto’s die je maakt kunnen wel persoonlijke gegevens bevatten.
+Boopli stuurt uit zichzelf niets naar Claude. Als je een verzoek doet, krijgt Claude de tekst van je taak, je antwoorden en eventuele kamernotities of foto’s die je wilt delen. Bij vragen over een kamer krijgt Claude de naam en de huidige notities van die kamer. Claude kan bewaren wat je deelt. Boopli stuurt geen apparaatnamen, Home Assistant-geschiedenis of locatie mee. De tekst die je invult en de foto’s die je maakt kunnen wel persoonlijke gegevens bevatten.
 
 ## Houd je token geheim
 

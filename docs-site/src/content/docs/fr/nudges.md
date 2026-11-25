@@ -27,7 +27,7 @@ L’application Home Assistant envoie une notification avec les boutons **Termin
 
 ### Un style par tâche
 
-**Sans rappel** (affichage dans le panneau uniquement), **Un rappel**, **Rappels progressifs** (30, 15, 10, puis toutes les 5 minutes jusqu’à l’arrêt) ou **Rappels répétés** (toutes les 5 minutes jusqu’à ce que tu aies terminé).
+**Sans rappel** (affichage dans le panneau uniquement), **Un rappel**, **Rappels progressifs** (30, 15, 10, puis toutes les 5 minutes, jusqu’à la fin de la série) ou **Rappels répétés** (toutes les 5 minutes jusqu’à ce que tu aies terminé).
 
 ### Séries de rappels
 

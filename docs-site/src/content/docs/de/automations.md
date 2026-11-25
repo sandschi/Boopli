@@ -1,26 +1,26 @@
 ---
-title: Dienste, Ereignisse und Sensoren
+title: Aktionen, Ereignisse und Sensoren
 description: Erstelle eigene Automatisierungen mit Boopli.
 ---
 
-Deine Automatisierungen, Skripte und Sprachassistenten können drei Dinge von Boopli nutzen. Es gibt Dienste zum Aufrufen, Ereignisse zum Abhören und Sensoren für dein Haustier.
+Deine Automatisierungen, Skripte und Sprachassistenten können drei Dinge von Boopli nutzen. Es gibt Aktionen zum Aufrufen, Ereignisse zum Abhören und Sensoren für dein Haustier.
 
-## Dienste
+## Aktionen
 
-| Dienst | Was er tut |
+| Aktion | Was sie tut |
 |---|---|
 | `boopli.break_down` | Teilt eine Aufgabe mit deinem KI-Agenten in kleine Schritte und gibt sie zurück. Dazu muss die KI-Hilfe eingeschaltet sein. Felder: `task` sowie optional `kind` (`now` oder `recurring`), `answers`, `notes` und `rooms`. Ohne `rooms` leitet Boopli die Räume aus der Aufgabe ab, wie im Panel. |
 | `boopli.add_task` | Erstellt eine einmalige Aufgabe (auf Wunsch mit Schritten) und startet sie. Sie verschwindet, wenn sie erledigt ist. |
 | `boopli.start_chore` | Startet eine Aufgabe sofort anhand ihres Namens oder ihrer ID. |
 | `boopli.complete_step` | Markiert den Schritt als erledigt, der bei einer Aufgabe auf dich wartet. |
-| `boopli.snooze_step` | Verschiebt den Schritt, der bei einer Aufgabe auf dich wartet. |
+| `boopli.snooze_step` | Verschiebt den nächsten Stups für den Schritt, der bei einer Aufgabe auf dich wartet. |
 | `boopli.step_on_it` | Sagt Boopli, dass du am wartenden Schritt einer Aufgabe arbeitest („Bin dran“). |
 | `boopli.step_not_on_it` | Setzt die Stupse nach „Bin dran“ fort. |
 | `boopli.delete_chore` | Löscht eine Aufgabe und alles, was dafür gerade läuft. |
 | `boopli.set_away` | Schaltet den [Abwesenheitsmodus](/Boopli/de/away-mode/) ein. Optional mit `start` und `until`, zum Beispiel `2026-11-28 08:00`. |
 | `boopli.end_away` | Schaltet den Abwesenheitsmodus aus. |
 
-Dienste, die eine Aufgabe (`chore`) erwarten, akzeptieren ihren Namen oder ihre ID. Wenn zwei Aufgaben denselben Namen haben, nutze die ID.
+Aktionen, die eine Aufgabe (`chore`) erwarten, akzeptieren ihren Namen oder ihre ID. Wenn zwei Aufgaben denselben Namen haben, nutze die ID.
 
 ## Ereignisse
 
@@ -45,6 +45,6 @@ Boopli fügt ein Gerät namens **Boopli** mit drei Sensoren für dein Haustier h
 
 - **XP** gibt die Gesamtzahl der XP deines Haustiers an.
 - **Level** zeigt das Level deines Haustiers.
-- **Stimmung** zeigt, ob dein Haustier fröhlich, zufrieden, müde, traurig oder im Tiefschlaf ist.
+- **Mood** (Stimmung) hat einen dieser Werte: `happy`, `content`, `sleepy`, `sad` oder `hibernating` (fröhlich, zufrieden, müde, traurig oder im Tiefschlaf).
 
-Du kannst die Sensoren in einem Dashboard anzeigen oder in Automatisierungen nutzen. Lass zum Beispiel eine Lampe grün leuchten, wenn dein Haustier fröhlich ist.
+Du kannst die Sensoren in einem Dashboard anzeigen oder in Automatisierungen nutzen. Lass zum Beispiel eine Lampe grün leuchten, wenn der Sensor **Mood** den Wert `happy` hat.

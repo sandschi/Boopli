@@ -9,7 +9,7 @@ Boopli divide tus tareas en pasos pequeños y te envía recordatorios con las lu
 
 En estas páginas verás cómo configurar Boopli y cómo usar cada función. Puedes leerlas en el orden que quieras. Usa el menú de la izquierda o el buscador de arriba.
 
-El panel está disponible en inglés (en), alemán (de), neerlandés (nl), francés (fr) y español (es). Usa el idioma de Home Assistant. Para elegir otro idioma en este navegador, ve a **Configuración → Idioma**. La opción `?lang=xx` en la dirección tiene prioridad.
+El panel está disponible en inglés (en), alemán (de), neerlandés (nl), francés (fr) y español (es). El panel adopta el idioma de Home Assistant. Para elegir otro idioma en este navegador, ve a **Configuración → Idioma**. La opción `?lang=xx` en la dirección tiene prioridad.
 
 ## Si acabas de llegar
 
@@ -24,7 +24,7 @@ El panel está disponible en inglés (en), alemán (de), neerlandés (nl), franc
 - **Dividir una tarea grande en pasos muy pequeños**. [Ayuda con IA](/Boopli/es/ai-help/) y, como opción extra, [Preguntar a Claude](/Boopli/es/ask-claude/)
 - **Una pantalla en la pared**. [Wallboard](/Boopli/es/wall-board/)
 - **Tomarte un descanso**. [Modo ausencia](/Boopli/es/away-mode/)
-- **Tus propias automatizaciones**. [Servicios, eventos y sensores](/Boopli/es/automations/)
+- **Tus propias automatizaciones**. [Acciones, eventos y sensores](/Boopli/es/automations/)
 - **Algo no funciona**. [Solución de problemas](/Boopli/es/troubleshooting/)
 - **Lo que viene después**. [Hoja de ruta](/Boopli/roadmap/)
 

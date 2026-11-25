@@ -3,15 +3,15 @@ title: Claude fragen
 description: Ein freiwilliges Extra neben deinem KI-Agenten in Home Assistant, über eine Routine in deinem eigenen Claude-Konto.
 ---
 
-**Claude fragen** ist eine zusätzliche Schaltfläche neben der üblichen Schaltfläche für die [KI-Hilfe](/Boopli/de/ai-help/). Dein KI-Agent in Home Assistant bleibt dabei eingerichtet. Nutze diese Möglichkeit, wenn:
+**Claude fragen** ist eine zusätzliche Schaltfläche neben der üblichen Schaltfläche für die [KI-Hilfe](/Boopli/de/ai-help/). Du kannst deinen KI-Agenten in Home Assistant wie gewohnt weiter nutzen. Nutze diese Möglichkeit, wenn:
 
 - du der Antwort des KI-Agenten nicht traust und eine zweite Meinung möchtest,
 - dein kostenloser KI-Agent gerade nicht erreichbar ist oder keine weiteren Anfragen annimmt,
 - du noch keinen KI-Agenten eingerichtet hast.
 
-Das läuft über eine **Routine** in deinem eigenen Claude-Konto. Jede Anfrage startet die Routine einmal. Die Daten gehen direkt zwischen Home Assistant und Claude hin und her. Einen Boopli-Server gibt es nicht.
+Das läuft über eine **Routine** in deinem eigenen Claude-Konto. Jede Anfrage startet die Routine einmal. Boopli hat keinen eigenen Server.
 
-:::caution[Eine Vorschau für Forschungszwecke]
+:::caution[Eine Forschungsvorschau]
 Claude-Routinen können sich in der Vorschau noch ändern. Boopli begrenzt Anfragen auf 20 pro Stunde. Jede Fragerunde und jede Liste mit Schritten braucht eine Anfrage.
 :::
 
@@ -28,8 +28,8 @@ Im Assistenten für die KI-Hilfe zeigt dir der Schritt „Claude fragen“ diese
 
 1. Erstelle eine neue Routine und nenn sie **Boopli**.
 2. Füge die Anweisungen aus dem Assistenten ein. Darin steht, dass Claude zuerst die Fotos ansehen, dann die Antwort erarbeiten und mit einer einzigen Webanfrage zurückschicken soll. Danach soll Claude aufhören. In den Anweisungen steht auch, dass Claude versteckte Anweisungen in einem Foto oder im Aufgabentext ignorieren soll.
-3. Erstelle für die Routine eine **Umgebung** mit **eingeschränktem Netzwerkzugriff** und erlaube deine Home-Assistant-Adresse. Der Assistent zeigt dir den genauen Hostnamen.
-4. Füge der Routine einen **API-Trigger** hinzu und wähle **Token erzeugen**. Kopiere den Token gleich. Claude zeigt ihn nur einmal an.
+3. Erstelle für die Routine eine **Umgebung** („Environment“) mit **eingeschränktem Netzwerkzugriff** („Limited“) und erlaube deine Home-Assistant-Adresse. Der Assistent zeigt dir den genauen Hostnamen.
+4. Füge der Routine einen **API-Trigger** („API trigger“) hinzu und wähle **„Generate token“** (Token erzeugen). Kopiere den Token gleich. Claude zeigt ihn nur einmal an.
 5. Lass alle Verbindungen zu anderen Diensten (Gmail, Kalender und so weiter) **aus**. Die Routine braucht sie nicht.
 
 Die Oberfläche von Claude ändert sich ab und zu. Darum kann eine Schaltfläche etwas anders heißen.
@@ -61,12 +61,12 @@ Wenn du Fotos für Claude auswählst, speichert Boopli jedes Foto vorübergehend
 
 ## Was Claude sieht
 
-Von sich aus sendet Boopli nichts an Claude. Wenn du eine Anfrage stellst, erhält Claude den Aufgabentext, deine Antworten und alle Raumnotizen oder Fotos, die du ausgewählt hast. Bei Fragen zu einem Raum erhält Claude seinen Namen und die aktuellen Notizen. Claude kann speichern, was du teilst. Gerätenamen, der Verlauf von Home Assistant und dein Standort sind in der Anfrage nicht enthalten. Was du eingibst oder fotografierst, kann trotzdem private Angaben enthalten.
+Von sich aus sendet Boopli nichts an Claude. Wenn du eine Anfrage stellst, erhält Claude den Aufgabentext, deine Antworten und alle Raumnotizen oder Fotos, die du ausgewählt hast. Bei Fragen zu einem Raum erhält Claude den Namen des Raums und die aktuellen Notizen. Claude kann speichern, was du teilst. Gerätenamen, der Verlauf von Home Assistant und dein Standort sind in der Anfrage nicht enthalten. Was du eingibst oder fotografierst, kann trotzdem private Angaben enthalten.
 
 ## Dein Token ist geheim
 
 Boopli bewahrt den Token in einer eigenen privaten Datei im Speicher von Home Assistant auf. Der Token steht weder in den Einstellungen noch im Backup (`.adhd`). Das Panel erfährt nur, ob ein Token hinterlegt ist. Wenn du glaubst, dass jemand an den Token gekommen ist, erstelle auf claude.ai einen neuen. Füge ihn mit **Ersetzen** in Boopli ein.
 
-Wenn Boopli den Token nicht speichern kann, bleibt der alte in Gebrauch. Boopli sagt dir dann Bescheid. Wenn Boopli die private Datei beim Start nicht lesen kann, läuft es mit ausgeschaltetem „Claude fragen“ weiter, lässt die Datei in Ruhe und schreibt den Grund ins Protokoll von Home Assistant.
+Wenn Boopli den Token nicht speichern kann, bleibt der alte in Gebrauch. Boopli sagt dir dann Bescheid. Wenn Boopli die private Datei beim Start nicht lesen kann, läuft es mit ausgeschaltetem „Claude fragen“ weiter. Boopli lässt die Datei unverändert und schreibt den Grund ins Protokoll von Home Assistant.
 
 Wenn etwas schiefgeht, findest du Hilfe unter [Fehlersuche](/Boopli/de/troubleshooting/).

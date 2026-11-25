@@ -6,9 +6,9 @@ description: Wat je kunt controleren als iets niet werkt.
 ## Ik krijg geen seintjes
 
 - Controleer **Stille uren** in Instellingen. Elke dag van de week heeft eigen tijden.
-- Controleer de **Afwezigheidsmodus**. Zolang die aanstaat, krijg je alleen seintjes voor klussen die mogen doorgaan.
-- Kies **Testen** naast de lamp, luidspreker, het alarmapparaat of je telefoon in Instellingen. Werkt de test? Dan werkt het kanaal en zit het probleem in het type seintjes of de reeks.
-- Een klus met **Geen seintjes** verschijnt alleen in Boopli.
+- Controleer de **Afwezigheidsmodus**. Zolang die aanstaat, krijg je alleen seintjes voor taken die mogen doorgaan.
+- Kies in Instellingen **Testen** naast de lamp, de luidspreker, het alarmapparaat of je telefoon. Werkt de test? Dan werkt het kanaal en zit het probleem in het type seintjes of de reeks.
+- Een taak met **Geen seintjes** verschijnt alleen in Boopli.
 - Heb je je telefoon ingesteld? Controleer of de Home Assistant-app op je telefoon meldingen mag sturen.
 
 ## Een lamp doet iets vreemds

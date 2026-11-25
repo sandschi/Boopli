@@ -9,7 +9,7 @@ La primera vez que abras Boopli, se abrirá un asistente. A la izquierda verás 
 
 Si te saltas el asistente o lo dejas a medias, en Hoy aparece el aviso **Terminar de configurar**. Desde ahí puedes seguir donde lo dejaste. Si tu instalación ya tenía tareas o ajustes antes de que existiera el asistente, se considera configurada.
 
-El panel está disponible en inglés (en), alemán (de), neerlandés (nl), francés (fr) y español (es). Usa el idioma de Home Assistant. Para elegir otro idioma en este navegador, ve a **Configuración → Idioma**. Selecciona **Igual que en Home Assistant** para volver al idioma por defecto. La opción `?lang=xx` en la dirección tiene prioridad.
+El panel está disponible en inglés (en), alemán (de), neerlandés (nl), francés (fr) y español (es). El panel adopta el idioma de Home Assistant. Para elegir otro idioma en este navegador, ve a **Configuración → Idioma**. Selecciona **Igual que en Home Assistant** para volver al idioma por defecto. La opción `?lang=xx` en la dirección tiene prioridad.
 
 ## Horas de silencio para cada día
 
