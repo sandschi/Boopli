@@ -453,10 +453,15 @@ export class BoopliSpeakers extends LitElement {
     }
     const first = speakers[0];
     const target = this._testTarget(speakers); // the Test button uses a speaker that can play it and is there
-    const setAll =(which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
+    const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) => {
+      if ("kind" in patch || "sound" in patch) {
+        // another sound: the old Test results of every speaker in the group no longer fit it, and late answers are ignored
+        for (const s of speakers) this._clearNote(`speaker:${s.entity_id}:${which}`);
+      }
       this._patch({
         speakers: this._speakers().map((s) => (this._group(s) === group ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s)),
       });
+    };
     const one = (which: "cue" | "alarm", name: string, example: string) => {
       const c = first[which];
       const key = `shared:${group}:${which}`;
@@ -479,14 +484,8 @@ export class BoopliSpeakers extends LitElement {
                       c.kind as SoundKind,
                       c.sound,
                       example,
-                      (k) => {
-                        setAll(which, k === c.kind ? {} : { kind: k, sound: "" });
-                        if (k !== c.kind) this._clearNote(`speaker:${target.entity_id}:${which}`);
-                      },
-                      (s) => {
-                        setAll(which, { sound: s });
-                        this._clearNote(`speaker:${target.entity_id}:${which}`); // the old result was for the old sound
-                      },
+                      (k) => setAll(which, k === c.kind ? {} : { kind: k, sound: "" }),
+                      (s) => setAll(which, { sound: s }),
                       // the Test plays what the editor shows (the first speaker's setting) on the speaker that is there
                       { run: () => void this._test({ ...target, [which]: first[which] }, which), note: this._notes[`speaker:${target.entity_id}:${which}`] },
                     )}`

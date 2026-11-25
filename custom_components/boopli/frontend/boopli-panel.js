@@ -14726,14 +14726,17 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 	_toneGroup(e) {
 		let t = this._speakers().filter((t) => this._group(t) === e), n = C(e === "alexa" ? "speakers.alexa_speakers" : "speakers.other_media_players");
 		if (!t.length) return m`<h4>${n}</h4><p class="muted small">${C("speakers.you_have_no_such_speaker_yet")}</p>`;
-		let r = t[0], i = this._testTarget(t), a = (t, n) => this._patch({ speakers: this._speakers().map((r) => this._group(r) === e ? {
-			...r,
-			[t]: {
-				...r[t],
-				...n,
-				enabled: !0
-			}
-		} : r) }), o = (n, o, s) => {
+		let r = t[0], i = this._testTarget(t), a = (n, r) => {
+			if ("kind" in r || "sound" in r) for (let e of t) this._clearNote(`speaker:${e.entity_id}:${n}`);
+			this._patch({ speakers: this._speakers().map((t) => this._group(t) === e ? {
+				...t,
+				[n]: {
+					...t[n],
+					...r,
+					enabled: !0
+				}
+			} : t) });
+		}, o = (n, o, s) => {
 			let c = r[n], l = `shared:${e}:${n}`, u = !!this._open[l];
 			return m`
         <div class="line">
@@ -14750,14 +14753,10 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 				sound: e.sound
 			}))}
                 ${e === "alexa" ? m`${t.some((e) => this._cannotPlayAlexaSounds(e)) ? m`<div class="note muted small soundnote">${C("speakers.alexa_devices_no_amazon_sounds")}</div>` : _}
-                    ${this._soundFields(c.kind, c.sound, s, (e) => {
-				a(n, e === c.kind ? {} : {
-					kind: e,
-					sound: ""
-				}), e !== c.kind && this._clearNote(`speaker:${i.entity_id}:${n}`);
-			}, (e) => {
-				a(n, { sound: e }), this._clearNote(`speaker:${i.entity_id}:${n}`);
-			}, {
+                    ${this._soundFields(c.kind, c.sound, s, (e) => a(n, e === c.kind ? {} : {
+				kind: e,
+				sound: ""
+			}), (e) => a(n, { sound: e }), {
 				run: () => void this._test({
 					...i,
 					[n]: r[n]
