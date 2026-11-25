@@ -1,0 +1,41 @@
+{
+  "site_description": "Hulp bij klussen en taken in Home Assistant, afgestemd op mensen met ADHD.",
+  "sidebar": {
+    "start_here": "Begin hier",
+    "everyday_use": "Dagelijks gebruik",
+    "nudges_and_the_wall": "Seintjes en het Wallboard",
+    "more": "Meer"
+  },
+  "landing": {
+    "hero_line_1": "Klussen in kleine stapjes.",
+    "hero_line_2": "Een huisdier dat je aanmoedigt.",
+    "lead": "Boopli helpt je met klussen in <b>Home Assistant</b> en houdt rekening met ADHD. Je krijgt seintjes via de lampen, luidsprekers en telefoon die je al hebt. Je hebt geen account of server nodig. Boopli stuurt niets door tenzij je AI-hulp aanzet. Beschikbaar in het Engels, Duits, Nederlands, Frans en Spaans.",
+    "badge_hacs_alt": "Open je Home Assistant-installatie en open deze repository in HACS.",
+    "badge_setup_alt": "Open je Home Assistant-installatie en begin met het instellen van Boopli.",
+    "install_button": "Installeer Boopli",
+    "setup_button": "Stel Boopli in",
+    "docs_button": "Open de documentatie",
+    "early_note": "Boopli is nog in ontwikkeling en nog niet klaar voor dagelijks gebruik. Gratis en met open broncode (MIT).",
+    "hero_image_alt": "Boopli het slijm in een kamer met een waterbakje, een voerbakje en een bed",
+    "steps_title": "Aan de slag in drie stappen",
+    "step_1": "<b>Voeg Boopli toe.</b> Voeg de repository toe aan HACS en download Boopli.",
+    "step_2": "<b>Zet Boopli aan.</b> Voeg de Boopli-integratie toe via Instellingen, Apparaten &amp; diensten.",
+    "step_3": "<b>Volg de stappen.</b> Open Boopli in de zijbalk. Je krijgt één vraag per scherm.",
+    "read_more": "Lees meer",
+    "feature_1_title": "Kleine stapjes, één voor één",
+    "feature_1_text": "Deel een grote klus op in een paar heel kleine stapjes. Boopli toont alleen de stap die nu aan de beurt is, met een grote knop Klaar. Stappen kunnen op een sensor, NFC-tag of knop wachten en vanzelf klaar zijn.",
+    "feature_1_alt": "Het scherm Vandaag in Boopli",
+    "feature_2_title": "Seintjes die steeds duidelijker worden",
+    "feature_2_text": "Een lamp knippert. Een luidspreker geeft een kort geluidje en leest daarna iets voor. Als het echt nodig is, klinkt een sirene. Maak per klus je eigen reeks seintjes en laat je telefoon meedoen. Met stille uren en de afwezigheidsmodus blijft het rustig.",
+    "feature_2_alt": "De pagina Instellingen in Boopli",
+    "feature_3_title": "AI die klussen opdeelt",
+    "feature_3_text": "Zeg bijvoorbeeld “ruim mijn kamer op”. Je eigen AI-agent in Home Assistant stelt een paar vragen. Je kunt dit ook via je eigen Claude-account doen. De AI deelt de klus op in kleine stapjes die bij je huis passen. Foto’s helpen de AI om te zien wat er niet op zijn plek ligt.",
+    "feature_3_alt": "Het venster AI-hulp",
+    "feature_4_title": "Een Wallboard voor je tablet",
+    "feature_4_text": "Een scherm aan de muur met de huidige stap, de klok, het weer en je huisdier. Versleep tegels en pas hun grootte aan op het Wallboard zelf, net als op een Home Assistant-dashboard.",
+    "feature_4_alt": "Het Wallboard",
+    "find_your_way": "Vind je weg",
+    "what_is_next": "Wat er nog komt",
+    "what_is_next_note": "Dit overzicht komt rechtstreeks uit de meldingen bij het project op GitHub en is altijd actueel."
+  }
+}

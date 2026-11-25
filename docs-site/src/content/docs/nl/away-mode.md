@@ -1,0 +1,6 @@
+---
+title: Afwezigheidsmodus
+description: Geef Boopli rust terwijl je weg bent.
+---
+
+Met de kaart **Afwezigheidsmodus** bovenaan Instellingen (of de dienst `boopli.set_away`) geef je Boopli rust. Laat de modus nu of op een gekozen datum beginnen. Laat die op een gekozen datum stoppen of zet de modus zelf uit met **Ik ben terug**. Zolang de modus actief is, zie je op Vandaag een grote amberkleurige balk met **Afwezigheidsmodus actief**. Op de andere tabbladen zie je een dunne balk, zodat je het niet vergeet. Geplande klussen starten ondertussen niet, je krijgt geen seintjes en de stemming van je huisdier blijft gelijk. Lopende klussen pauzeren en gaan verder als je terug bent. De seintjes komen dan na elkaar, met 2 minuten ertussen. Terugkerende klussen die aan de beurt waren terwijl je weg was, beginnen vanaf vandaag opnieuw. Je hoeft niets in te halen. Opzijgezette delen en eenmalige klussen starten als je terug bent. Klussen die je kiest onder **Deze taken gaan door als ik weg ben**, gaan gewoon door. Bij het sjabloon Pillen staat **Gaat door als ik weg ben (bijvoorbeeld voor pillen)** standaard aan. Stappen die vanzelf klaar zijn, ronden gewoon af. Automatiseringen krijgen `boopli_away_started` en `boopli_away_ended`.

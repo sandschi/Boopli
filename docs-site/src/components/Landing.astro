@@ -2,14 +2,29 @@
 import { getCollection } from 'astro:content';
 import { Icon } from '@astrojs/starlight/components';
 import Roadmap from './Roadmap.astro';
+import en from '../i18n/en.json';
+import de from '../i18n/de.json';
+import nl from '../i18n/nl.json';
+import fr from '../i18n/fr.json';
+import es from '../i18n/es.json';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const texts: Record<string, typeof en> = { en, de, nl, fr, es };
+const locale = Astro.currentLocale && texts[Astro.currentLocale] ? Astro.currentLocale : 'en';
+const L = { ...en.landing, ...texts[locale].landing };
+const S = { ...en.sidebar, ...texts[locale].sidebar };
+// English pages live at the root, the others under /de/, /nl/, ...
+const prefix = locale === 'en' ? '' : `/${locale}`;
+// These pages are English only, so their links and titles stay at the root.
+const englishOnly = new Set(['roadmap', 'development', 'translating']);
+const href = (slug: string) => `${base}${englishOnly.has(slug) ? '' : prefix}/${slug}/`;
+
 const docs = await getCollection('docs');
-const info = (slug: string) => docs.find((d) => d.id === slug)?.data;
+const info = (slug: string) => docs.find((d) => d.id === (englishOnly.has(slug) || locale === 'en' ? slug : `${locale}/${slug}`))?.data;
 
 const groups = [
 	{
-		title: 'Start here',
+		title: S.start_here,
 		pages: [
 			['install', 'download'],
 			['setup', 'setting'],
@@ -17,7 +32,7 @@ const groups = [
 		],
 	},
 	{
-		title: 'Everyday use',
+		title: S.everyday_use,
 		pages: [
 			['chores', 'list-format'],
 			['ai-help', 'random'],
@@ -28,14 +43,14 @@ const groups = [
 		],
 	},
 	{
-		title: 'Nudges and the wall',
+		title: S.nudges_and_the_wall,
 		pages: [
 			['nudges', 'clock'],
 			['wall-board', 'laptop'],
 		],
 	},
 	{
-		title: 'More',
+		title: S.more,
 		pages: [
 			['automations', 'puzzle'],
 			['data-and-backups', 'cloud-download'],
@@ -47,82 +62,46 @@ const groups = [
 ];
 
 const features = [
-	{
-		title: 'Tiny steps, one at a time',
-		text: 'A big chore becomes a few very small steps. Boopli shows only the one that is your turn, with a big Done button. Steps can wait for a sensor, an NFC tag or a button, and finish by themselves.',
-		image: 'today.jpg',
-		alt: 'The Boopli Today screen',
-		page: 'chores',
-	},
-	{
-		title: 'Nudges that climb',
-		text: 'A light blinks. A speaker dings, then speaks. A siren sounds if you really need it. Build your own nudge sequences, per chore, and let your phone join in. Quiet hours and away mode keep it calm.',
-		image: 'settings.jpg',
-		alt: 'The Boopli Settings page',
-		page: 'nudges',
-	},
-	{
-		title: 'AI that breaks chores down',
-		text: 'Say "clean my room" and your own Home Assistant AI agent (or your own Claude, as an extra) asks a few questions and splits it into tiny steps that fit your home. Photos help it see what is out of place.',
-		image: 'ai-help.jpg',
-		alt: 'The AI help window',
-		page: 'ai-help',
-	},
-	{
-		title: 'A wall board for the tablet',
-		text: 'A screen on the wall with the current step, the clock, the weather and your pet. Move and resize the tiles right on the wall, like a Home Assistant dashboard.',
-		image: 'wall.jpg',
-		alt: 'The wall board',
-		page: 'wall-board',
-	},
+	{ title: L.feature_1_title, text: L.feature_1_text, image: 'today.jpg', alt: L.feature_1_alt, page: 'chores' },
+	{ title: L.feature_2_title, text: L.feature_2_text, image: 'settings.jpg', alt: L.feature_2_alt, page: 'nudges' },
+	{ title: L.feature_3_title, text: L.feature_3_text, image: 'ai-help.jpg', alt: L.feature_3_alt, page: 'ai-help' },
+	{ title: L.feature_4_title, text: L.feature_4_text, image: 'wall.jpg', alt: L.feature_4_alt, page: 'wall-board' },
 ];
 ---
 
 <div class="landing">
 	<section class="hero">
-		<h1><span class="line">Chores in tiny steps.</span> <span class="line">A pet that cheers you on.</span></h1>
+		<h1><span class="line">{L.hero_line_1}</span> <span class="line">{L.hero_line_2}</span></h1>
 		<div class="hero-text">
-			<p class="lead">
-				Boopli is an ADHD-friendly chore companion that lives inside <b>Home Assistant</b>. It nudges you with
-				the lights, speakers and phone you already have. No account and no server. Nothing is sent anywhere unless you
-				turn on AI help. Available in English, German, Dutch, French and Spanish.
-			</p>
+			<p class="lead" set:html={L.lead} />
 			<div class="buttons">
 				<a
 					href="https://my.home-assistant.io/redirect/hacs_repository/?owner=sandschi&repository=Boopli&category=integration"
 					target="_blank"
 					rel="noreferrer"
 				>
-					<img
-						class="badge"
-						src="https://my.home-assistant.io/badges/hacs_repository.svg"
-						alt="Open your Home Assistant instance and open this repository in HACS."
-					/>
+					<img class="badge" src="https://my.home-assistant.io/badges/hacs_repository.svg" alt={L.badge_hacs_alt} />
 				</a>
 				<a href="https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli" target="_blank" rel="noreferrer">
-					<img
-						class="badge"
-						src="https://my.home-assistant.io/badges/config_flow_start.svg"
-						alt="Open your Home Assistant instance and start setting up Boopli."
-					/>
+					<img class="badge" src="https://my.home-assistant.io/badges/config_flow_start.svg" alt={L.badge_setup_alt} />
 				</a>
 			</div>
 			<div class="buttons">
-				<a class="boopli-btn" href={`${base}/install/`}>Install Boopli</a>
-				<a class="boopli-btn quiet" href={`${base}/setup/`}>Set it up</a>
-				<a class="boopli-btn quiet" href={`${base}/welcome/`}>Open docs</a>
+				<a class="boopli-btn" href={href('install')}>{L.install_button}</a>
+				<a class="boopli-btn quiet" href={href('setup')}>{L.setup_button}</a>
+				<a class="boopli-btn quiet" href={href('welcome')}>{L.docs_button}</a>
 			</div>
-			<p class="small">Early development: Boopli is not ready for daily use yet. Free and open source (MIT).</p>
+			<p class="small">{L.early_note}</p>
 		</div>
-		<img class="hero-art" src={`${base}/img/pet-room.png`} alt="Boopli the slime in its room, next to a water bowl, a food bowl and a bed" />
+		<img class="hero-art" src={`${base}/img/pet-room.png`} alt={L.hero_image_alt} />
 	</section>
 
 	<section class="steps">
-		<h2>Up and running in three steps</h2>
+		<h2>{L.steps_title}</h2>
 		<ol>
-			<li><b>Add it.</b> Add the repository to HACS and download Boopli.</li>
-			<li><b>Switch it on.</b> Add the Boopli integration under Settings, Devices &amp; services.</li>
-			<li><b>Follow the wizard.</b> Open Boopli in the sidebar. A guide asks one question per screen.</li>
+			<li set:html={L.step_1} />
+			<li set:html={L.step_2} />
+			<li set:html={L.step_3} />
 		</ol>
 	</section>
 
@@ -132,8 +111,8 @@ const features = [
 				<div class="feature-text">
 					<h2>{f.title}</h2>
 					<p>{f.text}</p>
-					<a class="boopli-btn quiet" href={`${base}/${f.page}/`}>
-						Read more
+					<a class="boopli-btn quiet" href={href(f.page)}>
+						{L.read_more}
 					</a>
 				</div>
 				<img src={`${base}/img/${f.image}`} alt={f.alt} loading="lazy" />
@@ -142,7 +121,7 @@ const features = [
 	}
 
 	<section class="map">
-		<h2 id="find-your-way">Find your way</h2>
+		<h2 id="find-your-way">{L.find_your_way}</h2>
 		<div class="groups">
 			{
 				groups.map((g) => (
@@ -151,7 +130,7 @@ const features = [
 						<ul>
 							{g.pages.map(([slug, icon]) => (
 								<li>
-									<a href={`${base}/${slug}/`}>
+									<a href={href(slug)}>
 										<span class="ico">
 											<Icon name={icon as any} size="1.3rem" />
 										</span>
@@ -170,12 +149,11 @@ const features = [
 	</section>
 
 	<section class="next">
-		<h2>What is next</h2>
-		<p class="small">Straight from the project's GitHub issues, so it is always current.</p>
+		<h2>{L.what_is_next}</h2>
+		<p class="small">{L.what_is_next_note}</p>
 		<Roadmap limit={3} more={true} />
 	</section>
 </div>
-
 <style>
 	.landing {
 		display: grid;

@@ -1,0 +1,6 @@
+---
+title: Abwesenheitsmodus
+description: Lass Boopli Pause machen, während du weg bist.
+---
+
+Mit der Karte **Abwesenheitsmodus** oben in den Einstellungen oder dem Dienst `boopli.set_away` macht Boopli Pause. Die Pause beginnt sofort oder an einem Datum deiner Wahl. Sie endet an einem Datum oder wenn du **Bin wieder da** wählst. Solange der Modus aktiv ist, zeigt „Heute“ einen großen bernsteinfarbenen Hinweis **Abwesenheitsmodus aktiv**. Auf den anderen Seiten ist er schmaler, damit du ihn im Blick behältst. In dieser Zeit starten keine geplanten Aufgaben, du bekommst keine Stupse und die Stimmung deines Haustiers bleibt gleich. Laufende Aufgaben pausieren. Wenn du zurück bist, gehen sie weiter und stupsen dich nacheinander im Abstand von 2 Minuten an. Wiederkehrende Aufgaben, die während deiner Abwesenheit fällig waren, werden ab heute neu eingeplant. Verpasste Termine werden dabei ausgelassen. Zur Seite gelegte Aufgabenteile und einmalige Aufgaben starten, wenn du wieder da bist. Aufgaben unter **Diese Aufgaben laufen weiter, wenn ich weg bin** laufen wie gewohnt. In der Vorlage „Tabletten“ ist **Läuft weiter, wenn ich weg bin (zum Beispiel für Tabletten)** bereits eingeschaltet. Schritte, die sich von selbst erledigen, werden weiterhin abgeschlossen. Für Automatisierungen gibt es `boopli_away_started` und `boopli_away_ended`.

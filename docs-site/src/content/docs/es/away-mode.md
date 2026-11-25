@@ -1,0 +1,6 @@
+---
+title: Modo ausencia
+description: Deja que Boopli descanse mientras estás fuera.
+---
+
+La tarjeta **Modo ausencia**, arriba en Configuración, y el servicio `boopli.set_away` te permiten poner a Boopli en pausa. Puedes empezar ahora o en una fecha que elijas. La pausa puede durar hasta una fecha o hasta que selecciones **Ya estoy de vuelta**. Mientras está en pausa, Hoy muestra un aviso grande de color ámbar, **Modo ausencia activo**. Las otras pestañas muestran un aviso más fino para que lo tengas presente. Durante la pausa no se inician las tareas programadas, no recibes recordatorios y el estado de ánimo de tu mascota se mantiene. Las tareas que ya estaban en curso se pausan y siguen cuando vuelves. Sus recordatorios llegan uno detrás de otro, con 2 minutos de separación. Las tareas que se repiten y que tocaban mientras estabas fuera vuelven a contar desde hoy. No se acumulan. Las partes que dejaste para más tarde y las tareas de una sola vez empiezan al volver. Las tareas que selecciones en **Estas tareas siguen activas mientras estoy fuera** funcionan como siempre. La plantilla Pastillas tiene activada por defecto la opción **Sigue activa mientras estoy fuera (por ejemplo, para tomar pastillas)**. Los pasos que se completan automáticamente siguen completándose. Las automatizaciones reciben los eventos `boopli_away_started` y `boopli_away_ended`.
