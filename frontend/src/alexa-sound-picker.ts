@@ -43,7 +43,7 @@ export function alexaSoundPicker(
           if (first) onChange(first.id);
         }}
       >
-        <option value="" ?selected=${!known}>${known ? t("common.alexa_sound_pick_kind") : value ? t("common.alexa_sound_own_in_use") : t("common.alexa_sound_pick_kind")}</option>
+        <option value="" ?selected=${!known} ?disabled=${!!known}>${known ? t("common.alexa_sound_pick_kind") : value ? t("common.alexa_sound_own_in_use") : t("common.alexa_sound_pick_kind")}</option>
         ${[...GROUPS.keys()].map((top) => html`<option value=${top} ?selected=${top === known}>${top}</option>`)}
       </select>
     </label>
