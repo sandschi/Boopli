@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.storage import Store
 from homeassistant.loader import async_get_integration
 
 from . import breakdown, engine
@@ -57,6 +59,8 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_test_channel)
     websocket_api.async_register_command(hass, ws_claude_token)
     websocket_api.async_register_command(hass, ws_claude_test)
+    websocket_api.async_register_command(hass, ws_sound_test_get)  # TEMPORARY
+    websocket_api.async_register_command(hass, ws_sound_test_set)  # TEMPORARY
     websocket_api.async_register_command(hass, ws_backup_export)
     websocket_api.async_register_command(hass, ws_backup_preview)
     websocket_api.async_register_command(hass, ws_backup_import)
@@ -855,6 +859,50 @@ async def ws_test_channel(
         _send_error(connection, msg, "invalid", err)
         return
     connection.send_result(msg["id"], _wire_note(result))
+
+
+# --- TEMPORARY: which Alexa sounds really play (see frontend/src/boopli-sound-test.ts) -----------------
+# The marks live in their own small file, apart from Boopli's data, and every change is also written to the log
+# so it can be read from there. Remove with the "Try the sounds" window.
+
+_SOUND_TEST_LOGGER = logging.getLogger(__name__)
+_SOUND_TEST_KEY = "boopli_sound_test"
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command({vol.Required("type"): "boopli/sound_test_get"})
+@websocket_api.async_response
+async def ws_sound_test_get(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The marks set so far: sound id -> "ok" or "bad"."""
+    data = await Store(hass, 1, _SOUND_TEST_KEY).async_load() or {}
+    connection.send_result(msg["id"], {"marks": data.get("marks", {})})
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/sound_test_set",
+        vol.Required("sound"): vol.All(str, vol.Match(r"^amzn_sfx_[a-z0-9_]{1,80}$")),
+        vol.Required("mark"): vol.In(["ok", "bad", ""]),
+    }
+)
+@websocket_api.async_response
+async def ws_sound_test_set(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Mark one sound as working, not working, or take the mark back ("")."""
+    store: Store[dict[str, Any]] = Store(hass, 1, _SOUND_TEST_KEY)
+    data = await store.async_load() or {}
+    marks: dict[str, str] = dict(data.get("marks", {}))
+    if msg["mark"]:
+        marks[msg["sound"]] = msg["mark"]
+    else:
+        marks.pop(msg["sound"], None)
+    await store.async_save({"marks": marks})
+    _SOUND_TEST_LOGGER.warning("Boopli sound test: %s = %s", msg["sound"], msg["mark"] or "open")
+    connection.send_result(msg["id"])
 
 
 # --- backup of the setup (admins only: a backup holds private data, an import replaces it) ---------

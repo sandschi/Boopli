@@ -18,7 +18,8 @@ function walk(dir) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) return name === "i18n" ? [] : walk(full);
     // alexa-sounds.ts is Amazon's sound list: names stay as Amazon writes them, so it is data, not interface text.
-    return full.endsWith(".ts") && name !== "alexa-sounds.ts" ? [full] : [];
+    // boopli-sound-test.ts is a temporary tool for the maintainer (English only, to be deleted).
+    return full.endsWith(".ts") && name !== "alexa-sounds.ts" && name !== "boopli-sound-test.ts" ? [full] : [];
   });
 }
 
