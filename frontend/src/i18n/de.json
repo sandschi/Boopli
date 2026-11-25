@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Boopli fragt Claude. Das dauert einen Moment…",
     "break_it_down_now": "Jetzt aufteilen",
     "make_a_cup_of_tea": "Eine Tasse Tee machen",
-    "alexa_sound_id": "Alexa-Ton-ID",
     "on_for_seconds": "Dauer (Sekunden)",
     "switch_ask_claude_on": "„Claude fragen“ einschalten",
     "no_limit": "Kein Limit",
@@ -87,10 +86,7 @@
     "alexa_sound_kind": "Art des Tons",
     "alexa_sound_which": "Ton",
     "alexa_sound_pick_kind": "Wähle eine Art von Ton …",
-    "alexa_sound_own_in_use": "Deine eigene ID ist in Benutzung",
-    "alexa_sound_type_own": "Eine ID selbst eintippen",
-    "alexa_sound_library_name": "Alexa-Tonbibliothek",
-    "alexa_sound_library_hint": "Das sind die Töne aus der {library}, die auf Alexa-Lautsprechern laufen. Wähle „Testen“, um zu prüfen, ob dein Lautsprecher den gewählten Ton abspielen kann."
+    "alexa_sound_own_in_use": "Deine eigene ID ist in Benutzung"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Im Abwesenheitsmodus pausieren Aufgaben und Stupse. Unten kannst du auswählen, welche Aufgaben weiterlaufen. Dein Haustier ruht sich aus, bis du wieder da bist.",

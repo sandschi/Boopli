@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Consultando a Claude. Tardará un momento…",
     "break_it_down_now": "Dividir en pasos ahora",
     "make_a_cup_of_tea": "Preparar una taza de té",
-    "alexa_sound_id": "ID del sonido de Alexa",
     "on_for_seconds": "Duración (segundos)",
     "switch_ask_claude_on": "Activar «Preguntar a Claude»",
     "no_limit": "Sin límite",
@@ -87,10 +86,7 @@
     "alexa_sound_kind": "Tipo de sonido",
     "alexa_sound_which": "Sonido",
     "alexa_sound_pick_kind": "Elige un tipo de sonido…",
-    "alexa_sound_own_in_use": "Se está usando tu propio ID",
-    "alexa_sound_type_own": "Escribir un ID tú mismo",
-    "alexa_sound_library_name": "biblioteca de sonidos de Alexa",
-    "alexa_sound_library_hint": "Estos son los sonidos de la {library} que suenan en los altavoces Alexa. Selecciona Probar para comprobar si tu altavoz puede reproducir el que elegiste."
+    "alexa_sound_own_in_use": "Se está usando tu propio ID"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "El modo ausencia pausa las tareas y los recordatorios. Las tareas que selecciones abajo siguen activas y pueden enviarte recordatorios. Tu mascota descansa hasta que vuelvas.",

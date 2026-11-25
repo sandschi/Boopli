@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Asking Claude. This takes a little while…",
     "break_it_down_now": "Break it down now",
     "make_a_cup_of_tea": "Make a cup of tea",
-    "alexa_sound_id": "Alexa sound ID",
     "on_for_seconds": "On for (seconds)",
     "switch_ask_claude_on": "Switch Ask Claude on",
     "no_limit": "No limit",
@@ -87,10 +86,7 @@
     "alexa_sound_kind": "Kind of sound",
     "alexa_sound_which": "Sound",
     "alexa_sound_pick_kind": "Choose a kind of sound…",
-    "alexa_sound_own_in_use": "Your own ID is in use",
-    "alexa_sound_type_own": "Type an ID yourself",
-    "alexa_sound_library_name": "Alexa sound library",
-    "alexa_sound_library_hint": "These are the sounds from the {library} that play on Alexa speakers. Select Test to check whether your speaker can play the one you chose."
+    "alexa_sound_own_in_use": "Your own ID is in use"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Away mode pauses chores and nudges unless you select them below. Your pet rests until you come back.",

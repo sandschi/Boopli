@@ -1,9 +1,7 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { live } from "lit/directives/live.js";
 import { ALEXA_SOUNDS } from "./alexa-sounds";
-import { t, rich } from "./i18n";
-
-const SOUND_LIBRARY_URL = "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html";
+import { t } from "./i18n";
 
 type Sound = { id: string; name: string; seconds: number };
 
@@ -24,8 +22,7 @@ const BY_ID: ReadonlyMap<string, string> = new Map(
 
 /**
  * Choose an Alexa sound: first a kind of sound, then the sound itself. Picking a kind already picks its first
- * sound, so there is always something to press Test on. An ID that is not in the list stays usable under
- * "Type an ID yourself".
+ * sound, so there is always something to press Test on. Only sounds that really play on a real Alexa are listed.
  */
 export function alexaSoundPicker(
   value: string,
@@ -62,22 +59,5 @@ export function alexaSoundPicker(
           ${test.note ? html`<span class="note muted small">${test.note}</span>` : nothing}
         </div>`
       : nothing}
-    <details class="soundown" ?open=${!!value && !known}>
-      <summary>${t("common.alexa_sound_type_own")}</summary>
-      <label class="num wide">
-        ${t("common.alexa_sound_id")}
-        <input
-          type="text"
-          .value=${value}
-          placeholder="amzn_sfx_…"
-          @change=${(e: Event) => onChange((e.target as HTMLInputElement).value.trim())}
-        />
-      </label>
-    </details>
-    <div class="muted small libhint">
-      ${rich("common.alexa_sound_library_hint", {
-        library: html`<a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">${t("common.alexa_sound_library_name")}</a>`,
-      })}
-    </div>
   `;
 }

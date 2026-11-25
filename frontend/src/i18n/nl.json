@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Boopli vraagt het aan Claude. Dat duurt even…",
     "break_it_down_now": "Nu opdelen",
     "make_a_cup_of_tea": "Een kop thee zetten",
-    "alexa_sound_id": "ID van Alexa-geluid",
     "on_for_seconds": "Duur (seconden)",
     "switch_ask_claude_on": "“Vraag Claude” aanzetten",
     "no_limit": "Geen limiet",
@@ -87,10 +86,7 @@
     "alexa_sound_kind": "Soort geluid",
     "alexa_sound_which": "Geluid",
     "alexa_sound_pick_kind": "Kies een soort geluid…",
-    "alexa_sound_own_in_use": "Je eigen ID is in gebruik",
-    "alexa_sound_type_own": "Zelf een ID intypen",
-    "alexa_sound_library_name": "Alexa-geluidsbibliotheek",
-    "alexa_sound_library_hint": "Dit zijn de geluiden uit de {library} die op Alexa-speakers afspelen. Kies Testen om te controleren of je speaker het gekozen geluid kan afspelen."
+    "alexa_sound_own_in_use": "Je eigen ID is in gebruik"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "De Afwezigheidsmodus pauzeert taken en seintjes, behalve voor de taken die je hieronder kiest. Je huisdier rust tot je terug bent.",

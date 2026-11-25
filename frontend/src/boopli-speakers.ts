@@ -1,7 +1,6 @@
 import { LitElement, html, css, nothing, type TemplateResult } from "lit";
 import { errorMessage, testAlarmDevice, testNote, testSpeaker } from "./api";
 import { alexaSoundPicker } from "./alexa-sound-picker";
-import "./boopli-sound-test"; // TEMPORARY
 import { newLadderId } from "./helpers";
 import { icon } from "./icon";
 import { sharedStyles } from "./styles";
@@ -70,7 +69,7 @@ export class BoopliSpeakers extends LitElement {
   declare _addDevice: string;
   declare _notes: Record<string, string>;
   declare _open: Record<string, boolean>; // the lines whose details are showing
-  declare _sub: "" | "add" | "tone" | "own" | "say" | "try"; // which small window is open
+  declare _sub: "" | "add" | "tone" | "own" | "say"; // which small window is open
 
   constructor() {
     super();
@@ -554,10 +553,6 @@ export class BoopliSpeakers extends LitElement {
       );
     }
     if (this._sub === "own") return this._subWindow(t("speakers.your_own_sounds"), this._ownSounds());
-    if (this._sub === "try") {
-      // TEMPORARY (see boopli-sound-test.ts)
-      return this._subWindow("Try the sounds", html`<boopli-sound-test .hass=${this.hass} .speakers=${d.speakers}></boopli-sound-test>`);
-    }
     if (this._sub === "say") {
       return this._subWindow(
         t("speakers.what_the_speakers_say"),
@@ -575,7 +570,7 @@ export class BoopliSpeakers extends LitElement {
   }
 
   private _renderSpeakers(d: Settings) {
-    const topButton = (sub: "add" | "tone" | "own" | "say" | "try", ico: string, label: string) =>
+    const topButton = (sub: "add" | "tone" | "own" | "say", ico: string, label: string) =>
       html`<button type="button" class="textlink" @click=${() => (this._sub = sub)}>${icon(ico)} ${label}</button>`;
     return html`
       <section class="card">
@@ -586,7 +581,6 @@ export class BoopliSpeakers extends LitElement {
         <div class="topbtns">
           ${topButton("add", "plus", t("speakers.add_a_speaker"))} ${topButton("tone", "music-note", t("speakers.ding_and_alarm_sound"))}
           ${topButton("own", "playlist-music", t("speakers.your_own_sounds"))} ${topButton("say", "message-text-outline", t("speakers.what_the_speakers_say"))}
-          ${topButton("try", "music-note", "Try the sounds")}
         </div>
         ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">${t("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(d)}
@@ -795,11 +789,8 @@ export class BoopliSpeakers extends LitElement {
         align-items: flex-end;
         padding: 10px 0 4px 30px;
       }
-      .soundtest,
-      details.soundown {
-        flex-basis: 100%;
-      }
       .soundtest {
+        flex-basis: 100%;
         display: flex;
         align-items: center;
         gap: 10px;

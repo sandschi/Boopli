@@ -375,6 +375,33 @@ class BoopliNudger:
             return False
         return True
 
+    def _do_not_disturb(self, entity_id: str) -> bool:
+        """Whether the Alexa speaker has Do not disturb on (or it cannot be told, which counts as on).
+
+        The speaker's Do not disturb switch is found through the speaker's serial number, which both Alexa
+        integrations use in the switch's unique ID. A speaker with no such switch is treated as not disturbed.
+        """
+        from homeassistant.helpers import entity_registry as er
+
+        registry = er.async_get(self.hass)
+        speaker = registry.async_get(entity_id)
+        if speaker is None or not speaker.unique_id:
+            return False
+        serial = speaker.unique_id.removesuffix("-media")  # Alexa Devices adds "-media"
+        switches = (
+            registry.async_get_entity_id("switch", "alexa_media", f"{serial}_do not disturb"),
+            registry.async_get_entity_id("switch", "alexa_devices", f"{serial}-dnd"),
+        )
+        for switch_id in switches:
+            if switch_id is None:
+                continue
+            state = self.hass.states.get(switch_id)
+            if state is None or state.state in ("on", "unavailable", "unknown"):
+                return True
+            # a switch that reads "off" is a clear answer; the other integration's switch is the same setting
+            return False
+        return False
+
     async def _play_speaker(
         self,
         speaker: engine.SpeakerCfg,
@@ -414,6 +441,13 @@ class BoopliNudger:
             text = engine.speech_text(
                 self.manager.settings.speech_template, chore_name, step_title
             )
+            if (
+                speaker.speech.route == engine.SPEECH_ALEXA_MEDIA
+                and (speaker.speech.announce if announce is None else announce)
+                and self._do_not_disturb(speaker.entity_id)
+            ):
+                # Alexa swallows announcements while Do not disturb is on; plain speech still comes through.
+                announce = False
             domain, service, data = engine.speech_call(speaker, text, announce)
             return await self._call(domain, service, data)
         return self._start_speaker_alarm(speaker, key)

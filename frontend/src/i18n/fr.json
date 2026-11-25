@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Boopli demande à Claude. Ça prend un petit moment…",
     "break_it_down_now": "Découper maintenant",
     "make_a_cup_of_tea": "Préparer une tasse de thé",
-    "alexa_sound_id": "ID du son Alexa",
     "on_for_seconds": "Durée (en secondes)",
     "switch_ask_claude_on": "Activer « Demander à Claude »",
     "no_limit": "Sans limite",
@@ -87,10 +86,7 @@
     "alexa_sound_kind": "Type de son",
     "alexa_sound_which": "Son",
     "alexa_sound_pick_kind": "Choisis un type de son…",
-    "alexa_sound_own_in_use": "Ton propre identifiant est utilisé",
-    "alexa_sound_type_own": "Saisir un identifiant toi-même",
-    "alexa_sound_library_name": "bibliothèque de sons Alexa",
-    "alexa_sound_library_hint": "Voici les sons de la {library} qui se jouent sur les enceintes Alexa. Sélectionne Tester pour vérifier que ton enceinte peut jouer le son choisi."
+    "alexa_sound_own_in_use": "Ton propre identifiant est utilisé"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Le mode absence met les tâches et les rappels en pause, sauf pour les tâches que tu sélectionnes ci-dessous. Ton animal se repose jusqu’à ton retour.",
