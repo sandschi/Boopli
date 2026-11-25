@@ -98,6 +98,17 @@ export class BoopliSpeakers extends LitElement {
     return typeof name === "string" && name ? name : entityId;
   }
 
+  /** Whether the speaker is there right now (no state at all means it is gone from Home Assistant). */
+  private _here(s: SpeakerCfg): boolean {
+    const state = this.hass?.states[s.entity_id]?.state;
+    return state !== undefined && state !== "unavailable";
+  }
+
+  /** Amazon's sounds only play through Alexa Media Player; the official Alexa Devices media player cannot. */
+  private _cannotPlayAlexaSounds(s: SpeakerCfg): boolean {
+    return this.hass?.entities?.[s.entity_id]?.platform === "alexa_devices";
+  }
+
   private _ids(domains: string[], used: string[] = []): string[] {
     return Object.keys(this.hass?.states ?? {})
       .filter((id) => domains.includes(id.split(".")[0]) && !used.includes(id))
@@ -232,11 +243,7 @@ export class BoopliSpeakers extends LitElement {
     const key = `own:${sound.id}`;
     const fits = this._speakers().filter((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
     // the first speaker that can play it and is there right now
-    const here = (s: SpeakerCfg) => {
-      const state = this.hass?.states[s.entity_id]?.state; // no state at all: it is gone from Home Assistant
-      return state !== undefined && state !== "unavailable";
-    };
-    const speaker = fits.find(here) ?? fits[0];
+    const speaker = fits.find((s) => this._here(s)) ?? fits[0];
     if (!speaker) {
       this._note(key, t("speakers.add_a_speaker_that_can_play"));
       return;
@@ -414,7 +421,8 @@ export class BoopliSpeakers extends LitElement {
       return html`<h4>${title}</h4><p class="muted small">${t("speakers.you_have_no_such_speaker_yet")}</p>`;
     }
     const first = speakers[0];
-    const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
+    const target = speakers.find((s) => this._here(s)) ?? first; // the Test button uses a speaker that is there
+    const setAll =(which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
       this._patch({
         speakers: this._speakers().map((s) => (this._group(s) === group ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s)),
       });
@@ -435,10 +443,18 @@ export class BoopliSpeakers extends LitElement {
             ? html`<div class="fields">
                 ${this._soundPicker(c, first, (x) => setAll(which, { kind: x.kind, sound: x.sound }))}
                 ${group === "alexa"
-                  ? this._soundFields(c.kind as SoundKind, c.sound, example, (k) => setAll(which, { kind: k }), (s) => setAll(which, { sound: s }), {
-                      run: () => void this._test(first, which),
-                      note: this._notes[`speaker:${first.entity_id}:${which}`],
-                    })
+                  ? html`${speakers.some((s) => this._cannotPlayAlexaSounds(s)) ? html`<div class="note muted small soundnote">${t("speakers.alexa_devices_no_amazon_sounds")}</div>` : nothing}
+                    ${this._soundFields(
+                      c.kind as SoundKind,
+                      c.sound,
+                      example,
+                      (k) => setAll(which, k === c.kind ? {} : { kind: k, sound: "" }),
+                      (s) => {
+                        setAll(which, { sound: s });
+                        this._note(`speaker:${target.entity_id}:${which}`, ""); // the old result was for the old sound
+                      },
+                      { run: () => void this._test(target, which), note: this._notes[`speaker:${target.entity_id}:${which}`] },
+                    )}`
                   : html`<label class="num wide">
                       ${t("speakers.file_in_my_media_folder_for_example", { example })}
                       <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
@@ -474,7 +490,7 @@ export class BoopliSpeakers extends LitElement {
           />`,
           summary: this._soundSummary(x.kind, x.sound),
           onTest: () => void this._testExtra(x),
-          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, { kind: k }), (s) => this._setExtra(x.id, { sound: s })),
+          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, k === x.kind ? {} : { kind: k, sound: "" }), (s) => this._setExtra(x.id, { sound: s })),
           onRemove: () => this._removeExtra(x.id),
           removeLabel: t("speakers.remove_the_sound", { name: x.name }),
         })

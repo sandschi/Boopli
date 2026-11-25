@@ -740,7 +740,8 @@
     "remove_alarm_device": "Retirer l’appareil d’alarme {device}",
     "sound": "Son {n}",
     "file": "Fichier : {sound}",
-    "no_device_chosen_yet": "aucun appareil choisi pour l’instant"
+    "no_device_chosen_yet": "aucun appareil choisi pour l’instant",
+    "alexa_devices_no_amazon_sounds": "Cette enceinte vient d’Alexa Devices, qui ne peut pas jouer les sons d’Amazon. Utilise une enceinte d’Alexa Media Player ou un fichier."
   },
   "stage": {
     "your_pets_room": "La pièce de ton animal"
@@ -1523,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Tu peux modifier la série de rappels prédéfinie « {gone} ». Garde-la dans ta liste.",
     "you_can_have_at_most_sounds_of_0a92": "Tu peux avoir au maximum {extra_sounds_max} sons personnalisés.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Tu peux avoir au maximum {ladder_max} séries de rappels.",
-    "your_pet_s_name_can_have_up_2b26": "Le nom de ton animal est limité à {pet_name_max} caractères."
+    "your_pet_s_name_can_have_up_2b26": "Le nom de ton animal est limité à {pet_name_max} caractères.",
+    "alexa_devices_cannot_play_amazon_sounds_use_c092": "Alexa Devices ne peut pas jouer les sons d’Amazon. Utilise une enceinte d’Alexa Media Player ou un fichier."
   }
 }

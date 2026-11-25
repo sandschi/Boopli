@@ -3220,6 +3220,17 @@ def speaker_plays_alexa_sounds(speaker: SpeakerCfg) -> bool:
     return speaker.speech.route != SPEECH_TTS
 
 
+def level_plays_alexa_sound(speaker: SpeakerCfg, level: str, sounds: Iterable[ExtraSound] = ()) -> bool:
+    """Whether playing this level means playing one of Amazon's sounds (a ding, an alarm or one of your own)."""
+    extra = find_sound(sounds, level)
+    if extra is not None:
+        return extra.kind == SOUND_ALEXA
+    if level == SPEAKER_CUE:
+        return speaker.cue.kind == SOUND_ALEXA
+    if level == SPEAKER_ALARM:
+        return speaker.alarm.kind == SOUND_ALEXA
+    return False
+
 def sound_fits_speaker(sound: ExtraSound, speaker: SpeakerCfg) -> bool:
     """A file plays on any speaker, one of Amazon's sounds on an Alexa speaker."""
     return sound.kind != SOUND_ALEXA or speaker_plays_alexa_sounds(speaker)

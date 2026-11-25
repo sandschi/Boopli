@@ -740,7 +740,8 @@
     "remove_alarm_device": "Alarmapparaat {device} verwijderen",
     "sound": "Geluid {n}",
     "file": "Bestand · {sound}",
-    "no_device_chosen_yet": "nog geen apparaat gekozen"
+    "no_device_chosen_yet": "nog geen apparaat gekozen",
+    "alexa_devices_no_amazon_sounds": "Deze speaker komt van Alexa Devices en kan geen Amazon-geluiden afspelen. Gebruik een speaker van Alexa Media Player of een bestand."
   },
   "stage": {
     "your_pets_room": "Kamer van je huisdier"
@@ -1523,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Je kunt de standaardreeks “{gone}” bewerken. Laat die in je lijst staan.",
     "you_can_have_at_most_sounds_of_0a92": "Je kunt maximaal {extra_sounds_max} eigen geluiden hebben.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Je kunt maximaal {ladder_max} reeksen hebben.",
-    "your_pet_s_name_can_have_up_2b26": "De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn."
+    "your_pet_s_name_can_have_up_2b26": "De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn.",
+    "alexa_devices_cannot_play_amazon_sounds_use_c092": "Alexa Devices kan geen Amazon-geluiden afspelen. Gebruik een speaker van Alexa Media Player of een bestand."
   }
 }

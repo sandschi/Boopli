@@ -740,7 +740,8 @@
     "remove_alarm_device": "Quitar el dispositivo de alarma {device}",
     "sound": "Sonido {n}",
     "file": "Archivo: {sound}",
-    "no_device_chosen_yet": "aún no se ha elegido un dispositivo"
+    "no_device_chosen_yet": "aún no se ha elegido un dispositivo",
+    "alexa_devices_no_amazon_sounds": "Este altavoz viene de Alexa Devices, que no puede reproducir los sonidos de Amazon. Usa un altavoz de Alexa Media Player o un archivo."
   },
   "stage": {
     "your_pets_room": "Habitación de tu mascota"
@@ -1523,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Puedes editar la cadena de recordatorios «{gone}» que viene con Boopli. Consérvala en tu lista.",
     "you_can_have_at_most_sounds_of_0a92": "Puedes tener hasta {extra_sounds_max} sonidos propios.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Puedes tener hasta {ladder_max} cadenas de recordatorios.",
-    "your_pet_s_name_can_have_up_2b26": "El nombre de tu mascota puede tener hasta {pet_name_max} caracteres."
+    "your_pet_s_name_can_have_up_2b26": "El nombre de tu mascota puede tener hasta {pet_name_max} caracteres.",
+    "alexa_devices_cannot_play_amazon_sounds_use_c092": "Alexa Devices no puede reproducir los sonidos de Amazon. Usa un altavoz de Alexa Media Player o un archivo."
   }
 }

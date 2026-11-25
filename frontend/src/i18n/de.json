@@ -740,7 +740,8 @@
     "remove_alarm_device": "Alarmgerät {device} entfernen",
     "sound": "Ton {n}",
     "file": "Datei: {sound}",
-    "no_device_chosen_yet": "noch kein Gerät ausgewählt"
+    "no_device_chosen_yet": "noch kein Gerät ausgewählt",
+    "alexa_devices_no_amazon_sounds": "Dieser Lautsprecher kommt von Alexa Devices und kann keine Amazon-Töne abspielen. Nimm einen Lautsprecher von Alexa Media Player oder eine Datei."
   },
   "stage": {
     "your_pets_room": "Zimmer deines Haustiers"
@@ -1523,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Du kannst die voreingestellte Stups-Kette „{gone}“ bearbeiten. Lass sie in deiner Liste.",
     "you_can_have_at_most_sounds_of_0a92": "Du kannst höchstens {extra_sounds_max} eigene Töne haben.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Du kannst höchstens {ladder_max} Ketten haben.",
-    "your_pet_s_name_can_have_up_2b26": "Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein."
+    "your_pet_s_name_can_have_up_2b26": "Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein.",
+    "alexa_devices_cannot_play_amazon_sounds_use_c092": "Alexa Devices kann keine Amazon-Töne abspielen. Nimm einen Lautsprecher von Alexa Media Player oder eine Datei."
   }
 }

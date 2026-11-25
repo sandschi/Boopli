@@ -243,3 +243,15 @@ def test_testing_a_level_does_not_need_it_switched_on():
     assert engine.validate_speaker_test(s, "cue")  # emptied: nothing to play
     assert engine.validate_speaker_test(s, "speech")  # no target yet
     assert engine.validate_speaker_test(s, "loud")
+
+
+def test_a_level_plays_an_amazon_sound_when_it_is_a_ding_an_alarm_or_your_own_sound():
+    s = all_on()
+    own = [engine.ExtraSound(id="a1", name="x", kind="alexa", sound="amzn_sfx_x"), engine.ExtraSound(id="f1", name="y", kind="file", sound="a.mp3")]
+    assert engine.level_plays_alexa_sound(s, "cue", own)
+    assert engine.level_plays_alexa_sound(s, "alarm", own)
+    assert engine.level_plays_alexa_sound(s, engine.SPEAKER_SOUND_PREFIX + "a1", own)
+    assert not engine.level_plays_alexa_sound(s, engine.SPEAKER_SOUND_PREFIX + "f1", own)  # a file plays anywhere
+    assert not engine.level_plays_alexa_sound(s, "speech", own)  # speech is not a sound
+    s.cue.kind = "file"
+    assert not engine.level_plays_alexa_sound(s, "cue", own)
