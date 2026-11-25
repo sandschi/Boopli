@@ -1,0 +1,41 @@
+{
+  "site_description": "Un compagnon pour les tâches du quotidien, adapté au TDAH et intégré à Home Assistant.",
+  "sidebar": {
+    "start_here": "Pour commencer",
+    "everyday_use": "Au quotidien",
+    "nudges_and_the_wall": "Rappels et Wallboard",
+    "more": "Pour aller plus loin"
+  },
+  "landing": {
+    "hero_line_1": "Tes tâches à petits pas.",
+    "hero_line_2": "Un animal qui t’encourage.",
+    "lead": "Boopli t’accompagne dans tes tâches avec une approche adaptée au TDAH. Il fonctionne dans <b>Home Assistant</b>. Il te fait des rappels avec les lampes, les enceintes et le téléphone que tu as déjà. Pas de compte ni de serveur. Rien n’est envoyé ailleurs, sauf si tu actives l’aide de l’IA. Disponible en anglais, en allemand, en néerlandais, en français et en espagnol.",
+    "badge_hacs_alt": "Ouvre ton instance Home Assistant, puis ce dépôt dans HACS.",
+    "badge_setup_alt": "Ouvre ton instance Home Assistant et lance la configuration de Boopli.",
+    "install_button": "Installer Boopli",
+    "setup_button": "Configurer Boopli",
+    "docs_button": "Ouvrir la documentation",
+    "early_note": "Boopli en est au début de son développement et n’est pas encore prêt pour un usage quotidien. Gratuit, avec un code source ouvert (MIT).",
+    "hero_image_alt": "Boopli, le Slime, dans sa pièce, à côté d’un bol d’eau, d’une gamelle et d’un lit",
+    "steps_title": "Démarre en trois étapes",
+    "step_1": "<b>Ajoute le dépôt.</b> Ajoute le dépôt à HACS et télécharge Boopli.",
+    "step_2": "<b>Ajoute l’intégration.</b> Ajoute Boopli dans Paramètres → Appareils et services.",
+    "step_3": "<b>Suis l’assistant.</b> Ouvre Boopli dans la barre latérale. L’assistant te pose une question par écran.",
+    "read_more": "En savoir plus",
+    "feature_1_title": "De tout petits pas, un à la fois",
+    "feature_1_text": "Une grosse tâche se découpe en quelques minuscules étapes. Boopli affiche seulement celle qui t’attend, avec un gros bouton Terminé. Une étape peut attendre le signal d’un capteur, d’une étiquette NFC ou d’un bouton, puis se terminer automatiquement.",
+    "feature_1_alt": "L’écran Aujourd’hui de Boopli",
+    "feature_2_title": "Des rappels qui montent en intensité",
+    "feature_2_text": "Une lampe clignote. Une enceinte émet un son bref, puis te parle. Une sirène retentit si tu en as vraiment besoin. Crée tes propres séries de rappels pour chaque tâche et ajoute ton téléphone. Les heures calmes et le mode absence te laissent tranquille.",
+    "feature_2_alt": "La page Paramètres de Boopli",
+    "feature_3_title": "L’IA découpe tes tâches",
+    "feature_3_text": "Dis « nettoyer ma chambre ». Ton agent IA dans Home Assistant, ou ton propre compte Claude en plus, te pose quelques questions et découpe la tâche en toutes petites étapes adaptées à ton logement. Les photos l’aident à repérer ce qui traîne.",
+    "feature_3_alt": "La fenêtre Aide de l’IA",
+    "feature_4_title": "Un Wallboard pour ta tablette",
+    "feature_4_text": "Un écran au mur affiche l’étape en cours, l’heure, la météo et ton animal. Déplace et redimensionne les tuiles directement sur le mur, comme dans un tableau de bord Home Assistant.",
+    "feature_4_alt": "Le Wallboard",
+    "find_your_way": "Trouve ce que tu cherches",
+    "what_is_next": "Ce qui est prévu",
+    "what_is_next_note": "La liste vient directement des tickets GitHub du projet. Elle est donc toujours à jour."
+  }
+}

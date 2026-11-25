@@ -101,9 +101,23 @@ export function languages(): string[] {
   return ["en", ...Object.keys(catalogs).filter((c) => c !== "en").sort()];
 }
 
+/**
+ * Each language's name in that language, for the picker. They are written out because Home Assistant
+ * replaces the browser's own language names (Intl.DisplayNames) with a copy that only knows English,
+ * which showed "German" next to "French" in every language.
+ */
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  de: "Deutsch",
+  nl: "Nederlands",
+  fr: "Français",
+  es: "Español",
+};
+
 /** A language's name in that language ("Deutsch"), for the picker. */
 export function languageName(code: string): string {
   if (code === FANCY) return fancify("Fancy English");
+  if (LANGUAGE_NAMES[code]) return LANGUAGE_NAMES[code];
   try {
     const name = new Intl.DisplayNames([code], { type: "language" }).of(code) ?? code;
     return name.charAt(0).toLocaleUpperCase(code) + name.slice(1);

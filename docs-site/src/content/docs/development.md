@@ -1,6 +1,6 @@
 ---
 title: Development
-description: Build the panel, run the tests, services and events.
+description: Build the panel, run the tests, actions and events.
 ---
 
 The panel is a [Lit](https://lit.dev/) web component in `frontend/`. The built bundle in `custom_components/boopli/frontend/` is committed, so installing needs no Node.

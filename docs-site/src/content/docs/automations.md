@@ -1,13 +1,13 @@
 ---
-title: Services, events and sensors
+title: Actions, events and sensors
 description: Build your own automations on top of Boopli.
 ---
 
-Boopli gives your own automations, scripts and voice assistants three things to work with: services you can call, events you can listen to, and sensors for your pet.
+Boopli gives your own automations, scripts and voice assistants three things to work with: actions you can call, events you can listen to, and sensors for your pet.
 
-## Services
+## Actions
 
-| Service | What it does |
+| Action | What it does |
 |---|---|
 | `boopli.break_down` | Splits a chore into small steps with your AI agent and returns them (needs AI help switched on). Fields: `task`, and optionally `kind` (`now` or `recurring`), `answers`, `notes` and `rooms`. Without `rooms`, the rooms are guessed from the chore, like in the panel. |
 | `boopli.add_task` | Creates a one-off chore (optionally with steps) and starts it. It disappears when done. |
@@ -20,7 +20,7 @@ Boopli gives your own automations, scripts and voice assistants three things to 
 | `boopli.set_away` | Turns [Away mode](/Boopli/away-mode/) on. Optional `start` and `until`, for example `2026-11-28 08:00`. |
 | `boopli.end_away` | Turns Away mode off. |
 
-Services that take a chore (`chore`) accept its name or its id. If two chores have the same name, use the id.
+Actions that take a chore (`chore`) accept its name or its id. If two chores have the same name, use the id.
 
 ## Events
 

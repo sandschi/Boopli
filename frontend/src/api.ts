@@ -27,6 +27,9 @@ export interface TestResult {
   ok: boolean;
   mode?: string;
   note: string;
+  /** The key and values of the note, so it can be shown in the language of the panel. */
+  note_key?: string;
+  note_params?: Params;
 }
 
 export function saveSettings(hass: Hass, settings: Settings): Promise<{ ladders?: Settings["ladders"] } | void> {
@@ -303,6 +306,14 @@ function resolveValues(values: Params): Params {
     }
   }
   return out;
+}
+
+/** The note of a test result, in the language of the panel (the English text if the panel has no translation). */
+export function testNote(result: TestResult): string {
+  if (result.note_key && hasText(`errors.${result.note_key}`)) {
+    return t(`errors.${result.note_key}`, resolveValues(result.note_params ?? {}));
+  }
+  return result.note;
 }
 
 /** Turn a failed websocket call into a readable message. */

@@ -45,7 +45,7 @@ An unavailable or unknown sensor never counts as done. Steps finished this way s
 
 ### "On it" while you work
 
-Select **On it** on Today, on the wall board or in the phone notification to pause nudges while you work. The phone notification turns green and quiet. After the check-in time (30 minutes by default), Boopli can send a phone check-in with **Done** and **Still on it**. To start nudges again, select **Resume nudges** on Today or the wall board, or **Not on it** in the phone notification. The services `boopli.step_on_it` and `boopli.step_not_on_it` and the event `boopli_step_on_it` are there for your own automations.
+Select **On it** on Today, on the wall board or in the phone notification to pause nudges while you work. The phone notification turns green and quiet. After the check-in time (30 minutes by default), Boopli can send a phone check-in with **Done** and **Still on it**. To start nudges again, select **Resume nudges** on Today or the wall board, or **Not on it** in the phone notification. The actions `boopli.step_on_it` and `boopli.step_not_on_it` and the event `boopli_step_on_it` are there for your own automations.
 
 ### An image with the nudge
 

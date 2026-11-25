@@ -2963,6 +2963,33 @@ def notification_tag(run_id: str, step_id: str) -> str:
     return f"boopli-{run_id}-{step_id}"
 
 
+# What a phone shows besides the chore and step: buttons and a few short sentences. These are the English
+# texts; phone_texts.py has the other languages, and the notifier passes the ones for the language of
+# Home Assistant. A missing text falls back to the English one.
+PHONE_TEXTS: dict[str, str] = {
+    "done": "Done",
+    "snooze": "Snooze {minutes} min",
+    "on_it": "On it",
+    "not_on_it": "Not on it",
+    "still_on_it": "Still on it",
+    "start_all_steps": "Start with all steps",
+    "answer_questions": "Answer the questions",
+    "in_progress": "✅ In progress: {step} (since {since})",
+    "still_on": "Still on: {step}?",
+    "quick_look_one": "Quick look first: {count} question about what needs doing.",
+    "quick_look_other": "Quick look first: {count} questions about what needs doing.",
+    "test_title": "Boopli test",
+    "test_message": "This is a test of your Boopli notification.",
+    "test_speech": "Dishwasher: empty it",
+}
+
+
+def phone_text(texts: dict[str, str] | None, key: str, **values: Any) -> str:
+    """One text for a phone, in the language of `texts` (English where it has none)."""
+    template = (texts or {}).get(key) or PHONE_TEXTS[key]
+    return template.format(**values) if values else template
+
+
 def phone_payload(
     level: str,
     run_id: str,
@@ -2972,18 +2999,19 @@ def phone_payload(
     snooze_minutes: int,
     image: str = "",
     media_id: str = "local",
+    texts: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Build the data for a notify.mobile_app_* call."""
     data: dict[str, Any] = {
         **picture_data(image, media_id),
         "tag": notification_tag(run_id, step_id),
         "actions": [
-            {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
+            {"action": action_id(ACTION_DONE, run_id, step_id), "title": phone_text(texts, "done")},
             {
                 "action": action_id(ACTION_SNOOZE, run_id, step_id),
-                "title": f"Snooze {snooze_minutes} min",
+                "title": phone_text(texts, "snooze", minutes=snooze_minutes),
             },
-            {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": "On it"},
+            {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": phone_text(texts, "on_it")},
         ],
     }
     if level == LEVEL_HIGH:
@@ -3005,6 +3033,7 @@ def on_it_payload(
     since: str,
     image: str = "",
     media_id: str = "local",
+    texts: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """The same notification again, now green and quiet: "In progress".
 
@@ -3013,7 +3042,7 @@ def on_it_payload(
     """
     return {
         "title": chore_name,
-        "message": f"✅ In progress: {step_title} (since {since})",
+        "message": phone_text(texts, "in_progress", step=step_title, since=since),
         "data": {
             **picture_data(image, media_id),  # the picture stays when the nudge is replaced
             "tag": notification_tag(run_id, step_id),
@@ -3021,8 +3050,8 @@ def on_it_payload(
             "color": ON_IT_COLOR,
             "alert_once": True,  # replacing it must not make a sound or buzz again
             "actions": [
-                {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
-                {"action": action_id(ACTION_NOT_ON_IT, run_id, step_id), "title": "Not on it"},
+                {"action": action_id(ACTION_DONE, run_id, step_id), "title": phone_text(texts, "done")},
+                {"action": action_id(ACTION_NOT_ON_IT, run_id, step_id), "title": phone_text(texts, "not_on_it")},
             ],
         },
     }
@@ -3035,17 +3064,18 @@ def check_in_payload(
     step_title: str,
     image: str = "",
     media_id: str = "local",
+    texts: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """"Still on it?": replaces the green notification, back to the normal look, with a sound."""
     return {
         "title": chore_name,
-        "message": f"Still on: {step_title}?",
+        "message": phone_text(texts, "still_on", step=step_title),
         "data": {
             **picture_data(image, media_id),
             "tag": notification_tag(run_id, step_id),
             "actions": [
-                {"action": action_id(ACTION_DONE, run_id, step_id), "title": "Done"},
-                {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": "Still on it"},
+                {"action": action_id(ACTION_DONE, run_id, step_id), "title": phone_text(texts, "done")},
+                {"action": action_id(ACTION_ON_IT, run_id, step_id), "title": phone_text(texts, "still_on_it")},
             ],
         },
     }
@@ -3054,25 +3084,24 @@ def check_in_payload(
 PANEL_PATH = "/boopli"  # where Boopli lives inside Home Assistant (the app opens it from a button)
 
 
-def questions_payload(run_id: str, chore_name: str, count: int) -> dict[str, Any]:
+def questions_payload(run_id: str, chore_name: str, count: int, texts: dict[str, str] | None = None) -> dict[str, Any]:
     """The phone notification for a chore that started by itself and has questions to answer.
 
     "Start with all steps" starts it as it is; "Answer the questions" opens Boopli in
     the Home Assistant app. The chore itself is already running either way.
     """
-    many = "questions" if count != 1 else "question"
     return {
         "title": chore_name,
-        "message": f"Quick look first: {count} {many} about what needs doing.",
+        "message": phone_text(texts, "quick_look_one" if count == 1 else "quick_look_other", count=count),
         "data": {
             "tag": notification_tag(run_id, QUESTIONS_STEP),
             "clickAction": PANEL_PATH,
             "actions": [
                 {
                     "action": action_id(ACTION_ALL_STEPS, run_id, QUESTIONS_STEP),
-                    "title": "Start with all steps",
+                    "title": phone_text(texts, "start_all_steps"),
                 },
-                {"action": "URI", "title": "Answer the questions", "uri": PANEL_PATH},
+                {"action": "URI", "title": phone_text(texts, "answer_questions"), "uri": PANEL_PATH},
             ],
         },
     }

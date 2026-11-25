@@ -1,0 +1,41 @@
+{
+  "site_description": "Tu ayuda con las tareas en Home Assistant, pensada para personas con TDAH.",
+  "sidebar": {
+    "start_here": "Empieza aquí",
+    "everyday_use": "Uso diario",
+    "nudges_and_the_wall": "Recordatorios y Wallboard",
+    "more": "Más"
+  },
+  "landing": {
+    "hero_line_1": "Tareas en pasos muy pequeños.",
+    "hero_line_2": "Una mascota que te anima.",
+    "lead": "Boopli te ayuda con tus tareas desde <b>Home Assistant</b> y está pensado para personas con TDAH. Te envía recordatorios con las luces, los altavoces y el teléfono que ya tienes. No necesitas una cuenta ni un servidor. Solo se envían datos fuera si activas la ayuda con IA. Disponible en inglés, alemán, neerlandés, francés y español.",
+    "badge_hacs_alt": "Abre tu instancia de Home Assistant y este repositorio en HACS.",
+    "badge_setup_alt": "Abre tu instancia de Home Assistant y empieza a configurar Boopli.",
+    "install_button": "Instalar Boopli",
+    "setup_button": "Configurar Boopli",
+    "docs_button": "Abrir la documentación",
+    "early_note": "Boopli está en una etapa temprana de desarrollo y todavía no está listo para el uso diario. Es gratuito y de código abierto (MIT).",
+    "hero_image_alt": "Boopli, la mascota Slime, en su habitación junto a un cuenco de agua, uno de comida y una cama",
+    "steps_title": "Empieza en tres pasos",
+    "step_1": "<b>Añádelo.</b> Añade el repositorio a HACS y descarga Boopli.",
+    "step_2": "<b>Actívalo.</b> Añade la integración Boopli en Configuración → Dispositivos y servicios.",
+    "step_3": "<b>Sigue el asistente.</b> Abre Boopli en la barra lateral. La guía te hace una pregunta por pantalla.",
+    "read_more": "Leer más",
+    "feature_1_title": "Pasos pequeños, uno a la vez",
+    "feature_1_text": "Una tarea grande se convierte en unos cuantos pasos muy pequeños. Boopli solo muestra el paso que te toca, con un botón Listo bien grande. Los pasos pueden esperar a un sensor, una etiqueta NFC o un botón y completarse automáticamente.",
+    "feature_1_alt": "La pantalla Hoy de Boopli",
+    "feature_2_title": "Recordatorios que suben de intensidad",
+    "feature_2_text": "Una luz parpadea. Un altavoz emite un sonido breve y luego habla. Si de verdad lo necesitas, suena una sirena. Crea tus propias cadenas de recordatorios para cada tarea y usa también tu teléfono. Las horas de silencio y el modo ausencia te dejan descansar.",
+    "feature_2_alt": "La página Configuración de Boopli",
+    "feature_3_title": "IA que divide las tareas en pasos",
+    "feature_3_text": "Di «limpiar mi habitación» y tu propio agente de IA de Home Assistant (o tu propio Claude, como opción extra) te hace unas preguntas. Luego divide la tarea en pasos muy pequeños que encajan con tu hogar. Las fotos ayudan a ver qué está fuera de sitio.",
+    "feature_3_alt": "La ventana Ayuda con IA",
+    "feature_4_title": "Un Wallboard para la tableta",
+    "feature_4_text": "Una pantalla en la pared con el paso actual, el reloj, el clima y tu mascota. Mueve las tarjetas y cambia su tamaño directamente en el Wallboard, como en un panel de Home Assistant.",
+    "feature_4_alt": "El Wallboard",
+    "find_your_way": "Encuentra lo que buscas",
+    "what_is_next": "Lo que viene después",
+    "what_is_next_note": "La información viene directamente de los reportes del proyecto en GitHub, así que siempre está al día."
+  }
+}

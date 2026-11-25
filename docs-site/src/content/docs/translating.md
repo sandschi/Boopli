@@ -36,7 +36,7 @@ You can translate in several rounds. A key that is missing in your file shows th
 - Error texts that come from the AI agent or from Home Assistant itself. Every error that Boopli writes is translated, including the reason inside it ("Step 'x': ...").
 ## Home Assistant integration texts
 
-The setup dialog and service descriptions are translated into the same five languages in `custom_components/boopli/translations/<code>.json`. For a new language, copy `en.json` from that folder to `<code>.json` and translate the values there too.
+The setup dialog and action descriptions are translated into the same five languages in `custom_components/boopli/translations/<code>.json`. For a new language, copy `en.json` from that folder to `<code>.json` and translate the values there too.
 
 ## Writing new texts
 

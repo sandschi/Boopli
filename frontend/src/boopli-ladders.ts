@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { icon } from "./icon";
-import { friendlyName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
+import { friendlyName, ladderName, newLadderId, phoneName, PHONE_LEVEL_LABEL, styleLabel } from "./helpers";
 import { speakerChoices } from "./boopli-rung";
 import { sharedStyles } from "./styles";
 import type { Hass, Ladder, NudgeStyle, Rung, Settings, Snapshot } from "./types";
@@ -252,7 +252,7 @@ export class BoopliLadders extends LitElement {
         <input
           id="name-${l.id}"
           maxlength=${NAME_MAX}
-          .value=${l.name}
+          .value=${ladderName(l)}
           @input=${(e: Event) => this._edit(l.id, (x) => (x.name = (e.target as HTMLInputElement).value))}
         />
       </div>
@@ -299,7 +299,7 @@ export class BoopliLadders extends LitElement {
           )}
           ${ladders.map(
             (l) => html`<option value=${`ladder:${l.id}`} ?selected=${`ladder:${l.id}` === s.default_style}>
-              ${l.name || t("ladders.no_name")}
+              ${ladderName(l) || t("ladders.no_name")}
 
             </option>`
           )}
@@ -314,7 +314,7 @@ export class BoopliLadders extends LitElement {
             const open = this._open === l.id;
             return html`<div class="ladder">
               <div class="lhead">
-                <b class="lname">${l.name || t("ladders.no_name")}</b>
+                <b class="lname">${ladderName(l) || t("ladders.no_name")}</b>
                 <span class="muted small">${t("common.nudges_count", { count: l.rungs.length })}</span>
                 <span class="spacer"></span>
                 <button class="chip" aria-expanded=${open ? "true" : "false"} @click=${() => (this._open = open ? "" : l.id)}>

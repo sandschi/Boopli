@@ -7,6 +7,8 @@ import {
   saveSettings,
   testAlarmDevice,
   testLight,
+  testNote,
+  type TestResult,
   testPhone,
   testSpeaker,
 } from "./api";
@@ -19,6 +21,7 @@ import {
   entityIds,
   friendlyName,
   hexToRgb,
+  ladderName,
   lightHasColor,
   newLadderId,
   newAlarmDevice,
@@ -620,11 +623,11 @@ export class BoopliWizard extends LitElement {
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     if (users.length) {
-      this._error = t("ladders.is_used_by_pick_another_nudge", { name: l.name, join: users.join(", ") });
+      this._error = t("ladders.is_used_by_pick_another_nudge", { name: ladderName(l), join: users.join(", ") });
       return;
     }
     if (d.default_style === style) {
-      this._error = t("ladders.is_the_style_for_new_chores", { name: l.name });
+      this._error = t("ladders.is_the_style_for_new_chores", { name: ladderName(l) });
       return;
     }
     const before = d;
@@ -694,7 +697,7 @@ export class BoopliWizard extends LitElement {
               <option value="" ?selected=${!this._ladderPick}>${t("wizard.pick_a_ladder")}</option>
               ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
-                  ${l.name} (${t("common.nudges_count", { count: l.rungs.length })})
+                  ${ladderName(l)} (${t("common.nudges_count", { count: l.rungs.length })})
                 </option>`
               )}
             </select>
@@ -709,7 +712,7 @@ export class BoopliWizard extends LitElement {
     const style = `ladder:${l.id}`;
     const users = (this.snapshot?.chores ?? []).filter((c) => c.nudge_style === style).map((c) => c.name).sort();
     return html`
-      <p>${rich("wizard.delete_the_ladder_this_cannot_be", { name: l.name })}</p>
+      <p>${rich("wizard.delete_the_ladder_this_cannot_be", { name: ladderName(l) })}</p>
       ${users.length
         ? html`<p class="muted">${t("wizard.it_is_used_by_pick_another", { join: users.join(", ") })}</p>`
         : nothing}
@@ -850,10 +853,10 @@ export class BoopliWizard extends LitElement {
 
   // --- tests -------------------------------------------------------------------
 
-  private async _try(key: string, run: () => Promise<{ note: string }>): Promise<void> {
+  private async _try(key: string, run: () => Promise<TestResult>): Promise<void> {
     this._note(key, t("common.testing"));
     try {
-      this._note(key, (await run()).note);
+      this._note(key, testNote(await run()));
     } catch (err) {
       this._note(key, errorMessage(err));
     }
@@ -1045,7 +1048,7 @@ export class BoopliWizard extends LitElement {
         ...STYLE_CHOICES(),
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
-          label: l.name,
+          label: ladderName(l),
           text: html`
             ${l.id.startsWith("standard_") ? nothing : html`<span class="sequence-type">${t("wizard.your_own_ladder").trimEnd()}</span>`}
             <span>${t("wizard.ladder_nudges_sentence", { count: l.rungs.length })}</span>

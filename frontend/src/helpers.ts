@@ -132,9 +132,24 @@ export function normalizeStyle(style: string, ladders: Ladder[] | undefined): st
   return id && ladders?.some((l) => l.id === id) ? `ladder:${id}` : style;
 }
 
+/**
+ * The name of a ladder as shown. The three standard ladders are stored with their English names; while
+ * one still has that name it is shown in the panel's language, and once you rename it your name is shown.
+ */
+export function ladderName(l: Ladder): string {
+  const standard: Record<string, [string, () => string]> = {
+    standard_one: ["One nudge", () => t("helpers.one_nudge")],
+    standard_escalating: ["Escalating", () => t("helpers.escalating")],
+    standard_persistent: ["Persistent", () => t("helpers.persistent")],
+  };
+  const entry = standard[l.id];
+  return entry && l.name === entry[0] ? entry[1]() : l.name;
+}
+
 export function styleLabel(style: string, ladders: Ladder[] | undefined): string {
   if (style.startsWith("ladder:")) {
-    return ladders?.find((l) => `ladder:${l.id}` === style)?.name ?? t("chore_editor.a_ladder_that_is_gone");
+    const ladder = ladders?.find((l) => `ladder:${l.id}` === style);
+    return ladder ? ladderName(ladder) : t("chore_editor.a_ladder_that_is_gone");
   }
   return STYLE_LABEL()[style] ?? style;
 }

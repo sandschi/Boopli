@@ -77,6 +77,21 @@ def _wire_values(params: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _wire_note(result: dict[str, Any]) -> dict[str, Any]:
+    """A test result with its note as a message: the English text stays in `note`, and `note_key` and
+    `note_params` let the panel show the note in its own language."""
+    note = result.get("note")
+    template = getattr(note, "template", None)
+    if template is None:
+        return result
+    return {
+        **result,
+        "note": str(note),
+        "note_key": message_key(template),
+        "note_params": _wire_values(getattr(note, "params", {})),
+    }
+
+
 def _send_error(
     connection: websocket_api.ActiveConnection, msg: dict[str, Any], code: str, err: Exception
 ) -> None:
@@ -839,7 +854,7 @@ async def ws_test_channel(
     except BoopliError as err:
         _send_error(connection, msg, "invalid", err)
         return
-    connection.send_result(msg["id"], result)
+    connection.send_result(msg["id"], _wire_note(result))
 
 
 # --- backup of the setup (admins only: a backup holds private data, an import replaces it) ---------

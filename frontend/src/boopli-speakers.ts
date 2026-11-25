@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing, type TemplateResult } from "lit";
-import { errorMessage, testAlarmDevice, testSpeaker } from "./api";
+import { errorMessage, testAlarmDevice, testNote, testSpeaker } from "./api";
 import { newLadderId } from "./helpers";
 import { icon } from "./icon";
 import { sharedStyles } from "./styles";
@@ -200,7 +200,7 @@ export class BoopliSpeakers extends LitElement {
     const key = `speaker:${speaker.entity_id}:${level}`;
     this._note(key, t("common.sending"));
     try {
-      this._note(key, (await testSpeaker(this.hass, speaker, level)).note);
+      this._note(key, testNote(await testSpeaker(this.hass, speaker, level)));
     } catch (err) {
       this._note(key, errorMessage(err));
     }
@@ -245,7 +245,7 @@ export class BoopliSpeakers extends LitElement {
     if (!this.hass) return;
     this._note(key, t("common.sending"));
     try {
-      this._note(key, (await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())).note);
+      this._note(key, testNote(await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())));
     } catch (err) {
       this._note(key, errorMessage(err));
     }
@@ -609,7 +609,7 @@ export class BoopliSpeakers extends LitElement {
     const key = `device:${device.entity_id}`;
     this._note(key, t("common.sending"));
     try {
-      this._note(key, (await testAlarmDevice(this.hass, device)).note);
+      this._note(key, testNote(await testAlarmDevice(this.hass, device)));
     } catch (err) {
       this._note(key, errorMessage(err));
     }

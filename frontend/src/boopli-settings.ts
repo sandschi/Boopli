@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testPhone } from "./api";
+import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testNote, testPhone } from "./api";
 import type { WizardId } from "./boopli-wizard";
 import {
   describeQuiet,
@@ -10,6 +10,7 @@ import {
   lightKind,
   phoneName,
   PHONE_LEVEL_LABEL,
+  ladderName,
   styleLabel,
 } from "./helpers";
 import { weekdayNames } from "./time";
@@ -325,7 +326,7 @@ export class BoopliSettings extends LitElement {
     this._note(`phone:${service}`, t("common.sending"));
     try {
       const result = await testPhone(this.hass, { service, level, start_at: 1 });
-      this._note(`phone:${service}`, result.note);
+      this._note(`phone:${service}`, testNote(result));
     } catch (err) {
       this._note(`phone:${service}`, errorMessage(err));
     }
@@ -393,7 +394,7 @@ export class BoopliSettings extends LitElement {
     this._note(`light:${light.entity_id}`, t("common.testing"));
     try {
       const result = await testLight(this.hass, light);
-      this._note(`light:${light.entity_id}`, result.note);
+      this._note(`light:${light.entity_id}`, testNote(result));
     } catch (err) {
       this._note(`light:${light.entity_id}`, errorMessage(err));
     }
@@ -974,7 +975,7 @@ export class BoopliSettings extends LitElement {
         const ladders = d.ladders ?? [];
         return [
           t("settings.new_chores", { style: styleLabel(d.default_style, ladders) }),
-          ...ladders.map((l) => t("settings.ladder_nudges", { name: l.name, count: l.rungs.length })),
+          ...ladders.map((l) => t("settings.ladder_nudges", { name: ladderName(l), count: l.rungs.length })),
           ...(ladders.length ? [] : [t("settings.no_ladders_of_your_own_yet")]),
         ];
       }
@@ -986,7 +987,7 @@ export class BoopliSettings extends LitElement {
         return [d.presence_entity ? fn(d.presence_entity) : t("settings.not_set_boopli_assumes_you_are")];
       case "pet":
         return [
-          t("settings.the", { pet_name: d.pet_name, value: petInfo(d.pet_kind).label.toLowerCase() }),
+          t("settings.the", { pet_name: d.pet_name, value: petInfo(d.pet_kind).label }),
           isHex(d.accent) ? t("settings.accent_colour_2", { value: d.accent.toLowerCase() }) : t("settings.accent_colour_your_pets_own"),
         ];
       case "backup":

@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { icon } from "./icon";
 import { deleteChore, errorMessage, saveChore } from "./api";
-import { hexToRgb, lightHasColor, normalizeStyle, rgbToHex } from "./helpers";
+import { hexToRgb, ladderName, lightHasColor, normalizeStyle, rgbToHex } from "./helpers";
 import { describeRepeat } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-triggers";
@@ -539,7 +539,7 @@ export class BoopliChoreEditor extends LitElement {
               ...STYLE_OPTIONS(),
               ...(this.snapshot?.settings?.ladders ?? []).map((l) => ({
                 value: `ladder:${l.id}` as NudgeStyle,
-                label: l.id.startsWith("standard_") ? l.name : t("chore_editor.my_own_ladder", { name: l.name }),
+                label: l.id.startsWith("standard_") ? ladderName(l) : t("chore_editor.my_own_ladder", { name: l.name }),
               })),
             ].map(
               (o) => html`<option

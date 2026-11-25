@@ -23,3 +23,6 @@ wall-night.ts: Fri
 wall-night.ts: Sat
 wall-night.ts: Sun
 boopli-egg.ts: MacIntel
+helpers.ts: One nudge
+helpers.ts: Escalating
+helpers.ts: Persistent

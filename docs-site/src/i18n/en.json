@@ -1,0 +1,41 @@
+{
+  "site_description": "An ADHD-friendly chore and task companion that lives inside Home Assistant.",
+  "sidebar": {
+    "start_here": "Start here",
+    "everyday_use": "Everyday use",
+    "nudges_and_the_wall": "Nudges and the wall",
+    "more": "More"
+  },
+  "landing": {
+    "hero_line_1": "Chores in tiny steps.",
+    "hero_line_2": "A pet that cheers you on.",
+    "lead": "Boopli is an ADHD-friendly chore companion that lives inside <b>Home Assistant</b>. It nudges you with the lights, speakers and phone you already have. No account and no server. Nothing is sent anywhere unless you turn on AI help. Available in English, German, Dutch, French and Spanish.",
+    "badge_hacs_alt": "Open your Home Assistant instance and open this repository in HACS.",
+    "badge_setup_alt": "Open your Home Assistant instance and start setting up Boopli.",
+    "install_button": "Install Boopli",
+    "setup_button": "Set it up",
+    "docs_button": "Open docs",
+    "early_note": "Early development: Boopli is not ready for daily use yet. Free and open source (MIT).",
+    "hero_image_alt": "Boopli the slime in its room, next to a water bowl, a food bowl and a bed",
+    "steps_title": "Up and running in three steps",
+    "step_1": "<b>Add it.</b> Add the repository to HACS and download Boopli.",
+    "step_2": "<b>Switch it on.</b> Add the Boopli integration under Settings, Devices &amp; services.",
+    "step_3": "<b>Follow the wizard.</b> Open Boopli in the sidebar. A guide asks one question per screen.",
+    "read_more": "Read more",
+    "feature_1_title": "Tiny steps, one at a time",
+    "feature_1_text": "A big chore becomes a few very small steps. Boopli shows only the one that is your turn, with a big Done button. Steps can wait for a sensor, an NFC tag or a button, and finish by themselves.",
+    "feature_1_alt": "The Boopli Today screen",
+    "feature_2_title": "Nudges that climb",
+    "feature_2_text": "A light blinks. A speaker dings, then speaks. A siren sounds if you really need it. Build your own nudge sequences, per chore, and let your phone join in. Quiet hours and away mode keep it calm.",
+    "feature_2_alt": "The Boopli Settings page",
+    "feature_3_title": "AI that breaks chores down",
+    "feature_3_text": "Say \"clean my room\" and your own Home Assistant AI agent (or your own Claude, as an extra) asks a few questions and splits it into tiny steps that fit your home. Photos help it see what is out of place.",
+    "feature_3_alt": "The AI help window",
+    "feature_4_title": "A wall board for the tablet",
+    "feature_4_text": "A screen on the wall with the current step, the clock, the weather and your pet. Move and resize the tiles right on the wall, like a Home Assistant dashboard.",
+    "feature_4_alt": "The wall board",
+    "find_your_way": "Find your way",
+    "what_is_next": "What is next",
+    "what_is_next_note": "Straight from the project's GitHub issues, so it is always current."
+  }
+}
