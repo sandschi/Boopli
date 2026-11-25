@@ -139,6 +139,19 @@ export function inEnglish<T>(fn: () => T): T {
   }
 }
 
+/** Run `fn` once for every language that has a file (English first) and collect the results: to recognise a text that was saved in any language. */
+export function inEveryLanguage<T>(fn: () => T): T[] {
+  const before = current;
+  try {
+    return languages().map((code) => {
+      current = code;
+      return fn();
+    });
+  } finally {
+    current = before;
+  }
+}
+
 /** The text for a key in the current language, with the values filled in. */
 export function t(key: string, params?: Params): string {
   const count = typeof params?.count === "number" ? params.count : undefined;
