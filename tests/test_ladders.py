@@ -85,9 +85,9 @@ def test_junk_in_a_ladder_is_ignored_not_a_crash():
 def test_ladders_are_checked():
     assert engine.validate_ladders([ladder()]) is None
     assert "name" in engine.validate_ladders([ladder(name="")])
-    assert "at most" in engine.validate_ladders([ladder(name="x" * 41)])
-    assert "two ladders" in engine.validate_ladders([ladder(), ladder(id="p2", name="pills")])  # not case sensitive
-    assert "same id" in engine.validate_ladders([ladder(), ladder(name="Other")])
+    assert "up to 40 characters" in engine.validate_ladders([ladder(name="x" * 41)])
+    assert "Two nudge sequences are named" in engine.validate_ladders([ladder(), ladder(id="p2", name="pills")])  # not case sensitive
+    assert "same ID" in engine.validate_ladders([ladder(), ladder(name="Other")])
     assert "nudges" in engine.validate_ladders([ladder(rungs=[])])
     assert "nudges" in engine.validate_ladders([ladder(rungs=[rung()] * 13)])
     assert engine.validate_ladders([ladder(rungs=[rung()] * 12)]) is None
@@ -97,7 +97,7 @@ def test_ladders_are_checked():
     assert "phone" in engine.validate_ladders([ladder(rungs=[rung(phones={"pixel": "screaming"})])])
     assert "speaker" in engine.validate_ladders([ladder(rungs=[rung(speakers={"media_player.k": "opera"})])])
     too_many = [ladder(id=str(i), name=f"L{i}") for i in range(31)]
-    assert "at most" in engine.validate_ladders(too_many)
+    assert "up to 30 nudge sequences" in engine.validate_ladders(too_many)
 
 
 def test_the_default_style_can_be_a_ladder_but_only_one_that_exists():

@@ -54,16 +54,24 @@ export class WallTileEntity extends WallTile {
     const name = this.text("name") || friendlyName(this.hass, id);
     const unit = typeof st?.attributes?.unit_of_measurement === "string" ? ` ${st.attributes.unit_of_measurement}` : "";
     const on = st?.state === "on";
-    const tappable = !!TAP[domain] && this.text("tap", "toggle") === "toggle" && !this.preview; // in the editor it does nothing, so it is no button there
+    const action = TAP[domain]?.[1];
+    const tappable = !!action && this.text("tap", "toggle") === "toggle" && !this.preview; // in the editor it does nothing, so it is no button there
     const inside = html`<div class="icon big">${icon(ICON[domain] ?? "shape-outline")}</div>
       <div>
         <div class="label">${name}</div>
         <div class="big">${st ? `${st.state}${unit}` : t("wall_tile_entity.not_found")}</div>
       </div>`;
-    // something a tap switches is a real button, so it can also be reached and used from a keyboard
-    return tappable
-      ? html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label=${t("wall_tile_entity.tap_label", { name, state: st?.state ?? t("wall_tile_entity.not_found") })} @click=${() => this._tap()}>${inside}</button>`
-      : html`<div class="ent ${on ? "on" : ""}">${inside}</div>`;
+    if (!tappable) return html`<div class="ent ${on ? "on" : ""}">${inside}</div>`;
+
+    const state = st?.state ?? t("wall_tile_entity.not_found");
+    const label = t(
+      action === "toggle" ? "wall_tile_entity.toggle_entity"
+        : action === "press" ? "wall_tile_entity.press_button"
+        : domain === "script" ? "wall_tile_entity.run_script"
+        : "wall_tile_entity.tap_label",
+      { name, state },
+    );
+    return html`<button type="button" class="ent tap ${on ? "on" : ""}" aria-label=${label} @click=${() => this._tap()}>${inside}</button>`;
   }
 
   static styles = [

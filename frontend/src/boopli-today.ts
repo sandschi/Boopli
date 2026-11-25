@@ -523,7 +523,7 @@ export class BoopliToday extends LitElement {
                         ${t("today.yes_remove")}
                       </button>
                       <button class="link" @click=${() => (this._removing = "")}>${t("today.keep")}</button>`
-                  : html`<button class="link" @click=${() => (this._removing = c.id)}>${t("common.remove")}</button>`}
+                  : html`<button class="link" @click=${() => (this._removing = c.id)}>${t("common.delete")}</button>`}
               </div>`}
         </div>`
       )}
@@ -801,6 +801,7 @@ export class BoopliToday extends LitElement {
         font-size: 22px;
         font-weight: 700;
         letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
       .away-when {
         font-size: 19px;

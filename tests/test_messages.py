@@ -49,7 +49,7 @@ def test_a_message_from_a_validator_survives_being_raised():
 
 
 def test_another_error_can_be_wrapped_without_losing_its_values():
-    inner = BoopliError("Claude says you asked too often. Wait {minutes} minutes.", minutes=5)
+    inner = BoopliError("Boopli stopped waiting for Claude’s reply. Wait limit (minutes): {minutes}. Try again.", minutes=5)
     outer = BoopliError(inner)
     assert outer.code == inner.code
     assert outer.params == {"minutes": 5}
@@ -86,16 +86,16 @@ def test_a_reply_that_carries_another_error_can_be_sent_as_json():
 
 def test_a_reason_inside_a_message_is_sent_as_a_message_of_its_own():
     """"Step 'x': {error}" must reach the panel with the reason's own key, so it is translated too."""
-    reason = Msg("A picture name can have at most {picture_max} letters.", picture_max=120)
+    reason = Msg("An image file path can have up to {picture_max} characters.", picture_max=120)
     outer = BoopliError(Msg("Step '{title}': {error}", title="Pills", error=reason))
     connection = MagicMock()
     websocket_api._send_error(connection, {"id": 4}, "invalid", outer)
     values = connection.send_error.call_args.kwargs["translation_placeholders"]
     assert values["title"] == "Pills"
     assert values["error"] == {
-        "key": message_key("A picture name can have at most {picture_max} letters."),
+        "key": message_key("An image file path can have up to {picture_max} characters."),
         "params": {"picture_max": 120},
-        "text": "A picture name can have at most 120 letters.",
+        "text": "An image file path can have up to 120 characters.",
     }
 
 

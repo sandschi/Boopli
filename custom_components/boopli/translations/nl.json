@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Boopli instellen",
-        "description": "Boopli helpt je met je taken. Je vindt Boopli in de zijbalk. Alles blijft binnen je eigen Home Assistant."
+        "description": "Boopli helpt je taken op te delen in kleine stapjes en geeft je seintjes via je telefoon, lampen of luidsprekers. Kies je een AI-dienst in de cloud, dan gaat de informatie die je deelt naar die dienst."
       }
     }
   },
@@ -30,7 +30,7 @@
         },
         "where": {
           "name": "Waar?",
-          "description": "Kies of je deze taak alleen thuis of overal kunt doen."
+          "description": "Kies waar je deze taak kunt doen."
         }
       }
     },
@@ -65,8 +65,8 @@
       }
     },
     "step_on_it": {
-      "name": "Stap: Ik ben bezig",
-      "description": "Zo laat je Boopli weten dat je met de huidige stap bezig bent. Boopli laat je rustig werken en vraagt na de ingestelde tijd één keer “Nog bezig?”",
+      "name": "Ik ben bezig",
+      "description": "Pauzeert de seintjes voor de huidige stap. Als seintjes zijn toegestaan, kan Boopli na de ingestelde wachttijd op je telefoon vragen of je nog bezig bent.",
       "fields": {
         "chore": {
           "name": "Taak",
@@ -75,8 +75,8 @@
       }
     },
     "step_not_on_it": {
-      "name": "Stap: Niet meer bezig",
-      "description": "Zet “Ik ben bezig” uit. Je krijgt weer zoals gewoonlijk seintjes voor deze stap.",
+      "name": "Seintjes hervatten",
+      "description": "Zet “Ik ben bezig” uit. Je krijgt weer seintjes voor deze stap.",
       "fields": {
         "chore": {
           "name": "Taak",
@@ -86,7 +86,7 @@
     },
     "delete_chore": {
       "name": "Taak wissen",
-      "description": "Wist de taak en alles wat er voor die taak loopt.",
+      "description": "Wist de taak en stopt alles wat voor die taak loopt.",
       "fields": {
         "chore": {
           "name": "Taak",
@@ -96,11 +96,11 @@
     },
     "set_away": {
       "name": "Afwezigheidsmodus instellen",
-      "description": "Boopli neemt pauze. Alleen taken waarvoor je “Gaat door als ik weg ben (bijvoorbeeld voor pillen)” hebt aangezet, kunnen starten of je een seintje geven. Je huisdier blijft zoals het is.",
+      "description": "Pauzeert geplande taken en seintjes. Taken waarvoor je “Gaat door als ik weg ben (bijvoorbeeld voor pillen)” hebt aangezet, gaan door.",
       "fields": {
         "start": {
           "name": "Vanaf",
-          "description": "Datum en tijd in je eigen tijdzone, bijvoorbeeld 2026-11-28 08:00. Laat dit veld leeg als je de modus nu wilt aanzetten."
+          "description": "Datum en tijd waarop de Afwezigheidsmodus begint, in je eigen tijdzone. Bijvoorbeeld 2026-11-28 08:00. Laat dit veld leeg als je de modus nu wilt aanzetten."
         },
         "until": {
           "name": "Tot",
@@ -110,7 +110,7 @@
     },
     "end_away": {
       "name": "Afwezigheidsmodus uitzetten",
-      "description": "Met “Ik ben terug” gaat Boopli verder. Voor de taken die op pauze stonden, krijg je weer één voor één een seintje."
+      "description": "Zet de Afwezigheidsmodus uit. Voor de taken die op pauze stonden, krijg je weer één voor één een seintje."
     }
   }
 }

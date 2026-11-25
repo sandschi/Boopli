@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Set up Boopli",
-        "description": "Boopli adds a chore and task companion to your sidebar. Everything stays inside your Home Assistant, and nothing is sent anywhere else."
+        "description": "Boopli helps you break chores into small steps and nudges you through your phone, lights or speakers. If you choose a cloud AI service, the information you share goes to that service."
       }
     }
   },
@@ -17,8 +17,8 @@
   },
   "services": {
     "add_task": {
-      "name": "Add task",
-      "description": "Creates a one-off task and starts it right away. It disappears once it is done.",
+      "name": "Add chore",
+      "description": "Creates a one-time chore and starts it right away. The chore disappears when you finish it.",
       "fields": {
         "title": {
           "name": "Title",
@@ -26,11 +26,11 @@
         },
         "steps": {
           "name": "Steps",
-          "description": "Optional smaller steps. Without steps, the task has one step called like the title."
+          "description": "Optional steps. If you leave this blank, the chore has one step with the same title as the chore."
         },
         "where": {
           "name": "Where",
-          "description": "Whether the task only makes sense at home or anywhere."
+          "description": "Choose where you can do this chore."
         }
       }
     },
@@ -65,8 +65,8 @@
       }
     },
     "step_on_it": {
-      "name": "Step: on it",
-      "description": "Says you are doing the step that is waiting for you in a chore. It stays quiet until the check-in, then asks if you are still on it.",
+      "name": "On it",
+      "description": "Pauses nudges for the current step. Boopli can send a phone check-in after the configured delay, when nudges are allowed.",
       "fields": {
         "chore": {
           "name": "Chore",
@@ -75,8 +75,8 @@
       }
     },
     "step_not_on_it": {
-      "name": "Step: not on it",
-      "description": "Takes \"on it\" back: the step is nudged again as usual.",
+      "name": "Resume nudges",
+      "description": "Ends “On it” and resumes nudges for the current step.",
       "fields": {
         "chore": {
           "name": "Chore",
@@ -86,7 +86,7 @@
     },
     "delete_chore": {
       "name": "Delete chore",
-      "description": "Deletes a chore and anything in progress for it.",
+      "description": "Deletes a chore and stops any work in progress for it.",
       "fields": {
         "chore": {
           "name": "Chore",
@@ -95,22 +95,22 @@
       }
     },
     "set_away": {
-      "name": "Set away mode",
-      "description": "Boopli rests: scheduled chores do not start and nothing nudges you, except chores marked 'Keeps going while I'm away'. The pet does not get sad.",
+      "name": "Set Away mode",
+      "description": "Pauses scheduled chores and nudges. Chores marked \"Keeps going while I'm away (for example pills)\" keep going.",
       "fields": {
         "start": {
           "name": "Starts",
-          "description": "Local date and time it begins, like 2026-11-28 08:00. Leave empty to begin now."
+          "description": "Local date and time Away mode starts, such as 2026-11-28 08:00. Leave blank to start now."
         },
         "until": {
           "name": "Until",
-          "description": "Local date and time it ends by itself. Leave empty to stay away until you end it."
+          "description": "Local date and time Away mode ends. Leave blank to end it yourself."
         }
       }
     },
     "end_away": {
-      "name": "End away mode",
-      "description": "Back now: Boopli carries on, and frozen chores nudge again one after the other."
+      "name": "End Away mode",
+      "description": "Ends Away mode. Paused chores resume nudges one at a time."
     }
   }
 }

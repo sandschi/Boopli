@@ -47,13 +47,13 @@ def clean_fire_url(value: str) -> str:
         return ""
     if not url.startswith(FIRE_URL_PREFIX) or not url.endswith(FIRE_URL_SUFFIX):
         raise RoutineError(
-            "That is not a routine fire address. It looks like {prefix}trig_…{suffix}",
+            "Enter a routine trigger URL in this format: {prefix}trig_…{suffix}",
             prefix=FIRE_URL_PREFIX,
             suffix=FIRE_URL_SUFFIX,
         )
     middle = url[len(FIRE_URL_PREFIX) : -len(FIRE_URL_SUFFIX)]
     if not middle or "/" in middle or " " in middle or "?" in middle:
-        raise RoutineError("That fire address looks wrong. Copy it again from the routine.")
+        raise RoutineError("Copy the routine trigger URL again from Claude.")
     return url
 
 
@@ -111,7 +111,7 @@ class FireCounter:
         if len(self.times) >= self.limit:
             wait = max(1, int((self.times[0] + 3600 - now) // 60) + 1)
             raise RoutineError(
-                "Boopli already asked Claude {limit} times this hour. Try again in about {wait} minutes.", limit=self.limit, wait=wait
+                "Boopli reached its Claude limit of {limit} requests per hour. Time until you can retry (minutes): about {wait}.", limit=self.limit, wait=wait
             )
         self.times.append(now)
 
@@ -166,7 +166,7 @@ def fire_text(instructions: str, request_id: str, answer_url: str, photo_urls: l
     tail_text = "\n\n".join(tail)
     room = MAX_TEXT - len(tail_text) - 2
     if room < 200:
-        raise RoutineError("That request is too big for Claude. Use fewer or smaller photos.")
+        raise RoutineError("This request has too many photo links for Claude. Try again with fewer photos.")
     task = instructions.strip()
     if len(task) > room:
         task = task[: room - 2].rstrip() + " …"
@@ -180,9 +180,9 @@ def _explain(status: int) -> str:
             "paste it in Boopli and try again."
         )
     if status == 404:
-        return "Claude does not know that routine. Check the fire address."
+        return "Claude couldn’t find the routine. Check the routine trigger URL."
     if status == 429:
-        return "Claude says you asked too often. Wait a while and try again."
+        return "Claude has limited requests for now. Try again in a little while."
     if status in (400, 422):
         return "Claude did not accept the request. Check that the routine is switched on."
     if status >= 500:
@@ -224,5 +224,5 @@ async def wait_for_answer(future: asyncio.Future[Any], seconds: float | None = N
     except TimeoutError as err:
         minutes = max(1, round(seconds / 60))
         raise RoutineError(
-            "Claude did not send an answer within {minutes} minutes. Try again.", minutes=minutes
+            "Boopli stopped waiting for Claude’s reply. Wait limit (minutes): {minutes}. Try again.", minutes=minutes
         ) from err

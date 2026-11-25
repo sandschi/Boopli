@@ -35,11 +35,13 @@ function pickValue(iso: string, tz: string): string {
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
 
-/** One line for banners: "until Sun 29 Nov, 18:00", "from Sat 28 Nov, 08:00 until …" or "until you turn it off". */
+/** Banners show the end of Away mode, with a start time for a planned absence. */
 export function awayWhen(away: Away, nowMs: number, tz: string, onNow: boolean): string {
-  const until = away.until ? t("away.until_2", { when: describeWhen(away.until, nowMs, tz) }) : t("away.until_you_turn_it_off");
-  if (onNow || !away.start) return until;
-  return t("away.from_2", { when: describeWhen(away.start, nowMs, tz), until  });
+  const end = away.until
+    ? t("away.until_2", { when: describeWhen(away.until, nowMs, tz) })
+    : t("away.until_you_turn_it_off");
+  if (onNow || !away.start) return end;
+  return t("away.from_2", { when: describeWhen(away.start, nowMs, tz), until: end });
 }
 
 /**

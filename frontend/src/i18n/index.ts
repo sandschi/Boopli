@@ -120,6 +120,7 @@ function lookup(key: string, count: number | undefined): string | undefined {
     for (const k of [`${key}_${rule}`, `${key}_other`]) {
       if (own[k] !== undefined) return own[k];
     }
+    if (own !== fallback && own[key] !== undefined) return own[key];
     for (const k of [`${key}_${new Intl.PluralRules("en").select(count)}`, `${key}_other`]) {
       if (fallback[k] !== undefined) return fallback[k];
     }

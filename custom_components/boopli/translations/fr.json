@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Configurer Boopli",
-        "description": "Boopli t’accompagne dans tes tâches. Tu trouveras Boopli dans le menu latéral. Tout reste dans ton Home Assistant."
+        "description": "Boopli t’aide à découper tes tâches en petites étapes et t’envoie des rappels sur ton téléphone, avec tes lampes ou sur tes enceintes. Si tu choisis un service d’IA dans le cloud, les informations que tu partages lui sont envoyées."
       }
     }
   },
@@ -30,7 +30,7 @@
         },
         "where": {
           "name": "Où ?",
-          "description": "Indique si tu fais cette tâche uniquement chez toi ou si tu peux la faire n’importe où."
+          "description": "Choisis où tu peux faire cette tâche."
         }
       }
     },
@@ -65,8 +65,8 @@
       }
     },
     "step_on_it": {
-      "name": "Étape : Je m’y mets",
-      "description": "Dis à Boopli que tu commences l’étape qui t’attend. Boopli met les rappels en pause. Au bout du délai prévu, Boopli te demande si tu y travailles encore.",
+      "name": "Je m’y mets",
+      "description": "Met les rappels en pause pour l’étape en cours. Une fois le délai prévu écoulé, Boopli peut te demander où tu en es par une notification sur ton téléphone, si les rappels sont autorisés.",
       "fields": {
         "chore": {
           "name": "Tâche",
@@ -75,8 +75,8 @@
       }
     },
     "step_not_on_it": {
-      "name": "Étape : Je m’arrête",
-      "description": "Annule « Je m’y mets ». Boopli reprend les rappels habituels pour cette étape.",
+      "name": "Reprendre les rappels",
+      "description": "Annule « Je m’y mets ». Boopli reprend les rappels pour l’étape en cours.",
       "fields": {
         "chore": {
           "name": "Tâche",
@@ -86,7 +86,7 @@
     },
     "delete_chore": {
       "name": "Supprimer une tâche",
-      "description": "Supprime la tâche, y compris ce qui est en cours.",
+      "description": "Supprime la tâche et arrête tout ce qui est en cours pour cette tâche.",
       "fields": {
         "chore": {
           "name": "Tâche",
@@ -96,11 +96,11 @@
     },
     "set_away": {
       "name": "Configurer le mode absence",
-      "description": "Boopli fait une pause : seules les tâches pour lesquelles tu as coché « Continuer pendant mon absence (par exemple pour les médicaments) » peuvent démarrer à l’heure prévue ou déclencher un rappel. Ton animal se repose et garde son humeur.",
+      "description": "Met les tâches planifiées et les rappels en pause. Les tâches pour lesquelles tu as activé « Continuer pendant mon absence (par exemple pour les médicaments) » continuent.",
       "fields": {
         "start": {
           "name": "Début de l’absence",
-          "description": "Date et heure de début dans ton fuseau horaire, par exemple 2026-11-28 08:00. Laisse ce champ vide pour commencer maintenant."
+          "description": "Date et heure de début du mode absence dans ton fuseau horaire, par exemple 2026-11-28 08:00. Laisse ce champ vide pour l’activer maintenant."
         },
         "until": {
           "name": "Fin de l’absence",
@@ -110,7 +110,7 @@
     },
     "end_away": {
       "name": "Désactiver le mode absence",
-      "description": "Boopli reprend avec « Je suis de retour ». Les rappels des tâches mises en pause reviennent les uns après les autres."
+      "description": "Désactive le mode absence. Tu reçois à nouveau des rappels pour les tâches en pause, une tâche à la fois."
     }
   }
 }
