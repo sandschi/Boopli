@@ -696,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli findet keine Entitäten von Alexa Devices. Ist die Integration installiert?",
     "you_have_no_such_speaker_yet": "Du hast noch keinen Lautsprecher dieser Art eingerichtet.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen auf Alexa-Lautsprechern, Tondateien auf allen Lautsprechern.",
+    "one_list_for_all_speakers_pick": "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen nur auf Lautsprechern von Alexa Media Player. Tondateien laufen auf anderen Media Playern.",
     "name_of_the_sound": "Name des Tons",
     "pick_one_of_your_sounds": "Wähle einen deiner Töne",
     "choose_a_media_player": "Mediaplayer auswählen…",

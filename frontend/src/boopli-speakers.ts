@@ -70,9 +70,11 @@ export class BoopliSpeakers extends LitElement {
   declare _notes: Record<string, string>;
   declare _open: Record<string, boolean>; // the lines whose details are showing
   declare _sub: "" | "add" | "tone" | "own" | "say"; // which small window is open
+  private _rev: Record<string, number>; // per Test note: which round it is in (not drawn)
 
   constructor() {
     super();
+    this._rev = {};
     this._addSpeaker = "";
     this._addDevice = "";
     this._notes = {};
@@ -205,14 +207,37 @@ export class BoopliSpeakers extends LitElement {
     this._updateSpeaker(entityId, (s) => ({ ...s, speech: { ...s.speech, ...patch } }));
   }
 
+  /** Starts a new round for a Test note: the answer of an older Test (or of an older sound) is then ignored. */
+  private _bump(key: string): number {
+    this._rev[key] = (this._rev[key] ?? 0) + 1;
+    return this._rev[key];
+  }
+
+  /** The sound changed: the note of the Test before it no longer fits, and its late answer must not show up. */
+  private _clearNote(key: string): void {
+    this._bump(key);
+    this._note(key, "");
+  }
+
+  /** The speaker a shared Test uses: one that can play Amazon's sounds and is there right now. */
+  private _testTarget(list: SpeakerCfg[]): SpeakerCfg {
+    const able = list.filter((s) => !this._cannotPlayAlexaSounds(s));
+    const pool = able.length ? able : list; // none able: let the Test run, the answer says why
+    return pool.find((s) => this._here(s)) ?? pool[0];
+  }
+
   private async _test(speaker: SpeakerCfg, level: SpeakerChoice): Promise<void> {
     if (!this.hass) return;
     const key = `speaker:${speaker.entity_id}:${level}`;
-    this._note(key, t("common.sending"));
+    const rev = this._bump(key);
+    const show = (text: string) => {
+      if (this._rev[key] === rev) this._note(key, text);
+    };
+    show(t("common.sending"));
     try {
-      this._note(key, testNote(await testSpeaker(this.hass, speaker, level)));
+      show(testNote(await testSpeaker(this.hass, speaker, level)));
     } catch (err) {
-      this._note(key, errorMessage(err));
+      show(errorMessage(err));
     }
   }
 
@@ -241,19 +266,25 @@ export class BoopliSpeakers extends LitElement {
   /** Test one of your sounds on the first speaker that can play it. */
   private async _testExtra(sound: ExtraSound): Promise<void> {
     const key = `own:${sound.id}`;
-    const fits = this._speakers().filter((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
+    // Alexa Devices speakers play neither Amazon's sounds nor files, so they are never a target here
+    const fits = this._speakers().filter((s) => (sound.kind !== "alexa" || s.speech.route !== "tts") && !this._cannotPlayAlexaSounds(s));
     // the first speaker that can play it and is there right now
     const speaker = fits.find((s) => this._here(s)) ?? fits[0];
     if (!speaker) {
+      this._clearNote(key);
       this._note(key, t("speakers.add_a_speaker_that_can_play"));
       return;
     }
     if (!this.hass) return;
-    this._note(key, t("common.sending"));
+    const rev = this._bump(key);
+    const show = (text: string) => {
+      if (this._rev[key] === rev) this._note(key, text);
+    };
+    show(t("common.sending"));
     try {
-      this._note(key, testNote(await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())));
+      show(testNote(await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())));
     } catch (err) {
-      this._note(key, errorMessage(err));
+      show(errorMessage(err));
     }
   }
 
@@ -421,7 +452,7 @@ export class BoopliSpeakers extends LitElement {
       return html`<h4>${title}</h4><p class="muted small">${t("speakers.you_have_no_such_speaker_yet")}</p>`;
     }
     const first = speakers[0];
-    const target = speakers.find((s) => this._here(s)) ?? first; // the Test button uses a speaker that is there
+    const target = this._testTarget(speakers); // the Test button uses a speaker that can play it and is there
     const setAll =(which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
       this._patch({
         speakers: this._speakers().map((s) => (this._group(s) === group ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s)),
@@ -448,12 +479,16 @@ export class BoopliSpeakers extends LitElement {
                       c.kind as SoundKind,
                       c.sound,
                       example,
-                      (k) => setAll(which, k === c.kind ? {} : { kind: k, sound: "" }),
+                      (k) => {
+                        setAll(which, k === c.kind ? {} : { kind: k, sound: "" });
+                        if (k !== c.kind) this._clearNote(`speaker:${target.entity_id}:${which}`);
+                      },
                       (s) => {
                         setAll(which, { sound: s });
-                        this._note(`speaker:${target.entity_id}:${which}`, ""); // the old result was for the old sound
+                        this._clearNote(`speaker:${target.entity_id}:${which}`); // the old result was for the old sound
                       },
-                      { run: () => void this._test(target, which), note: this._notes[`speaker:${target.entity_id}:${which}`] },
+                      // the Test plays what the editor shows (the first speaker's setting) on the speaker that is there
+                      { run: () => void this._test({ ...target, [which]: first[which] }, which), note: this._notes[`speaker:${target.entity_id}:${which}`] },
                     )}`
                   : html`<label class="num wide">
                       ${t("speakers.file_in_my_media_folder_for_example", { example })}
@@ -490,7 +525,13 @@ export class BoopliSpeakers extends LitElement {
           />`,
           summary: this._soundSummary(x.kind, x.sound),
           onTest: () => void this._testExtra(x),
-          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, k === x.kind ? {} : { kind: k, sound: "" }), (s) => this._setExtra(x.id, { sound: s })),
+          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => {
+            this._setExtra(x.id, k === x.kind ? {} : { kind: k, sound: "" });
+            if (k !== x.kind) this._clearNote(`own:${x.id}`);
+          }, (s) => {
+            this._setExtra(x.id, { sound: s });
+            this._clearNote(`own:${x.id}`);
+          }),
           onRemove: () => this._removeExtra(x.id),
           removeLabel: t("speakers.remove_the_sound", { name: x.name }),
         })

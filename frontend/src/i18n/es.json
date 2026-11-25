@@ -696,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli no encuentra entidades de Alexa Devices. ¿Instalaste la integración?",
     "you_have_no_such_speaker_yet": "Aún no tienes altavoces de este tipo.",
     "details": "Detalles",
-    "one_list_for_all_speakers_pick": "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa se reproducen en altavoces Alexa. Los archivos se reproducen en cualquier altavoz.",
+    "one_list_for_all_speakers_pick": "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa solo se reproducen en altavoces de Alexa Media Player. Los archivos se reproducen en otros reproductores multimedia.",
     "name_of_the_sound": "Nombre del sonido",
     "pick_one_of_your_sounds": "Elige uno de tus sonidos",
     "choose_a_media_player": "Elegir reproductor multimedia…",

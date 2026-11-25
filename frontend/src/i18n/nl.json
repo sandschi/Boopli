@@ -696,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli vindt geen entiteiten van Alexa Devices. Heb je de integratie geïnstalleerd?",
     "you_have_no_such_speaker_yet": "Je hebt nog geen luidspreker van dit type ingesteld.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt op Alexa-luidsprekers. Een bestand werkt op elke luidspreker.",
+    "one_list_for_all_speakers_pick": "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt alleen op luidsprekers van Alexa Media Player. Een bestand werkt op andere mediaspelers.",
     "name_of_the_sound": "Naam van het geluid",
     "pick_one_of_your_sounds": "Kies een van je geluiden",
     "choose_a_media_player": "Kies een mediaspeler…",

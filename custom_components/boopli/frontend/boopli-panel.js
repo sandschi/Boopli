@@ -1220,7 +1220,7 @@ var Je = {
 		no_alexa_devices_entities_found_is: "Boopli findet keine Entitäten von Alexa Devices. Ist die Integration installiert?",
 		you_have_no_such_speaker_yet: "Du hast noch keinen Lautsprecher dieser Art eingerichtet.",
 		details: "Details",
-		one_list_for_all_speakers_pick: "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen auf Alexa-Lautsprechern, Tondateien auf allen Lautsprechern.",
+		one_list_for_all_speakers_pick: "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen nur auf Lautsprechern von Alexa Media Player. Tondateien laufen auf anderen Media Playern.",
 		name_of_the_sound: "Name des Tons",
 		pick_one_of_your_sounds: "Wähle einen deiner Töne",
 		choose_a_media_player: "Mediaplayer auswählen…",
@@ -2369,7 +2369,7 @@ var Je = {
 		no_alexa_devices_entities_found_is: "No Alexa Devices entities found. Is the integration installed?",
 		you_have_no_such_speaker_yet: "You have no such speaker yet.",
 		details: "Details",
-		one_list_for_all_speakers_pick: "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play on Alexa speakers. Files play on any speaker.",
+		one_list_for_all_speakers_pick: "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play only on Alexa Media Player speakers. Files play on other media players.",
 		name_of_the_sound: "Name of the sound",
 		pick_one_of_your_sounds: "Pick one of your sounds",
 		choose_a_media_player: "Choose a media player…",
@@ -3518,7 +3518,7 @@ var Je = {
 		no_alexa_devices_entities_found_is: "Boopli no encuentra entidades de Alexa Devices. ¿Instalaste la integración?",
 		you_have_no_such_speaker_yet: "Aún no tienes altavoces de este tipo.",
 		details: "Detalles",
-		one_list_for_all_speakers_pick: "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa se reproducen en altavoces Alexa. Los archivos se reproducen en cualquier altavoz.",
+		one_list_for_all_speakers_pick: "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa solo se reproducen en altavoces de Alexa Media Player. Los archivos se reproducen en otros reproductores multimedia.",
 		name_of_the_sound: "Nombre del sonido",
 		pick_one_of_your_sounds: "Elige uno de tus sonidos",
 		choose_a_media_player: "Elegir reproductor multimedia…",
@@ -4667,7 +4667,7 @@ var Je = {
 		no_alexa_devices_entities_found_is: "Boopli ne trouve aucune entité Alexa Devices. L’intégration est-elle installée\xA0?",
 		you_have_no_such_speaker_yet: "Tu n’as pas encore configuré d’enceinte de ce type.",
 		details: "Détails",
-		one_list_for_all_speakers_pick: "Choisis les sons pour «\xA0Son bref\xA0» ou «\xA0Son de l’alarme\xA0», ou utilise-les dans tes séries de rappels. Les enceintes Alexa peuvent jouer les sons Alexa. Toutes les enceintes peuvent lire les fichiers audio.",
+		one_list_for_all_speakers_pick: "Choisis les sons pour «\xA0Son bref\xA0» ou «\xA0Son de l’alarme\xA0», ou utilise-les dans tes séries de rappels. Les sons Alexa ne sont joués que par les enceintes d’Alexa Media Player. Les fichiers audio sont lus par les autres lecteurs multimédias.",
 		name_of_the_sound: "Nom du son",
 		pick_one_of_your_sounds: "Choisis un de tes sons",
 		choose_a_media_player: "Choisir un lecteur multimédia…",
@@ -5816,7 +5816,7 @@ var Je = {
 		no_alexa_devices_entities_found_is: "Boopli vindt geen entiteiten van Alexa Devices. Heb je de integratie geïnstalleerd?",
 		you_have_no_such_speaker_yet: "Je hebt nog geen luidspreker van dit type ingesteld.",
 		details: "Details",
-		one_list_for_all_speakers_pick: "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt op Alexa-luidsprekers. Een bestand werkt op elke luidspreker.",
+		one_list_for_all_speakers_pick: "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt alleen op luidsprekers van Alexa Media Player. Een bestand werkt op andere mediaspelers.",
 		name_of_the_sound: "Naam van het geluid",
 		pick_one_of_your_sounds: "Kies een van je geluiden",
 		choose_a_media_player: "Kies een mediaspeler…",
@@ -14386,7 +14386,7 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 		};
 	}
 	constructor() {
-		super(), this._addSpeaker = "", this._addDevice = "", this._notes = {}, this._open = {}, this._sub = "";
+		super(), this._rev = {}, this._addSpeaker = "", this._addDevice = "", this._notes = {}, this._open = {}, this._sub = "";
 	}
 	updated() {
 		let e = this.renderRoot.querySelector("dialog.sub");
@@ -14525,14 +14525,26 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 			}
 		}));
 	}
+	_bump(e) {
+		return this._rev[e] = (this._rev[e] ?? 0) + 1, this._rev[e];
+	}
+	_clearNote(e) {
+		this._bump(e), this._note(e, "");
+	}
+	_testTarget(e) {
+		let t = e.filter((e) => !this._cannotPlayAlexaSounds(e)), n = t.length ? t : e;
+		return n.find((e) => this._here(e)) ?? n[0];
+	}
 	async _test(e, t) {
 		if (!this.hass) return;
-		let n = `speaker:${e.entity_id}:${t}`;
-		this._note(n, C("common.sending"));
+		let n = `speaker:${e.entity_id}:${t}`, r = this._bump(n), i = (e) => {
+			this._rev[n] === r && this._note(n, e);
+		};
+		i(C("common.sending"));
 		try {
-			this._note(n, sn(await Yt(this.hass, e, t)));
+			i(sn(await Yt(this.hass, e, t)));
 		} catch (e) {
-			this._note(n, T(e));
+			i(T(e));
 		}
 	}
 	_sounds() {
@@ -14558,15 +14570,20 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 		this._patch({ sounds: this._sounds().filter((t) => t.id !== e) });
 	}
 	async _testExtra(e) {
-		let t = `own:${e.id}`, n = this._speakers().filter((t) => e.kind !== "alexa" || t.speech.route !== "tts"), r = n.find((e) => this._here(e)) ?? n[0];
-		if (!r) this._note(t, C("speakers.add_a_speaker_that_can_play"));
-		else if (this.hass) {
-			this._note(t, C("common.sending"));
-			try {
-				this._note(t, sn(await Yt(this.hass, r, `sound:${e.id}`, this._sounds())));
-			} catch (e) {
-				this._note(t, T(e));
-			}
+		let t = `own:${e.id}`, n = this._speakers().filter((t) => (e.kind !== "alexa" || t.speech.route !== "tts") && !this._cannotPlayAlexaSounds(t)), r = n.find((e) => this._here(e)) ?? n[0];
+		if (!r) {
+			this._clearNote(t), this._note(t, C("speakers.add_a_speaker_that_can_play"));
+			return;
+		}
+		if (!this.hass) return;
+		let i = this._bump(t), a = (e) => {
+			this._rev[t] === i && this._note(t, e);
+		};
+		a(C("common.sending"));
+		try {
+			a(sn(await Yt(this.hass, r, `sound:${e.id}`, this._sounds())));
+		} catch (e) {
+			a(T(e));
 		}
 	}
 	_soundSummary(e, t) {
@@ -14709,7 +14726,7 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 	_toneGroup(e) {
 		let t = this._speakers().filter((t) => this._group(t) === e), n = C(e === "alexa" ? "speakers.alexa_speakers" : "speakers.other_media_players");
 		if (!t.length) return m`<h4>${n}</h4><p class="muted small">${C("speakers.you_have_no_such_speaker_yet")}</p>`;
-		let r = t[0], i = t.find((e) => this._here(e)) ?? r, a = (t, n) => this._patch({ speakers: this._speakers().map((r) => this._group(r) === e ? {
+		let r = t[0], i = this._testTarget(t), a = (t, n) => this._patch({ speakers: this._speakers().map((r) => this._group(r) === e ? {
 			...r,
 			[t]: {
 				...r[t],
@@ -14733,13 +14750,18 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
 				sound: e.sound
 			}))}
                 ${e === "alexa" ? m`${t.some((e) => this._cannotPlayAlexaSounds(e)) ? m`<div class="note muted small soundnote">${C("speakers.alexa_devices_no_amazon_sounds")}</div>` : _}
-                    ${this._soundFields(c.kind, c.sound, s, (e) => a(n, e === c.kind ? {} : {
-				kind: e,
-				sound: ""
-			}), (e) => {
-				a(n, { sound: e }), this._note(`speaker:${i.entity_id}:${n}`, "");
+                    ${this._soundFields(c.kind, c.sound, s, (e) => {
+				a(n, e === c.kind ? {} : {
+					kind: e,
+					sound: ""
+				}), e !== c.kind && this._clearNote(`speaker:${i.entity_id}:${n}`);
+			}, (e) => {
+				a(n, { sound: e }), this._clearNote(`speaker:${i.entity_id}:${n}`);
 			}, {
-				run: () => void this._test(i, n),
+				run: () => void this._test({
+					...i,
+					[n]: r[n]
+				}, n),
 				note: this._notes[`speaker:${i.entity_id}:${n}`]
 			})}` : m`<label class="num wide">
                       ${C("speakers.file_in_my_media_folder_for_example", { example: s })}
@@ -14774,10 +14796,14 @@ var ho = "amzn_sfx_scifi_alarm_01", go = "amzn_sfx_doorbell_chime_01", _o = [
           />`,
 			summary: this._soundSummary(e.kind, e.sound),
 			onTest: () => void this._testExtra(e),
-			details: this._soundFields(e.kind, e.sound, "fanfare", (t) => this._setExtra(e.id, t === e.kind ? {} : {
-				kind: t,
-				sound: ""
-			}), (t) => this._setExtra(e.id, { sound: t })),
+			details: this._soundFields(e.kind, e.sound, "fanfare", (t) => {
+				this._setExtra(e.id, t === e.kind ? {} : {
+					kind: t,
+					sound: ""
+				}), t !== e.kind && this._clearNote(`own:${e.id}`);
+			}, (t) => {
+				this._setExtra(e.id, { sound: t }), this._clearNote(`own:${e.id}`);
+			}),
 			onRemove: () => this._removeExtra(e.id),
 			removeLabel: C("speakers.remove_the_sound", { name: e.name })
 		}))}

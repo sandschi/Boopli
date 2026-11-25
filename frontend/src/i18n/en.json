@@ -696,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "No Alexa Devices entities found. Is the integration installed?",
     "you_have_no_such_speaker_yet": "You have no such speaker yet.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play on Alexa speakers. Files play on any speaker.",
+    "one_list_for_all_speakers_pick": "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play only on Alexa Media Player speakers. Files play on other media players.",
     "name_of_the_sound": "Name of the sound",
     "pick_one_of_your_sounds": "Pick one of your sounds",
     "choose_a_media_player": "Choose a media player…",

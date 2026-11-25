@@ -696,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli ne trouve aucune entité Alexa Devices. L’intégration est-elle installée ?",
     "you_have_no_such_speaker_yet": "Tu n’as pas encore configuré d’enceinte de ce type.",
     "details": "Détails",
-    "one_list_for_all_speakers_pick": "Choisis les sons pour « Son bref » ou « Son de l’alarme », ou utilise-les dans tes séries de rappels. Les enceintes Alexa peuvent jouer les sons Alexa. Toutes les enceintes peuvent lire les fichiers audio.",
+    "one_list_for_all_speakers_pick": "Choisis les sons pour « Son bref » ou « Son de l’alarme », ou utilise-les dans tes séries de rappels. Les sons Alexa ne sont joués que par les enceintes d’Alexa Media Player. Les fichiers audio sont lus par les autres lecteurs multimédias.",
     "name_of_the_sound": "Nom du son",
     "pick_one_of_your_sounds": "Choisis un de tes sons",
     "choose_a_media_player": "Choisir un lecteur multimédia…",
