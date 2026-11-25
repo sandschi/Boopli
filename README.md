@@ -1,8 +1,8 @@
 # Boopli
 
-An ADHD-friendly chore and task companion that lives inside [Home Assistant](https://www.home-assistant.io/).
+An ADHD-friendly chore companion that lives inside [Home Assistant](https://www.home-assistant.io/).
 
-Boopli turns chores into small steps, nudges you with the lights, speakers and phone you already have, and rewards progress with a pet. Everything runs inside your own Home Assistant: no account, no cloud, no server.
+Boopli turns chores into small steps, nudges you with the lights, speakers and phone you already have, and rewards progress with a pet. Boopli runs in Home Assistant and needs no Boopli account. It sends nothing to an AI service by itself. If you use AI help or Ask Claude, the AI service you choose receives your chore, answers and any room notes or photos you share. A cloud provider may keep that data.
 
 ![Boopli: the Today screen](docs-site/public/img/today.jpg)
 
@@ -10,6 +10,8 @@ Boopli turns chores into small steps, nudges you with the lights, speakers and p
 [![Open your Home Assistant instance and start setting up Boopli.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=boopli)
 
 > **Status: early development.** Boopli is not ready for daily use yet.
+
+The panel and the integration’s Home Assistant texts are available in English (en), German (de), Dutch (nl), French (fr) and Spanish (es). The panel follows Home Assistant’s language. Select another language for this browser in **Settings → Language**. The `?lang=xx` option in the address takes priority.
 
 ## Install
 

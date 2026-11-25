@@ -189,7 +189,7 @@ def test_switched_off_and_not_set_up_say_so():
 
 @pytest.mark.parametrize(
     "status,words",
-    [(401, "refused the token"), (403, "refused the token"), (404, "does not know"), (429, "too often"), (503, "trouble")],
+    [(401, "refused the token"), (403, "refused the token"), (404, "routine trigger URL"), (429, "limited requests"), (503, "trouble")],
 )
 def test_claude_errors_are_plain_words(status, words):
     async def body(m, fake):
@@ -207,7 +207,7 @@ def test_no_answer_in_time_is_a_timeout_message():
         fake.silent = True
         with patch.object(routine, "WAIT_SECONDS", 0.2):
             message = await _error(m)
-        assert "did not send an answer" in message
+        assert "stopped waiting" in message
 
     run(body)
 
@@ -241,7 +241,7 @@ def test_boopli_stops_before_claudes_limit():
         assert len(fake.fires) == routine.MAX_FIRES_PER_HOUR
         assert m.claude_status()["fires_left"] == 0
         message = await _error(m)
-        assert "this hour" in message
+        assert "requests per hour" in message
         assert len(fake.fires) == routine.MAX_FIRES_PER_HOUR  # nothing more was sent
 
     run(body)
@@ -527,7 +527,7 @@ def test_the_token_never_goes_to_an_address_that_is_not_a_routine():
         # As if an imported backup had brought this address in, without the normal save check.
         m.settings.ai.claude_fire_url = "https://evil.example.com/collect"
         message = await _error(m)
-        assert "not a routine fire address" in message
+        assert "Enter a routine trigger URL" in message
         assert fake.fires == []
         assert m.claude_status()["fires_left"] == routine.MAX_FIRES_PER_HOUR  # no fire was counted
 
@@ -550,7 +550,7 @@ def test_a_request_that_cannot_fit_is_refused_before_a_fire_is_counted():
             routine.fire_text("x", "id", "https://ha.example.org/h", ["https://ha.example.org/" + "p" * 70_000])
         m.settings.ai.claude_ha_url = "https://ha.example.org/" + "a" * 70_000
         message = await _error(m)
-        assert "too big" in message
+        assert "too big for Claude" in message
         assert fake.fires == []
         assert m.claude_status()["fires_left"] == routine.MAX_FIRES_PER_HOUR
 

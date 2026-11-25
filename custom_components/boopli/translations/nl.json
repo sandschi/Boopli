@@ -1,0 +1,116 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Boopli instellen",
+        "description": "Boopli helpt je taken op te delen in kleine stapjes en geeft je seintjes via je telefoon, lampen of luidsprekers. Kies je een AI-dienst in de cloud, dan gaat de informatie die je deelt naar die dienst."
+      }
+    }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Alleen thuis",
+        "anywhere": "Overal"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Taak toevoegen",
+      "description": "Maakt een eenmalige taak aan en start die meteen. De taak verdwijnt zodra die klaar is.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Wat wil je doen?"
+        },
+        "steps": {
+          "name": "Stappen",
+          "description": "Je kunt de taak opdelen in kleine stappen. Als je dit veld leeg laat, krijgt de taak één stap met dezelfde titel."
+        },
+        "where": {
+          "name": "Waar?",
+          "description": "Kies waar je deze taak kunt doen."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Taak starten",
+      "description": "Start meteen een taak, bijvoorbeeld de was als je die normaal zelf start.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Stap afronden",
+      "description": "Vinkt de stap af die bij deze taak nu aan de beurt is.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "snooze_step": {
+      "name": "Stap uitstellen",
+      "description": "Stelt het volgende seintje voor de huidige stap uit. De stap blijft open.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "step_on_it": {
+      "name": "Ik ben bezig",
+      "description": "Pauzeert de seintjes voor de huidige stap. Als seintjes zijn toegestaan, kan Boopli na de ingestelde wachttijd op je telefoon vragen of je nog bezig bent.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Seintjes hervatten",
+      "description": "Zet “Ik ben bezig” uit. Je krijgt weer seintjes voor deze stap.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Taak wissen",
+      "description": "Wist de taak en stopt alles wat voor die taak loopt.",
+      "fields": {
+        "chore": {
+          "name": "Taak",
+          "description": "De naam of ID van de taak."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Afwezigheidsmodus instellen",
+      "description": "Pauzeert geplande taken en seintjes. Taken waarvoor je “Gaat door als ik weg ben (bijvoorbeeld voor pillen)” hebt aangezet, gaan door.",
+      "fields": {
+        "start": {
+          "name": "Vanaf",
+          "description": "Datum en tijd waarop de Afwezigheidsmodus begint, in je eigen tijdzone. Bijvoorbeeld 2026-11-28 08:00. Laat dit veld leeg als je de modus nu wilt aanzetten."
+        },
+        "until": {
+          "name": "Tot",
+          "description": "Datum en tijd in je eigen tijdzone waarop de modus vanzelf stopt. Laat dit veld leeg als je de modus zelf wilt uitzetten."
+        }
+      }
+    },
+    "end_away": {
+      "name": "Afwezigheidsmodus uitzetten",
+      "description": "Zet de Afwezigheidsmodus uit. Voor de taken die op pauze stonden, krijg je weer één voor één een seintje."
+    }
+  }
+}

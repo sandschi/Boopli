@@ -48,13 +48,14 @@ export function blankTrigger(kind: TriggerKind): Trigger {
 }
 
 /**
- * "Finishes by itself when…" for one step: entity states, NFC tags and buttons.
+ * Wait or completion conditions for one step: entity states, NFC tags and buttons.
  * Any one of them is enough. Emits `triggers-change` with the new list.
  */
 export class BoopliTriggers extends LitElement {
   static properties = {
     hass: { attribute: false },
     triggers: { attribute: false },
+    purpose: { attribute: false },
     _tags: { state: true },
     _scanning: { state: true },
     _note: { state: true },
@@ -62,6 +63,7 @@ export class BoopliTriggers extends LitElement {
 
   declare hass?: Hass;
   declare triggers: Trigger[];
+  declare purpose: "wait" | "finish";
   declare _tags: TagInfo[];
   declare _scanning: number;
   declare _note: string;
@@ -70,6 +72,7 @@ export class BoopliTriggers extends LitElement {
   constructor() {
     super();
     this.triggers = [];
+    this.purpose = "finish";
     this._tags = [];
     this._scanning = -1;
     this._note = "";
@@ -384,7 +387,9 @@ export class BoopliTriggers extends LitElement {
       </datalist>
       ${this.triggers.length === 0
         ? html`<div class="muted small">
-            ${t("triggers.nothing_yet_only_you_finish_this")}
+            ${t(this.purpose === "wait"
+              ? "triggers.add_a_condition_that_makes_this_step_ready"
+              : "triggers.nothing_yet_only_you_finish_this")}
           </div>`
         : this.triggers.map(
             (trig, i) => html`

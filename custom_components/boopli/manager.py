@@ -950,7 +950,7 @@ class BoopliManager:
         """Replace the settings."""
         settings = engine.Settings.from_dict(data)
         if (gone := engine.deleted_standard_ladder(self.settings, settings)) is not None:
-            raise BoopliError("The standard ladder '{gone}' can be changed but not deleted.", gone=gone)
+            raise BoopliError("You can edit the built-in nudge sequence “{gone}.” Keep it in your list.", gone=gone)
         error = engine.validate_settings(settings)
         if error:
             raise BoopliError(error)
@@ -967,7 +967,7 @@ class BoopliManager:
             users = engine.chores_using(ladder.id, self.chores.values())
             if users:
                 raise BoopliError(
-                    "The ladder '{name}' is used by {users}. Pick another nudge style for them first.", name=ladder.name, users=', '.join(users)
+                    "These chores use the nudge sequence “{name}”: {users}. Choose another nudge style for them first.", name=ladder.name, users=', '.join(users)
                 )
         # Devices added now act in the standard ladders the way they used to (their "starts at nudge").
         engine.sync_phone_levels_to_standard_ladders(self.settings, settings)
@@ -1092,7 +1092,7 @@ class BoopliManager:
         """
         run = self.runs.get(run_id)
         if run is None:
-            raise BoopliError("That task is not running any more.")
+            raise BoopliError("That chore is no longer in progress.")
         now = dt_util.utcnow()
         try:
             due = engine.park_time(when, at, now, self.tz)
@@ -1124,7 +1124,7 @@ class BoopliManager:
         """
         run = self.runs.get(run_id)
         if run is None:
-            raise BoopliError("That task is not running any more.")
+            raise BoopliError("That chore is no longer in progress.")
         now = dt_util.utcnow()
         try:
             due = engine.park_time(when, at, now, self.tz)
@@ -1339,8 +1339,7 @@ class BoopliManager:
         except ServiceValidationError as err:
             if getattr(err, "translation_key", "") == "attachments_not_supported":
                 raise BoopliError(
-                    "This AI agent can't read photos. Pick an agent that can under "
-                    "Settings, Advanced, AI help, or describe the room another way."
+                    "This AI agent can’t analyze photos. Choose one that can in Settings → AI help → Advanced, or continue without photos."
                 ) from err
             raise BoopliError("The AI agent answered with an error: {error}", error=err) from err
         except HomeAssistantError as err:
@@ -1505,7 +1504,7 @@ class BoopliManager:
             raise BoopliError("Ask Claude is switched off. Turn it on in Settings first.")
         if not ai.claude_fire_url or not self._claude_token:
             raise BoopliError(
-                "Ask Claude is not set up yet. Add the routine's address and token in Settings."
+                "Ask Claude is not set up yet. Add the routine trigger URL and token in Settings."
             )
         try:
             # The token only ever goes to a real routine address, also when the setting came
@@ -1554,7 +1553,7 @@ class BoopliManager:
     @staticmethod
     def _check_via(via: str) -> str:
         if via not in (VIA_AGENT, VIA_CLAUDE):
-            raise BoopliError("Ask the agent or Claude.")
+            raise BoopliError("Choose your AI agent or Claude.")
         return via
 
     @staticmethod
@@ -1846,7 +1845,7 @@ class BoopliManager:
         dirs = dict(getattr(self.hass.config, "media_dirs", None) or {})
         if not dirs:
             raise BoopliError(
-                "Home Assistant has no media folder, so Boopli cannot hand photos to the agent."
+                "Set up a Home Assistant media folder so Boopli can prepare the photos."
             )
         key = "local" if "local" in dirs else next(iter(dirs))
         return key, dirs[key]
@@ -1948,7 +1947,7 @@ class BoopliManager:
             )
             raise
         except OSError as err:
-            raise BoopliError("Boopli could not hand the photos over: {error}", error=err) from err
+            raise BoopliError("Boopli couldn’t prepare the photos: {error}", error=err) from err
         attachments = [
             {
                 "media_content_id": f"media-source://media_source/{dir_id}/{PHOTO_DIR}/{path.name}",
@@ -2135,7 +2134,7 @@ class BoopliManager:
         if kind == "phone":
             phone = engine.PhoneCfg.from_dict(data.get("phone") or {})
             if not phone.service or phone.level not in engine.LEVEL_VALUES:
-                raise BoopliError("Pick a phone and a level first.")
+                raise BoopliError("Choose a phone and a notification level first.")
             return await self.nudger.async_test_phone(phone)
         if kind == "speaker":
             speaker = engine.SpeakerCfg.from_dict(data.get("speaker") or {})

@@ -430,6 +430,7 @@ export class BoopliChoreEditor extends LitElement {
           </p>
           <boopli-triggers
             .hass=${this.hass}
+            .purpose=${"wait"}
             .triggers=${step.wait_for ?? []}
             @triggers-change=${(e: CustomEvent<Trigger[]>) =>
               this._updateStep(index, { wait_for: e.detail })}
@@ -455,6 +456,7 @@ export class BoopliChoreEditor extends LitElement {
           </summary>
           <boopli-triggers
             .hass=${this.hass}
+            .purpose=${"finish"}
             .triggers=${step.triggers ?? []}
             @triggers-change=${(e: CustomEvent<Trigger[]>) =>
               this._updateStep(index, { triggers: e.detail })}

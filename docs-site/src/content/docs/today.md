@@ -13,18 +13,18 @@ The panel fits a phone too, so you can use it from the Home Assistant app.
 
 ## What is on it
 
-- **What to do now.** The step that is waiting for you, with its group, "Step 3 of 8" and a progress bar. A celebration shows when a task is finished.
+- The current step shows its group, a progress bar and a count such as “Step 3 of 8.” A celebration shows when a chore is finished.
 - **Done.** Marks the step done. The nudges for it stop.
-- **On it.** Tells Boopli you are working on the step. It stops nagging and asks once after the check-in time, "Still on it?". See [Chores and schedules](/Boopli/chores/).
-- **Snooze.** Delays the next nudge. The step stays open.
+- **On it.** Tells Boopli you are working on the step. It pauses nudges and can send a phone check-in after the check-in time. Select **Resume nudges** to take it back. See [Chores and schedules](/Boopli/chores/).
+- **Snooze** on your phone or wall board delays the next nudge. The step stays open and Today shows when the snooze ends.
 - **Ready now.** Other steps that are your turn right now, grouped by chore.
 - **Still to do today.** The rest of what is going on today: the waiting steps of chores in progress, and chores due later today with their time.
 - **Upcoming.** Scheduled chores on later days (the first eight, with the rest in the Chores tab).
-- **Set aside for later.** Parts of a task you put away, each with **Start now**, **Change time** and **Remove**.
+- **Set aside for later.** Parts of a chore you put away, each with **Start now**, **Change time** and **Delete**.
 - **Done by itself.** Steps that finished through a sensor, an NFC tag or a button, with what happened.
-- **Away mode banner.** A big amber banner while [Away mode](/Boopli/away-mode/) is on.
+- **Away mode is on.** A big amber banner while [Away mode](/Boopli/away-mode/) is on.
 - **Finish setting up.** A banner that continues the setup wizard where you stopped.
 
-## Starting a task
+## Starting a chore
 
-Write what you want to get done and press **Break it down now** to make a one-off task that disappears when it is done, or **Break down a recurring chore** to make a chore with a schedule. With [Ask Claude](/Boopli/ask-claude/) on, there is also an **Ask Claude to break it down** button. See [AI help](/Boopli/ai-help/).
+Write what you want to get done and select **Break it down now** to make a one-off chore that disappears when it is done, or **Break down a recurring chore** to make a chore with a schedule. If you’ve set up [Ask Claude](/Boopli/ask-claude/) and your Home Assistant AI agent is off, the button is **Ask Claude to break it down**. See [AI help](/Boopli/ai-help/).

@@ -120,6 +120,7 @@ function lookup(key: string, count: number | undefined): string | undefined {
     for (const k of [`${key}_${rule}`, `${key}_other`]) {
       if (own[k] !== undefined) return own[k];
     }
+    if (own !== fallback && own[key] !== undefined) return own[key];
     for (const k of [`${key}_${new Intl.PluralRules("en").select(count)}`, `${key}_other`]) {
       if (fallback[k] !== undefined) return fallback[k];
     }
@@ -133,6 +134,19 @@ export function inEnglish<T>(fn: () => T): T {
   current = "en";
   try {
     return fn();
+  } finally {
+    current = before;
+  }
+}
+
+/** Run `fn` once for every language that has a file (English first) and collect the results: to recognise a text that was saved in any language. */
+export function inEveryLanguage<T>(fn: () => T): T[] {
+  const before = current;
+  try {
+    return languages().map((code) => {
+      current = code;
+      return fn();
+    });
   } finally {
     current = before;
   }

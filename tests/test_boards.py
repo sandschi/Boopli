@@ -53,23 +53,23 @@ def test_every_tile_gets_its_default_options():
 
 
 def test_there_has_to_be_a_board():
-    assert "1 to" in engine.validate_boards([])
+    assert f"between 1 and {engine.BOARD_MAX}" in engine.validate_boards([])
 
 
 def test_board_names_are_checked():
-    assert engine.validate_boards([board(name="")]) == "Every board needs a name."
-    assert "at most" in engine.validate_boards([board(name="x" * 41)])
-    assert "two boards called" in engine.validate_boards([board(name="A"), board(name="a")])
+    assert engine.validate_boards([board(name="")]) == "Give each wall board a name."
+    assert "up to 40 characters" in engine.validate_boards([board(name="x" * 41)])
+    assert "Two wall boards are named" in engine.validate_boards([board(name="A"), board(name="a")])
 
 
 def test_two_boards_cannot_share_an_id():
     a, b = board(id="1", name="A"), board(id="1", name="B")
-    assert "same id" in engine.validate_boards([a, b])
+    assert "same ID" in engine.validate_boards([a, b])
 
 
 def test_the_most_boards_and_tiles():
     many = [board(name=f"B{i}") for i in range(engine.BOARD_MAX + 1)]
-    assert "1 to" in engine.validate_boards(many)
+    assert f"between 1 and {engine.BOARD_MAX}" in engine.validate_boards(many)
     tiles = [{"type": "pet"} for _ in range(engine.BOARD_TILES_MAX + 1)]
     assert "at most" in engine.validate_boards([board(tiles=tiles)])
 
@@ -87,7 +87,7 @@ def test_tile_options_are_checked():
     ok = engine.validate_boards
     assert "format" in ok([board(tiles=[{"type": "clock", "options": {"format": "5h"}}])])
     assert "count" in ok([board(tiles=[{"type": "coming_up", "options": {"count": 99}}])])
-    assert "at most" in ok([board(tiles=[{"type": "note", "options": {"text": "x" * 301}}])])
+    assert "up to 300 characters" in ok([board(tiles=[{"type": "note", "options": {"text": "x" * 301}}])])
 
 
 def test_entity_tiles_need_the_right_kind_of_entity():

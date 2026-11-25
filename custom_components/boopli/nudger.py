@@ -545,7 +545,7 @@ class BoopliNudger:
         sounds = self.manager.settings.sounds if sounds is None else sounds
         extra = engine.find_sound(sounds, level)
         if extra is None and level not in engine.SPEAKER_LEVELS and level != engine.SPEAKER_SPEECH_CHIME:
-            return {"ok": False, "note": "Unknown speaker level."}
+            return {"ok": False, "note": "Choose which speaker sound to test."}
         if not self._speaker_available(speaker.entity_id):
             return {"ok": False, "note": "That speaker is not available right now."}
         if level == engine.SPEAKER_ALARM:

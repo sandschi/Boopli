@@ -1046,7 +1046,10 @@ export class BoopliWizard extends LitElement {
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
           label: l.name,
-          text: `${l.id.startsWith("standard_") ? "" : t("wizard.your_own_ladder")}${t("wizard.ladder_nudges_sentence", { count: l.rungs.length })}`,
+          text: html`
+            ${l.id.startsWith("standard_") ? nothing : html`<span class="sequence-type">${t("wizard.your_own_ladder").trimEnd()}</span>`}
+            <span>${t("wizard.ladder_nudges_sentence", { count: l.rungs.length })}</span>
+          `,
         })),
       ].map(
         (s) => html`<label class="inline option">
@@ -1866,6 +1869,9 @@ export class BoopliWizard extends LitElement {
         border-radius: 12px;
         margin: 6px 0;
         max-width: 760px;
+      }
+      .sequence-type {
+        margin-inline-end: 0.15em;
       }
       label.card-choice {
         margin: 0;

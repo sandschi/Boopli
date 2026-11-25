@@ -835,7 +835,7 @@ def award_egg(progress: Progress, now: datetime, tz: tzinfo) -> Award:
 def validate_trigger(t: Trigger) -> str | None:
     """Return an error message, or None when the trigger is valid."""
     if t.kind not in TRIGGER_KINDS:
-        return "Unknown way to finish by itself."
+        return "Choose a supported condition type."
     if t.kind == TRIGGER_TAG:
         return None if t.tag_id else "Pick an NFC tag."
     domain, _, name = t.entity_id.partition(".")
@@ -846,13 +846,13 @@ def validate_trigger(t: Trigger) -> str | None:
     if t.mode not in MODE_VALUES:
         return "Unknown mode."
     if not t.state and t.above is None and t.below is None:
-        return "Say which state, or which number, finishes the step."
+        return "Enter a state or a number limit for this condition."
     if t.state and (t.above is not None or t.below is not None):
         return "Use either a state or a number, not both."
     if t.above is not None and t.below is not None and t.above >= t.below:
-        return "'Above' must be lower than 'below'."
+        return "For a range, set “Above” to the lower number and “Below” to the higher number."
     if not 0 <= t.for_minutes <= FOR_MINUTES_MAX:
-        return "'For' must be between 0 minutes and 24 hours."
+        return "Enter how long the condition must stay true, from 0 minutes to 24 hours."
     return None
 
 
@@ -877,7 +877,7 @@ def validate_picture(image: str) -> str | None:
     if not image:
         return None
     if len(image) > PICTURE_MAX:
-        return Msg("A picture name can have at most {picture_max} letters.", picture_max=PICTURE_MAX)
+        return Msg("An image file path can have up to {picture_max} characters.", picture_max=PICTURE_MAX)
     if is_camera(image):
         return None
     if (
@@ -885,7 +885,7 @@ def validate_picture(image: str) -> str | None:
         or not _PICTURE_FILE_RE.match(image)
         or not image.lower().endswith(PICTURE_EXTENSIONS)
     ):
-        return "A picture is a camera, or a .jpg, .png or .gif file in the media folder."
+        return "Choose a camera or a JPEG (.jpg or .jpeg), PNG or GIF file in the media folder."
     return None
 
 
@@ -917,7 +917,7 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
         if not question.text:
             return "Every question needs some text."
         if len(question.text) > QUESTION_MAX:
-            return Msg("A question can have at most {question_max} letters.", question_max=QUESTION_MAX)
+            return Msg("A question can have up to {question_max} characters.", question_max=QUESTION_MAX)
         if question.id in question_ids:
             return "Two questions have the same id."
         question_ids.add(question.id)
@@ -938,15 +938,15 @@ def validate_chore(chore: Chore, ladder_ids: Iterable[str] = ()) -> str | None:
         if step.size not in SIZE_VALUES:
             return "A step is small, medium or big."
         if len(step.title) > STEP_TITLE_MAX:
-            return Msg("A step title can have at most {step_title_max} letters.", step_title_max=STEP_TITLE_MAX)
+            return Msg("A step title can have up to {step_title_max} characters.", step_title_max=STEP_TITLE_MAX)
         if len(step.wait_for) > MAX_TRIGGERS:
-            return Msg("A step can wait for at most {max_triggers} things.", max_triggers=MAX_TRIGGERS)
+            return Msg("A step can have up to {max_triggers} wait conditions.", max_triggers=MAX_TRIGGERS)
         for trigger in step.wait_for:
             error = validate_trigger(trigger)
             if error:
                 return Msg("Step '{title}' (wait until): {error}", title=step.title, error=as_msg(error))
         if len(step.triggers) > MAX_TRIGGERS:
-            return Msg("A step can have at most {max_triggers} ways to finish by itself.", max_triggers=MAX_TRIGGERS)
+            return Msg("A step can have up to {max_triggers} conditions for finishing automatically.", max_triggers=MAX_TRIGGERS)
         for trigger in step.triggers:
             error = validate_trigger(trigger)
             if error:
@@ -984,7 +984,7 @@ def validate_repeat(rep: Repeat) -> str | None:
         if not _time_ok(rep.time):
             return "The time must look like 09:30."
         if not 1 <= rep.every_n_days <= 365:
-            return "Repeat every N days needs N between 1 and 365."
+            return "Enter 1 to 365 days after the chore is finished."
     if rep.type == REPEAT_SCHEDULE:
         if not rep.days:
             return "Pick at least one day and a time."
@@ -2427,19 +2427,19 @@ def default_board() -> Board:
 def validate_boards(boards: list[Board]) -> str | None:
     """Check the boards: how many, the names, the tiles, their sizes and their options."""
     if not 1 <= len(boards) <= BOARD_MAX:
-        return Msg("You need 1 to {board_max} boards.", board_max=BOARD_MAX)
+        return Msg("Keep between 1 and {board_max} wall boards.", board_max=BOARD_MAX)
     ids: set[str] = set()
     names: set[str] = set()
     for board in boards:
         if board.id in ids:
-            return "Two boards have the same id."
+            return "Two wall boards have the same ID."
         ids.add(board.id)
         if not board.name:
-            return "Every board needs a name."
+            return "Give each wall board a name."
         if len(board.name) > BOARD_NAME_MAX:
-            return Msg("A board name can have at most {board_name_max} letters.", board_name_max=BOARD_NAME_MAX)
+            return Msg("A wall board name can have up to {board_name_max} characters.", board_name_max=BOARD_NAME_MAX)
         if board.name.casefold() in names:
-            return Msg("There are two boards called '{name}'.", name=board.name)
+            return Msg("Two wall boards are named “{name}.” Give them different names.", name=board.name)
         names.add(board.name.casefold())
         if not BOARD_COLUMNS_MIN <= board.columns <= BOARD_COLUMNS_MAX:
             return Msg("'{name}': the columns must be {board_columns_min} to {board_columns_max}.", name=board.name, board_columns_min=BOARD_COLUMNS_MIN, board_columns_max=BOARD_COLUMNS_MAX)
@@ -2470,7 +2470,7 @@ def validate_boards(boards: list[Board]) -> str | None:
                 if kind == "int" and not extra[0] <= value <= extra[1]:
                     return Msg("'{name}': a {type} tile's {key} must be {extra} to {extra2}.", name=board.name, type=tile.type, key=key, extra=extra[0], extra2=extra[1])
                 if kind == "text" and len(value) > extra:
-                    return Msg("'{name}': a {type} tile's {key} can have at most {extra} letters.", name=board.name, type=tile.type, key=key, extra=extra)
+                    return Msg("On “{name},” the {key} field for this tile (type: {type}) can have up to {extra} characters.", name=board.name, type=tile.type, key=key, extra=extra)
                 if kind == "entity":
                     domain, _, rest = value.partition(".")
                     if tile.type != "entity" and not value:
@@ -2637,7 +2637,7 @@ def validate_sounds(sounds: list[ExtraSound]) -> str | None:
         if not sound.name:
             return "Every sound needs a name."
         if len(sound.name) > EXTRA_SOUND_NAME_MAX:
-            return Msg("A sound name can have at most {extra_sound_name_max} letters.", extra_sound_name_max=EXTRA_SOUND_NAME_MAX)
+            return Msg("A sound name can have up to {extra_sound_name_max} characters.", extra_sound_name_max=EXTRA_SOUND_NAME_MAX)
         if sound.id in ids or sound.name.casefold() in names:
             return Msg("There are two sounds called '{name}'.", name=sound.name)
         ids.add(sound.id)
@@ -2654,7 +2654,7 @@ def validate_speaker_test(speaker: SpeakerCfg, level: str, sounds: list[ExtraSou
     if find_sound(sounds or [], level) is not None:
         return _validate_speaker(speaker)  # one of your own sounds
     if level not in SPEAKER_LEVELS and level != SPEAKER_SPEECH_CHIME:
-        return "Unknown speaker level."
+        return "Choose which speaker sound to test."
     probe = speaker
     if level in (SPEAKER_CUE, SPEAKER_ALARM) and not (speaker.cue if level == SPEAKER_CUE else speaker.alarm).sound:
         return Msg("Choose the {level} sound for {entity_id} first.", level=level, entity_id=speaker.entity_id)  # saving without one is fine; testing it is not
@@ -2728,22 +2728,22 @@ def validate_settings(settings: Settings) -> str | None:
     if not 5 <= settings.check_in_minutes <= 720:
         return "The check-in after \"On it\" must be between 5 minutes and 12 hours."
     if settings.ai.entity_id and not settings.ai.entity_id.startswith("ai_task."):
-        return "Pick an AI task agent, or leave it empty for the default."
+        return "Choose an AI Task agent, or keep the Home Assistant default."
     if settings.ai.photo_entity_id and not settings.ai.photo_entity_id.startswith("ai_task."):
-        return "Pick an AI task agent for photos, or leave it empty to use the same agent."
+        return "Choose an AI Task agent for photos, or select “The same agent as above.”"
     if (
         len(settings.ai.questions_prompt) > AI_PROMPT_MAX
         or len(settings.ai.steps_prompt) > AI_PROMPT_MAX
         or len(settings.ai.chat_room_prompt) > AI_PROMPT_MAX
         or len(settings.ai.chat_home_prompt) > AI_PROMPT_MAX
     ):
-        return Msg("A prompt can have at most {ai_prompt_max} letters.", ai_prompt_max=AI_PROMPT_MAX)
+        return Msg("A prompt can have up to {ai_prompt_max} characters.", ai_prompt_max=AI_PROMPT_MAX)
     if len(settings.pet_name) > PET_NAME_MAX:
-        return Msg("The pet's name can have at most {pet_name_max} letters.", pet_name_max=PET_NAME_MAX)
+        return Msg("Your pet’s name can have up to {pet_name_max} characters.", pet_name_max=PET_NAME_MAX)
     if settings.pet_kind not in PET_KINDS:
         return "Pick a pet from the list."
     if settings.accent and not ACCENT_RE.fullmatch(settings.accent):
-        return "The accent colour must look like #1A2B3C."
+        return "Enter a color code like #1A2B3C."
     error = validate_sounds(settings.sounds) or validate_ladders(settings.ladders) or validate_boards(settings.boards)
     if error:
         return error
@@ -2759,19 +2759,19 @@ def _speaker_choice_known(choice: str) -> bool:
 def validate_ladders(ladders: list[Ladder]) -> str | None:
     """Check "Nudge it your way": names, the number of nudges, the waits and the device levels."""
     if len(ladders) > LADDER_MAX:
-        return Msg("You can have at most {ladder_max} ladders.", ladder_max=LADDER_MAX)
+        return Msg("You can have up to {ladder_max} nudge sequences.", ladder_max=LADDER_MAX)
     ids: set[str] = set()
     names: set[str] = set()
     for ladder in ladders:
         if ladder.id in ids:
-            return "Two ladders have the same id."
+            return "Two nudge sequences have the same ID."
         ids.add(ladder.id)
         if not ladder.name:
-            return "Every ladder needs a name."
+            return "Give each nudge sequence a name."
         if len(ladder.name) > LADDER_NAME_MAX:
-            return Msg("A ladder name can have at most {ladder_name_max} letters.", ladder_name_max=LADDER_NAME_MAX)
+            return Msg("A nudge sequence name can have up to {ladder_name_max} characters.", ladder_name_max=LADDER_NAME_MAX)
         if ladder.name.casefold() in names:
-            return Msg("There are two ladders called '{name}'.", name=ladder.name)
+            return Msg("Two nudge sequences are named “{name}.” Give them different names.", name=ladder.name)
         names.add(ladder.name.casefold())
         if not 1 <= len(ladder.rungs) <= LADDER_MAX_NUDGES:
             return Msg("'{name}' needs 1 to {ladder_max_nudges} nudges.", name=ladder.name, ladder_max_nudges=LADDER_MAX_NUDGES)
@@ -3464,7 +3464,7 @@ def check_backup_selection(
             users = chores_using(ladder.id, chores)
             if users:
                 return (
-                    Msg("The ladder '{name}' is used by {users}, and it is not in the file. Import the chores as well, or pick another nudge style for them first.", name=ladder.name, users=', '.join(users))
+                    Msg("The backup is missing the nudge sequence “{name},” which {users} use. Import the chores too, or choose another nudge style for them first.", name=ladder.name, users=', '.join(users))
                 )
     return None
 

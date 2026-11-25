@@ -1,0 +1,116 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer Boopli",
+        "description": "Boopli t’aide à découper tes tâches en petites étapes et t’envoie des rappels sur ton téléphone, avec tes lampes ou sur tes enceintes. Si tu choisis un service d’IA dans le cloud, les informations que tu partages lui sont envoyées."
+      }
+    }
+  },
+  "selector": {
+    "where": {
+      "options": {
+        "home": "Chez moi uniquement",
+        "anywhere": "N’importe où"
+      }
+    }
+  },
+  "services": {
+    "add_task": {
+      "name": "Ajouter une tâche",
+      "description": "Crée une tâche ponctuelle et la lance tout de suite. Elle disparaît une fois terminée.",
+      "fields": {
+        "title": {
+          "name": "Titre",
+          "description": "Qu’est-ce que tu veux faire ?"
+        },
+        "steps": {
+          "name": "Étapes",
+          "description": "Tu peux découper la tâche en petites étapes. Si tu laisses ce champ vide, Boopli crée une seule étape qui porte le titre de la tâche."
+        },
+        "where": {
+          "name": "Où ?",
+          "description": "Choisis où tu peux faire cette tâche."
+        }
+      }
+    },
+    "start_chore": {
+      "name": "Lancer une tâche",
+      "description": "Démarre une tâche tout de suite, par exemple une lessive que tu lances à la demande.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "complete_step": {
+      "name": "Terminer une étape",
+      "description": "Marque comme terminée l’étape de la tâche qui t’attend.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "snooze_step": {
+      "name": "Reporter une étape",
+      "description": "Reporte le prochain rappel pour l’étape de la tâche qui t’attend. L’étape reste à faire.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "step_on_it": {
+      "name": "Je m’y mets",
+      "description": "Met les rappels en pause pour l’étape en cours. Une fois le délai prévu écoulé, Boopli peut te demander où tu en es par une notification sur ton téléphone, si les rappels sont autorisés.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "step_not_on_it": {
+      "name": "Reprendre les rappels",
+      "description": "Annule « Je m’y mets ». Boopli reprend les rappels pour l’étape en cours.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "delete_chore": {
+      "name": "Supprimer une tâche",
+      "description": "Supprime la tâche et arrête tout ce qui est en cours pour cette tâche.",
+      "fields": {
+        "chore": {
+          "name": "Tâche",
+          "description": "Le nom ou l’ID de la tâche."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Configurer le mode absence",
+      "description": "Met les tâches planifiées et les rappels en pause. Les tâches pour lesquelles tu as activé « Continuer pendant mon absence (par exemple pour les médicaments) » continuent.",
+      "fields": {
+        "start": {
+          "name": "Début de l’absence",
+          "description": "Date et heure de début du mode absence dans ton fuseau horaire, par exemple 2026-11-28 08:00. Laisse ce champ vide pour l’activer maintenant."
+        },
+        "until": {
+          "name": "Fin de l’absence",
+          "description": "Date et heure dans ton fuseau horaire auxquelles le mode absence s’arrête tout seul. Laisse ce champ vide si tu veux le désactiver toi-même."
+        }
+      }
+    },
+    "end_away": {
+      "name": "Désactiver le mode absence",
+      "description": "Désactive le mode absence. Tu reçois à nouveau des rappels pour les tâches en pause, une tâche à la fois."
+    }
+  }
+}

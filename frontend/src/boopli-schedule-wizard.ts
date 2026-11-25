@@ -259,7 +259,9 @@ export class BoopliScheduleWizard extends LitElement {
         ? html`<p class="muted">${t("schedule_wizard.nothing_is_scheduled")}</p>`
         : html`<ul>${times.map((t) => html`<li>${describeWhen(t, now, this.timeZone)}</li>`)}</ul>`}
       ${d.type === "every_n_days"
-        ? html`<p class="muted small">${t("schedule_wizard.after_that_days_after_you_finish", { every_n_days: d.every_n_days, time: d.time })}</p>`
+        ? html`<p class="muted small">${t("schedule_wizard.after_that_days_after_you_finish", {
+            count: d.every_n_days, every_n_days: d.every_n_days, time: d.time,
+          })}</p>`
         : nothing}
     `;
   }

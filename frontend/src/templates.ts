@@ -1,5 +1,5 @@
 import type { ChoreDraft } from "./types";
-import { inEnglish, t } from "./i18n";
+import { inEveryLanguage, t } from "./i18n";
 
 /** Starter chores the user can pick and edit. */
 export interface Template {
@@ -9,15 +9,15 @@ export interface Template {
 
 /**
  * Whether a starter is already among the chores. A starter added while the panel was in another
- * language (or in English) has that language's name, so the name in English counts too.
+ * language (or in English) has that language's name, so its name in every language counts too.
  */
 export function starterNamesTaken(existing: string[]): (starterName: string) => boolean {
   const have = new Set(existing);
   const now = TEMPLATES().map((tpl) => tpl.draft.name);
-  const english = inEnglish(() => TEMPLATES().map((tpl) => tpl.draft.name));
+  const everyLanguage = inEveryLanguage(() => TEMPLATES().map((tpl) => tpl.draft.name));
   return (name) => {
     const at = now.indexOf(name);
-    return have.has(name) || (at >= 0 && have.has(english[at]));
+    return have.has(name) || (at >= 0 && everyLanguage.some((names) => have.has(names[at])));
   };
 }
 
