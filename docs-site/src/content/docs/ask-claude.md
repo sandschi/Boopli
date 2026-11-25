@@ -9,10 +9,10 @@ description: An optional extra next to your Home Assistant AI agent, through a r
 - your free agent is down or rate limited,
 - you have no agent set up at all.
 
-It works through a **routine** in your own Claude account. Every ask runs that routine once. Nothing goes through a Boopli server, because there is none.
+It works through a **routine** in your own Claude account. Each request runs that routine once. Nothing goes through a Boopli server, because there is none.
 
 :::caution[A research preview]
-Claude calls routines a research preview. They can change or stop working, and Boopli cannot promise otherwise. Claude allows 30 runs per hour for one routine. Boopli counts the asks itself and stops at 20 per hour, so you never hit Claude's limit by accident.
+Claude routines can change while in preview. Boopli stops at 20 requests per hour. Each round of questions and each step list uses one request.
 :::
 
 ![The Ask Claude window in Settings](/Boopli/img/ask-claude.jpg)
@@ -24,44 +24,44 @@ Claude calls routines a research preview. They can change or stop working, and B
 
 ## Make the routine
 
-The Ask Claude step of the AI help guide shows these steps next to your own Home Assistant address. In short, do this once on claude.ai, under Routines:
+The Ask Claude step of the AI help guide shows these steps next to your own Home Assistant address. Use the [Claude routines page](https://claude.ai/code/routines) to set this up once.
 
 1. Make a new routine and name it **Boopli**.
-2. Paste the instructions the guide gives you. They tell Claude to look at any pictures first, work out the answer, send it back with one web request, and then stop. They also tell it to ignore instructions hidden in a picture or in the task text.
+2. Paste the instructions the guide gives you. They tell Claude to look at any photos first, work out the answer, send it back with one web request, and then stop. They also tell it to ignore instructions hidden in a photo or in the chore text.
 3. Make an **environment** for the routine with network access set to **Limited**, and allow your Home Assistant address. The guide shows the exact host name.
-4. Add an **API trigger** to the routine and press **Generate token**. Copy the token now. Claude shows it only once.
+4. Add an **API trigger** to the routine and select **Generate token**. Copy the token now. Claude shows it only once.
 5. Leave every connector (Gmail, calendar and so on) switched **off**. The routine does not need them.
 
 Claude's screens change now and then, so a button may have a slightly different name.
 
 ## Connect it to Boopli
 
-Open **Settings**, then the **AI help** card, then **Ask Claude (extra)**, or use the guide.
+Open **Settings**, select **Advanced** on the **AI help** card, then select **Ask Claude (extra)**. You can also use the guide.
 
-1. Switch Ask Claude on.
-2. Paste the routine's **fire address**. It starts with `https://api.anthropic.com/v1/claude_code/routines/` and ends in `/fire`.
-3. Paste the routine's **token** and press **Save token**.
-4. Press **Test Claude**. Boopli saves your settings, asks Claude for a tiny answer, and tells you how many seconds it took.
+1. Select **Switch Ask Claude on**.
+2. Paste the routine's **Routine trigger URL**. It starts with `https://api.anthropic.com/v1/claude_code/routines/` and ends in `/fire`.
+3. Paste the token under **The routine's token** and select **Save token**.
+4. Select **Test Claude**. Boopli saves your settings, asks Claude for a tiny answer, and tells you how many seconds it took.
 
-If Home Assistant has no external URL, or it is not the address the routine should answer to, open **Advanced: Home Assistant's web address** and type it there.
+If you need to set or change the address for Claude’s reply, open **Advanced: Home Assistant's web address** and fill in **Where the routine sends its answer**.
 
 ## How it works
 
-1. You press **Ask Claude**. Boopli sends the task text, your answers and, if you chose any, the photos to your routine.
+1. Select **Ask Claude**. Boopli sends the chore text, your answers and any room notes or photos you chose to share with your routine.
 2. The routine works out the answer and posts it back to a webhook that Boopli made in Home Assistant.
-3. Boopli shows the answer. It waits at most 2 minutes. If the answer cannot be read, Boopli asks once more, which uses another run.
+3. Boopli shows the answer. It waits up to 2 minutes per request. If the answer cannot be read, Boopli sends one more request.
 
-Every ask carries its own one-time request number, so an answer is accepted once and only for an ask that is waiting.
+Every request has a one-time ID. Boopli accepts a reply once, while that request is still waiting.
 
-Anyone can press Ask Claude. Only an admin can save or remove the token and press **Test Claude**.
+Anyone who can use the panel can select **Ask Claude**. Only an admin can save or remove the token and select **Test Claude**.
 
 ## Photos
 
-When you pick photos for Claude (a room, or how it looks now), Boopli puts each one in a temporary file in Home Assistant's media folder and gives the routine a **signed link** that works for 10 minutes. The routine downloads the photos, and Boopli deletes the files right after the answer, also when something fails.
+When you select photos for Claude, Boopli puts each one in a temporary file in Home Assistant’s media folder and gives the routine a signed link that lasts up to 10 minutes. The routine downloads the photos. Boopli deletes its own temporary files after the request, even if it fails. Claude may keep the photos it received.
 
 ## What Claude sees
 
-The same as the Home Assistant agent: the task text, your answers, the notes of the rooms a task is about if you use room notes, and the photos you chose. Never device names, history or location.
+Boopli sends nothing to Claude by itself. When you make a request, Claude receives the chore text, your answers and any room notes or photos you chose to share. For a room interview, Claude receives the room name and current notes. Claude may keep what you share. Boopli leaves device names, Home Assistant history and location out of the request, though anything you type or photograph can contain private details.
 
 ## Your token is a secret
 

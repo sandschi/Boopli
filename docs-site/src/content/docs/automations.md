@@ -9,13 +9,13 @@ Boopli gives your own automations, scripts and voice assistants three things to 
 
 | Service | What it does |
 |---|---|
-| `boopli.break_down` | Splits a task into small steps with your AI agent and returns them (needs AI help switched on). Fields: `task`, and optionally `kind` (`now` or `recurring`), `answers`, `notes` and `rooms`. Without `rooms`, the rooms are guessed from the task, like in the panel. |
-| `boopli.add_task` | Creates a one-off task (optionally with steps) and starts it. It disappears when done. |
+| `boopli.break_down` | Splits a chore into small steps with your AI agent and returns them (needs AI help switched on). Fields: `task`, and optionally `kind` (`now` or `recurring`), `answers`, `notes` and `rooms`. Without `rooms`, the rooms are guessed from the chore, like in the panel. |
+| `boopli.add_task` | Creates a one-off chore (optionally with steps) and starts it. It disappears when done. |
 | `boopli.start_chore` | Starts a chore now, by name or id. |
 | `boopli.complete_step` | Marks the step that is waiting for you in a chore as done. |
 | `boopli.snooze_step` | Snoozes the step that is waiting for you in a chore. |
 | `boopli.step_on_it` | Tells Boopli you are working on the waiting step of a chore ("On it"). |
-| `boopli.step_not_on_it` | Takes "On it" back. |
+| `boopli.step_not_on_it` | Resumes nudges after "On it". |
 | `boopli.delete_chore` | Deletes a chore and anything in progress. |
 | `boopli.set_away` | Turns [Away mode](/Boopli/away-mode/) on. Optional `start` and `until`, for example `2026-11-28 08:00`. |
 | `boopli.end_away` | Turns Away mode off. |
@@ -31,7 +31,7 @@ These fire on the Home Assistant event bus, so an automation can trigger on them
 | `boopli_chore_started` | A chore started. |
 | `boopli_questions_answered` | You answered the questions of a chore before it started. |
 | `boopli_step_active` | A step became your turn. |
-| `boopli_step_on_it` | You pressed **On it** on a step. |
+| `boopli_step_on_it` | You selected **On it** on a step. |
 | `boopli_step_done` | A step is done. `by` says `manual` or `auto`, and `reason` says what happened. |
 | `boopli_chore_done` | All steps of a chore are done. |
 | `boopli_nudge_sent` | Boopli nudged you. |

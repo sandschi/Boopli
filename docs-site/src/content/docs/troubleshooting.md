@@ -6,9 +6,9 @@ description: What to check when something does not work.
 ## Nothing nudges me
 
 - Check **Quiet hours** in Settings. Every weekday has its own times.
-- Check **Away mode**. While it is on, nothing nudges you.
-- Press **Test** next to the light, speaker, alarm device or phone in Settings. A test that works shows the channel is fine, and the problem is in the nudge style or ladder.
-- A chore with the style **Quiet** only shows in Boopli.
+- Check **Away mode**. While it is on, only chores set to keep going can nudge you.
+- Select **Test** next to the light, speaker, alarm device or phone in Settings. A test that works shows the channel is fine, and the problem is in the nudge style or nudge sequence.
+- A chore with the style **No nudges** only shows in Boopli.
 - If you set up your phone, check that the Home Assistant app on it allows notifications.
 
 ## A light does something strange
@@ -17,24 +17,24 @@ Boopli does not use a light's built-in flash, because some lights say they suppo
 
 ## The AI agent gives no answer or a strange one
 
-- Press **Test the agent** on the AI help card. Boopli shows the agent's own reason when it fails: an empty account, a model that is gone, a timeout.
+- Open **Advanced** on the **AI help** card and select **Test the AI agent**. Boopli shows the agent's own reason when it fails: an empty account, a model that is gone, a timeout.
 - Waiting for the agent takes at most 3 minutes. **Stop waiting** keeps everything you typed.
-- For photos you need an agent that can read images. Under **Advanced** on the AI help card you can choose a different agent for photos.
+- For photos you need an agent that can read images. In the **AI help** card’s **Advanced** window, open **Advanced: AI agent for photos and prompts** to select a different **AI agent for photos**.
 - Free models sometimes answer in a strange shape. Boopli rescues broken steps where it can, and **Try again** asks once more.
 
 ## Ask Claude does not work
 
 | Boopli says | What to do |
 |---|---|
-| Claude refused the token. | Make a new token for the routine on claude.ai, paste it in Boopli and try again. |
-| Claude does not know that routine. | Check the fire address. It must end in `/fire`. |
-| Claude says you asked too often. | Wait a while. Claude allows 30 runs per hour for one routine. |
-| Claude did not accept the request. | Check that the routine is switched on. |
-| Claude is having trouble right now. | Try again in a few minutes. |
-| Boopli could not reach Claude. | Check the internet connection of Home Assistant. |
-| Claude did not send an answer within 2 minutes. | Usually the routine could not reach Home Assistant. See below. |
-| Home Assistant has no web address that Claude can reach. | Set the external URL in Home Assistant, or fill in the address under **Advanced** in Ask Claude. |
-| You have used all your asks this hour. | Boopli stops at 20 asks per hour on purpose. Wait. |
+| Claude refused the token. Make a new token for the routine, paste it in Boopli and try again. | Make the new token on claude.ai. |
+| Claude couldn’t find the routine. Check the routine trigger URL. | Check that the URL ends in `/fire`. |
+| Claude has limited requests for now. Try again in a little while. | Wait before sending another request. |
+| Claude did not accept the request. Check that the routine is switched on. | Open the routine on claude.ai to check. |
+| Claude is having trouble right now. Try again in a few minutes. | Wait before sending another request. |
+| Boopli could not reach Claude. Check the internet connection. | Check the internet connection of Home Assistant. |
+| Boopli stopped waiting for Claude’s reply. Wait limit (minutes): 2. Try again. | Check whether the routine can reach Home Assistant. See below. |
+| Home Assistant has no web address that Claude can reach. Fill in the Home Assistant address under Ask Claude, or set the external URL in Home Assistant. | Set the external URL in Home Assistant, or use **Advanced: Home Assistant's web address** in Ask Claude. |
+| Boopli reached its Claude limit of 20 requests per hour. Time until you can retry (minutes): about 5. | Wait for the number of minutes shown. |
 
 **The routine runs but no answer arrives.** The routine's environment must allow your Home Assistant address (network access **Limited**, with that host allowed). The address must work from the internet, not only at home. Open the run on claude.ai to see what the routine did.
 
@@ -42,7 +42,7 @@ Boopli does not use a light's built-in flash, because some lights say they suppo
 
 ## My settings did not save
 
-Changes in Settings are drafts until you press **Save**. A bar at the bottom lists the cards with unsaved changes. Leaving the page with unsaved edits asks **Save / Discard / Stay**.
+Changes in Settings are drafts until you select **Save**. A bar at the bottom lists the cards with unsaved changes. Leaving the page with unsaved edits offers **Save**, **Discard** and **Stay**.
 
 ## Something else
 
