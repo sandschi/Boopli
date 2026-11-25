@@ -83,7 +83,14 @@
     "steps_count_one": "{count} stap",
     "steps_count_other": "{count} stappen",
     "nudges_count_one": "{count} seintje",
-    "nudges_count_other": "{count} seintjes"
+    "nudges_count_other": "{count} seintjes",
+    "alexa_sound_kind": "Soort geluid",
+    "alexa_sound_which": "Geluid",
+    "alexa_sound_pick_kind": "Kies een soort geluid…",
+    "alexa_sound_own_in_use": "Je eigen ID is in gebruik",
+    "alexa_sound_type_own": "Zelf een ID intypen",
+    "alexa_sound_library_name": "Alexa-geluidsbibliotheek",
+    "alexa_sound_library_hint": "Dit zijn de geluiden uit de {library} die op Alexa-speakers afspelen. Kies Testen om te controleren of je speaker het gekozen geluid kan afspelen."
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "De Afwezigheidsmodus pauzeert taken en seintjes, behalve voor de taken die je hieronder kiest. Je huisdier rust tot je terug bent.",
@@ -672,7 +679,6 @@
     "the_home_assistant_default_agent": "Standaardagent van Home Assistant"
   },
   "speakers": {
-    "alexa_sound_library": "Alexa-geluidsbibliotheek",
     "what_kind_of_speaker": "Soort luidspreker",
     "no_alexa_devices_entities_found_is": "Boopli vindt geen entiteiten van Alexa Devices. Heb je de integratie geïnstalleerd?",
     "you_have_no_such_speaker_yet": "Je hebt nog geen luidspreker van dit type ingesteld.",
@@ -721,8 +727,7 @@
     "remove_alarm_device": "Alarmapparaat {device} verwijderen",
     "sound": "Geluid {n}",
     "file": "Bestand · {sound}",
-    "no_device_chosen_yet": "nog geen apparaat gekozen",
-    "sound_library_hint": "Kies een geluids-ID uit de {library}, bijvoorbeeld <code>amzn_sfx_doorbell_chime_01</code>. Kies “Testen” om te kijken of je luidspreker het kan afspelen."
+    "no_device_chosen_yet": "nog geen apparaat gekozen"
   },
   "stage": {
     "your_pets_room": "Kamer van je huisdier"
@@ -934,7 +939,6 @@
     "skip": "Overslaan",
     "which_speaker_do_you_want_to": "Welke luidspreker wil je instellen? Je kunt er daarna meer toevoegen.",
     "pick_a_speaker_first_press_back": "Kies “Terug” en kies daar eerst een luidspreker.",
-    "amazon_sound_library": "Geluidsbibliotheek van Amazon",
     "the_speaker_says_the_step_out": "De luidspreker leest de stap voor, bijvoorbeeld “Vaatwasser: uitruimen”.",
     "add_another_speaker": "Nog een luidspreker toevoegen",
     "optional_a_siren_switch_or_script": "Je kunt een sirene, schakelaar of script kiezen voor het alarm. Boopli zet het alarm uit zodra de tijd om is of je antwoordt.",
@@ -1061,7 +1065,6 @@
     "which_phone_should_get_booplis_notifications": "Op welke telefoon wil je meldingen van Boopli krijgen? Met <b>{item}</b> en <b>{item2}</b> kun je meteen reageren zonder iets te openen.",
     "which_lights_should_remind_you_each": "Kies de lampen die je wilt gebruiken. <b>{item}</b> laat de lamp kort knipperen als een stap aan de beurt is. <b>{item2}</b> blijft aan tot je klaar bent met de stap. Je kunt dit overslaan.",
     "set_up": "<br />Ingesteld: {speaker}",
-    "amazon_sound_hint": "Kopieer een geluids-ID uit de {library}. De ID begint met <code>amzn_sfx_</code>, bijvoorbeeld <code>amzn_sfx_doorbell_chime_01</code>. Kies “Testen” om te kijken of je luidspreker het kan afspelen.",
     "for_example_boopli_ding_mp3_in": "Bijvoorbeeld <code>boopli/ding.mp3</code> in de mediamap van Home Assistant.",
     "joins_the_standard_nudges_one_nudge": "{name} doet mee in de standaardreeksen (Eén seintje, Steeds duidelijker, Blijft terugkomen). Zoals altijd komt eerst het korte geluid, dan de voorgelezen zin en dan het alarm. Onder <b>{item}</b> in Instellingen kies je vanaf welk seintje de luidspreker meedoet.",
     "boopli_can_split_a_big_task": "Boopli kan een grote taak opdelen in kleine stapjes. Boopli stelt je eerst een paar vragen. AI-agent: <b>{item}</b>.",

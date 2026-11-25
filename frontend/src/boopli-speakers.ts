@@ -1,9 +1,10 @@
 import { LitElement, html, css, nothing, type TemplateResult } from "lit";
 import { errorMessage, testAlarmDevice, testNote, testSpeaker } from "./api";
+import { alexaSoundPicker } from "./alexa-sound-picker";
 import { newLadderId } from "./helpers";
 import { icon } from "./icon";
 import { sharedStyles } from "./styles";
-import { t, rich } from "./i18n";
+import { t } from "./i18n";
 import type {
   AlarmDeviceCfg,
   ExtraSound,
@@ -19,8 +20,6 @@ import type {
 
 const ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01";
 const ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01";
-const SOUND_LIBRARY_URL =
-  "https://developer.amazon.com/en-US/docs/alexa/custom-skills/ask-soundlibrary.html";
 const ALARM_DOMAINS = ["siren", "switch", "input_boolean", "script"];
 
 const SOUND_KINDS = (): { value: SoundKind; label: string }[] => [
@@ -260,7 +259,7 @@ export class BoopliSpeakers extends LitElement {
   }
 
   /** The two fields that choose a sound: its type and its id (or file). */
-  private _soundFields(kind: SoundKind, sound: string, example: string, onKind: (k: SoundKind) => void, onSound: (s: string) => void) {
+  private _soundFields(kind: SoundKind, sound: string, example: string, onKind: (k: SoundKind) => void, onSound: (s: string) => void, test?: { run: () => void; note?: string }) {
     return html`
       <label class="num wide">
         ${t("common.sound_type")}
@@ -268,20 +267,12 @@ export class BoopliSpeakers extends LitElement {
           ${SOUND_KINDS().map((k) => html`<option value=${k.value} ?selected=${k.value === kind}>${k.label}</option>`)}
         </select>
       </label>
-      <label class="num wide">
-        ${kind === "alexa" ? t("common.alexa_sound_id") : t("speakers.file_for_example_boopli_mp3", { example })}
-        <input
-          type="text"
-          .value=${sound}
-          placeholder=${kind === "alexa" ? "amzn_sfx_…" : `boopli/${example}.mp3`}
-          @change=${(e: Event) => onSound((e.target as HTMLInputElement).value.trim())}
-        />
-      </label>
       ${kind === "alexa"
-        ? html`<div class="muted small libhint">
-            ${rich("speakers.sound_library_hint", { library: html`<a href=${SOUND_LIBRARY_URL} target="_blank" rel="noopener noreferrer">${t("speakers.alexa_sound_library")}</a>` })}
-          </div>`
-        : nothing}
+        ? alexaSoundPicker(sound, onSound, test)
+        : html`<label class="num wide">
+            ${t("speakers.file_for_example_boopli_mp3", { example })}
+            <input type="text" .value=${sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => onSound((e.target as HTMLInputElement).value.trim())} />
+          </label>`}
     `;
   }
 
@@ -444,7 +435,10 @@ export class BoopliSpeakers extends LitElement {
             ? html`<div class="fields">
                 ${this._soundPicker(c, first, (x) => setAll(which, { kind: x.kind, sound: x.sound }))}
                 ${group === "alexa"
-                  ? this._soundFields(c.kind as SoundKind, c.sound, example, (k) => setAll(which, { kind: k }), (s) => setAll(which, { sound: s }))
+                  ? this._soundFields(c.kind as SoundKind, c.sound, example, (k) => setAll(which, { kind: k }), (s) => setAll(which, { sound: s }), {
+                      run: () => void this._test(first, which),
+                      note: this._notes[`speaker:${first.entity_id}:${which}`],
+                    })
                   : html`<label class="num wide">
                       ${t("speakers.file_in_my_media_folder_for_example", { example })}
                       <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
@@ -794,6 +788,15 @@ export class BoopliSpeakers extends LitElement {
         gap: 10px;
         align-items: flex-end;
         padding: 10px 0 4px 30px;
+      }
+      .soundtest,
+      details.soundown {
+        flex-basis: 100%;
+      }
+      .soundtest {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
       label.num {
         display: flex;

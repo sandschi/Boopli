@@ -83,7 +83,14 @@
     "steps_count_one": "{count} Schritt",
     "steps_count_other": "{count} Schritte",
     "nudges_count_one": "{count} Stups",
-    "nudges_count_other": "{count} Stupse"
+    "nudges_count_other": "{count} Stupse",
+    "alexa_sound_kind": "Art des Tons",
+    "alexa_sound_which": "Ton",
+    "alexa_sound_pick_kind": "Wähle eine Art von Ton …",
+    "alexa_sound_own_in_use": "Deine eigene ID ist in Benutzung",
+    "alexa_sound_type_own": "Eine ID selbst eintippen",
+    "alexa_sound_library_name": "Alexa-Tonbibliothek",
+    "alexa_sound_library_hint": "Das sind die Töne aus der {library}, die auf Alexa-Lautsprechern laufen. Wähle „Testen“, um zu prüfen, ob dein Lautsprecher den gewählten Ton abspielen kann."
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Im Abwesenheitsmodus pausieren Aufgaben und Stupse. Unten kannst du auswählen, welche Aufgaben weiterlaufen. Dein Haustier ruht sich aus, bis du wieder da bist.",
@@ -672,7 +679,6 @@
     "the_home_assistant_default_agent": "Standardagent von Home Assistant"
   },
   "speakers": {
-    "alexa_sound_library": "Alexa-Tonbibliothek",
     "what_kind_of_speaker": "Art des Lautsprechers",
     "no_alexa_devices_entities_found_is": "Boopli findet keine Entitäten von Alexa Devices. Ist die Integration installiert?",
     "you_have_no_such_speaker_yet": "Du hast noch keinen Lautsprecher dieser Art eingerichtet.",
@@ -721,8 +727,7 @@
     "remove_alarm_device": "Alarmgerät {device} entfernen",
     "sound": "Ton {n}",
     "file": "Datei: {sound}",
-    "no_device_chosen_yet": "noch kein Gerät ausgewählt",
-    "sound_library_hint": "Wähle eine Ton-ID aus der {library}, zum Beispiel <code>amzn_sfx_doorbell_chime_01</code>. Wähle „Testen“, um zu prüfen, ob dein Lautsprecher den Ton abspielen kann."
+    "no_device_chosen_yet": "noch kein Gerät ausgewählt"
   },
   "stage": {
     "your_pets_room": "Zimmer deines Haustiers"
@@ -934,7 +939,6 @@
     "skip": "Überspringen",
     "which_speaker_do_you_want_to": "Welchen Lautsprecher möchtest du einrichten? Weitere kannst du danach hinzufügen.",
     "pick_a_speaker_first_press_back": "Wähle „Zurück“ und such zuerst einen Lautsprecher aus.",
-    "amazon_sound_library": "Amazon-Tonbibliothek",
     "the_speaker_says_the_step_out": "Der Lautsprecher liest den Schritt vor, zum Beispiel „Geschirrspüler: Ausräumen“.",
     "add_another_speaker": "Weiteren Lautsprecher hinzufügen",
     "optional_a_siren_switch_or_script": "Optional kannst du eine Sirene, einen Schalter oder ein Skript für den Alarm wählen. Boopli schaltet den Alarm aus, wenn die Zeit abläuft oder du antwortest.",
@@ -1061,7 +1065,6 @@
     "which_phone_should_get_booplis_notifications": "Welches Handy soll Booplis Benachrichtigungen bekommen? Mit <b>{item}</b> und <b>{item2}</b> kannst du direkt antworten, ohne etwas zu öffnen.",
     "which_lights_should_remind_you_each": "Wähle die Lampen aus, die du nutzen willst. Im <b>{item}</b> blinkt die Lampe kurz, wenn ein Schritt dran ist. Im <b>{item2}</b> bleibt sie an, bis du den Schritt erledigt hast. Du kannst diesen Teil überspringen.",
     "set_up": "<br />Eingerichtet: {speaker}",
-    "amazon_sound_hint": "Kopiere eine Ton-ID aus der {library}. IDs beginnen mit <code>amzn_sfx_</code>, zum Beispiel <code>amzn_sfx_doorbell_chime_01</code>. Wähle „Testen“, um zu prüfen, ob dein Lautsprecher den Ton abspielen kann.",
     "for_example_boopli_ding_mp3_in": "Zum Beispiel <code>boopli/ding.mp3</code> im Medienordner von Home Assistant.",
     "joins_the_standard_nudges_one_nudge": "{name} macht in den Standardketten mit (Ein Stups, Immer deutlicher, Wiederholt). Wie gewohnt kommt zuerst der kurze Ton, dann der vorgelesene Satz und dann der Alarm. Unter <b>{item}</b> in den Einstellungen kannst du ändern, ab welchem Stups der Lautsprecher mitmacht.",
     "boopli_can_split_a_big_task": "Boopli kann eine große Aufgabe in kleine Schritte teilen. Vorher stellt Boopli dir ein paar Fragen. KI-Agent: <b>{item}</b>.",
