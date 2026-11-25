@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
+import { live } from "lit/directives/live.js";
 import { ALEXA_SOUNDS } from "./alexa-sounds";
 import { t, rich } from "./i18n";
 
@@ -43,15 +44,15 @@ export function alexaSoundPicker(
           if (first) onChange(first.id);
         }}
       >
-        <option value="" ?selected=${!known} ?disabled=${!!known}>${known ? t("common.alexa_sound_pick_kind") : value ? t("common.alexa_sound_own_in_use") : t("common.alexa_sound_pick_kind")}</option>
-        ${[...GROUPS.keys()].map((top) => html`<option value=${top} ?selected=${top === known}>${top}</option>`)}
+        <option value="" .selected=${live(!known)} ?disabled=${!!known}>${known ? t("common.alexa_sound_pick_kind") : value ? t("common.alexa_sound_own_in_use") : t("common.alexa_sound_pick_kind")}</option>
+        ${[...GROUPS.keys()].map((top) => html`<option value=${top} .selected=${live(top === known)}>${top}</option>`)}
       </select>
     </label>
     ${known
       ? html`<label class="num wide">
           ${t("common.alexa_sound_which")}
           <select @change=${(e: Event) => onChange((e.target as HTMLSelectElement).value)}>
-            ${sounds.map((s) => html`<option value=${s.id} ?selected=${s.id === value}>${s.name} · ${s.seconds.toFixed(1)} s</option>`)}
+            ${sounds.map((s) => html`<option value=${s.id} .selected=${live(s.id === value)}>${s.name} · ${s.seconds.toFixed(1)} s</option>`)}
           </select>
         </label>`
       : nothing}

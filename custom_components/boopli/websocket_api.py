@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 
@@ -867,6 +868,7 @@ async def ws_test_channel(
 
 _SOUND_TEST_LOGGER = logging.getLogger(__name__)
 _SOUND_TEST_KEY = "boopli_sound_test"
+_SOUND_TEST_LOCK = asyncio.Lock()
 
 
 @websocket_api.require_admin
@@ -893,14 +895,16 @@ async def ws_sound_test_set(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
 ) -> None:
     """Mark one sound as working, not working, or take the mark back ("")."""
-    store: Store[dict[str, Any]] = Store(hass, 1, _SOUND_TEST_KEY)
-    data = await store.async_load() or {}
-    marks: dict[str, str] = dict(data.get("marks", {}))
-    if msg["mark"]:
-        marks[msg["sound"]] = msg["mark"]
-    else:
-        marks.pop(msg["sound"], None)
-    await store.async_save({"marks": marks})
+    # one lock around load, change and save: two marks set a moment apart must not overwrite each other
+    async with _SOUND_TEST_LOCK:
+        store: Store[dict[str, Any]] = Store(hass, 1, _SOUND_TEST_KEY)
+        data = await store.async_load() or {}
+        marks: dict[str, str] = dict(data.get("marks", {}))
+        if msg["mark"]:
+            marks[msg["sound"]] = msg["mark"]
+        else:
+            marks.pop(msg["sound"], None)
+        await store.async_save({"marks": marks})
     _SOUND_TEST_LOGGER.warning("Boopli sound test: %s = %s", msg["sound"], msg["mark"] or "open")
     connection.send_result(msg["id"])
 
