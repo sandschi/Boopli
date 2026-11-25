@@ -741,7 +741,7 @@
     "sound": "Sound {n}",
     "file": "File: {sound}",
     "no_device_chosen_yet": "no device chosen yet",
-    "alexa_devices_no_amazon_sounds": "This speaker comes from Alexa Devices, which cannot play Amazon sounds. Use a speaker from Alexa Media Player, or a file."
+    "alexa_devices_no_amazon_sounds": "This speaker comes from Alexa Devices, which cannot play Amazon sounds. Use a speaker from Alexa Media Player."
   },
   "stage": {
     "your_pets_room": "Your pet's room"
@@ -1357,7 +1357,7 @@
     "a_wall_board_name_can_have_up_65cb": "A wall board name can have up to {board_name_max} characters.",
     "ai_help_is_switched_off_turn_it_675e": "AI help is switched off. Turn it on in Settings first.",
     "alarm_repeat_must_be_0_to_seconds_3ded": "Alarm repeat must be 0 to {alarm_repeat_max} seconds.",
-    "alexa_devices_cannot_play_amazon_sounds_use_c092": "Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player, or a file.",
+    "alexa_devices_cannot_play_amazon_sounds_use_a1ee": "Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player.",
     "an_alarm_device_must_be_a_siren_81ed": "An alarm device must be a siren, switch, input_boolean or script.",
     "an_alarm_must_last_to_seconds_98c4": "An alarm must last {seconds_min} to {seconds_max} seconds.",
     "an_image_file_path_can_have_up_b43f": "An image file path can have up to {picture_max} characters.",

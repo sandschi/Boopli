@@ -615,7 +615,7 @@ class BoopliNudger:
         if not self._speaker_available(speaker.entity_id):
             return {"ok": False, "note": engine.Msg("That speaker is not available right now.")}
         if self._alexa_sound_blocked(speaker, level, sounds):
-            return {"ok": False, "note": engine.Msg("Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player, or a file.")}
+            return {"ok": False, "note": engine.Msg("Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player.")}
         if level == engine.SPEAKER_ALARM:
             # One play only, so a test never rings for long.
             ok = await self._call(
