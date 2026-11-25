@@ -7,6 +7,8 @@ import {
   saveSettings,
   testAlarmDevice,
   testLight,
+  testNote,
+  type TestResult,
   testPhone,
   testSpeaker,
 } from "./api";
@@ -695,7 +697,7 @@ export class BoopliWizard extends LitElement {
               <option value="" ?selected=${!this._ladderPick}>${t("wizard.pick_a_ladder")}</option>
               ${(this._ladderAction === "delete" ? own : ladders).map(
                 (l) => html`<option value=${l.id} ?selected=${this._ladderPick === l.id}>
-                  ${l.name} (${t("common.nudges_count", { count: l.rungs.length })})
+                  ${ladderName(l)} (${t("common.nudges_count", { count: l.rungs.length })})
                 </option>`
               )}
             </select>
@@ -851,10 +853,10 @@ export class BoopliWizard extends LitElement {
 
   // --- tests -------------------------------------------------------------------
 
-  private async _try(key: string, run: () => Promise<{ note: string }>): Promise<void> {
+  private async _try(key: string, run: () => Promise<TestResult>): Promise<void> {
     this._note(key, t("common.testing"));
     try {
-      this._note(key, (await run()).note);
+      this._note(key, testNote(await run()));
     } catch (err) {
       this._note(key, errorMessage(err));
     }
@@ -1046,7 +1048,7 @@ export class BoopliWizard extends LitElement {
         ...STYLE_CHOICES(),
         ...(d.ladders ?? []).map((l) => ({
           value: `ladder:${l.id}` as NudgeStyle,
-          label: l.name,
+          label: ladderName(l),
           text: html`
             ${l.id.startsWith("standard_") ? nothing : html`<span class="sequence-type">${t("wizard.your_own_ladder").trimEnd()}</span>`}
             <span>${t("wizard.ladder_nudges_sentence", { count: l.rungs.length })}</span>

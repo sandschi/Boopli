@@ -16029,15 +16029,15 @@ function Oo(e, t, n) {
 		count: e.rungs.length
 	}))), d.removed.forEach((e) => i.push(C("diff.nudge_ladder_removed", { name: X(e) }))), d.kept.forEach(({ before: e, after: t }) => {
 		e.name !== t.name && i.push(C("diff.nudge_ladder_renamed", {
-			before: e.name,
-			after: t.name
+			before: X(e),
+			after: X(t)
 		})), JSON.stringify({
 			r: e.rungs,
 			x: e.repeat_last
 		}) !== JSON.stringify({
 			r: t.rungs,
 			x: t.repeat_last
-		}) && i.push(C("diff.nudge_ladder_changed", { name: t.name }));
+		}) && i.push(C("diff.nudge_ladder_changed", { name: X(t) }));
 	});
 	let ee = To(e.lights, t.lights, (e) => e.entity_id);
 	ee.added.forEach((e) => i.push(C("diff.reminder_light_added", {
@@ -20730,7 +20730,7 @@ var As = {
             <select id="ladpick" .value=${this._ladderPick} @change=${(e) => this._ladderPick = e.target.value}>
               <option value="" ?selected=${!this._ladderPick}>${C("wizard.pick_a_ladder")}</option>
               ${(this._ladderAction === "delete" ? r : t).map((e) => h`<option value=${e.id} ?selected=${this._ladderPick === e.id}>
-                  ${e.name} (${C("common.nudges_count", { count: e.rungs.length })})
+                  ${X(e)} (${C("common.nudges_count", { count: e.rungs.length })})
                 </option>`)}
             </select>
           </div>` : v}
@@ -20869,7 +20869,7 @@ var As = {
 	async _try(e, t) {
 		this._note(e, C("common.testing"));
 		try {
-			this._note(e, (await t()).note);
+			this._note(e, an(await t()));
 		} catch (t) {
 			this._note(e, E(t));
 		}
@@ -21053,7 +21053,7 @@ var As = {
       <p>${C("wizard.how_should_new_chores_nudge_you")}</p>
       ${[...Ls(), ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
-			label: e.name,
+			label: X(e),
 			text: h`
             ${e.id.startsWith("standard_") ? v : h`<span class="sequence-type">${C("wizard.your_own_ladder").trimEnd()}</span>`}
             <span>${C("wizard.ladder_nudges_sentence", { count: e.rungs.length })}</span>

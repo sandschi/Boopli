@@ -117,9 +117,9 @@ export function diffSettings(before: Settings, after: Settings, hass?: Hass): st
   ladders.added.forEach((l) => out.push(t("diff.nudge_ladder_added_nudges", { name: ladderName(l), count: l.rungs.length })));
   ladders.removed.forEach((l) => out.push(t("diff.nudge_ladder_removed", { name: ladderName(l) })));
   ladders.kept.forEach(({ before: b, after: a }) => {
-    if (b.name !== a.name) out.push(t("diff.nudge_ladder_renamed", { before: b.name, after: a.name }));
+    if (b.name !== a.name) out.push(t("diff.nudge_ladder_renamed", { before: ladderName(b), after: ladderName(a) }));
     if (JSON.stringify({ r: b.rungs, x: b.repeat_last }) !== JSON.stringify({ r: a.rungs, x: a.repeat_last }))
-      out.push(t("diff.nudge_ladder_changed", { name: a.name }));
+      out.push(t("diff.nudge_ladder_changed", { name: ladderName(a) }));
   });
 
   const lights = byKey(before.lights, after.lights, (l) => l.entity_id);
