@@ -7,7 +7,7 @@ Si quieres una segunda opinión o no tienes un agente, consulta también [Pregun
 
 Boopli puede dividir una tarea grande, como «limpiar mi habitación», en pasos muy pequeños con **tu propio agente de IA de Home Assistant**. Para ello usa la integración Tarea de IA de Home Assistant. La ayuda con IA está desactivada por defecto. En Configuración, abre **Ayuda con IA** y selecciona **Opciones avanzadas** y **Activar la ayuda con IA**. Selecciona tu agente de IA y guarda los cambios. Vuelve a abrir **Opciones avanzadas** en la tarjeta y selecciona **Probar el agente de IA**. También puedes seguir la guía con **Paso a paso**.
 
-![La ventana Ayuda con IA en Configuración](/Boopli/img/ai-help.jpg)
+![La ventana Ayuda con IA en Configuración](/Boopli/img/es/ai-help.jpg)
 
 ### Dos formas de empezar
 

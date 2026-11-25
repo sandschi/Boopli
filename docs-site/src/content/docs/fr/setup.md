@@ -15,7 +15,7 @@ Le panneau est disponible en anglais (en), en allemand (de), en néerlandais (nl
 
 Chaque jour de la semaine a ses propres horaires, ou **Sans limite**. Les jours ne sont pas regroupés en « jours de semaine » et « week-end », car tout le monde n’a pas le même week-end. Sélectionne **Comme lun.** pour copier les horaires du lundi sur le jour suivant.
 
-![La page Paramètres, avec des cartes pour les appareils, les délais et les options en plus. Chacune propose Pas à pas et Avancé.](/Boopli/img/settings.jpg)
+![La page Paramètres, avec des cartes pour les appareils, les délais et les options en plus. Chacune propose Pas à pas et Avancé.](/Boopli/img/fr/settings.jpg)
 
 ## Guides et paramètres avancés
 

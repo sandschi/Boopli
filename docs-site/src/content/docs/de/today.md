@@ -5,9 +5,9 @@ description: Was du unter „Heute“ siehst und was die Schaltflächen tun.
 
 Unter „Heute“ erledigst du deine Aufgaben. Oben siehst du dein Haustier in seinem Zimmer. Darunter steht, was jetzt dran ist.
 
-![Heute mit dem Schritt, der auf dich wartet, den Schaltflächen „Fertig“ und „Bin dran“, dem Haustier in seinem Zimmer und den Schritten, die jetzt dran sind](/Boopli/img/today.jpg)
+![Heute mit dem Schritt, der auf dich wartet, den Schaltflächen „Fertig“ und „Bin dran“, dem Haustier in seinem Zimmer und den Schritten, die jetzt dran sind](/Boopli/img/de/today.jpg)
 
-<img src="/Boopli/img/today-phone.jpg" alt="Die Ansicht „Heute“ auf einem Handy" width="260" />
+<img src="/Boopli/img/de/today-phone.jpg" alt="Die Ansicht „Heute“ auf einem Handy" width="260" />
 
 Das Panel passt auch aufs Handy. Du kannst es in der Home-Assistant-App nutzen.
 

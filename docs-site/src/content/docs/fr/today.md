@@ -5,9 +5,9 @@ description: Ce que montre l’onglet Aujourd’hui et à quoi servent ses bouto
 
 Aujourd’hui, c’est l’écran où tu fais tes tâches. Ton animal est dans sa pièce en haut de l’écran. Juste en dessous, tu vois ce qui t’attend maintenant.
 
-![L’écran Aujourd’hui montre l’étape qui t’attend avec Terminé et Je m’y mets, ton animal dans sa pièce et ce qui est à faire maintenant.](/Boopli/img/today.jpg)
+![L’écran Aujourd’hui montre l’étape qui t’attend avec Terminé et Je m’y mets, ton animal dans sa pièce et ce qui est à faire maintenant.](/Boopli/img/fr/today.jpg)
 
-<img src="/Boopli/img/today-phone.jpg" alt="L’écran Aujourd’hui sur un téléphone" width="260" />
+<img src="/Boopli/img/fr/today-phone.jpg" alt="L’écran Aujourd’hui sur un téléphone" width="260" />
 
 Le panneau s’adapte aussi au téléphone. Tu peux l’utiliser dans l’application Home Assistant.
 

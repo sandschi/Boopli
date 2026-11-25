@@ -15,7 +15,7 @@ Das läuft über eine **Routine** in deinem eigenen Claude-Konto. Jede Anfrage s
 Claude-Routinen können sich in der Vorschau noch ändern. Boopli begrenzt Anfragen auf 20 pro Stunde. Jede Fragerunde und jede Liste mit Schritten braucht eine Anfrage.
 :::
 
-![Das Fenster „Claude fragen“ in den Einstellungen](/Boopli/img/ask-claude.jpg)
+![Das Fenster „Claude fragen“ in den Einstellungen](/Boopli/img/de/ask-claude.jpg)
 
 ## Was du brauchst
 

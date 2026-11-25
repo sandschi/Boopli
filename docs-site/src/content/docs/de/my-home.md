@@ -3,7 +3,7 @@ title: Mein Zuhause und Fotos
 description: Raumnotizen, Räume anhand von Fotos beschreiben und zeigen, wie es gerade aussieht.
 ---
 
-![Die Ansicht „Mein Zuhause“ mit einem Notizfeld für jeden Raum](/Boopli/img/my-home.jpg)
+![Die Ansicht „Mein Zuhause“ mit einem Notizfeld für jeden Raum](/Boopli/img/de/my-home.jpg)
 
 ### Mein Zuhause
 

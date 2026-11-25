@@ -53,7 +53,10 @@ h3,
 h4 {
 	letter-spacing: 0.01em;
 }
-.sl-markdown-content h2 {
+/* The line and the space above a section heading sit on the wrapper. Starlight makes the h2 itself
+   inline (so the link icon follows the text), and an inline box repeats its border on every line
+   it wraps to, which drew a line through the first line of a long heading. */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
 	border-top: 2px solid var(--sl-color-hairline-light);
 	padding-top: 0.9rem;
 	margin-top: 2.2rem;

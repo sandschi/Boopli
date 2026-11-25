@@ -7,7 +7,7 @@ Wenn du eine zweite Meinung möchtest oder keinen KI-Agenten hast, schau auch be
 
 Boopli kann eine große Aufgabe wie „Mein Zimmer aufräumen“ in sehr kleine Schritte teilen. Dafür nutzt es **deinen eigenen KI-Agenten in Home Assistant** über die Integration AI Task. Die KI-Hilfe ist standardmäßig aus. Öffne in den Einstellungen die Karte **KI-Hilfe**. Wähle **Erweitert** und dann **KI-Hilfe einschalten**. Wähle deinen KI-Agenten und speichere. Öffne auf der Karte erneut **Erweitert** und wähle **KI-Agenten testen**. Du kannst auch dem Assistenten unter **Schritt für Schritt** folgen.
 
-![Das Fenster für die KI-Hilfe in den Einstellungen](/Boopli/img/ai-help.jpg)
+![Das Fenster für die KI-Hilfe in den Einstellungen](/Boopli/img/de/ai-help.jpg)
 
 ### Zwei Wege zur KI-Hilfe
 

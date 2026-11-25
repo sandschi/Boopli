@@ -15,7 +15,7 @@ Het paneel is beschikbaar in het Engels (en), Duits (de), Nederlands (nl), Frans
 
 Elke dag van de week heeft eigen tijden of staat op **Geen limiet**. Er is geen aparte groep voor werkdagen en het weekend. Niet iedereen heeft immers op dezelfde dagen weekend. Kies **Zelfde als ma** om de tijden van maandag naar de volgende dag te kopiëren.
 
-![De pagina Instellingen met kaarten voor apparaten, wachttijden en extra’s. Elke kaart heeft Stap voor stap en Geavanceerd.](/Boopli/img/settings.jpg)
+![De pagina Instellingen met kaarten voor apparaten, wachttijden en extra’s. Elke kaart heeft Stap voor stap en Geavanceerd.](/Boopli/img/nl/settings.jpg)
 
 ## Stap voor stap en geavanceerde instellingen
 

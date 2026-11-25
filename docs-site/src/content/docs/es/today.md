@@ -5,9 +5,9 @@ description: Qué ves en la pestaña Hoy y qué hacen sus botones.
 
 Hoy es donde haces tus tareas. Arriba ves a tu mascota en su habitación. Debajo tienes lo que toca ahora.
 
-![La pantalla Hoy con el paso que te toca, los botones Listo y Estoy en ello, tu mascota en su habitación y lo que está listo para hacer ahora](/Boopli/img/today.jpg)
+![La pantalla Hoy con el paso que te toca, los botones Listo y Estoy en ello, tu mascota en su habitación y lo que está listo para hacer ahora](/Boopli/img/es/today.jpg)
 
-<img src="/Boopli/img/today-phone.jpg" alt="La pantalla Hoy en un teléfono" width="260" />
+<img src="/Boopli/img/es/today-phone.jpg" alt="La pantalla Hoy en un teléfono" width="260" />
 
 El panel también se adapta al teléfono. Puedes usarlo desde la aplicación de Home Assistant.
 

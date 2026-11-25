@@ -15,7 +15,7 @@ Het werkt via een **routine** in je eigen Claude-account. Elk verzoek voert die 
 Routines van Claude kunnen nog veranderen. Boopli stopt bij 20 verzoeken per uur. Elke vragenronde en elke lijst met stappen telt als één verzoek.
 :::
 
-![Het venster Vraag Claude in Instellingen](/Boopli/img/ask-claude.jpg)
+![Het venster Vraag Claude in Instellingen](/Boopli/img/nl/ask-claude.jpg)
 
 ## Wat je nodig hebt
 

@@ -7,7 +7,7 @@ Wil je een tweede mening of heb je geen AI-agent? Kijk dan ook bij [Vraag Claude
 
 Boopli kan een grote klus zoals “mijn kamer opruimen” opdelen in kleine stapjes met **je eigen AI-agent in Home Assistant**. Dat gaat via de integratie AI Task van Home Assistant. AI-hulp staat standaard uit. Open in Instellingen de kaart **AI-hulp**. Kies **Geavanceerd** en dan **AI-hulp aanzetten**. Kies je AI-agent en sla op. Open het venster **Geavanceerd** van de kaart opnieuw en kies **AI-agent testen**. Je kunt ook **Stap voor stap** volgen.
 
-![Het venster AI-hulp in Instellingen](/Boopli/img/ai-help.jpg)
+![Het venster AI-hulp in Instellingen](/Boopli/img/nl/ai-help.jpg)
 
 ### Op twee plekken beginnen
 

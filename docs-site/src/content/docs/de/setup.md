@@ -15,7 +15,7 @@ Das Panel gibt es auf Englisch (en), Deutsch (de), Niederländisch (nl), Franzö
 
 Für jeden Wochentag kannst du eigene Zeiten oder **Kein Limit** wählen. Die Tage werden einzeln eingestellt, weil nicht alle am selben Tag Wochenende haben. Wähle **Wie Mo**, um die Zeiten vom Montag auf den nächsten Tag zu übernehmen.
 
-![Die Einstellungen mit Karten für Geräte, Zeiten und Extras. Auf jeder Karte stehen „Schritt für Schritt“ und „Erweitert“.](/Boopli/img/settings.jpg)
+![Die Einstellungen mit Karten für Geräte, Zeiten und Extras. Auf jeder Karte stehen „Schritt für Schritt“ und „Erweitert“.](/Boopli/img/de/settings.jpg)
 
 ## Assistenten und erweiterte Einstellungen
 

@@ -7,7 +7,7 @@ Si tu veux un deuxième avis ou si tu n’as pas d’agent, vois aussi [Demander
 
 Boopli peut découper une grosse tâche comme « nettoyer ma chambre » en toutes petites étapes avec **ton propre agent IA dans Home Assistant**. Il passe par l’intégration Tâche IA de Home Assistant. L’aide de l’IA est désactivée par défaut. Dans les Paramètres, ouvre **Aide de l’IA**, puis sélectionne **Avancé** et **Activer l’aide de l’IA**. Sélectionne ton agent IA et enregistre. Rouvre la fenêtre **Avancé** de la carte et sélectionne **Tester l’agent IA**. Tu peux aussi suivre **Pas à pas**.
 
-![La fenêtre Aide de l’IA dans les Paramètres](/Boopli/img/ai-help.jpg)
+![La fenêtre Aide de l’IA dans les Paramètres](/Boopli/img/fr/ai-help.jpg)
 
 ### Deux façons de commencer
 

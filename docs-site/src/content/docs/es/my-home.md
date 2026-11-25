@@ -3,7 +3,7 @@ title: Mi hogar y las fotos
 description: Notas sobre tus espacios, cómo describirlos a partir de fotos y cómo compartir fotos de su estado actual.
 ---
 
-![La pestaña Mi hogar con un cuadro de notas para cada espacio](/Boopli/img/my-home.jpg)
+![La pestaña Mi hogar con un cuadro de notas para cada espacio](/Boopli/img/es/my-home.jpg)
 
 ### Mi hogar
 

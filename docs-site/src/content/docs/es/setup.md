@@ -15,7 +15,7 @@ El panel está disponible en inglés (en), alemán (de), neerlandés (nl), franc
 
 Cada día de la semana tiene su propio horario o la opción **Sin límite**. Los días se configuran por separado, porque no todo el mundo tiene el mismo fin de semana. Selecciona **Igual que el lun** para copiar el horario del lunes al día siguiente.
 
-![La página Configuración con tarjetas de dispositivos, tiempos y extras, cada una con Paso a paso y Opciones avanzadas](/Boopli/img/settings.jpg)
+![La página Configuración con tarjetas de dispositivos, tiempos y extras, cada una con Paso a paso y Opciones avanzadas](/Boopli/img/es/settings.jpg)
 
 ## Guías y opciones avanzadas
 

@@ -5,9 +5,9 @@ description: Wat je op het tabblad Vandaag ziet en wat de knoppen doen.
 
 Op Vandaag ga je aan de slag. Bovenaan zie je je huisdier in de eigen kamer. Daaronder staat wat nu aan de beurt is.
 
-![Het scherm Vandaag met de stap die op je wacht, de knoppen Klaar en Ik ben bezig, het huisdier in de eigen kamer en wat nu aan de beurt is](/Boopli/img/today.jpg)
+![Het scherm Vandaag met de stap die op je wacht, de knoppen Klaar en Ik ben bezig, het huisdier in de eigen kamer en wat nu aan de beurt is](/Boopli/img/nl/today.jpg)
 
-<img src="/Boopli/img/today-phone.jpg" alt="Het scherm Vandaag op een telefoon" width="260" />
+<img src="/Boopli/img/nl/today-phone.jpg" alt="Het scherm Vandaag op een telefoon" width="260" />
 
 Het paneel past ook op je telefoon. Je kunt het dus vanuit de Home Assistant-app gebruiken.
 

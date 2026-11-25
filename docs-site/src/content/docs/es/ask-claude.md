@@ -15,7 +15,7 @@ Funciona mediante una **rutina** en tu propia cuenta de Claude. Cada consulta ej
 Las rutinas de Claude pueden cambiar mientras estén en fase preliminar. Boopli tiene un límite de 20 consultas por hora. Cada ronda de preguntas y cada lista de pasos consume una consulta.
 :::
 
-![La ventana Preguntar a Claude en Configuración](/Boopli/img/ask-claude.jpg)
+![La ventana Preguntar a Claude en Configuración](/Boopli/img/es/ask-claude.jpg)
 
 ## Qué necesitas
 

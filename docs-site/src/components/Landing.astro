@@ -115,7 +115,7 @@ const features = [
 						{L.read_more}
 					</a>
 				</div>
-				<img src={`${base}/img/${f.image}`} alt={f.alt} loading="lazy" />
+				<img src={`${base}/img/${locale === 'en' ? '' : `${locale}/`}${f.image}`} alt={f.alt} loading="lazy" />
 			</section>
 		))
 	}

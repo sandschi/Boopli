@@ -3,7 +3,7 @@ title: Chez moi et les photos
 description: Les notes sur les pièces, la description d’une pièce à partir de photos et les photos de son état actuel.
 ---
 
-![L’onglet Chez moi avec un champ de notes pour chaque pièce](/Boopli/img/my-home.jpg)
+![L’onglet Chez moi avec un champ de notes pour chaque pièce](/Boopli/img/fr/my-home.jpg)
 
 ### Chez moi
 

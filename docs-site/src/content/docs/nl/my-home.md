@@ -3,7 +3,7 @@ title: Mijn huis en foto’s
 description: Kamernotities, een kamer beschrijven aan de hand van foto’s en foto’s van hoe het er nu uitziet.
 ---
 
-![Het tabblad Mijn huis met een veld voor notities bij elke kamer](/Boopli/img/my-home.jpg)
+![Het tabblad Mijn huis met een veld voor notities bij elke kamer](/Boopli/img/nl/my-home.jpg)
 
 ### Mijn huis
 

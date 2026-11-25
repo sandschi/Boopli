@@ -15,7 +15,7 @@ Cette option passe par une **routine** dans ton propre compte Claude. Chaque dem
 Les routines Claude peuvent changer tant qu’elles sont en préversion. Boopli s’arrête à 20 demandes par heure. Chaque série de questions et chaque liste d’étapes utilise une demande.
 :::
 
-![La fenêtre Demander à Claude dans les Paramètres](/Boopli/img/ask-claude.jpg)
+![La fenêtre Demander à Claude dans les Paramètres](/Boopli/img/fr/ask-claude.jpg)
 
 ## Ce qu’il te faut
 
