@@ -1462,7 +1462,7 @@
     "there_are_two_sounds_called_340c": "Zwei Töne heißen „{name}“.",
     "these_chores_use_the_nudge_sequence_choose_6c4e": "Diese Aufgaben nutzen die Kette „{name}“: {users}. Wähle für sie zuerst einen anderen Stups-Stil.",
     "this_ai_agent_can_t_analyze_photos_f0a5": "Dieser KI-Agent kann keine Fotos auswerten. Wähle unter „Einstellungen“ → „KI-Hilfe“ → „Erweitert“ einen Agenten, der das kann. Du kannst auch ohne Fotos weitermachen.",
-    "this_request_has_too_many_photo_links_48d6": "Diese Anfrage enthält zu viele Fotolinks für Claude. Versuch’s mit weniger Fotos noch mal.",
+    "this_request_is_too_big_for_claude_01b9": "Die Anfrage ist zu groß für Claude. Versuch es mit weniger Fotos.",
     "two_nudge_sequences_are_named_give_them_080c": "Zwei Stups-Ketten heißen „{name}“. Gib ihnen unterschiedliche Namen.",
     "two_nudge_sequences_have_the_same_id_392b": "Zwei Stups-Ketten haben dieselbe ID.",
     "two_questions_have_the_same_id_2b7f": "Zwei Fragen haben dieselbe ID.",

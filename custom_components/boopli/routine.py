@@ -166,7 +166,7 @@ def fire_text(instructions: str, request_id: str, answer_url: str, photo_urls: l
     tail_text = "\n\n".join(tail)
     room = MAX_TEXT - len(tail_text) - 2
     if room < 200:
-        raise RoutineError("This request has too many photo links for Claude. Try again with fewer photos.")
+        raise RoutineError("This request is too big for Claude. Try again with fewer photos.")
     task = instructions.strip()
     if len(task) > room:
         task = task[: room - 2].rstrip() + " …"

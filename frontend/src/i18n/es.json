@@ -1462,7 +1462,7 @@
     "there_are_two_sounds_called_340c": "Hay dos sonidos que se llaman «{name}».",
     "these_chores_use_the_nudge_sequence_choose_6c4e": "Estas tareas usan la cadena de recordatorios «{name}»: {users}. Elige primero otro estilo de recordatorios para ellas.",
     "this_ai_agent_can_t_analyze_photos_f0a5": "Este agente de IA no puede analizar fotos. Elige uno que pueda en «Configuración» → «Ayuda con IA» → «Opciones avanzadas» o continúa sin fotos.",
-    "this_request_has_too_many_photo_links_48d6": "Esta consulta tiene demasiados enlaces a fotos para Claude. Inténtalo de nuevo con menos fotos.",
+    "this_request_is_too_big_for_claude_01b9": "La consulta es demasiado grande para Claude. Prueba con menos fotos.",
     "two_nudge_sequences_are_named_give_them_080c": "Hay dos cadenas de recordatorios que se llaman «{name}». Ponles nombres distintos.",
     "two_nudge_sequences_have_the_same_id_392b": "Hay dos cadenas de recordatorios con el mismo ID.",
     "two_questions_have_the_same_id_2b7f": "Hay dos preguntas con el mismo ID.",

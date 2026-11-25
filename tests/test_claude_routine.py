@@ -550,7 +550,7 @@ def test_a_request_that_cannot_fit_is_refused_before_a_fire_is_counted():
             routine.fire_text("x", "id", "https://ha.example.org/h", ["https://ha.example.org/" + "p" * 70_000])
         m.settings.ai.claude_ha_url = "https://ha.example.org/" + "a" * 70_000
         message = await _error(m)
-        assert "too many photo links" in message
+        assert "too big for Claude" in message
         assert fake.fires == []
         assert m.claude_status()["fires_left"] == routine.MAX_FIRES_PER_HOUR
 

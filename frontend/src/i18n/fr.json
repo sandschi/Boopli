@@ -1462,7 +1462,7 @@
     "there_are_two_sounds_called_340c": "Deux sons s’appellent « {name} ».",
     "these_chores_use_the_nudge_sequence_choose_6c4e": "Ces tâches utilisent la série de rappels « {name} » : {users}. Pour chacune, choisis d’abord une autre option dans « Comment veux-tu que Boopli te rappelle cette tâche ? ».",
     "this_ai_agent_can_t_analyze_photos_f0a5": "Cet agent IA ne peut pas analyser les photos. Dans « Paramètres » → « Aide de l’IA » → « Avancé », choisis un agent qui sait le faire. Tu peux aussi continuer sans photos.",
-    "this_request_has_too_many_photo_links_48d6": "Cette demande contient trop de liens vers des photos pour Claude. Réessaie avec moins de photos.",
+    "this_request_is_too_big_for_claude_01b9": "La demande est trop volumineuse pour Claude. Essaie avec moins de photos.",
     "two_nudge_sequences_are_named_give_them_080c": "Deux séries de rappels s’appellent « {name} ». Donne-leur des noms différents.",
     "two_nudge_sequences_have_the_same_id_392b": "Deux séries de rappels ont le même ID.",
     "two_questions_have_the_same_id_2b7f": "Deux questions ont le même ID.",

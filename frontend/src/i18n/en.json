@@ -1462,7 +1462,7 @@
     "there_are_two_sounds_called_340c": "There are two sounds called '{name}'.",
     "these_chores_use_the_nudge_sequence_choose_6c4e": "These chores use the nudge sequence “{name}”: {users}. Choose another nudge style for them first.",
     "this_ai_agent_can_t_analyze_photos_f0a5": "This AI agent can’t analyze photos. Choose one that can in Settings → AI help → Advanced, or continue without photos.",
-    "this_request_has_too_many_photo_links_48d6": "This request has too many photo links for Claude. Try again with fewer photos.",
+    "this_request_is_too_big_for_claude_01b9": "This request is too big for Claude. Try again with fewer photos.",
     "two_nudge_sequences_are_named_give_them_080c": "Two nudge sequences are named “{name}.” Give them different names.",
     "two_nudge_sequences_have_the_same_id_392b": "Two nudge sequences have the same ID.",
     "two_questions_have_the_same_id_2b7f": "Two questions have the same id.",

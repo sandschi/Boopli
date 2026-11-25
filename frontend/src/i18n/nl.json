@@ -1462,7 +1462,7 @@
     "there_are_two_sounds_called_340c": "Twee geluiden heten “{name}”.",
     "these_chores_use_the_nudge_sequence_choose_6c4e": "Deze taken gebruiken de reeks “{name}”: {users}. Pas bij die taken eerst “Hoe wil je dat Boopli je een seintje geeft?” aan.",
     "this_ai_agent_can_t_analyze_photos_f0a5": "Deze AI-agent kan geen foto’s bekijken. Kies een agent die dat wel kan via “Instellingen” → “AI-hulp” → “Geavanceerd: AI-agent voor foto’s en prompts”, of ga verder zonder foto’s.",
-    "this_request_has_too_many_photo_links_48d6": "Dit verzoek bevat te veel links naar foto’s voor Claude. Probeer het opnieuw met minder foto’s.",
+    "this_request_is_too_big_for_claude_01b9": "Het verzoek is te groot voor Claude. Probeer het met minder foto’s.",
     "two_nudge_sequences_are_named_give_them_080c": "Twee reeksen heten “{name}”. Geef ze verschillende namen.",
     "two_nudge_sequences_have_the_same_id_392b": "Twee reeksen seintjes hebben dezelfde ID.",
     "two_questions_have_the_same_id_2b7f": "Twee vragen hebben dezelfde ID.",
