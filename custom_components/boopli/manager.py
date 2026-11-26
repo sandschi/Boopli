@@ -45,7 +45,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util.file import write_utf8_file_atomic
 
 from . import breakdown, engine, routine
-from .const import DOMAIN
+from .const import ACCESS_ALL, ACCESS_DEFAULT, ACCESS_NOTES, ACCESS_USE, DOMAIN
 from .errors import BoopliError, Msg
 from .nudger import BoopliNudger
 
@@ -88,6 +88,11 @@ def _delete_files(paths: list[Path], folder: Path | None = None) -> None:
             pass
 
 
+def normalize_access_level(value: Any) -> int:
+    """A saved access level as 1, 2 or 3; anything else (or nothing yet) is the default."""
+    return value if isinstance(value, int) and not isinstance(value, bool) and value in (ACCESS_USE, ACCESS_NOTES, ACCESS_ALL) else ACCESS_DEFAULT
+
+
 class BoopliManager:
     """Holds Boopli's data and keeps its timers running."""
 
@@ -102,6 +107,7 @@ class BoopliManager:
         self.away = engine.Away()
         self.setup = engine.Setup()
         self.home = engine.Home()
+        self.access_level = ACCESS_DEFAULT  # what people who are not administrators may do (see const.py)
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
         self.light_last_on: dict[str, dict[str, Any]] = {}  # light -> brightness/color when it was last on (not by us)
         self._unsub_lights: CALLBACK_TYPE | None = None
@@ -156,6 +162,7 @@ class BoopliManager:
             else engine.initial_setup(data)
         )
         self.home = engine.Home.from_dict(data.get("home"))
+        self.access_level = normalize_access_level(data.get("access_level"))
         self.sync_areas()
         self.progress = engine.Progress.from_dict(data.get("progress"))
         self.away = engine.Away.from_dict(data.get("away"))
@@ -225,6 +232,7 @@ class BoopliManager:
             "away": engine.to_dict(self.away),
             "setup": engine.to_dict(self.setup),
             "home": engine.to_dict(self.home),
+            "access_level": self.access_level,
             "indicator_on": self.indicator_on,
             "light_last_on": self.light_last_on,
             "alarm_on": self.alarm_on + [x for x in self._alarm_stuck if x not in self.alarm_on],
@@ -267,6 +275,36 @@ class BoopliManager:
             "xp_for_level": needed,
             "last_activity": self.progress.last_activity,
         }
+
+    # --- access levels ---------------------------------------------------
+
+    def may(self, user: Any, level: int) -> bool:
+        """Whether this person may do what `level` stands for: administrators always, everyone else
+        when the level the admin chose reaches it. No person (a system call) may not."""
+        if user is None:
+            return False
+        return bool(user.is_admin) or self.access_level >= level
+
+    def access_for(self, user: Any) -> dict[str, Any]:
+        """What the panel may offer this person (the real check stays in the commands)."""
+        return {
+            "level": self.access_level,
+            "admin": bool(user and user.is_admin),
+            "notes": self.may(user, ACCESS_NOTES),
+            "all": self.may(user, ACCESS_ALL),
+        }
+
+    def snapshot_for(self, user: Any) -> dict[str, Any]:
+        """The snapshot with what this person may do."""
+        return {**self.snapshot(), "access": self.access_for(user)}
+
+    def set_access_level(self, level: Any) -> None:
+        """An administrator chose what everyone else may do."""
+        if isinstance(level, bool) or normalize_access_level(level) != level:
+            raise ValueError(f"Unknown access level: {level!r}")
+        self.access_level = level
+        self._store.async_delay_save(self._data_to_save, 0)
+        self._notify()
 
     def snapshot(self) -> dict[str, Any]:
         """Everything the panel needs to draw itself."""

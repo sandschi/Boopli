@@ -9,7 +9,15 @@ import type {
   QuietHours,
   SpeakerCfg,
   SpeechRoute,
+  Snapshot,
+  Access,
 } from "./types";
+
+
+/** What this person may do. Before the integration says (an older one), nothing is hidden: it checks anyway. */
+export function accessOf(snapshot?: Snapshot): Access {
+  return snapshot?.access ?? { level: 3, admin: true, notes: true, all: true };
+}
 
 export const ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01";
 export const ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01";

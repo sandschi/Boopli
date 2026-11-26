@@ -320,7 +320,8 @@
     "skip_running_ask": "Laisser tomber ce tour ? Il ne rapporte pas d'XP.",
     "skip_next_ask": "Passer le prochain tour ? La tâche revient après.",
     "skip_yes": "Oui, passer",
-    "skip_keep": "Garder"
+    "skip_keep": "Garder",
+    "no_chores_yet_ask_an_admin": "Pas encore de tâches. Demande à un administrateur d’en ajouter."
   },
   "claude": {
     "the_routines_fire_address": "URL de lancement de la routine",
@@ -691,7 +692,15 @@
     "board_summary_one": "{name} : {count} tuile. Pendant les heures calmes, {night}",
     "board_summary_other": "{name} : {count} tuiles. Pendant les heures calmes, {night}",
     "on_using": "Agent IA utilisé : {agent}",
-    "the_home_assistant_default_agent": "agent par défaut de Home Assistant"
+    "the_home_assistant_default_agent": "agent par défaut de Home Assistant",
+    "access_title": "Qui peut faire quoi ?",
+    "access_note": "Ce réglage s’applique à toutes les personnes de ton foyer qui n’ont pas le rôle d’administrateur dans Home Assistant. Les administrateurs peuvent toujours tout faire.",
+    "access_use": "Utiliser Boopli",
+    "access_use_note": "voir les tâches à faire, lancer des tâches, suivre les étapes et régler le mode absence",
+    "access_notes": "Utiliser Boopli et modifier les pièces et leurs notes",
+    "access_notes_note": "aussi l’onglet « Chez moi »",
+    "access_all": "Tout sauf ce qui est réservé aux administrateurs",
+    "access_all_note": "aussi les tâches, les paramètres, les rappels et les Wallboards. Les sauvegardes, le jeton de « Demander à Claude » et ce choix restent réservés aux administrateurs"
   },
   "speakers": {
     "what_kind_of_speaker": "Type d’enceinte",

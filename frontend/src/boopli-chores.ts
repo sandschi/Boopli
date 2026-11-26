@@ -6,6 +6,7 @@ import { blankDraft, TEMPLATES } from "./templates";
 import { describeRepeat, describeWhen } from "./time";
 import { sharedStyles } from "./styles";
 import { icon } from "./icon";
+import { accessOf } from "./helpers";
 import type { Chore, ChoreDraft, Hass, Snapshot } from "./types";
 import { t } from "./i18n";
 
@@ -238,8 +239,10 @@ export class BoopliChores extends LitElement {
       a.name.localeCompare(b.name)
     );
 
+    const canEdit = accessOf(this.snapshot).all; // making and changing chores is level 3; starting and skipping is not
     return html`
-      <div class="toolbar">
+      ${canEdit
+        ? html`<div class="toolbar">
         <button class="primary" @click=${() => (this._editing = blankDraft())}>
           ${icon("plus")} ${t("chores.new_chore")}
         </button>
@@ -251,9 +254,11 @@ export class BoopliChores extends LitElement {
         >
           ${icon("auto-fix")} ${t("chores.new_chore_with_ai")}
         </button>
-      </div>
+      </div>`
+        : nothing}
 
-      <div class="templates">
+      ${canEdit
+        ? html`<div class="templates">
         <span class="muted small">${t("chores.start_from_a_template")}</span>
         ${TEMPLATES().map(
           (t) => html`<button
@@ -263,12 +268,13 @@ export class BoopliChores extends LitElement {
             ${t.label}
           </button>`
         )}
-      </div>
+      </div>`
+        : nothing}
 
       ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
       ${chores.length === 0
         ? html`<p class="muted empty">
-            ${t("chores.no_chores_yet_pick_a_template")}
+            ${canEdit ? t("chores.no_chores_yet_pick_a_template") : t("chores.no_chores_yet_ask_an_admin")}
           </p>`
         : html`<div class="chore-list">${chores.map(
             (c) => html`
@@ -293,10 +299,12 @@ export class BoopliChores extends LitElement {
                   ${running.has(c.id)
                     ? nothing
                     : html`<button class="textlink" ?disabled=${this._busy} @click=${() => this._start(c)}>${t("common.start_now")}</button>`}
-                  ${c.repeat.type === "none"
+                  ${canEdit && c.repeat.type === "none"
                     ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>${t("chores.set_a_schedule")}</button>`
                     : nothing}
-                  <button class="textlink quiet" data-edit=${c.id} @click=${() => this._edit(c)}>${t("chores.edit")}</button>
+                  ${canEdit
+                    ? html`<button class="textlink quiet" data-edit=${c.id} @click=${() => this._edit(c)}>${t("chores.edit")}</button>`
+                    : nothing}
                   ${this._canSkip(c, running.has(c.id)) && this._skipping !== c.id
                     ? html`<button class="textlink quiet" data-skip=${c.id} ?disabled=${this._busy} @click=${() => this._askSkip(c, running.has(c.id))}>
                         ${running.has(c.id) ? t("chores.skip_round") : t("chores.skip_next")}

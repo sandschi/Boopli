@@ -12,6 +12,7 @@ import { icon } from "./icon";
 import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
+import { accessOf } from "./helpers";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 import { t } from "./i18n";
 
@@ -157,6 +158,7 @@ export class BoopliToday extends LitElement {
 
   /** The quick task box: say what you want to get done and let the AI break it down. */
   private _renderQuick() {
+    if (!accessOf(this.snapshot).all) return nothing; // making chores is for those who may change them
     const aiOn = anyAi(this.snapshot); // the agent, or Ask Claude
     return html`
       <section class="card quick">
@@ -387,9 +389,11 @@ export class BoopliToday extends LitElement {
         <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => awayEnd(this.hass!))}>
           ${onNow ? t("common.back_now") : t("common.cancel_it")}
         </button>
-        <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
-          ${t("today.change_in_settings")}
-        </button>
+        ${accessOf(this.snapshot).all
+          ? html`<button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
+              ${t("today.change_in_settings")}
+            </button>`
+          : nothing}
       </div>
     </section>`;
   }
@@ -579,8 +583,11 @@ export class BoopliToday extends LitElement {
     const setup = this.snapshot.setup?.status;
     return html`
       ${this._renderAway(tz)}
+      ${accessOf(this.snapshot).all
+        ? nothing
+        : html`<section class="card"><boopli-away .hass=${this.hass} .snapshot=${this.snapshot} .nowMs=${this.nowMs}></boopli-away></section>`}
       <div class="cols"><div class="col">
-      ${setup === "skipped" || setup === "in_progress"
+      ${(setup === "skipped" || setup === "in_progress") && accessOf(this.snapshot).all
         ? html`<section class="card banner">
             <span>${t("today.boopli_is_not_fully_set_up")}</span>
             <button

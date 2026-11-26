@@ -15,6 +15,7 @@ import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
 import { applyAccent } from "./accent";
 import { loadFonts } from "./fonts";
+import { accessOf } from "./helpers";
 import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
 import { setLanguage, t } from "./i18n";
@@ -157,7 +158,14 @@ export class BoopliPanel extends LitElement {
 
   // --- tabs and the wizard ------------------------------------------------------
 
+  /** The tabs this person may open: Home shows the notes (editing them is level 2), Settings is level 3. */
+  private _tabs(): Tab[] {
+    const can = accessOf(this._snapshot);
+    return (Object.keys(TAB_LABELS()) as Tab[]).filter((tab) => tab === "today" || tab === "chores" || (tab === "home" ? can.notes : can.all));
+  }
+
   private async _selectTab(tab: Tab): Promise<void> {
+    if (!this._tabs().includes(tab)) return;
     if (tab === this._tab && !this._wizard) return;
     if (!(await this._guard())) return;
     this._wizard = null;
@@ -176,6 +184,7 @@ export class BoopliPanel extends LitElement {
   }
 
   private _onOpenWizard = async (e: Event): Promise<void> => {
+    if (!accessOf(this._snapshot).all) return;
     const detail = (e as CustomEvent<Partial<WizardRequest>>).detail ?? {};
     const wizard = detail.wizard ?? "first";
     if (!(await this._guard())) return;
@@ -193,6 +202,7 @@ export class BoopliPanel extends LitElement {
   // --- breaking a task down with AI ---------------------------------------------
 
   private _onOpenBreakdown = async (e: Event): Promise<void> => {
+    if (!accessOf(this._snapshot).all) return;
     const detail = (e as CustomEvent<{ kind?: "now" | "recurring"; task?: string }>).detail ?? {};
     if (!(await this._guard())) return;
     this._wizard = null;
@@ -332,7 +342,9 @@ export class BoopliPanel extends LitElement {
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
       <span>${icon("bag-suitcase")} <b>${onNow ? t("wall.away_mode_is_on") : t("panel.away_mode_is_planned")}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
-      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>
+      ${accessOf(this._snapshot).all
+        ? html`<button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>`
+        : nothing}
     </div>`;
   }
 
@@ -340,7 +352,7 @@ export class BoopliPanel extends LitElement {
   private async _openWall(name = "", edit = false): Promise<void> {
     if (!(await this._guard())) return;
     this._wall = name;
-    this._wallEdit = edit;
+    this._wallEdit = edit && accessOf(this._snapshot).all;
     const url = new URL(location.href);
     url.searchParams.set("wall", name);
     history.replaceState(null, "", url);
@@ -356,7 +368,10 @@ export class BoopliPanel extends LitElement {
   };
 
   render() {
-    if (this._wall !== null && this._wallEdit) {
+    const can = accessOf(this._snapshot);
+    // A tab this person may not open (the level was lowered meanwhile) shows Today.
+    const tab: Tab = this._tabs().includes(this._tab) ? this._tab : "today";
+    if (this._wall !== null && this._wallEdit && can.all) {
       return html`<boopli-wall-edit
         .hass=${this.hass}
         .snapshot=${this._snapshot}
@@ -378,7 +393,8 @@ export class BoopliPanel extends LitElement {
         .nowMs=${this._nowMs}
         .boardName=${this._wall}
         @wall-exit=${this._closeWall}
-        @wall-edit=${() => (this._wallEdit = true)}
+        .canEdit=${can.all}
+        @wall-edit=${() => (this._wallEdit = can.all)}
       ></boopli-wall>`;
     }
     const unsaved: Record<Tab, boolean> = {
@@ -394,13 +410,13 @@ export class BoopliPanel extends LitElement {
           : nothing}
         <h1>${t("wizard.boopli")}</h1>
         <nav>
-          ${(Object.keys(TAB_LABELS()) as Tab[]).map(
-            (tab) => html`<button
-              class="tab ${this._tab === tab && !this._wizard ? "on" : ""}"
-              @click=${() => this._selectTab(tab)}
+          ${this._tabs().map(
+            (name) => html`<button
+              class="tab ${tab === name && !this._wizard ? "on" : ""}"
+              @click=${() => this._selectTab(name)}
             >
-              ${TAB_LABELS()[tab]}
-              ${unsaved[tab] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
+              ${TAB_LABELS()[name]}
+              ${unsaved[name] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
             </button>`
           )}
         </nav>
@@ -440,9 +456,9 @@ export class BoopliPanel extends LitElement {
                   @breakdown-result=${this._onBreakdownResult}
                   @breakdown-cancel=${() => (this._breakdown = null)}
                 ></boopli-breakdown>`
-              : this._tab === "today"
+              : tab === "today"
                 ? html`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>`
-                : this._tab === "chores"
+                : tab === "chores"
                   ? html`<boopli-chores
                       .hass=${this.hass}
                       .snapshot=${this._snapshot}
@@ -450,7 +466,7 @@ export class BoopliPanel extends LitElement {
                       .openRequest=${this._choresRequest}
                       @request-handled=${() => (this._choresRequest = null)}
                     ></boopli-chores>`
-                  : this._tab === "home"
+                  : tab === "home"
                     ? html`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>`
                     : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>

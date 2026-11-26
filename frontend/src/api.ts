@@ -36,6 +36,11 @@ export function saveSettings(hass: Hass, settings: Settings): Promise<{ ladders?
   return hass.callWS({ type: "boopli/settings_save", settings });
 }
 
+/** An administrator chooses what everyone else may do: 1 use, 2 also edit notes, 3 everything else. */
+export function setAccessLevel(hass: Hass, level: 1 | 2 | 3): Promise<void> {
+  return hass.callWS({ type: "boopli/access_set", level });
+}
+
 // --- backup of the setup (the file is saved with the extension .adhd; inside it is plain JSON) ---
 
 export type BackupPart = "settings" | "chores" | "home" | "pet";

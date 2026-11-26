@@ -320,7 +320,8 @@
     "skip_running_ask": "Deze ronde laten vallen? Daarvoor krijg je geen XP.",
     "skip_next_ask": "De volgende ronde overslaan? Daarna komt de klus weer terug.",
     "skip_yes": "Ja, overslaan",
-    "skip_keep": "Laten staan"
+    "skip_keep": "Laten staan",
+    "no_chores_yet_ask_an_admin": "Er zijn nog geen taken. Vraag een beheerder om er een paar toe te voegen."
   },
   "claude": {
     "the_routines_fire_address": "Start-URL van de routine",
@@ -691,7 +692,15 @@
     "board_summary_one": "{name}: {count} tegel, tijdens stille uren: {night}",
     "board_summary_other": "{name}: {count} tegels, tijdens stille uren: {night}",
     "on_using": "AI-agent in gebruik: {agent}",
-    "the_home_assistant_default_agent": "Standaardagent van Home Assistant"
+    "the_home_assistant_default_agent": "Standaardagent van Home Assistant",
+    "access_title": "Wie mag wat?",
+    "access_note": "Dit geldt voor iedereen bij je thuis die geen beheerder is in Home Assistant. Beheerders mogen altijd alles.",
+    "access_use": "Boopli gebruiken",
+    "access_use_note": "zien welke taken aan de beurt zijn, taken starten, stappen doorlopen en de afwezigheidsmodus instellen",
+    "access_notes": "Boopli gebruiken en de kamers en hun notities bewerken",
+    "access_notes_note": "ook het tabblad “Mijn huis”",
+    "access_all": "Alles behalve wat alleen beheerders mogen",
+    "access_all_note": "ook taken, instellingen, seintjes en Wallboards. Back-ups, het token voor “Vraag Claude” en deze keuze blijven voorbehouden aan beheerders"
   },
   "speakers": {
     "what_kind_of_speaker": "Soort luidspreker",

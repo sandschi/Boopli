@@ -320,7 +320,8 @@
     "skip_running_ask": "¿Dejar esta ronda? No da XP.",
     "skip_next_ask": "¿Saltar la próxima ronda? La tarea vuelve después.",
     "skip_yes": "Sí, saltar",
-    "skip_keep": "Mantener"
+    "skip_keep": "Mantener",
+    "no_chores_yet_ask_an_admin": "Aún no hay tareas. Pídele a un administrador que añada algunas."
   },
   "claude": {
     "the_routines_fire_address": "Dirección para iniciar la rutina",
@@ -691,7 +692,15 @@
     "board_summary_one": "{name}: {count} tarjeta, {night} durante las horas de silencio",
     "board_summary_other": "{name}: {count} tarjetas, {night} durante las horas de silencio",
     "on_using": "Agente de IA en uso: {agent}",
-    "the_home_assistant_default_agent": "Agente predeterminado de Home Assistant"
+    "the_home_assistant_default_agent": "Agente predeterminado de Home Assistant",
+    "access_title": "¿Quién puede hacer qué?",
+    "access_note": "Esto se aplica a las personas de tu hogar que no son administradoras de Home Assistant. Los administradores siempre pueden hacerlo todo.",
+    "access_use": "Usar Boopli",
+    "access_use_note": "ver qué tareas tocan, iniciar tareas, seguir los pasos y configurar el modo ausencia",
+    "access_notes": "Usar Boopli y editar los espacios y sus notas",
+    "access_notes_note": "también la pestaña «Mi hogar»",
+    "access_all": "Todo salvo lo reservado a los administradores",
+    "access_all_note": "también las tareas, la configuración, los recordatorios y los Wallboards. Las copias de seguridad, el token de «Preguntar a Claude» y esta elección siguen reservados a los administradores"
   },
   "speakers": {
     "what_kind_of_speaker": "Tipo de altavoz",
