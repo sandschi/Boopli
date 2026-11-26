@@ -1202,7 +1202,7 @@ export class BoopliWizard extends LitElement {
       ${html`<div class="fields">
             <label class="num">
               ${t("common.sound_type")}
-              <select @change=${(e: Event) => this._patchSound(which, { kind: (e.target as HTMLSelectElement).value as SoundKind })}>
+              <select @change=${(e: Event) => this._patchSound(which, (e.target as HTMLSelectElement).value === sound.kind ? {} : { kind: (e.target as HTMLSelectElement).value as SoundKind, sound: "" })}>
                 ${SOUND_KINDS().filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>

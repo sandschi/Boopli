@@ -375,6 +375,47 @@ class BoopliNudger:
             return False
         return True
 
+    def _alexa_sound_blocked(
+        self, speaker: engine.SpeakerCfg, level: str, sounds: list[engine.ExtraSound]
+    ) -> bool:
+        """Whether this would play one of Amazon's sounds on a speaker that cannot.
+
+        Only Alexa Media Player plays them (media_content_type "sound"). The official Alexa Devices
+        integration treats play_media as a music search and answers "sound is not available as a music provider".
+        """
+        if not engine.level_plays_alexa_sound(speaker, level, sounds):
+            return False
+        from homeassistant.helpers import entity_registry as er
+
+        entry = er.async_get(self.hass).async_get(speaker.entity_id)
+        return entry is not None and entry.platform == "alexa_devices"
+    def _do_not_disturb(self, entity_id: str) -> bool:
+        """Whether the Alexa speaker has Do not disturb on (or it cannot be told, which counts as on).
+
+        The speaker's Do not disturb switch is found through the speaker's serial number, which both Alexa
+        integrations use in the switch's unique ID. A speaker with no such switch is treated as not disturbed.
+        """
+        from homeassistant.helpers import entity_registry as er
+
+        registry = er.async_get(self.hass)
+        speaker = registry.async_get(entity_id)
+        if speaker is None or not speaker.unique_id:
+            return False
+        serial = speaker.unique_id.removesuffix("-media")  # Alexa Devices adds "-media"
+        switches = (
+            registry.async_get_entity_id("switch", "alexa_media", f"{serial}_do not disturb"),
+            registry.async_get_entity_id("switch", "alexa_devices", f"{serial}-dnd"),
+        )
+        for switch_id in switches:
+            if switch_id is None:
+                continue
+            state = self.hass.states.get(switch_id)
+            if state is None or state.state in ("on", "unavailable", "unknown"):
+                return True
+            # a switch that reads "off" is a clear answer; the other integration's switch is the same setting
+            return False
+        return False
+
     async def _play_speaker(
         self,
         speaker: engine.SpeakerCfg,
@@ -391,6 +432,9 @@ class BoopliNudger:
         (the saved one unless a test brings its own).
         """
         if not self._speaker_available(speaker.entity_id):
+            return False
+        if self._alexa_sound_blocked(speaker, level, self.manager.settings.sounds if sounds is None else sounds):
+            _LOGGER.warning("Boopli: %s is an Alexa Devices speaker and cannot play Amazon sounds, skipping", speaker.entity_id)
             return False
         extra = engine.find_sound(self.manager.settings.sounds if sounds is None else sounds, level)
         if extra is None and level.startswith(engine.SPEAKER_SOUND_PREFIX):
@@ -414,6 +458,13 @@ class BoopliNudger:
             text = engine.speech_text(
                 self.manager.settings.speech_template, chore_name, step_title
             )
+            if (
+                speaker.speech.route == engine.SPEECH_ALEXA_MEDIA
+                and (speaker.speech.announce if announce is None else announce)
+                and self._do_not_disturb(speaker.entity_id)
+            ):
+                # Alexa swallows announcements while Do not disturb is on; plain speech still comes through.
+                announce = False
             domain, service, data = engine.speech_call(speaker, text, announce)
             return await self._call(domain, service, data)
         return self._start_speaker_alarm(speaker, key)
@@ -563,6 +614,8 @@ class BoopliNudger:
             return {"ok": False, "note": engine.Msg("Choose which speaker sound to test.")}
         if not self._speaker_available(speaker.entity_id):
             return {"ok": False, "note": engine.Msg("That speaker is not available right now.")}
+        if self._alexa_sound_blocked(speaker, level, sounds):
+            return {"ok": False, "note": engine.Msg("Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player.")}
         if level == engine.SPEAKER_ALARM:
             # One play only, so a test never rings for long.
             ok = await self._call(

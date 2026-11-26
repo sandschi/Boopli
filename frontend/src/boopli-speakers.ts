@@ -1,7 +1,6 @@
 import { LitElement, html, css, nothing, type TemplateResult } from "lit";
 import { errorMessage, testAlarmDevice, testNote, testSpeaker } from "./api";
 import { alexaSoundPicker } from "./alexa-sound-picker";
-import "./boopli-sound-test"; // TEMPORARY
 import { newLadderId } from "./helpers";
 import { icon } from "./icon";
 import { sharedStyles } from "./styles";
@@ -70,10 +69,12 @@ export class BoopliSpeakers extends LitElement {
   declare _addDevice: string;
   declare _notes: Record<string, string>;
   declare _open: Record<string, boolean>; // the lines whose details are showing
-  declare _sub: "" | "add" | "tone" | "own" | "say" | "try"; // which small window is open
+  declare _sub: "" | "add" | "tone" | "own" | "say"; // which small window is open
+  private _rev: Record<string, number>; // per Test note: which round it is in (not drawn)
 
   constructor() {
     super();
+    this._rev = {};
     this._addSpeaker = "";
     this._addDevice = "";
     this._notes = {};
@@ -97,6 +98,17 @@ export class BoopliSpeakers extends LitElement {
   private _friendly(entityId: string): string {
     const name = this.hass?.states[entityId]?.attributes?.friendly_name;
     return typeof name === "string" && name ? name : entityId;
+  }
+
+  /** Whether the speaker is there right now (no state at all means it is gone from Home Assistant). */
+  private _here(s: SpeakerCfg): boolean {
+    const state = this.hass?.states[s.entity_id]?.state;
+    return state !== undefined && state !== "unavailable";
+  }
+
+  /** Amazon's sounds only play through Alexa Media Player; the official Alexa Devices media player cannot. */
+  private _cannotPlayAlexaSounds(s: SpeakerCfg): boolean {
+    return this.hass?.entities?.[s.entity_id]?.platform === "alexa_devices";
   }
 
   private _ids(domains: string[], used: string[] = []): string[] {
@@ -195,14 +207,37 @@ export class BoopliSpeakers extends LitElement {
     this._updateSpeaker(entityId, (s) => ({ ...s, speech: { ...s.speech, ...patch } }));
   }
 
+  /** Starts a new round for a Test note: the answer of an older Test (or of an older sound) is then ignored. */
+  private _bump(key: string): number {
+    this._rev[key] = (this._rev[key] ?? 0) + 1;
+    return this._rev[key];
+  }
+
+  /** The sound changed: the note of the Test before it no longer fits, and its late answer must not show up. */
+  private _clearNote(key: string): void {
+    this._bump(key);
+    this._note(key, "");
+  }
+
+  /** The speaker a shared Test uses: one that can play Amazon's sounds and is there right now. */
+  private _testTarget(list: SpeakerCfg[]): SpeakerCfg {
+    const able = list.filter((s) => !this._cannotPlayAlexaSounds(s));
+    const pool = able.length ? able : list; // none able: let the Test run, the answer says why
+    return pool.find((s) => this._here(s)) ?? pool[0];
+  }
+
   private async _test(speaker: SpeakerCfg, level: SpeakerChoice): Promise<void> {
     if (!this.hass) return;
     const key = `speaker:${speaker.entity_id}:${level}`;
-    this._note(key, t("common.sending"));
+    const rev = this._bump(key);
+    const show = (text: string) => {
+      if (this._rev[key] === rev) this._note(key, text);
+    };
+    show(t("common.sending"));
     try {
-      this._note(key, testNote(await testSpeaker(this.hass, speaker, level)));
+      show(testNote(await testSpeaker(this.hass, speaker, level)));
     } catch (err) {
-      this._note(key, errorMessage(err));
+      show(errorMessage(err));
     }
   }
 
@@ -231,23 +266,25 @@ export class BoopliSpeakers extends LitElement {
   /** Test one of your sounds on the first speaker that can play it. */
   private async _testExtra(sound: ExtraSound): Promise<void> {
     const key = `own:${sound.id}`;
-    const fits = this._speakers().filter((s) => sound.kind !== "alexa" || s.speech.route !== "tts");
+    // Alexa Devices speakers play neither Amazon's sounds nor files, so they are never a target here
+    const fits = this._speakers().filter((s) => (sound.kind !== "alexa" || s.speech.route !== "tts") && !this._cannotPlayAlexaSounds(s));
     // the first speaker that can play it and is there right now
-    const here = (s: SpeakerCfg) => {
-      const state = this.hass?.states[s.entity_id]?.state; // no state at all: it is gone from Home Assistant
-      return state !== undefined && state !== "unavailable";
-    };
-    const speaker = fits.find(here) ?? fits[0];
+    const speaker = fits.find((s) => this._here(s)) ?? fits[0];
     if (!speaker) {
+      this._clearNote(key);
       this._note(key, t("speakers.add_a_speaker_that_can_play"));
       return;
     }
     if (!this.hass) return;
-    this._note(key, t("common.sending"));
+    const rev = this._bump(key);
+    const show = (text: string) => {
+      if (this._rev[key] === rev) this._note(key, text);
+    };
+    show(t("common.sending"));
     try {
-      this._note(key, testNote(await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())));
+      show(testNote(await testSpeaker(this.hass, speaker, `sound:${sound.id}`, this._sounds())));
     } catch (err) {
-      this._note(key, errorMessage(err));
+      show(errorMessage(err));
     }
   }
 
@@ -415,10 +452,16 @@ export class BoopliSpeakers extends LitElement {
       return html`<h4>${title}</h4><p class="muted small">${t("speakers.you_have_no_such_speaker_yet")}</p>`;
     }
     const first = speakers[0];
-    const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) =>
+    const target = this._testTarget(speakers); // the Test button uses a speaker that can play it and is there
+    const setAll = (which: "cue" | "alarm", patch: Partial<SoundCfg>) => {
+      if ("kind" in patch || "sound" in patch) {
+        // another sound: the old Test results of every speaker in the group no longer fit it, and late answers are ignored
+        for (const s of speakers) this._clearNote(`speaker:${s.entity_id}:${which}`);
+      }
       this._patch({
         speakers: this._speakers().map((s) => (this._group(s) === group ? { ...s, [which]: { ...s[which], ...patch, enabled: true } } : s)),
       });
+    };
     const one = (which: "cue" | "alarm", name: string, example: string) => {
       const c = first[which];
       const key = `shared:${group}:${which}`;
@@ -436,10 +479,16 @@ export class BoopliSpeakers extends LitElement {
             ? html`<div class="fields">
                 ${this._soundPicker(c, first, (x) => setAll(which, { kind: x.kind, sound: x.sound }))}
                 ${group === "alexa"
-                  ? this._soundFields(c.kind as SoundKind, c.sound, example, (k) => setAll(which, { kind: k }), (s) => setAll(which, { sound: s }), {
-                      run: () => void this._test(first, which),
-                      note: this._notes[`speaker:${first.entity_id}:${which}`],
-                    })
+                  ? html`${speakers.some((s) => this._cannotPlayAlexaSounds(s)) ? html`<div class="note muted small soundnote">${t("speakers.alexa_devices_no_amazon_sounds")}</div>` : nothing}
+                    ${this._soundFields(
+                      c.kind as SoundKind,
+                      c.sound,
+                      example,
+                      (k) => setAll(which, k === c.kind ? {} : { kind: k, sound: "" }),
+                      (s) => setAll(which, { sound: s }),
+                      // the Test plays what the editor shows (the first speaker's setting) on the speaker that is there
+                      { run: () => void this._test({ ...target, [which]: first[which] }, which), note: this._notes[`speaker:${target.entity_id}:${which}`] },
+                    )}`
                   : html`<label class="num wide">
                       ${t("speakers.file_in_my_media_folder_for_example", { example })}
                       <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
@@ -475,7 +524,13 @@ export class BoopliSpeakers extends LitElement {
           />`,
           summary: this._soundSummary(x.kind, x.sound),
           onTest: () => void this._testExtra(x),
-          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => this._setExtra(x.id, { kind: k }), (s) => this._setExtra(x.id, { sound: s })),
+          details: this._soundFields(x.kind, x.sound, "fanfare", (k) => {
+            this._setExtra(x.id, k === x.kind ? {} : { kind: k, sound: "" });
+            if (k !== x.kind) this._clearNote(`own:${x.id}`);
+          }, (s) => {
+            this._setExtra(x.id, { sound: s });
+            this._clearNote(`own:${x.id}`);
+          }),
           onRemove: () => this._removeExtra(x.id),
           removeLabel: t("speakers.remove_the_sound", { name: x.name }),
         })
@@ -554,10 +609,6 @@ export class BoopliSpeakers extends LitElement {
       );
     }
     if (this._sub === "own") return this._subWindow(t("speakers.your_own_sounds"), this._ownSounds());
-    if (this._sub === "try") {
-      // TEMPORARY (see boopli-sound-test.ts)
-      return this._subWindow("Try the sounds", html`<boopli-sound-test .hass=${this.hass} .speakers=${d.speakers}></boopli-sound-test>`);
-    }
     if (this._sub === "say") {
       return this._subWindow(
         t("speakers.what_the_speakers_say"),
@@ -575,7 +626,7 @@ export class BoopliSpeakers extends LitElement {
   }
 
   private _renderSpeakers(d: Settings) {
-    const topButton = (sub: "add" | "tone" | "own" | "say" | "try", ico: string, label: string) =>
+    const topButton = (sub: "add" | "tone" | "own" | "say", ico: string, label: string) =>
       html`<button type="button" class="textlink" @click=${() => (this._sub = sub)}>${icon(ico)} ${label}</button>`;
     return html`
       <section class="card">
@@ -586,7 +637,6 @@ export class BoopliSpeakers extends LitElement {
         <div class="topbtns">
           ${topButton("add", "plus", t("speakers.add_a_speaker"))} ${topButton("tone", "music-note", t("speakers.ding_and_alarm_sound"))}
           ${topButton("own", "playlist-music", t("speakers.your_own_sounds"))} ${topButton("say", "message-text-outline", t("speakers.what_the_speakers_say"))}
-          ${topButton("try", "music-note", "Try the sounds")}
         </div>
         ${d.speakers.length ? d.speakers.map((speaker) => this._speakerBody(speaker)) : html`<p class="muted">${t("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(d)}
@@ -795,11 +845,8 @@ export class BoopliSpeakers extends LitElement {
         align-items: flex-end;
         padding: 10px 0 4px 30px;
       }
-      .soundtest,
-      details.soundown {
-        flex-basis: 100%;
-      }
       .soundtest {
+        flex-basis: 100%;
         display: flex;
         align-items: center;
         gap: 10px;

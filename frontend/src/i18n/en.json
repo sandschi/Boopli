@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Asking Claude. This takes a little while…",
     "break_it_down_now": "Break it down now",
     "make_a_cup_of_tea": "Make a cup of tea",
-    "alexa_sound_id": "Alexa sound ID",
     "on_for_seconds": "On for (seconds)",
     "switch_ask_claude_on": "Switch Ask Claude on",
     "no_limit": "No limit",
@@ -88,9 +87,23 @@
     "alexa_sound_which": "Sound",
     "alexa_sound_pick_kind": "Choose a kind of sound…",
     "alexa_sound_own_in_use": "Your own ID is in use",
-    "alexa_sound_type_own": "Type an ID yourself",
-    "alexa_sound_library_name": "Alexa sound library",
-    "alexa_sound_library_hint": "These are the sounds from the {library} that play on Alexa speakers. Select Test to check whether your speaker can play the one you chose."
+    "alexa_kind_alarms": "Alarms",
+    "alexa_kind_animals": "Animals",
+    "alexa_kind_bell": "Bell",
+    "alexa_kind_voices": "Voices",
+    "alexa_snd_scifi_alarm_01": "Scifi Alarm (1)",
+    "alexa_snd_scifi_alarm_04": "Scifi Alarm (4)",
+    "alexa_snd_doorbell_01": "Doorbell (1)",
+    "alexa_snd_doorbell_chime_01": "Doorbell Chime (1)",
+    "alexa_snd_doorbell_chime_02": "Doorbell Chime (2)",
+    "alexa_snd_rooster_crow_01": "Rooster Crow (1)",
+    "alexa_snd_cat_meow_1x_01": "Cat Meow 1x (1)",
+    "alexa_snd_dog_med_bark_1x_02": "Dog Med Bark 1x (2)",
+    "alexa_snd_lion_roar_02": "Lion Roar (2)",
+    "alexa_snd_wolf_howl_02": "Wolf Howl (2)",
+    "alexa_snd_church_bell_1x_02": "Church Bell 1x (2)",
+    "alexa_snd_crowd_applause_01": "Crowd Applause (1)",
+    "alexa_snd_large_crowd_cheer_01": "Large Crowd Cheer (1)"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Away mode pauses chores and nudges unless you select them below. Your pet rests until you come back.",
@@ -683,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "No Alexa Devices entities found. Is the integration installed?",
     "you_have_no_such_speaker_yet": "You have no such speaker yet.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play on Alexa speakers. Files play on any speaker.",
+    "one_list_for_all_speakers_pick": "Choose sounds for Ding or Alarm, or use them in your nudge sequences. Alexa sounds play only on Alexa Media Player speakers. Files play on other media players.",
     "name_of_the_sound": "Name of the sound",
     "pick_one_of_your_sounds": "Pick one of your sounds",
     "choose_a_media_player": "Choose a media player…",
@@ -727,7 +740,8 @@
     "remove_alarm_device": "Remove alarm device {device}",
     "sound": "Sound {n}",
     "file": "File: {sound}",
-    "no_device_chosen_yet": "no device chosen yet"
+    "no_device_chosen_yet": "no device chosen yet",
+    "alexa_devices_no_amazon_sounds": "This speaker comes from Alexa Devices, which cannot play Amazon sounds. Use a speaker from Alexa Media Player."
   },
   "stage": {
     "your_pets_room": "Your pet's room"
@@ -1343,6 +1357,7 @@
     "a_wall_board_name_can_have_up_65cb": "A wall board name can have up to {board_name_max} characters.",
     "ai_help_is_switched_off_turn_it_675e": "AI help is switched off. Turn it on in Settings first.",
     "alarm_repeat_must_be_0_to_seconds_3ded": "Alarm repeat must be 0 to {alarm_repeat_max} seconds.",
+    "alexa_devices_cannot_play_amazon_sounds_use_a1ee": "Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player.",
     "an_alarm_device_must_be_a_siren_81ed": "An alarm device must be a siren, switch, input_boolean or script.",
     "an_alarm_must_last_to_seconds_98c4": "An alarm must last {seconds_min} to {seconds_max} seconds.",
     "an_image_file_path_can_have_up_b43f": "An image file path can have up to {picture_max} characters.",

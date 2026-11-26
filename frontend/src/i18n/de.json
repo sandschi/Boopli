@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Boopli fragt Claude. Das dauert einen Moment…",
     "break_it_down_now": "Jetzt aufteilen",
     "make_a_cup_of_tea": "Eine Tasse Tee machen",
-    "alexa_sound_id": "Alexa-Ton-ID",
     "on_for_seconds": "Dauer (Sekunden)",
     "switch_ask_claude_on": "„Claude fragen“ einschalten",
     "no_limit": "Kein Limit",
@@ -88,9 +87,23 @@
     "alexa_sound_which": "Ton",
     "alexa_sound_pick_kind": "Wähle eine Art von Ton …",
     "alexa_sound_own_in_use": "Deine eigene ID ist in Benutzung",
-    "alexa_sound_type_own": "Eine ID selbst eintippen",
-    "alexa_sound_library_name": "Alexa-Tonbibliothek",
-    "alexa_sound_library_hint": "Das sind die Töne aus der {library}, die auf Alexa-Lautsprechern laufen. Wähle „Testen“, um zu prüfen, ob dein Lautsprecher den gewählten Ton abspielen kann."
+    "alexa_kind_alarms": "Alarme",
+    "alexa_kind_animals": "Tiere",
+    "alexa_kind_bell": "Glocken",
+    "alexa_kind_voices": "Stimmen",
+    "alexa_snd_scifi_alarm_01": "Science-Fiction-Alarm (1)",
+    "alexa_snd_scifi_alarm_04": "Science-Fiction-Alarm (4)",
+    "alexa_snd_doorbell_01": "Türklingel (1)",
+    "alexa_snd_doorbell_chime_01": "Türgong (1)",
+    "alexa_snd_doorbell_chime_02": "Türgong (2)",
+    "alexa_snd_rooster_crow_01": "Hahnenschrei (1)",
+    "alexa_snd_cat_meow_1x_01": "Katze miaut einmal (1)",
+    "alexa_snd_dog_med_bark_1x_02": "Hund bellt einmal (2)",
+    "alexa_snd_lion_roar_02": "Löwengebrüll (2)",
+    "alexa_snd_wolf_howl_02": "Wolfsgeheul (2)",
+    "alexa_snd_church_bell_1x_02": "Kirchenglocke, einmal (2)",
+    "alexa_snd_crowd_applause_01": "Publikumsapplaus (1)",
+    "alexa_snd_large_crowd_cheer_01": "Große Menge jubelt (1)"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "Im Abwesenheitsmodus pausieren Aufgaben und Stupse. Unten kannst du auswählen, welche Aufgaben weiterlaufen. Dein Haustier ruht sich aus, bis du wieder da bist.",
@@ -683,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli findet keine Entitäten von Alexa Devices. Ist die Integration installiert?",
     "you_have_no_such_speaker_yet": "Du hast noch keinen Lautsprecher dieser Art eingerichtet.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen auf Alexa-Lautsprechern, Tondateien auf allen Lautsprechern.",
+    "one_list_for_all_speakers_pick": "Wähle Töne für „Ding“ oder „Alarmton“ oder nutze sie in deinen Ketten. Alexa-Töne laufen nur auf Lautsprechern von Alexa Media Player. Tondateien laufen auf anderen Media Playern.",
     "name_of_the_sound": "Name des Tons",
     "pick_one_of_your_sounds": "Wähle einen deiner Töne",
     "choose_a_media_player": "Mediaplayer auswählen…",
@@ -727,7 +740,8 @@
     "remove_alarm_device": "Alarmgerät {device} entfernen",
     "sound": "Ton {n}",
     "file": "Datei: {sound}",
-    "no_device_chosen_yet": "noch kein Gerät ausgewählt"
+    "no_device_chosen_yet": "noch kein Gerät ausgewählt",
+    "alexa_devices_no_amazon_sounds": "Dieser Lautsprecher kommt von Alexa Devices und kann keine Amazon-Töne abspielen. Nimm einen Lautsprecher von Alexa Media Player."
   },
   "stage": {
     "your_pets_room": "Zimmer deines Haustiers"
@@ -1510,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Du kannst die voreingestellte Stups-Kette „{gone}“ bearbeiten. Lass sie in deiner Liste.",
     "you_can_have_at_most_sounds_of_0a92": "Du kannst höchstens {extra_sounds_max} eigene Töne haben.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Du kannst höchstens {ladder_max} Ketten haben.",
-    "your_pet_s_name_can_have_up_2b26": "Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein."
+    "your_pet_s_name_can_have_up_2b26": "Der Name deines Haustiers darf höchstens {pet_name_max} Zeichen lang sein.",
+    "alexa_devices_cannot_play_amazon_sounds_use_a1ee": "Alexa Devices kann keine Amazon-Töne abspielen. Nimm einen Lautsprecher von Alexa Media Player."
   }
 }

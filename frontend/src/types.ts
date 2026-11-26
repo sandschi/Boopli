@@ -415,6 +415,7 @@ export interface Hass {
   user?: { name?: string };
   language?: string; // the language of the person (for example "de"), also used for the panel texts
   states: Record<string, HassState>;
+  entities?: Record<string, { platform?: string }>; // which integration an entity belongs to
   services: Record<string, Record<string, unknown>>;
   callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;
   connected?: boolean; // false while the connection to Home Assistant is down

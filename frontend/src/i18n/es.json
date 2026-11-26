@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Consultando a Claude. Tardará un momento…",
     "break_it_down_now": "Dividir en pasos ahora",
     "make_a_cup_of_tea": "Preparar una taza de té",
-    "alexa_sound_id": "ID del sonido de Alexa",
     "on_for_seconds": "Duración (segundos)",
     "switch_ask_claude_on": "Activar «Preguntar a Claude»",
     "no_limit": "Sin límite",
@@ -88,9 +87,23 @@
     "alexa_sound_which": "Sonido",
     "alexa_sound_pick_kind": "Elige un tipo de sonido…",
     "alexa_sound_own_in_use": "Se está usando tu propio ID",
-    "alexa_sound_type_own": "Escribir un ID tú mismo",
-    "alexa_sound_library_name": "biblioteca de sonidos de Alexa",
-    "alexa_sound_library_hint": "Estos son los sonidos de la {library} que suenan en los altavoces Alexa. Selecciona Probar para comprobar si tu altavoz puede reproducir el que elegiste."
+    "alexa_kind_alarms": "Alarmas",
+    "alexa_kind_animals": "Animales",
+    "alexa_kind_bell": "Campanas",
+    "alexa_kind_voices": "Voces",
+    "alexa_snd_scifi_alarm_01": "Alarma de ciencia ficción (1)",
+    "alexa_snd_scifi_alarm_04": "Alarma de ciencia ficción (4)",
+    "alexa_snd_doorbell_01": "Timbre (1)",
+    "alexa_snd_doorbell_chime_01": "Campanilla del timbre (1)",
+    "alexa_snd_doorbell_chime_02": "Campanilla del timbre (2)",
+    "alexa_snd_rooster_crow_01": "Canto del gallo (1)",
+    "alexa_snd_cat_meow_1x_01": "Gato que maúlla una vez (1)",
+    "alexa_snd_dog_med_bark_1x_02": "Perro que ladra una vez (2)",
+    "alexa_snd_lion_roar_02": "Rugido de león (2)",
+    "alexa_snd_wolf_howl_02": "Aullido de lobo (2)",
+    "alexa_snd_church_bell_1x_02": "Campana de iglesia, una vez (2)",
+    "alexa_snd_crowd_applause_01": "Aplausos del público (1)",
+    "alexa_snd_large_crowd_cheer_01": "Multitud que vitorea (1)"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "El modo ausencia pausa las tareas y los recordatorios. Las tareas que selecciones abajo siguen activas y pueden enviarte recordatorios. Tu mascota descansa hasta que vuelvas.",
@@ -683,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli no encuentra entidades de Alexa Devices. ¿Instalaste la integración?",
     "you_have_no_such_speaker_yet": "Aún no tienes altavoces de este tipo.",
     "details": "Detalles",
-    "one_list_for_all_speakers_pick": "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa se reproducen en altavoces Alexa. Los archivos se reproducen en cualquier altavoz.",
+    "one_list_for_all_speakers_pick": "Elige sonidos para «Sonido breve» o «Sonido de alarma», o úsalos en tus cadenas de recordatorios. Los sonidos de Alexa solo se reproducen en altavoces de Alexa Media Player. Los archivos se reproducen en otros reproductores multimedia.",
     "name_of_the_sound": "Nombre del sonido",
     "pick_one_of_your_sounds": "Elige uno de tus sonidos",
     "choose_a_media_player": "Elegir reproductor multimedia…",
@@ -727,7 +740,8 @@
     "remove_alarm_device": "Quitar el dispositivo de alarma {device}",
     "sound": "Sonido {n}",
     "file": "Archivo: {sound}",
-    "no_device_chosen_yet": "aún no se ha elegido un dispositivo"
+    "no_device_chosen_yet": "aún no se ha elegido un dispositivo",
+    "alexa_devices_no_amazon_sounds": "Este altavoz viene de Alexa Devices, que no puede reproducir los sonidos de Amazon. Usa un altavoz de Alexa Media Player."
   },
   "stage": {
     "your_pets_room": "Habitación de tu mascota"
@@ -1510,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Puedes editar la cadena de recordatorios «{gone}» que viene con Boopli. Consérvala en tu lista.",
     "you_can_have_at_most_sounds_of_0a92": "Puedes tener hasta {extra_sounds_max} sonidos propios.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Puedes tener hasta {ladder_max} cadenas de recordatorios.",
-    "your_pet_s_name_can_have_up_2b26": "El nombre de tu mascota puede tener hasta {pet_name_max} caracteres."
+    "your_pet_s_name_can_have_up_2b26": "El nombre de tu mascota puede tener hasta {pet_name_max} caracteres.",
+    "alexa_devices_cannot_play_amazon_sounds_use_a1ee": "Alexa Devices no puede reproducir los sonidos de Amazon. Usa un altavoz de Alexa Media Player."
   }
 }

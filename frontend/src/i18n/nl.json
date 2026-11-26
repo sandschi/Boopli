@@ -40,7 +40,6 @@
     "asking_claude_this_takes_a_little": "Boopli vraagt het aan Claude. Dat duurt even…",
     "break_it_down_now": "Nu opdelen",
     "make_a_cup_of_tea": "Een kop thee zetten",
-    "alexa_sound_id": "ID van Alexa-geluid",
     "on_for_seconds": "Duur (seconden)",
     "switch_ask_claude_on": "“Vraag Claude” aanzetten",
     "no_limit": "Geen limiet",
@@ -88,9 +87,23 @@
     "alexa_sound_which": "Geluid",
     "alexa_sound_pick_kind": "Kies een soort geluid…",
     "alexa_sound_own_in_use": "Je eigen ID is in gebruik",
-    "alexa_sound_type_own": "Zelf een ID intypen",
-    "alexa_sound_library_name": "Alexa-geluidsbibliotheek",
-    "alexa_sound_library_hint": "Dit zijn de geluiden uit de {library} die op Alexa-speakers afspelen. Kies Testen om te controleren of je speaker het gekozen geluid kan afspelen."
+    "alexa_kind_alarms": "Alarmen",
+    "alexa_kind_animals": "Dieren",
+    "alexa_kind_bell": "Bellen",
+    "alexa_kind_voices": "Stemmen",
+    "alexa_snd_scifi_alarm_01": "Sciencefictionalarm (1)",
+    "alexa_snd_scifi_alarm_04": "Sciencefictionalarm (4)",
+    "alexa_snd_doorbell_01": "Deurbel (1)",
+    "alexa_snd_doorbell_chime_01": "Deurbelgong (1)",
+    "alexa_snd_doorbell_chime_02": "Deurbelgong (2)",
+    "alexa_snd_rooster_crow_01": "Hanengekraai (1)",
+    "alexa_snd_cat_meow_1x_01": "Kat miauwt één keer (1)",
+    "alexa_snd_dog_med_bark_1x_02": "Hond blaft één keer (2)",
+    "alexa_snd_lion_roar_02": "Leeuwengebrul (2)",
+    "alexa_snd_wolf_howl_02": "Wolfsgehuil (2)",
+    "alexa_snd_church_bell_1x_02": "Kerkklok, één keer (2)",
+    "alexa_snd_crowd_applause_01": "Applaus van het publiek (1)",
+    "alexa_snd_large_crowd_cheer_01": "Grote menigte juicht (1)"
   },
   "away": {
     "boopli_rests_nothing_starts_and_nothing": "De Afwezigheidsmodus pauzeert taken en seintjes, behalve voor de taken die je hieronder kiest. Je huisdier rust tot je terug bent.",
@@ -683,7 +696,7 @@
     "no_alexa_devices_entities_found_is": "Boopli vindt geen entiteiten van Alexa Devices. Heb je de integratie geïnstalleerd?",
     "you_have_no_such_speaker_yet": "Je hebt nog geen luidspreker van dit type ingesteld.",
     "details": "Details",
-    "one_list_for_all_speakers_pick": "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt op Alexa-luidsprekers. Een bestand werkt op elke luidspreker.",
+    "one_list_for_all_speakers_pick": "Kies geluiden voor “Ping” of “Alarmgeluid”, of gebruik ze in je reeksen seintjes. Een Alexa-geluid werkt alleen op luidsprekers van Alexa Media Player. Een bestand werkt op andere mediaspelers.",
     "name_of_the_sound": "Naam van het geluid",
     "pick_one_of_your_sounds": "Kies een van je geluiden",
     "choose_a_media_player": "Kies een mediaspeler…",
@@ -727,7 +740,8 @@
     "remove_alarm_device": "Alarmapparaat {device} verwijderen",
     "sound": "Geluid {n}",
     "file": "Bestand · {sound}",
-    "no_device_chosen_yet": "nog geen apparaat gekozen"
+    "no_device_chosen_yet": "nog geen apparaat gekozen",
+    "alexa_devices_no_amazon_sounds": "Deze speaker komt van Alexa Devices en kan geen Amazon-geluiden afspelen. Gebruik een speaker van Alexa Media Player."
   },
   "stage": {
     "your_pets_room": "Kamer van je huisdier"
@@ -1510,6 +1524,7 @@
     "you_can_edit_the_built_in_nudge_e705": "Je kunt de standaardreeks “{gone}” bewerken. Laat die in je lijst staan.",
     "you_can_have_at_most_sounds_of_0a92": "Je kunt maximaal {extra_sounds_max} eigen geluiden hebben.",
     "you_can_have_up_to_nudge_sequences_bd4a": "Je kunt maximaal {ladder_max} reeksen hebben.",
-    "your_pet_s_name_can_have_up_2b26": "De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn."
+    "your_pet_s_name_can_have_up_2b26": "De naam van je huisdier mag maximaal {pet_name_max} tekens lang zijn.",
+    "alexa_devices_cannot_play_amazon_sounds_use_a1ee": "Alexa Devices kan geen Amazon-geluiden afspelen. Gebruik een speaker van Alexa Media Player."
   }
 }
