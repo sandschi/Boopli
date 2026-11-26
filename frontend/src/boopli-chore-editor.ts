@@ -41,7 +41,6 @@ const ALL_DAYS_AT_NINE: Record<string, string[]> = Object.fromEntries(
 export class BoopliChoreEditor extends LitElement {
   static properties = {
     hass: { attribute: false },
-    draft: { attribute: false },
     defaultStyle: { attribute: false },
     timeZone: { type: String },
     snapshot: { attribute: false },
@@ -54,7 +53,6 @@ export class BoopliChoreEditor extends LitElement {
   };
 
   declare hass?: Hass;
-  declare draft: ChoreDraft;
   declare defaultStyle: NudgeStyle;
   declare timeZone: string;
   declare snapshot?: Snapshot;
@@ -67,6 +65,26 @@ export class BoopliChoreEditor extends LitElement {
   declare _sched: "off" | "inline" | "direct";
   /** The AI "Suggest steps" screen is open. */
   declare _suggest: boolean;
+
+  private _working?: ChoreDraft; // the chore being edited: what the person changes lives here
+  private _given?: ChoreDraft; // the last chore the parent handed in
+
+  /**
+   * The chore to edit. The parent hands in the chore it opened, and Lit hands the same object in again
+   * on every refresh of the parent (a snapshot push, a Home Assistant state change). Only a different
+   * chore replaces the working copy; the same one again must not throw away what was changed since.
+   */
+  get draft(): ChoreDraft {
+    return this._working as ChoreDraft;
+  }
+
+  set draft(value: ChoreDraft) {
+    if (value === this._given) return;
+    this._given = value;
+    const old = this._working;
+    this._working = value;
+    this.requestUpdate("draft", old);
+  }
 
   private _base?: string; // the draft as it was when the editor opened
   private _lastDirty = false;
@@ -136,7 +154,9 @@ export class BoopliChoreEditor extends LitElement {
   }
 
   private _update(patch: Partial<ChoreDraft>): void {
-    this.draft = { ...this.draft, ...patch };
+    const old = this._working;
+    this._working = { ...this.draft, ...patch }; // not through the setter: that is for what the parent hands in
+    this.requestUpdate("draft", old);
   }
 
   private _updateRepeat(patch: Partial<ChoreDraft["repeat"]>): void {
