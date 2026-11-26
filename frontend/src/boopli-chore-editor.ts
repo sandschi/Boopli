@@ -275,7 +275,8 @@ export class BoopliChoreEditor extends LitElement {
       const submitted = JSON.stringify(submittedDraft);
       const saved = await saveChore(this.hass, payload);
       if (this._given !== given) {
-        // The screen was handed another chore while saving: leave it alone.
+        // The screen was handed another chore while saving: leave it alone, and do not report a finished save.
+        incomplete = true;
       } else if (JSON.stringify(this.draft) === submitted) {
         if (close) {
           this._close();
