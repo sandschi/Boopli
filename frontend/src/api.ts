@@ -243,6 +243,11 @@ export function deleteChore(hass: Hass, choreId: string): Promise<void> {
   return hass.callWS({ type: "boopli/chore_delete", chore_id: choreId });
 }
 
+/** Skip this round of a chore: a run in progress is dropped (no XP), otherwise the coming round is skipped. */
+export function skipRound(hass: Hass, choreId: string): Promise<void> {
+  return hass.callWS({ type: "boopli/chore_skip", chore_id: choreId });
+}
+
 /** Start a chore. With `answers` (question id -> yes) the steps for a "no" are left out. */
 export function startChore(
   hass: Hass,

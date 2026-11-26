@@ -318,7 +318,13 @@
     "in_progress": "En cours",
     "anywhere": "Partout",
     "not_scheduled": "Non planifiée",
-    "next": "La prochaine fois : {when}"
+    "next": "La prochaine fois : {when}",
+    "skip_round": "Passer ce tour",
+    "skip_next": "Passer le prochain tour",
+    "skip_running_ask": "Laisser tomber ce tour ? Il ne rapporte pas d'XP.",
+    "skip_next_ask": "Passer le prochain tour ? La tâche revient après.",
+    "skip_yes": "Oui, passer",
+    "skip_keep": "Garder"
   },
   "claude": {
     "the_routines_fire_address": "URL de lancement de la routine",
@@ -1414,6 +1420,7 @@
     "give_each_nudge_sequence_a_name_b157": "Donne un nom à chaque série de rappels.",
     "give_each_wall_board_a_name_4968": "Donne un nom à chaque Wallboard.",
     "give_the_room_a_name_first_e276": "Donne d’abord un nom à la pièce.",
+    "has_no_round_to_skip_e62b": "« {name} » n’a pas de tour à passer.",
     "has_no_step_waiting_for_you_right_379f": "Aucune étape de « {name} » ne t’attend pour l’instant.",
     "has_nothing_in_progress_5779": "Rien n’est en cours dans « {name} ».",
     "has_two_tiles_with_the_same_id_7762": "Deux tuiles de « {name} » ont le même ID.",

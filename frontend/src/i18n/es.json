@@ -318,7 +318,13 @@
     "in_progress": "En curso",
     "anywhere": "En cualquier lugar",
     "not_scheduled": "Sin horario",
-    "next": "Siguiente: {when}"
+    "next": "Siguiente: {when}",
+    "skip_round": "Saltar esta ronda",
+    "skip_next": "Saltar la próxima ronda",
+    "skip_running_ask": "¿Dejar esta ronda? No da XP.",
+    "skip_next_ask": "¿Saltar la próxima ronda? La tarea vuelve después.",
+    "skip_yes": "Sí, saltar",
+    "skip_keep": "Mantener"
   },
   "claude": {
     "the_routines_fire_address": "Dirección para iniciar la rutina",
@@ -1414,6 +1420,7 @@
     "give_each_nudge_sequence_a_name_b157": "Ponle un nombre a cada cadena de recordatorios.",
     "give_each_wall_board_a_name_4968": "Ponle un nombre a cada Wallboard.",
     "give_the_room_a_name_first_e276": "Ponle primero un nombre al espacio.",
+    "has_no_round_to_skip_e62b": "«{name}» no tiene ninguna ronda que saltar.",
     "has_no_step_waiting_for_you_right_379f": "Ahora mismo no hay ningún paso pendiente en «{name}».",
     "has_nothing_in_progress_5779": "No hay nada en curso en «{name}».",
     "has_two_tiles_with_the_same_id_7762": "«{name}» tiene dos tarjetas con el mismo ID.",

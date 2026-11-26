@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import TYPE_CHECKING, Any
 
 from dataclasses import replace
@@ -41,6 +42,9 @@ class BoopliNudger:
         self._blink_owner: dict[str, str] = {}  # light entity -> step key that started its blink
         # Alarms that are sounding: target entity -> (step key, task)
         self._alarms: dict[str, tuple[str, asyncio.Task[None]]] = {}
+        # One-shot speaker alarms (repeat 0): their task ends right after the single play, so
+        # remember speaker -> (step key, monotonic time until which the sound may still be playing).
+        self._one_shots: dict[str, tuple[str, float]] = {}
 
     def _texts(self) -> dict[str, str]:
         """The buttons and sentences phones and speakers get, in the language of Home Assistant."""
@@ -66,6 +70,7 @@ class BoopliNudger:
         for _key, task in self._alarms.values():
             task.cancel()  # each alarm stops its speaker or switches its device off
         self._alarms.clear()
+        self._one_shots.clear()
 
     @callback
     def _on_action(self, event: Event) -> None:
@@ -471,9 +476,19 @@ class BoopliNudger:
 
     def _start_speaker_alarm(self, speaker: engine.SpeakerCfg, key: str) -> bool:
         """Repeat the alarm sound on a speaker for its duration, in the background."""
-        return self._start_alarm_task(
+        started = self._start_alarm_task(
             speaker.entity_id, key, self._speaker_alarm(speaker)
         )
+        if started:
+            # This alarm owns the speaker now: an older step's one-shot must not stop it.
+            self._one_shots.pop(speaker.entity_id, None)
+            if speaker.alarm.repeat_s <= 0:
+                # Plays once and the task is over at once: remember it so Done, Snooze and On it can still stop it.
+                self._one_shots[speaker.entity_id] = (
+                    key,
+                    time.monotonic() + speaker.alarm.seconds,
+                )
+        return started
 
     def _start_device_alarm(self, device: engine.AlarmDeviceCfg, key: str) -> bool:
         """Switch an alarm device on for its duration, then off."""
@@ -522,6 +537,13 @@ class BoopliNudger:
         for target, (alarm_key, task) in list(self._alarms.items()):
             if alarm_key == key and not task.done():
                 task.cancel()
+        now = time.monotonic()
+        for entity_id, (one_shot_key, until) in list(self._one_shots.items()):
+            if until <= now:
+                del self._one_shots[entity_id]  # long over; never stop what plays there now
+            elif one_shot_key == key:
+                del self._one_shots[entity_id]
+                await self._call("media_player", "media_stop", {"entity_id": entity_id})
         for entity_id, blink in list(self._blinks.items()):
             # A blink of this step stops, and the light goes back as it was; others carry on.
             if self._blink_owner.get(entity_id) == key and not blink.done():
