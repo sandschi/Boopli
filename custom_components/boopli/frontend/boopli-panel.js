@@ -13314,14 +13314,14 @@ var Ka = 8, qa = () => [{
 					only_if: e.only_if && n.has(e.only_if) ? e.only_if : "",
 					image: (e.image ?? "").trim()
 				}))
-			}, i = JSON.stringify(this.draft), a = await Xt(this.hass, r);
-			return e ? this._close() : JSON.stringify(this.draft) === i ? (this._update({
+			}, i = this.draft, a = this._given, o = JSON.stringify(i), s = await Xt(this.hass, r);
+			return e ? this._close() : this._given !== a || (JSON.stringify(this.draft) === o ? (this._update({
 				...r,
-				id: a.id
-			}), this._base = JSON.stringify(this.draft)) : (this._update({ id: a.id }), this._base = JSON.stringify({
-				...r,
-				id: a.id
-			})), !0;
+				id: s.id
+			}), this._base = JSON.stringify(this.draft)) : (this._update({ id: s.id }), this._base = JSON.stringify({
+				...i,
+				id: s.id
+			}))), !0;
 		} catch (e) {
 			return this._error = D(e), !1;
 		} finally {
