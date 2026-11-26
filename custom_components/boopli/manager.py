@@ -407,7 +407,7 @@ class BoopliManager:
             )
 
     def _watch_lights(self) -> None:
-        """Remember each nudge light's brightness and color while it is on (see engine.restore_steps)."""
+        """Remember each nudge light's brightness and color while it is on (see engine.own_color_steps)."""
         if self._unsub_lights:
             self._unsub_lights()
             self._unsub_lights = None

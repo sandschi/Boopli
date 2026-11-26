@@ -273,16 +273,18 @@ export class BoopliChoreEditor extends LitElement {
       const given = this._given;
       const submitted = JSON.stringify(submittedDraft);
       const saved = await saveChore(this.hass, payload);
-      if (close) {
-        this._close();
-      } else if (this._given !== given) {
+      if (this._given !== given) {
         // The screen was handed another chore while saving: leave it alone.
       } else if (JSON.stringify(this.draft) === submitted) {
-        // Stay on the page: what is shown is now what is saved, so nothing is left unsaved.
-        this._update({ ...payload, id: saved.id });
-        this._base = JSON.stringify(this.draft);
+        if (close) {
+          this._close();
+        } else {
+          // Stay on the page: what is shown is now what is saved, so nothing is left unsaved.
+          this._update({ ...payload, id: saved.id });
+          this._base = JSON.stringify(this.draft);
+        }
       } else {
-        // Something was typed while the save was on its way: keep it, and keep it marked as unsaved.
+        // Something was typed while the save was on its way: keep it (also for Save and close), marked as unsaved.
         this._update({ id: saved.id });
         // The saved state is what was sent, so undoing the later typing leaves nothing unsaved.
         this._base = JSON.stringify({ ...submittedDraft, id: saved.id });

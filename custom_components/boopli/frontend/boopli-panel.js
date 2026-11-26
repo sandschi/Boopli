@@ -13315,7 +13315,7 @@ var Ka = 8, qa = () => [{
 					image: (e.image ?? "").trim()
 				}))
 			}, i = this.draft, a = this._given, o = JSON.stringify(i), s = await Xt(this.hass, r);
-			return e ? this._close() : this._given !== a || (JSON.stringify(this.draft) === o ? (this._update({
+			return this._given !== a || (JSON.stringify(this.draft) === o ? e ? this._close() : (this._update({
 				...r,
 				id: s.id
 			}), this._base = JSON.stringify(this.draft)) : (this._update({ id: s.id }), this._base = JSON.stringify({

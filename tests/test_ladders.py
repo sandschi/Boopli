@@ -554,13 +554,14 @@ def test_a_removed_device_leaves_every_nudge():
     assert engine.drop_removed_devices_from_ladders(settings) is False  # nothing left to drop
 
 
-def test_a_light_that_was_off_gets_its_own_color_back_after_a_blink():
+def test_a_light_that_was_off_gets_its_own_color_back_after_the_last_blink():
     own = engine.light_last_on({"brightness": 200, "color_mode": "rgb", "rgb_color": [255, 180, 60]})
     assert own == {"brightness": 200, "rgb_color": [255, 180, 60]}
-    # off before the blink and we know its color: on with that color, then off again
-    assert engine.restore_steps("off", {}, own) == [("turn_on", own), ("turn_off", {})]
-    # off and no color known: only off, as before
-    assert engine.restore_steps("off", {}, None) == [("turn_off", {})]
-    # on before the blink: put back as it was, nothing more
-    steps = engine.restore_steps("on", {"brightness": 100, "color_mode": "rgb", "rgb_color": [1, 2, 3]}, own)
-    assert steps == [("turn_on", {"brightness": 100, "rgb_color": [1, 2, 3]})]
+    # off before the blink and we know its color: once at the end, on with that color, then off again
+    assert engine.own_color_steps("off", own) == [("turn_on", own), ("turn_off", {})]
+    # between the blinks it is simply put back (off), as before
+    assert engine.restore_plan("off", {}) == ("turn_off", {})
+    # off and no color known: nothing more to do
+    assert engine.own_color_steps("off", None) == []
+    # on before the blink: put back with restore_plan, nothing more
+    assert engine.own_color_steps("on", own) == []

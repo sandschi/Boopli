@@ -3213,18 +3213,17 @@ def light_last_on(attrs: dict[str, Any]) -> dict[str, Any]:
     return restore_plan("on", attrs)[1]
 
 
-def restore_steps(
-    state: str, attrs: dict[str, Any], last_on: dict[str, Any] | None
-) -> list[tuple[str, dict[str, Any]]]:
-    """The calls that put a light back as it was after a blink or an indicator.
+def own_color_steps(state: str, last_on: dict[str, Any] | None) -> list[tuple[str, dict[str, Any]]]:
+    """The calls to make once, after the last blink, so a light that was off keeps its own color.
 
     A light that was off has no color in Home Assistant, but the lamp itself keeps the last one it
     showed (the blink color) and uses it at the next switch-on. So when we know the color it had
-    when it was last on, it is switched on with that color for a moment and off again.
+    when it was last on, it is switched on with that color for a moment and off again. Nothing
+    for a light that was on (it is put back with `restore_plan`) or whose color is not known.
     """
     if state != "on" and last_on:
         return [("turn_on", dict(last_on)), ("turn_off", {})]
-    return [restore_plan(state, attrs)]
+    return []
 
 
 def restore_plan(state: str, attrs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
