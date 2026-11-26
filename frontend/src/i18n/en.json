@@ -467,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Could not reach Boopli. Is the integration set up?",
     "away_mode_is_planned": "Away mode is planned",
     "back_now": "Open Away mode settings",
-    "my_home": "My home"
+    "my_home": "My home",
+    "access_lowered_discarded": "This access change closed something that was open. Its unsaved changes were dropped."
   },
   "pet_preview": {
     "level_up_n": "Level {n}!",
@@ -924,7 +925,8 @@
     "full_screen": "Full screen",
     "back_to_boopli": "Back to Boopli",
     "no_board_yet_make_one_in": "No wall board yet. Create one under Wall board in Settings.",
-    "edit_this_tile": "Edit this tile: {replace}"
+    "edit_this_tile": "Edit this tile: {replace}",
+    "no_board_yet_ask_an_admin": "No wall board yet. Ask an administrator to create one."
   },
   "wizard": {
     "a_board_is_a_grid_of": "A wall board is a grid of tiles for a screen on the wall. You can add a clock, your pet, chores that are due, weather and more.",

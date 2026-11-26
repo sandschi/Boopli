@@ -1,4 +1,4 @@
-{
+﻿{
   "domain": "boopli",
   "name": "Boopli",
   "codeowners": ["@sandschi"],
@@ -10,5 +10,5 @@
   "issue_tracker": "https://github.com/sandschi/Boopli/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.0.83"
+  "version": "0.0.84"
 }

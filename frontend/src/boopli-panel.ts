@@ -59,6 +59,7 @@ export class BoopliPanel extends LitElement {
     _tab: { state: true },
     _nowMs: { state: true },
     _connectionError: { state: true },
+    _accessNote: { state: true },
     _wizard: { state: true },
     _breakdown: { state: true },
     _breakdownError: { state: true },
@@ -75,6 +76,7 @@ export class BoopliPanel extends LitElement {
   declare _tab: Tab;
   declare _nowMs: number;
   declare _connectionError: string;
+  declare _accessNote: string; // said once when a lowered access level took away something that was open
   declare _wizard: WizardRequest | null;
   declare _breakdown: { kind: "now" | "recurring"; task: string } | null;
   declare _breakdownError: string;
@@ -96,6 +98,7 @@ export class BoopliPanel extends LitElement {
     this._tab = "today";
     this._nowMs = Date.now();
     this._connectionError = "";
+    this._accessNote = "";
     this._wizard = null;
     this._breakdown = null;
     this._breakdownError = "";
@@ -164,7 +167,31 @@ export class BoopliPanel extends LitElement {
     return (Object.keys(TAB_LABELS()) as Tab[]).filter((tab) => tab === "today" || tab === "chores" || (tab === "home" ? can.notes : can.all));
   }
 
+  /**
+   * The level was lowered while something that needs more was open (a tab, the wizard, the breakdown):
+   * close it, forget its unsaved draft (it could not be saved any more) and say so.
+   */
+  private _dropRevoked(): void {
+    const can = accessOf(this._snapshot);
+    let dropped = false;
+    if (!this._tabs().includes(this._tab)) {
+      const lost = this._tab;
+      this._tab = "today";
+      if ((lost === "settings" || lost === "home") && this._dirty[lost]) {
+        this._dirty = { ...this._dirty, [lost]: false };
+        dropped = true;
+      }
+    }
+    if (!can.all && (this._wizard || this._breakdown)) {
+      this._wizard = null;
+      this._breakdown = null;
+      dropped = true;
+    }
+    if (dropped) this._accessNote = t("panel.access_lowered_discarded");
+  }
+
   private async _selectTab(tab: Tab): Promise<void> {
+    this._accessNote = "";
     if (!this._tabs().includes(tab)) return;
     if (tab === this._tab && !this._wizard) return;
     if (!(await this._guard())) return;
@@ -288,12 +315,13 @@ export class BoopliPanel extends LitElement {
       this._subscribing = true;
       subscribe(this.hass, (snapshot) => {
         this._snapshot = snapshot;
+        this._dropRevoked();
         this._nowMs = Date.now();
         this._connectionError = "";
         // The very first visit opens the wizard by itself (once per page load).
         if (!this._autoChecked) {
           this._autoChecked = true;
-          if (snapshot.setup?.status === "new") {
+          if (snapshot.setup?.status === "new" && accessOf(snapshot).all) {
             this._openWizard({ wizard: "first", startAt: "" });
           }
         }
@@ -436,6 +464,7 @@ export class BoopliPanel extends LitElement {
         @egg-started=${() => this.hass && void eggFound(this.hass).catch(() => undefined)}
         @dirty-change=${this._onDirty}
       >
+        ${this._accessNote ? html`<p class="muted" role="status">${this._accessNote}</p>` : nothing}
         ${this._connectionError
           ? html`<p class="error">${this._connectionError}</p>`
           : this._wizard

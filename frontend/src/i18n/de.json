@@ -467,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Boopli ist gerade nicht erreichbar. Ist die Integration eingerichtet?",
     "away_mode_is_planned": "Abwesenheitsmodus geplant",
     "back_now": "Einstellungen für den Abwesenheitsmodus öffnen",
-    "my_home": "Mein Zuhause"
+    "my_home": "Mein Zuhause",
+    "access_lowered_discarded": "Durch die geänderte Zugriffsstufe wurde etwas geschlossen, das offen war. Nicht gespeicherte Änderungen wurden verworfen."
   },
   "pet_preview": {
     "level_up_n": "Level {n}!",
@@ -924,7 +925,8 @@
     "full_screen": "Vollbild",
     "back_to_boopli": "Zurück zu Boopli",
     "no_board_yet_make_one_in": "Es gibt noch kein Wallboard. Erstelle eins in den „Einstellungen“ unter „Wallboard“.",
-    "edit_this_tile": "Kachel bearbeiten: {replace}"
+    "edit_this_tile": "Kachel bearbeiten: {replace}",
+    "no_board_yet_ask_an_admin": "Es gibt noch kein Wallboard. Bitte einen Administrator, eins anzulegen."
   },
   "wizard": {
     "a_board_is_a_grid_of": "Ein Wallboard ist ein Raster aus Kacheln für einen Wandbildschirm. Du kannst eine Uhr, dein Haustier, anstehende Aufgaben, das Wetter und mehr hinzufügen.",

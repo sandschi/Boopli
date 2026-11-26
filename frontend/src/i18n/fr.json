@@ -467,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Boopli est inaccessible. Est-ce que l’intégration est bien configurée ?",
     "away_mode_is_planned": "Mode absence prévu",
     "back_now": "Ouvrir les paramètres du mode absence",
-    "my_home": "Chez moi"
+    "my_home": "Chez moi",
+    "access_lowered_discarded": "Le changement du niveau d’accès a fermé quelque chose qui était ouvert. Les modifications non enregistrées ont été perdues."
   },
   "pet_preview": {
     "level_up_n": "Niveau {n} !",
@@ -924,7 +925,8 @@
     "full_screen": "Plein écran",
     "back_to_boopli": "Retour à Boopli",
     "no_board_yet_make_one_in": "Pas encore de Wallboard. Dans « Paramètres », tu peux en créer un depuis la carte « Wallboard ».",
-    "edit_this_tile": "Modifier cette tuile : {replace}"
+    "edit_this_tile": "Modifier cette tuile : {replace}",
+    "no_board_yet_ask_an_admin": "Pas encore de tableau mural. Demande à un administrateur d’en créer un."
   },
   "wizard": {
     "a_board_is_a_grid_of": "Un Wallboard est une grille de tuiles pour un écran mural. Tu peux y ajouter une horloge, ton animal, les tâches à faire, la météo et plus encore.",

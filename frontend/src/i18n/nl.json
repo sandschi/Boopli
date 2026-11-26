@@ -467,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Boopli is niet bereikbaar. Heb je de integratie ingesteld?",
     "away_mode_is_planned": "Afwezigheidsmodus gepland",
     "back_now": "Instellingen voor de Afwezigheidsmodus openen",
-    "my_home": "Mijn huis"
+    "my_home": "Mijn huis",
+    "access_lowered_discarded": "Door het gewijzigde toegangsniveau is iets wat openstond gesloten. Niet-opgeslagen wijzigingen zijn vervallen."
   },
   "pet_preview": {
     "level_up_n": "Level {n}!",
@@ -924,7 +925,8 @@
     "full_screen": "Volledig scherm",
     "back_to_boopli": "Terug naar Boopli",
     "no_board_yet_make_one_in": "Je hebt nog geen Wallboard. Maak er een via “Wallboard” in “Instellingen”.",
-    "edit_this_tile": "Tegel bewerken: {replace}"
+    "edit_this_tile": "Tegel bewerken: {replace}",
+    "no_board_yet_ask_an_admin": "Er is nog geen wandbord. Vraag een beheerder er een te maken."
   },
   "wizard": {
     "a_board_is_a_grid_of": "Een Wallboard is een raster met tegels voor een scherm aan de muur. Je kunt een klok, je huisdier, taken die aan de beurt zijn, het weer en meer toevoegen.",

@@ -53,7 +53,15 @@ export class BoopliChores extends LitElement {
   }
 
   protected willUpdate(): void {
-    if (this.openRequest && !this._editing) {
+    // The level was lowered while the editor was open: close it and say nothing is unsaved any more.
+    if (!accessOf(this.snapshot).all) {
+      if (this._editing) {
+        this._editing = null;
+        this._openSchedule = false;
+        this.dispatchEvent(new CustomEvent("dirty-change", { detail: { source: "chore", dirty: false }, bubbles: true, composed: true }));
+      }
+      if (this.openRequest) this.dispatchEvent(new CustomEvent("request-handled", { bubbles: true, composed: true })); // not for this person: drop it
+    } else if (this.openRequest && !this._editing) {
       const request = this.openRequest;
       this._openSchedule = request.schedule;
       this._editing = request.draft;
@@ -83,8 +91,16 @@ export class BoopliChores extends LitElement {
    */
   private async _focusLater(link: "skip" | "edit", id: string): Promise<void> {
     await this.updateComplete;
-    const links = [...this.renderRoot.querySelectorAll<HTMLElement>(`[data-${link}]`)];
-    links.find((el) => el.getAttribute(`data-${link}`) === id)?.focus();
+    // Edit is only there for those who may change chores, Skip only while a round can be skipped: fall back to Start.
+    const order = link === "edit" ? ["edit", "skip", "start"] : ["skip", "start"];
+    for (const name of order) {
+      const links = [...this.renderRoot.querySelectorAll<HTMLElement>(`[data-${name}]`)];
+      const found = links.find((el) => el.getAttribute(`data-${name}`) === id);
+      if (found) {
+        found.focus();
+        return;
+      }
+    }
   }
 
   private _askSkip(chore: Chore, isRunning: boolean): void {
@@ -298,7 +314,7 @@ export class BoopliChores extends LitElement {
                 <div class="chore-actions">
                   ${running.has(c.id)
                     ? nothing
-                    : html`<button class="textlink" ?disabled=${this._busy} @click=${() => this._start(c)}>${t("common.start_now")}</button>`}
+                    : html`<button class="textlink" data-start=${c.id} ?disabled=${this._busy} @click=${() => this._start(c)}>${t("common.start_now")}</button>`}
                   ${canEdit && c.repeat.type === "none"
                     ? html`<button class="textlink quiet" @click=${() => this._edit(c, true)}>${t("chores.set_a_schedule")}</button>`
                     : nothing}

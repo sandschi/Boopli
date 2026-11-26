@@ -680,7 +680,7 @@ export class BoopliToday extends LitElement {
               <p class="muted">
                 ${hasChores
                   ? t("today.enjoy_the_quiet_what_is_coming")
-                  : t("today.add_your_first_chore_in_the")}
+                  : accessOf(this.snapshot).all ? t("today.add_your_first_chore_in_the") : t("chores.no_chores_yet_ask_an_admin")}
               </p>
               ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             </section>

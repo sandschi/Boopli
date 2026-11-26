@@ -467,7 +467,8 @@
     "could_not_reach_boopli_is_the": "No se pudo conectar con Boopli. ¿Ya configuraste la integración?",
     "away_mode_is_planned": "Modo ausencia programado",
     "back_now": "Abrir la configuración del modo ausencia",
-    "my_home": "Mi hogar"
+    "my_home": "Mi hogar",
+    "access_lowered_discarded": "El cambio del nivel de acceso cerró algo que estaba abierto. Se descartaron los cambios sin guardar."
   },
   "pet_preview": {
     "level_up_n": "¡Nivel {n}!",
@@ -924,7 +925,8 @@
     "full_screen": "Pantalla completa",
     "back_to_boopli": "Volver a Boopli",
     "no_board_yet_make_one_in": "Aún no hay ningún Wallboard. Crea uno en «Configuración», en «Wallboard».",
-    "edit_this_tile": "Editar esta tarjeta: {replace}"
+    "edit_this_tile": "Editar esta tarjeta: {replace}",
+    "no_board_yet_ask_an_admin": "Todavía no hay un panel de pared. Pide a un administrador que cree uno."
   },
   "wizard": {
     "a_board_is_a_grid_of": "Un Wallboard es una cuadrícula de tarjetas para una pantalla en la pared. Puedes añadir un reloj, tu mascota, las tareas pendientes, el clima y más.",

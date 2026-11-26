@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
+import { live } from "lit/directives/live.js";
 import { aiDefaults, aiSteps, errorMessage, saveSettings, setAccessLevel, testLight, testNote, testPhone } from "./api";
 import type { WizardId } from "./boopli-wizard";
 import {
@@ -1091,7 +1092,7 @@ export class BoopliSettings extends LitElement {
             <input
               type="radio"
               name="access"
-              .checked=${level === c.value}
+              .checked=${live(level === c.value)}
               ?disabled=${this._accessBusy}
               @change=${() => void this._setAccess(c.value)}
             />
