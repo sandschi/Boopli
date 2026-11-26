@@ -523,8 +523,12 @@ class BoopliNudger:
 
     def _start_speaker_alarm(self, speaker: engine.SpeakerCfg, key: str) -> bool:
         """Repeat the alarm sound on a speaker for its duration, in the background."""
+        # Worked out before anything starts: with no sound to play there is nothing to remember or to stop.
+        play = self._sound_data(speaker.alarm.kind, speaker.alarm.sound)
+        if play is None:
+            return False
         started = self._start_alarm_task(
-            speaker.entity_id, key, self._speaker_alarm(speaker)
+            speaker.entity_id, key, self._speaker_alarm(speaker, play)
         )
         if started:
             # This alarm owns the speaker now: an older step's one-shot must not stop it.
@@ -552,11 +556,8 @@ class BoopliNudger:
         self._alarms[target] = (key, self.hass.async_create_task(coro))
         return True
 
-    async def _speaker_alarm(self, speaker: engine.SpeakerCfg) -> None:
+    async def _speaker_alarm(self, speaker: engine.SpeakerCfg, play: dict[str, str]) -> None:
         alarm = speaker.alarm
-        play = self._sound_data(alarm.kind, alarm.sound)
-        if play is None:
-            return
         data = {"entity_id": speaker.entity_id, **play}
         try:
             for i in range(engine.alarm_plays(alarm.seconds, alarm.repeat_s)):
