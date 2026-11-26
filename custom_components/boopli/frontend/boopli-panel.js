@@ -10108,7 +10108,7 @@ var ba = class extends b {
 		super.disconnectedCallback(), window.clearTimeout(this._toastTimer);
 	}
 	willUpdate(e) {
-		if (this._removing && !K(this.snapshot).all && (this._removing = ""), !e.has("snapshot") || !this.snapshot?.pet) return;
+		if (K(this.snapshot).all || (this._removing = "", this._quick = ""), !e.has("snapshot") || !this.snapshot?.pet) return;
 		let t = this.snapshot.pet, n = this._lastPet;
 		this._lastPet = t;
 		let r = this.snapshot.runs.map((e) => e.id), i = this._lastRunIds.filter((e) => !r.includes(e)).map((e) => this.snapshot.history.find((t) => t.kind === "chore_done" && t.run_id === e)?.chore_name).filter((e) => !!e);

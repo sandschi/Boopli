@@ -111,7 +111,11 @@ export class BoopliToday extends LitElement {
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
-    if (this._removing && !accessOf(this.snapshot).all) this._removing = ""; // the level was lowered: the question is gone
+    if (!accessOf(this.snapshot).all) {
+      // the level was lowered: the question is gone, and so is a half-written quick task (it would reappear when the level rises again)
+      this._removing = "";
+      this._quick = "";
+    }
     if (!changed.has("snapshot") || !this.snapshot?.pet) return;
     const pet = this.snapshot.pet;
     const before = this._lastPet;
