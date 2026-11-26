@@ -11,7 +11,7 @@ Pour chaque lampe, choisis **Clignoter** ou **Voyant (allumé jusqu’à ce que 
 
 ### Enceintes
 
-Ajoute n’importe quel lecteur multimédia. Chaque enceinte a trois niveaux que tu peux activer ou désactiver : un son bref, une phrase lue à voix haute et un son d’alarme qui se répète pendant la durée choisie. L’enceinte joue le niveau le plus élevé atteint. Choisis un son Alexa dans la liste **Son** ou utilise un fichier du dossier multimédia de Home Assistant (par exemple `boopli/ding.mp3`). Les annonces vocales passent par Alexa Media Player, une entité de notification d’Alexa Devices ou une voix de synthèse sur l’enceinte. Utilise **Tester le son bref**, **Tester la lecture** ou **Tester l’alarme** pour essayer les sons.
+Ajoute n’importe quel lecteur multimédia. Chaque enceinte a trois niveaux que tu peux activer ou désactiver : un son bref, une phrase lue à voix haute et un son d’alarme qui se répète pendant la durée choisie. L’enceinte joue le niveau le plus élevé atteint. Choisis un son Alexa dans la liste **Son** ou utilise un fichier du dossier multimédia de Home Assistant (par exemple `boopli/ding.mp3`). Avec une voix de synthèse, l’enceinte utilise par défaut le son bref et le son d’alarme de Boopli (libres d’utilisation, CC0), sans configuration. L’enceinte récupère ces sons depuis Home Assistant et doit donc pouvoir accéder à l’URL interne ou externe de Home Assistant. Indique ton propre fichier dans le champ prévu à cet effet ou laisse-le vide pour revenir au son intégré. Les annonces vocales passent par Alexa Media Player, une entité de notification d’Alexa Devices ou une voix de synthèse sur l’enceinte. Utilise **Tester le son bref**, **Tester la lecture** ou **Tester l’alarme** pour essayer les sons.
 
 ### Appareils d’alarme
 

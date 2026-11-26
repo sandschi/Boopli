@@ -11,7 +11,7 @@ Per light you choose **Blink** or **Indicator lamp (on until done)**. Blink: Boo
 
 ### Speakers
 
-Add any media player. Each speaker has three levels you can switch on or off: a small ding, a spoken sentence, and an alarm sound that repeats for a time you set. A speaker plays the highest level that has been reached. Choose an Alexa sound from the **Sound** list or use a file in your Home Assistant media folder (for example `boopli/ding.mp3`). Speech works through Alexa Media Player, an Alexa Devices notify entity, or a TTS voice on the speaker. Use **Test ding**, **Test talk** or **Test alarm** to try the sounds.
+Add any media player. Each speaker has three levels you can switch on or off: a small ding, a spoken sentence, and an alarm sound that repeats for a time you set. A speaker plays the highest level that has been reached. Choose an Alexa sound from the **Sound** list or use a file in your Home Assistant media folder (for example `boopli/ding.mp3`). A speaker that uses a TTS voice starts with Boopli's own ding and alarm sound (free to use, CC0), so it works without any setup. The speaker fetches them from Home Assistant, so it must be able to reach Home Assistant's internal or external URL. To use your own file instead, enter it in the file field; leave the field empty to go back to the built-in sound. Speech works through Alexa Media Player, an Alexa Devices notify entity, or a TTS voice on the speaker. Use **Test ding**, **Test talk** or **Test alarm** to try the sounds.
 
 ### Alarm devices
 
