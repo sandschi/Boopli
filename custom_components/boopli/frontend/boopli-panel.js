@@ -10108,7 +10108,7 @@ var ba = class extends b {
 		super.disconnectedCallback(), window.clearTimeout(this._toastTimer);
 	}
 	willUpdate(e) {
-		if (!e.has("snapshot") || !this.snapshot?.pet) return;
+		if (this._removing && !K(this.snapshot).all && (this._removing = ""), !e.has("snapshot") || !this.snapshot?.pet) return;
 		let t = this.snapshot.pet, n = this._lastPet;
 		this._lastPet = t;
 		let r = this.snapshot.runs.map((e) => e.id), i = this._lastRunIds.filter((e) => !r.includes(e)).map((e) => this.snapshot.history.find((t) => t.kind === "chore_done" && t.run_id === e)?.chore_name).filter((e) => !!e);
@@ -10440,7 +10440,7 @@ var ba = class extends b {
                   ${C("common.start_now")}
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${C("today.change_time")}</button>
-                ${this._removing === e.id ? m`<span class="small">${C("today.remove_it")}</span>
+                ${K(this.snapshot).all ? this._removing === e.id ? m`<span class="small">${C("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
                         @click=${() => this._partAction(async () => {
@@ -10449,7 +10449,7 @@ var ba = class extends b {
                       >
                         ${C("today.yes_remove")}
                       </button>
-                      <button class="link" @click=${() => this._removing = ""}>${C("today.keep")}</button>` : m`<button class="link" @click=${() => this._removing = e.id}>${C("common.delete")}</button>`}
+                      <button class="link" @click=${() => this._removing = ""}>${C("today.keep")}</button>` : m`<button class="link" @click=${() => this._removing = e.id}>${C("common.delete")}</button>` : _}
               </div>`}
         </div>`)}
     </section>`;
@@ -14114,7 +14114,8 @@ var ao = class extends b {
 		if (!K(this.snapshot).all) this._editing && (this._editing = null, this._openSchedule = !1, this.dispatchEvent(new CustomEvent("dirty-change", {
 			detail: {
 				source: "chore",
-				dirty: !1
+				dirty: !1,
+				revoked: !0
 			},
 			bubbles: !0,
 			composed: !0
@@ -23580,17 +23581,17 @@ var bc = () => ({
 	}
 	constructor() {
 		super(), this._requestId = 0, this._subscribing = !1, this._autoChecked = !1, this._onDirty = (e) => {
-			let { source: t, dirty: n } = e.detail;
+			let { source: t, dirty: n, revoked: r } = e.detail;
 			this._dirty = {
 				...this._dirty,
 				[t]: n
-			};
+			}, r && (this._accessNote = C("panel.access_lowered_discarded")), this._settleConfirm();
 		}, this._beforeUnload = (e) => {
 			this._hasUnsaved && (e.preventDefault(), e.returnValue = "");
 		}, this._onOpenWizard = async (e) => {
 			if (!K(this._snapshot).all) return;
 			let t = e.detail ?? {}, n = t.wizard ?? "first";
-			if (!await this._guard()) return;
+			if (!await this._guard() || !K(this._snapshot).all) return;
 			let r = this._snapshot?.setup;
 			this._openWizard({
 				wizard: n,
@@ -23599,7 +23600,7 @@ var bc = () => ({
 		}, this._onOpenBreakdown = async (e) => {
 			if (!K(this._snapshot).all) return;
 			let t = e.detail ?? {};
-			await this._guard() && (this._wizard = null, this._breakdownError = "", this._breakdown = {
+			await this._guard() && K(this._snapshot).all && (this._wizard = null, this._breakdownError = "", this._breakdown = {
 				kind: t.kind ?? "now",
 				task: t.task ?? ""
 			});
@@ -23664,10 +23665,13 @@ var bc = () => ({
 				[e]: !1
 			}, t = !0);
 		}
-		!e.all && (this._wizard || this._breakdown) && (this._wizard = null, this._breakdown = null, t = !0), t && (this._accessNote = C("panel.access_lowered_discarded"));
+		!e.all && (this._wizard || this._breakdown) && (this._wizard = null, this._breakdown = null, t = !0), !e.all && this._wallEdit && (this._wallEdit = !1, t = !0), t && (this._accessNote = C("panel.access_lowered_discarded")), this._settleConfirm();
+	}
+	_settleConfirm() {
+		this._confirm && !this._hasUnsaved && this._confirm("discard");
 	}
 	async _selectTab(e) {
-		this._accessNote = "", this._tabs().includes(e) && (e !== this._tab || this._wizard) && await this._guard() && (this._wizard = null, this._breakdown = null, this._tab = e);
+		this._accessNote = "", this._tabs().includes(e) && (e !== this._tab || this._wizard) && await this._guard() && this._tabs().includes(e) && (this._wizard = null, this._breakdown = null, this._tab = e);
 	}
 	_openWizard(e) {
 		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && Wt(this.hass, "in_progress", e.startAt).catch(() => void 0);

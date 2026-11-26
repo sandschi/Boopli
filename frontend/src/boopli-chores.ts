@@ -58,7 +58,7 @@ export class BoopliChores extends LitElement {
       if (this._editing) {
         this._editing = null;
         this._openSchedule = false;
-        this.dispatchEvent(new CustomEvent("dirty-change", { detail: { source: "chore", dirty: false }, bubbles: true, composed: true }));
+        this.dispatchEvent(new CustomEvent("dirty-change", { detail: { source: "chore", dirty: false, revoked: true }, bubbles: true, composed: true }));
       }
       if (this.openRequest) this.dispatchEvent(new CustomEvent("request-handled", { bubbles: true, composed: true })); // not for this person: drop it
     } else if (this.openRequest && !this._editing) {

@@ -117,8 +117,10 @@ export class BoopliPanel extends LitElement {
   }
 
   private _onDirty = (e: Event): void => {
-    const { source, dirty } = (e as CustomEvent<{ source: "settings" | "chore" | "home"; dirty: boolean }>).detail;
+    const { source, dirty, revoked } = (e as CustomEvent<{ source: "settings" | "chore" | "home"; dirty: boolean; revoked?: boolean }>).detail;
     this._dirty = { ...this._dirty, [source]: dirty };
+    if (revoked) this._accessNote = t("panel.access_lowered_discarded"); // a screen closed its editor because the level was lowered
+    this._settleConfirm();
   };
 
   private _beforeUnload = (e: BeforeUnloadEvent): void => {
@@ -187,7 +189,17 @@ export class BoopliPanel extends LitElement {
       this._breakdown = null;
       dropped = true;
     }
+    if (!can.all && this._wallEdit) {
+      this._wallEdit = false; // the editor of the wall board is level 3; the board stays open
+      dropped = true;
+    }
     if (dropped) this._accessNote = t("panel.access_lowered_discarded");
+    this._settleConfirm();
+  }
+
+  /** An "unsaved changes" question whose changes are gone (their screen was closed) has nothing left to ask. */
+  private _settleConfirm(): void {
+    if (this._confirm && !this._hasUnsaved) this._confirm("discard");
   }
 
   private async _selectTab(tab: Tab): Promise<void> {
@@ -195,6 +207,7 @@ export class BoopliPanel extends LitElement {
     if (!this._tabs().includes(tab)) return;
     if (tab === this._tab && !this._wizard) return;
     if (!(await this._guard())) return;
+    if (!this._tabs().includes(tab)) return; // the level may have been lowered while the question was open
     this._wizard = null;
     this._breakdown = null;
     this._tab = tab;
@@ -215,6 +228,7 @@ export class BoopliPanel extends LitElement {
     const detail = (e as CustomEvent<Partial<WizardRequest>>).detail ?? {};
     const wizard = detail.wizard ?? "first";
     if (!(await this._guard())) return;
+    if (!accessOf(this._snapshot).all) return; // the level may have been lowered while the question was open
     const setup = this._snapshot?.setup;
     this._openWizard({
       wizard,
@@ -232,6 +246,7 @@ export class BoopliPanel extends LitElement {
     if (!accessOf(this._snapshot).all) return;
     const detail = (e as CustomEvent<{ kind?: "now" | "recurring"; task?: string }>).detail ?? {};
     if (!(await this._guard())) return;
+    if (!accessOf(this._snapshot).all) return;
     this._wizard = null;
     this._breakdownError = "";
     this._breakdown = { kind: detail.kind ?? "now", task: detail.task ?? "" };

@@ -111,6 +111,7 @@ export class BoopliToday extends LitElement {
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
+    if (this._removing && !accessOf(this.snapshot).all) this._removing = ""; // the level was lowered: the question is gone
     if (!changed.has("snapshot") || !this.snapshot?.pet) return;
     const pet = this.snapshot.pet;
     const before = this._lastPet;
@@ -535,7 +536,9 @@ export class BoopliToday extends LitElement {
                   ${t("common.start_now")}
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
-                ${this._removing === c.id
+                ${!accessOf(this.snapshot).all
+                  ? nothing // taking a chore away is level 3, like changing it
+                  : this._removing === c.id
                   ? html`<span class="small">${t("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
