@@ -11,7 +11,7 @@ Kies per lamp **Knipperen** of **Statuslampje (aan tot je klaar bent)**. Bij Kni
 
 ### Luidsprekers
 
-Voeg een mediaspeler naar keuze toe. Per luidspreker kun je drie niveaus aan- of uitzetten: een kort geluidje, een voorgelezen zin en een alarmgeluid dat zich herhaalt zolang je instelt. Een luidspreker speelt het hoogste niveau af dat is bereikt. Kies een Alexa-geluid uit de lijst **Geluid** of gebruik een bestand uit je Home Assistant-mediamap (bijvoorbeeld `boopli/ding.mp3`). Voorlezen werkt via Alexa Media Player, een meldingsentiteit van Alexa Devices of een voorleesstem op de luidspreker. Kies **Ping testen**, **Voorlezen testen** of **Alarm testen** om de geluiden te proberen.
+Voeg een mediaspeler naar keuze toe. Per luidspreker kun je drie niveaus aan- of uitzetten: een kort geluidje, een voorgelezen zin en een alarmgeluid dat zich herhaalt zolang je instelt. Een luidspreker speelt het hoogste niveau af dat is bereikt. Kies een Alexa-geluid uit de lijst **Geluid** of gebruik een bestand uit je Home Assistant-mediamap (bijvoorbeeld `boopli/ding.mp3`). Een luidspreker met een voorleesstem gebruikt standaard het korte geluidje en het alarmgeluid van Boopli (vrij te gebruiken, CC0), dus je hoeft niets in te stellen. De luidspreker haalt die geluiden op bij Home Assistant en moet daarom de interne of externe URL van Home Assistant kunnen bereiken. Geef in het bestandsveld je eigen bestand op of laat het veld leeg om het ingebouwde geluid weer te gebruiken. Voorlezen werkt via Alexa Media Player, een meldingsentiteit van Alexa Devices of een voorleesstem op de luidspreker. Kies **Ping testen**, **Voorlezen testen** of **Alarm testen** om de geluiden te proberen.
 
 ### Alarmapparaten
 
