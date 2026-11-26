@@ -18,7 +18,7 @@ Het paneel past ook op je telefoon. Je kunt het dus vanuit de Home Assistant-app
 - **Ik ben bezig.** Laat Boopli weten dat je aan de stap werkt. De seintjes pauzeren. Na de ingestelde wachttijd kan Boopli op je telefoon vragen of je nog bezig bent. Kies **Seintjes hervatten** om de pauze op te heffen. Zie [Taken en planning](/Boopli/nl/chores/).
 - **Uitstellen** in de telefoonmelding of op het Wallboard stelt het volgende seintje uit. De stap blijft open. Op Vandaag zie je wanneer het uitstel afloopt.
 - **Nu aan de beurt.** De andere stappen die nu op je wachten, per taak gegroepeerd.
-- **Vandaag nog te doen.** De rest van vandaag: de stappen die nog wachten bij taken waar je mee bezig bent, en de taken die later vandaag aan de beurt zijn met hun tijd.
+- **Vandaag nog te doen.** De rest van vandaag: de stappen die nog wachten bij taken waar je mee bezig bent, en de taken die later vandaag aan de beurt zijn met hun tijd. Kies **Nu starten** bij een stap die wacht op een bepaald moment of tot er iets gebeurt.
 - **Binnenkort.** De eerste acht taken die op latere dagen gepland staan. De rest staat op het tabblad Taken.
 - **Voor later.** Delen van een taak die je opzij hebt gezet, elk met **Nu starten**, **Tijd aanpassen** en **Wissen**.
 - **Vanzelf klaar.** Stappen die zijn afgerond via een sensor, NFC-tag of knop. Je ziet ook wat er is gebeurd.

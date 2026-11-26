@@ -39,7 +39,7 @@ Dans l’éditeur de tâches, chaque étape a une section facultative **Se termi
 - **Une étiquette NFC est scannée**. Choisis une étiquette dans la liste de Home Assistant ou sélectionne **Scanner maintenant**, puis approche ton téléphone de l’étiquette.
 - **Un bouton est actionné**. Choisis une entité `event`, `input_button` ou `button`. Tu peux aussi choisir un seul type d’appui (simple ou double).
 
-Par défaut, un déclencheur doit se produire **après le début de l’étape**. Par exemple, une porte déjà ouverte ne termine pas l’étape « ouvrir la porte pour laisser sécher ». Sous **Avancé**, tu peux aussi sélectionner **Compter la condition si elle est déjà remplie au début de l’étape** (par exemple « les fenêtres sont fermées »). L’étape se termine alors tout de suite, sans rappel pour ce que tu as déjà fait.
+Par défaut, un déclencheur doit se produire **après le début de l’étape**. Par exemple, une porte déjà ouverte ne termine pas l’étape « ouvrir la porte pour laisser sécher ». Sous la condition, sélectionne **Compter la condition si elle est déjà remplie au début de l’étape**. Des fenêtres déjà fermées comptent alors aussi. Si tu n’as pas réglé de durée pour cette condition, l’étape se termine tout de suite, sans rappel.
 
 Un capteur indisponible ou dont l’état est inconnu ne termine jamais une étape. Les étapes terminées automatiquement s’affichent dans Aujourd’hui sous « Fait automatiquement », avec ce qui s’est passé. Les événements `boopli_step_done` contiennent `by` (`manual` ou `auto`) et `reason`. Quand Home Assistant redémarre, Boopli vérifie de nouveau les conditions déjà remplies. Il ne récupère pas les appuis ni les lectures d’étiquettes qui ont eu lieu pendant l’arrêt.
 

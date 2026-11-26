@@ -25,7 +25,7 @@ Elke begeleide instelling eindigt met **Alles klaar**. Daar zie je wat er is ver
 
 ## Niet-opgeslagen wijzigingen blijven zichtbaar
 
-Zodra je iets wijzigt in Instellingen of bij het bewerken van een taak, verschijnt er onderaan een balk die in beeld blijft. In Instellingen zie je in die balk op welke kaarten je wijzigingen hebt. Kies de naam van een kaart om erheen te gaan en de kaart te laten oplichten. Op gewijzigde kaarten staat een oranje label “Niet opgeslagen”. Op de tabbladen Instellingen en Taken verschijnt een stip. Ga je naar een ander tabblad, begin je een begeleide instelling of sluit je de pagina? Dan krijg je bij niet-opgeslagen wijzigingen de keuzes **Opslaan**, **Niet opslaan** en **Blijven**.
+Zodra je iets wijzigt in Instellingen of bij het bewerken van een taak, verschijnt er onderaan een balk die in beeld blijft. In Instellingen zie je in die balk op welke kaarten je wijzigingen hebt. Kies de naam van een kaart om erheen te gaan en de kaart te laten oplichten. Op gewijzigde kaarten staat een oranje label “Niet opgeslagen”. Op de tabbladen Instellingen en Taken verschijnt een stip. Ga je naar een ander tabblad, begin je een begeleide instelling of sluit je de pagina? Dan krijg je bij niet-opgeslagen wijzigingen de keuzes **Opslaan**, **Niet opslaan** en **Blijven**. Bij het bewerken van een taak blijft het scherm met **Opslaan** open. Met **Opslaan en sluiten** sla je je wijzigingen op en sluit je het scherm.
 
 ## Alle instellingen op één rustige pagina
 

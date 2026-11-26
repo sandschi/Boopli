@@ -103,6 +103,8 @@ class BoopliManager:
         self.setup = engine.Setup()
         self.home = engine.Home()
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
+        self.light_last_on: dict[str, dict[str, Any]] = {}  # light -> brightness/color when it was last on (not by us)
+        self._unsub_lights: CALLBACK_TYPE | None = None
         self.alarm_on: list[str] = []  # alarm devices Boopli switched on right now
         self.nudger = BoopliNudger(hass, self)
         self._listeners: list[Callable[[], None]] = []
@@ -147,6 +149,7 @@ class BoopliManager:
             engine.HistoryEntry.from_dict(h) for h in data.get("history", [])
         ]
         self.settings = engine.Settings.from_dict(data.get("settings"))
+        engine.drop_removed_devices_from_ladders(self.settings)  # leftovers of devices removed earlier
         self.setup = (
             engine.Setup.from_dict(data["setup"])
             if "setup" in data
@@ -159,6 +162,9 @@ class BoopliManager:
         if not self.progress.started_at:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
+        self.light_last_on = {
+            str(k): dict(v) for k, v in (data.get("light_last_on") or {}).items() if isinstance(v, dict)
+        }
         # An alarm device still on from before a restart must not stay on.
         # They stay on this list until the "off" call really went out, also across restarts.
         self._alarm_stuck = [str(x) for x in data.get("alarm_on", [])]
@@ -177,7 +183,8 @@ class BoopliManager:
         if self._alarm_stuck:
             self.hass.async_create_task(self._async_release_stuck_alarms(0))
         self._watch_presence()
-        self._unsub_tags = self.hass.bus.async_listen("tag_scanned", self._tag_scanned)
+        self._watch_lights()
+        self._unsub_tags =self.hass.bus.async_listen("tag_scanned", self._tag_scanned)
         self._tick()
 
     @callback
@@ -189,6 +196,9 @@ class BoopliManager:
         if self._unsub_presence:
             self._unsub_presence()
             self._unsub_presence = None
+        if self._unsub_lights:
+            self._unsub_lights()
+            self._unsub_lights = None
         if self._unsub_trigger_states:
             self._unsub_trigger_states()
             self._unsub_trigger_states = None
@@ -216,6 +226,7 @@ class BoopliManager:
             "setup": engine.to_dict(self.setup),
             "home": engine.to_dict(self.home),
             "indicator_on": self.indicator_on,
+            "light_last_on": self.light_last_on,
             "alarm_on": self.alarm_on + [x for x in self._alarm_stuck if x not in self.alarm_on],
         }
 
@@ -394,6 +405,36 @@ class BoopliManager:
             self._unsub_presence = async_track_state_change_event(
                 self.hass, [entity_id], self._presence_changed
             )
+
+    def _watch_lights(self) -> None:
+        """Remember each nudge light's brightness and color while it is on (see engine.own_color_steps)."""
+        if self._unsub_lights:
+            self._unsub_lights()
+            self._unsub_lights = None
+        ids = [light.entity_id for light in self.settings.lights]
+        for gone in [k for k in self.light_last_on if k not in ids]:
+            del self.light_last_on[gone]
+        if not ids:
+            return
+        for entity_id in ids:
+            self._remember_light(self.hass.states.get(entity_id))
+        self._unsub_lights = async_track_state_change_event(self.hass, ids, self._light_changed)
+
+    @callback
+    def _light_changed(self, event: HAEvent) -> None:
+        self._remember_light(event.data.get("new_state"))
+
+    def _remember_light(self, state: Any) -> None:
+        """Keep what a light shows while it is on, but not while Boopli itself is blinking or signalling with it."""
+        if state is None or state.state != "on" or self.nudger.is_driving(state.entity_id):
+            return
+        data = engine.light_last_on(dict(state.attributes))
+        old = self.light_last_on.get(state.entity_id)
+        if old and engine.light_has_color(old) and not engine.light_has_color(data):
+            return  # a moment with brightness only (no color reported yet) must not replace a known color
+        if data and old != data:
+            self.light_last_on[state.entity_id] = data
+            self._save()
 
     @callback
     def _presence_changed(self, _event: HAEvent) -> None:
@@ -976,9 +1017,11 @@ class BoopliManager:
         # Devices added now act in the standard ladders the way they used to (their "starts at nudge").
         engine.sync_phone_levels_to_standard_ladders(self.settings, settings)
         engine.add_new_devices_to_standard_ladders(self.settings, settings)
+        engine.drop_removed_devices_from_ladders(settings)  # a removed device leaves every nudge too
         settings.default_style = engine.normalize_style(settings.default_style, settings.ladders)
         self.settings = settings
         self._watch_presence()
+        self._watch_lights()
         self._tick()
 
     def preview_schedule(self, data: dict[str, Any], count: int = 5) -> list[str]:
@@ -1174,6 +1217,17 @@ class BoopliManager:
         if run is None:
             return  # already finished: completing twice is harmless
         self._complete(run, step_id)
+
+    def release_waiting_step(self, run_id: str, step_id: str) -> None:
+        """Start a waiting step now, by hand: its turn begins as if what it waited for had happened."""
+        run = self.runs.get(run_id)
+        if run is None:
+            return  # already finished: harmless, like completing twice
+        events = engine.release_step(run, step_id, dt_util.utcnow())
+        if not events:
+            return  # not waiting (any more): nothing to do
+        self._announce(events)
+        self._tick()
 
     def complete_active_step_for(self, ref: str) -> None:
         """Mark the currently active step of a chore done (used by services)."""
@@ -1712,6 +1766,7 @@ class BoopliManager:
                 self.progress.started_at = engine.fmt_ts(now)
             self.history = backup.history or []
         self._watch_presence()
+        self._watch_lights()
         self._tick()
         self._store.async_delay_save(self._data_to_save, 0)
         return {

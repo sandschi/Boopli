@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, startChore, type ParkWhen } from "./api";
+import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, releaseStep, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
 import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
@@ -279,6 +279,20 @@ export class BoopliToday extends LitElement {
     }
   }
 
+  /** A waiting step is started by hand: "now" instead of "someday". */
+  private async _release(runId: string, stepId: string): Promise<void> {
+    if (!this.hass || this._busy) return;
+    this._busy = true;
+    this._error = "";
+    try {
+      await releaseStep(this.hass, runId, stepId);
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
   /** "On it" (or "Still on it", or taking it back): quiet until the check-in. */
   private async _working(runId: string, stepId: string, on: boolean): Promise<void> {
     if (!this.hass || this._busy) return;
@@ -458,6 +472,9 @@ export class BoopliToday extends LitElement {
             (s) => html`<div class="row">
               <span>${s.title}</span>
               <span class="hint">${s.hint}</span>
+              ${s.status === "waiting"
+                ? html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._release(g.run.id, s.stepId)}>${t("common.start_now")}</button>`
+                : nothing}
             </div>`
           )}
         </div>`
@@ -658,6 +675,7 @@ export class BoopliToday extends LitElement {
                   ? t("today.enjoy_the_quiet_what_is_coming")
                   : t("today.add_your_first_chore_in_the")}
               </p>
+              ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             </section>
           `}
       ${this._renderQuick()}

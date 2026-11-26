@@ -35,6 +35,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
+    websocket_api.async_register_command(hass, ws_step_release)
     websocket_api.async_register_command(hass, ws_step_snooze)
     websocket_api.async_register_command(hass, ws_step_on_it)
     websocket_api.async_register_command(hass, ws_step_not_on_it)
@@ -366,6 +367,26 @@ def ws_step_complete(
         _not_loaded(connection, msg)
         return
     manager.complete_step(msg["run_id"], msg["step_id"])
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/step_release",
+        vol.Required("run_id"): str,
+        vol.Required("step_id"): str,
+    }
+)
+@callback
+def ws_step_release(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The user started a waiting step by hand ("now, not someday")."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.release_waiting_step(msg["run_id"], msg["step_id"])
     connection.send_result(msg["id"])
 
 

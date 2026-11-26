@@ -524,3 +524,50 @@ def test_a_lights_own_mode_survives_saving_and_loading():
     assert again.mode == engine.LIGHT_OWN_MODE
     assert engine.RungLight.from_dict({}).mode == engine.LIGHT_BLINK  # no mode at all: blink
     assert engine.RungLight.from_dict({"mode": "junk"}).mode == engine.LIGHT_BLINK
+
+
+def test_a_removed_device_leaves_every_nudge():
+    settings = engine.Settings(
+        phones=[engine.PhoneCfg(service="pixel", level="normal", start_at=1)],
+        speakers=[engine.SpeakerCfg(entity_id="media_player.dot")],
+        standard_done=False,
+    )
+    engine.seed_standard_ladders(settings)
+    ladder = engine.Ladder(
+        id="mine",
+        name="Mine",
+        rungs=[
+            engine.Rung(
+                phones={"pixel": "normal", "gone_phone": "high"},
+                speakers={"media_player.dot": "ding", "media_player.old_dot": "ding"},
+                lights={"light.gone": engine.RungLight("blink")},
+                alarms=["siren.gone"],
+            )
+        ],
+    )
+    settings.ladders.append(ladder)
+    assert engine.drop_removed_devices_from_ladders(settings) is True
+    rung = ladder.rungs[0]
+    assert rung.phones == {"pixel": "normal"}
+    assert list(rung.speakers) == ["media_player.dot"]
+    assert rung.lights == {} and rung.alarms == []
+    assert engine.drop_removed_devices_from_ladders(settings) is False  # nothing left to drop
+
+
+def test_a_light_that_was_off_gets_its_own_color_back_after_the_last_blink():
+    own = engine.light_last_on({"brightness": 200, "color_mode": "rgb", "rgb_color": [255, 180, 60]})
+    assert own == {"brightness": 200, "rgb_color": [255, 180, 60]}
+    # off before the blink and we know its color: once at the end, on with that color, then off again
+    assert engine.own_color_steps("off", own) == [("turn_on", own), ("turn_off", {})]
+    # between the blinks it is simply put back (off), as before
+    assert engine.restore_plan("off", {}) == ("turn_off", {})
+    # off and no color known: nothing more to do
+    assert engine.own_color_steps("off", None) == []
+    # on before the blink: put back with restore_plan, nothing more
+    assert engine.own_color_steps("on", own) == []
+
+
+def test_a_brightness_only_moment_is_not_a_color():
+    assert engine.light_has_color({"brightness": 10, "rgb_color": [1, 2, 3]}) is True
+    assert engine.light_has_color({"brightness": 10}) is False
+    assert engine.light_has_color({}) is False

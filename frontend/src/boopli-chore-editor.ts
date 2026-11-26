@@ -244,7 +244,8 @@ export class BoopliChoreEditor extends LitElement {
     this.dispatchEvent(new CustomEvent("editor-close", { bubbles: true, composed: true }));
   }
 
-  private async _save(): Promise<boolean> {
+  /** Save the chore. With `close` false the editor stays open on the saved chore. */
+  private async _save(close = true): Promise<boolean> {
     if (!this.hass || this._busy) return false;
     this._busy = true;
     this._error = "";
@@ -254,7 +255,7 @@ export class BoopliChoreEditor extends LitElement {
         .map((q) => ({ ...q, text: q.text.trim() }))
         .filter((q) => q.text);
       const known = new Set(questions.map((q) => q.id));
-      await saveChore(this.hass, {
+      const payload: ChoreDraft = {
         ...this.draft,
         nudge_style: this.draft.nudge_style ?? this.defaultStyle,
         ignore_quiet_hours: this.draft.ignore_quiet_hours ?? false,
@@ -267,9 +268,32 @@ export class BoopliChoreEditor extends LitElement {
           only_if: s.only_if && known.has(s.only_if) ? s.only_if : "",
           image: (s.image ?? "").trim(),
         })),
-      });
-      this._close();
-      return true;
+      };
+      let incomplete = false;
+      const submittedDraft = this.draft; // _update makes a new object, so this one is never changed
+      const given = this._given;
+      const submitted = JSON.stringify(submittedDraft);
+      const saved = await saveChore(this.hass, payload);
+      if (this._given !== given) {
+        // The screen was handed another chore while saving: leave it alone, and do not report a finished save.
+        incomplete = true;
+      } else if (JSON.stringify(this.draft) === submitted) {
+        if (close) {
+          this._close();
+        } else {
+          // Stay on the page: what is shown is now what is saved, so nothing is left unsaved.
+          this._update({ ...payload, id: saved.id });
+          this._base = JSON.stringify(this.draft);
+        }
+      } else {
+        // Something was typed while the save was on its way: keep it (also for Save and close), marked as unsaved.
+        // The save is not complete then: returning false keeps the panel's "save and leave" from going on.
+        incomplete = true;
+        this._update({ id: saved.id });
+        // The saved state is what was sent, so undoing the later typing leaves nothing unsaved.
+        this._base = JSON.stringify({ ...submittedDraft, id: saved.id });
+      }
+      return !incomplete;
     } catch (err) {
       this._error = errorMessage(err);
       return false;
@@ -662,7 +686,8 @@ export class BoopliChoreEditor extends LitElement {
         ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
 
         <div class="actions">
-          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+          <button ?disabled=${this._busy} @click=${() => this._save(false)}>${t("common.save")}</button>
+          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save_and_close")}</button>
           <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.cancel")}</button>
           ${d.id
             ? this._confirmDelete
@@ -677,7 +702,8 @@ export class BoopliChoreEditor extends LitElement {
         ? html`<div class="savebar" role="status">
             <span>${rich("chore_editor.you_have_unsaved_changes")}</span>
             <span class="spacer"></span>
-            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+            <button ?disabled=${this._busy} @click=${() => this._save(false)}>${t("common.save")}</button>
+            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save_and_close")}</button>
             <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.discard")}</button>
           </div>`
         : nothing}

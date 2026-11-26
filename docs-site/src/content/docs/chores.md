@@ -39,7 +39,7 @@ In the chore editor, every step has an optional **Finishes by itself when…** s
 - **An NFC tag is scanned.** Pick a tag from Home Assistant's tag list, or select **Scan now** and hold your phone to the tag.
 - **A button is pressed.** Any `event`, `input_button` or `button` entity, optionally only one kind of press (single, double).
 
-By default a trigger has to happen **after the step starts**, so a door that was already open does not finish "open it to dry". Under **Advanced** you can also select **Count the condition if it’s already met when the step starts** (for example "the windows are shut"). In that case the step finishes silently at once, and nothing nudges you for something that is already done.
+By default a trigger has to happen **after the step starts**, so a door that was already open does not finish "open it to dry". Below the condition, select **Count the condition if it’s already met when the step starts** to include cases like windows that are already shut. If you haven’t set a time for the condition to stay true, the step finishes right away without a nudge.
 
 An unavailable or unknown sensor never counts as done. Steps finished this way show on the Today screen under "Done by itself" with what happened, and `boopli_step_done` events carry `by` (`manual` or `auto`) and `reason`. Triggers that were already true when Home Assistant restarts are checked again, but a press or scan that happened while Home Assistant was down is lost.
 

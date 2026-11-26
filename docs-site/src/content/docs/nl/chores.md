@@ -39,7 +39,7 @@ Bij elke stap in het bewerkscherm kun je **Vanzelf klaar als…** instellen. Zod
 - **Iemand scant een NFC-tag.** Kies een tag uit de lijst van Home Assistant of kies **Nu scannen** en houd je telefoon tegen de tag.
 - **Iemand drukt op een knop.** Kies een entiteit van het type `event`, `input_button` of `button`. Je kunt ook kiezen hoe iemand op de knop drukt, bijvoorbeeld één of twee keer.
 
-Standaard moet er **na het begin van de stap** iets gebeuren. Een deur die al openstaat rondt de stap “Zet de deur open om te drogen” dus niet af. Onder **Geavanceerd** kun je ook **Laat de voorwaarde meetellen als die bij de start van de stap al klopt** kiezen. Bijvoorbeeld voor “De ramen zijn dicht”. Dan is de stap meteen stilletjes klaar en krijg je geen seintje voor iets wat al af is.
+Standaard moet er **na het begin van de stap** iets gebeuren. Een deur die al openstaat rondt de stap “Zet de deur open om te drogen” dus niet af. Kies onder de voorwaarde **Laat de voorwaarde meetellen als die bij de start van de stap al klopt**. Zo tellen bijvoorbeeld ramen die al dicht zijn mee. Als je geen tijd hebt ingesteld waarin de voorwaarde moet blijven kloppen, is de stap meteen klaar en krijg je geen seintje.
 
 Een sensor die niet beschikbaar is of waarvan de status onbekend is, telt nooit mee. Stappen die zo zijn afgerond, staan op Vandaag onder “Vanzelf klaar”, met wat er is gebeurd. De gebeurtenis `boopli_step_done` bevat `by` (`manual` of `auto`) en `reason`. Als Home Assistant opnieuw opstart, controleert Boopli voorwaarden die al klopten opnieuw. Een druk op een knop of een scan terwijl Home Assistant uit stond, gaat verloren.
 

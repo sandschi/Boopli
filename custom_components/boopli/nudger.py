@@ -29,6 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 NOTIFICATION_ACTION_EVENT = "mobile_app_notification_action"
 INDICATOR_TEST_SECONDS = 5
 ALARM_TEST_SECONDS = 3
+RESTORE_PAUSE = 1.0  # seconds a light that was off shows its own color before it goes off again
 
 
 class BoopliNudger:
@@ -39,6 +40,7 @@ class BoopliNudger:
         self.manager = manager
         self._unsub_actions: CALLBACK_TYPE | None = None
         self._blinks: dict[str, asyncio.Task[None]] = {}
+        self._testing: set[str] = set()  # lights showing a test of the indicator lamp
         self._blink_owner: dict[str, str] = {}  # light entity -> step key that started its blink
         # Alarms that are sounding: target entity -> (step key, task)
         self._alarms: dict[str, tuple[str, asyncio.Task[None]]] = {}
@@ -308,6 +310,15 @@ class BoopliNudger:
         self.manager.mark_indicator_on(light.entity_id)
         return engine.LIGHT_INDICATOR
 
+    def is_driving(self, entity_id: str) -> bool:
+        """Whether Boopli is blinking this light or showing it as an indicator right now."""
+        running = self._blinks.get(entity_id)
+        return (
+            (running is not None and not running.done())
+            or entity_id in self.manager.indicator_on
+            or entity_id in self._testing
+        )
+
     def _start_blink(self, light: engine.LightCfg, state: Any, key: str = "") -> str | None:
         """Start a blink in the background. Returns None if one is running.
 
@@ -327,6 +338,7 @@ class BoopliNudger:
         """Blink, then put the light back exactly as it was. Never raises."""
         attrs = dict(state.attributes)
         restore = engine.restore_plan(state.state, attrs)
+        own_color = engine.own_color_steps(state.state, self.manager.light_last_on.get(light.entity_id))
         alert = engine.blink_alert(
             list(attrs.get("supported_color_modes") or []),
             light.color,
@@ -348,8 +360,10 @@ class BoopliNudger:
                 await self._light_call(alert[0], light.entity_id, alert[1])
                 await asyncio.sleep(light.blink_ms / 1000)
                 await self._light_call(restore[0], light.entity_id, restore[1])
+            await self._finish_restore(light.entity_id, own_color)
         except asyncio.CancelledError:
             await self._light_call(restore[0], light.entity_id, restore[1])
+            await self._finish_restore(light.entity_id, own_color)
             raise
         except Exception:  # noqa: BLE001 - a broken light must not break Boopli
             _LOGGER.exception("Boopli: blink of %s failed", light.entity_id)
@@ -357,6 +371,31 @@ class BoopliNudger:
                 await self._light_call(restore[0], light.entity_id, restore[1])
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Boopli: could not restore %s", light.entity_id)
+            await self._finish_restore(light.entity_id, own_color)
+
+    async def _finish_restore(self, entity_id: str, steps: list[tuple[str, dict[str, Any]]]) -> None:
+        """After the last blink: a light that was off gets its own color back, then goes off again.
+
+        Every call is tried on its own, so the final "off" goes out even when the color call fails.
+        """
+        finished = False
+        try:
+            for service, data in steps:
+                await asyncio.sleep(RESTORE_PAUSE)  # let the lamp take the color before it goes off
+                if entity_id in self.manager.indicator_on:
+                    finished = True  # a newer nudge took the light meanwhile: leave it as that nudge set it
+                    return
+                try:
+                    await self._light_call(service, entity_id, data)
+                except Exception:  # noqa: BLE001
+                    _LOGGER.exception("Boopli: %s of %s failed", service, entity_id)
+            finished = True
+        finally:
+            if steps and not finished:
+                # Cancelled (again) on the way: the last call is "off". Start it as its own task, which
+                # needs no waiting here, so a second cancellation cannot stop it.
+                service, data = steps[-1]
+                self.hass.async_create_task(self._light_call(service, entity_id, data))
 
     # --- speakers and alarm devices --------------------------------------
 
@@ -575,6 +614,17 @@ class BoopliNudger:
     async def async_turn_off_indicators(self, entity_ids: list[str]) -> None:
         """Switch indicator lights off once nothing is waiting any more."""
         for entity_id in entity_ids:
+            if entity_id in self.manager.indicator_on:
+                continue  # a newer nudge owns this light now: leave its color alone
+            last_on = self.manager.light_last_on.get(entity_id)
+            if last_on:  # the lamp keeps the indicator color: put its own color back first
+                try:
+                    await self._light_call("turn_on", entity_id, dict(last_on))
+                    await asyncio.sleep(RESTORE_PAUSE)
+                except Exception:  # noqa: BLE001 - it must still be switched off below
+                    _LOGGER.exception("Boopli: could not restore the color of %s", entity_id)
+                if entity_id in self.manager.indicator_on:
+                    continue  # a newer nudge has taken this light again during the pause: leave it on
             try:
                 await self.hass.services.async_call(
                     "light", "turn_off", {"entity_id": entity_id}, blocking=False
@@ -610,8 +660,13 @@ class BoopliNudger:
                     "This light is on already, so turn it off and test again to see it."
                 ),
             }
-        await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
-        self.hass.async_create_task(self._indicator_test_off(light.entity_id))
+        self._testing.add(light.entity_id)  # the test color must not be remembered as the light's own
+        try:
+            await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
+            self.hass.async_create_task(self._indicator_test_off(light.entity_id))
+        except Exception:
+            self._testing.discard(light.entity_id)  # the test never started
+            raise
         return {
             "ok": True,
             "mode": light.mode,
@@ -623,8 +678,12 @@ class BoopliNudger:
         }
 
     async def _indicator_test_off(self, entity_id: str) -> None:
-        await asyncio.sleep(INDICATOR_TEST_SECONDS)
-        await self.async_turn_off_indicators([entity_id])
+        try:
+            await asyncio.sleep(INDICATOR_TEST_SECONDS)
+            await self.async_turn_off_indicators([entity_id])
+        finally:
+            await asyncio.sleep(RESTORE_PAUSE + 1)  # its last states have been seen by now
+            self._testing.discard(entity_id)
 
     async def async_test_speaker(
         self, speaker: engine.SpeakerCfg, level: str, sounds: list[engine.ExtraSound] | None = None
