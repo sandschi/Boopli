@@ -318,7 +318,13 @@
     "in_progress": "In progress",
     "anywhere": "Anywhere",
     "not_scheduled": "Not scheduled",
-    "next": "Next: {when}"
+    "next": "Next: {when}",
+    "skip_round": "Skip this round",
+    "skip_next": "Skip next round",
+    "skip_running_ask": "Drop this round? Nothing counts for it: no XP.",
+    "skip_next_ask": "Skip the next round? The chore comes back after it.",
+    "skip_yes": "Yes, skip it",
+    "skip_keep": "Keep it"
   },
   "claude": {
     "the_routines_fire_address": "Routine trigger URL",
@@ -1415,6 +1421,7 @@
     "give_each_nudge_sequence_a_name_b157": "Give each nudge sequence a name.",
     "give_each_wall_board_a_name_4968": "Give each wall board a name.",
     "give_the_room_a_name_first_e276": "Give the room a name first.",
+    "has_no_round_to_skip_e62b": "'{name}' has no round to skip.",
     "has_no_step_waiting_for_you_right_379f": "'{name}' has no step waiting for you right now.",
     "has_nothing_in_progress_5779": "'{name}' has nothing in progress.",
     "has_two_tiles_with_the_same_id_7762": "'{name}' has two tiles with the same id.",

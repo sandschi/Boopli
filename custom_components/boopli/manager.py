@@ -1037,6 +1037,22 @@ class BoopliManager:
         del self.chores[chore.id]
         self._tick()
 
+    def skip_round(self, chore_id: str) -> None:
+        """Skip this round of a chore (a deliberate button in the panel, never on a notification).
+
+        A run in progress is dropped without XP; with no run, the coming round is skipped.
+        """
+        chore = self.find_chore(chore_id)
+        run = self._active_run_for(chore.id)
+        try:
+            engine.skip_round(chore, run is not None, dt_util.utcnow(), self.tz)
+        except ValueError as err:
+            raise BoopliError("'{name}' has no round to skip.", name=chore.name) from err
+        if run is not None:
+            self._clear_notifications_for(run)
+            del self.runs[run.id]
+        self._tick()
+
     def start_chore(self, ref: str, answers: dict[str, bool] | None = None) -> engine.Run:
         """Start a chore now (for on-demand chores). Idempotent while running.
 

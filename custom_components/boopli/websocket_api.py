@@ -26,6 +26,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_subscribe)
     websocket_api.async_register_command(hass, ws_chore_save)
     websocket_api.async_register_command(hass, ws_chore_delete)
+    websocket_api.async_register_command(hass, ws_chore_skip)
     websocket_api.async_register_command(hass, ws_chore_start)
     websocket_api.async_register_command(hass, ws_questions_answer)
     websocket_api.async_register_command(hass, ws_away_set)
@@ -182,6 +183,26 @@ def ws_chore_delete(
         return
     try:
         manager.delete_chore(msg["chore_id"])
+    except BoopliError as err:
+        _send_error(connection, msg, "invalid", err)
+        return
+    connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command(
+    {vol.Required("type"): "boopli/chore_skip", vol.Required("chore_id"): str}
+)
+@callback
+def ws_chore_skip(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Skip this round of a chore (only from the panel, never from a notification)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.skip_round(msg["chore_id"])
     except BoopliError as err:
         _send_error(connection, msg, "invalid", err)
         return

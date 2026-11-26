@@ -1563,6 +1563,27 @@ def on_run_finished(chore: Chore, now: datetime, tz: tzinfo) -> bool:
     return False
 
 
+def skip_round(chore: Chore, has_run: bool, now: datetime, tz: tzinfo) -> None:
+    """The user chose to skip this round of a chore: no XP, no streak, no penalty.
+
+    With a run in progress the caller drops that run, and the chore goes on with its next round
+    (a schedule already points at it; "every N days" counts from today). With no run, the coming
+    round is skipped: the chore moves on to the one after it. One-off tasks, set-aside parts and
+    on-demand chores have no rounds, so they raise ValueError (the caller words the message).
+    """
+    if chore.one_off or chore.parked or chore.repeat.type not in (REPEAT_SCHEDULE, REPEAT_EVERY_N_DAYS):
+        raise ValueError("no rounds")
+    if has_run:
+        if chore.repeat.type == REPEAT_EVERY_N_DAYS:
+            due = compute_next_due(chore.repeat, now, tz)
+            chore.next_due = fmt_ts(due) if due else None
+        return  # a schedule already points at the next round
+    if not chore.next_due:
+        raise ValueError("no next round")
+    due = compute_next_due(chore.repeat, parse_ts(chore.next_due), tz)
+    chore.next_due = fmt_ts(due) if due else None
+
+
 # --- away mode ---------------------------------------------------------------
 
 
