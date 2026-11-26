@@ -675,6 +675,7 @@ export class BoopliToday extends LitElement {
                   ? t("today.enjoy_the_quiet_what_is_coming")
                   : t("today.add_your_first_chore_in_the")}
               </p>
+              ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             </section>
           `}
       ${this._renderQuick()}

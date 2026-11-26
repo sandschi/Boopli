@@ -269,13 +269,18 @@ export class BoopliChoreEditor extends LitElement {
           image: (s.image ?? "").trim(),
         })),
       };
+      const submitted = JSON.stringify(this.draft);
       const saved = await saveChore(this.hass, payload);
       if (close) {
         this._close();
-      } else {
+      } else if (JSON.stringify(this.draft) === submitted) {
         // Stay on the page: what is shown is now what is saved, so nothing is left unsaved.
         this._update({ ...payload, id: saved.id });
         this._base = JSON.stringify(this.draft);
+      } else {
+        // Something was typed while the save was on its way: keep it, and keep it marked as unsaved.
+        this._update({ id: saved.id });
+        this._base = JSON.stringify({ ...payload, id: saved.id });
       }
       return true;
     } catch (err) {

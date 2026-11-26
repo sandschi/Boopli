@@ -10310,6 +10310,7 @@ var Qi = class extends x {
               <p class="muted">
                 ${w(n ? "today.enjoy_the_quiet_what_is_coming" : "today.add_your_first_chore_in_the")}
               </p>
+              ${this._error ? h`<div class="error">${this._error}</div>` : v}
             </section>
           `}
       ${this._renderQuick()}
@@ -13313,11 +13314,14 @@ var Ka = 8, qa = () => [{
 					only_if: e.only_if && n.has(e.only_if) ? e.only_if : "",
 					image: (e.image ?? "").trim()
 				}))
-			}, i = await Xt(this.hass, r);
-			return e ? this._close() : (this._update({
+			}, i = JSON.stringify(this.draft), a = await Xt(this.hass, r);
+			return e ? this._close() : JSON.stringify(this.draft) === i ? (this._update({
 				...r,
-				id: i.id
-			}), this._base = JSON.stringify(this.draft)), !0;
+				id: a.id
+			}), this._base = JSON.stringify(this.draft)) : (this._update({ id: a.id }), this._base = JSON.stringify({
+				...r,
+				id: a.id
+			})), !0;
 		} catch (e) {
 			return this._error = D(e), !1;
 		} finally {

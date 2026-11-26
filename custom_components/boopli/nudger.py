@@ -591,11 +591,16 @@ class BoopliNudger:
     async def async_turn_off_indicators(self, entity_ids: list[str]) -> None:
         """Switch indicator lights off once nothing is waiting any more."""
         for entity_id in entity_ids:
-            try:
-                last_on = self.manager.light_last_on.get(entity_id)
-                if last_on:  # the lamp keeps the indicator color: put its own color back first
+            last_on = self.manager.light_last_on.get(entity_id)
+            if last_on:  # the lamp keeps the indicator color: put its own color back first
+                try:
                     await self._light_call("turn_on", entity_id, dict(last_on))
                     await asyncio.sleep(RESTORE_PAUSE)
+                except Exception:  # noqa: BLE001 - it must still be switched off below
+                    _LOGGER.exception("Boopli: could not restore the color of %s", entity_id)
+                if entity_id in self.manager.indicator_on:
+                    continue  # a newer nudge has taken this light again during the pause: leave it on
+            try:
                 await self.hass.services.async_call(
                     "light", "turn_off", {"entity_id": entity_id}, blocking=False
                 )
