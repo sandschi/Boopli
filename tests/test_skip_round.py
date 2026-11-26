@@ -129,6 +129,15 @@ def test_a_sound_that_is_long_over_is_never_stopped():
     assert n._one_shots == {}
 
 
+def test_a_later_alarm_on_the_same_speaker_is_not_stopped_by_an_earlier_step():
+    n, speaker = make_nudger(repeat_s=0)
+    n._start_speaker_alarm(speaker, "run:s1")  # step 1 plays once
+    speaker.alarm.repeat_s = 5
+    n._start_speaker_alarm(speaker, "run:s2")  # step 2 starts a repeating alarm on the same speaker
+    asyncio.run(n.async_silence("run:s1"))  # step 1 is answered
+    assert stops(n) == []  # step 2's alarm keeps sounding
+
+
 def test_a_repeating_alarm_is_not_a_one_shot():
     n, speaker = make_nudger(repeat_s=5)
     n._start_speaker_alarm(speaker, "run:s1")

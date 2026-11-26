@@ -479,12 +479,15 @@ class BoopliNudger:
         started = self._start_alarm_task(
             speaker.entity_id, key, self._speaker_alarm(speaker)
         )
-        if started and speaker.alarm.repeat_s <= 0:
-            # Plays once and the task is over at once: remember it so Done, Snooze and On it can still stop it.
-            self._one_shots[speaker.entity_id] = (
-                key,
-                time.monotonic() + speaker.alarm.seconds,
-            )
+        if started:
+            # This alarm owns the speaker now: an older step's one-shot must not stop it.
+            self._one_shots.pop(speaker.entity_id, None)
+            if speaker.alarm.repeat_s <= 0:
+                # Plays once and the task is over at once: remember it so Done, Snooze and On it can still stop it.
+                self._one_shots[speaker.entity_id] = (
+                    key,
+                    time.monotonic() + speaker.alarm.seconds,
+                )
         return started
 
     def _start_device_alarm(self, device: engine.AlarmDeviceCfg, key: str) -> bool:

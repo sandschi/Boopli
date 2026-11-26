@@ -14014,11 +14014,12 @@ var to = class extends x {
 			_error: { state: !0 },
 			_asking: { state: !0 },
 			_busy: { state: !0 },
-			_skipping: { state: !0 }
+			_skipping: { state: !0 },
+			_skipWasRunning: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this.nowMs = Date.now(), this.openRequest = null, this._editing = null, this._openSchedule = !1, this._error = "", this._asking = null, this._busy = !1, this._skipping = null;
+		super(), this.nowMs = Date.now(), this.openRequest = null, this._editing = null, this._openSchedule = !1, this._error = "", this._asking = null, this._busy = !1, this._skipping = null, this._skipWasRunning = !1;
 	}
 	willUpdate() {
 		if (this.openRequest && !this._editing) {
@@ -14028,6 +14029,19 @@ var to = class extends x {
 				composed: !0
 			}));
 		}
+		if (this._skipping && !this._busy) {
+			let e = this.snapshot?.chores.find((e) => e.id === this._skipping), t = !!this.snapshot?.runs.some((e) => e.chore_id === this._skipping);
+			e && t === this._skipWasRunning && this._canSkip(e, t) || (this._skipping = null);
+		}
+	}
+	async _focusLater(e) {
+		await this.updateComplete, this.renderRoot.querySelector(e)?.focus();
+	}
+	_askSkip(e, t) {
+		this._busy || (this._skipping = e.id, this._skipWasRunning = t, this._focusLater(".skip-ask button.quiet"));
+	}
+	_keepRound(e) {
+		this._skipping = null, this._focusLater(`[data-skip="${e.id}"]`);
 	}
 	_edit(e, t = !1) {
 		this._openSchedule = t, this._editing = {
@@ -14066,7 +14080,7 @@ var to = class extends x {
 		this._editing = null;
 	}
 	async _start(e, t) {
-		if (this.hass) {
+		if (this.hass && !this._busy) {
 			if (this._error = "", !t && (e.questions ?? []).length > 0) this._asking = e;
 			else {
 				this._busy = !0;
@@ -14084,7 +14098,7 @@ var to = class extends x {
 		return !e.enabled || e.one_off || e.parked || e.repeat.type !== "schedule" && e.repeat.type !== "every_n_days" ? !1 : t || !!e.next_due;
 	}
 	async _skip(e) {
-		if (this.hass) {
+		if (this.hass && !this._busy) {
 			this._error = "", this._busy = !0;
 			try {
 				await Qt(this.hass, e.id);
@@ -14093,6 +14107,7 @@ var to = class extends x {
 			} finally {
 				this._skipping = null, this._busy = !1;
 			}
+			this._focusLater(`[data-edit="${e.id}"]`);
 		}
 	}
 	render() {
@@ -14173,10 +14188,10 @@ var to = class extends x {
                   </div>
                 </div>
                 <div class="chore-actions">
-                  ${t.has(n.id) ? v : h`<button class="textlink" @click=${() => this._start(n)}>${w("common.start_now")}</button>`}
+                  ${t.has(n.id) ? v : h`<button class="textlink" ?disabled=${this._busy} @click=${() => this._start(n)}>${w("common.start_now")}</button>`}
                   ${n.repeat.type === "none" ? h`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>${w("chores.set_a_schedule")}</button>` : v}
-                  <button class="textlink quiet" @click=${() => this._edit(n)}>${w("chores.edit")}</button>
-                  ${this._canSkip(n, t.has(n.id)) && this._skipping !== n.id ? h`<button class="textlink quiet" @click=${() => this._skipping = n.id}>
+                  <button class="textlink quiet" data-edit=${n.id} @click=${() => this._edit(n)}>${w("chores.edit")}</button>
+                  ${this._canSkip(n, t.has(n.id)) && this._skipping !== n.id ? h`<button class="textlink quiet" data-skip=${n.id} ?disabled=${this._busy} @click=${() => this._askSkip(n, t.has(n.id))}>
                         ${t.has(n.id) ? w("chores.skip_round") : w("chores.skip_next")}
                       </button>` : v}
                 </div>
@@ -14184,7 +14199,7 @@ var to = class extends x {
                       <span class="small">${t.has(n.id) ? w("chores.skip_running_ask") : w("chores.skip_next_ask")}</span>
                       <div class="chore-actions">
                         <button class="textlink" ?disabled=${this._busy} @click=${() => this._skip(n)}>${w("chores.skip_yes")}</button>
-                        <button class="textlink quiet" ?disabled=${this._busy} @click=${() => this._skipping = null}>${w("chores.skip_keep")}</button>
+                        <button class="textlink quiet" ?disabled=${this._busy} @click=${() => this._keepRound(n)}>${w("chores.skip_keep")}</button>
                       </div>
                     </div>` : v}
               </section>
