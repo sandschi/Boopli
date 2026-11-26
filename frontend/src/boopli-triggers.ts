@@ -280,8 +280,7 @@ export class BoopliTriggers extends LitElement {
             })}
         />
       </div>
-      <details class="advanced">
-        <summary>${t("settings.advanced")}</summary>
+      <div class="field">
         <label class="inline">
           <input
             type="checkbox"
@@ -294,7 +293,7 @@ export class BoopliTriggers extends LitElement {
         <div class="muted small">
           ${t("triggers.off_the_usual_it_has_to")}
         </div>
-      </details>
+      </div>
     `;
   }
 

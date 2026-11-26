@@ -29,6 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 NOTIFICATION_ACTION_EVENT = "mobile_app_notification_action"
 INDICATOR_TEST_SECONDS = 5
 ALARM_TEST_SECONDS = 3
+RESTORE_PAUSE = 1.0  # seconds a light that was off shows its own color before it goes off again
 
 
 class BoopliNudger:
@@ -308,6 +309,11 @@ class BoopliNudger:
         self.manager.mark_indicator_on(light.entity_id)
         return engine.LIGHT_INDICATOR
 
+    def is_driving(self, entity_id: str) -> bool:
+        """Whether Boopli is blinking this light or showing it as an indicator right now."""
+        running = self._blinks.get(entity_id)
+        return (running is not None and not running.done()) or entity_id in self.manager.indicator_on
+
     def _start_blink(self, light: engine.LightCfg, state: Any, key: str = "") -> str | None:
         """Start a blink in the background. Returns None if one is running.
 
@@ -326,7 +332,8 @@ class BoopliNudger:
     async def _blink(self, light: engine.LightCfg, state: Any) -> None:
         """Blink, then put the light back exactly as it was. Never raises."""
         attrs = dict(state.attributes)
-        restore = engine.restore_plan(state.state, attrs)
+        steps = engine.restore_steps(state.state, attrs, self.manager.light_last_on.get(light.entity_id))
+        restore = steps[0]
         alert = engine.blink_alert(
             list(attrs.get("supported_color_modes") or []),
             light.color,
@@ -348,15 +355,24 @@ class BoopliNudger:
                 await self._light_call(alert[0], light.entity_id, alert[1])
                 await asyncio.sleep(light.blink_ms / 1000)
                 await self._light_call(restore[0], light.entity_id, restore[1])
+            await self._finish_restore(light.entity_id, steps)
         except asyncio.CancelledError:
             await self._light_call(restore[0], light.entity_id, restore[1])
+            await self._finish_restore(light.entity_id, steps)
             raise
         except Exception:  # noqa: BLE001 - a broken light must not break Boopli
             _LOGGER.exception("Boopli: blink of %s failed", light.entity_id)
             try:
                 await self._light_call(restore[0], light.entity_id, restore[1])
+                await self._finish_restore(light.entity_id, steps)
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Boopli: could not restore %s", light.entity_id)
+
+    async def _finish_restore(self, entity_id: str, steps: list[tuple[str, dict[str, Any]]]) -> None:
+        """The rest of a restore: a light that was off gets its own color back, then goes off again."""
+        for service, data in steps[1:]:
+            await asyncio.sleep(RESTORE_PAUSE)  # let the lamp take the color before it goes off
+            await self._light_call(service, entity_id, data)
 
     # --- speakers and alarm devices --------------------------------------
 
@@ -576,6 +592,10 @@ class BoopliNudger:
         """Switch indicator lights off once nothing is waiting any more."""
         for entity_id in entity_ids:
             try:
+                last_on = self.manager.light_last_on.get(entity_id)
+                if last_on:  # the lamp keeps the indicator color: put its own color back first
+                    await self._light_call("turn_on", entity_id, dict(last_on))
+                    await asyncio.sleep(RESTORE_PAUSE)
                 await self.hass.services.async_call(
                     "light", "turn_off", {"entity_id": entity_id}, blocking=False
                 )

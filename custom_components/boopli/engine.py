@@ -2239,6 +2239,30 @@ def deleted_standard_ladder(old: Settings, new: Settings) -> str | None:
     return next((l.name for l in old.ladders if l.id in STANDARD_LADDER_IDS and l.id not in kept), None)
 
 
+def drop_removed_devices_from_ladders(settings: Settings) -> bool:
+    """Take the devices that are not set up (any more) out of every nudge. Returns whether anything changed.
+
+    Removing a speaker, light, phone or alarm device in the settings used to leave it in the nudge
+    sequences as "not set up any more", with no way to remove it from there.
+    """
+    phones = {p.service for p in settings.phones}
+    lights = {x.entity_id for x in settings.lights}
+    speakers = {s.entity_id for s in settings.speakers}
+    alarms = {a.entity_id for a in settings.alarm_devices}
+    changed = False
+    for ladder in settings.ladders:
+        for rung in ladder.rungs:
+            for devices, known in ((rung.phones, phones), (rung.lights, lights), (rung.speakers, speakers)):
+                for key in [k for k in devices if k not in known]:
+                    del devices[key]
+                    changed = True
+            kept = [a for a in rung.alarms if a in alarms]
+            if len(kept) != len(rung.alarms):
+                rung.alarms[:] = kept
+                changed = True
+    return changed
+
+
 def sync_phone_levels_to_standard_ladders(old: Settings, new: Settings) -> None:
     """A phone whose level was changed in the settings uses the new level in the standard ladders too."""
     changed = {
@@ -3182,6 +3206,25 @@ _COLOR_ATTRIBUTE = {
     "rgbww": "rgbww_color",
     "xy": "xy_color",
 }
+
+
+def light_last_on(attrs: dict[str, Any]) -> dict[str, Any]:
+    """Brightness and color of a light that is on, as `light.turn_on` data (to remember them for later)."""
+    return restore_plan("on", attrs)[1]
+
+
+def restore_steps(
+    state: str, attrs: dict[str, Any], last_on: dict[str, Any] | None
+) -> list[tuple[str, dict[str, Any]]]:
+    """The calls that put a light back as it was after a blink or an indicator.
+
+    A light that was off has no color in Home Assistant, but the lamp itself keeps the last one it
+    showed (the blink color) and uses it at the next switch-on. So when we know the color it had
+    when it was last on, it is switched on with that color for a moment and off again.
+    """
+    if state != "on" and last_on:
+        return [("turn_on", dict(last_on)), ("turn_off", {})]
+    return [restore_plan(state, attrs)]
 
 
 def restore_plan(state: str, attrs: dict[str, Any]) -> tuple[str, dict[str, Any]]:

@@ -284,6 +284,11 @@ export function answerQuestions(
   return hass.callWS({ type: "boopli/questions_answer", run_id: runId, answers });
 }
 
+/** Start a waiting step now, by hand (its turn begins as if what it waited for had happened). */
+export function releaseStep(hass: Hass, runId: string, stepId: string): Promise<void> {
+  return hass.callWS({ type: "boopli/step_release", run_id: runId, step_id: stepId });
+}
+
 export function completeStep(
   hass: Hass,
   runId: string,

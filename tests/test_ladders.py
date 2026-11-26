@@ -524,3 +524,43 @@ def test_a_lights_own_mode_survives_saving_and_loading():
     assert again.mode == engine.LIGHT_OWN_MODE
     assert engine.RungLight.from_dict({}).mode == engine.LIGHT_BLINK  # no mode at all: blink
     assert engine.RungLight.from_dict({"mode": "junk"}).mode == engine.LIGHT_BLINK
+
+
+def test_a_removed_device_leaves_every_nudge():
+    settings = engine.Settings(
+        phones=[engine.PhoneCfg(service="pixel", level="normal", start_at=1)],
+        speakers=[engine.SpeakerCfg(entity_id="media_player.dot")],
+        standard_done=False,
+    )
+    engine.seed_standard_ladders(settings)
+    ladder = engine.Ladder(
+        id="mine",
+        name="Mine",
+        rungs=[
+            engine.Rung(
+                phones={"pixel": "normal", "gone_phone": "high"},
+                speakers={"media_player.dot": "ding", "media_player.old_dot": "ding"},
+                lights={"light.gone": engine.RungLight("blink")},
+                alarms=["siren.gone"],
+            )
+        ],
+    )
+    settings.ladders.append(ladder)
+    assert engine.drop_removed_devices_from_ladders(settings) is True
+    rung = ladder.rungs[0]
+    assert rung.phones == {"pixel": "normal"}
+    assert list(rung.speakers) == ["media_player.dot"]
+    assert rung.lights == {} and rung.alarms == []
+    assert engine.drop_removed_devices_from_ladders(settings) is False  # nothing left to drop
+
+
+def test_a_light_that_was_off_gets_its_own_color_back_after_a_blink():
+    own = engine.light_last_on({"brightness": 200, "color_mode": "rgb", "rgb_color": [255, 180, 60]})
+    assert own == {"brightness": 200, "rgb_color": [255, 180, 60]}
+    # off before the blink and we know its color: on with that color, then off again
+    assert engine.restore_steps("off", {}, own) == [("turn_on", own), ("turn_off", {})]
+    # off and no color known: only off, as before
+    assert engine.restore_steps("off", {}, None) == [("turn_off", {})]
+    # on before the blink: put back as it was, nothing more
+    steps = engine.restore_steps("on", {"brightness": 100, "color_mode": "rgb", "rgb_color": [1, 2, 3]}, own)
+    assert steps == [("turn_on", {"brightness": 100, "rgb_color": [1, 2, 3]})]

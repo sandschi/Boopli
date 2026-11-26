@@ -12,6 +12,7 @@ export interface NowItem {
 
 /** A remaining step of a run, shown small and dimmed. */
 export interface UpcomingStep {
+  stepId: string;
   title: string;
   status: StepStatus;
   hint: string;
@@ -78,7 +79,7 @@ export function buildToday(snapshot: Snapshot, nowMs: number): TodayModel {
     else if (s.status === "waiting" && s.active_at) hint = untilLabel(s.active_at, nowMs);
     else if (s.status === "waiting" && (s.wait_for ?? []).length > 0) hint = t("today.waits_for_something_to_happen");
     else if (s.wait_minutes > 0) hint = t("today.after_the_step_before", { duration: fmtMinutes(s.wait_minutes) });
-    return { title: s.title, status: s.status, hint };
+    return { stepId: s.step_id, title: s.title, status: s.status, hint };
   };
 
   const ready: RunGroup[] = sortedRuns

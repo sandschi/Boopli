@@ -244,7 +244,8 @@ export class BoopliChoreEditor extends LitElement {
     this.dispatchEvent(new CustomEvent("editor-close", { bubbles: true, composed: true }));
   }
 
-  private async _save(): Promise<boolean> {
+  /** Save the chore. With `close` false the editor stays open on the saved chore. */
+  private async _save(close = true): Promise<boolean> {
     if (!this.hass || this._busy) return false;
     this._busy = true;
     this._error = "";
@@ -254,7 +255,7 @@ export class BoopliChoreEditor extends LitElement {
         .map((q) => ({ ...q, text: q.text.trim() }))
         .filter((q) => q.text);
       const known = new Set(questions.map((q) => q.id));
-      await saveChore(this.hass, {
+      const payload: ChoreDraft = {
         ...this.draft,
         nudge_style: this.draft.nudge_style ?? this.defaultStyle,
         ignore_quiet_hours: this.draft.ignore_quiet_hours ?? false,
@@ -267,8 +268,15 @@ export class BoopliChoreEditor extends LitElement {
           only_if: s.only_if && known.has(s.only_if) ? s.only_if : "",
           image: (s.image ?? "").trim(),
         })),
-      });
-      this._close();
+      };
+      const saved = await saveChore(this.hass, payload);
+      if (close) {
+        this._close();
+      } else {
+        // Stay on the page: what is shown is now what is saved, so nothing is left unsaved.
+        this._update({ ...payload, id: saved.id });
+        this._base = JSON.stringify(this.draft);
+      }
       return true;
     } catch (err) {
       this._error = errorMessage(err);
@@ -662,7 +670,8 @@ export class BoopliChoreEditor extends LitElement {
         ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
 
         <div class="actions">
-          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+          <button ?disabled=${this._busy} @click=${() => this._save(false)}>${t("common.save")}</button>
+          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save_and_close")}</button>
           <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.cancel")}</button>
           ${d.id
             ? this._confirmDelete
@@ -677,7 +686,8 @@ export class BoopliChoreEditor extends LitElement {
         ? html`<div class="savebar" role="status">
             <span>${rich("chore_editor.you_have_unsaved_changes")}</span>
             <span class="spacer"></span>
-            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save")}</button>
+            <button ?disabled=${this._busy} @click=${() => this._save(false)}>${t("common.save")}</button>
+            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${t("common.save_and_close")}</button>
             <button ?disabled=${this._busy} @click=${() => this._close()}>${t("common.discard")}</button>
           </div>`
         : nothing}
