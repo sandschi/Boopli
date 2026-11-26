@@ -429,7 +429,10 @@ class BoopliManager:
         if state is None or state.state != "on" or self.nudger.is_driving(state.entity_id):
             return
         data = engine.light_last_on(dict(state.attributes))
-        if data and self.light_last_on.get(state.entity_id) != data:
+        old = self.light_last_on.get(state.entity_id)
+        if old and engine.light_has_color(old) and not engine.light_has_color(data):
+            return  # a moment with brightness only (no color reported yet) must not replace a known color
+        if data and old != data:
             self.light_last_on[state.entity_id] = data
             self._save()
 

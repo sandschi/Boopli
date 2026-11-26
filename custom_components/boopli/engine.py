@@ -3213,6 +3213,11 @@ def light_last_on(attrs: dict[str, Any]) -> dict[str, Any]:
     return restore_plan("on", attrs)[1]
 
 
+def light_has_color(data: dict[str, Any]) -> bool:
+    """Whether remembered light data holds a color (not just a brightness)."""
+    return any(key != "brightness" for key in data)
+
+
 def own_color_steps(state: str, last_on: dict[str, Any] | None) -> list[tuple[str, dict[str, Any]]]:
     """The calls to make once, after the last blink, so a light that was off keeps its own color.
 

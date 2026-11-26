@@ -382,6 +382,9 @@ class BoopliNudger:
         try:
             for service, data in steps:
                 await asyncio.sleep(RESTORE_PAUSE)  # let the lamp take the color before it goes off
+                if entity_id in self.manager.indicator_on:
+                    finished = True  # a newer nudge took the light meanwhile: leave it as that nudge set it
+                    return
                 try:
                     await self._light_call(service, entity_id, data)
                 except Exception:  # noqa: BLE001

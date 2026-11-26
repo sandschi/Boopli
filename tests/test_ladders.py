@@ -565,3 +565,9 @@ def test_a_light_that_was_off_gets_its_own_color_back_after_the_last_blink():
     assert engine.own_color_steps("off", None) == []
     # on before the blink: put back with restore_plan, nothing more
     assert engine.own_color_steps("on", own) == []
+
+
+def test_a_brightness_only_moment_is_not_a_color():
+    assert engine.light_has_color({"brightness": 10, "rgb_color": [1, 2, 3]}) is True
+    assert engine.light_has_color({"brightness": 10}) is False
+    assert engine.light_has_color({}) is False
