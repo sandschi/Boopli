@@ -40,6 +40,7 @@ import { sharedStyles } from "./styles";
 import { starterNamesTaken, TEMPLATES } from "./templates";
 import { weekdayNames } from "./time";
 import { t, rich } from "./i18n";
+import { accessOf } from "./helpers";
 import type {
   AlarmDeviceCfg,
   Hass,
@@ -294,7 +295,8 @@ export class BoopliWizard extends LitElement {
     this._saved = structuredClone(this.snapshot.settings);
     this._baseline = structuredClone(this.snapshot.settings);
     this._draft = structuredClone(this.snapshot.settings);
-    this._steps = [...SEQUENCES[this.wizard]];
+    // Ask Claude holds a secret and costs fires: only an administrator may set it up (the commands say no to anyone else).
+    this._steps = SEQUENCES[this.wizard].filter((s) => accessOf(this.snapshot).admin || !s.startsWith("claude_"));
     const resume = this.startAt as StepId;
     if (this._first && SPEAKER_STEPS.includes(resume)) {
       const gate = this._steps.indexOf("speaker_gate");

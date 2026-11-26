@@ -339,7 +339,16 @@ export interface AiPreview {
   enabled: boolean;
 }
 
+/** What the person at this screen may do (the integration checks again on every command). */
+export interface Access {
+  level: 1 | 2 | 3; // what people who are not administrators may do: 1 use, 2 also edit notes, 3 everything else
+  admin: boolean;
+  notes: boolean; // may edit the rooms and their notes
+  all: boolean; // may change chores, settings, nudges and boards
+}
+
 export interface Snapshot {
+  access?: Access;
   now: string;
   time_zone: string;
   ai_timeout?: number; // the longest Boopli waits for the AI agent, in seconds

@@ -320,7 +320,8 @@
     "skip_running_ask": "Diese Runde weglassen? Dafür gibt es keine XP.",
     "skip_next_ask": "Die nächste Runde überspringen? Danach kommt die Aufgabe wieder.",
     "skip_yes": "Ja, überspringen",
-    "skip_keep": "Behalten"
+    "skip_keep": "Behalten",
+    "no_chores_yet_ask_an_admin": "Noch keine Aufgaben. Bitte einen Administrator, welche anzulegen."
   },
   "claude": {
     "the_routines_fire_address": "Auslöse-URL der Routine",
@@ -466,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Boopli ist gerade nicht erreichbar. Ist die Integration eingerichtet?",
     "away_mode_is_planned": "Abwesenheitsmodus geplant",
     "back_now": "Einstellungen für den Abwesenheitsmodus öffnen",
-    "my_home": "Mein Zuhause"
+    "my_home": "Mein Zuhause",
+    "access_lowered_discarded": "Durch die geänderte Zugriffsstufe wurde etwas geschlossen, das offen war. Nicht gespeicherte Änderungen wurden verworfen."
   },
   "pet_preview": {
     "level_up_n": "Level {n}!",
@@ -691,7 +693,15 @@
     "board_summary_one": "{name}: {count} Kachel, in den Ruhezeiten {night}",
     "board_summary_other": "{name}: {count} Kacheln, in den Ruhezeiten {night}",
     "on_using": "Aktiver KI-Agent: {agent}",
-    "the_home_assistant_default_agent": "Standardagent von Home Assistant"
+    "the_home_assistant_default_agent": "Standardagent von Home Assistant",
+    "access_title": "Wer darf was?",
+    "access_note": "Das gilt für alle bei dir zu Hause, die in Home Assistant keine Administratorrechte haben. Administratoren dürfen immer alles.",
+    "access_use": "Boopli nutzen",
+    "access_use_note": "sehen, was ansteht, Aufgaben starten, Schritte durchgehen und den Abwesenheitsmodus einstellen",
+    "access_notes": "Boopli nutzen, Räume bearbeiten und ihre Notizen ändern",
+    "access_notes_note": "auch der Tab „Mein Zuhause“",
+    "access_all": "Alles außer dem, was Administratoren vorbehalten ist",
+    "access_all_note": "auch Aufgaben, Einstellungen, Stupse und Wallboards. Backups, der Token für „Claude fragen“ und diese Auswahl bleiben Administratoren vorbehalten"
   },
   "speakers": {
     "what_kind_of_speaker": "Art des Lautsprechers",
@@ -915,7 +925,8 @@
     "full_screen": "Vollbild",
     "back_to_boopli": "Zurück zu Boopli",
     "no_board_yet_make_one_in": "Es gibt noch kein Wallboard. Erstelle eins in den „Einstellungen“ unter „Wallboard“.",
-    "edit_this_tile": "Kachel bearbeiten: {replace}"
+    "edit_this_tile": "Kachel bearbeiten: {replace}",
+    "no_board_yet_ask_an_admin": "Es gibt noch kein Wallboard. Bitte einen Administrator, eins anzulegen."
   },
   "wizard": {
     "a_board_is_a_grid_of": "Ein Wallboard ist ein Raster aus Kacheln für einen Wandbildschirm. Du kannst eine Uhr, dein Haustier, anstehende Aufgaben, das Wetter und mehr hinzufügen.",

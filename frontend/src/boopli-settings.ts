@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
-import { aiDefaults, aiSteps, errorMessage, saveSettings, testLight, testNote, testPhone } from "./api";
+import { live } from "lit/directives/live.js";
+import { aiDefaults, aiSteps, errorMessage, saveSettings, setAccessLevel, testLight, testNote, testPhone } from "./api";
 import type { WizardId } from "./boopli-wizard";
 import {
   describeQuiet,
@@ -17,6 +18,7 @@ import { weekdayNames } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-speakers";
 import "./boopli-away";
+import { accessOf } from "./helpers";
 import "./boopli-ladders";
 import "./boopli-pet-picker";
 import "./boopli-pet-preview";
@@ -42,7 +44,7 @@ import type {
 const ADDRESS_CHOICE = "@address";
 
 /** The parts of Settings. Each is a card on the page, with a guide and an "Advanced" window. */
-type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup" | "language";
+type Area = "phone" | "lights" | "speakers" | "alarms" | "quiet" | "timing" | "ladders" | "presence" | "pet" | "wall" | "ai" | "backup" | "access" | "language";
 
 interface AreaDef {
   icon: string; // a Material Design icon name (mdi:<name>)
@@ -69,6 +71,7 @@ const AREAS = (): Record<Area, AreaDef> => ({
   wall: { icon: "monitor-dashboard", title: t("common.wall_board"), wizard: "wall", keys: ["boards"] },
   ai: { icon: "robot-outline", title: t("settings.ai_help"), wizard: "ai", keys: ["ai"] },
   backup: { icon: "content-save-outline", title: t("backup.backup"), keys: [] },
+  access: { icon: "account-lock-outline", title: t("settings.access_title"), keys: [] },
   language: { icon: "translate", title: t("settings.language"), keys: [] },
 });
 
@@ -76,7 +79,7 @@ const AREAS = (): Record<Area, AreaDef> => ({
 const GROUPS = (): { title: string; areas: Area[] }[] => [
   { title: t("settings.devices"), areas: ["phone", "lights", "speakers", "alarms"] },
   { title: t("settings.timing"), areas: ["quiet", "timing", "ladders", "presence"] },
-  { title: t("settings.extras"), areas: ["pet", "wall", "ai", "backup", "language"] },
+  { title: t("settings.extras"), areas: ["pet", "wall", "ai", "backup", "access", "language"] },
 ];
 const AREA_ORDER: Area[] = GROUPS().flatMap((g) => g.areas);
 
@@ -110,6 +113,8 @@ export class BoopliSettings extends LitElement {
     _defaults: { state: true },
     _aiNote: { state: true },
     _claudeOpen: { state: true },
+    _accessBusy: { state: true },
+    _accessError: { state: true },
     _backup: { state: true },
     _languageNote: { state: true },
   };
@@ -126,6 +131,8 @@ export class BoopliSettings extends LitElement {
   declare _flash: Area | ""; // the card that is lit up ("look here")
   declare _defaults: PromptDefaults | null;
   declare _aiNote: string;
+  declare _accessBusy: boolean; // the choice of who may do what is on its way
+  declare _accessError: string;
   declare _claudeOpen: boolean; // the small Ask Claude window on top of the AI help window
   declare _backup: "" | "export" | "import"; // the backup window that is open
   declare _languageNote: string; // why the language could not be changed (a message under the picker)
@@ -148,6 +155,8 @@ export class BoopliSettings extends LitElement {
     this._defaults = null;
     this._aiNote = "";
     this._claudeOpen = false;
+    this._accessBusy = false;
+    this._accessError = "";
     this._backup = "";
   }
 
@@ -851,9 +860,11 @@ export class BoopliSettings extends LitElement {
             ${t("common.switch_ai_help_on")}
           </label>
           <button type="button" ?disabled=${changed || !ai.enabled} @click=${() => this._testAi()}>${t("settings.test_the_agent")}</button>
-          <button type="button" @click=${() => (this._claudeOpen = true)}>
-            ${icon("creation")} ${t("settings.ask_claude_extra")}${ai.claude_enabled ? t("settings.claude_on_suffix") : ""}
-          </button>
+          ${accessOf(this.snapshot).admin
+            ? html`<button type="button" @click=${() => (this._claudeOpen = true)}>
+                ${icon("creation")} ${t("settings.ask_claude_extra")}${ai.claude_enabled ? t("settings.claude_on_suffix") : ""}
+              </button>`
+            : nothing}
         </div>
         ${changed ? html`<div class="muted small">${t("settings.save_first_to_test")}</div>` : nothing}
         ${this._aiNote ? html`<div class="note muted small">${this._aiNote}</div>` : nothing}
@@ -993,6 +1004,7 @@ export class BoopliSettings extends LitElement {
       case "backup":
         return [t("settings.save_your_whole_setup_to_one")];
       case "language":
+      case "access":
         return [];
       case "ai":
         return [
@@ -1055,8 +1067,59 @@ export class BoopliSettings extends LitElement {
     </section>`;
   }
 
+  /** The backup and the choice of who may do what are for administrators; the rest is for whoever may open Settings. */
+  private _shown(area: Area): boolean {
+    return area === "backup" || area === "access" ? accessOf(this.snapshot).admin : true;
+  }
+
+  private _renderAccessCard() {
+    const a = AREAS().access;
+    const level = accessOf(this.snapshot).level;
+    const choices: { value: 1 | 2 | 3; label: string; note: string }[] = [
+      { value: 1, label: t("settings.access_use"), note: t("settings.access_use_note") },
+      { value: 2, label: t("settings.access_notes"), note: t("settings.access_notes_note") },
+      { value: 3, label: t("settings.access_all"), note: t("settings.access_all_note") },
+    ];
+    return html`<section id="card-access" class="card area">
+      <div class="card-head">
+        <span class="card-icon">${icon(a.icon)}</span>
+        <h3 tabindex="-1">${a.title}</h3>
+      </div>
+      <div class="muted small">${t("settings.access_note")}</div>
+      <div class="field" role="radiogroup" aria-label=${a.title}>
+        ${choices.map(
+          (c) => html`<label class="inline">
+            <input
+              type="radio"
+              name="access"
+              .checked=${live(level === c.value)}
+              ?disabled=${this._accessBusy}
+              @change=${() => void this._setAccess(c.value)}
+            />
+            <span>${c.label}<span class="muted small"> — ${c.note}</span></span>
+          </label>`
+        )}
+      </div>
+      ${this._accessError ? html`<div class="error" role="alert">${this._accessError}</div>` : nothing}
+    </section>`;
+  }
+
+  private async _setAccess(level: 1 | 2 | 3): Promise<void> {
+    if (!this.hass || this._accessBusy) return;
+    this._accessBusy = true;
+    this._accessError = "";
+    try {
+      await setAccessLevel(this.hass, level);
+    } catch (err) {
+      this._accessError = errorMessage(err);
+    } finally {
+      this._accessBusy = false;
+    }
+  }
+
   private _card(area: Area, d: Settings) {
     if (area === "language") return this._renderLanguageCard();
+    if (area === "access") return this._renderAccessCard();
     const a = AREAS()[area];
     const changed = this._changed(...a.keys);
     return html`<section id="card-${area}" class="card area ${area === "pet" ? "accented" : ""} ${changed ? "changed" : ""} ${this._flash === area ? "flash" : ""}">
@@ -1229,7 +1292,7 @@ export class BoopliSettings extends LitElement {
       </section>
       ${GROUPS().map(
         (g) => html`<h2 class="group">${g.title}</h2>
-          <div class="cards">${g.areas.map((a) => this._card(a, d))}</div>`
+          <div class="cards">${g.areas.filter((a) => this._shown(a)).map((a) => this._card(a, d))}</div>`
       )}
       <p class="muted small">
         ${t("settings.want_to_do_all_of_it")}

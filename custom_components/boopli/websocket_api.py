@@ -2,22 +2,52 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from functools import wraps
 from typing import Any
 
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import Unauthorized
 from homeassistant.loader import async_get_integration
 
 from . import breakdown, engine
-from .const import DOMAIN
+from .const import ACCESS_ADMIN, ACCESS_ALL, ACCESS_NOTES, ACCESS_USE, DOMAIN
 from .errors import message_key
 from .manager import BoopliError, BoopliManager
 
 
 def _manager(hass: HomeAssistant) -> BoopliManager | None:
     return hass.data.get(DOMAIN)
+
+
+def _access(level: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """Guard a command: it runs only for an administrator, or when the access level the admin
+    chose (see BoopliManager.access_level) reaches `level`. Every command carries one, so a new
+    command cannot stay unprotected by accident (a test checks that)."""
+
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        @wraps(func)
+        def guarded(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> Any:
+            manager = _manager(hass)
+            user = connection.user
+            is_admin = user is not None and user.is_admin
+            if level >= ACCESS_ADMIN:
+                allowed = is_admin
+            elif manager is None:
+                allowed = True  # not set up: the command itself says so
+            else:
+                allowed = manager.may(user, level)
+            if not allowed:
+                raise Unauthorized()
+            return func(hass, connection, msg)
+
+        guarded.boopli_access = level  # type: ignore[attr-defined]
+        return guarded
+
+    return decorator
 
 
 def async_register_websocket_commands(hass: HomeAssistant) -> None:
@@ -59,6 +89,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_test_channel)
     websocket_api.async_register_command(hass, ws_claude_token)
     websocket_api.async_register_command(hass, ws_claude_test)
+    websocket_api.async_register_command(hass, ws_access_set)
     websocket_api.async_register_command(hass, ws_backup_export)
     websocket_api.async_register_command(hass, ws_backup_preview)
     websocket_api.async_register_command(hass, ws_backup_import)
@@ -115,6 +146,7 @@ def _not_loaded(connection: websocket_api.ActiveConnection, msg: dict[str, Any])
     _send_error(connection, msg, "not_loaded", BoopliError("Boopli is not set up."))
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/state"})
 @callback
 def ws_state(
@@ -125,9 +157,10 @@ def ws_state(
     if manager is None:
         _not_loaded(connection, msg)
         return
-    connection.send_result(msg["id"], manager.snapshot())
+    connection.send_result(msg["id"], manager.snapshot_for(connection.user))
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/subscribe"})
 @callback
 def ws_subscribe(
@@ -142,7 +175,7 @@ def ws_subscribe(
     @callback
     def forward() -> None:
         connection.send_message(
-            websocket_api.event_message(msg["id"], manager.snapshot())
+            websocket_api.event_message(msg["id"], manager.snapshot_for(connection.user))
         )
 
     connection.subscriptions[msg["id"]] = manager.async_add_listener(forward)
@@ -150,6 +183,7 @@ def ws_subscribe(
     forward()
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/chore_save", vol.Required("chore"): dict}
 )
@@ -170,6 +204,7 @@ def ws_chore_save(
     connection.send_result(msg["id"], {"id": chore.id})
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/chore_delete", vol.Required("chore_id"): str}
 )
@@ -190,6 +225,7 @@ def ws_chore_delete(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/chore_skip", vol.Required("chore_id"): str}
 )
@@ -213,6 +249,7 @@ def ws_chore_skip(
 _ANSWERS = vol.Schema({str: bool})  # question id -> yes
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/chore_start",
@@ -238,6 +275,7 @@ def ws_chore_start(
     connection.send_result(msg["id"], {"run_id": run.id})
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/away_set",
@@ -265,6 +303,7 @@ def ws_away_set(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/away_end"})
 @callback
 def ws_away_end(
@@ -279,6 +318,7 @@ def ws_away_end(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/questions_answer",
@@ -305,6 +345,7 @@ _PARK_FIELDS = {
 }
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/part_park",
@@ -330,6 +371,7 @@ def ws_part_park(
     connection.send_result(msg["id"], {"chore_id": chore.id})
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/part_time", vol.Required("chore_id"): str, **_PARK_FIELDS}
 )
@@ -350,6 +392,7 @@ def ws_part_time(
     connection.send_result(msg["id"], {})
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/step_complete",
@@ -370,6 +413,7 @@ def ws_step_complete(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/step_release",
@@ -390,6 +434,7 @@ def ws_step_release(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/step_snooze",
@@ -410,6 +455,7 @@ def ws_step_snooze(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/step_on_it",
@@ -430,6 +476,7 @@ def ws_step_on_it(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/step_not_on_it",
@@ -450,6 +497,7 @@ def ws_step_not_on_it(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/settings_save", vol.Required("settings"): dict}
 )
@@ -471,6 +519,7 @@ def ws_settings_save(
     connection.send_result(msg["id"], {"ladders": manager.snapshot()["settings"]["ladders"]})
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/schedule_preview",
@@ -508,6 +557,7 @@ _AI_FIELDS = {
 }
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/home_save", vol.Required("home"): dict})
 @callback
 def ws_home_save(
@@ -526,6 +576,7 @@ def ws_home_save(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/home_sync"})
 @callback
 def ws_home_sync(
@@ -540,6 +591,7 @@ def ws_home_sync(
     connection.send_result(msg["id"], engine.to_dict(manager.home))
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/rooms_guess", vol.Required("task"): str})
 @callback
 def ws_rooms_guess(
@@ -553,6 +605,7 @@ def ws_rooms_guess(
     connection.send_result(msg["id"], {"rooms": manager.guess_rooms(msg["task"])})
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_preview", **_AI_FIELDS})
 @callback
 def ws_ai_preview(
@@ -581,6 +634,7 @@ _ROOM_FIELDS = {
 }
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/room_questions", **_ROOM_FIELDS})
 @websocket_api.async_response
 async def ws_room_questions(
@@ -601,6 +655,7 @@ async def ws_room_questions(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/room_notes", **_ROOM_FIELDS})
 @websocket_api.async_response
 async def ws_room_notes(
@@ -621,6 +676,7 @@ async def ws_room_notes(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_questions", **_AI_FIELDS})
 @websocket_api.async_response
 async def ws_ai_questions(
@@ -647,6 +703,7 @@ async def ws_ai_questions(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_steps", **_AI_FIELDS})
 @websocket_api.async_response
 async def ws_ai_steps(
@@ -673,6 +730,7 @@ async def ws_ai_steps(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/room_photos",
@@ -701,6 +759,7 @@ async def ws_room_photos(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/scene_photos",
@@ -729,6 +788,7 @@ async def ws_scene_photos(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/chat_prompt",
@@ -758,6 +818,7 @@ def ws_chat_prompt(
     connection.send_result(msg["id"], {"prompt": prompt})
 
 
+@_access(ACCESS_NOTES)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/paste_notes",
@@ -788,6 +849,7 @@ def ws_paste_notes(
     connection.send_result(msg["id"], result)
 
 
+@_access(ACCESS_USE)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/egg_found"})
 @callback
 def ws_egg_found(
@@ -801,6 +863,7 @@ def ws_egg_found(
     connection.send_result(msg["id"], {"xp": manager.found_egg()})
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/ai_defaults"})
 @callback
 def ws_ai_defaults(
@@ -818,6 +881,7 @@ def ws_ai_defaults(
     )
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/task_add",
@@ -846,6 +910,7 @@ def ws_task_add(
     connection.send_result(msg["id"], {"run_id": run.id})
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/setup_save",
@@ -870,6 +935,7 @@ def ws_setup_save(
     connection.send_result(msg["id"])
 
 
+@_access(ACCESS_ALL)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/test_channel",
@@ -899,10 +965,28 @@ async def ws_test_channel(
     connection.send_result(msg["id"], _wire_note(result))
 
 
+# --- who may do what (admins only) ------------------------------------------------------------------
+
+
+@_access(ACCESS_ADMIN)
+@websocket_api.websocket_command({vol.Required("type"): "boopli/access_set", vol.Required("level"): vol.In([1, 2, 3])})
+@callback
+def ws_access_set(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Choose what people who are not administrators may do: 1 use, 2 also edit notes, 3 everything else."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.set_access_level(msg["level"])
+    connection.send_result(msg["id"])
+
+
 # --- backup of the setup (admins only: a backup holds private data, an import replaces it) ---------
 
 
-@websocket_api.require_admin
+@_access(ACCESS_ADMIN)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/backup_export",
@@ -927,7 +1011,7 @@ async def ws_backup_export(
     connection.send_result(msg["id"], backup)
 
 
-@websocket_api.require_admin
+@_access(ACCESS_ADMIN)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/backup_preview",
@@ -952,7 +1036,7 @@ def ws_backup_preview(
     connection.send_result(msg["id"], result)
 
 
-@websocket_api.require_admin
+@_access(ACCESS_ADMIN)
 @websocket_api.websocket_command(
     {
         vol.Required("type"): "boopli/backup_import",
@@ -980,7 +1064,7 @@ def ws_backup_import(
 # --- Ask Claude (the optional routine; admins only: it holds a secret and costs fires) -----------
 
 
-@websocket_api.require_admin
+@_access(ACCESS_ADMIN)
 @websocket_api.websocket_command(
     {vol.Required("type"): "boopli/claude_token", vol.Required("token"): str}
 )
@@ -1001,7 +1085,7 @@ async def ws_claude_token(
     connection.send_result(msg["id"], manager.claude_status())
 
 
-@websocket_api.require_admin
+@_access(ACCESS_ADMIN)
 @websocket_api.websocket_command({vol.Required("type"): "boopli/claude_test"})
 @websocket_api.async_response
 async def ws_claude_test(

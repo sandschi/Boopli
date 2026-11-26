@@ -15,6 +15,7 @@ import type { WizardId } from "./boopli-wizard";
 import { sharedStyles } from "./styles";
 import { applyAccent } from "./accent";
 import { loadFonts } from "./fonts";
+import { accessOf } from "./helpers";
 import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
 import { setLanguage, t } from "./i18n";
@@ -58,6 +59,7 @@ export class BoopliPanel extends LitElement {
     _tab: { state: true },
     _nowMs: { state: true },
     _connectionError: { state: true },
+    _accessNote: { state: true },
     _wizard: { state: true },
     _breakdown: { state: true },
     _breakdownError: { state: true },
@@ -74,6 +76,7 @@ export class BoopliPanel extends LitElement {
   declare _tab: Tab;
   declare _nowMs: number;
   declare _connectionError: string;
+  declare _accessNote: string; // said once when a lowered access level took away something that was open
   declare _wizard: WizardRequest | null;
   declare _breakdown: { kind: "now" | "recurring"; task: string } | null;
   declare _breakdownError: string;
@@ -95,6 +98,7 @@ export class BoopliPanel extends LitElement {
     this._tab = "today";
     this._nowMs = Date.now();
     this._connectionError = "";
+    this._accessNote = "";
     this._wizard = null;
     this._breakdown = null;
     this._breakdownError = "";
@@ -113,8 +117,10 @@ export class BoopliPanel extends LitElement {
   }
 
   private _onDirty = (e: Event): void => {
-    const { source, dirty } = (e as CustomEvent<{ source: "settings" | "chore" | "home"; dirty: boolean }>).detail;
+    const { source, dirty, revoked } = (e as CustomEvent<{ source: "settings" | "chore" | "home"; dirty: boolean; revoked?: boolean }>).detail;
     this._dirty = { ...this._dirty, [source]: dirty };
+    if (revoked) this._accessNote = t("panel.access_lowered_discarded"); // a screen closed its editor because the level was lowered
+    this._settleConfirm();
   };
 
   private _beforeUnload = (e: BeforeUnloadEvent): void => {
@@ -157,9 +163,51 @@ export class BoopliPanel extends LitElement {
 
   // --- tabs and the wizard ------------------------------------------------------
 
+  /** The tabs this person may open: Home shows the notes (editing them is level 2), Settings is level 3. */
+  private _tabs(): Tab[] {
+    const can = accessOf(this._snapshot);
+    return (Object.keys(TAB_LABELS()) as Tab[]).filter((tab) => tab === "today" || tab === "chores" || (tab === "home" ? can.notes : can.all));
+  }
+
+  /**
+   * The level was lowered while something that needs more was open (a tab, the wizard, the breakdown):
+   * close it, forget its unsaved draft (it could not be saved any more) and say so.
+   */
+  private _dropRevoked(): void {
+    const can = accessOf(this._snapshot);
+    let dropped = false;
+    if (!this._tabs().includes(this._tab)) {
+      const lost = this._tab;
+      this._tab = "today";
+      if ((lost === "settings" || lost === "home") && this._dirty[lost]) {
+        this._dirty = { ...this._dirty, [lost]: false };
+        dropped = true;
+      }
+    }
+    if (!can.all && (this._wizard || this._breakdown)) {
+      this._wizard = null;
+      this._breakdown = null;
+      dropped = true;
+    }
+    if (!can.all && this._wallEdit) {
+      this._wallEdit = false; // the editor of the wall board is level 3; the board stays open
+      dropped = true;
+    }
+    if (dropped) this._accessNote = t("panel.access_lowered_discarded");
+    this._settleConfirm();
+  }
+
+  /** An "unsaved changes" question whose changes are gone (their screen was closed) has nothing left to ask. */
+  private _settleConfirm(): void {
+    if (this._confirm && !this._hasUnsaved) this._confirm("discard");
+  }
+
   private async _selectTab(tab: Tab): Promise<void> {
+    this._accessNote = "";
+    if (!this._tabs().includes(tab)) return;
     if (tab === this._tab && !this._wizard) return;
     if (!(await this._guard())) return;
+    if (!this._tabs().includes(tab)) return; // the level may have been lowered while the question was open
     this._wizard = null;
     this._breakdown = null;
     this._tab = tab;
@@ -176,9 +224,11 @@ export class BoopliPanel extends LitElement {
   }
 
   private _onOpenWizard = async (e: Event): Promise<void> => {
+    if (!accessOf(this._snapshot).all) return;
     const detail = (e as CustomEvent<Partial<WizardRequest>>).detail ?? {};
     const wizard = detail.wizard ?? "first";
     if (!(await this._guard())) return;
+    if (!accessOf(this._snapshot).all) return; // the level may have been lowered while the question was open
     const setup = this._snapshot?.setup;
     this._openWizard({
       wizard,
@@ -193,8 +243,10 @@ export class BoopliPanel extends LitElement {
   // --- breaking a task down with AI ---------------------------------------------
 
   private _onOpenBreakdown = async (e: Event): Promise<void> => {
+    if (!accessOf(this._snapshot).all) return;
     const detail = (e as CustomEvent<{ kind?: "now" | "recurring"; task?: string }>).detail ?? {};
     if (!(await this._guard())) return;
+    if (!accessOf(this._snapshot).all) return;
     this._wizard = null;
     this._breakdownError = "";
     this._breakdown = { kind: detail.kind ?? "now", task: detail.task ?? "" };
@@ -278,12 +330,13 @@ export class BoopliPanel extends LitElement {
       this._subscribing = true;
       subscribe(this.hass, (snapshot) => {
         this._snapshot = snapshot;
+        this._dropRevoked();
         this._nowMs = Date.now();
         this._connectionError = "";
         // The very first visit opens the wizard by itself (once per page load).
         if (!this._autoChecked) {
           this._autoChecked = true;
-          if (snapshot.setup?.status === "new") {
+          if (snapshot.setup?.status === "new" && accessOf(snapshot).all) {
             this._openWizard({ wizard: "first", startAt: "" });
           }
         }
@@ -332,7 +385,9 @@ export class BoopliPanel extends LitElement {
     const tz = this._snapshot?.time_zone ?? "UTC";
     return html`<div class="away-bar" role="status">
       <span>${icon("bag-suitcase")} <b>${onNow ? t("wall.away_mode_is_on") : t("panel.away_mode_is_planned")}</b> ${awayWhen(away, this._nowMs, tz, onNow)}</span>
-      <button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>
+      ${accessOf(this._snapshot).all
+        ? html`<button type="button" @click=${() => this._selectTab("settings")}>${onNow ? t("panel.back_now") : t("away.change")}</button>`
+        : nothing}
     </div>`;
   }
 
@@ -340,7 +395,7 @@ export class BoopliPanel extends LitElement {
   private async _openWall(name = "", edit = false): Promise<void> {
     if (!(await this._guard())) return;
     this._wall = name;
-    this._wallEdit = edit;
+    this._wallEdit = edit && accessOf(this._snapshot).all;
     const url = new URL(location.href);
     url.searchParams.set("wall", name);
     history.replaceState(null, "", url);
@@ -356,7 +411,10 @@ export class BoopliPanel extends LitElement {
   };
 
   render() {
-    if (this._wall !== null && this._wallEdit) {
+    const can = accessOf(this._snapshot);
+    // A tab this person may not open (the level was lowered meanwhile) shows Today.
+    const tab: Tab = this._tabs().includes(this._tab) ? this._tab : "today";
+    if (this._wall !== null && this._wallEdit && can.all) {
       return html`<boopli-wall-edit
         .hass=${this.hass}
         .snapshot=${this._snapshot}
@@ -378,7 +436,8 @@ export class BoopliPanel extends LitElement {
         .nowMs=${this._nowMs}
         .boardName=${this._wall}
         @wall-exit=${this._closeWall}
-        @wall-edit=${() => (this._wallEdit = true)}
+        .canEdit=${can.all}
+        @wall-edit=${() => (this._wallEdit = can.all)}
       ></boopli-wall>`;
     }
     const unsaved: Record<Tab, boolean> = {
@@ -394,13 +453,13 @@ export class BoopliPanel extends LitElement {
           : nothing}
         <h1>${t("wizard.boopli")}</h1>
         <nav>
-          ${(Object.keys(TAB_LABELS()) as Tab[]).map(
-            (tab) => html`<button
-              class="tab ${this._tab === tab && !this._wizard ? "on" : ""}"
-              @click=${() => this._selectTab(tab)}
+          ${this._tabs().map(
+            (name) => html`<button
+              class="tab ${tab === name && !this._wizard ? "on" : ""}"
+              @click=${() => this._selectTab(name)}
             >
-              ${TAB_LABELS()[tab]}
-              ${unsaved[tab] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
+              ${TAB_LABELS()[name]}
+              ${unsaved[name] ? html`<span class="dot" title=${t("panel.unsaved_changes")} aria-label=${t("panel.unsaved_changes")}></span>` : nothing}
             </button>`
           )}
         </nav>
@@ -420,6 +479,7 @@ export class BoopliPanel extends LitElement {
         @egg-started=${() => this.hass && void eggFound(this.hass).catch(() => undefined)}
         @dirty-change=${this._onDirty}
       >
+        ${this._accessNote ? html`<p class="muted" role="status">${this._accessNote}</p>` : nothing}
         ${this._connectionError
           ? html`<p class="error">${this._connectionError}</p>`
           : this._wizard
@@ -440,9 +500,9 @@ export class BoopliPanel extends LitElement {
                   @breakdown-result=${this._onBreakdownResult}
                   @breakdown-cancel=${() => (this._breakdown = null)}
                 ></boopli-breakdown>`
-              : this._tab === "today"
+              : tab === "today"
                 ? html`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>`
-                : this._tab === "chores"
+                : tab === "chores"
                   ? html`<boopli-chores
                       .hass=${this.hass}
                       .snapshot=${this._snapshot}
@@ -450,7 +510,7 @@ export class BoopliPanel extends LitElement {
                       .openRequest=${this._choresRequest}
                       @request-handled=${() => (this._choresRequest = null)}
                     ></boopli-chores>`
-                  : this._tab === "home"
+                  : tab === "home"
                     ? html`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>`
                     : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>

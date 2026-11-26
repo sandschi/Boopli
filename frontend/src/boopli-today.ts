@@ -12,6 +12,7 @@ import { icon } from "./icon";
 import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
+import { accessOf } from "./helpers";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 import { t } from "./i18n";
 
@@ -110,6 +111,11 @@ export class BoopliToday extends LitElement {
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
+    if (!accessOf(this.snapshot).all) {
+      // the level was lowered: the question is gone, and so is a half-written quick task (it would reappear when the level rises again)
+      this._removing = "";
+      this._quick = "";
+    }
     if (!changed.has("snapshot") || !this.snapshot?.pet) return;
     const pet = this.snapshot.pet;
     const before = this._lastPet;
@@ -157,6 +163,7 @@ export class BoopliToday extends LitElement {
 
   /** The quick task box: say what you want to get done and let the AI break it down. */
   private _renderQuick() {
+    if (!accessOf(this.snapshot).all) return nothing; // making chores is for those who may change them
     const aiOn = anyAi(this.snapshot); // the agent, or Ask Claude
     return html`
       <section class="card quick">
@@ -387,9 +394,11 @@ export class BoopliToday extends LitElement {
         <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => awayEnd(this.hass!))}>
           ${onNow ? t("common.back_now") : t("common.cancel_it")}
         </button>
-        <button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
-          ${t("today.change_in_settings")}
-        </button>
+        ${accessOf(this.snapshot).all
+          ? html`<button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", { bubbles: true, composed: true }))}>
+              ${t("today.change_in_settings")}
+            </button>`
+          : nothing}
       </div>
     </section>`;
   }
@@ -531,7 +540,9 @@ export class BoopliToday extends LitElement {
                   ${t("common.start_now")}
                 </button>
                 <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
-                ${this._removing === c.id
+                ${!accessOf(this.snapshot).all
+                  ? nothing // taking a chore away is level 3, like changing it
+                  : this._removing === c.id
                   ? html`<span class="small">${t("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
@@ -579,8 +590,11 @@ export class BoopliToday extends LitElement {
     const setup = this.snapshot.setup?.status;
     return html`
       ${this._renderAway(tz)}
+      ${accessOf(this.snapshot).all
+        ? nothing
+        : html`<section class="card"><boopli-away .hass=${this.hass} .snapshot=${this.snapshot} .nowMs=${this.nowMs}></boopli-away></section>`}
       <div class="cols"><div class="col">
-      ${setup === "skipped" || setup === "in_progress"
+      ${(setup === "skipped" || setup === "in_progress") && accessOf(this.snapshot).all
         ? html`<section class="card banner">
             <span>${t("today.boopli_is_not_fully_set_up")}</span>
             <button
@@ -673,7 +687,7 @@ export class BoopliToday extends LitElement {
               <p class="muted">
                 ${hasChores
                   ? t("today.enjoy_the_quiet_what_is_coming")
-                  : t("today.add_your_first_chore_in_the")}
+                  : accessOf(this.snapshot).all ? t("today.add_your_first_chore_in_the") : t("chores.no_chores_yet_ask_an_admin")}
               </p>
               ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
             </section>

@@ -320,7 +320,8 @@
     "skip_running_ask": "Drop this round? Nothing counts for it: no XP.",
     "skip_next_ask": "Skip the next round? The chore comes back after it.",
     "skip_yes": "Yes, skip it",
-    "skip_keep": "Keep it"
+    "skip_keep": "Keep it",
+    "no_chores_yet_ask_an_admin": "No chores yet. Ask an administrator to add some."
   },
   "claude": {
     "the_routines_fire_address": "Routine trigger URL",
@@ -466,7 +467,8 @@
     "could_not_reach_boopli_is_the": "Could not reach Boopli. Is the integration set up?",
     "away_mode_is_planned": "Away mode is planned",
     "back_now": "Open Away mode settings",
-    "my_home": "My home"
+    "my_home": "My home",
+    "access_lowered_discarded": "This access change closed something that was open. Its unsaved changes were dropped."
   },
   "pet_preview": {
     "level_up_n": "Level {n}!",
@@ -691,7 +693,15 @@
     "board_summary_one": "{name}: {count} tile, {night} during quiet hours",
     "board_summary_other": "{name}: {count} tiles, {night} during quiet hours",
     "on_using": "AI agent in use: {agent}",
-    "the_home_assistant_default_agent": "Home Assistant default agent"
+    "the_home_assistant_default_agent": "Home Assistant default agent",
+    "access_title": "Who can do what",
+    "access_note": "This is for everyone in your home who is not a Home Assistant administrator. Administrators can always do everything.",
+    "access_use": "Use Boopli",
+    "access_use_note": "see what is due, start chores, work through steps, set away mode",
+    "access_notes": "Use Boopli and edit the rooms and their notes",
+    "access_notes_note": "also the My home tab",
+    "access_all": "Everything except the administrator’s own things",
+    "access_all_note": "also chores, settings, nudges and wall boards. Backups, the Ask Claude token and this choice stay with administrators"
   },
   "speakers": {
     "what_kind_of_speaker": "What kind of speaker",
@@ -915,7 +925,8 @@
     "full_screen": "Full screen",
     "back_to_boopli": "Back to Boopli",
     "no_board_yet_make_one_in": "No wall board yet. Create one under Wall board in Settings.",
-    "edit_this_tile": "Edit this tile: {replace}"
+    "edit_this_tile": "Edit this tile: {replace}",
+    "no_board_yet_ask_an_admin": "No wall board yet. Ask an administrator to create one."
   },
   "wizard": {
     "a_board_is_a_grid_of": "A wall board is a grid of tiles for a screen on the wall. You can add a clock, your pet, chores that are due, weather and more.",

@@ -28,6 +28,7 @@ export class BoopliWall extends LitElement {
     boardName: { type: String },
     board: { attribute: false },
     preview: { type: Boolean, reflect: true },
+    canEdit: { type: Boolean }, // may this person change the board? (the editor button hides when not)
     pickable: { type: Boolean }, // in the editor: a tap on a tile picks it instead of using it
     selectedId: { type: String },
     _awakeUntil: { state: true },
@@ -40,6 +41,7 @@ export class BoopliWall extends LitElement {
   declare boardName: string;
   declare board?: Board; // a board to show as it is being edited (the preview)
   declare preview: boolean;
+  declare canEdit: boolean;
   declare pickable: boolean;
   declare selectedId: string;
   declare _awakeUntil: number;
@@ -55,6 +57,7 @@ export class BoopliWall extends LitElement {
     this.nowMs = Date.now();
     this.boardName = "";
     this.preview = false;
+    this.canEdit = true;
     this.pickable = false;
     this.selectedId = "";
     this._awakeUntil = 0;
@@ -113,7 +116,7 @@ export class BoopliWall extends LitElement {
   render() {
     const board = this._board();
     if (!this.snapshot || !board) {
-      return html`<div class="note">${this.snapshot ? t("wall.no_board_yet_make_one_in") : t("common.loading")}</div>
+      return html`<div class="note">${this.snapshot ? (this.canEdit ? t("wall.no_board_yet_make_one_in") : t("wall.no_board_yet_ask_an_admin")) : t("common.loading")}</div>
         ${this.preview ? nothing : html`<div class="controls"><button type="button" aria-label=${t("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button></div>`}`;
     }
     const tz = this.snapshot.time_zone;
@@ -157,7 +160,9 @@ export class BoopliWall extends LitElement {
       ${this.preview
         ? nothing
         : html`<div class="controls">
-            <button type="button" aria-label=${t("wall.edit_this_board")} title=${t("wall.edit_this_board")} @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>${icon("pencil")}</button>
+            ${this.canEdit
+              ? html`<button type="button" aria-label=${t("wall.edit_this_board")} title=${t("wall.edit_this_board")} @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", { bubbles: true, composed: true }))}>${icon("pencil")}</button>`
+              : nothing}
             <button type="button" aria-label=${t("wall.full_screen")} @click=${this._fullscreen}>${icon("fullscreen")}</button>
             <button type="button" aria-label=${t("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", { bubbles: true, composed: true }))}>✕</button>
           </div>`}
