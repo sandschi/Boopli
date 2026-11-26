@@ -25,7 +25,7 @@ Jeder Assistent endet mit **Alles bereit**. Dort siehst du, was sich geändert h
 
 ## Ungespeicherte Änderungen bleiben sichtbar
 
-Sobald du in den Einstellungen oder beim Bearbeiten einer Aufgabe etwas änderst, erscheint unten eine Leiste. In den Einstellungen zeigt sie die Karten mit ungespeicherten Änderungen. Wähle einen Namen aus. Die Seite springt zu dieser Karte und hebt sie hervor. Geänderte Karten bekommen die orange Markierung „Ungespeichert“. Bei „Einstellungen“ und „Aufgaben“ erscheint ein Punkt. Wenn du mit ungespeicherten Änderungen zu einem anderen Menüpunkt wechselst, einen Assistenten öffnest oder die Seite schließt, kannst du **Speichern**, **Verwerfen** oder **Hierbleiben** wählen.
+Sobald du in den Einstellungen oder beim Bearbeiten einer Aufgabe etwas änderst, erscheint unten eine Leiste. In den Einstellungen zeigt sie die Karten mit ungespeicherten Änderungen. Wähle einen Namen aus. Die Seite springt zu dieser Karte und hebt sie hervor. Geänderte Karten bekommen die orange Markierung „Ungespeichert“. Bei „Einstellungen“ und „Aufgaben“ erscheint ein Punkt. Wenn du mit ungespeicherten Änderungen zu einem anderen Menüpunkt wechselst, einen Assistenten öffnest oder die Seite schließt, kannst du **Speichern**, **Verwerfen** oder **Hierbleiben** wählen. Beim Bearbeiten einer Aufgabe bleibt die Seite mit **Speichern** offen. Mit **Speichern und schließen** speicherst du deine Änderungen und schließt die Seite.
 
 ## Eine ruhige Seite für deine Einstellungen
 

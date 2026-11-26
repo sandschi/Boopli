@@ -18,7 +18,7 @@ El panel también se adapta al teléfono. Puedes usarlo desde la aplicación de 
 - **Estoy en ello**. Le dice a Boopli que ya estás trabajando en el paso. Pausa los recordatorios. Pasado el tiempo configurado, Boopli puede enviarte una notificación al teléfono para preguntarte cómo vas. Selecciona **Reanudar recordatorios** para deshacer la pausa. Consulta [Tareas y horarios](/Boopli/es/chores/).
 - **Posponer** en el teléfono o el Wallboard retrasa el próximo recordatorio. El paso sigue pendiente y Hoy muestra cuándo termina la pausa.
 - **Para hacer ahora**. Otros pasos que ya puedes hacer, agrupados por tarea.
-- **Pendiente para hoy**. El resto de lo que hay para hoy. Incluye los pasos en espera de las tareas en curso y las tareas programadas para más tarde, con su hora.
+- **Pendiente para hoy**. El resto de lo que hay para hoy. Incluye los pasos en espera de las tareas en curso y las tareas programadas para más tarde, con su hora. Selecciona **Empezar ahora** en un paso que esté esperando a que llegue su hora o a que ocurra algo.
 - **Próximamente**. Las primeras ocho tareas programadas para otros días. El resto está en la pestaña Tareas.
 - **Para más tarde**. Las partes de una tarea que dejaste para después. Cada una tiene **Empezar ahora**, **Cambiar hora** y **Eliminar**.
 - **Pasos completados automáticamente**. Los pasos que se completaron mediante un sensor, una etiqueta NFC o un botón, con lo que ocurrió en cada caso.

@@ -25,7 +25,7 @@ Every wizard ends with **All set**, which shows what changed, for example “Sno
 
 ## Unsaved changes are always visible
 
-On the Settings page and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything. On Settings it lists which cards have unsaved changes: select a name and the page scrolls to that card and lights it up. The changed cards carry an orange "Unsaved" tag, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) offers **Save**, **Discard** and **Stay**. In the chore editor, **Save** keeps you on the page and **Save and close** saves and closes it.
+On the Settings page and in the chore editor, a bar sticks to the bottom of the screen as soon as you edit anything. On Settings it lists which cards have unsaved changes: select a name and the page scrolls to that card and lights it up. The changed cards carry an orange "Unsaved" tag, the Settings and Chores tabs show a dot, and leaving with unsaved edits (another tab, a wizard, closing the page) offers **Save**, **Discard** and **Stay**. In the chore editor, **Save** keeps the editor open. **Save and close** saves your changes and closes the editor.
 
 ## Settings are one calm page
 

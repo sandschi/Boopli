@@ -25,7 +25,7 @@ Todos los asistentes terminan en **Todo listo**, donde puedes ver qué cambió. 
 
 ## Los cambios sin guardar siempre están a la vista
 
-En Configuración y en el editor de tareas, aparece una barra en la parte inferior en cuanto haces un cambio. En Configuración, la barra indica qué tarjetas tienen cambios sin guardar. Selecciona un nombre para ir a esa tarjeta y resaltarla. Las tarjetas que cambiaste llevan la etiqueta naranja «Sin guardar». Las pestañas Configuración y Tareas muestran un punto. Si cambias de pestaña, abres un asistente o cierras la página con cambios sin guardar, puedes elegir **Guardar**, **Descartar** o **Quedarme**.
+En Configuración y en el editor de tareas, aparece una barra en la parte inferior en cuanto haces un cambio. En Configuración, la barra indica qué tarjetas tienen cambios sin guardar. Selecciona un nombre para ir a esa tarjeta y resaltarla. Las tarjetas que cambiaste llevan la etiqueta naranja «Sin guardar». Las pestañas Configuración y Tareas muestran un punto. Si cambias de pestaña, abres un asistente o cierras la página con cambios sin guardar, puedes elegir **Guardar**, **Descartar** o **Quedarme**. En el editor de tareas, **Guardar** deja el editor abierto. **Guardar y cerrar** guarda tus cambios y cierra el editor.
 
 ## Toda la configuración en una sola página
 

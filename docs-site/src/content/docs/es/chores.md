@@ -39,7 +39,7 @@ En el editor de tareas, cada paso tiene una sección opcional **Se completa auto
 - **Se escanea una etiqueta NFC**. Elige una etiqueta de la lista de Home Assistant o selecciona **Escanear ahora** y acerca el teléfono a la etiqueta.
 - **Se pulsa un botón**. Elige cualquier entidad `event`, `input_button` o `button`. Si quieres, limita la condición a un tipo de pulsación (simple o doble).
 
-Por defecto, el activador debe ocurrir **después de que empiece el paso**. Así, una puerta que ya estaba abierta no completa «Abrirla para que se seque». En **Opciones avanzadas** también puedes seleccionar **Contar la condición si ya se cumple al empezar el paso** (por ejemplo, «Las ventanas están cerradas»). En ese caso, el paso se completa al instante y en silencio. Así, no recibes recordatorios por algo que ya está hecho.
+Por defecto, el activador debe ocurrir **después de que empiece el paso**. Así, una puerta que ya estaba abierta no completa «Abrirla para que se seque». Debajo de la condición, selecciona **Contar la condición si ya se cumple al empezar el paso**. Así cuentan, por ejemplo, las ventanas que ya están cerradas. Si no has indicado cuánto tiempo debe mantenerse la condición, el paso se completa al instante y sin recordatorio.
 
 Un sensor que no está disponible o cuyo estado se desconoce nunca completa un paso. Los pasos que terminan así aparecen en Hoy, en «Pasos completados automáticamente», junto con lo que ocurrió. Los eventos `boopli_step_done` incluyen `by` (`manual` o `auto`) y `reason`. Si ya se cumplían los requisitos de un activador al reiniciar Home Assistant, Boopli lo vuelve a comprobar. Las pulsaciones o los escaneos que ocurrieron mientras Home Assistant estaba apagado se pierden.
 

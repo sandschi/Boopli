@@ -25,7 +25,7 @@ Chaque assistant se termine par **Tout est prêt**. Cet écran indique ce qui a 
 
 ## Les modifications non enregistrées restent visibles
 
-Dans les Paramètres et l’éditeur de tâches, une barre apparaît en bas de l’écran dès que tu modifies quelque chose. Dans les Paramètres, elle liste les cartes dont les modifications restent à enregistrer. Sélectionne un nom pour faire défiler la page jusqu’à la carte et la mettre en évidence. Les cartes modifiées portent une étiquette orange « Non enregistré ». Un point s’affiche dans les onglets Paramètres et Tâches. Si tu changes d’onglet, ouvres un assistant ou fermes la page avec des modifications non enregistrées, tu peux choisir **Enregistrer**, **Abandonner** ou **Rester**.
+Dans les Paramètres et l’éditeur de tâches, une barre apparaît en bas de l’écran dès que tu modifies quelque chose. Dans les Paramètres, elle liste les cartes dont les modifications restent à enregistrer. Sélectionne un nom pour faire défiler la page jusqu’à la carte et la mettre en évidence. Les cartes modifiées portent une étiquette orange « Non enregistré ». Un point s’affiche dans les onglets Paramètres et Tâches. Si tu changes d’onglet, ouvres un assistant ou fermes la page avec des modifications non enregistrées, tu peux choisir **Enregistrer**, **Abandonner** ou **Rester**. Dans l’éditeur de tâches, **Enregistrer** laisse l’éditeur ouvert. **Enregistrer et fermer** enregistre tes changements et ferme l’éditeur.
 
 ## Tous les paramètres sur une seule page
 
