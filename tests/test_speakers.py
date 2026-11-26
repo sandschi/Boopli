@@ -101,6 +101,39 @@ def test_full_ids_and_urls_are_used_as_given():
         assert engine.sound_play_data("file", given)["media_content_id"] == given
 
 
+def test_a_bundled_sound_is_a_file_served_by_home_assistant():
+    assert engine.sound_play_data("bundled", "ding", "http://ha.local:8123/") == {
+        "media_content_id": "http://ha.local:8123/boopli_static/sounds/ding.mp3",
+        "media_content_type": "music",
+    }
+
+
+def test_another_media_player_starts_with_boopli_sounds():
+    tts = {"entity_id": "media_player.x", "speech": {"route": "tts"}}
+    s = engine.SpeakerCfg.from_dict(tts)
+    assert (s.cue.kind, s.cue.sound) == ("bundled", "ding")
+    assert (s.alarm.kind, s.alarm.sound) == ("bundled", "alarm")
+    # a file you chose yourself stays
+    own = engine.SpeakerCfg.from_dict({**tts, "cue": {"kind": "file", "sound": "boopli/mine.mp3"}})
+    assert (own.cue.kind, own.cue.sound) == ("file", "boopli/mine.mp3")
+    # an Alexa speaker keeps Amazon's sounds
+    alexa = engine.SpeakerCfg.from_dict({"entity_id": "media_player.y"})
+    assert alexa.cue.kind == "alexa"
+
+
+def test_a_bundled_sound_must_be_one_that_exists():
+    s = speaker(cue=engine.SoundCfg(kind="bundled", sound="ding"), speech=engine.SpeechCfg(route="tts"))
+    assert engine.validate_speaker_test(s, "cue") is None
+    s = speaker(cue=engine.SoundCfg(kind="bundled", sound="../x"), speech=engine.SpeechCfg(route="tts"))
+    assert engine.validate_speaker_test(s, "cue") is not None
+
+
+def test_the_bundled_sound_files_are_there():
+    root = Path(__file__).parents[1] / "custom_components" / "boopli" / "frontend" / "sounds"
+    for name in engine.BUNDLED_SOUNDS:
+        assert (root / f"{name}.mp3").is_file()
+
+
 def test_alarm_play_count_rounds_up_and_zero_repeat_plays_once():
     assert engine.alarm_plays(30, 5) == 6
     assert engine.alarm_plays(32, 5) == 7

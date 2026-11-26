@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 from dataclasses import replace
 
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
+from homeassistant.helpers.network import NoURLAvailableError, get_url
 
 from homeassistant.util import dt as dt_util
 
@@ -399,6 +400,18 @@ class BoopliNudger:
 
     # --- speakers and alarm devices --------------------------------------
 
+    def _sound_data(self, kind: str, sound: str) -> dict[str, str] | None:
+        """`play_media` data for a sound; None when it needs Home Assistant's address and there is none."""
+        base = ""
+        if kind == engine.SOUND_BUNDLED:
+            # The speaker fetches Boopli's own sounds from Home Assistant, so it needs a full address.
+            try:
+                base = get_url(self.hass)
+            except NoURLAvailableError:
+                _LOGGER.warning("Boopli: Home Assistant has no web address, so a speaker cannot fetch Boopli's built-in sounds")
+                return None
+        return engine.sound_play_data(kind, sound, base)
+
     async def _call(self, domain: str, service: str, data: dict[str, Any]) -> bool:
         """Call a service without ever raising. Returns whether it was sent."""
         if not self.hass.services.has_service(domain, service):
@@ -484,20 +497,15 @@ class BoopliNudger:
         if extra is None and level.startswith(engine.SPEAKER_SOUND_PREFIX):
             return False  # one of your own sounds that is not there any more: not the alarm
         if extra is not None:
-            return await self._call(
-                "media_player",
-                "play_media",
-                {"entity_id": speaker.entity_id, **engine.sound_play_data(extra.kind, extra.sound)},
-            )
+            play = self._sound_data(extra.kind, extra.sound)
+            if play is None:
+                return False
+            return await self._call("media_player", "play_media", {"entity_id": speaker.entity_id, **play})
         if level == engine.SPEAKER_CUE:
-            return await self._call(
-                "media_player",
-                "play_media",
-                {
-                    "entity_id": speaker.entity_id,
-                    **engine.sound_play_data(speaker.cue.kind, speaker.cue.sound),
-                },
-            )
+            play = self._sound_data(speaker.cue.kind, speaker.cue.sound)
+            if play is None:
+                return False
+            return await self._call("media_player", "play_media", {"entity_id": speaker.entity_id, **play})
         if level in (engine.SPEAKER_SPEECH, engine.SPEAKER_SPEECH_CHIME):
             text = engine.speech_text(
                 self.manager.settings.speech_template, chore_name, step_title
@@ -515,8 +523,12 @@ class BoopliNudger:
 
     def _start_speaker_alarm(self, speaker: engine.SpeakerCfg, key: str) -> bool:
         """Repeat the alarm sound on a speaker for its duration, in the background."""
+        # Worked out before anything starts: with no sound to play there is nothing to remember or to stop.
+        play = self._sound_data(speaker.alarm.kind, speaker.alarm.sound)
+        if play is None:
+            return False
         started = self._start_alarm_task(
-            speaker.entity_id, key, self._speaker_alarm(speaker)
+            speaker.entity_id, key, self._speaker_alarm(speaker, play)
         )
         if started:
             # This alarm owns the speaker now: an older step's one-shot must not stop it.
@@ -544,12 +556,9 @@ class BoopliNudger:
         self._alarms[target] = (key, self.hass.async_create_task(coro))
         return True
 
-    async def _speaker_alarm(self, speaker: engine.SpeakerCfg) -> None:
+    async def _speaker_alarm(self, speaker: engine.SpeakerCfg, play: dict[str, str]) -> None:
         alarm = speaker.alarm
-        data = {
-            "entity_id": speaker.entity_id,
-            **engine.sound_play_data(alarm.kind, alarm.sound),
-        }
+        data = {"entity_id": speaker.entity_id, **play}
         try:
             for i in range(engine.alarm_plays(alarm.seconds, alarm.repeat_s)):
                 if i:
@@ -699,14 +708,8 @@ class BoopliNudger:
             return {"ok": False, "note": engine.Msg("Alexa Devices cannot play Amazon sounds. Use a speaker from Alexa Media Player.")}
         if level == engine.SPEAKER_ALARM:
             # One play only, so a test never rings for long.
-            ok = await self._call(
-                "media_player",
-                "play_media",
-                {
-                    "entity_id": speaker.entity_id,
-                    **engine.sound_play_data(speaker.alarm.kind, speaker.alarm.sound),
-                },
-            )
+            play = self._sound_data(speaker.alarm.kind, speaker.alarm.sound)
+            ok = play is not None and await self._call("media_player", "play_media", {"entity_id": speaker.entity_id, **play})
             note = engine.Msg("Playing the alarm sound once.")
         else:
             announce = True if level == engine.SPEAKER_SPEECH_CHIME else None

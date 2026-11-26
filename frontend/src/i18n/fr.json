@@ -728,6 +728,8 @@
     "add_a_speaker_that_can_play": "Ajoute d’abord une enceinte qui peut jouer ce son.",
     "no_sound_chosen_yet": "Aucun son choisi pour l’instant",
     "other_media_players": "Autres lecteurs multimédias",
+    "built_in_sound": "Son intégré",
+    "leave_empty_for_the_built_in_sound": "Laisse le champ vide pour utiliser le son intégré de Boopli.",
     "no_file_chosen_yet": "Aucun fichier choisi pour l’instant",
     "rings_for_seconds": "Durée de la sonnerie (en secondes)",
     "repeat_every_seconds_0_once": "Intervalle entre les répétitions (en secondes, 0 = une seule fois)",

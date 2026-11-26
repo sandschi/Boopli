@@ -173,7 +173,10 @@ EXTRA_SOUND_NAME_MAX = 30
 
 SOUND_ALEXA = "alexa"  # one of Amazon's built-in sounds, by id
 SOUND_FILE = "file"  # a file in Home Assistant's media folder, or a URL
-SOUND_KINDS = (SOUND_ALEXA, SOUND_FILE)
+SOUND_BUNDLED = "bundled"  # a sound that comes with Boopli ("ding" or "alarm"), served by Home Assistant
+SOUND_KINDS = (SOUND_ALEXA, SOUND_FILE, SOUND_BUNDLED)
+BUNDLED_SOUNDS = ("ding", "alarm")
+BUNDLED_SOUND_URL = "/boopli_static/sounds/{sound}.mp3"  # under const.STATIC_URL
 
 SPEECH_ALEXA_MEDIA = "alexa_media"  # notify.alexa_media_* (Alexa Media Player)
 SPEECH_ALEXA_DEVICES = "alexa_devices"  # a notify.*_speak/_announce entity
@@ -189,6 +192,7 @@ ALARM_DEVICE_DOMAINS = ("siren", "switch", "input_boolean", "script")
 SPEECH_TEMPLATE_DEFAULT = "{chore}: {step}"
 ALEXA_ALARM_SOUND = "amzn_sfx_scifi_alarm_01"
 ALEXA_DING_SOUND = "amzn_sfx_doorbell_chime_01"
+BUNDLED_SOUNDS_BY_LEVEL = {"cue": "ding", "alarm": "alarm"}  # which of Boopli's sounds each level starts with
 
 # Which channels a nudge may use
 CHANNELS_ALL = "all"
@@ -1903,13 +1907,20 @@ class SpeakerCfg:
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> SpeakerCfg:
         extra = d.get("sounds")
-        return cls(
+        speaker = cls(
             sounds=[ExtraSound.from_dict(x) for x in extra if isinstance(x, dict)] if isinstance(extra, list) else [],
             entity_id=str(d.get("entity_id", "")).strip(),
             cue=SoundCfg.from_dict(d.get("cue") or {"sound": ALEXA_DING_SOUND}, 1),
             speech=SpeechCfg.from_dict(d.get("speech")),
             alarm=SoundCfg.from_dict(d.get("alarm") or {"sound": ALEXA_ALARM_SOUND}, 4),
         )
+        if speaker.speech.route == SPEECH_TTS:
+            # Another media player cannot play Amazon's sounds, so one that has no sound yet gets Boopli's own.
+            for name in BUNDLED_SOUNDS_BY_LEVEL:
+                tone = getattr(speaker, name)
+                if not tone.sound or tone.kind == SOUND_ALEXA:
+                    setattr(speaker, name, replace(tone, kind=SOUND_BUNDLED, sound=BUNDLED_SOUNDS_BY_LEVEL[name]))
+        return speaker
 
 
 @dataclass
@@ -2653,6 +2664,8 @@ def _validate_speaker(speaker: SpeakerCfg) -> str | None:
             return _START_AT_ERROR
         if sound.kind not in SOUND_KINDS:
             return Msg("Unknown {name} sound type.", name=name)
+        if sound.kind == SOUND_BUNDLED and sound.sound not in BUNDLED_SOUNDS:
+            return Msg("Unknown {name} sound type.", name=name)
     if not ALARM_SECONDS_MIN <= speaker.alarm.seconds <= ALARM_SECONDS_MAX:
         return _ALARM_SECONDS_ERROR
     if not 0 <= speaker.alarm.repeat_s <= ALARM_REPEAT_MAX:
@@ -3339,15 +3352,19 @@ def speech_text(template: str, chore: str, step: str) -> str:
     return template.replace("{chore}", chore).replace("{step}", step)
 
 
-def sound_play_data(kind: str, sound: str) -> dict[str, str]:
-    """`media_player.play_media` data for an Alexa sound or a file.
+def sound_play_data(kind: str, sound: str, base_url: str = "") -> dict[str, str]:
+    """`media_player.play_media` data for an Alexa sound, one of Boopli's own sounds or a file.
 
     A bare file path such as "boopli/ding.mp3" means a file in Home Assistant's
     media folder. A media-source id, a /local path or a URL is used as given.
+    One of Boopli's own sounds is a file the speaker fetches from Home Assistant, so it needs
+    the address Home Assistant can be reached at (`base_url`, no slash at the end).
     """
     sound = sound.strip()
     if kind == SOUND_ALEXA:
         return {"media_content_id": sound, "media_content_type": "sound"}
+    if kind == SOUND_BUNDLED:
+        return {"media_content_id": base_url.rstrip("/") + BUNDLED_SOUND_URL.format(sound=sound), "media_content_type": "music"}
     if not (
         sound.startswith(("media-source://", "http://", "https://", "/"))
     ):

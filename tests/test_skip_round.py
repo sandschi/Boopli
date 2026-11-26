@@ -112,6 +112,20 @@ def test_a_one_shot_alarm_is_stopped_by_done_snooze_or_on_it():
     assert [c.args[2] for c in stops(n)] == [{"entity_id": "media_player.kitchen"}]
 
 
+def test_a_bundled_sound_with_no_web_address_starts_nothing_and_leaves_nothing_to_stop(monkeypatch):
+    n, speaker = make_nudger(repeat_s=0)
+    speaker.alarm.kind, speaker.alarm.sound = engine.SOUND_BUNDLED, "alarm"
+
+    def no_url(_hass):
+        raise nudger.NoURLAvailableError
+
+    monkeypatch.setattr(nudger, "get_url", no_url)
+    assert not n._start_speaker_alarm(speaker, "run:s1")
+    assert "media_player.kitchen" not in n._one_shots
+    asyncio.run(n.async_silence("run:s1"))
+    assert stops(n) == []  # a stop would hit whatever else plays on the speaker
+
+
 def test_the_stop_is_sent_only_once():
     n, speaker = make_nudger(repeat_s=0)
     n._start_speaker_alarm(speaker, "run:s1")
