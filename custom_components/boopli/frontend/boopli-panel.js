@@ -13152,7 +13152,6 @@ var Ga = 8, Ka = () => [{
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
-			draft: { attribute: !1 },
 			defaultStyle: { attribute: !1 },
 			timeZone: { type: String },
 			snapshot: { attribute: !1 },
@@ -13163,6 +13162,15 @@ var Ga = 8, Ka = () => [{
 			_sched: { state: !0 },
 			_suggest: { state: !0 }
 		};
+	}
+	get draft() {
+		return this._working;
+	}
+	set draft(e) {
+		if (e === this._given) return;
+		this._given = e;
+		let t = this._working;
+		this._working = e, this.requestUpdate("draft", t);
 	}
 	constructor() {
 		super(), this._lastDirty = !1, this.defaultStyle = "one", this.timeZone = "UTC", this.startSchedule = !1, this._error = "", this._busy = !1, this._confirmDelete = !1, this._sched = "off", this._suggest = !1;
@@ -13199,10 +13207,11 @@ var Ga = 8, Ka = () => [{
 		this._close();
 	}
 	_update(e) {
-		this.draft = {
+		let t = this._working;
+		this._working = {
 			...this.draft,
 			...e
-		};
+		}, this.requestUpdate("draft", t);
 	}
 	_updateRepeat(e) {
 		this._update({ repeat: {
