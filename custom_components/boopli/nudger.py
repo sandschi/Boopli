@@ -378,12 +378,21 @@ class BoopliNudger:
 
         Every call is tried on its own, so the final "off" goes out even when the color call fails.
         """
-        for service, data in steps:
-            await asyncio.sleep(RESTORE_PAUSE)  # let the lamp take the color before it goes off
-            try:
-                await self._light_call(service, entity_id, data)
-            except Exception:  # noqa: BLE001
-                _LOGGER.exception("Boopli: %s of %s failed", service, entity_id)
+        finished = False
+        try:
+            for service, data in steps:
+                await asyncio.sleep(RESTORE_PAUSE)  # let the lamp take the color before it goes off
+                try:
+                    await self._light_call(service, entity_id, data)
+                except Exception:  # noqa: BLE001
+                    _LOGGER.exception("Boopli: %s of %s failed", service, entity_id)
+            finished = True
+        finally:
+            if steps and not finished:
+                # Cancelled (again) on the way: the last call is "off". Start it as its own task, which
+                # needs no waiting here, so a second cancellation cannot stop it.
+                service, data = steps[-1]
+                self.hass.async_create_task(self._light_call(service, entity_id, data))
 
     # --- speakers and alarm devices --------------------------------------
 
@@ -602,6 +611,8 @@ class BoopliNudger:
     async def async_turn_off_indicators(self, entity_ids: list[str]) -> None:
         """Switch indicator lights off once nothing is waiting any more."""
         for entity_id in entity_ids:
+            if entity_id in self.manager.indicator_on:
+                continue  # a newer nudge owns this light now: leave its color alone
             last_on = self.manager.light_last_on.get(entity_id)
             if last_on:  # the lamp keeps the indicator color: put its own color back first
                 try:
@@ -647,8 +658,12 @@ class BoopliNudger:
                 ),
             }
         self._testing.add(light.entity_id)  # the test color must not be remembered as the light's own
-        await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
-        self.hass.async_create_task(self._indicator_test_off(light.entity_id))
+        try:
+            await self._light_call("turn_on", light.entity_id, self._indicator_data(light, state))
+            self.hass.async_create_task(self._indicator_test_off(light.entity_id))
+        except Exception:
+            self._testing.discard(light.entity_id)  # the test never started
+            raise
         return {
             "ok": True,
             "mode": light.mode,

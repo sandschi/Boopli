@@ -269,6 +269,7 @@ export class BoopliChoreEditor extends LitElement {
           image: (s.image ?? "").trim(),
         })),
       };
+      let incomplete = false;
       const submittedDraft = this.draft; // _update makes a new object, so this one is never changed
       const given = this._given;
       const submitted = JSON.stringify(submittedDraft);
@@ -285,11 +286,13 @@ export class BoopliChoreEditor extends LitElement {
         }
       } else {
         // Something was typed while the save was on its way: keep it (also for Save and close), marked as unsaved.
+        // The save is not complete then: returning false keeps the panel's "save and leave" from going on.
+        incomplete = true;
         this._update({ id: saved.id });
         // The saved state is what was sent, so undoing the later typing leaves nothing unsaved.
         this._base = JSON.stringify({ ...submittedDraft, id: saved.id });
       }
-      return true;
+      return !incomplete;
     } catch (err) {
       this._error = errorMessage(err);
       return false;
