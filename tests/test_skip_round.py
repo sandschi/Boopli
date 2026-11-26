@@ -68,6 +68,14 @@ def test_chores_without_rounds_cannot_be_skipped(c):
         engine.skip_round(c, False, NOW, UTC)
 
 
+def test_a_switched_off_chore_has_no_coming_round_but_a_running_round_can_be_dropped():
+    c = chore(engine.Repeat.daily("09:00"), enabled=False)
+    c.next_due = engine.fmt_ts(NOW + timedelta(hours=1))
+    with pytest.raises(ValueError):
+        engine.skip_round(c, False, NOW, UTC)
+    engine.skip_round(c, True, NOW, UTC)  # a round that is running (from a start now) can still go
+
+
 def test_nothing_to_skip_without_a_next_round_and_without_a_run():
     c = chore(engine.Repeat.daily("09:00"))
     c.next_due = None

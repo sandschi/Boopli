@@ -14029,19 +14029,23 @@ var to = class extends x {
 				composed: !0
 			}));
 		}
-		if (this._skipping && !this._busy) {
-			let e = this.snapshot?.chores.find((e) => e.id === this._skipping), t = !!this.snapshot?.runs.some((e) => e.chore_id === this._skipping);
-			e && t === this._skipWasRunning && this._canSkip(e, t) || (this._skipping = null);
+		if (this._skipping && this._editing) this._skipping = null;
+		else if (this._skipping && !this._busy) {
+			let e = this._skipping, t = this.snapshot?.chores.find((t) => t.id === e), n = !!this.snapshot?.runs.some((t) => t.chore_id === e);
+			if (!t || n !== this._skipWasRunning || !this._canSkip(t, n)) {
+				let n = !!this.renderRoot.activeElement?.closest(".skip-ask");
+				this._skipping = null, n && t && this._focusLater("edit", e);
+			}
 		}
 	}
-	async _focusLater(e) {
-		await this.updateComplete, this.renderRoot.querySelector(e)?.focus();
+	async _focusLater(e, t) {
+		await this.updateComplete, [...this.renderRoot.querySelectorAll(`[data-${e}]`)].find((n) => n.getAttribute(`data-${e}`) === t)?.focus();
 	}
 	_askSkip(e, t) {
-		this._busy || (this._skipping = e.id, this._skipWasRunning = t, this._focusLater(".skip-ask button.quiet"));
+		this._busy || (this._skipping = e.id, this._skipWasRunning = t, this.updateComplete.then(() => this.renderRoot.querySelector(".skip-ask button.quiet")?.focus()));
 	}
 	_keepRound(e) {
-		this._skipping = null, this._focusLater(`[data-skip="${e.id}"]`);
+		this._skipping = null, this._focusLater("skip", e.id);
 	}
 	_edit(e, t = !1) {
 		this._openSchedule = t, this._editing = {
@@ -14095,7 +14099,7 @@ var to = class extends x {
 		}
 	}
 	_canSkip(e, t) {
-		return !e.enabled || e.one_off || e.parked || e.repeat.type !== "schedule" && e.repeat.type !== "every_n_days" ? !1 : t || !!e.next_due;
+		return e.one_off || e.parked || e.repeat.type !== "schedule" && e.repeat.type !== "every_n_days" ? !1 : t || e.enabled && !!e.next_due;
 	}
 	async _skip(e) {
 		if (this.hass && !this._busy) {
@@ -14107,7 +14111,7 @@ var to = class extends x {
 			} finally {
 				this._skipping = null, this._busy = !1;
 			}
-			this._focusLater(`[data-edit="${e.id}"]`);
+			this._focusLater("edit", e.id);
 		}
 	}
 	render() {

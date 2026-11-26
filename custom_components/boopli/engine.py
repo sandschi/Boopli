@@ -1578,8 +1578,8 @@ def skip_round(chore: Chore, has_run: bool, now: datetime, tz: tzinfo) -> None:
             due = compute_next_due(chore.repeat, now, tz)
             chore.next_due = fmt_ts(due) if due else None
         return  # a schedule already points at the next round
-    if not chore.next_due:
-        raise ValueError("no next round")
+    if not chore.enabled or not chore.next_due:
+        raise ValueError("no next round")  # switched off: nothing is coming
     due = compute_next_due(chore.repeat, parse_ts(chore.next_due), tz)
     chore.next_due = fmt_ts(due) if due else None
 

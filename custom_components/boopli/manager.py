@@ -937,7 +937,11 @@ class BoopliManager:
         return matches[0]
 
     def _clear_notifications_for(self, run: engine.Run) -> None:
-        """Remove phone notifications of a run's steps that were nudged."""
+        """Remove phone notifications of a run's steps that were nudged, and its opening questions."""
+        if run.questions_open:
+            self.hass.async_create_task(
+                self.nudger.async_clear_step(run.id, engine.QUESTIONS_STEP)
+            )
         for step in run.steps:
             if step.nudge_count > 0:
                 self.hass.async_create_task(

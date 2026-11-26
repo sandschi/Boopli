@@ -61,29 +61,43 @@ export class BoopliChores extends LitElement {
     }
     // An open "skip" question is about one round. If the chore started, finished or cannot be skipped
     // any more while it was open, close it: Yes must not drop or skip a different round than the one asked about.
-    if (this._skipping && !this._busy) {
-      const chore = this.snapshot?.chores.find((c) => c.id === this._skipping);
-      const running = !!this.snapshot?.runs.some((r) => r.chore_id === this._skipping);
-      if (!chore || running !== this._skipWasRunning || !this._canSkip(chore, running)) this._skipping = null;
+    if (this._skipping && this._editing) {
+      this._skipping = null; // the chore is being edited: its schedule may change, so ask again afterwards
+    } else if (this._skipping && !this._busy) {
+      const id = this._skipping;
+      const chore = this.snapshot?.chores.find((c) => c.id === id);
+      const running = !!this.snapshot?.runs.some((r) => r.chore_id === id);
+      if (!chore || running !== this._skipWasRunning || !this._canSkip(chore, running)) {
+        // If the question had the focus, it goes to the chore's Edit link instead of falling to the page.
+        const hadFocus = !!(this.renderRoot as ShadowRoot).activeElement?.closest(".skip-ask");
+        this._skipping = null;
+        if (hadFocus && chore) void this._focusLater("edit", id);
+      }
     }
   }
 
-  /** Move focus to a control once the next render has put it there (a removed button loses the focus). */
-  private async _focusLater(selector: string): Promise<void> {
+  /**
+   * Move focus to the "skip" or "edit" link of a chore once the next render has put it there (a removed
+   * button loses the focus). The chore's id is compared as text, never put into a selector.
+   */
+  private async _focusLater(link: "skip" | "edit", id: string): Promise<void> {
     await this.updateComplete;
-    (this.renderRoot.querySelector(selector) as HTMLElement | null)?.focus();
+    const links = [...this.renderRoot.querySelectorAll<HTMLElement>(`[data-${link}]`)];
+    links.find((el) => el.getAttribute(`data-${link}`) === id)?.focus();
   }
 
   private _askSkip(chore: Chore, isRunning: boolean): void {
     if (this._busy) return;
     this._skipping = chore.id;
     this._skipWasRunning = isRunning;
-    void this._focusLater(".skip-ask button.quiet"); // "Keep it" is the safe one
+    void this.updateComplete.then(() =>
+      this.renderRoot.querySelector<HTMLElement>(".skip-ask button.quiet")?.focus() // "Keep it" is the safe one
+    );
   }
 
   private _keepRound(chore: Chore): void {
     this._skipping = null;
-    void this._focusLater(`[data-skip="${chore.id}"]`);
+    void this._focusLater("skip", chore.id);
   }
 
   /** Open the editor for a chore, or straight into its schedule wizard. */
@@ -151,11 +165,14 @@ export class BoopliChores extends LitElement {
     }
   }
 
-  /** Whether a chore has rounds to skip: scheduled or "every N days", not a one-off or a set-aside part. */
+  /**
+   * Whether a chore has a round to skip: scheduled or "every N days", not a one-off or a set-aside part.
+   * A round in progress can always be dropped; a coming round only exists while the chore is switched on.
+   */
   private _canSkip(chore: Chore, isRunning: boolean): boolean {
-    if (!chore.enabled || chore.one_off || chore.parked) return false;
+    if (chore.one_off || chore.parked) return false;
     if (chore.repeat.type !== "schedule" && chore.repeat.type !== "every_n_days") return false;
-    return isRunning || !!chore.next_due;
+    return isRunning || (chore.enabled && !!chore.next_due);
   }
 
   private async _skip(chore: Chore): Promise<void> {
@@ -170,7 +187,7 @@ export class BoopliChores extends LitElement {
       this._skipping = null;
       this._busy = false;
     }
-    void this._focusLater(`[data-edit="${chore.id}"]`); // the question is gone; keep the focus on this chore
+    void this._focusLater("edit", chore.id); // the question is gone; keep the focus on this chore
   }
 
   render() {
