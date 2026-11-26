@@ -1252,6 +1252,8 @@ var Je = {
 		add_a_speaker_that_can_play: "Füge erst einen Lautsprecher hinzu, der diesen Ton abspielen kann.",
 		no_sound_chosen_yet: "Noch kein Ton ausgewählt",
 		other_media_players: "Andere Mediaplayer",
+		built_in_sound: "Integrierter Ton",
+		leave_empty_for_the_built_in_sound: "Lass das Feld leer, um den integrierten Ton von Boopli zu verwenden.",
 		no_file_chosen_yet: "Noch keine Datei ausgewählt",
 		rings_for_seconds: "Tondauer (Sekunden)",
 		repeat_every_seconds_0_once: "Wiederholabstand (Sekunden, 0 = einmal)",
@@ -2414,6 +2416,8 @@ var Je = {
 		add_a_speaker_that_can_play: "Add a speaker that can play it first.",
 		no_sound_chosen_yet: "No sound chosen yet",
 		other_media_players: "Other media players",
+		built_in_sound: "Built-in sound",
+		leave_empty_for_the_built_in_sound: "Leave empty to use Boopli's built-in sound.",
 		no_file_chosen_yet: "No file chosen yet",
 		rings_for_seconds: "Rings for (seconds)",
 		repeat_every_seconds_0_once: "Repeat every (seconds, 0 = once)",
@@ -3576,6 +3580,8 @@ var Je = {
 		add_a_speaker_that_can_play: "Primero añade un altavoz que pueda reproducir ese sonido.",
 		no_sound_chosen_yet: "Aún no se ha elegido un sonido",
 		other_media_players: "Otros reproductores multimedia",
+		built_in_sound: "Sonido integrado",
+		leave_empty_for_the_built_in_sound: "Deja el campo vacío para usar el sonido integrado de Boopli.",
 		no_file_chosen_yet: "Aún no se ha elegido un archivo",
 		rings_for_seconds: "Duración del sonido (segundos)",
 		repeat_every_seconds_0_once: "Repetir cada (segundos, 0 = una vez)",
@@ -4738,6 +4744,8 @@ var Je = {
 		add_a_speaker_that_can_play: "Ajoute d’abord une enceinte qui peut jouer ce son.",
 		no_sound_chosen_yet: "Aucun son choisi pour l’instant",
 		other_media_players: "Autres lecteurs multimédias",
+		built_in_sound: "Son intégré",
+		leave_empty_for_the_built_in_sound: "Laisse le champ vide pour utiliser le son intégré de Boopli.",
 		no_file_chosen_yet: "Aucun fichier choisi pour l’instant",
 		rings_for_seconds: "Durée de la sonnerie (en secondes)",
 		repeat_every_seconds_0_once: "Intervalle entre les répétitions (en secondes, 0 = une seule fois)",
@@ -5900,6 +5908,8 @@ var Je = {
 		add_a_speaker_that_can_play: "Voeg eerst een luidspreker toe die dit geluid kan afspelen.",
 		no_sound_chosen_yet: "Nog geen geluid gekozen",
 		other_media_players: "Andere mediaspelers",
+		built_in_sound: "Ingebouwd geluid",
+		leave_empty_for_the_built_in_sound: "Laat het veld leeg om het ingebouwde geluid van Boopli te gebruiken.",
 		no_file_chosen_yet: "Nog geen bestand gekozen",
 		rings_for_seconds: "Duur van het alarm (seconden)",
 		repeat_every_seconds_0_once: "Herhalen om de … seconden (0 = één keer)",
@@ -14646,16 +14656,16 @@ var _o = "amzn_sfx_scifi_alarm_01", vo = "amzn_sfx_doorbell_chime_01", yo = [
 		return {
 			cue: {
 				enabled: !0,
-				kind: n ? "alexa" : "file",
-				sound: n ? vo : "",
+				kind: n ? "alexa" : "bundled",
+				sound: n ? vo : "ding",
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
 			},
 			alarm: {
 				enabled: !0,
-				kind: n ? "alexa" : "file",
-				sound: n ? _o : "",
+				kind: n ? "alexa" : "bundled",
+				sound: n ? _o : "alarm",
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -14763,7 +14773,7 @@ var _o = "amzn_sfx_scifi_alarm_01", vo = "amzn_sfx_doorbell_chime_01", yo = [
 		}
 	}
 	_soundSummary(e, t) {
-		return t ? e === "alexa" ? C("speakers.alexa_sound", { replace: t.replace(/^amzn_sfx_/, "") }) : C("speakers.file", { sound: t }) : C("speakers.no_sound_chosen_yet");
+		return t ? e === "bundled" ? C("speakers.built_in_sound") : e === "alexa" ? C("speakers.alexa_sound", { replace: t.replace(/^amzn_sfx_/, "") }) : C("speakers.file", { sound: t }) : C("speakers.no_sound_chosen_yet");
 	}
 	_soundFields(e, t, n, r, i, a) {
 		return m`
@@ -14940,11 +14950,18 @@ var _o = "amzn_sfx_scifi_alarm_01", vo = "amzn_sfx_doorbell_chime_01", yo = [
 				note: this._notes[`speaker:${i.entity_id}:${n}`]
 			})}` : m`<label class="num wide">
                       ${C("speakers.file_in_my_media_folder_for_example", { example: s })}
-                      <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${s}.mp3`} @change=${(e) => a(n, {
-				kind: "file",
-				sound: e.target.value.trim()
-			})} />
-                    </label>`}
+                      <input type="text" .value=${c.kind === "file" ? c.sound : ""} placeholder=${`boopli/${s}.mp3`} @change=${(e) => {
+				let t = e.target.value.trim();
+				a(n, t ? {
+					kind: "file",
+					sound: t
+				} : {
+					kind: "bundled",
+					sound: n === "cue" ? "ding" : "alarm"
+				});
+			}} />
+                    </label>
+                    <div class="muted small">${C("speakers.leave_empty_for_the_built_in_sound")}</div>`}
                 ${n === "alarm" ? m`${this._numField(C("speakers.rings_for_seconds"), c.seconds, 3, 600, (e) => a(n, { seconds: e }))}
                     ${this._numField(C("speakers.repeat_every_seconds_0_once"), c.repeat_s, 0, 60, (e) => a(n, { repeat_s: e }))}` : _}
               </div>` : _}
@@ -20873,13 +20890,20 @@ var Gs = {
 		value: "tts",
 		label: C("common.a_tts_voice_on_this_speaker")
 	}
-], ec = () => [{
-	value: "alexa",
-	label: C("common.alexa_sound")
-}, {
-	value: "file",
-	label: C("common.file_in_my_media_folder")
-}], tc = [
+], ec = () => [
+	{
+		value: "alexa",
+		label: C("common.alexa_sound")
+	},
+	{
+		value: "file",
+		label: C("common.file_in_my_media_folder")
+	},
+	{
+		value: "bundled",
+		label: C("speakers.built_in_sound")
+	}
+], tc = [
 	0,
 	1,
 	2,
@@ -21734,12 +21758,12 @@ var Gs = {
               ${C("common.sound_type")}
               <select @change=${(t) => this._patchSound(e, t.target.value === i.kind ? {} : {
 			kind: t.target.value,
-			sound: ""
+			sound: t.target.value === "bundled" ? e === "cue" ? "ding" : "alarm" : ""
 		})}>
-                ${ec().filter((e) => e.value === "file" || t.speech.route !== "tts").map((e) => m`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${ec().filter((e) => e.value !== "alexa" || t.speech.route !== "tts").map((e) => m`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
-            ${i.kind === "alexa" ? go(i.sound, (t) => this._patchSound(e, { sound: t })) : m`<label class="num wide">
+            ${i.kind === "alexa" ? go(i.sound, (t) => this._patchSound(e, { sound: t })) : i.kind === "bundled" ? _ : m`<label class="num wide">
                     ${C("wizard.file_in_the_media_folder_or")}
                     <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
                   </label>
@@ -21766,15 +21790,15 @@ var Gs = {
               ${C("wizard.how")}
               <select
                 @change=${(e) => {
-			let t = e.target.value, n = (e) => t === "tts" && e.kind === "alexa" ? {
+			let t = e.target.value, n = (e, n) => t === "tts" && e.kind === "alexa" ? {
 				...e,
-				kind: "file",
-				sound: ""
+				kind: "bundled",
+				sound: n
 			} : e;
 			this._patchSpeaker((e) => ({
 				...e,
-				cue: n(e.cue),
-				alarm: n(e.alarm),
+				cue: n(e.cue, "ding"),
+				alarm: n(e.alarm, "alarm"),
 				speech: {
 					...e.speech,
 					route: t,

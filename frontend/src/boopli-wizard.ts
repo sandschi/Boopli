@@ -201,6 +201,7 @@ const ROUTES = (): { value: SpeechRoute; label: string }[] => [
 const SOUND_KINDS = (): { value: SoundKind; label: string }[] => [
   { value: "alexa", label: t("common.alexa_sound") },
   { value: "file", label: t("common.file_in_my_media_folder") },
+  { value: "bundled", label: t("speakers.built_in_sound") },
 ];
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -1204,12 +1205,14 @@ export class BoopliWizard extends LitElement {
       ${html`<div class="fields">
             <label class="num">
               ${t("common.sound_type")}
-              <select @change=${(e: Event) => this._patchSound(which, (e.target as HTMLSelectElement).value === sound.kind ? {} : { kind: (e.target as HTMLSelectElement).value as SoundKind, sound: "" })}>
-                ${SOUND_KINDS().filter((k) => k.value === "file" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
+              <select @change=${(e: Event) => this._patchSound(which, (e.target as HTMLSelectElement).value === sound.kind ? {} : { kind: (e.target as HTMLSelectElement).value as SoundKind, sound: (e.target as HTMLSelectElement).value === "bundled" ? (which === "cue" ? "ding" : "alarm") : "" })}>
+                ${SOUND_KINDS().filter((k) => k.value !== "alexa" || s.speech.route !== "tts").map((k) => html`<option value=${k.value} .selected=${k.value === sound.kind}>${k.label}</option>`)}
               </select>
             </label>
             ${sound.kind === "alexa"
               ? alexaSoundPicker(sound.sound, (id) => this._patchSound(which, { sound: id }))
+              : sound.kind === "bundled"
+              ? nothing
               : html`<label class="num wide">
                     ${t("wizard.file_in_the_media_folder_or")}
                     <input .value=${sound.sound} @input=${(e: Event) => this._patchSound(which, { sound: (e.target as HTMLInputElement).value })} />
@@ -1237,9 +1240,9 @@ export class BoopliWizard extends LitElement {
               <select
                 @change=${(e: Event) => {
                   const route = (e.target as HTMLSelectElement).value as SpeechRoute;
-                  // Another media player can only play files, not Amazon's sounds.
-                  const tone = (t: SpeakerCfg["cue"]) => (route === "tts" && t.kind === "alexa" ? { ...t, kind: "file" as SoundKind, sound: "" } : t);
-                  this._patchSpeaker((x) => ({ ...x, cue: tone(x.cue), alarm: tone(x.alarm), speech: { ...x.speech, route, target: "", enabled: false } }));
+                  // Another media player cannot play Amazon's sounds, so it starts with Boopli's own.
+                  const tone = (t: SpeakerCfg["cue"], own: string) => (route === "tts" && t.kind === "alexa" ? { ...t, kind: "bundled" as SoundKind, sound: own } : t);
+                  this._patchSpeaker((x) => ({ ...x, cue: tone(x.cue, "ding"), alarm: tone(x.alarm, "alarm"), speech: { ...x.speech, route, target: "", enabled: false } }));
                 }}
               >
                 ${ROUTES().map((r) => html`<option value=${r.value} .selected=${r.value === sp.route}>${r.label}</option>`)}

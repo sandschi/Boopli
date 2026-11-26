@@ -728,6 +728,8 @@
     "add_a_speaker_that_can_play": "Füge erst einen Lautsprecher hinzu, der diesen Ton abspielen kann.",
     "no_sound_chosen_yet": "Noch kein Ton ausgewählt",
     "other_media_players": "Andere Mediaplayer",
+    "built_in_sound": "Integrierter Ton",
+    "leave_empty_for_the_built_in_sound": "Lass das Feld leer, um den integrierten Ton von Boopli zu verwenden.",
     "no_file_chosen_yet": "Noch keine Datei ausgewählt",
     "rings_for_seconds": "Tondauer (Sekunden)",
     "repeat_every_seconds_0_once": "Wiederholabstand (Sekunden, 0 = einmal)",

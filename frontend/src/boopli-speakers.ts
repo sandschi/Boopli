@@ -175,8 +175,8 @@ export class BoopliSpeakers extends LitElement {
     if (have) return { cue: { ...structuredClone(have.cue), enabled: true }, alarm: { ...structuredClone(have.alarm), enabled: true } };
     const alexa = group === "alexa";
     return {
-      cue: { enabled: true, kind: alexa ? "alexa" : "file", sound: alexa ? ALEXA_DING_SOUND : "", start_at: 1, seconds: 30, repeat_s: 5 },
-      alarm: { enabled: true, kind: alexa ? "alexa" : "file", sound: alexa ? ALEXA_ALARM_SOUND : "", start_at: 4, seconds: 30, repeat_s: 5 },
+      cue: { enabled: true, kind: alexa ? "alexa" : "bundled", sound: alexa ? ALEXA_DING_SOUND : "ding", start_at: 1, seconds: 30, repeat_s: 5 },
+      alarm: { enabled: true, kind: alexa ? "alexa" : "bundled", sound: alexa ? ALEXA_ALARM_SOUND : "alarm", start_at: 4, seconds: 30, repeat_s: 5 },
     };
   }
 
@@ -293,6 +293,7 @@ export class BoopliSpeakers extends LitElement {
   /** What a sound says about itself in one short line. */
   private _soundSummary(kind: SoundKind, sound: string): string {
     if (!sound) return t("speakers.no_sound_chosen_yet");
+    if (kind === "bundled") return t("speakers.built_in_sound");
     return kind === "alexa" ? t("speakers.alexa_sound", { replace: sound.replace(/^amzn_sfx_/, "") }) : t("speakers.file", { sound });
   }
 
@@ -491,8 +492,13 @@ export class BoopliSpeakers extends LitElement {
                     )}`
                   : html`<label class="num wide">
                       ${t("speakers.file_in_my_media_folder_for_example", { example })}
-                      <input type="text" .value=${c.kind === "alexa" ? "" : c.sound} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => setAll(which, { kind: "file", sound: (e.target as HTMLInputElement).value.trim() })} />
-                    </label>`}
+                      <input type="text" .value=${c.kind === "file" ? c.sound : ""} placeholder=${`boopli/${example}.mp3`} @change=${(e: Event) => {
+                        const file = (e.target as HTMLInputElement).value.trim();
+                        // empty: back to Boopli's own sound
+                        setAll(which, file ? { kind: "file", sound: file } : { kind: "bundled", sound: which === "cue" ? "ding" : "alarm" });
+                      }} />
+                    </label>
+                    <div class="muted small">${t("speakers.leave_empty_for_the_built_in_sound")}</div>`}
                 ${which === "alarm"
                   ? html`${this._numField(t("speakers.rings_for_seconds"), c.seconds, 3, 600, (n) => setAll(which, { seconds: n }))}
                     ${this._numField(t("speakers.repeat_every_seconds_0_once"), c.repeat_s, 0, 60, (n) => setAll(which, { repeat_s: n }))}`

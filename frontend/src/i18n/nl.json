@@ -728,6 +728,8 @@
     "add_a_speaker_that_can_play": "Voeg eerst een luidspreker toe die dit geluid kan afspelen.",
     "no_sound_chosen_yet": "Nog geen geluid gekozen",
     "other_media_players": "Andere mediaspelers",
+    "built_in_sound": "Ingebouwd geluid",
+    "leave_empty_for_the_built_in_sound": "Laat het veld leeg om het ingebouwde geluid van Boopli te gebruiken.",
     "no_file_chosen_yet": "Nog geen bestand gekozen",
     "rings_for_seconds": "Duur van het alarm (seconden)",
     "repeat_every_seconds_0_once": "Herhalen om de … seconden (0 = één keer)",

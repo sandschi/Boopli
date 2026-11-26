@@ -728,6 +728,8 @@
     "add_a_speaker_that_can_play": "Primero añade un altavoz que pueda reproducir ese sonido.",
     "no_sound_chosen_yet": "Aún no se ha elegido un sonido",
     "other_media_players": "Otros reproductores multimedia",
+    "built_in_sound": "Sonido integrado",
+    "leave_empty_for_the_built_in_sound": "Deja el campo vacío para usar el sonido integrado de Boopli.",
     "no_file_chosen_yet": "Aún no se ha elegido un archivo",
     "rings_for_seconds": "Duración del sonido (segundos)",
     "repeat_every_seconds_0_once": "Repetir cada (segundos, 0 = una vez)",

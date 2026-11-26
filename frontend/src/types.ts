@@ -135,7 +135,7 @@ export interface PhoneCfg {
   start_at: number;
 }
 
-export type SoundKind = "alexa" | "file";
+export type SoundKind = "alexa" | "file" | "bundled";
 export type SpeechRoute = "alexa_media" | "alexa_devices" | "tts";
 export type SpeakerLevel = "cue" | "speech" | "alarm";
 /** What a ladder can pick for a speaker at one nudge: a level, speech with the Alexa chime, or one of its extra sounds. */

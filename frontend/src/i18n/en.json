@@ -728,6 +728,8 @@
     "add_a_speaker_that_can_play": "Add a speaker that can play it first.",
     "no_sound_chosen_yet": "No sound chosen yet",
     "other_media_players": "Other media players",
+    "built_in_sound": "Built-in sound",
+    "leave_empty_for_the_built_in_sound": "Leave empty to use Boopli's built-in sound.",
     "no_file_chosen_yet": "No file chosen yet",
     "rings_for_seconds": "Rings for (seconds)",
     "repeat_every_seconds_0_once": "Repeat every (seconds, 0 = once)",
