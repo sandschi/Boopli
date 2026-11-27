@@ -10,9 +10,10 @@ import { t } from "./i18n";
 const FOOD_SIZES: FoodSize[] = ["small", "medium", "big"];
 
 /**
- * What the household owns, in its own window: the food stock (fed from here), the colours and patterns to
- * put on the wall and the floor, and the other things that stand in the room. Fires `inventory-close`,
- * and `open-shop` from the "to the shop" link.
+ * What the household owns, in its own window: the food stock, the colours and patterns for the wall and the floor,
+ * and the other things that stand in the room. Choose a slot and the bar at the bottom says what it is and offers
+ * the one thing to do with it (feed, use). Fires `inventory-close`, and `open-shop` from the "to the shop" link.
+ * The chosen slot is `kind:id`: `food:small`, `wall:<id>`, `floor:<id>` (an empty id = plain), `thing:<id>`.
  */
 export class BoopliInventory extends LitElement {
   static properties = {
@@ -22,6 +23,7 @@ export class BoopliInventory extends LitElement {
     _busy: { state: true },
     _error: { state: true },
     _note: { state: true },
+    _sel: { state: true },
   };
 
   declare hass?: Hass;
@@ -30,6 +32,7 @@ export class BoopliInventory extends LitElement {
   declare _busy: boolean;
   declare _error: string;
   declare _note: string;
+  declare _sel: string;
 
   constructor() {
     super();
@@ -37,6 +40,7 @@ export class BoopliInventory extends LitElement {
     this._busy = false;
     this._error = "";
     this._note = "";
+    this._sel = "";
   }
 
   protected updated(changed: Map<string, unknown>): void {
@@ -46,6 +50,7 @@ export class BoopliInventory extends LitElement {
     if (this.open && !dialog.open) {
       this._error = "";
       this._note = "";
+      this._sel = "";
       dialog.showModal();
     } else if (!this.open && dialog.open) dialog.close();
   }
@@ -81,62 +86,47 @@ export class BoopliInventory extends LitElement {
     void this._run(() => shopPlace(this.hass!, place, id));
   }
 
+  /** One slot. `mark` is the small badge in the corner (the count, or a tick for what is in use). */
+  private _slot(key: string, label: string, art: unknown, mark: string | number = "", dim = false) {
+    return html`<button
+      type="button"
+      class="slot ${this._sel === key ? "sel" : ""} ${dim ? "dim" : ""}"
+      aria-pressed=${this._sel === key}
+      aria-label=${label}
+      @click=${() => (this._sel = key)}
+    >
+      <span class="pic">${art}</span>
+      ${mark !== "" ? html`<span class="mark" aria-hidden="true">${mark}</span>` : nothing}
+    </button>`;
+  }
+
   private _food(pet: Pet) {
     const full = pet.meals_today >= pet.meals_max;
     const any = FOOD_SIZES.some((s) => (pet.food[s] ?? 0) > 0);
-    // Three big buttons, one per food: press the food to feed it. A size you have none of stays, dimmed, so nothing jumps around.
     return html`<div class="group">
       <h4>${t("inventory.food")}</h4>
-      <p class="muted small meals">
+      <p class="muted meals">
         ${full ? t("common.is_full_for_today", { name: pet.name }) : t("common.meals_today", { eaten: pet.meals_today, max: pet.meals_max })}
       </p>
-      <div class="tiles">
+      <div class="slots">
         ${FOOD_SIZES.map((size) => {
-          const item = pet.items.find((i) => i.food === size);
           const count = pet.food[size] ?? 0;
-          const name = itemName(`food_${size}`);
-          return html`<button
-            type="button"
-            class="tile"
-            ?disabled=${full || count <= 0 || this._busy}
-            aria-label="${name} · ${t("inventory.n_in_stock", { count })} · ${t("shop.gives_xp", { xp: item?.xp ?? 0 })}"
-            @click=${() => this._feed(size, item)}
-          >
-            <span class="count" aria-hidden="true">${count}</span>
-            <span class="pic">${foodArt(size)}</span>
-            <span class="tname">${name}</span>
-            <span class="txp">${t("inventory.fed_xp", { xp: item?.xp ?? 0 })}</span>
-          </button>`;
+          return this._slot(`food:${size}`, `${itemName(`food_${size}`)} · ${t("inventory.n_in_stock", { count })}`, foodArt(size), count, count <= 0);
         })}
       </div>
       ${any ? nothing : html`<p class="muted">${t("inventory.no_food_yet")}</p>`}
-      <button type="button" class="textlink" @click=${() => this._toShop()}>${t("inventory.to_the_shop")}</button>
     </div>`;
   }
 
-  /** Wall or floor: tiles of the owned colours and patterns, and "plain". */
+  /** Wall or floor: slots of the owned colours and patterns, and "plain". A tick marks what is in use. */
   private _paint(pet: Pet, place: "wall" | "floor", title: string) {
     const looks = pet.items.filter((i) => (i.kind === "color" || i.kind === "pattern") && i.owned);
     const current = pet.placed[place] ?? "";
-    return html`<div class="place">
-      <div class="label">${title}</div>
-      <div class="tiles small-tiles" role="group" aria-label=${title}>
-        <button type="button" class="tile ${current === "" ? "on" : ""}" aria-pressed=${current === ""} ?disabled=${this._busy} @click=${() => this._place(place, "")}>
-          <span class="pic"><span class="swatch plain"></span></span>
-          <span class="tname">${t("inventory.plain")}</span>
-        </button>
-        ${looks.map(
-          (i) => html`<button
-            type="button"
-            class="tile ${current === i.id ? "on" : ""}"
-            aria-pressed=${current === i.id}
-            ?disabled=${this._busy}
-            @click=${() => this._place(place, i.id)}
-          >
-            <span class="pic">${itemArt(i.id)}</span>
-            <span class="tname">${itemName(i.id)}</span>
-          </button>`
-        )}
+    return html`<div class="group">
+      <h4>${title}</h4>
+      <div class="slots" role="group" aria-label=${title}>
+        ${this._slot(`${place}:`, t("inventory.plain"), html`<span class="swatch plain"></span>`, current === "" ? "✓" : "")}
+        ${looks.map((i) => this._slot(`${place}:${i.id}`, itemName(i.id), itemArt(i.id), current === i.id ? "✓" : ""))}
       </div>
     </div>`;
   }
@@ -145,20 +135,49 @@ export class BoopliInventory extends LitElement {
     const things = pet.items.filter((i) => i.owned && i.kind === "extra");
     const looks = pet.items.some((i) => (i.kind === "color" || i.kind === "pattern") && i.owned);
     return html`<div class="group">
-      <h4>${t("inventory.room")}</h4>
-      ${looks
-        ? html`${this._paint(pet, "wall", t("inventory.wall"))}${this._paint(pet, "floor", t("inventory.floor"))}`
-        : html`<p class="muted">${t("inventory.no_colours_or_patterns_yet")}</p>`}
-      ${things.length
-        ? html`<div class="tiles small-tiles things">
-            ${things.map(
-              (i) => html`<div class="tile static">
-                <span class="pic">${itemArt(i.id)}</span>
-                <span class="tname">${itemName(i.id)}</span>
-              </div>`
-            )}
-          </div>`
-        : nothing}
+        <h4>${t("inventory.room")}</h4>
+        ${looks ? nothing : html`<p class="muted">${t("inventory.no_colours_or_patterns_yet")}</p>`}
+      </div>
+      ${looks ? html`${this._paint(pet, "wall", t("inventory.wall"))}${this._paint(pet, "floor", t("inventory.floor"))}` : nothing}
+      ${things.length ? html`<div class="slots">${things.map((i) => this._slot(`thing:${i.id}`, itemName(i.id), itemArt(i.id)))}</div>` : nothing}`;
+  }
+
+  /** The bar at the bottom: the chosen slot and the one thing to do with it. */
+  private _detail(pet: Pet) {
+    const [kind, ...rest] = this._sel.split(":");
+    const id = rest.join(":");
+    if (!this._sel) return html`<div class="detail"><span class="dtext muted">${t("inventory.tap_something_to_see_more")}</span></div>`;
+    if (kind === "food") {
+      const size = id as FoodSize;
+      const item = pet.items.find((i) => i.food === size);
+      const count = pet.food[size] ?? 0;
+      const full = pet.meals_today >= pet.meals_max;
+      return html`<div class="detail">
+        <span class="dpic">${foodArt(size)}</span>
+        <span class="dtext">
+          <div class="dname">${itemName(`food_${size}`)}</div>
+          <div class="dnote">${t("inventory.fed_xp", { xp: item?.xp ?? 0 })} · ${t("inventory.n_in_stock", { count })}</div>
+        </span>
+        <button type="button" class="go" ?disabled=${full || count <= 0 || this._busy} @click=${() => this._feed(size, item)}>${t("inventory.feed")}</button>
+      </div>`;
+    }
+    if (kind === "wall" || kind === "floor") {
+      const inUse = (pet.placed[kind] ?? "") === id;
+      const name = id ? itemName(id) : t("inventory.plain");
+      return html`<div class="detail">
+        <span class="dpic">${id ? itemArt(id) : html`<span class="swatch plain"></span>`}</span>
+        <span class="dtext">
+          <div class="dname">${name}</div>
+          <div class="dnote">${kind === "wall" ? t("inventory.wall") : t("inventory.floor")}</div>
+        </span>
+        <button type="button" class="go" ?disabled=${inUse || this._busy} @click=${() => this._place(kind, id)}>
+          ${inUse ? t("inventory.in_use") : t("inventory.use")}
+        </button>
+      </div>`;
+    }
+    return html`<div class="detail">
+      <span class="dpic">${itemArt(id)}</span>
+      <span class="dtext"><div class="dname">${itemName(id)}</div></span>
     </div>`;
   }
 
@@ -177,10 +196,13 @@ export class BoopliInventory extends LitElement {
               <h3>${icon("bag-personal-outline")} ${t("inventory.inventory")}</h3>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
-            ${this._note ? html`<p class="muted" role="status">${this._note}</p>` : nothing}
-            ${this._error ? html`<p class="error" role="alert">${this._error}</p>` : nothing}
-            ${this._food(pet)}${this._room(pet)}
-            <div class="actions"><button type="button" @click=${() => this._close()}>${t("common.close")}</button></div>
+            <div class="body">
+              ${this._note ? html`<p class="muted note" role="status">${this._note}</p>` : nothing}
+              ${this._error ? html`<p class="error note" role="alert">${this._error}</p>` : nothing}
+              ${this._food(pet)}${this._room(pet)}
+              <button type="button" class="textlink" @click=${() => this._toShop()}>${t("inventory.to_the_shop")}</button>
+            </div>
+            ${this._detail(pet)}
           </div>`
         : nothing}
     </dialog>`;
@@ -190,28 +212,8 @@ export class BoopliInventory extends LitElement {
     sharedStyles,
     modalStyles,
     css`
-      .small {
-        font-size: 16px;
-      }
       .meals {
         margin: 0 0 6px;
-      }
-      .place {
-        margin-bottom: 10px;
-      }
-      .label {
-        font-weight: 500;
-        margin-bottom: 6px;
-      }
-      .small-tiles {
-        grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-      }
-      .small-tiles .tile {
-        min-height: 0;
-        padding-bottom: 10px;
-      }
-      .things {
-        margin-top: 10px;
       }
     `,
   ];

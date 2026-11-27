@@ -7,17 +7,18 @@ import { sharedStyles } from "./styles";
 import type { Hass, Pet, ShopItem } from "./types";
 import { t } from "./i18n";
 
-/** The groups of the shop, in the order they are shown. */
-const GROUPS: { id: string; title: () => string; kinds: ShopItem["kind"][] }[] = [
-  { id: "food", title: () => t("shop.food"), kinds: ["food"] },
-  { id: "room", title: () => t("shop.for_the_room"), kinds: ["extra"] },
-  { id: "looks", title: () => t("shop.wall_and_floor"), kinds: ["color", "pattern"] },
-  { id: "upgrades", title: () => t("shop.upgrades"), kinds: ["upgrade"] },
+/** The groups of the shop, in the order they are shown (one at a time, picked at the top). */
+const GROUPS: { id: string; icon: string; title: () => string; kinds: ShopItem["kind"][] }[] = [
+  { id: "food", icon: "bowl-mix-outline", title: () => t("shop.food"), kinds: ["food"] },
+  { id: "room", icon: "sofa-outline", title: () => t("shop.for_the_room"), kinds: ["extra"] },
+  { id: "looks", icon: "palette-outline", title: () => t("shop.wall_and_floor"), kinds: ["color", "pattern"] },
+  { id: "upgrades", icon: "arrow-up-bold-circle-outline", title: () => t("shop.upgrades"), kinds: ["upgrade"] },
 ];
 
 /**
  * The shop, in its own window. It sells what the integration lists (`pet.items`): food again and again,
- * everything else once (a bought item is gone from here and shows up in the inventory). A locked item says why.
+ * everything else once (a bought item is gone from here and shows up in the inventory). Pick a group at the top,
+ * choose a slot, and the bar at the bottom says what it is, why it is locked (if so) and has the buy button.
  * Fires `shop-close`.
  */
 export class BoopliShop extends LitElement {
@@ -28,6 +29,8 @@ export class BoopliShop extends LitElement {
     _busy: { state: true },
     _error: { state: true },
     _note: { state: true },
+    _cat: { state: true },
+    _sel: { state: true },
   };
 
   declare hass?: Hass;
@@ -36,6 +39,8 @@ export class BoopliShop extends LitElement {
   declare _busy: string; // the id of the item being bought
   declare _error: string;
   declare _note: string;
+  declare _cat: string; // the shown group
+  declare _sel: string; // the chosen item
 
   constructor() {
     super();
@@ -43,6 +48,8 @@ export class BoopliShop extends LitElement {
     this._busy = "";
     this._error = "";
     this._note = "";
+    this._cat = "";
+    this._sel = "";
   }
 
   protected updated(changed: Map<string, unknown>): void {
@@ -52,6 +59,7 @@ export class BoopliShop extends LitElement {
     if (this.open && !dialog.open) {
       this._error = "";
       this._note = "";
+      this._sel = "";
       dialog.showModal();
     } else if (!this.open && dialog.open) dialog.close();
   }
@@ -68,6 +76,7 @@ export class BoopliShop extends LitElement {
     try {
       await shopBuy(this.hass, item.id);
       this._note = t("shop.is_yours", { item: itemName(item.id) });
+      if (!item.food) this._sel = ""; // a bought thing leaves the shop
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -84,26 +93,55 @@ export class BoopliShop extends LitElement {
     return "";
   }
 
-  private _row(item: ShopItem, pet: Pet) {
-    const why = this._why(item, pet);
-    const blocked = item.locked !== "";
-    // A tile is the whole button: press the picture to buy it. What is in the way (level, achievement, Blubs) is written on it.
+  /** One slot: the picture big, the price as a tag under it, a lock when something is in the way. */
+  private _slot(item: ShopItem, pet: Pet) {
+    const dim = item.locked !== "" || item.price > pet.blubs;
     return html`<button
       type="button"
-      class="tile"
-      ?disabled=${blocked || item.price > pet.blubs || !!this._busy}
-      aria-label=${t("shop.buy_item_for", { item: itemName(item.id), price: item.price })}
-      @click=${() => this._buy(item)}
+      class="slot ${this._sel === item.id ? "sel" : ""} ${dim ? "dim" : ""}"
+      aria-pressed=${this._sel === item.id}
+      aria-label=${itemName(item.id)}
+      @click=${() => (this._sel = item.id)}
     >
+      ${item.locked !== "" ? html`<span class="lock">${icon("lock-outline")}</span>` : nothing}
       <span class="pic">${itemArt(item.id)}</span>
-      <span class="tname">${itemName(item.id)}</span>
-      <span class="txp">${item.food ? t("inventory.fed_xp", { xp: item.xp }) : why || nothing}</span>
-      <span class="price">${coin()} ${item.price}</span>
+      <span class="tag">${coin()} ${item.price}</span>
     </button>`;
+  }
+
+  /** The bar at the bottom: what is chosen, what is in the way, and the buy button. */
+  private _detail(pet: Pet) {
+    const item = pet.items.find((i) => i.id === this._sel);
+    if (!item) return html`<div class="detail"><span class="dtext muted">${t("shop.tap_something_to_see_more")}</span></div>`;
+    const why = this._why(item, pet);
+    const blocked = item.locked !== "" || item.price > pet.blubs || !!this._busy;
+    return html`<div class="detail">
+      <span class="dpic">${itemArt(item.id)}</span>
+      <span class="dtext">
+        <div class="dname">${itemName(item.id)}</div>
+        <div class="dnote">${item.food ? t("inventory.fed_xp", { xp: item.xp }) : nothing} ${why}</div>
+      </span>
+      <button
+        type="button"
+        class="go"
+        ?disabled=${blocked}
+        aria-label=${t("shop.buy_item_for", { item: itemName(item.id), price: item.price })}
+        @click=${() => this._buy(item)}
+      >
+        ${t("shop.buy")} ${coin()} ${item.price}
+      </button>
+    </div>`;
   }
 
   render() {
     const pet = this.pet;
+    const groups = pet
+      ? GROUPS.map((g) => ({
+          ...g,
+          items: pet.items.filter((i) => g.kinds.includes(i.kind) && (!i.owned || i.kind === "food")).sort((a, b) => a.price - b.price),
+        })).filter((g) => g.items.length)
+      : [];
+    const group = groups.find((g) => g.id === this._cat) ?? groups[0];
     return html`<dialog
       aria-label=${t("shop.shop")}
       @close=${() => this.open && this._close()}
@@ -118,19 +156,28 @@ export class BoopliShop extends LitElement {
               <span class="wallet" title=${t("shop.your_blubs")}>${coin()} ${t("shop.n_blubs", { count: pet.blubs })}</span>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
-            ${this._note ? html`<p class="muted" role="status">${this._note}</p>` : nothing}
-            ${this._error ? html`<p class="error" role="alert">${this._error}</p>` : nothing}
-            ${GROUPS.map((g) => {
-              const items = pet.items
-                .filter((i) => g.kinds.includes(i.kind) && (!i.owned || i.kind === "food"))
-                .sort((a, b) => a.price - b.price);
-              if (!items.length) return nothing;
-              return html`<div class="group">
-                <h4>${g.title()}</h4>
-                <div class="tiles">${items.map((i) => this._row(i, pet))}</div>
-              </div>`;
-            })}
-            <div class="actions"><button type="button" @click=${() => this._close()}>${t("common.close")}</button></div>
+            <div class="cats" role="tablist">
+              ${groups.map(
+                (g) => html`<button
+                  type="button"
+                  role="tab"
+                  class="cat ${g === group ? "on" : ""}"
+                  aria-selected=${g === group}
+                  @click=${() => {
+                    this._cat = g.id;
+                    this._sel = "";
+                  }}
+                >
+                  ${icon(g.icon)}<span>${g.title()}</span>
+                </button>`
+              )}
+            </div>
+            <div class="body">
+              ${this._note ? html`<p class="muted note" role="status">${this._note}</p>` : nothing}
+              ${this._error ? html`<p class="error note" role="alert">${this._error}</p>` : nothing}
+              ${group ? html`<div class="slots">${group.items.map((i) => this._slot(i, pet))}</div>` : nothing}
+            </div>
+            ${this._detail(pet)}
           </div>`
         : nothing}
     </dialog>`;
@@ -139,7 +186,11 @@ export class BoopliShop extends LitElement {
   static styles = [
     sharedStyles,
     modalStyles,
-    css``,
+    css`
+      .cat span {
+        white-space: nowrap;
+      }
+    `,
   ];
 }
 

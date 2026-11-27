@@ -1,33 +1,58 @@
 import { css } from "lit";
 
-/** The look of the shop's and the inventory's windows (a native <dialog>; on a phone it fills the screen). */
+/**
+ * The look of the shop's and the inventory's windows (a native <dialog>; on a phone it fills the screen).
+ * Game-like: a framed wooden panel with a sign for a title, a grid of sunken slots with the pictures big in them,
+ * and a bar at the bottom that says what the chosen slot is and what you can do with it. The wood is mixed into
+ * the theme's card colour, so it stays dark in dark mode and light in light mode.
+ */
 export const modalStyles = css`
   dialog {
+    --wood: color-mix(in srgb, #a8743c 30%, var(--card-background-color, #1c1c1c));
+    --wood-dark: color-mix(in srgb, #5b3a17 65%, var(--card-background-color, #1c1c1c));
+    --wood-edge: color-mix(in srgb, #8a5a2b 78%, var(--card-background-color, #1c1c1c));
+    --slot: color-mix(in srgb, #2a1a08 38%, var(--wood));
+    --gold: #e9b949;
     padding: 0;
-    border: 1px solid var(--divider-color, #444);
-    border-radius: 16px;
-    width: min(94vw, 640px);
-    max-height: 90vh;
-    overflow: auto;
-    background: var(--card-background-color, #1c1c1c);
+    border: 6px solid var(--wood-edge);
+    border-radius: 22px;
+    box-shadow: 0 0 0 2px var(--wood-dark), 0 18px 48px rgba(0, 0, 0, 0.55);
+    width: min(94vw, 600px);
+    height: fit-content; /* (not auto: an open dialog is pinned top and bottom, and auto would stretch it) */
+    min-height: min(440px, 90vh);
+    max-height: min(90vh, 720px);
+    background: var(--wood);
     color: var(--primary-text-color, #fff);
+    overflow: hidden;
+  }
+  dialog[open] {
+    display: flex;
+    flex-direction: column;
   }
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.6);
   }
   .win {
-    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 auto;
+    min-height: 0;
   }
   .head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(var(--wood-edge), var(--wood-dark));
+    border-bottom: 3px solid var(--wood-dark);
   }
   .head h3 {
+    flex: 1;
     margin: 0;
     font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .close {
     border: 0;
@@ -41,67 +66,69 @@ export const modalStyles = css`
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    border: 2px solid color-mix(in srgb, var(--primary-text-color, #888) 35%, transparent);
+    border: 2px solid var(--gold);
     border-radius: 999px;
     padding: 2px 12px;
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
+    background: color-mix(in srgb, #000 35%, transparent);
+  }
+  .cats {
+    display: flex;
+    gap: 6px;
+    padding: 10px 12px 0;
+    overflow-x: auto;
+  }
+  .cat {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 76px;
+    padding: 6px 10px;
+    border: 3px solid var(--wood-edge);
+    border-radius: 14px 14px 0 0;
+    background: var(--wood-dark);
+    color: inherit;
+    font-size: 15px;
+    line-height: 1.1;
+  }
+  .cat .ico {
+    --mdc-icon-size: 28px;
+  }
+  .cat.on {
+    background: var(--wood);
+    border-color: var(--gold);
+    border-bottom-color: var(--wood);
+    font-weight: 700;
+  }
+  .body {
+    flex: 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 14px;
+    border-top: 3px solid var(--wood-edge);
+  }
+  .body > .note {
+    margin: 0 0 8px;
   }
   .group {
-    margin-top: 16px;
+    margin-bottom: 14px;
   }
   .group > h4 {
     margin: 0 0 6px;
     font-size: 18px;
-    font-weight: 500;
-    color: var(--secondary-text-color);
-  }
-  .rows {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-    border-top: 1px solid var(--divider-color, #444);
-  }
-  .row .art {
-    flex: none;
-    width: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .row .art svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    max-height: 52px;
+    font-weight: 600;
   }
   .swatch {
     display: inline-block;
-    width: 44px;
-    height: 44px;
+    width: 100%;
+    height: 100%;
+    max-width: 48px;
+    max-height: 48px;
     border-radius: 50%;
     border: 2px solid var(--primary-text-color, #fff);
-  }
-  .row .text {
-    flex: 1;
-    min-width: 0;
-  }
-  .row .name {
-    font-weight: 500;
-  }
-  .row .note {
-    font-size: 16px;
-    color: var(--secondary-text-color);
-  }
-  .row .act {
-    flex: none;
-    text-align: right;
   }
   .coin {
     display: inline-flex;
@@ -114,112 +141,172 @@ export const modalStyles = css`
     width: 100%;
     height: 100%;
   }
-  /* Tiles: the shop and the inventory are made of them. Warm gold-tinted, but following the theme (dark in dark mode). */
-  .tiles {
+  /* The slots: sunken squares, the picture big in them, a price tag or a count at the bottom. */
+  .slots {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
   }
-  .tile {
+  .slot {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 4px;
-    min-height: 132px;
-    padding: 12px 6px 8px;
-    border-radius: 16px;
-    border: 2px solid color-mix(in srgb, #e9b949 60%, transparent);
-    background: color-mix(in srgb, #e9b949 13%, var(--card-background-color, #1c1c1c));
-    color: var(--primary-text-color, #fff);
-    font-size: 17px;
-    text-align: center;
-  }
-  button.tile:hover:not(:disabled) {
-    background: color-mix(in srgb, #e9b949 22%, var(--card-background-color, #1c1c1c));
-  }
-  button.tile:active:not(:disabled) {
-    transform: translateY(2px);
-  }
-  button.tile:disabled {
-    opacity: 0.5;
-  }
-  .tile.static {
-    min-height: 0;
-    padding-bottom: 10px;
-  }
-  .tile.on {
-    border-color: var(--boopli-accent, var(--primary-color, #03a9f4));
-    background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 22%, var(--card-background-color, #1c1c1c));
-  }
-  .tile .pic {
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 64px;
-    height: 52px;
+    padding: 6px 6px 20px;
+    border: 3px solid var(--wood-dark);
+    border-radius: 12px;
+    background: var(--slot);
+    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5);
+    color: inherit;
+    font-size: 15px;
   }
-  .tile .pic svg {
+  button.slot:hover:not(:disabled) {
+    background: color-mix(in srgb, #fff 8%, var(--slot));
+  }
+  button.slot:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+  .slot.sel {
+    border-color: var(--gold);
+    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--gold);
+  }
+  .slot.dim {
+    opacity: 0.5;
+  }
+  .slot .pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  .slot .pic svg {
     display: block;
     width: 100%;
     height: 100%;
   }
-  .tile .pic .swatch {
-    width: 44px;
-    height: 44px;
-  }
-  .tile .pic .swatch.plain {
+  .slot .pic .swatch.plain {
     background: transparent;
     border-style: dashed;
     opacity: 0.6;
   }
-  .tile .tname {
-    font-weight: 700;
-    line-height: 1.1;
-  }
-  .tile .txp {
-    min-height: 18px;
-    font-size: 15px;
-    color: var(--secondary-text-color, #aaa);
-    line-height: 1.15;
-  }
-  .tile .price {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: auto;
-    font-weight: 700;
-  }
-  .tile .count {
+  .slot .tag {
     position: absolute;
-    top: 6px;
-    right: 8px;
-    min-width: 24px;
-    padding: 0 6px;
+    left: 4px;
+    right: 4px;
+    bottom: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .slot .tag .coin {
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .slot .lock {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    --mdc-icon-size: 18px;
+  }
+  .slot .mark {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    min-width: 20px;
+    padding: 0 5px;
     border-radius: 999px;
-    background: #e9b949;
+    background: var(--gold);
     color: #2a1e00;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
   }
-  .actions {
-    margin-top: 16px;
+  /* The bar at the bottom: what is chosen, and what to do with it. */
+  .detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 84px;
+    padding: 10px 14px;
+    background: linear-gradient(var(--wood-dark), var(--wood-edge));
+    border-top: 3px solid var(--wood-dark);
+  }
+  .detail .dpic {
+    flex: none;
+    width: 64px;
+    height: 56px;
+    border-radius: 10px;
+    background: var(--slot);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .detail .dpic svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .detail .dtext {
+    flex: 1;
+    min-width: 0;
+  }
+  .detail .dname {
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .detail .dnote {
+    font-size: 15px;
+    opacity: 0.85;
+  }
+  .detail .go {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 48px;
+    padding: 0 18px;
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    background: var(--gold);
+    color: #2a1e00;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .detail .go:disabled {
+    opacity: 0.45;
+  }
+  .foot {
+    padding: 8px 14px 10px;
+    background: var(--wood-edge);
+  }
+  .foot .textlink {
+    margin-right: 12px;
   }
   @media (max-width: 760px) {
     dialog {
       width: 100vw;
       max-width: 100vw;
       height: 100vh;
+      min-height: 100vh;
       max-height: 100vh;
       border-radius: 0;
-      border: 0;
+      border-width: 0;
+      box-shadow: none;
     }
-    .row {
-      gap: 8px;
+    .slots {
+      grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
     }
-    .row .art {
-      width: 52px;
+    .detail .go {
+      padding: 0 12px;
     }
   }
 `;
