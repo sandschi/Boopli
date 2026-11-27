@@ -16,7 +16,7 @@ The panel fits a phone too, so you can use it from the Home Assistant app.
 - The current step shows its group, a progress bar and a count such as “Step 3 of 8.” A celebration shows when a chore is finished.
 - **Done.** Marks the step done. The nudges for it stop.
 - **On it.** Tells Boopli you are working on the step. It pauses nudges and can send a phone check-in after the check-in time. Select **Resume nudges** to take it back. See [Chores and schedules](/Boopli/chores/).
-- **Snooze** on your phone or wall board delays the next nudge. The step stays open and Today shows when the snooze ends.
+- **Snooze** on Today, your phone or the wall board delays the next nudge. The step stays open and Today shows when the snooze ends.
 - **Ready now.** Other steps that are your turn right now, grouped by chore.
 - **Still to do today.** The rest of what is going on today: the waiting steps of chores in progress, and chores due later today with their time. Select **Start now** on a step that’s waiting for a time or for something to happen.
 - **Upcoming.** Scheduled chores on later days (the first eight, with the rest in the Chores tab).

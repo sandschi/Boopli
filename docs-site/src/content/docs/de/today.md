@@ -16,7 +16,7 @@ Das Panel passt auch aufs Handy. Du kannst es in der Home-Assistant-App nutzen.
 - Beim aktuellen Schritt siehst du, zu welchem Teil er gehört, einen Fortschrittsbalken und eine Angabe wie „Schritt 3 von 8“. Wenn du eine Aufgabe erledigst, gibt es eine kleine Feier.
 - **Fertig**. Markiert den Schritt als erledigt. Die Stupse dafür hören auf.
 - **Bin dran**. Sagt Boopli, dass du gerade am Schritt arbeitest. Die Stupse machen Pause. Nach der eingestellten Wartezeit kann Boopli auf deinem Handy nachfragen. Wähle **Stupse fortsetzen**, um die Pause zu beenden. Mehr dazu unter [Aufgaben und Zeitpläne](/Boopli/de/chores/).
-- **Verschieben** auf dem Handy oder Wallboard schiebt den nächsten Stups auf. Der Schritt bleibt offen. Unter „Heute“ siehst du, bis wann der Stups verschoben ist.
+- **Verschieben** unter „Heute“, auf dem Handy oder Wallboard schiebt den nächsten Stups auf. Der Schritt bleibt offen. Unter „Heute“ siehst du, bis wann der Stups verschoben ist.
 - **Jetzt dran**. Weitere Schritte, die gerade auf dich warten, nach Aufgaben geordnet.
 - **Heute noch offen**. Alles Weitere für heute. Hier stehen die wartenden Schritte laufender Aufgaben und die Aufgaben, die heute später dran sind, mit ihrer Uhrzeit. Mit **Jetzt starten** kannst du einen Schritt starten, der auf eine Uhrzeit oder ein Ereignis wartet.
 - **Demnächst**. Geplante Aufgaben für die nächsten Tage. Hier siehst du die ersten acht, die übrigen unter „Aufgaben“.

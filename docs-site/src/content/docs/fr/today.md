@@ -16,7 +16,7 @@ Le panneau s’adapte aussi au téléphone. Tu peux l’utiliser dans l’applic
 - L’étape en cours affiche sa partie, une barre de progression et un compteur comme « Étape 3 sur 8 ». Une petite animation fête la fin de la tâche.
 - **Terminé**. Marque l’étape comme terminée et arrête ses rappels.
 - **Je m’y mets**. Indique à Boopli que tu fais l’étape. Les rappels se mettent en pause. Une fois le délai prévu écoulé, Boopli peut te demander où tu en es sur ton téléphone. Sélectionne **Reprendre les rappels** pour annuler la pause. Voir [Tâches et planning](/Boopli/fr/chores/).
-- **Reporter** sur ton téléphone ou le Wallboard décale le prochain rappel. L’étape reste à faire et Aujourd’hui t’indique quand le report prend fin.
+- **Reporter** dans Aujourd’hui, sur ton téléphone ou le Wallboard décale le prochain rappel. L’étape reste à faire et Aujourd’hui t’indique quand le report prend fin.
 - **À faire maintenant**. Les autres étapes que tu peux faire tout de suite, regroupées par tâche.
 - **Encore à faire aujourd’hui**. Les étapes qui attendent dans les tâches en cours et les tâches prévues plus tard aujourd’hui, avec leur heure. Sélectionne **Commencer maintenant** pour lancer une étape qui attend une heure précise ou un événement.
 - **À venir**. Les tâches prévues les jours suivants. Les huit premières s’affichent ici et les autres sont dans l’onglet Tâches.
