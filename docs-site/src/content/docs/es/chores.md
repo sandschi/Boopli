@@ -19,7 +19,7 @@ Si llega la hora de una tarea y la anterior sigue pendiente, Boopli salta ese tu
 
 ### Partes de una tarea y cómo dejarlas para más tarde
 
-Los pasos se agrupan en partes («Escritorio», «Sofá», «Suelo»). Una tarea para un espacio entero tiene una parte completa por cada cosa que aparece en sus notas. En Hoy, **Dejar «<grupo>» para más tarde** (por ejemplo **Dejar «Escritorio» para más tarde**) convierte los pasos pendientes de una parte en una tarea pequeña («Limpiar la sala de estar: Escritorio»). Elige **La empezaré por mi cuenta**, **Mañana, 9:00** o **Elegir hora**. No se pierde nada y nada queda atrasado. La parte espera en **Para más tarde**, con **Empezar ahora**, **Cambiar hora** y **Eliminar**. Se inicia sola a su hora, con los recordatorios y XP de siempre. Puedes dejar para más tarde una parte entera, salvo la última de una tarea. Para un paso suelto, usa Posponer.
+Los pasos se agrupan en partes («Escritorio», «Sofá», «Suelo»). Una tarea para un espacio entero tiene una parte completa por cada cosa que aparece en sus notas. En Hoy, **Dejar «<grupo>» para más tarde** (por ejemplo **Dejar «Escritorio» para más tarde**) convierte los pasos pendientes de una parte en una tarea pequeña («Limpiar la sala de estar: Escritorio»). Elige **La empezaré por mi cuenta**, **Mañana, 9:00** o **Elegir hora**. No se pierde nada y nada queda atrasado. La parte espera en **Para más tarde**, con **Empezar ahora**, **Cambiar hora** y **Eliminar**. Se inicia sola a su hora, con los recordatorios y Blubs de siempre. Puedes dejar para más tarde una parte entera, salvo la última de una tarea. Para un paso suelto, usa Posponer.
 
 ### Esperar a que pase esto
 

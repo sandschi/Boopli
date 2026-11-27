@@ -51,8 +51,21 @@ from .nudger import BoopliNudger
 
 _LOGGER = logging.getLogger(__name__)
 
-STORAGE_VERSION = 1
+STORAGE_VERSION = 2  # 2: Blubs and the shop; the pet's progress of version 1 starts over (see _BoopliStore)
+SECRET_STORAGE_VERSION = 1
 STORAGE_KEY = DOMAIN
+
+
+class _BoopliStore(Store[dict[str, Any]]):
+    """The data store. Raising its version once resets the pet's XP, level and progress (Blubs came in)."""
+
+    async def _async_migrate_func(
+        self, old_major_version: int, old_minor_version: int, old_data: dict[str, Any]
+    ) -> dict[str, Any]:
+        if old_major_version < 2:
+            old_data = {**old_data, "progress": engine.reset_progress_data(old_data.get("progress") or {})}
+        return old_data
+
 # The Claude routine's token and webhook id live under their own key, apart from the settings,
 # so they are never part of the panel's data, a backup, an export or a "what changed" summary.
 SECRET_STORAGE_KEY = f"{DOMAIN}_claude"
@@ -98,7 +111,7 @@ class BoopliManager:
 
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
-        self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, STORAGE_KEY)
+        self._store: Store[dict[str, Any]] = _BoopliStore(hass, STORAGE_VERSION, STORAGE_KEY)
         self.chores: dict[str, engine.Chore] = {}
         self.runs: dict[str, engine.Run] = {}  # active runs only
         self.history: list[engine.HistoryEntry] = []
@@ -108,6 +121,7 @@ class BoopliManager:
         self.setup = engine.Setup()
         self.home = engine.Home()
         self.access_level = ACCESS_DEFAULT  # what people who are not administrators may do (see const.py)
+        self.version = ""  # the integration's version (manifest.json), shown in the panel's header
         self.indicator_on: list[str] = []  # lights Boopli switched on as indicators
         self.light_last_on: dict[str, dict[str, Any]] = {}  # light -> brightness/color when it was last on (not by us)
         self._unsub_lights: CALLBACK_TYPE | None = None
@@ -125,7 +139,7 @@ class BoopliManager:
         self._unsub_alarm_retry: CALLBACK_TYPE | None = None
         # Ask Claude (the optional routine): secret storage, fire counter, waiting requests
         self._secret_store: Store[dict[str, Any]] = Store(
-            hass, STORAGE_VERSION, SECRET_STORAGE_KEY, private=True
+            hass, SECRET_STORAGE_VERSION, SECRET_STORAGE_KEY, private=True
         )
         self._claude_secrets_ok = True  # False when the secret file could not be read
         self._claude_token = ""
@@ -168,6 +182,8 @@ class BoopliManager:
         self.away = engine.Away.from_dict(data.get("away"))
         if not self.progress.started_at:
             self.progress.started_at = engine.fmt_ts(dt_util.utcnow())  # the pet appears
+        if engine.hand_out_start_gift(self.progress):  # the first start with Blubs: the start Blubs
+            self._save()
         self.indicator_on = [str(x) for x in data.get("indicator_on", [])]
         self.light_last_on = {
             str(k): dict(v) for k, v in (data.get("light_last_on") or {}).items() if isinstance(v, dict)
@@ -265,6 +281,24 @@ class BoopliManager:
         away = engine.away_in_effect(self.away, now)
         # While away the days do not count: the mood stays as it was when you left.
         progress = engine.shifted_progress(self.progress, self.away.began_at, now) if away else self.progress
+        kind = self.settings.pet_kind
+        items = [
+            {
+                "id": item.id,
+                "kind": item.kind,
+                "price": item.price,
+                "min_level": item.min_level,
+                "achievement": item.achievement,
+                "attach_to": item.attach_to,
+                "requires": item.requires,
+                "food": item.food,
+                "xp": engine.FOOD[item.food][1] if item.food else 0,
+                "owned": item.kind != engine.KIND_FOOD and item.id in self.progress.owned,
+                "locked": engine.item_locked(self.progress, item, level, kind),
+            }
+            for item in engine.SHOP_ITEMS
+            if not item.species or item.species == kind
+        ]
         return {
             "away": away,
             "name": self.settings.pet_name,
@@ -274,6 +308,19 @@ class BoopliManager:
             "xp_in_level": into,
             "xp_for_level": needed,
             "last_activity": self.progress.last_activity,
+            "blubs": self.progress.blubs,
+            "food": dict(self.progress.food),
+            "meals_today": engine.meals_today(self.progress, now, self.tz),
+            "meals_max": engine.meals_allowed(self.progress),
+            "owned": list(self.progress.owned),
+            "placed": dict(self.progress.placed),
+            "items": items,
+            # something new the household can buy right now (food does not count: it is always there)
+            "can_buy": any(
+                not i["owned"] and not i["locked"] and i["kind"] != engine.KIND_FOOD and i["price"] <= self.progress.blubs
+                for i in items
+            ),
+            "quest_popup": level >= engine.LEVEL_QUEST and not self.progress.quest_seen,
         }
 
     # --- access levels ---------------------------------------------------
@@ -312,6 +359,7 @@ class BoopliManager:
         return {
             "now": engine.fmt_ts(now),
             "time_zone": str(self.tz),
+            "version": self.version,
             "ai_timeout": AI_TIMEOUT,  # so the panel can show how long it will wait
             "claude": self.claude_status(),  # never the token itself, only whether one is set
             "is_home": self.is_home(),
@@ -616,24 +664,22 @@ class BoopliManager:
         return events
 
     def found_egg(self) -> int:
-        """The Easter egg was found. The first time it gives a small gift of XP; returns the XP."""
+        """The Easter egg was found. The first time it gives a small gift of Blubs; returns the Blubs."""
         now = dt_util.utcnow()
         award = engine.award_egg(self.progress, now, self.tz)
-        if award.xp <= 0:
+        if award.blubs <= 0:
             return 0
         self._announce(
             [
                 engine.Event(
-                    engine.EVENT_XP_GAINED,
+                    engine.EVENT_BLUBS_EARNED,
                     {
                         "chore_id": "",
                         "chore_name": "Easter egg",
                         "run_id": "",
                         "step_title": None,
-                        "xp": award.xp,
-                        "total_xp": award.total_xp,
-                        "level": award.level,
-                        "level_up": award.level_up,
+                        "blubs": award.blubs,
+                        "total_blubs": award.total_blubs,
                         "woke_up": False,
                         "mood": award.mood,
                         "time": engine.fmt_ts(now),
@@ -643,12 +689,68 @@ class BoopliManager:
         )
         self._save()
         self._notify()
-        return award.xp
+        return award.blubs
+
+    # --- the shop, the inventory and feeding -------------------------------
+
+    def _level(self) -> int:
+        return engine.level_for(self.progress.total_xp)[0]
+
+    def _shop_change(self) -> None:
+        self._save()
+        self._notify()
+
+    def buy(self, item_id: str) -> None:
+        """Buy an item with Blubs (food goes into the inventory)."""
+        try:
+            engine.buy_item(self.progress, item_id, self._level(), self.settings.pet_kind)
+        except engine.ShopError as err:
+            raise BoopliError(err) from err
+        self._shop_change()
+
+    def place(self, place: str, item_id: str) -> None:
+        """Put an owned colour or pattern on the wall or the floor ("" empties the place)."""
+        try:
+            engine.place_item(self.progress, place, item_id)
+        except engine.ShopError as err:
+            raise BoopliError(err) from err
+        self._shop_change()
+
+    def feed(self, size: str) -> None:
+        """Feed the pet one meal from the inventory: the food is used up and the XP is gained."""
+        now = dt_util.utcnow()
+        try:
+            meal = engine.feed_pet(self.progress, size, now, self.tz)
+        except engine.ShopError as err:
+            raise BoopliError(err) from err
+        self._announce(
+            [
+                engine.Event(
+                    engine.EVENT_XP_GAINED,
+                    {
+                        "food": size,
+                        "xp": meal.xp,
+                        "total_xp": meal.total_xp,
+                        "level": meal.level,
+                        "level_up": meal.level_up,
+                        "meals_today": meal.meals_today,
+                        "time": engine.fmt_ts(now),
+                    },
+                )
+            ]
+        )
+        self._shop_change()
+
+    def quest_seen(self) -> None:
+        """The one-time pop-up at the end of the starter quest was shown."""
+        if not self.progress.quest_seen:
+            self.progress.quest_seen = True
+            self._shop_change()
 
     def _award(
         self, run: engine.Run, step: engine.StepRun | None, now: datetime
     ) -> list[engine.Event]:
-        """Give XP for a step that was just finished (by hand or by itself)."""
+        """Give Blubs for a step that was just finished (by hand or by itself)."""
         award = engine.award_step(
             self.progress,
             run.chore_id,
@@ -659,20 +761,18 @@ class BoopliManager:
             run.status == engine.RUN_DONE,
             step.size if step else engine.SIZE_SMALL,
         )
-        if award.xp <= 0 and not award.woke_up:
+        if award.blubs <= 0 and not award.woke_up:
             return []
         return [
             engine.Event(
-                engine.EVENT_XP_GAINED,
+                engine.EVENT_BLUBS_EARNED,
                 {
                     "chore_id": run.chore_id,
                     "chore_name": run.chore_name,
                     "run_id": run.id,
                     "step_title": step.title if step else None,
-                    "xp": award.xp,
-                    "total_xp": award.total_xp,
-                    "level": award.level,
-                    "level_up": award.level_up,
+                    "blubs": award.blubs,
+                    "total_blubs": award.total_blubs,
                     "woke_up": award.woke_up,
                     "mood": award.mood,
                     "time": engine.fmt_ts(now),
@@ -1500,7 +1600,7 @@ class BoopliManager:
         same format, so the Store still reads it back.
         """
         envelope = {
-            "version": STORAGE_VERSION,
+            "version": SECRET_STORAGE_VERSION,
             "minor_version": 1,
             "key": SECRET_STORAGE_KEY,
             "data": {
@@ -1802,6 +1902,7 @@ class BoopliManager:
             self.progress = backup.progress
             if not self.progress.started_at:
                 self.progress.started_at = engine.fmt_ts(now)
+            engine.hand_out_start_gift(self.progress)  # a backup from before Blubs starts over, with the start Blubs
             self.history = backup.history or []
         self._watch_presence()
         self._watch_lights()

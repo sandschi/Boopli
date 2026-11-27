@@ -19,7 +19,7 @@ Is een taak opnieuw aan de beurt terwijl die van de vorige keer nog openstaat? D
 
 ### Delen van een taak opzijzetten
 
-Stappen staan bij elkaar in delen, zoals “Bureau”, “Bank” en “Vloer”. Bij een taak voor een hele kamer krijgt elk onderdeel uit je kamernotities een eigen deel. Kies op Vandaag **<groep> later doen** (bijvoorbeeld **Bureau later doen**) om de open stappen van een deel als aparte kleine taak opzij te zetten, bijvoorbeeld “Woonkamer schoonmaken: bureau”. Kies **Ik start de taak zelf**, **Morgen om 9:00** of **Kies een tijd**. Je raakt geen stappen kwijt en niets raakt achterstallig. Het deel wacht onder **Voor later** met de knoppen **Nu starten**, **Tijd aanpassen** en **Wissen**. Op de gekozen tijd start het vanzelf, met de gebruikelijke seintjes en XP. Je kunt een heel deel opzijzetten. Voor een losse stap kies je Uitstellen. Het laatste deel van een taak kun je niet opzijzetten.
+Stappen staan bij elkaar in delen, zoals “Bureau”, “Bank” en “Vloer”. Bij een taak voor een hele kamer krijgt elk onderdeel uit je kamernotities een eigen deel. Kies op Vandaag **<groep> later doen** (bijvoorbeeld **Bureau later doen**) om de open stappen van een deel als aparte kleine taak opzij te zetten, bijvoorbeeld “Woonkamer schoonmaken: bureau”. Kies **Ik start de taak zelf**, **Morgen om 9:00** of **Kies een tijd**. Je raakt geen stappen kwijt en niets raakt achterstallig. Het deel wacht onder **Voor later** met de knoppen **Nu starten**, **Tijd aanpassen** en **Wissen**. Op de gekozen tijd start het vanzelf, met de gebruikelijke seintjes en Blubs. Je kunt een heel deel opzijzetten. Voor een losse stap kies je Uitstellen. Het laatste deel van een taak kun je niet opzijzetten.
 
 ### Wachten tot er iets gebeurt
 

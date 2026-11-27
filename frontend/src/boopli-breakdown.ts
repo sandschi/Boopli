@@ -20,12 +20,12 @@ export interface BreakdownResult {
   questions: ChoreQuestion[]; // asked every time the chore starts; steps point to them with only_if
 }
 
-const SIZES = (): { value: StepSize; letter: string; label: string; xp: number }[] => [
-  { value: "small", letter: t("breakdown.letter_small"), label: t("breakdown.small_quick_and_easy"), xp: 10 },
-  { value: "medium", letter: t("breakdown.letter_medium"), label: t("breakdown.medium_takes_some_effort"), xp: 15 },
-  { value: "big", letter: t("breakdown.letter_big"), label: t("breakdown.big_hard_or_long"), xp: 20 },
+const SIZES = (): { value: StepSize; letter: string; label: string; blubs: number }[] => [
+  { value: "small", letter: t("breakdown.letter_small"), label: t("breakdown.small_quick_and_easy"), blubs: 10 },
+  { value: "medium", letter: t("breakdown.letter_medium"), label: t("breakdown.medium_takes_some_effort"), blubs: 15 },
+  { value: "big", letter: t("breakdown.letter_big"), label: t("breakdown.big_hard_or_long"), blubs: 20 },
 ];
-const XP = { small: 10, medium: 15, big: 20 } as const;
+const BLUBS = { small: 10, medium: 15, big: 20 } as const;
 const FINISH_BONUS = 20;
 const MAX_STEPS = 50;
 
@@ -722,8 +722,8 @@ export class BoopliBreakdown extends LitElement {
     ></boopli-wait>`;
   }
 
-  private _xp(): number {
-    return this._steps.reduce((sum, s) => sum + XP[s.size], 0) + FINISH_BONUS;
+  private _blubs(): number {
+    return this._steps.reduce((sum, s) => sum + BLUBS[s.size], 0) + FINISH_BONUS;
   }
 
   private _renderStep(s: AiStep, i: number) {
@@ -744,7 +744,7 @@ export class BoopliBreakdown extends LitElement {
             (z) => html`<button
               type="button"
               class="chip size ${s.size === z.value ? "on" : ""}"
-              title=${t("breakdown.xp", { label: z.label, xp: z.xp })}
+              title=${t("breakdown.blubs", { label: z.label, blubs: z.blubs })}
               aria-pressed=${s.size === z.value}
               @click=${() => this._patchStep(i, { size: z.value })}
             >
@@ -798,7 +798,7 @@ export class BoopliBreakdown extends LitElement {
     return html`
       <p>
         <b>${t("common.steps_count", { count: steps.length })}</b>
-        <span class="muted"> ${t("breakdown.worth_about_xp_when_all_are", { xp: this._xp() })}</span>
+        <span class="muted"> ${t("breakdown.worth_about_blubs_when_all_are", { blubs: this._blubs() })}</span>
       </p>
       ${this._renderChecks()}
       <div class="steps">${steps.map((s, i) => this._renderStep(s, i))}</div>

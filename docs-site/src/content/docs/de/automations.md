@@ -35,7 +35,8 @@ Diese Ereignisse laufen über den Ereignisbus von Home Assistant. Sie können ei
 | `boopli_step_done` | Ein Schritt ist erledigt. In `by` steht `manual` oder `auto`. In `reason` steht, was passiert ist. |
 | `boopli_chore_done` | Alle Schritte einer Aufgabe sind erledigt. |
 | `boopli_nudge_sent` | Boopli hat dich angestupst. |
-| `boopli_xp_gained` | Du hast XP bekommen. |
+| `boopli_blubs_earned` | Du hast einen Schritt erledigt und dafür Blubs bekommen. |
+| `boopli_xp_gained` | Du hast dein Haustier gefüttert und dafür XP bekommen. |
 | `boopli_away_started` | Der Abwesenheitsmodus wurde gestartet. |
 | `boopli_away_ended` | Der Abwesenheitsmodus wurde beendet. |
 

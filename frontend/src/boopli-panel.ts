@@ -20,6 +20,9 @@ import { icon } from "./icon";
 import type { ChoreDraft, Hass, Snapshot } from "./types";
 import { setLanguage, t } from "./i18n";
 
+// The slime logo in the header: a file next to the bundle (frontend/public), served like the sounds.
+const LOGO = new URL("./slime.png", import.meta.url).href;
+
 type Tab = "today" | "chores" | "home" | "settings";
 
 const TAB_LABELS = (): Record<Tab, string> => ({
@@ -451,7 +454,9 @@ export class BoopliPanel extends LitElement {
         ${this.narrow
           ? html`<button class="menu" aria-label=${t("panel.open_sidebar")} @click=${this._toggleSidebar}>${icon("menu")}</button>`
           : nothing}
+        <img class="logo" src=${LOGO} alt="" width="32" height="32" />
         <h1>${t("wizard.boopli")}</h1>
+        ${this._snapshot?.version ? html`<span class="ver">${t("panel.version", { version: this._snapshot.version })}</span>` : nothing}
         <nav>
           ${this._tabs().map(
             (name) => html`<button
@@ -534,11 +539,24 @@ export class BoopliPanel extends LitElement {
         background: var(--app-header-background-color, var(--boopli-accent, var(--primary-color)));
         color: var(--app-header-text-color, #fff);
       }
+      header .logo {
+        flex: none;
+        width: 32px;
+        height: 32px;
+        margin-right: -4px;
+      }
       header h1 {
         margin: 0;
         font-size: 22px;
         font-weight: 500;
         margin-right: 8px;
+      }
+      header .ver {
+        margin-left: -4px;
+        margin-right: 8px;
+        font-size: 15px;
+        opacity: 0.7;
+        white-space: nowrap;
       }
       header .grow {
         flex: 1;
@@ -643,6 +661,9 @@ export class BoopliPanel extends LitElement {
         header {
           padding: 0 8px;
           gap: 6px;
+        }
+        header .ver {
+          display: none;
         }
         header h1 {
           font-size: 20px;

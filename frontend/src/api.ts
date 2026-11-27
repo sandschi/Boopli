@@ -424,9 +424,29 @@ export function scenePhotos(
   return hass.callWS({ type: "boopli/scene_photos", task, photos, via, ...(rooms ? { rooms } : {}) });
 }
 
-/** The Easter egg played. The first time it gives a small gift of XP. */
-export function eggFound(hass: Hass): Promise<{ xp: number }> {
+/** The Easter egg played. The first time it gives a small gift of Blubs. */
+export function eggFound(hass: Hass): Promise<{ blubs: number }> {
   return hass.callWS({ type: "boopli/egg_found" });
+}
+
+/** Buy an item in the shop with Blubs (food goes into the inventory). */
+export function shopBuy(hass: Hass, item: string): Promise<void> {
+  return hass.callWS({ type: "boopli/shop_buy", item });
+}
+
+/** Put an owned colour or pattern on the wall or the floor of the room ("" empties the place). */
+export function shopPlace(hass: Hass, place: "wall" | "floor", item: string): Promise<void> {
+  return hass.callWS({ type: "boopli/shop_place", place, item });
+}
+
+/** Feed the pet one meal from the inventory. */
+export function feedPet(hass: Hass, size: string): Promise<void> {
+  return hass.callWS({ type: "boopli/feed", size });
+}
+
+/** The pop-up at the end of the starter quest was shown (once for the whole household). */
+export function questSeen(hass: Hass): Promise<void> {
+  return hass.callWS({ type: "boopli/quest_seen" });
 }
 
 /** Store the Claude routine's token (empty removes it). It is never sent back. */

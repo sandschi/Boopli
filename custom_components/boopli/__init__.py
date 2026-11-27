@@ -207,6 +207,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hass.data[DATA_STATIC_REGISTERED] = True
 
         version = await hass.async_add_executor_job(_read_version)
+        manager.version = str(version)  # the panel shows it in its header
         await panel_custom.async_register_panel(
             hass,
             frontend_url_path=PANEL_URL_PATH,

@@ -35,7 +35,8 @@ Boopli stuurt deze gebeurtenissen via de gebeurtenisbus van Home Assistant. Je k
 | `boopli_step_done` | Een stap is klaar. `by` geeft `manual` of `auto` aan. `reason` zegt wat er is gebeurd. |
 | `boopli_chore_done` | Alle stappen van een taak zijn klaar. |
 | `boopli_nudge_sent` | Boopli heeft je een seintje gegeven. |
-| `boopli_xp_gained` | Je hebt XP verdiend. |
+| `boopli_blubs_earned` | Je hebt een stap afgerond en daarmee Blubs verdiend. |
+| `boopli_xp_gained` | Je huisdier heeft eten gekregen en je hebt XP verdiend. |
 | `boopli_away_started` | De afwezigheidsmodus is gestart. |
 | `boopli_away_ended` | De afwezigheidsmodus is afgelopen. |
 

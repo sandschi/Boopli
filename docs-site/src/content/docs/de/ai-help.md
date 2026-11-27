@@ -21,9 +21,9 @@ Bei einer klaren Aufgabe wie „Müll rausbringen“ kommen direkt die Schritte.
 
 Jeder Schritt ist eine konkrete Handlung. Der erste Schritt macht den Einstieg so leicht wie möglich. Die Schritte sind nach Teilen der Aufgabe geordnet, etwa Tisch, Stühle und Boden. Die KI kann auch eine Wartezeit vorschlagen. Eine Aufgabe kann bis zu 50 Schritte haben. Boopli legt erst etwas an, wenn du die Schritte geprüft, bei Bedarf angepasst und übernommen hast.
 
-### Schrittgrößen und XP
+### Schrittgrößen und Blubs
 
-Jeder Schritt ist klein, mittel oder groß (S, M, L) und bringt 10, 15 oder 20 XP. Schritte, die du selbst schreibst, sind klein. Unter „Heute“ siehst du den Teil der Aufgabe, „Schritt 3 von 8“ und einen Fortschrittsbalken. Wenn du eine Aufgabe erledigst, gibt es eine kleine Feier.
+Jeder Schritt ist klein, mittel oder groß (S, M, L) und bringt 10, 15 oder 20 Blubs. Schritte, die du selbst schreibst, sind klein. Unter „Heute“ siehst du den Teil der Aufgabe, „Schritt 3 von 8“ und einen Fortschrittsbalken. Wenn du eine Aufgabe erledigst, gibt es eine kleine Feier.
 
 ### Fürs nächste Mal gespeichert
 

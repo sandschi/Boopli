@@ -393,7 +393,7 @@ export class BoopliChoreEditor extends LitElement {
               (z) => html`<button
                 type="button"
                 class="chip size ${(step.size ?? "small") === z ? "on" : ""}"
-                title="${z === "small" ? t("chore_editor.small_10_xp") : z === "medium" ? t("chore_editor.medium_15_xp") : t("chore_editor.big_20_xp")}"
+                title="${z === "small" ? t("chore_editor.small_10_blubs") : z === "medium" ? t("chore_editor.medium_15_blubs") : t("chore_editor.big_20_blubs")}"
                 aria-pressed=${(step.size ?? "small") === z}
                 @click=${() => this._updateStep(index, { size: z })}
               >

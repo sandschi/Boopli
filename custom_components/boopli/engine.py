@@ -206,14 +206,23 @@ SETUP_DONE = "done"
 SETUP_STATUSES = (SETUP_NEW, SETUP_IN_PROGRESS, SETUP_SKIPPED, SETUP_DONE)
 SETUP_STEP_MAX = 40
 
-# XP and the pet. Rewards only: nothing here ever takes XP or a level away.
-EVENT_XP_GAINED = "xp_gained"
-XP_STEP = 10  # for every step finished
-XP_CHORE = 20  # extra, for the step that finishes the chore
-XP_QUICK = 5  # extra, for a step finished within QUICK_MINUTES of its turn
+# Blubs, XP and the pet. Rewards only: nothing here ever takes Blubs, XP or a level away.
+# Finishing steps earns Blubs; feeding the pet (food bought with Blubs) earns XP.
+EVENT_XP_GAINED = "xp_gained"  # the pet was fed
+EVENT_BLUBS_EARNED = "blubs_earned"  # a step was finished
+XP_STEP = 10  # Blubs for every step finished (small; see SIZE_XP for the others)
+XP_CHORE = 20  # extra Blubs, for the step that finishes the chore
+XP_QUICK = 5  # extra Blubs, for a step finished within QUICK_MINUTES of its turn
 QUICK_MINUTES = 10
-XP_RUNS_PER_DAY = 3  # runs of one chore that earn XP per day
-PROGRESS_DAYS_KEPT = 7  # how long the per-day XP bookkeeping is kept
+XP_RUNS_PER_DAY = 3  # runs of one chore that earn Blubs per day
+PROGRESS_DAYS_KEPT = 7  # how long the per-day bookkeeping is kept
+BLUBS_START = 30  # every household gets these once
+MEALS_PER_DAY = 3  # after this many meals the pet is full (upgrades raise it)
+ECONOMY_VERSION = 1  # progress saved before Blubs existed has no marker and starts over
+LEVEL_QUEST = 10  # the starter quest ends here (one calm pop-up)
+LEVEL_STEP_START = 110  # XP from level 10 to 11; each step after is LEVEL_STEP_GROWTH dearer...
+LEVEL_STEP_GROWTH = 1.06
+LEVEL_STEP_FLAT = 200  # ...until level 20, from where every level costs this much (no maximum level)
 PET_NAME_DEFAULT = "Boopli"
 PET_NAME_MAX = 30
 PET_KINDS = ("bear", "cat", "dog", "fox", "slime")  # the pets to choose from
@@ -690,45 +699,100 @@ def validate_setup(setup: Setup) -> str | None:
 
 @dataclass
 class Progress:
-    """The pet's progress. XP only ever goes up."""
+    """The household's pet: Blubs (the money), XP and level, and what the household owns.
+
+    Blubs, XP and what is owned only ever go up, except that Blubs are spent in the shop.
+    """
 
     total_xp: int = 0
+    blubs: int = 0
     started_at: str = ""  # when the pet first appeared
     last_activity: str | None = None  # the last time a step was finished
-    # local date -> chore id -> ids of the runs that earned XP that day
+    # local date -> chore id -> ids of the runs that earned Blubs that day
     credited: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     egg_found: bool = False  # the Easter egg gave its one-time gift
+    food: dict[str, int] = field(default_factory=dict)  # food size -> how many are in the inventory
+    fed: dict[str, int] = field(default_factory=dict)  # local date -> meals that day
+    owned: list[str] = field(default_factory=list)  # ids of the shop items bought
+    placed: dict[str, str] = field(default_factory=dict)  # room place ("wall", "floor") -> item id
+    achievements: list[str] = field(default_factory=list)  # ids of the achievements reached (the engine comes later)
+    gift_given: bool = False  # the BLUBS_START were handed out
+    quest_seen: bool = False  # the one-time pop-up at LEVEL_QUEST was shown
+    economy: int = ECONOMY_VERSION
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> Progress:
         d = d or {}
+        if d and "economy" not in d:
+            d = reset_progress_data(d)
         return cls(
             egg_found=bool(d.get("egg_found", False)),
             total_xp=max(0, int(d.get("total_xp", 0) or 0)),
+            blubs=max(0, int(d.get("blubs", 0) or 0)),
             started_at=str(d.get("started_at", "")),
             last_activity=d.get("last_activity"),
             credited={
                 str(day): {str(c): [str(r) for r in runs] for c, runs in chores.items()}
                 for day, chores in (d.get("credited") or {}).items()
             },
+            food={str(k): max(0, int(v or 0)) for k, v in (d.get("food") or {}).items() if k in FOOD},
+            fed={str(k): max(0, int(v or 0)) for k, v in (d.get("fed") or {}).items()},
+            owned=[str(x) for x in (d.get("owned") or [])],
+            placed={str(k): str(v) for k, v in (d.get("placed") or {}).items() if k in ROOM_PLACES and v},
+            achievements=[str(x) for x in (d.get("achievements") or [])],
+            gift_given=bool(d.get("gift_given", False)),
+            quest_seen=bool(d.get("quest_seen", False)),
         )
+
+
+def reset_progress_data(d: dict[str, Any]) -> dict[str, Any]:
+    """Progress saved before Blubs existed, started over: XP, level and everything else are gone.
+
+    Only when the pet first appeared and when it was last active are kept, so its mood stays. Used once
+    for the saved data (the store version) and for a backup file made before Blubs.
+    """
+    return {
+        "started_at": str(d.get("started_at", "")),
+        "last_activity": d.get("last_activity"),
+        "economy": ECONOMY_VERSION,
+    }
 
 
 @dataclass
 class Award:
     """What finishing a step gave."""
 
-    xp: int
-    total_xp: int
-    level: int
-    level_up: bool
+    blubs: int
+    total_blubs: int
     woke_up: bool  # the pet was sad or hibernating until now
     mood: str
 
 
+@dataclass
+class Feeding:
+    """What a meal gave."""
+
+    xp: int
+    total_xp: int
+    level: int
+    level_up: bool
+    meals_today: int
+
+
+def level_step(level: int) -> int:
+    """XP from `level` to the next one, for level 10 and up: 6 % dearer each time, then flat from level 20."""
+    if level >= 20:
+        return LEVEL_STEP_FLAT
+    return round(LEVEL_STEP_START * LEVEL_STEP_GROWTH ** (level - LEVEL_QUEST))
+
+
 def level_threshold(level: int) -> int:
-    """Total XP needed to reach `level` (level 1 starts at 0, then 100, 250, 450, ...)."""
-    return 25 * (level - 1) * (level + 2) if level > 1 else 0
+    """Total XP needed to reach `level`: level 2 at 20, level 10 at 540, then slower, no maximum level."""
+    if level <= 1:
+        return 0
+    if level <= LEVEL_QUEST:
+        return 5 * (level - 1) * (level + 2)
+    return level_threshold(LEVEL_QUEST) + sum(level_step(n) for n in range(LEVEL_QUEST, level))
 
 
 def level_for(total_xp: int) -> tuple[int, int, int]:
@@ -773,63 +837,218 @@ def award_step(
     chore_done: bool,
     size: str = SIZE_SMALL,
 ) -> Award:
-    """Give XP for a finished step and note the activity.
+    """Give Blubs for a finished step and note the activity.
 
-    A step is worth 10, 15 or 20 XP for small, medium or big. Per chore and day
-    only the first XP_RUNS_PER_DAY runs earn XP, so running a chore over and
+    A step is worth 10, 15 or 20 Blubs for small, medium or big. Per chore and day
+    only the first XP_RUNS_PER_DAY runs earn Blubs, so running a chore over and
     over cannot be farmed. Finishing still wakes the pet up.
     """
     mood_before = mood_for(progress, now, tz)
-    level_before = level_for(progress.total_xp)[0]
 
     today = now.astimezone(tz).date()
     runs = progress.credited.setdefault(today.isoformat(), {}).setdefault(chore_id, [])
-    xp = 0
+    blubs = 0
     if run_id in runs or len(runs) < XP_RUNS_PER_DAY:
         if run_id not in runs:
             runs.append(run_id)
-        xp = SIZE_XP.get(size, XP_STEP) + (XP_CHORE if chore_done else 0)
+        blubs = SIZE_XP.get(size, XP_STEP) + (XP_CHORE if chore_done else 0)
         if active_at and now - parse_ts(active_at) <= timedelta(minutes=QUICK_MINUTES):
-            xp += XP_QUICK
+            blubs += XP_QUICK
 
-    progress.total_xp += xp
+    progress.blubs += blubs
     progress.last_activity = fmt_ts(now)
     cutoff = (today - timedelta(days=PROGRESS_DAYS_KEPT)).isoformat()
     progress.credited = {d: c for d, c in progress.credited.items() if d >= cutoff}
+    progress.fed = {d: n for d, n in progress.fed.items() if d >= cutoff}
 
-    level = level_for(progress.total_xp)[0]
     return Award(
-        xp=xp,
-        total_xp=progress.total_xp,
-        level=level,
-        level_up=level > level_before,
+        blubs=blubs,
+        total_blubs=progress.blubs,
         woke_up=mood_before in (MOOD_SAD, MOOD_HIBERNATING),
         mood=mood_for(progress, now, tz),
     )
 
 
-EGG_XP = 10  # the one-time gift for finding the Easter egg
+EGG_BLUBS = 10  # the one-time gift for finding the Easter egg
 
 
 def award_egg(progress: Progress, now: datetime, tz: tzinfo) -> Award:
-    """Give the Easter egg's gift: EGG_XP the first time it is found, nothing afterwards.
+    """Give the Easter egg's gift: EGG_BLUBS the first time it is found, nothing afterwards.
 
     It is not chore work, so it does not wake the pet and does not count as activity.
     """
-    level_before = level_for(progress.total_xp)[0]
-    xp = 0
+    blubs = 0
     if not progress.egg_found:
         progress.egg_found = True
-        xp = EGG_XP
-        progress.total_xp += xp
-    level = level_for(progress.total_xp)[0]
+        blubs = EGG_BLUBS
+        progress.blubs += blubs
     return Award(
+        blubs=blubs,
+        total_blubs=progress.blubs,
+        woke_up=False,
+        mood=mood_for(progress, now, tz),
+    )
+
+
+def hand_out_start_gift(progress: Progress) -> bool:
+    """Give the household its BLUBS_START once. True when it was given just now."""
+    if progress.gift_given:
+        return False
+    progress.gift_given = True
+    progress.blubs += BLUBS_START
+    return True
+
+
+# --- the shop, the inventory and feeding --------------------------------------------------------
+
+KIND_EXTRA = "extra"  # stands in the room once bought (bowl, bed)
+KIND_COLOR = "color"  # a colour for the wall or the floor
+KIND_PATTERN = "pattern"  # a pattern for the wall or the floor
+KIND_FOOD = "food"  # bought again and again, kept as a stock, fed to the pet
+KIND_UPGRADE = "upgrade"  # works as soon as it is bought (see EFFECT_MEALS)
+ITEM_KINDS = (KIND_EXTRA, KIND_COLOR, KIND_PATTERN, KIND_FOOD, KIND_UPGRADE)
+ROOM_PLACES = ("wall", "floor")  # where a colour or a pattern can be put
+EFFECT_MEALS = "meals"  # one more meal per day before the pet is full
+
+# Food sizes: what it costs in Blubs and what it gives in XP.
+FOOD_SMALL = "small"
+FOOD_MEDIUM = "medium"
+FOOD_BIG = "big"
+FOOD: dict[str, tuple[int, int]] = {FOOD_SMALL: (10, 5), FOOD_MEDIUM: (25, 15), FOOD_BIG: (50, 30)}
+
+
+@dataclass(frozen=True)
+class ShopItem:
+    """One thing in the shop. A new item is one more row in SHOP_ITEMS (and its name and picture in the panel).
+
+    The achievement hook is there from the start: an item with an achievement stays locked until the
+    household has reached it (the achievement engine itself comes later).
+    """
+
+    id: str
+    kind: str
+    price: int
+    min_level: int = 1
+    achievement: str = ""  # an achievement that unlocks it ("" = none needed)
+    effect: str = ""  # what it does once bought, for upgrades (EFFECT_MEALS)
+    effect_value: int = 0
+    attach_to: str = ""  # an item this one sits on (a gem on the bowl); it can only be bought and shown with it
+    requires: str = ""  # an item to buy first (the 5th meal needs the 4th)
+    species: str = ""  # only for this pet kind ("" = every pet)
+    food: str = ""  # for food: its size
+
+
+SHOP_ITEMS: tuple[ShopItem, ...] = (
+    ShopItem("water_bowl", KIND_EXTRA, 30, min_level=1),
+    ShopItem("food_bowl", KIND_EXTRA, 40, min_level=2),
+    ShopItem("bed", KIND_EXTRA, 80, min_level=3),
+    ShopItem("color_sky", KIND_COLOR, 20),
+    ShopItem("pattern_dots", KIND_PATTERN, 20),
+    ShopItem("meal_4", KIND_UPGRADE, 300, min_level=5, effect=EFFECT_MEALS, effect_value=1),
+    ShopItem("meal_5", KIND_UPGRADE, 800, min_level=10, effect=EFFECT_MEALS, effect_value=1, requires="meal_4"),
+    ShopItem("food_small", KIND_FOOD, FOOD[FOOD_SMALL][0], food=FOOD_SMALL),
+    ShopItem("food_medium", KIND_FOOD, FOOD[FOOD_MEDIUM][0], food=FOOD_MEDIUM),
+    ShopItem("food_big", KIND_FOOD, FOOD[FOOD_BIG][0], food=FOOD_BIG),
+)
+SHOP_BY_ID = {item.id: item for item in SHOP_ITEMS}
+
+
+class ShopError(ValueError):
+    """Something the shop, the inventory or feeding cannot do. args[0] is a Msg (words for the user)."""
+
+
+def item_locked(progress: Progress, item: ShopItem, level: int, kind: str = "") -> str:
+    """Why the household cannot buy `item` yet: "level", "achievement", "requires", "species", or "" when it can."""
+    if item.species and kind and item.species != kind:
+        return "species"
+    if level < item.min_level:
+        return "level"
+    if item.achievement and item.achievement not in progress.achievements:
+        return "achievement"
+    if item.requires and item.requires not in progress.owned:
+        return "requires"
+    if item.attach_to and item.attach_to not in progress.owned:
+        return "requires"
+    return ""
+
+
+def meals_allowed(progress: Progress) -> int:
+    """How many meals the pet eats per day before it is full: MEALS_PER_DAY and what upgrades added."""
+    extra = sum(
+        SHOP_BY_ID[i].effect_value for i in progress.owned if i in SHOP_BY_ID and SHOP_BY_ID[i].effect == EFFECT_MEALS
+    )
+    return MEALS_PER_DAY + extra
+
+
+def meals_today(progress: Progress, now: datetime, tz: tzinfo) -> int:
+    return progress.fed.get(now.astimezone(tz).date().isoformat(), 0)
+
+
+def buy_item(progress: Progress, item_id: str, level: int, kind: str = "") -> ShopItem:
+    """Pay for an item: food goes into the stock, anything else is owned from now on. Raises ShopError."""
+    item = SHOP_BY_ID.get(item_id)
+    if item is None:
+        raise ShopError(Msg("That item is not in the shop."))
+    if item.kind != KIND_FOOD and item.id in progress.owned:
+        raise ShopError(Msg("You already have that."))
+    reason = item_locked(progress, item, level, kind)
+    if reason == "species":
+        raise ShopError(Msg("That item is for another pet."))
+    if reason == "level":
+        raise ShopError(Msg("That item needs level {level}.", level=item.min_level))
+    if reason == "achievement":
+        raise ShopError(Msg("That item is not unlocked yet."))
+    if reason == "requires":
+        raise ShopError(Msg("Buy what it needs first."))
+    if progress.blubs < item.price:
+        raise ShopError(Msg("You need {blubs} Blubs for that.", blubs=item.price))
+    progress.blubs -= item.price
+    if item.kind == KIND_FOOD:
+        progress.food[item.food] = progress.food.get(item.food, 0) + 1
+    else:
+        progress.owned.append(item.id)
+    return item
+
+
+def place_item(progress: Progress, place: str, item_id: str) -> None:
+    """Put an owned colour or pattern on the wall or the floor, or empty the place with "". Raises ShopError."""
+    if place not in ROOM_PLACES:
+        raise ShopError(Msg("That is not a place in the room."))
+    if not item_id:
+        progress.placed.pop(place, None)
+        return
+    item = SHOP_BY_ID.get(item_id)
+    if item is None or item.id not in progress.owned or item.kind not in (KIND_COLOR, KIND_PATTERN):
+        raise ShopError(Msg("You cannot put that in the room."))
+    progress.placed[place] = item.id
+
+
+def feed_pet(progress: Progress, size: str, now: datetime, tz: tzinfo) -> Feeding:
+    """Feed the pet one meal from the stock: the food is used up and its XP is gained. Raises ShopError.
+
+    A full pet (all meals of the day eaten) takes nothing: no XP, and the food stays in the inventory.
+    """
+    if size not in FOOD:
+        raise ShopError(Msg("That is not food."))
+    if progress.food.get(size, 0) <= 0:
+        raise ShopError(Msg("You have no food of that size."))
+    day = now.astimezone(tz).date().isoformat()
+    if progress.fed.get(day, 0) >= meals_allowed(progress):
+        raise ShopError(Msg("The pet is full for today."))
+    level_before = level_for(progress.total_xp)[0]
+    progress.food[size] -= 1
+    if progress.food[size] <= 0:
+        del progress.food[size]
+    progress.fed[day] = progress.fed.get(day, 0) + 1
+    xp = FOOD[size][1]
+    progress.total_xp += xp
+    level = level_for(progress.total_xp)[0]
+    return Feeding(
         xp=xp,
         total_xp=progress.total_xp,
         level=level,
         level_up=level > level_before,
-        woke_up=False,
-        mood=mood_for(progress, now, tz),
+        meals_today=progress.fed[day],
     )
 
 

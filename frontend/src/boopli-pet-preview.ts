@@ -71,7 +71,7 @@ export class BoopliPetPreview extends LitElement {
 
   private _play(moment: Exclude<Moment, "">): void {
     this._moment = moment;
-    this._text = moment === "levelup" ? t("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : moment === "done" ? "+10 XP" : "";
+    this._text = moment === "levelup" ? t("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : moment === "done" ? t("today.blubs_gained", { blubs: 10 }) : "";
     this._seq += 1;
   }
 
@@ -98,6 +98,7 @@ export class BoopliPetPreview extends LitElement {
             .kind=${this.kind}
             .mood=${this._mood}
             .level=${this._level}
+            .owned=${["water_bowl", "food_bowl", "bed"]}
             .away=${this._away}
             .activity=${this._activity}
             .moment=${this._moment}
@@ -140,7 +141,7 @@ export class BoopliPetPreview extends LitElement {
               ${t("pet_preview.away_mode_suitcase")}
             </label>
           </div>
-          <p class="muted small">${t("pet_preview.the_room_grows_with_the_level")}</p>
+          <p class="muted small">${t("pet_preview.the_room_shows_what_you_bought")}</p>
           <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${t("common.close")}</button></div>
         </div>
       </dialog>

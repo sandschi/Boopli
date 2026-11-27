@@ -21,9 +21,9 @@ A clear chore such as "take out the trash" goes straight to steps. For anything 
 
 Each step is one concrete action, the first one is the easiest possible start, steps are grouped by area (Table, Chairs, Floor...), and the AI can say that something needs waiting time. A chore can have up to 50 steps. Nothing is created until you have checked and changed the steps and chosen to use them.
 
-### Step sizes and XP
+### Step sizes and Blubs
 
-Every step is small, medium or big (S, M, L), worth 10, 15 or 20 XP (steps you write yourself are small). Today shows the group, "Step 3 of 8" with a progress bar, and a celebration when a chore is finished.
+Every step is small, medium or big (S, M, L), worth 10, 15 or 20 Blubs (steps you write yourself are small). Today shows the group, "Step 3 of 8" with a progress bar, and a celebration when a chore is finished.
 
 ### Kept for next time
 
