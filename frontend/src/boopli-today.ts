@@ -76,6 +76,7 @@ export class BoopliToday extends LitElement {
     _questError: { state: true },
     _moment: { state: true },
     _momentSeq: { state: true },
+    _feedSeq: { state: true },
     _momentText: { state: true },
   };
 
@@ -96,6 +97,7 @@ export class BoopliToday extends LitElement {
   private _questHandled = false; // the server has been told it was seen (from this screen)
   declare _moment: Moment; // what the pet plays once: level up, waking up, a step done
   declare _momentSeq: number; // counts them, so the same moment can play again
+  declare _feedSeq: number; // counts the meals just given, so each one plays the eating scene
   declare _momentText: string;
   private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
@@ -117,6 +119,7 @@ export class BoopliToday extends LitElement {
     this._questError = "";
     this._moment = "";
     this._momentSeq = 0;
+    this._feedSeq = 0;
     this._momentText = "";
   }
 
@@ -135,6 +138,7 @@ export class BoopliToday extends LitElement {
     const pet = this.snapshot.pet;
     const before = this._lastPet;
     this._lastPet = pet;
+    if (before && pet.meals_today > before.meals_today) this._feedSeq += 1; // a meal was just given (here or on another screen)
     // A task that was running and is now finished: celebrate it by name.
     const runIds = this.snapshot.runs.map((r) => r.id);
     const finished = this._lastRunIds
@@ -236,6 +240,9 @@ export class BoopliToday extends LitElement {
           controls
           .blubs=${pet.blubs}
           .canBuy=${pet.can_buy}
+          .mealsEaten=${pet.meals_today}
+          .mealsMax=${pet.meals_max}
+          .feedSeq=${this._feedSeq}
           .owned=${pet.owned}
           .placed=${pet.placed}
           @open-shop=${() => (this._shop = true)}
@@ -259,7 +266,7 @@ export class BoopliToday extends LitElement {
           <div class="muted small">${t("today.xp_to_the_next_level", { xp: pet.xp_in_level, xp_needed: pet.xp_for_level })}</div>
           <div class="small">${moodLine(pet)}</div>
           <div class="small muted meals">
-            ${full ? t("common.is_full_for_today", { name: pet.name }) : t("common.meals_today", { eaten: pet.meals_today, max: pet.meals_max })}
+            ${full ? t("common.is_full_for_today", { name: pet.name }) : nothing}
             ${!full && hasFood
               ? html` <button type="button" class="textlink" @click=${() => (this._inventory = true)}>${t("today.feed")}</button>`
               : nothing}

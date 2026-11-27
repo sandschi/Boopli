@@ -765,7 +765,8 @@
     "your_pets_room": "Your pet's room",
     "blubs_open_the_shop": "{count} Blubs. Open the shop.",
     "open_the_shop": "Open the shop",
-    "open_the_inventory": "Open the inventory"
+    "open_the_inventory": "Open the inventory",
+    "meals_left_today": "{left} of {max} meals left today"
   },
   "today": {
     "keep_all_steps": "Keep all steps",

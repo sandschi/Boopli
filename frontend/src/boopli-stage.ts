@@ -4,11 +4,13 @@ import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
 import type { Activity, Moment } from "./boopli-pet";
-import { BED_BACK, BED_FRONT, FOOD_BOWL, WATER_BOWL, roomPaint } from "./shop-art";
+import { BED_BACK, BED_FRONT, FOOD_BOWL, WATER_BOWL, coin, mealBowl, roomPaint } from "./shop-art";
 import { icon } from "./icon";
 import { t } from "./i18n";
 
 const INK = "#101010";
+
+type StageFeed = "" | "fill" | "walk" | "eat" | "back";
 
 /** A little suitcase: it stands next to the pet while away mode is on. */
 const SUITCASE = svg`<svg viewBox="0 0 50 50" aria-hidden="true">
@@ -42,6 +44,10 @@ export class BoopliStage extends LitElement {
     controls: { type: Boolean },
     blubs: { type: Number },
     canBuy: { type: Boolean },
+    mealsEaten: { type: Number },
+    mealsMax: { type: Number },
+    feedSeq: { type: Number },
+    _feed: { state: true },
   };
 
   declare kind: PetKind;
@@ -57,6 +63,11 @@ export class BoopliStage extends LitElement {
   declare controls: boolean; // show the Blubs field and the inventory button
   declare blubs: number;
   declare canBuy: boolean; // something new can be bought right now: the Blubs field turns green
+  declare mealsEaten: number; // meals the pet ate today
+  declare mealsMax: number; // meals it eats before it is full
+  declare feedSeq: number; // counts the meals just given, so each one plays the eating scene
+  declare _feed: "" | "fill" | "walk" | "eat" | "back"; // the part of the eating scene that is playing
+  private _feedTimers: number[] = [];
 
   constructor() {
     super();
@@ -73,6 +84,10 @@ export class BoopliStage extends LitElement {
     this.controls = false;
     this.blubs = 0;
     this.canBuy = false;
+    this.mealsEaten = 0;
+    this.mealsMax = 3;
+    this.feedSeq = 0;
+    this._feed = "";
   }
 
   private _open(what: "open-shop" | "open-inventory"): void {
@@ -89,7 +104,7 @@ export class BoopliStage extends LitElement {
         title=${t("stage.open_the_shop")}
         @click=${() => this._open("open-shop")}
       >
-        ${icon("water")}<span class="n">${this.blubs}</span>
+        ${coin()}<span class="n">${this.blubs}</span>
       </button>
       <button
         type="button"
@@ -100,7 +115,36 @@ export class BoopliStage extends LitElement {
       >
         ${icon("bag-personal-outline")}
       </button>
+      <span
+        class="meals"
+        role="img"
+        aria-label=${t("stage.meals_left_today", { left: Math.max(0, this.mealsMax - this.mealsEaten), max: this.mealsMax })}
+        title=${t("stage.meals_left_today", { left: Math.max(0, this.mealsMax - this.mealsEaten), max: this.mealsMax })}
+      >
+        ${Array.from({ length: this.mealsMax }, (_v, i) => mealBowl(i >= this.mealsEaten))}
+      </span>
     </div>`;
+  }
+
+  // The eating scene: the bowl fills, the pet walks over, eats while the kibble goes down, and walks back.
+  private _clearFeed(): void {
+    for (const id of this._feedTimers) window.clearTimeout(id);
+    this._feedTimers = [];
+  }
+
+  private _playFeed(): void {
+    this._clearFeed();
+    const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const steps: [number, StageFeed][] = calm
+      ? [[0, "fill"], [1400, ""]] // no walking about: the bowl fills and empties
+      : [[0, "fill"], [700, "walk"], [1700, "eat"], [4300, "back"], [5300, ""]];
+    for (const [ms, phase] of steps) {
+      this._feedTimers.push(window.setTimeout(() => (this._feed = phase), ms));
+    }
+  }
+
+  protected updated(changed: Map<string, unknown>): void {
+    if (changed.has("feedSeq") && this.feedSeq > 0 && this.owned.includes("food_bowl")) this._playFeed();
   }
 
   // The bowl's ripple belongs to the stage, outside the pet, so the stage pauses it itself while the page is hidden.
@@ -115,6 +159,7 @@ export class BoopliStage extends LitElement {
   }
 
   disconnectedCallback(): void {
+    this._clearFeed();
     document.removeEventListener("visibilitychange", this._onVisibility);
     super.disconnectedCallback();
   }
@@ -131,8 +176,11 @@ export class BoopliStage extends LitElement {
     // Asleep in the bed, unless it is busy with something.
     const sleeping = hasBed && !activity && (mood === "sleepy" || mood === "hibernating");
     const deep = sleeping && mood === "hibernating";
+    const feed = this._feed ? `feed-${this._feed}` : "";
+    // Asleep or busy: the pet does not walk to the bowl (the bowl still fills and empties).
+    const stays = sleeping || !!activity;
     return html`<div
-      class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}"
+      class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""} ${feed} ${stays ? "stays" : ""}"
       style=${wall ? `background:${wall}` : ""}
       role="group"
       aria-label=${t("stage.your_pets_room")}
@@ -204,17 +252,57 @@ export class BoopliStage extends LitElement {
         min-width: 34px;
         padding: 2px 10px;
         border-radius: 999px;
-        border: 2px solid color-mix(in srgb, var(--primary-text-color, #888) 35%, transparent);
-        background: color-mix(in srgb, var(--card-background-color, #1c1c1c) 85%, transparent);
-        color: var(--primary-text-color, #fff);
+        /* Colourful on purpose: the room is the pet's world, not part of the dashboard, whatever theme Home Assistant has. */
+        border: 2px solid #e9b949;
+        background: #fff4d6;
+        color: #3a2a00;
         font-size: 17px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
+      }
+      .controls button:hover {
+        background: #ffeab3;
+      }
+      .controls button.inv {
+        border-color: #c9b8f5;
+        background: #f1eaff;
+        color: #6b4bc8;
+      }
+      .controls button.inv:hover {
+        background: #e4d8ff;
       }
       .controls button.buyable {
         background: #2e7d32;
         border-color: #2e7d32;
         color: #fff;
+      }
+      .coin {
+        display: inline-flex;
+        width: 1.3em;
+        height: 1.3em;
+      }
+      .coin svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      /* The meals still possible today: a little bowl for each, full = can still eat, empty = eaten. */
+      .meals {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        height: 34px;
+        padding: 0 8px;
+        border-radius: 999px;
+        border: 2px solid #e9b949;
+        background: #fff4d6;
+        color: #8a6a2a;
+      }
+      .meals svg {
+        display: block;
+        width: 24px;
+        height: 17px;
+        overflow: visible;
       }
       .controls button:focus-visible {
         outline: 3px solid var(--boopli-accent, var(--primary-color, #03a9f4));
@@ -276,6 +364,61 @@ export class BoopliStage extends LitElement {
       .deep .blanket {
         transform: translate(0, -1px) scale(0.95, 1);
       }
+      /* Feeding: the bowl is empty by itself; the kibble comes when the pet is fed and goes down while it eats. */
+      .food .kibble {
+        opacity: 0;
+        transform-box: fill-box;
+        transform-origin: 50% 100%;
+      }
+      .feed-fill .food .kibble,
+      .feed-walk .food .kibble {
+        opacity: 1;
+        animation: kibble-in 0.45s ease-out;
+      }
+      .feed-eat .food .kibble {
+        opacity: 0;
+        animation: kibble-eat 2.6s linear;
+      }
+      .feed-walk:not(.stays) .actor,
+      .feed-eat:not(.stays) .actor {
+        left: calc(7% + 98cqh);
+      }
+      .feed-eat:not(.stays) .actor {
+        animation: chomp 0.6s ease-in-out infinite;
+      }
+      @keyframes kibble-in {
+        from {
+          opacity: 0;
+          transform: scaleY(0.2);
+        }
+        to {
+          opacity: 1;
+          transform: scaleY(1);
+        }
+      }
+      @keyframes kibble-eat {
+        0% {
+          opacity: 1;
+          transform: scaleY(1);
+        }
+        85% {
+          opacity: 1;
+          transform: scaleY(0.12);
+        }
+        100% {
+          opacity: 0;
+          transform: scaleY(0);
+        }
+      }
+      @keyframes chomp {
+        0%,
+        100% {
+          transform: translateX(-50%) rotate(-4deg);
+        }
+        50% {
+          transform: translateX(-50%) translateY(2cqh) rotate(-11deg) scaleY(0.95);
+        }
+      }
       /* The water in the bowl ripples. */
       .ripple {
         transform-box: fill-box;
@@ -299,6 +442,15 @@ export class BoopliStage extends LitElement {
         .ripple {
           animation: none;
           opacity: 0.6;
+        }
+        .feed-eat .actor,
+        .feed-eat .food .kibble,
+        .feed-fill .food .kibble,
+        .feed-walk .food .kibble {
+          animation: none;
+        }
+        .feed-eat .food .kibble {
+          opacity: 1;
         }
         .actor,
         .blanket {
@@ -327,6 +479,10 @@ export class BoopliStage extends LitElement {
         }
         .sleeping .actor {
           left: calc(100% - 3% - 31cqh);
+        }
+        .feed-walk:not(.stays) .actor,
+        .feed-eat:not(.stays) .actor {
+          left: calc(3% + 78cqh);
         }
         .suitcase {
           left: calc(50% + 22cqh);

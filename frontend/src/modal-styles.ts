@@ -103,6 +103,17 @@ export const modalStyles = css`
     flex: none;
     text-align: right;
   }
+  .coin {
+    display: inline-flex;
+    width: 1.3em;
+    height: 1.3em;
+    vertical-align: middle;
+  }
+  .coin svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
   .actions {
     margin-top: 16px;
   }

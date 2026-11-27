@@ -765,7 +765,8 @@
     "your_pets_room": "Kamer van je huisdier",
     "blubs_open_the_shop": "{count} Blubs. Open de winkel.",
     "open_the_shop": "Open de winkel",
-    "open_the_inventory": "Open je voorraad"
+    "open_the_inventory": "Open je voorraad",
+    "meals_left_today": "Vandaag nog {left} van de {max} maaltijden"
   },
   "today": {
     "keep_all_steps": "Alle stappen behouden",

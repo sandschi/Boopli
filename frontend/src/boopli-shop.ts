@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { errorMessage, shopBuy } from "./api";
 import { icon } from "./icon";
 import { modalStyles } from "./modal-styles";
-import { itemArt, itemName } from "./shop-art";
+import { coin, itemArt, itemName } from "./shop-art";
 import { sharedStyles } from "./styles";
 import type { Hass, Pet, ShopItem } from "./types";
 import { t } from "./i18n";
@@ -103,7 +103,7 @@ export class BoopliShop extends LitElement {
           aria-label=${t("shop.buy_item_for", { item: itemName(item.id), price: item.price })}
           @click=${() => this._buy(item)}
         >
-          ${icon("water")} ${item.price}
+          ${coin()} ${item.price}
         </button>
       </div>
     </div>`;
@@ -122,7 +122,7 @@ export class BoopliShop extends LitElement {
         ? html`<div class="win">
             <div class="head">
               <h3>${icon("store-outline")} ${t("shop.shop")}</h3>
-              <span class="wallet" title=${t("shop.your_blubs")}>${icon("water")} ${t("shop.n_blubs", { count: pet.blubs })}</span>
+              <span class="wallet" title=${t("shop.your_blubs")}>${coin()} ${t("shop.n_blubs", { count: pet.blubs })}</span>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             ${this._note ? html`<p class="muted" role="status">${this._note}</p>` : nothing}

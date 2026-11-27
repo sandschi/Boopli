@@ -765,7 +765,8 @@
     "your_pets_room": "Zimmer deines Haustiers",
     "blubs_open_the_shop": "{count} Blubs. Shop öffnen.",
     "open_the_shop": "Shop öffnen",
-    "open_the_inventory": "Inventar öffnen"
+    "open_the_inventory": "Inventar öffnen",
+    "meals_left_today": "Heute noch {left} von {max} Mahlzeiten"
   },
   "today": {
     "keep_all_steps": "Alle Schritte behalten",

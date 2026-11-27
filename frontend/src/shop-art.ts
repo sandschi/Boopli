@@ -10,40 +10,65 @@ import type { FoodSize } from "./types";
 
 const INK = "#101010";
 
-/** A water bowl on a mat: white ceramic with a blue paw band. */
+/** A water bowl: sky-blue ceramic with a white paw band, a soft shine, and water that ripples. */
 export const WATER_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${INK} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#5B8DEF"/>
-  <circle cx="36" cy="34" r="2.8" fill="#fff"/>
-  <circle cx="31.5" cy="30.6" r="1.5" fill="#fff"/><circle cx="36" cy="29.3" r="1.5" fill="#fff"/><circle cx="40.5" cy="30.6" r="1.5" fill="#fff"/>
-  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#E6E0FF" stroke=${INK} stroke-width="2.5"/>
-  <ellipse cx="36" cy="19.5" rx="22" ry="5" fill="#7FD8FF"/>
-  <ellipse class="ripple" cx="36" cy="19.5" rx="7" ry="1.8" fill="none" stroke="#fff" stroke-width="1.4"/>
-  <path d="M20 18.5 Q26 16.5 32 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
+  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
+  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#4FB0F2" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#fff"/>
+  <circle cx="36" cy="35" r="2.6" fill="#4FB0F2"/>
+  <circle cx="31.8" cy="31.8" r="1.4" fill="#4FB0F2"/><circle cx="36" cy="30.6" r="1.4" fill="#4FB0F2"/><circle cx="40.2" cy="31.8" r="1.4" fill="#4FB0F2"/>
+  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.8"/>
+  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#D8F1FF" stroke=${INK} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#2F9BE8"/>
+  <ellipse class="ripple" cx="36" cy="19.6" rx="7" ry="1.9" fill="none" stroke="#fff" stroke-width="1.4"/>
+  <path d="M19 18.6 Q25 16.4 31 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
 </svg>`;
 
-/** A food bowl on a mat: warm ceramic with kibble and a bone biscuit. */
+/**
+ * A food bowl: warm terracotta with a cream paw band. The bowl is EMPTY by itself; the kibble (class "kibble")
+ * is only there while the pet is being fed, and in the shop picture. The room's CSS shows and hides it.
+ */
 export const FOOD_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${INK} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#FF9F5A"/>
-  <path d="M30 31.5 a3 3 0 1 1 6 0 a3 3 0 1 1 6 0 q0 4 -6 7 q-6 -3 -6 -7 z" fill="#fff"/>
-  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#FFE3C7" stroke=${INK} stroke-width="2.5"/>
-  <ellipse cx="36" cy="18" rx="22" ry="5" fill="#8A5A3A"/>
-  <circle cx="22" cy="15.5" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="29" cy="12.5" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="44" cy="12.8" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="50" cy="16" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="36" cy="15" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <g transform="translate(36 8) rotate(-12)">
-    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
-    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
-    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
+  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
+  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#F08A4B" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#FFF1E2"/>
+  <circle cx="36" cy="35" r="2.6" fill="#F08A4B"/>
+  <circle cx="31.8" cy="31.8" r="1.4" fill="#F08A4B"/><circle cx="36" cy="30.6" r="1.4" fill="#F08A4B"/><circle cx="40.2" cy="31.8" r="1.4" fill="#F08A4B"/>
+  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.7"/>
+  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#FFE3C7" stroke=${INK} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#7A4A2A"/>
+  <g class="kibble">
+    <circle cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
   </g>
 </svg>`;
+
+/** One of the little bowls beside the inventory button: full = a meal is still possible today, empty = eaten. */
+export const mealBowl = (full: boolean) => svg`<svg viewBox="0 0 28 20" aria-hidden="true" class="meal ${full ? "full" : "empty"}">
+  <path d="M3 8 Q4 18 14 18 Q24 18 25 8 Z" fill=${full ? "#F08A4B" : "none"} stroke=${full ? INK : "currentColor"} stroke-width="2" stroke-linejoin="round" opacity=${full ? 1 : 0.55}/>
+  <ellipse cx="14" cy="8" rx="11" ry="3.4" fill=${full ? "#7A4A2A" : "none"} stroke=${full ? INK : "currentColor"} stroke-width="2" opacity=${full ? 1 : 0.55}/>
+  ${full
+    ? svg`<circle cx="10.5" cy="6.4" r="2.2" fill="#C98A5A" stroke=${INK} stroke-width="1.2"/><circle cx="16" cy="5.6" r="2.2" fill="#B6784A" stroke=${INK} stroke-width="1.2"/><circle cx="19.5" cy="7.4" r="2" fill="#C98A5A" stroke=${INK} stroke-width="1.2"/>`
+    : ""}
+</svg>`;
+
+/** The Blub: a round coin with the slime on it. */
+export const BLUB_COIN = svg`<svg viewBox="0 0 32 32" aria-hidden="true" class="coin-art">
+  <circle cx="16" cy="16" r="14" fill="#FFC83D" stroke=${INK} stroke-width="2"/>
+  <circle cx="16" cy="16" r="10.6" fill="none" stroke="#FFE59A" stroke-width="1.6"/>
+  <path d="M16 6.8 C17.4 9.6 22.6 11.4 22.6 17.6 C22.6 21.6 19.8 24 16 24 C12.2 24 9.4 21.6 9.4 17.6 C9.4 11.4 14.6 9.6 16 6.8 Z" fill="#6BE04B" stroke=${INK} stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="13.2" cy="17.6" r="1.3" fill=${INK}/><circle cx="18.8" cy="17.6" r="1.3" fill=${INK}/>
+  <path d="M14 20.6 Q16 22.2 18 20.6" fill="none" stroke=${INK} stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M12.6 12.8 Q13.4 11.2 14.8 10.6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/>
+</svg>`;
+
+/** The Blub coin, sized by the text around it. */
+export const coin = () => html`<span class="coin" aria-hidden="true">${BLUB_COIN}</span>`;
 
 /** The bed, in two layers: the back (the soft arch, the cushion and a pillow) goes behind the pet... */
 export const BED_BACK = svg`<svg viewBox="0 0 120 64" aria-hidden="true">
