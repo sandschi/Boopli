@@ -37,6 +37,7 @@ Estos eventos se emiten en el bus de eventos de Home Assistant. Puedes usarlos p
 | `boopli_nudge_sent` | Boopli te envió un recordatorio. |
 | `boopli_blubs_earned` | Ganaste Blubs al completar un paso. |
 | `boopli_xp_gained` | Tu mascota comió y ganaste XP. |
+| `boopli_achievement_unlocked` | Has conseguido un logro. El evento se emite una vez por logro e incluye su identificador en `achievement`. |
 | `boopli_away_started` | Empezó el modo ausencia. |
 | `boopli_away_ended` | Terminó el modo ausencia. |
 

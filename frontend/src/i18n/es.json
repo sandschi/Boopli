@@ -833,6 +833,7 @@
     "waiting_until_you_start_it": "en espera hasta que la inicies",
     "waits_for_something_to_happen": "en espera hasta que pase algo",
     "blubs_gained": "+{blubs} Blubs",
+    "achievement_reached": "Nuevo logro: {name}",
     "feed": "Dar de comer",
     "quest_title": "Primera misión completada",
     "quest_text": "Has completado la primera misión. Ahora empieza la aventura. A partir de aquí, cada nivel lleva un poco más de tiempo y sigue a tu alcance.",

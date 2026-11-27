@@ -833,6 +833,7 @@
     "waiting_until_you_start_it": "waiting until you start it",
     "waits_for_something_to_happen": "waits for something to happen",
     "blubs_gained": "+{blubs} Blubs",
+    "achievement_reached": "New achievement: {name}",
     "feed": "Feed",
     "quest_title": "Starter quest complete",
     "quest_text": "You finished the starter quest. Now the adventure begins. From here, levels take a little longer. Every level is still within reach.",

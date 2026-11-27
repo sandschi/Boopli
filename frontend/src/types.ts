@@ -325,6 +325,7 @@ export interface Pet {
   meals_max: number; // the pet is full when it has eaten this many today
   owned: string[]; // ids of the things bought
   placed: { wall?: string; floor?: string }; // the colour or pattern on the wall and the floor
+  achievements: string[]; // the ids of the achievements reached
   items: ShopItem[];
   can_buy: boolean; // something new is unlocked and affordable (food does not count)
   quest_popup: boolean; // the one-time pop-up at the end of the starter quest is due

@@ -439,3 +439,111 @@ def test_easter_egg_flag_survives_storage():
     again = engine.Progress.from_dict(engine.to_dict(progress))
     assert again.egg_found and again.blubs == 10
     assert not engine.Progress.from_dict({"economy": 1, "blubs": 5}).egg_found
+
+
+# --- achievements ------------------------------------------------------------
+
+
+def _with_achievements(monkeypatch, *achievements):
+    monkeypatch.setattr(engine, "ACHIEVEMENTS", tuple(achievements))
+
+
+def test_there_are_no_base_achievements_yet_and_nothing_breaks_without_them():
+    assert engine.ACHIEVEMENTS == ()
+    p = engine.Progress()
+    give(p)
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == []
+
+
+def test_finished_steps_and_chores_are_counted_only_when_they_earn_blubs():
+    p = engine.Progress()
+    give(p, "c1", "r1")
+    give(p, "c1", "r1", chore_done=True)
+    assert p.stats == {"step_done": 2, "chore_done": 1}
+    # the 4th run of a chore on one day earns nothing, so it counts for nothing (no farming)
+    for n in range(2, 5):
+        give(p, "c1", f"r{n}", chore_done=True)
+    assert p.stats == {"step_done": 4, "chore_done": 3}
+
+
+def test_feeding_and_the_egg_are_counted():
+    p = engine.Progress(food={"small": 2})
+    engine.feed_pet(p, "small", NOON, TZ)
+    engine.feed_pet(p, "small", NOON, TZ)
+    engine.award_egg(p, NOON, TZ)
+    engine.award_egg(p, NOON, TZ)  # a second find gives and counts nothing
+    assert p.stats == {"fed": 2, "egg_found": 1}
+
+
+def test_reaching_gives_the_new_ones_in_order_and_only_once(monkeypatch):
+    a = engine.Achievement("two_steps", engine.STAT_STEP_DONE, 2)
+    b = engine.Achievement("one_step", engine.STAT_STEP_DONE, 1)
+    _with_achievements(monkeypatch, a, b)
+    p = engine.Progress()
+    give(p, "c1", "r1")
+    assert engine.reach_achievements(p) == [b]
+    give(p, "c1", "r1")
+    assert engine.reach_achievements(p) == [a]
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == ["one_step", "two_steps"]
+
+
+def test_one_event_can_reach_several_at_once(monkeypatch):
+    _with_achievements(
+        monkeypatch,
+        engine.Achievement("a", engine.STAT_STEP_DONE, 1),
+        engine.Achievement("b", engine.STAT_CHORE_DONE, 1),
+    )
+    p = engine.Progress()
+    give(p, chore_done=True)
+    assert [x.id for x in engine.reach_achievements(p)] == ["a", "b"]
+
+
+def test_the_level_is_a_stat_too(monkeypatch):
+    _with_achievements(monkeypatch, engine.Achievement("level_2", engine.STAT_LEVEL, 2))
+    p = engine.Progress(food={"big": 1})
+    assert engine.reach_achievements(p) == []
+    engine.feed_pet(p, "big", NOON, TZ)  # 30 XP: level 2
+    assert [x.id for x in engine.reach_achievements(p)] == ["level_2"]
+
+
+def test_the_streak_counts_days_in_a_row_and_a_gap_only_restarts_it():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert (p.streak, p.streak_best) == (3, 3)
+    give(p, "c1", "r3", now=day(2))  # the same day twice is still one day
+    assert (p.streak, p.streak_best) == (3, 3)
+    give(p, "c1", "r4", now=day(5))  # two days without a step: the streak starts over...
+    assert (p.streak, p.streak_best) == (1, 3)  # ...and the best one is not lost
+
+
+def test_a_streak_achievement_stays_once_the_streak_is_broken(monkeypatch):
+    _with_achievements(monkeypatch, engine.Achievement("three_days", engine.STAT_STREAK, 3))
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert [x.id for x in engine.reach_achievements(p)] == ["three_days"]
+    give(p, "c1", "r9", now=day(9))
+    assert p.achievements == ["three_days"]
+
+
+def test_nothing_is_ever_taken_back(monkeypatch):
+    _with_achievements(monkeypatch)  # the registry may shrink in a later version: what was reached stays
+    p = engine.Progress(achievements=["old_one"])
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == ["old_one"]
+
+
+def test_the_counters_and_the_streak_round_trip_through_saving():
+    p = engine.Progress(stats={"step_done": 4}, streak=2, streak_best=5, streak_day="2026-11-21", achievements=["x"])
+    again = engine.Progress.from_dict(engine.to_dict(p))
+    assert (again.stats, again.streak, again.streak_best, again.streak_day, again.achievements) == (
+        {"step_done": 4}, 2, 5, "2026-11-21", ["x"]
+    )
+
+
+def test_odd_saved_counters_are_cleaned():
+    p = engine.Progress.from_dict({"economy": 1, "stats": {"step_done": -3, "fed": "2"}, "streak": -1})
+    assert p.stats == {"step_done": 0, "fed": 2} and p.streak == 0

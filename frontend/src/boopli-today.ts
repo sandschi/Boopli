@@ -15,6 +15,7 @@ import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
 import { accessOf } from "./helpers";
+import { achievementName } from "./achievements";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 import { t } from "./i18n";
 
@@ -176,6 +177,11 @@ export class BoopliToday extends LitElement {
     const parts = [...gains];
     if (finished.length) parts.unshift(t("today.is_done", { value: finished[0] }));
     if (pet.level > before.level) parts.push(t("today.level_2", { level: pet.level }));
+    // An achievement reached just now: a quiet line in the same message, never a pop-up.
+    for (const id of pet.achievements ?? []) {
+      const name = (before.achievements ?? []).includes(id) ? "" : achievementName(id);
+      if (name) parts.push(t("today.achievement_reached", { name }));
+    }
     if (before.mood === "sad" || before.mood === "hibernating")
       parts.push(t("today.is_awake_welcome_back", { name: pet.name }));
     this._toast = parts.join("  ·  ");

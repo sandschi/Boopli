@@ -37,6 +37,7 @@ Boopli envoie ces événements sur le bus d’événements de Home Assistant. Tu
 | `boopli_nudge_sent` | Boopli t’a envoyé un rappel. |
 | `boopli_blubs_earned` | Tu as gagné des Blubs en terminant une étape. |
 | `boopli_xp_gained` | Ton animal a mangé et tu as gagné des XP. |
+| `boopli_achievement_unlocked` | Tu as débloqué un succès. L’événement se déclenche une fois par succès et contient son identifiant dans `achievement`. |
 | `boopli_away_started` | Le mode absence a démarré. |
 | `boopli_away_ended` | Le mode absence a pris fin. |
 
