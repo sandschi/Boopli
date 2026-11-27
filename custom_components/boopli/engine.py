@@ -210,6 +210,7 @@ SETUP_STEP_MAX = 40
 # Finishing steps earns Blubs; feeding the pet (food bought with Blubs) earns XP.
 EVENT_XP_GAINED = "xp_gained"  # the pet was fed
 EVENT_BLUBS_EARNED = "blubs_earned"  # a step was finished
+EVENT_ACHIEVEMENT_UNLOCKED = "achievement_unlocked"  # an achievement was reached (once each)
 XP_STEP = 10  # Blubs for every step finished (small; see SIZE_XP for the others)
 XP_CHORE = 20  # extra Blubs, for the step that finishes the chore
 XP_QUICK = 5  # extra Blubs, for a step finished within QUICK_MINUTES of its turn
@@ -715,7 +716,11 @@ class Progress:
     fed: dict[str, int] = field(default_factory=dict)  # local date -> meals that day
     owned: list[str] = field(default_factory=list)  # ids of the shop items bought
     placed: dict[str, str] = field(default_factory=dict)  # room place ("wall", "floor") -> item id
-    achievements: list[str] = field(default_factory=list)  # ids of the achievements reached (the engine comes later)
+    achievements: list[str] = field(default_factory=list)  # ids of the achievements reached (never removed)
+    stats: dict[str, int] = field(default_factory=dict)  # what the household has done so far: STAT_* -> how often
+    streak: int = 0  # days in a row with a finished step, up to streak_day
+    streak_best: int = 0  # the longest streak so far (a broken streak costs nothing: this stays)
+    streak_day: str = ""  # the local date the streak was last counted
     gift_given: bool = False  # the BLUBS_START were handed out
     quest_seen: bool = False  # the one-time pop-up at LEVEL_QUEST was shown
     economy: int = ECONOMY_VERSION
@@ -740,6 +745,10 @@ class Progress:
             owned=[str(x) for x in (d.get("owned") or [])],
             placed={str(k): str(v) for k, v in (d.get("placed") or {}).items() if k in ROOM_PLACES and v},
             achievements=[str(x) for x in (d.get("achievements") or [])],
+            stats={str(k): max(0, int(v or 0)) for k, v in (d.get("stats") or {}).items()},
+            streak=max(0, int(d.get("streak", 0) or 0)),
+            streak_best=max(0, int(d.get("streak_best", 0) or 0)),
+            streak_day=str(d.get("streak_day", "") or ""),
             gift_given=bool(d.get("gift_given", False)),
             quest_seen=bool(d.get("quest_seen", False)),
         )
@@ -854,6 +863,11 @@ def award_step(
         blubs = SIZE_XP.get(size, XP_STEP) + (XP_CHORE if chore_done else 0)
         if active_at and now - parse_ts(active_at) <= timedelta(minutes=QUICK_MINUTES):
             blubs += XP_QUICK
+        # what earns Blubs also counts for the achievements (so running a chore over and over cannot farm them either)
+        count_stat(progress, STAT_STEP_DONE)
+        if chore_done:
+            count_stat(progress, STAT_CHORE_DONE)
+        note_streak(progress, today)
 
     progress.blubs += blubs
     progress.last_activity = fmt_ts(now)
@@ -880,6 +894,7 @@ def award_egg(progress: Progress, now: datetime, tz: tzinfo) -> Award:
     blubs = 0
     if not progress.egg_found:
         progress.egg_found = True
+        count_stat(progress, STAT_EGG_FOUND)
         blubs = EGG_BLUBS
         progress.blubs += blubs
     return Award(
@@ -897,6 +912,74 @@ def hand_out_start_gift(progress: Progress) -> bool:
     progress.gift_given = True
     progress.blubs += BLUBS_START
     return True
+
+
+# --- achievements -----------------------------------------------------------------------------------
+#
+# Calm by design: an achievement is only ever reached, never lost, and nothing is taken away or
+# counted down. The household's doings are counted (STAT_*, plus the streak and the level), and an
+# achievement is reached when one of those counts gets to its target. What an achievement unlocks (a
+# shop item, later things like gold) hangs on it from the other side: `ShopItem.achievement`.
+
+STAT_STEP_DONE = "step_done"  # steps finished that earned Blubs
+STAT_CHORE_DONE = "chore_done"  # chores finished (the last step of a run) that earned Blubs
+STAT_FED = "fed"  # meals given to the pet
+STAT_EGG_FOUND = "egg_found"  # the Easter egg (once)
+STAT_STREAK = "streak"  # the longest run of days in a row with a finished step
+STAT_LEVEL = "level"  # the pet's level
+STATS_COUNTED = (STAT_STEP_DONE, STAT_CHORE_DONE, STAT_FED, STAT_EGG_FOUND)
+STATS_ALL = (*STATS_COUNTED, STAT_STREAK, STAT_LEVEL)
+
+
+@dataclass(frozen=True)
+class Achievement:
+    """One thing to reach: `stat` gets to `target`. The ids are what the shop and the panel refer to."""
+
+    id: str
+    stat: str
+    target: int
+
+
+# The achievements themselves come with the base content (the engine is what is here).
+ACHIEVEMENTS: tuple[Achievement, ...] = ()
+
+
+def count_stat(progress: Progress, stat: str, n: int = 1) -> None:
+    """Count `n` more of something the household did."""
+    progress.stats[stat] = progress.stats.get(stat, 0) + n
+
+
+def note_streak(progress: Progress, today: date) -> None:
+    """A step was finished today: carry on the streak (yesterday also had one), or start a new one at 1.
+
+    A day without a step ends the streak, nothing more: the best streak stays.
+    """
+    day = today.isoformat()
+    if progress.streak_day == day:
+        return
+    yesterday = (today - timedelta(days=1)).isoformat()
+    progress.streak = progress.streak + 1 if progress.streak_day == yesterday else 1
+    progress.streak_day = day
+    progress.streak_best = max(progress.streak_best, progress.streak)
+
+
+def stat_value(progress: Progress, stat: str) -> int:
+    """How far the household is on one of the STATS_ALL."""
+    if stat == STAT_STREAK:
+        return progress.streak_best
+    if stat == STAT_LEVEL:
+        return level_for(progress.total_xp)[0]
+    return progress.stats.get(stat, 0)
+
+
+def reach_achievements(progress: Progress) -> list[Achievement]:
+    """Mark every achievement whose target is reached and return the ones reached just now (in order)."""
+    reached = []
+    for a in ACHIEVEMENTS:
+        if a.id not in progress.achievements and stat_value(progress, a.stat) >= a.target:
+            progress.achievements.append(a.id)
+            reached.append(a)
+    return reached
 
 
 # --- the shop, the inventory and feeding --------------------------------------------------------
@@ -1040,6 +1123,7 @@ def feed_pet(progress: Progress, size: str, now: datetime, tz: tzinfo) -> Feedin
     if progress.food[size] <= 0:
         del progress.food[size]
     progress.fed[day] = progress.fed.get(day, 0) + 1
+    count_stat(progress, STAT_FED)
     xp = FOOD[size][1]
     progress.total_xp += xp
     level = level_for(progress.total_xp)[0]
@@ -1917,6 +2001,24 @@ def shifted_progress(progress: Progress, began_at: str | None, now: datetime) ->
     )
 
 
+def shift_streak(progress: Progress, began_at: str | None, now: datetime, tz: tzinfo) -> None:
+    """Back from away: the days away do not break the streak (they just do not count as days with a step).
+
+    A streak that was still going when away mode began carries on after it. One that had
+    already ended before is not brought back. The streak is carried up to yesterday, never to
+    today: a step finished today is what counts today. Also called before a step is counted
+    while away (a chore that keeps going), so that step does not see the days away as a gap.
+    """
+    if not began_at or not progress.streak_day:
+        return
+    began_day = parse_ts(began_at).astimezone(tz).date()
+    today = now.astimezone(tz).date()
+    last = date.fromisoformat(progress.streak_day)
+    if last < began_day - timedelta(days=1) or last >= today or today <= began_day:
+        return  # it was over before the pet went away, a step was already counted today, or nothing has passed
+    progress.streak_day = min(today - timedelta(days=1), last + (today - began_day)).isoformat()
+
+
 def return_from_away(
     away: Away,
     progress: Progress,
@@ -1931,6 +2033,7 @@ def return_from_away(
     moved = shifted_progress(progress, away.began_at, now)
     progress.last_activity = moved.last_activity
     progress.started_at = moved.started_at
+    shift_streak(progress, away.began_at, now, tz)
     for index, run in enumerate(sorted(frozen_runs, key=lambda r: r.started_at)):
         for step in run.steps:
             if step.status == STEP_ACTIVE:

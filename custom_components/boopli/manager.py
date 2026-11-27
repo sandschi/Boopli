@@ -314,6 +314,7 @@ class BoopliManager:
             "meals_max": engine.meals_allowed(self.progress),
             "owned": list(self.progress.owned),
             "placed": dict(self.progress.placed),
+            "achievements": list(self.progress.achievements),
             "items": items,
             # something new the household can buy right now (food does not count: it is always there)
             "can_buy": any(
@@ -671,6 +672,7 @@ class BoopliManager:
             return 0
         self._announce(
             [
+                *self._reach_achievements(now),
                 engine.Event(
                     engine.EVENT_BLUBS_EARNED,
                     {
@@ -738,6 +740,7 @@ class BoopliManager:
                     },
                 )
             ]
+            + self._reach_achievements(now)
         )
         self._shop_change()
 
@@ -751,6 +754,8 @@ class BoopliManager:
         self, run: engine.Run, step: engine.StepRun | None, now: datetime
     ) -> list[engine.Event]:
         """Give Blubs for a step that was just finished (by hand or by itself)."""
+        # A chore that keeps going while away: the days away are not a gap in the streak.
+        engine.shift_streak(self.progress, self.away.began_at, now, self.tz)
         award = engine.award_step(
             self.progress,
             run.chore_id,
@@ -761,8 +766,9 @@ class BoopliManager:
             run.status == engine.RUN_DONE,
             step.size if step else engine.SIZE_SMALL,
         )
+        reached = self._reach_achievements(now)
         if award.blubs <= 0 and not award.woke_up:
-            return []
+            return reached
         return [
             engine.Event(
                 engine.EVENT_BLUBS_EARNED,
@@ -778,6 +784,16 @@ class BoopliManager:
                     "time": engine.fmt_ts(now),
                 },
             )
+        ] + reached
+
+    def _reach_achievements(self, now: datetime) -> list[engine.Event]:
+        """Mark the achievements the household has just reached; one event for each."""
+        return [
+            engine.Event(
+                engine.EVENT_ACHIEVEMENT_UNLOCKED,
+                {"achievement": a.id, "stat": a.stat, "target": a.target, "time": engine.fmt_ts(now)},
+            )
+            for a in engine.reach_achievements(self.progress)
         ]
 
     def _auto_finish(

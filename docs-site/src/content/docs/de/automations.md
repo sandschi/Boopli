@@ -37,6 +37,7 @@ Diese Ereignisse laufen über den Ereignisbus von Home Assistant. Sie können ei
 | `boopli_nudge_sent` | Boopli hat dich angestupst. |
 | `boopli_blubs_earned` | Du hast einen Schritt erledigt und dafür Blubs bekommen. |
 | `boopli_xp_gained` | Du hast dein Haustier gefüttert und dafür XP bekommen. |
+| `boopli_achievement_unlocked` | Du hast einen Erfolg freigeschaltet. Das Ereignis wird pro Erfolg einmal ausgelöst und enthält seine ID in `achievement`. |
 | `boopli_away_started` | Der Abwesenheitsmodus wurde gestartet. |
 | `boopli_away_ended` | Der Abwesenheitsmodus wurde beendet. |
 

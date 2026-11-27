@@ -833,6 +833,7 @@
     "waiting_until_you_start_it": "wacht tot je begint",
     "waits_for_something_to_happen": "wacht tot er iets gebeurt",
     "blubs_gained": "+{blubs} Blubs",
+    "achievement_reached": "Nieuwe prestatie: {name}",
     "feed": "Voeren",
     "quest_title": "Eerste missie voltooid",
     "quest_text": "Je hebt de eerste missie afgerond. Nu begint het avontuur. Vanaf hier duurt elk level wat langer en blijft het haalbaar.",

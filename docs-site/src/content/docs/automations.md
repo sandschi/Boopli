@@ -37,6 +37,7 @@ These fire on the Home Assistant event bus, so an automation can trigger on them
 | `boopli_nudge_sent` | Boopli nudged you. |
 | `boopli_blubs_earned` | You earned Blubs by finishing a step. |
 | `boopli_xp_gained` | The pet was fed and you earned XP. |
+| `boopli_achievement_unlocked` | An achievement was reached (once each). The event carries its id in `achievement`. |
 | `boopli_away_started` | Away mode started. |
 | `boopli_away_ended` | Away mode ended. |
 

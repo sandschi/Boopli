@@ -439,3 +439,167 @@ def test_easter_egg_flag_survives_storage():
     again = engine.Progress.from_dict(engine.to_dict(progress))
     assert again.egg_found and again.blubs == 10
     assert not engine.Progress.from_dict({"economy": 1, "blubs": 5}).egg_found
+
+
+# --- achievements ------------------------------------------------------------
+
+
+def _with_achievements(monkeypatch, *achievements):
+    monkeypatch.setattr(engine, "ACHIEVEMENTS", tuple(achievements))
+
+
+def test_there_are_no_base_achievements_yet_and_nothing_breaks_without_them():
+    assert engine.ACHIEVEMENTS == ()
+    p = engine.Progress()
+    give(p)
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == []
+
+
+def test_finished_steps_and_chores_are_counted_only_when_they_earn_blubs():
+    p = engine.Progress()
+    give(p, "c1", "r1")
+    give(p, "c1", "r1", chore_done=True)
+    assert p.stats == {"step_done": 2, "chore_done": 1}
+    # the 4th run of a chore on one day earns nothing, so it counts for nothing (no farming)
+    for n in range(2, 5):
+        give(p, "c1", f"r{n}", chore_done=True)
+    assert p.stats == {"step_done": 4, "chore_done": 3}
+
+
+def test_feeding_and_the_egg_are_counted():
+    p = engine.Progress(food={"small": 2})
+    engine.feed_pet(p, "small", NOON, TZ)
+    engine.feed_pet(p, "small", NOON, TZ)
+    engine.award_egg(p, NOON, TZ)
+    engine.award_egg(p, NOON, TZ)  # a second find gives and counts nothing
+    assert p.stats == {"fed": 2, "egg_found": 1}
+
+
+def test_reaching_gives_the_new_ones_in_order_and_only_once(monkeypatch):
+    a = engine.Achievement("two_steps", engine.STAT_STEP_DONE, 2)
+    b = engine.Achievement("one_step", engine.STAT_STEP_DONE, 1)
+    _with_achievements(monkeypatch, a, b)
+    p = engine.Progress()
+    give(p, "c1", "r1")
+    assert engine.reach_achievements(p) == [b]
+    give(p, "c1", "r1")
+    assert engine.reach_achievements(p) == [a]
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == ["one_step", "two_steps"]
+
+
+def test_one_event_can_reach_several_at_once(monkeypatch):
+    _with_achievements(
+        monkeypatch,
+        engine.Achievement("a", engine.STAT_STEP_DONE, 1),
+        engine.Achievement("b", engine.STAT_CHORE_DONE, 1),
+    )
+    p = engine.Progress()
+    give(p, chore_done=True)
+    assert [x.id for x in engine.reach_achievements(p)] == ["a", "b"]
+
+
+def test_the_level_is_a_stat_too(monkeypatch):
+    _with_achievements(monkeypatch, engine.Achievement("level_2", engine.STAT_LEVEL, 2))
+    p = engine.Progress(food={"big": 1})
+    assert engine.reach_achievements(p) == []
+    engine.feed_pet(p, "big", NOON, TZ)  # 30 XP: level 2
+    assert [x.id for x in engine.reach_achievements(p)] == ["level_2"]
+
+
+def test_the_streak_counts_days_in_a_row_and_a_gap_only_restarts_it():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert (p.streak, p.streak_best) == (3, 3)
+    give(p, "c1", "r3", now=day(2))  # the same day twice is still one day
+    assert (p.streak, p.streak_best) == (3, 3)
+    give(p, "c1", "r4", now=day(5))  # two days without a step: the streak starts over...
+    assert (p.streak, p.streak_best) == (1, 3)  # ...and the best one is not lost
+
+
+def test_a_streak_achievement_stays_once_the_streak_is_broken(monkeypatch):
+    _with_achievements(monkeypatch, engine.Achievement("three_days", engine.STAT_STREAK, 3))
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert [x.id for x in engine.reach_achievements(p)] == ["three_days"]
+    give(p, "c1", "r9", now=day(9))
+    assert p.achievements == ["three_days"]
+
+
+def test_nothing_is_ever_taken_back(monkeypatch):
+    _with_achievements(monkeypatch)  # the registry may shrink in a later version: what was reached stays
+    p = engine.Progress(achievements=["old_one"])
+    assert engine.reach_achievements(p) == []
+    assert p.achievements == ["old_one"]
+
+
+def test_the_counters_and_the_streak_round_trip_through_saving():
+    p = engine.Progress(stats={"step_done": 4}, streak=2, streak_best=5, streak_day="2026-11-21", achievements=["x"])
+    again = engine.Progress.from_dict(engine.to_dict(p))
+    assert (again.stats, again.streak, again.streak_best, again.streak_day, again.achievements) == (
+        {"step_done": 4}, 2, 5, "2026-11-21", ["x"]
+    )
+
+
+def test_odd_saved_counters_are_cleaned():
+    p = engine.Progress.from_dict({"economy": 1, "stats": {"step_done": -3, "fed": "2"}, "streak": -1})
+    assert p.stats == {"step_done": 0, "fed": 2} and p.streak == 0
+
+
+def test_days_away_do_not_break_a_streak_that_was_going():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert p.streak_day == day(2).date().isoformat()
+    # away from day 3 for ten days, back on day 13
+    engine.shift_streak(p, engine.fmt_ts(day(3)), day(13), TZ)
+    give(p, "c1", "r9", now=day(13))  # the first step after coming back carries on: still one day in a row
+    assert (p.streak, p.streak_best) == (4, 4)
+
+
+def test_a_streak_that_had_ended_before_leaving_is_not_brought_back():
+    p = engine.Progress()
+    give(p, "c1", "r0", now=day(0))
+    give(p, "c1", "r1", now=day(1))
+    engine.shift_streak(p, engine.fmt_ts(day(6)), day(16), TZ)  # two quiet days before leaving
+    give(p, "c1", "r2", now=day(16))
+    assert (p.streak, p.streak_best) == (1, 2)
+
+
+def test_shifting_the_streak_needs_a_streak_and_time_away():
+    p = engine.Progress()
+    engine.shift_streak(p, engine.fmt_ts(day(0)), day(5), TZ)
+    assert p.streak_day == ""
+    give(p, "c1", "r0", now=day(0))
+    engine.shift_streak(p, None, day(5), TZ)  # away never began
+    engine.shift_streak(p, engine.fmt_ts(day(0)), day(0, hour=18), TZ)  # back the same day
+    assert p.streak_day == day(0).date().isoformat()
+
+
+def test_the_first_step_after_a_same_day_departure_carries_the_streak_on():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    engine.shift_streak(p, engine.fmt_ts(day(2, hour=18)), day(12), TZ)  # left the evening of the last step
+    give(p, "c1", "r9", now=day(12))
+    assert (p.streak, p.streak_best) == (4, 4)
+    give(p, "c1", "r10", now=day(12, hour=15))  # a second step the same day is still one day
+    assert (p.streak, p.streak_best) == (4, 4)
+
+
+def test_a_step_finished_while_away_does_not_see_the_days_away_as_a_gap():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    began = engine.fmt_ts(day(3))
+    # a chore that keeps going finishes on day 7: the manager shifts first, then counts
+    engine.shift_streak(p, began, day(7), TZ)
+    give(p, "c1", "r7", now=day(7))
+    assert (p.streak, p.streak_best) == (4, 4)
+    # back on day 13: nothing is shifted over a step already counted... and the next one carries on
+    engine.shift_streak(p, began, day(13), TZ)
+    give(p, "c1", "r13", now=day(13))
+    assert (p.streak, p.streak_best) == (5, 5)
