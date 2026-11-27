@@ -754,6 +754,8 @@ class BoopliManager:
         self, run: engine.Run, step: engine.StepRun | None, now: datetime
     ) -> list[engine.Event]:
         """Give Blubs for a step that was just finished (by hand or by itself)."""
+        # A chore that keeps going while away: the days away are not a gap in the streak.
+        engine.shift_streak(self.progress, self.away.began_at, now, self.tz)
         award = engine.award_step(
             self.progress,
             run.chore_id,

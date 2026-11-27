@@ -2005,16 +2005,18 @@ def shift_streak(progress: Progress, began_at: str | None, now: datetime, tz: tz
     """Back from away: the days away do not break the streak (they just do not count as days with a step).
 
     A streak that was still going when away mode began carries on after it. One that had
-    already ended before is not brought back.
+    already ended before is not brought back. The streak is carried up to yesterday, never to
+    today: a step finished today is what counts today. Also called before a step is counted
+    while away (a chore that keeps going), so that step does not see the days away as a gap.
     """
     if not began_at or not progress.streak_day:
         return
     began_day = parse_ts(began_at).astimezone(tz).date()
     today = now.astimezone(tz).date()
     last = date.fromisoformat(progress.streak_day)
-    if last < began_day - timedelta(days=1) or today <= began_day:
-        return  # it was over before the pet went away, or nothing has passed
-    progress.streak_day = min(today, last + (today - began_day)).isoformat()
+    if last < began_day - timedelta(days=1) or last >= today or today <= began_day:
+        return  # it was over before the pet went away, a step was already counted today, or nothing has passed
+    progress.streak_day = min(today - timedelta(days=1), last + (today - began_day)).isoformat()
 
 
 def return_from_away(

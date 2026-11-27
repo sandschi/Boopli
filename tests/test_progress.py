@@ -577,3 +577,29 @@ def test_shifting_the_streak_needs_a_streak_and_time_away():
     engine.shift_streak(p, None, day(5), TZ)  # away never began
     engine.shift_streak(p, engine.fmt_ts(day(0)), day(0, hour=18), TZ)  # back the same day
     assert p.streak_day == day(0).date().isoformat()
+
+
+def test_the_first_step_after_a_same_day_departure_carries_the_streak_on():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    engine.shift_streak(p, engine.fmt_ts(day(2, hour=18)), day(12), TZ)  # left the evening of the last step
+    give(p, "c1", "r9", now=day(12))
+    assert (p.streak, p.streak_best) == (4, 4)
+    give(p, "c1", "r10", now=day(12, hour=15))  # a second step the same day is still one day
+    assert (p.streak, p.streak_best) == (4, 4)
+
+
+def test_a_step_finished_while_away_does_not_see_the_days_away_as_a_gap():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    began = engine.fmt_ts(day(3))
+    # a chore that keeps going finishes on day 7: the manager shifts first, then counts
+    engine.shift_streak(p, began, day(7), TZ)
+    give(p, "c1", "r7", now=day(7))
+    assert (p.streak, p.streak_best) == (4, 4)
+    # back on day 13: nothing is shifted over a step already counted... and the next one carries on
+    engine.shift_streak(p, began, day(13), TZ)
+    give(p, "c1", "r13", now=day(13))
+    assert (p.streak, p.streak_best) == (5, 5)
