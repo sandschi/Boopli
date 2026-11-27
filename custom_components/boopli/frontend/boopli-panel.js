@@ -11356,7 +11356,7 @@ function Ba(e) {
 // src/achievements.ts
 var Va = {};
 function Ha(e) {
-	return Va[e]?.() ?? "";
+	return Object.prototype.hasOwnProperty.call(Va, e) ? Va[e]() : "";
 }
 // src/boopli-today.ts
 function Ua(e, t) {
