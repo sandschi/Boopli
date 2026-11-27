@@ -2001,6 +2001,22 @@ def shifted_progress(progress: Progress, began_at: str | None, now: datetime) ->
     )
 
 
+def shift_streak(progress: Progress, began_at: str | None, now: datetime, tz: tzinfo) -> None:
+    """Back from away: the days away do not break the streak (they just do not count as days with a step).
+
+    A streak that was still going when away mode began carries on after it. One that had
+    already ended before is not brought back.
+    """
+    if not began_at or not progress.streak_day:
+        return
+    began_day = parse_ts(began_at).astimezone(tz).date()
+    today = now.astimezone(tz).date()
+    last = date.fromisoformat(progress.streak_day)
+    if last < began_day - timedelta(days=1) or today <= began_day:
+        return  # it was over before the pet went away, or nothing has passed
+    progress.streak_day = min(today, last + (today - began_day)).isoformat()
+
+
 def return_from_away(
     away: Away,
     progress: Progress,
@@ -2015,6 +2031,7 @@ def return_from_away(
     moved = shifted_progress(progress, away.began_at, now)
     progress.last_activity = moved.last_activity
     progress.started_at = moved.started_at
+    shift_streak(progress, away.began_at, now, tz)
     for index, run in enumerate(sorted(frozen_runs, key=lambda r: r.started_at)):
         for step in run.steps:
             if step.status == STEP_ACTIVE:

@@ -547,3 +547,33 @@ def test_the_counters_and_the_streak_round_trip_through_saving():
 def test_odd_saved_counters_are_cleaned():
     p = engine.Progress.from_dict({"economy": 1, "stats": {"step_done": -3, "fed": "2"}, "streak": -1})
     assert p.stats == {"step_done": 0, "fed": 2} and p.streak == 0
+
+
+def test_days_away_do_not_break_a_streak_that_was_going():
+    p = engine.Progress()
+    for n in (0, 1, 2):
+        give(p, "c1", f"r{n}", now=day(n))
+    assert p.streak_day == day(2).date().isoformat()
+    # away from day 3 for ten days, back on day 13
+    engine.shift_streak(p, engine.fmt_ts(day(3)), day(13), TZ)
+    give(p, "c1", "r9", now=day(13))  # the first step after coming back carries on: still one day in a row
+    assert (p.streak, p.streak_best) == (4, 4)
+
+
+def test_a_streak_that_had_ended_before_leaving_is_not_brought_back():
+    p = engine.Progress()
+    give(p, "c1", "r0", now=day(0))
+    give(p, "c1", "r1", now=day(1))
+    engine.shift_streak(p, engine.fmt_ts(day(6)), day(16), TZ)  # two quiet days before leaving
+    give(p, "c1", "r2", now=day(16))
+    assert (p.streak, p.streak_best) == (1, 2)
+
+
+def test_shifting_the_streak_needs_a_streak_and_time_away():
+    p = engine.Progress()
+    engine.shift_streak(p, engine.fmt_ts(day(0)), day(5), TZ)
+    assert p.streak_day == ""
+    give(p, "c1", "r0", now=day(0))
+    engine.shift_streak(p, None, day(5), TZ)  # away never began
+    engine.shift_streak(p, engine.fmt_ts(day(0)), day(0, hour=18), TZ)  # back the same day
+    assert p.streak_day == day(0).date().isoformat()
