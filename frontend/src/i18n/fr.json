@@ -1602,6 +1602,7 @@
     "feed": "Nourrir",
     "use": "Appliquer",
     "in_use": "En place",
+    "unlocked": "Débloqués",
     "tap_something_to_see_more": "Appuie sur un élément pour en savoir plus.",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} en réserve",

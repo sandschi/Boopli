@@ -1735,6 +1735,7 @@ var Xe = {
 		feed: "Füttern",
 		use: "Anwenden",
 		in_use: "In Benutzung",
+		unlocked: "Freigeschaltet",
 		tap_something_to_see_more: "Tippe etwas an, um mehr zu sehen.",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} auf Vorrat",
@@ -2959,6 +2960,7 @@ var Xe = {
 		feed: "Feed",
 		use: "Use",
 		in_use: "In use",
+		unlocked: "Unlocked",
 		tap_something_to_see_more: "Tap something to see more.",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} in stock",
@@ -4183,6 +4185,7 @@ var Xe = {
 		feed: "Dar de comer",
 		use: "Aplicar",
 		in_use: "En uso",
+		unlocked: "Desbloqueados",
 		tap_something_to_see_more: "Toca algo para ver más.",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} disponibles",
@@ -5407,6 +5410,7 @@ var Xe = {
 		feed: "Nourrir",
 		use: "Appliquer",
 		in_use: "En place",
+		unlocked: "Débloqués",
 		tap_something_to_see_more: "Appuie sur un élément pour en savoir plus.",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} en réserve",
@@ -6631,6 +6635,7 @@ var Xe = {
 		feed: "Voeren",
 		use: "Toepassen",
 		in_use: "In gebruik",
+		unlocked: "Vrijgespeeld",
 		tap_something_to_see_more: "Tik ergens op om meer te zien.",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} op voorraad",
@@ -10326,7 +10331,8 @@ var ia = o`
     --wood-dark: color-mix(in srgb, #5b3a17 65%, var(--card-background-color, #1c1c1c));
     --wood-edge: color-mix(in srgb, #8a5a2b 78%, var(--card-background-color, #1c1c1c));
     --slot: color-mix(in srgb, #2a1a08 38%, var(--wood));
-    --gold: #e9b949;
+    --gold: #d3a05a; /* softer amber: buttons, badges, coins */
+    --wood-light: color-mix(in srgb, #c99a63 70%, var(--card-background-color, #1c1c1c)); /* selection rings */
     padding: 0;
     border: 6px solid var(--wood-edge);
     border-radius: 22px;
@@ -10413,7 +10419,7 @@ var ia = o`
   }
   .cat.on {
     background: var(--wood);
-    border-color: var(--gold);
+    border-color: var(--wood-light);
     border-bottom-color: var(--wood);
     font-weight: 700;
   }
@@ -10482,8 +10488,8 @@ var ia = o`
     transform: translateY(2px);
   }
   .slot.sel {
-    border-color: var(--gold);
-    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--gold);
+    border-color: var(--wood-light);
+    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--wood-light);
   }
   .slot.dim {
     opacity: 0.5;
@@ -10884,7 +10890,10 @@ var sa = [
         ${n ? _ : m`<p class="muted">${S("inventory.no_colours_or_patterns_yet")}</p>`}
       </div>
       ${n ? m`${this._paint(e, "wall", S("inventory.wall"))}${this._paint(e, "floor", S("inventory.floor"))}` : _}
-      ${t.length ? m`<div class="slots">${t.map((e) => this._slot(`thing:${e.id}`, K(e.id), $i(e.id)))}</div>` : _}`;
+      ${t.length ? m`<div class="group">
+            <h4>${S("inventory.unlocked")}</h4>
+            <div class="slots">${t.map((e) => this._slot(`thing:${e.id}`, K(e.id), $i(e.id), "", !0))}</div>
+          </div>` : _}`;
 	}
 	_detail(e) {
 		let [t, ...n] = this._sel.split(":"), r = n.join(":");

@@ -12,7 +12,8 @@ export const modalStyles = css`
     --wood-dark: color-mix(in srgb, #5b3a17 65%, var(--card-background-color, #1c1c1c));
     --wood-edge: color-mix(in srgb, #8a5a2b 78%, var(--card-background-color, #1c1c1c));
     --slot: color-mix(in srgb, #2a1a08 38%, var(--wood));
-    --gold: #e9b949;
+    --gold: #d3a05a; /* softer amber: buttons, badges, coins */
+    --wood-light: color-mix(in srgb, #c99a63 70%, var(--card-background-color, #1c1c1c)); /* selection rings */
     padding: 0;
     border: 6px solid var(--wood-edge);
     border-radius: 22px;
@@ -99,7 +100,7 @@ export const modalStyles = css`
   }
   .cat.on {
     background: var(--wood);
-    border-color: var(--gold);
+    border-color: var(--wood-light);
     border-bottom-color: var(--wood);
     font-weight: 700;
   }
@@ -168,8 +169,8 @@ export const modalStyles = css`
     transform: translateY(2px);
   }
   .slot.sel {
-    border-color: var(--gold);
-    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--gold);
+    border-color: var(--wood-light);
+    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--wood-light);
   }
   .slot.dim {
     opacity: 0.5;

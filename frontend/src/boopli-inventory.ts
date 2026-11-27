@@ -139,7 +139,12 @@ export class BoopliInventory extends LitElement {
         ${looks ? nothing : html`<p class="muted">${t("inventory.no_colours_or_patterns_yet")}</p>`}
       </div>
       ${looks ? html`${this._paint(pet, "wall", t("inventory.wall"))}${this._paint(pet, "floor", t("inventory.floor"))}` : nothing}
-      ${things.length ? html`<div class="slots">${things.map((i) => this._slot(`thing:${i.id}`, itemName(i.id), itemArt(i.id)))}</div>` : nothing}`;
+      ${things.length
+        ? html`<div class="group">
+            <h4>${t("inventory.unlocked")}</h4>
+            <div class="slots">${things.map((i) => this._slot(`thing:${i.id}`, itemName(i.id), itemArt(i.id), "", true))}</div>
+          </div>`
+        : nothing}`;
   }
 
   /** The bar at the bottom: the chosen slot and the one thing to do with it. */

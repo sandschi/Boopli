@@ -1602,6 +1602,7 @@
     "feed": "Feed",
     "use": "Use",
     "in_use": "In use",
+    "unlocked": "Unlocked",
     "tap_something_to_see_more": "Tap something to see more.",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} in stock",
