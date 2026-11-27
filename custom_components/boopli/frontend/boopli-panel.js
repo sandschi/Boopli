@@ -18166,8 +18166,11 @@ var os = "@address", ss = () => ({
       </div>
       <div class="summary">${n.find((e) => e.value === t)?.label ?? ""}</div>
       <div class="buttons">
-        <button type="button" class="textlink" aria-label=${e.title} @click=${() => this._accessOpen = !0}>${C("settings.access_change")}</button>
+        <button type="button" class="textlink" aria-label=${e.title} @click=${() => {
+			this._accessError = "", this._accessOpen = !0;
+		}}>${C("settings.access_change")}</button>
       </div>
+      ${!this._accessOpen && this._accessError ? m`<div class="error" role="alert">${this._accessError}</div>` : _}
       ${this._accessOpen ? m`<dialog
             class="sub"
             aria-label=${e.title}

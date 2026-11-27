@@ -1090,8 +1090,9 @@ export class BoopliSettings extends LitElement {
       </div>
       <div class="summary">${choices.find((c) => c.value === level)?.label ?? ""}</div>
       <div class="buttons">
-        <button type="button" class="textlink" aria-label=${a.title} @click=${() => (this._accessOpen = true)}>${t("settings.access_change")}</button>
+        <button type="button" class="textlink" aria-label=${a.title} @click=${() => { this._accessError = ""; this._accessOpen = true; }}>${t("settings.access_change")}</button>
       </div>
+      ${!this._accessOpen && this._accessError ? html`<div class="error" role="alert">${this._accessError}</div>` : nothing}
       ${this._accessOpen
         ? html`<dialog
             class="sub"
