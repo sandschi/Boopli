@@ -74,6 +74,20 @@ export const modalStyles = css`
     white-space: nowrap;
     background: color-mix(in srgb, #000 35%, transparent);
   }
+  .shopbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    background: var(--gold);
+    color: #2a1e00;
+    font-weight: 700;
+    font-size: 16px;
+    white-space: nowrap;
+  }
   .cats {
     display: flex;
     gap: 6px;

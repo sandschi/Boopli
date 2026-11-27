@@ -10393,6 +10393,20 @@ var ia = o`
     white-space: nowrap;
     background: color-mix(in srgb, #000 35%, transparent);
   }
+  .shopbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    background: var(--gold);
+    color: #2a1e00;
+    font-weight: 700;
+    font-size: 16px;
+    white-space: nowrap;
+  }
   .cats {
     display: flex;
     gap: 6px;
@@ -10939,14 +10953,13 @@ var sa = [
       ${e ? m`<div class="win">
             <div class="head">
               <h3>${O("bag-personal-outline")} ${S("inventory.inventory")}</h3>
+              <button type="button" class="shopbtn" @click=${() => this._toShop()}>${O("store-outline")} ${S("inventory.to_the_shop")}</button>
               <button type="button" class="close" aria-label=${S("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="body">
               ${this._note ? m`<p class="muted note" role="status">${this._note}</p>` : _}
               ${this._error ? m`<p class="error note" role="alert">${this._error}</p>` : _}
-              ${this._food(e)}${this._room(e)}
-              <button type="button" class="textlink" @click=${() => this._toShop()}>${S("inventory.to_the_shop")}</button>
-            </div>
+              ${this._food(e)}${this._room(e)}            </div>
             ${this._detail(e)}
           </div>` : _}
     </dialog>`;
