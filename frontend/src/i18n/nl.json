@@ -1598,7 +1598,6 @@
   "inventory": {
     "inventory": "Voorraad",
     "food": "Eten",
-    "feed": "Voeren",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} op voorraad",
     "no_food_yet": "Je hebt nog geen eten in voorraad.",

@@ -376,8 +376,14 @@ export class BoopliStage extends LitElement {
         animation: kibble-in 0.45s ease-out;
       }
       .feed-eat .food .kibble {
-        opacity: 0;
-        animation: kibble-eat 2.6s linear;
+        opacity: 1;
+      }
+      /* Eaten piece by piece, from the pet's side first. */
+      .feed-eat .food .kibble circle {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation: bite 0.35s ease-in both;
+        animation-delay: calc(0.25s + var(--i, 0) * 0.3s);
       }
       .feed-walk:not(.stays) .actor,
       .feed-eat:not(.stays) .actor {
@@ -396,18 +402,14 @@ export class BoopliStage extends LitElement {
           transform: scaleY(1);
         }
       }
-      @keyframes kibble-eat {
-        0% {
+      @keyframes bite {
+        from {
           opacity: 1;
-          transform: scaleY(1);
+          transform: scale(1);
         }
-        85% {
-          opacity: 1;
-          transform: scaleY(0.12);
-        }
-        100% {
+        to {
           opacity: 0;
-          transform: scaleY(0);
+          transform: scale(0.2);
         }
       }
       @keyframes chomp {
@@ -444,13 +446,11 @@ export class BoopliStage extends LitElement {
           opacity: 0.6;
         }
         .feed-eat .actor,
+        .feed-eat .food .kibble circle,
         .feed-eat .food .kibble,
         .feed-fill .food .kibble,
         .feed-walk .food .kibble {
           animation: none;
-        }
-        .feed-eat .food .kibble {
-          opacity: 1;
         }
         .actor,
         .blanket {

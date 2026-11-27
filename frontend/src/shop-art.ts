@@ -38,13 +38,13 @@ export const FOOD_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="36" cy="19" rx="29" ry="8" fill="#FFE3C7" stroke=${INK} stroke-width="2.5"/>
   <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#7A4A2A"/>
   <g class="kibble">
-    <circle cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-    <circle cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:6" cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:4" cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:1" cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:0" cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:3" cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:5" cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
+    <circle style="--i:2" cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
   </g>
 </svg>`;
 

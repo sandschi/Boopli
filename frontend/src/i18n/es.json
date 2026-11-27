@@ -1598,7 +1598,6 @@
   "inventory": {
     "inventory": "Inventario",
     "food": "Comida",
-    "feed": "Dar de comer",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} disponibles",
     "no_food_yet": "Aún no tienes comida.",

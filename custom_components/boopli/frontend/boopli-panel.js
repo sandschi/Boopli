@@ -1731,7 +1731,6 @@ var Ze = {
 	inventory: {
 		inventory: "Inventar",
 		food: "Futter",
-		feed: "Füttern",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} auf Vorrat",
 		no_food_yet: "Hier ist noch kein Futter.",
@@ -2951,7 +2950,6 @@ var Ze = {
 	inventory: {
 		inventory: "Inventory",
 		food: "Food",
-		feed: "Feed",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} in stock",
 		no_food_yet: "No food yet.",
@@ -4171,7 +4169,6 @@ var Ze = {
 	inventory: {
 		inventory: "Inventario",
 		food: "Comida",
-		feed: "Dar de comer",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} disponibles",
 		no_food_yet: "Aún no tienes comida.",
@@ -5391,7 +5388,6 @@ var Ze = {
 	inventory: {
 		inventory: "Inventaire",
 		food: "Nourriture",
-		feed: "Nourrir",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} en réserve",
 		no_food_yet: "Tu n’as pas encore de nourriture.",
@@ -6611,7 +6607,6 @@ var Ze = {
 	inventory: {
 		inventory: "Voorraad",
 		food: "Eten",
-		feed: "Voeren",
 		fed_xp: "+{xp} XP",
 		n_in_stock: "{count} op voorraad",
 		no_food_yet: "Je hebt nog geen eten in voorraad.",
@@ -9803,13 +9798,13 @@ var U = "#101010", Bi = m`<svg viewBox="0 0 72 48" aria-hidden="true">
   <ellipse cx="36" cy="19" rx="29" ry="8" fill="#FFE3C7" stroke=${U} stroke-width="2.5"/>
   <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#7A4A2A"/>
   <g class="kibble">
-    <circle cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
-    <circle cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:6" cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:4" cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:1" cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:0" cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:3" cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:5" cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
+    <circle style="--i:2" cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${U} stroke-width="1.5"/>
   </g>
 </svg>`, Hi = (e) => m`<svg viewBox="0 0 28 20" aria-hidden="true" class="meal ${e ? "full" : "empty"}">
   <path d="M3 8 Q4 18 14 18 Q24 18 25 8 Z" fill=${e ? "#F08A4B" : "none"} stroke=${e ? U : "currentColor"} stroke-width="2" stroke-linejoin="round" opacity=${e ? 1 : .55}/>
@@ -10182,8 +10177,14 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         animation: kibble-in 0.45s ease-out;
       }
       .feed-eat .food .kibble {
-        opacity: 0;
-        animation: kibble-eat 2.6s linear;
+        opacity: 1;
+      }
+      /* Eaten piece by piece, from the pet's side first. */
+      .feed-eat .food .kibble circle {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation: bite 0.35s ease-in both;
+        animation-delay: calc(0.25s + var(--i, 0) * 0.3s);
       }
       .feed-walk:not(.stays) .actor,
       .feed-eat:not(.stays) .actor {
@@ -10202,18 +10203,14 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
           transform: scaleY(1);
         }
       }
-      @keyframes kibble-eat {
-        0% {
+      @keyframes bite {
+        from {
           opacity: 1;
-          transform: scaleY(1);
+          transform: scale(1);
         }
-        85% {
-          opacity: 1;
-          transform: scaleY(0.12);
-        }
-        100% {
+        to {
           opacity: 0;
-          transform: scaleY(0);
+          transform: scale(0.2);
         }
       }
       @keyframes chomp {
@@ -10250,13 +10247,11 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
           opacity: 0.6;
         }
         .feed-eat .actor,
+        .feed-eat .food .kibble circle,
         .feed-eat .food .kibble,
         .feed-fill .food .kibble,
         .feed-walk .food .kibble {
           animation: none;
-        }
-        .feed-eat .food .kibble {
-          opacity: 1;
         }
         .actor,
         .blanket {
@@ -10616,7 +10611,7 @@ var la = [
 		this._run(() => Sn(this.hass, e, t));
 	}
 	_food(e) {
-		let t = e.meals_today >= e.meals_max, n = la.filter((t) => (e.food[t] ?? 0) > 0);
+		let t = e.meals_today >= e.meals_max, n = la.some((t) => (e.food[t] ?? 0) > 0);
 		return p`<div class="group">
       <h4>${b("inventory.food")}</h4>
       <p class="muted small meals">
@@ -10625,23 +10620,24 @@ var la = [
 			max: e.meals_max
 		})}
       </p>
-      ${n.length ? p`<div class="rows">
-            ${n.map((n) => {
-			let r = e.items.find((e) => e.food === n);
-			return p`<div class="row">
-                <div class="art">${ta(n)}</div>
-                <div class="text">
-                  <div class="name">${na(`food_${n}`)}</div>
-                  <div class="note">${b("inventory.n_in_stock", { count: e.food[n] ?? 0 })} · ${b("shop.gives_xp", { xp: r?.xp ?? 0 })}</div>
-                </div>
-                <div class="act">
-                  <button type="button" class="primary" ?disabled=${t || this._busy} @click=${() => this._feed(n, r)}>
-                    ${D("food-drumstick-outline")} ${b("inventory.feed")}
-                  </button>
-                </div>
-              </div>`;
+      <div class="tiles">
+        ${la.map((n) => {
+			let r = e.items.find((e) => e.food === n), i = e.food[n] ?? 0, a = na(`food_${n}`);
+			return p`<button
+            type="button"
+            class="tile"
+            ?disabled=${t || i <= 0 || this._busy}
+            aria-label="${a} · ${b("inventory.n_in_stock", { count: i })} · ${b("shop.gives_xp", { xp: r?.xp ?? 0 })}"
+            @click=${() => this._feed(n, r)}
+          >
+            <span class="count" aria-hidden="true">${i}</span>
+            <span class="pic">${ta(n)}</span>
+            <span class="tname">${a}</span>
+            <span class="txp">${b("inventory.fed_xp", { xp: r?.xp ?? 0 })}</span>
+          </button>`;
 		})}
-          </div>` : p`<p class="muted">${b("inventory.no_food_yet")}</p>`}
+      </div>
+      ${n ? g : p`<p class="muted">${b("inventory.no_food_yet")}</p>`}
       <button type="button" class="textlink" @click=${() => this._toShop()}>${b("inventory.to_the_shop")}</button>
     </div>`;
 	}
@@ -10709,6 +10705,67 @@ var la = [
       }
       .meals {
         margin: 0 0 6px;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .tile {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-height: 128px;
+        padding: 12px 6px 8px;
+        border-radius: 16px;
+        border: 2px solid #e9b949;
+        background: #fff4d6;
+        color: #3a2a00;
+        font-size: 17px;
+      }
+      .tile:hover:not(:disabled) {
+        background: #ffeab3;
+      }
+      .tile:active:not(:disabled) {
+        transform: translateY(2px);
+      }
+      .tile:disabled {
+        opacity: 0.45;
+      }
+      .tile .pic {
+        display: block;
+        width: 58px;
+        height: 52px;
+      }
+      .tile .pic svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .tile .tname {
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.1;
+      }
+      .tile .txp {
+        font-size: 15px;
+        color: #8a6a2a;
+      }
+      .tile .count {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        min-width: 24px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #3a2a00;
+        color: #fff4d6;
+        font-weight: 700;
+        font-size: 15px;
+        text-align: center;
       }
       .place {
         margin-bottom: 10px;
@@ -11139,7 +11196,7 @@ var Ga = class extends _ {
 		};
 	}
 	constructor() {
-		super(), this._questHandled = !1, this._lastRunIds = [], this.nowMs = Date.now(), this._busy = !1, this._error = "", this._toast = "", this._quick = "", this._park = null, this._removing = "", this._egg = !1, this._shop = !1, this._inventory = !1, this._quest = !1, this._questError = "", this._moment = "", this._momentSeq = 0, this._feedSeq = 0, this._momentText = "";
+		super(), this._questHandled = !1, this._feedPending = !1, this._lastRunIds = [], this.nowMs = Date.now(), this._busy = !1, this._error = "", this._toast = "", this._quick = "", this._park = null, this._removing = "", this._egg = !1, this._shop = !1, this._inventory = !1, this._quest = !1, this._questError = "", this._moment = "", this._momentSeq = 0, this._feedSeq = 0, this._momentText = "";
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearTimeout(this._toastTimer);
@@ -11147,7 +11204,7 @@ var Ga = class extends _ {
 	willUpdate(e) {
 		if (G(this.snapshot).all || (this._removing = "", this._quick = ""), !e.has("snapshot") || !this.snapshot?.pet) return;
 		let t = this.snapshot.pet, n = this._lastPet;
-		this._lastPet = t, n && t.meals_today > n.meals_today && (this._feedSeq += 1);
+		this._lastPet = t, n && t.meals_today > n.meals_today && (this._shop || this._inventory ? this._feedPending = !0 : this._feedSeq += 1);
 		let r = this.snapshot.runs.map((e) => e.id), i = this._lastRunIds.filter((e) => !r.includes(e)).map((e) => this.snapshot.history.find((t) => t.kind === "chore_done" && t.run_id === e)?.chore_name).filter((e) => !!e);
 		this._lastRunIds = r, t.quest_popup && !this._questHandled && (this._quest = !0);
 		let a = n ? t.blubs - n.blubs : 0, o = n ? t.total_xp - n.total_xp : 0;
@@ -11250,19 +11307,22 @@ var Ga = class extends _ {
         .hass=${this.hass}
         .pet=${e}
         .open=${this._shop}
-        @shop-close=${() => this._shop = !1}
+        @shop-close=${() => this._closeWindow("shop")}
       ></boopli-shop>
       <boopli-inventory
         .hass=${this.hass}
         .pet=${e}
         .open=${this._inventory}
-        @inventory-close=${() => this._inventory = !1}
+        @inventory-close=${() => this._closeWindow("inventory")}
         @open-shop=${() => {
 			this._inventory = !1, this._shop = !0;
 		}}
       ></boopli-inventory>
       ${this._renderQuest()}
     `;
+	}
+	_closeWindow(e) {
+		e === "shop" ? this._shop = !1 : this._inventory = !1, this._feedPending && !this._shop && !this._inventory && (this._feedPending = !1, window.setTimeout(() => this._feedSeq += 1, 250));
 	}
 	_renderQuest() {
 		return this._quest ? p`<dialog

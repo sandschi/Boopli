@@ -1598,7 +1598,6 @@
   "inventory": {
     "inventory": "Inventar",
     "food": "Futter",
-    "feed": "Füttern",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} auf Vorrat",
     "no_food_yet": "Hier ist noch kein Futter.",

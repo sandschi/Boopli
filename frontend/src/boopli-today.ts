@@ -95,6 +95,7 @@ export class BoopliToday extends LitElement {
   declare _quest: boolean; // the one-time pop-up at the end of the starter quest is open
   declare _questError: string;
   private _questHandled = false; // the server has been told it was seen (from this screen)
+  private _feedPending = false; // a meal was given while a window covered the room: play the eating scene when it closes
   declare _moment: Moment; // what the pet plays once: level up, waking up, a step done
   declare _momentSeq: number; // counts them, so the same moment can play again
   declare _feedSeq: number; // counts the meals just given, so each one plays the eating scene
@@ -138,7 +139,11 @@ export class BoopliToday extends LitElement {
     const pet = this.snapshot.pet;
     const before = this._lastPet;
     this._lastPet = pet;
-    if (before && pet.meals_today > before.meals_today) this._feedSeq += 1; // a meal was just given (here or on another screen)
+    if (before && pet.meals_today > before.meals_today) {
+      // A meal was just given (here or on another screen). The eating scene waits until the shop or the inventory is closed, so it can be seen.
+      if (this._shop || this._inventory) this._feedPending = true;
+      else this._feedSeq += 1;
+    }
     // A task that was running and is now finished: celebrate it by name.
     const runIds = this.snapshot.runs.map((r) => r.id);
     const finished = this._lastRunIds
@@ -278,13 +283,13 @@ export class BoopliToday extends LitElement {
         .hass=${this.hass}
         .pet=${pet}
         .open=${this._shop}
-        @shop-close=${() => (this._shop = false)}
+        @shop-close=${() => this._closeWindow("shop")}
       ></boopli-shop>
       <boopli-inventory
         .hass=${this.hass}
         .pet=${pet}
         .open=${this._inventory}
-        @inventory-close=${() => (this._inventory = false)}
+        @inventory-close=${() => this._closeWindow("inventory")}
         @open-shop=${() => {
           this._inventory = false;
           this._shop = true;
@@ -292,6 +297,16 @@ export class BoopliToday extends LitElement {
       ></boopli-inventory>
       ${this._renderQuest()}
     `;
+  }
+
+  /** Close the shop or the inventory; a meal given while it was open now plays its eating scene (unless the other one is still open). */
+  private _closeWindow(which: "shop" | "inventory"): void {
+    if (which === "shop") this._shop = false;
+    else this._inventory = false;
+    if (this._feedPending && !this._shop && !this._inventory) {
+      this._feedPending = false;
+      window.setTimeout(() => (this._feedSeq += 1), 250); // after the window has faded away
+    }
   }
 
   /** The one-time pop-up at level 10: the starter quest is done, from here it is slower but reachable. */

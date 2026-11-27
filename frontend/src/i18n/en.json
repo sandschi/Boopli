@@ -1598,7 +1598,6 @@
   "inventory": {
     "inventory": "Inventory",
     "food": "Food",
-    "feed": "Feed",
     "fed_xp": "+{xp} XP",
     "n_in_stock": "{count} in stock",
     "no_food_yet": "No food yet.",

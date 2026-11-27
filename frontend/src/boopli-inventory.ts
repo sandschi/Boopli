@@ -83,31 +83,33 @@ export class BoopliInventory extends LitElement {
 
   private _food(pet: Pet) {
     const full = pet.meals_today >= pet.meals_max;
-    const stock = FOOD_SIZES.filter((s) => (pet.food[s] ?? 0) > 0);
+    const any = FOOD_SIZES.some((s) => (pet.food[s] ?? 0) > 0);
+    // Three big buttons, one per food: press the food to feed it. A size you have none of stays, dimmed, so nothing jumps around.
     return html`<div class="group">
       <h4>${t("inventory.food")}</h4>
       <p class="muted small meals">
         ${full ? t("common.is_full_for_today", { name: pet.name }) : t("common.meals_today", { eaten: pet.meals_today, max: pet.meals_max })}
       </p>
-      ${stock.length
-        ? html`<div class="rows">
-            ${stock.map((size) => {
-              const item = pet.items.find((i) => i.food === size);
-              return html`<div class="row">
-                <div class="art">${foodArt(size)}</div>
-                <div class="text">
-                  <div class="name">${itemName(`food_${size}`)}</div>
-                  <div class="note">${t("inventory.n_in_stock", { count: pet.food[size] ?? 0 })} · ${t("shop.gives_xp", { xp: item?.xp ?? 0 })}</div>
-                </div>
-                <div class="act">
-                  <button type="button" class="primary" ?disabled=${full || this._busy} @click=${() => this._feed(size, item)}>
-                    ${icon("food-drumstick-outline")} ${t("inventory.feed")}
-                  </button>
-                </div>
-              </div>`;
-            })}
-          </div>`
-        : html`<p class="muted">${t("inventory.no_food_yet")}</p>`}
+      <div class="tiles">
+        ${FOOD_SIZES.map((size) => {
+          const item = pet.items.find((i) => i.food === size);
+          const count = pet.food[size] ?? 0;
+          const name = itemName(`food_${size}`);
+          return html`<button
+            type="button"
+            class="tile"
+            ?disabled=${full || count <= 0 || this._busy}
+            aria-label="${name} · ${t("inventory.n_in_stock", { count })} · ${t("shop.gives_xp", { xp: item?.xp ?? 0 })}"
+            @click=${() => this._feed(size, item)}
+          >
+            <span class="count" aria-hidden="true">${count}</span>
+            <span class="pic">${foodArt(size)}</span>
+            <span class="tname">${name}</span>
+            <span class="txp">${t("inventory.fed_xp", { xp: item?.xp ?? 0 })}</span>
+          </button>`;
+        })}
+      </div>
+      ${any ? nothing : html`<p class="muted">${t("inventory.no_food_yet")}</p>`}
       <button type="button" class="textlink" @click=${() => this._toShop()}>${t("inventory.to_the_shop")}</button>
     </div>`;
   }
@@ -191,6 +193,67 @@ export class BoopliInventory extends LitElement {
       }
       .meals {
         margin: 0 0 6px;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .tile {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-height: 128px;
+        padding: 12px 6px 8px;
+        border-radius: 16px;
+        border: 2px solid #e9b949;
+        background: #fff4d6;
+        color: #3a2a00;
+        font-size: 17px;
+      }
+      .tile:hover:not(:disabled) {
+        background: #ffeab3;
+      }
+      .tile:active:not(:disabled) {
+        transform: translateY(2px);
+      }
+      .tile:disabled {
+        opacity: 0.45;
+      }
+      .tile .pic {
+        display: block;
+        width: 58px;
+        height: 52px;
+      }
+      .tile .pic svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .tile .tname {
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.1;
+      }
+      .tile .txp {
+        font-size: 15px;
+        color: #8a6a2a;
+      }
+      .tile .count {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        min-width: 24px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #3a2a00;
+        color: #fff4d6;
+        font-weight: 700;
+        font-size: 15px;
+        text-align: center;
       }
       .place {
         margin-bottom: 10px;
