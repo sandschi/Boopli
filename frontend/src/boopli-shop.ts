@@ -19,7 +19,7 @@ const GROUPS: { id: string; icon: string; title: () => string; kinds: ShopItem["
  * The shop, in its own window. It sells what the integration lists (`pet.items`): food again and again,
  * everything else once (a bought item is gone from here and shows up in the inventory). Pick a group at the top,
  * choose a slot, and the bar at the bottom says what it is, why it is locked (if so) and has the buy button.
- * Fires `shop-close`.
+ * Fires `shop-close`, and `open-inventory` from the inventory button.
  */
 export class BoopliShop extends LitElement {
   static properties = {
@@ -66,6 +66,10 @@ export class BoopliShop extends LitElement {
 
   private _close(): void {
     this.dispatchEvent(new CustomEvent("shop-close", { bubbles: true, composed: true }));
+  }
+
+  private _toInventory(): void {
+    this.dispatchEvent(new CustomEvent("open-inventory", { bubbles: true, composed: true }));
   }
 
   private async _buy(item: ShopItem): Promise<void> {
@@ -154,6 +158,7 @@ export class BoopliShop extends LitElement {
             <div class="head">
               <h3>${icon("store-outline")} ${t("shop.shop")}</h3>
               <span class="wallet" title=${t("shop.your_blubs")}>${coin()} ${t("shop.n_blubs", { count: pet.blubs })}</span>
+              <button type="button" class="shopbtn" aria-label=${t("inventory.inventory")} @click=${() => this._toInventory()}>${icon("bag-personal-outline")}<span class="lbl">${t("inventory.inventory")}</span></button>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="cats" role="tablist">

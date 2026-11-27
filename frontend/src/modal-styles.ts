@@ -43,6 +43,7 @@ export const modalStyles = css`
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
     padding: 10px 14px;
     background: linear-gradient(var(--wood-edge), var(--wood-dark));
     border-bottom: 3px solid var(--wood-dark);
@@ -322,6 +323,12 @@ export const modalStyles = css`
     }
     .detail .go {
       padding: 0 12px;
+    }
+    .shopbtn .lbl {
+      display: none;
+    }
+    .shopbtn {
+      padding: 0 10px;
     }
   }
 `;

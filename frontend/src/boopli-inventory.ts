@@ -199,7 +199,7 @@ export class BoopliInventory extends LitElement {
         ? html`<div class="win">
             <div class="head">
               <h3>${icon("bag-personal-outline")} ${t("inventory.inventory")}</h3>
-              <button type="button" class="shopbtn" @click=${() => this._toShop()}>${icon("store-outline")} ${t("inventory.to_the_shop")}</button>
+              <button type="button" class="shopbtn" aria-label=${t("inventory.to_the_shop")} @click=${() => this._toShop()}>${icon("store-outline")}<span class="lbl">${t("inventory.to_the_shop")}</span></button>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="body">

@@ -284,6 +284,10 @@ export class BoopliToday extends LitElement {
         .pet=${pet}
         .open=${this._shop}
         @shop-close=${() => this._closeWindow("shop")}
+        @open-inventory=${() => {
+          this._shop = false;
+          this._inventory = true;
+        }}
       ></boopli-shop>
       <boopli-inventory
         .hass=${this.hass}

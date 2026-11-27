@@ -10362,6 +10362,7 @@ var ia = o`
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
     padding: 10px 14px;
     background: linear-gradient(var(--wood-edge), var(--wood-dark));
     border-bottom: 3px solid var(--wood-dark);
@@ -10642,6 +10643,12 @@ var ia = o`
     .detail .go {
       padding: 0 12px;
     }
+    .shopbtn .lbl {
+      display: none;
+    }
+    .shopbtn {
+      padding: 0 10px;
+    }
   }
 `, aa = [
 	{
@@ -10691,6 +10698,12 @@ var ia = o`
 	}
 	_close() {
 		this.dispatchEvent(new CustomEvent("shop-close", {
+			bubbles: !0,
+			composed: !0
+		}));
+	}
+	_toInventory() {
+		this.dispatchEvent(new CustomEvent("open-inventory", {
 			bubbles: !0,
 			composed: !0
 		}));
@@ -10764,6 +10777,7 @@ var ia = o`
             <div class="head">
               <h3>${O("store-outline")} ${S("shop.shop")}</h3>
               <span class="wallet" title=${S("shop.your_blubs")}>${Ui()} ${S("shop.n_blubs", { count: e.blubs })}</span>
+              <button type="button" class="shopbtn" aria-label=${S("inventory.inventory")} @click=${() => this._toInventory()}>${O("bag-personal-outline")}<span class="lbl">${S("inventory.inventory")}</span></button>
               <button type="button" class="close" aria-label=${S("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="cats" role="tablist">
@@ -10953,7 +10967,7 @@ var sa = [
       ${e ? m`<div class="win">
             <div class="head">
               <h3>${O("bag-personal-outline")} ${S("inventory.inventory")}</h3>
-              <button type="button" class="shopbtn" @click=${() => this._toShop()}>${O("store-outline")} ${S("inventory.to_the_shop")}</button>
+              <button type="button" class="shopbtn" aria-label=${S("inventory.to_the_shop")} @click=${() => this._toShop()}>${O("store-outline")}<span class="lbl">${S("inventory.to_the_shop")}</span></button>
               <button type="button" class="close" aria-label=${S("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="body">
@@ -11483,6 +11497,9 @@ var Ua = class extends v {
         .pet=${e}
         .open=${this._shop}
         @shop-close=${() => this._closeWindow("shop")}
+        @open-inventory=${() => {
+			this._shop = !1, this._inventory = !0;
+		}}
       ></boopli-shop>
       <boopli-inventory
         .hass=${this.hass}
