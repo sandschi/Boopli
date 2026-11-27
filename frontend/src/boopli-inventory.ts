@@ -73,6 +73,8 @@ export class BoopliInventory extends LitElement {
       this._note = note;
     } catch (err) {
       this._error = errorMessage(err);
+      // the window was closed while the request was out: nobody sees the message in it, so Today says it
+      if (!this.open) this.dispatchEvent(new CustomEvent("inventory-error", { detail: this._error, bubbles: true, composed: true }));
     } finally {
       this._busy = false;
     }

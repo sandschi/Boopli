@@ -10860,7 +10860,11 @@ var sa = [
 			try {
 				await e(), this._note = t;
 			} catch (e) {
-				this._error = w(e);
+				this._error = w(e), this.open || this.dispatchEvent(new CustomEvent("inventory-error", {
+					detail: this._error,
+					bubbles: !0,
+					composed: !0
+				}));
 			} finally {
 				this._busy = !1;
 			}
@@ -11405,6 +11409,9 @@ var Ua = class extends v {
 		let c = [...s];
 		i.length && c.unshift(S("today.is_done", { value: i[0] })), t.level > n.level && c.push(S("today.level_2", { level: t.level })), (n.mood === "sad" || n.mood === "hibernating") && c.push(S("today.is_awake_welcome_back", { name: t.name })), this._toast = c.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
 	}
+	_say(e) {
+		this._toast = e, window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
+	}
 	_openBreakdown(e) {
 		this.dispatchEvent(new CustomEvent("open-breakdown", {
 			detail: {
@@ -11508,6 +11515,7 @@ var Ua = class extends v {
         .pet=${e}
         .open=${this._inventory}
         @inventory-close=${() => this._closeWindow("inventory")}
+        @inventory-error=${(e) => this._say(e.detail)}
         @open-shop=${() => {
 			this._inventory = !1, this._shop = !0;
 		}}
@@ -11538,6 +11546,10 @@ var Ua = class extends v {
 		if (this.hass) try {
 			await Cn(this.hass), this._questHandled = !0, this._questError = "", this._quest = !1;
 		} catch (e) {
+			if (this._questError) {
+				this._questHandled = !0, this._questError = "", this._quest = !1;
+				return;
+			}
 			this._questError = w(e);
 		}
 	}

@@ -183,6 +183,13 @@ export class BoopliToday extends LitElement {
     this._toastTimer = window.setTimeout(() => (this._toast = ""), 5000);
   }
 
+  /** A short message at the bottom of Today, gone after a few seconds. */
+  private _say(text: string): void {
+    this._toast = text;
+    window.clearTimeout(this._toastTimer);
+    this._toastTimer = window.setTimeout(() => (this._toast = ""), 5000);
+  }
+
   private _openBreakdown(kind: "now" | "recurring"): void {
     this.dispatchEvent(
       new CustomEvent("open-breakdown", {
@@ -296,6 +303,7 @@ export class BoopliToday extends LitElement {
         .pet=${pet}
         .open=${this._inventory}
         @inventory-close=${() => this._closeWindow("inventory")}
+        @inventory-error=${(e: CustomEvent<string>) => this._say(e.detail)}
         @open-shop=${() => {
           this._inventory = false;
           this._shop = true;
@@ -347,6 +355,13 @@ export class BoopliToday extends LitElement {
       this._questError = "";
       this._quest = false;
     } catch (err) {
+      if (this._questError) {
+        // the second try failed as well: let the person go back to Today. The server still has not heard it, so it shows again after a reload.
+        this._questHandled = true;
+        this._questError = "";
+        this._quest = false;
+        return;
+      }
       this._questError = errorMessage(err);
     }
   }
