@@ -114,25 +114,27 @@ export class BoopliInventory extends LitElement {
     </div>`;
   }
 
-  /** Wall or floor: pick one of the owned colours and patterns, or none. */
+  /** Wall or floor: tiles of the owned colours and patterns, and "plain". */
   private _paint(pet: Pet, place: "wall" | "floor", title: string) {
     const looks = pet.items.filter((i) => (i.kind === "color" || i.kind === "pattern") && i.owned);
     const current = pet.placed[place] ?? "";
     return html`<div class="place">
       <div class="label">${title}</div>
-      <div class="chips" role="group" aria-label=${title}>
-        <button type="button" class="chip ${current === "" ? "on" : ""}" aria-pressed=${current === ""} ?disabled=${this._busy} @click=${() => this._place(place, "")}>
-          ${t("inventory.plain")}
+      <div class="tiles small-tiles" role="group" aria-label=${title}>
+        <button type="button" class="tile ${current === "" ? "on" : ""}" aria-pressed=${current === ""} ?disabled=${this._busy} @click=${() => this._place(place, "")}>
+          <span class="pic"><span class="swatch plain"></span></span>
+          <span class="tname">${t("inventory.plain")}</span>
         </button>
         ${looks.map(
           (i) => html`<button
             type="button"
-            class="chip ${current === i.id ? "on" : ""}"
+            class="tile ${current === i.id ? "on" : ""}"
             aria-pressed=${current === i.id}
             ?disabled=${this._busy}
             @click=${() => this._place(place, i.id)}
           >
-            <span class="dot">${itemArt(i.id)}</span> ${itemName(i.id)}
+            <span class="pic">${itemArt(i.id)}</span>
+            <span class="tname">${itemName(i.id)}</span>
           </button>`
         )}
       </div>
@@ -148,11 +150,11 @@ export class BoopliInventory extends LitElement {
         ? html`${this._paint(pet, "wall", t("inventory.wall"))}${this._paint(pet, "floor", t("inventory.floor"))}`
         : html`<p class="muted">${t("inventory.no_colours_or_patterns_yet")}</p>`}
       ${things.length
-        ? html`<div class="rows things">
+        ? html`<div class="tiles small-tiles things">
             ${things.map(
-              (i) => html`<div class="row">
-                <div class="art">${itemArt(i.id)}</div>
-                <div class="text"><div class="name">${itemName(i.id)}</div></div>
+              (i) => html`<div class="tile static">
+                <span class="pic">${itemArt(i.id)}</span>
+                <span class="tname">${itemName(i.id)}</span>
               </div>`
             )}
           </div>`
@@ -194,67 +196,6 @@ export class BoopliInventory extends LitElement {
       .meals {
         margin: 0 0 6px;
       }
-      .tiles {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 6px;
-      }
-      .tile {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        min-height: 128px;
-        padding: 12px 6px 8px;
-        border-radius: 16px;
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #3a2a00;
-        font-size: 17px;
-      }
-      .tile:hover:not(:disabled) {
-        background: #ffeab3;
-      }
-      .tile:active:not(:disabled) {
-        transform: translateY(2px);
-      }
-      .tile:disabled {
-        opacity: 0.45;
-      }
-      .tile .pic {
-        display: block;
-        width: 58px;
-        height: 52px;
-      }
-      .tile .pic svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-      .tile .tname {
-        font-weight: 700;
-        text-align: center;
-        line-height: 1.1;
-      }
-      .tile .txp {
-        font-size: 15px;
-        color: #8a6a2a;
-      }
-      .tile .count {
-        position: absolute;
-        top: 6px;
-        right: 8px;
-        min-width: 24px;
-        padding: 0 6px;
-        border-radius: 999px;
-        background: #3a2a00;
-        color: #fff4d6;
-        font-weight: 700;
-        font-size: 15px;
-        text-align: center;
-      }
       .place {
         margin-bottom: 10px;
       }
@@ -262,28 +203,15 @@ export class BoopliInventory extends LitElement {
         font-weight: 500;
         margin-bottom: 6px;
       }
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+      .small-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
       }
-      .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .dot {
-        display: inline-flex;
-        width: 22px;
-        height: 22px;
-      }
-      .dot .swatch {
-        width: 22px;
-        height: 22px;
-        border-width: 1px;
+      .small-tiles .tile {
+        min-height: 0;
+        padding-bottom: 10px;
       }
       .things {
-        margin-top: 6px;
+        margin-top: 10px;
       }
     `,
   ];

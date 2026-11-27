@@ -10054,23 +10054,23 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         padding: 2px 10px;
         border-radius: 999px;
         /* Colourful on purpose: the room is the pet's world, not part of the dashboard, whatever theme Home Assistant has. */
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #3a2a00;
+        border: 2px solid color-mix(in srgb, #e9b949 70%, transparent);
+        background: color-mix(in srgb, #e9b949 16%, var(--card-background-color, #1c1c1c) 92%);
+        color: var(--primary-text-color, #fff);
         font-size: 17px;
         font-weight: 700;
         cursor: pointer;
       }
       .controls button:hover {
-        background: #ffeab3;
+        background: color-mix(in srgb, #e9b949 28%, var(--card-background-color, #1c1c1c) 92%);
       }
       .controls button.inv {
-        border-color: #c9b8f5;
-        background: #f1eaff;
-        color: #6b4bc8;
+        border-color: color-mix(in srgb, #a98bff 70%, transparent);
+        background: color-mix(in srgb, #a98bff 18%, var(--card-background-color, #1c1c1c) 92%);
+        color: #b9a2ff;
       }
       .controls button.inv:hover {
-        background: #e4d8ff;
+        background: color-mix(in srgb, #a98bff 30%, var(--card-background-color, #1c1c1c) 92%);
       }
       .controls button.buyable {
         background: #2e7d32;
@@ -10095,9 +10095,9 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         height: 34px;
         padding: 0 8px;
         border-radius: 999px;
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #8a6a2a;
+        border: 2px solid color-mix(in srgb, #e9b949 70%, transparent);
+        background: color-mix(in srgb, #e9b949 16%, var(--card-background-color, #1c1c1c) 92%);
+        color: var(--secondary-text-color, #aaa);
       }
       .meals svg {
         display: block;
@@ -10408,6 +10408,95 @@ var oa = o`
     width: 100%;
     height: 100%;
   }
+  /* Tiles: the shop and the inventory are made of them. Warm gold-tinted, but following the theme (dark in dark mode). */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    min-height: 132px;
+    padding: 12px 6px 8px;
+    border-radius: 16px;
+    border: 2px solid color-mix(in srgb, #e9b949 60%, transparent);
+    background: color-mix(in srgb, #e9b949 13%, var(--card-background-color, #1c1c1c));
+    color: var(--primary-text-color, #fff);
+    font-size: 17px;
+    text-align: center;
+  }
+  button.tile:hover:not(:disabled) {
+    background: color-mix(in srgb, #e9b949 22%, var(--card-background-color, #1c1c1c));
+  }
+  button.tile:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+  button.tile:disabled {
+    opacity: 0.5;
+  }
+  .tile.static {
+    min-height: 0;
+    padding-bottom: 10px;
+  }
+  .tile.on {
+    border-color: var(--boopli-accent, var(--primary-color, #03a9f4));
+    background: color-mix(in srgb, var(--boopli-accent, var(--primary-color, #03a9f4)) 22%, var(--card-background-color, #1c1c1c));
+  }
+  .tile .pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 52px;
+  }
+  .tile .pic svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .tile .pic .swatch {
+    width: 44px;
+    height: 44px;
+  }
+  .tile .pic .swatch.plain {
+    background: transparent;
+    border-style: dashed;
+    opacity: 0.6;
+  }
+  .tile .tname {
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .tile .txp {
+    min-height: 18px;
+    font-size: 15px;
+    color: var(--secondary-text-color, #aaa);
+    line-height: 1.15;
+  }
+  .tile .price {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: auto;
+    font-weight: 700;
+  }
+  .tile .count {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    min-width: 24px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #e9b949;
+    color: #2a1e00;
+    font-weight: 700;
+    font-size: 15px;
+  }
   .actions {
     margin-top: 16px;
   }
@@ -10489,30 +10578,22 @@ var oa = o`
 		return e.locked === "level" ? b("shop.from_level", { level: e.min_level }) : e.locked === "achievement" ? b("shop.needs_an_achievement") : e.locked === "requires" ? b("shop.needs_something_first") : e.price > t.blubs ? b("shop.not_enough_blubs_yet") : "";
 	}
 	_row(e, t) {
-		let n = this._why(e, t), r = e.locked !== "";
-		return p`<div class="row ${r ? "locked" : ""}">
-      <div class="art">${ea(e.id)}</div>
-      <div class="text">
-        <div class="name">${na(e.id)}</div>
-        <div class="note">
-          ${e.food ? b("shop.gives_xp", { xp: e.xp }) : g}${n && !e.food ? n : g}${n && e.food ? p` · ${n}` : g}
-        </div>
-      </div>
-      <div class="act">
-        <button
-          type="button"
-          class="primary"
-          ?disabled=${r || e.price > t.blubs || !!this._busy}
-          aria-label=${b("shop.buy_item_for", {
+		let n = this._why(e, t);
+		return p`<button
+      type="button"
+      class="tile"
+      ?disabled=${e.locked !== "" || e.price > t.blubs || !!this._busy}
+      aria-label=${b("shop.buy_item_for", {
 			item: na(e.id),
 			price: e.price
 		})}
-          @click=${() => this._buy(e)}
-        >
-          ${Wi()} ${e.price}
-        </button>
-      </div>
-    </div>`;
+      @click=${() => this._buy(e)}
+    >
+      <span class="pic">${ea(e.id)}</span>
+      <span class="tname">${na(e.id)}</span>
+      <span class="txp">${e.food ? b("inventory.fed_xp", { xp: e.xp }) : n || g}</span>
+      <span class="price">${Wi()} ${e.price}</span>
+    </button>`;
 	}
 	render() {
 		let e = this.pet;
@@ -10535,7 +10616,7 @@ var oa = o`
 			let n = e.items.filter((e) => t.kinds.includes(e.kind) && (!e.owned || e.kind === "food")).sort((e, t) => e.price - t.price);
 			return n.length ? p`<div class="group">
                 <h4>${t.title()}</h4>
-                <div class="rows">${n.map((t) => this._row(t, e))}</div>
+                <div class="tiles">${n.map((t) => this._row(t, e))}</div>
               </div>` : g;
 		})}
             <div class="actions"><button type="button" @click=${() => this._close()}>${b("common.close")}</button></div>
@@ -10546,12 +10627,7 @@ var oa = o`
 		this.styles = [
 			w,
 			oa,
-			o`
-      .row.locked .art,
-      .row.locked .name {
-        opacity: 0.55;
-      }
-    `
+			o``
 		];
 	}
 };
@@ -10645,18 +10721,20 @@ var la = [
 		let r = e.items.filter((e) => (e.kind === "color" || e.kind === "pattern") && e.owned), i = e.placed[t] ?? "";
 		return p`<div class="place">
       <div class="label">${n}</div>
-      <div class="chips" role="group" aria-label=${n}>
-        <button type="button" class="chip ${i === "" ? "on" : ""}" aria-pressed=${i === ""} ?disabled=${this._busy} @click=${() => this._place(t, "")}>
-          ${b("inventory.plain")}
+      <div class="tiles small-tiles" role="group" aria-label=${n}>
+        <button type="button" class="tile ${i === "" ? "on" : ""}" aria-pressed=${i === ""} ?disabled=${this._busy} @click=${() => this._place(t, "")}>
+          <span class="pic"><span class="swatch plain"></span></span>
+          <span class="tname">${b("inventory.plain")}</span>
         </button>
         ${r.map((e) => p`<button
             type="button"
-            class="chip ${i === e.id ? "on" : ""}"
+            class="tile ${i === e.id ? "on" : ""}"
             aria-pressed=${i === e.id}
             ?disabled=${this._busy}
             @click=${() => this._place(t, e.id)}
           >
-            <span class="dot">${ea(e.id)}</span> ${na(e.id)}
+            <span class="pic">${ea(e.id)}</span>
+            <span class="tname">${na(e.id)}</span>
           </button>`)}
       </div>
     </div>`;
@@ -10666,10 +10744,10 @@ var la = [
 		return p`<div class="group">
       <h4>${b("inventory.room")}</h4>
       ${n ? p`${this._paint(e, "wall", b("inventory.wall"))}${this._paint(e, "floor", b("inventory.floor"))}` : p`<p class="muted">${b("inventory.no_colours_or_patterns_yet")}</p>`}
-      ${t.length ? p`<div class="rows things">
-            ${t.map((e) => p`<div class="row">
-                <div class="art">${ea(e.id)}</div>
-                <div class="text"><div class="name">${na(e.id)}</div></div>
+      ${t.length ? p`<div class="tiles small-tiles things">
+            ${t.map((e) => p`<div class="tile static">
+                <span class="pic">${ea(e.id)}</span>
+                <span class="tname">${na(e.id)}</span>
               </div>`)}
           </div>` : g}
     </div>`;
@@ -10706,67 +10784,6 @@ var la = [
       .meals {
         margin: 0 0 6px;
       }
-      .tiles {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 6px;
-      }
-      .tile {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        min-height: 128px;
-        padding: 12px 6px 8px;
-        border-radius: 16px;
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #3a2a00;
-        font-size: 17px;
-      }
-      .tile:hover:not(:disabled) {
-        background: #ffeab3;
-      }
-      .tile:active:not(:disabled) {
-        transform: translateY(2px);
-      }
-      .tile:disabled {
-        opacity: 0.45;
-      }
-      .tile .pic {
-        display: block;
-        width: 58px;
-        height: 52px;
-      }
-      .tile .pic svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-      .tile .tname {
-        font-weight: 700;
-        text-align: center;
-        line-height: 1.1;
-      }
-      .tile .txp {
-        font-size: 15px;
-        color: #8a6a2a;
-      }
-      .tile .count {
-        position: absolute;
-        top: 6px;
-        right: 8px;
-        min-width: 24px;
-        padding: 0 6px;
-        border-radius: 999px;
-        background: #3a2a00;
-        color: #fff4d6;
-        font-weight: 700;
-        font-size: 15px;
-        text-align: center;
-      }
       .place {
         margin-bottom: 10px;
       }
@@ -10774,28 +10791,15 @@ var la = [
         font-weight: 500;
         margin-bottom: 6px;
       }
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+      .small-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
       }
-      .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .dot {
-        display: inline-flex;
-        width: 22px;
-        height: 22px;
-      }
-      .dot .swatch {
-        width: 22px;
-        height: 22px;
-        border-width: 1px;
+      .small-tiles .tile {
+        min-height: 0;
+        padding-bottom: 10px;
       }
       .things {
-        margin-top: 6px;
+        margin-top: 10px;
       }
     `
 		];

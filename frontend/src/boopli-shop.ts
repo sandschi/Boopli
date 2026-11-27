@@ -87,26 +87,19 @@ export class BoopliShop extends LitElement {
   private _row(item: ShopItem, pet: Pet) {
     const why = this._why(item, pet);
     const blocked = item.locked !== "";
-    return html`<div class="row ${blocked ? "locked" : ""}">
-      <div class="art">${itemArt(item.id)}</div>
-      <div class="text">
-        <div class="name">${itemName(item.id)}</div>
-        <div class="note">
-          ${item.food ? t("shop.gives_xp", { xp: item.xp }) : nothing}${why && !item.food ? why : nothing}${why && item.food ? html` · ${why}` : nothing}
-        </div>
-      </div>
-      <div class="act">
-        <button
-          type="button"
-          class="primary"
-          ?disabled=${blocked || item.price > pet.blubs || !!this._busy}
-          aria-label=${t("shop.buy_item_for", { item: itemName(item.id), price: item.price })}
-          @click=${() => this._buy(item)}
-        >
-          ${coin()} ${item.price}
-        </button>
-      </div>
-    </div>`;
+    // A tile is the whole button: press the picture to buy it. What is in the way (level, achievement, Blubs) is written on it.
+    return html`<button
+      type="button"
+      class="tile"
+      ?disabled=${blocked || item.price > pet.blubs || !!this._busy}
+      aria-label=${t("shop.buy_item_for", { item: itemName(item.id), price: item.price })}
+      @click=${() => this._buy(item)}
+    >
+      <span class="pic">${itemArt(item.id)}</span>
+      <span class="tname">${itemName(item.id)}</span>
+      <span class="txp">${item.food ? t("inventory.fed_xp", { xp: item.xp }) : why || nothing}</span>
+      <span class="price">${coin()} ${item.price}</span>
+    </button>`;
   }
 
   render() {
@@ -134,7 +127,7 @@ export class BoopliShop extends LitElement {
               if (!items.length) return nothing;
               return html`<div class="group">
                 <h4>${g.title()}</h4>
-                <div class="rows">${items.map((i) => this._row(i, pet))}</div>
+                <div class="tiles">${items.map((i) => this._row(i, pet))}</div>
               </div>`;
             })}
             <div class="actions"><button type="button" @click=${() => this._close()}>${t("common.close")}</button></div>
@@ -146,12 +139,7 @@ export class BoopliShop extends LitElement {
   static styles = [
     sharedStyles,
     modalStyles,
-    css`
-      .row.locked .art,
-      .row.locked .name {
-        opacity: 0.55;
-      }
-    `,
+    css``,
   ];
 }
 

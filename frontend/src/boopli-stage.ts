@@ -253,23 +253,23 @@ export class BoopliStage extends LitElement {
         padding: 2px 10px;
         border-radius: 999px;
         /* Colourful on purpose: the room is the pet's world, not part of the dashboard, whatever theme Home Assistant has. */
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #3a2a00;
+        border: 2px solid color-mix(in srgb, #e9b949 70%, transparent);
+        background: color-mix(in srgb, #e9b949 16%, var(--card-background-color, #1c1c1c) 92%);
+        color: var(--primary-text-color, #fff);
         font-size: 17px;
         font-weight: 700;
         cursor: pointer;
       }
       .controls button:hover {
-        background: #ffeab3;
+        background: color-mix(in srgb, #e9b949 28%, var(--card-background-color, #1c1c1c) 92%);
       }
       .controls button.inv {
-        border-color: #c9b8f5;
-        background: #f1eaff;
-        color: #6b4bc8;
+        border-color: color-mix(in srgb, #a98bff 70%, transparent);
+        background: color-mix(in srgb, #a98bff 18%, var(--card-background-color, #1c1c1c) 92%);
+        color: #b9a2ff;
       }
       .controls button.inv:hover {
-        background: #e4d8ff;
+        background: color-mix(in srgb, #a98bff 30%, var(--card-background-color, #1c1c1c) 92%);
       }
       .controls button.buyable {
         background: #2e7d32;
@@ -294,9 +294,9 @@ export class BoopliStage extends LitElement {
         height: 34px;
         padding: 0 8px;
         border-radius: 999px;
-        border: 2px solid #e9b949;
-        background: #fff4d6;
-        color: #8a6a2a;
+        border: 2px solid color-mix(in srgb, #e9b949 70%, transparent);
+        background: color-mix(in srgb, #e9b949 16%, var(--card-background-color, #1c1c1c) 92%);
+        color: var(--secondary-text-color, #aaa);
       }
       .meals svg {
         display: block;
