@@ -21,9 +21,9 @@ Pour une tâche claire comme « sortir la poubelle », l’IA passe directemen
 
 Chaque étape correspond à une action concrète. La première te permet de démarrer le plus facilement possible. Les étapes sont regroupées par endroit (table, chaises, sol…). L’IA peut signaler qu’il faut prévoir un temps d’attente. Une tâche peut contenir jusqu’à 50 étapes. Rien n’est créé avant que tu aies vérifié les étapes, apporté tes changements et choisi de les utiliser.
 
-### Taille des étapes et XP
+### Taille des étapes et Blubs
 
-Une étape peut être petite, moyenne ou grande (S, M, L). Elle rapporte 10, 15 ou 20 XP. Les étapes que tu écris toi-même sont petites. Aujourd’hui affiche la partie, une barre de progression et un compteur comme « Étape 3 sur 8 ». Une petite animation fête la fin de la tâche.
+Une étape peut être petite, moyenne ou grande (S, M, L). Elle rapporte 10, 15 ou 20 Blubs. Les étapes que tu écris toi-même sont petites. Aujourd’hui affiche la partie, une barre de progression et un compteur comme « Étape 3 sur 8 ». Une petite animation fête la fin de la tâche.
 
 ### Gardé pour la prochaine fois
 

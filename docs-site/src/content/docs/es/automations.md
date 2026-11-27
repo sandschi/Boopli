@@ -35,7 +35,8 @@ Estos eventos se emiten en el bus de eventos de Home Assistant. Puedes usarlos p
 | `boopli_step_done` | Se completó un paso. `by` indica `manual` o `auto` y `reason` indica qué ocurrió. |
 | `boopli_chore_done` | Se completaron todos los pasos de una tarea. |
 | `boopli_nudge_sent` | Boopli te envió un recordatorio. |
-| `boopli_xp_gained` | Ganaste XP. |
+| `boopli_blubs_earned` | Ganaste Blubs al completar un paso. |
+| `boopli_xp_gained` | Tu mascota comió y ganaste XP. |
 | `boopli_away_started` | Empezó el modo ausencia. |
 | `boopli_away_ended` | Terminó el modo ausencia. |
 

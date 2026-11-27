@@ -62,6 +62,10 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_away_set)
     websocket_api.async_register_command(hass, ws_away_end)
     websocket_api.async_register_command(hass, ws_egg_found)
+    websocket_api.async_register_command(hass, ws_shop_buy)
+    websocket_api.async_register_command(hass, ws_shop_place)
+    websocket_api.async_register_command(hass, ws_feed)
+    websocket_api.async_register_command(hass, ws_quest_seen)
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
@@ -855,12 +859,86 @@ def ws_paste_notes(
 def ws_egg_found(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
 ) -> None:
-    """The Easter egg played. The first time it gives a small gift of XP."""
+    """The Easter egg played. The first time it gives a small gift of Blubs."""
     manager = _manager(hass)
     if manager is None:
         _not_loaded(connection, msg)
         return
-    connection.send_result(msg["id"], {"xp": manager.found_egg()})
+    connection.send_result(msg["id"], {"blubs": manager.found_egg()})
+
+
+@_access(ACCESS_USE)
+@websocket_api.websocket_command({vol.Required("type"): "boopli/shop_buy", vol.Required("item"): str})
+@callback
+def ws_shop_buy(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Buy an item in the shop with Blubs (food goes into the inventory)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.buy(msg["item"])
+    except BoopliError as err:
+        _send_error(connection, msg, "invalid", err)
+        return
+    connection.send_result(msg["id"])
+
+
+@_access(ACCESS_USE)
+@websocket_api.websocket_command(
+    {vol.Required("type"): "boopli/shop_place", vol.Required("place"): str, vol.Required("item"): str}
+)
+@callback
+def ws_shop_place(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Put an owned colour or pattern on the wall or the floor of the room ("" empties the place)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.place(msg["place"], msg["item"])
+    except BoopliError as err:
+        _send_error(connection, msg, "invalid", err)
+        return
+    connection.send_result(msg["id"])
+
+
+@_access(ACCESS_USE)
+@websocket_api.websocket_command({vol.Required("type"): "boopli/feed", vol.Required("size"): str})
+@callback
+def ws_feed(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Feed the pet one meal from the inventory."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    try:
+        manager.feed(msg["size"])
+    except BoopliError as err:
+        _send_error(connection, msg, "invalid", err)
+        return
+    connection.send_result(msg["id"])
+
+
+@_access(ACCESS_USE)
+@websocket_api.websocket_command({vol.Required("type"): "boopli/quest_seen"})
+@callback
+def ws_quest_seen(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The pop-up at the end of the starter quest was shown (once for the whole household)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.quest_seen()
+    connection.send_result(msg["id"])
 
 
 @_access(ACCESS_ALL)

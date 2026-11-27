@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, releaseStep, snoozeStep, startChore, type ParkWhen } from "./api";
+import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, questSeen, releaseStep, snoozeStep, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
 import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
@@ -7,6 +7,8 @@ import { buildToday } from "./today";
 import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-stage";
+import "./boopli-shop";
+import "./boopli-inventory";
 import "./boopli-pet";
 import { icon } from "./icon";
 import type { PetKind } from "./pets";
@@ -68,6 +70,10 @@ export class BoopliToday extends LitElement {
     _park: { state: true },
     _removing: { state: true },
     _egg: { state: true },
+    _shop: { state: true },
+    _inventory: { state: true },
+    _quest: { state: true },
+    _questError: { state: true },
     _moment: { state: true },
     _momentSeq: { state: true },
     _momentText: { state: true },
@@ -83,6 +89,11 @@ export class BoopliToday extends LitElement {
   declare _park: ParkAsk | null;
   declare _removing: string; // the parked part that is asked "really remove?"
   declare _egg: boolean; // the Easter egg is playing (found by tapping the pet)
+  declare _shop: boolean; // the shop window is open
+  declare _inventory: boolean; // the inventory window is open
+  declare _quest: boolean; // the one-time pop-up at the end of the starter quest is open
+  declare _questError: string;
+  private _questHandled = false; // the server has been told it was seen (from this screen)
   declare _moment: Moment; // what the pet plays once: level up, waking up, a step done
   declare _momentSeq: number; // counts them, so the same moment can play again
   declare _momentText: string;
@@ -100,6 +111,10 @@ export class BoopliToday extends LitElement {
     this._park = null;
     this._removing = "";
     this._egg = false;
+    this._shop = false;
+    this._inventory = false;
+    this._quest = false;
+    this._questError = "";
     this._moment = "";
     this._momentSeq = 0;
     this._momentText = "";
@@ -127,10 +142,17 @@ export class BoopliToday extends LitElement {
       .map((id) => this.snapshot!.history.find((h) => h.kind === "chore_done" && h.run_id === id)?.chore_name)
       .filter((name): name is string => !!name);
     this._lastRunIds = runIds;
-    if (!before || pet.total_xp <= before.total_xp) return; // the first look shows nothing
-    // The pet celebrates: a level up first, then waking up, otherwise a small hop for the step.
+    // The one-time pop-up at the end of the starter quest (level 10), once per household.
+    if (pet.quest_popup && !this._questHandled) this._quest = true;
+    const gainedBlubs = before ? pet.blubs - before.blubs : 0; // spending Blubs in the shop is not a gain
+    const gainedXp = before ? pet.total_xp - before.total_xp : 0;
+    if (!before || (gainedBlubs <= 0 && gainedXp <= 0)) return; // the first look shows nothing
+    // The pet celebrates: a level up first, then waking up, otherwise a small hop for the step or the meal.
+    const gains: string[] = [];
+    if (gainedBlubs > 0) gains.push(t("today.blubs_gained", { blubs: gainedBlubs }));
+    if (gainedXp > 0) gains.push(t("today.xp_gained", { xp: gainedXp }));
     this._moment = "done";
-    this._momentText = t("today.xp_gained", { xp: pet.total_xp - before.total_xp });
+    this._momentText = gains.join(" · ");
     if (before.mood === "sleepy" || before.mood === "hibernating") {
       this._moment = "wake";
       this._momentText = "";
@@ -140,7 +162,7 @@ export class BoopliToday extends LitElement {
       this._momentText = t("today.level_2", { level: pet.level });
     }
     this._momentSeq += 1;
-    const parts = [t("today.xp_gained", { xp: pet.total_xp - before.total_xp })];
+    const parts = [...gains];
     if (finished.length) parts.unshift(t("today.is_done", { value: finished[0] }));
     if (pet.level > before.level) parts.push(t("today.level_2", { level: pet.level }));
     if (before.mood === "sad" || before.mood === "hibernating")
@@ -206,9 +228,18 @@ export class BoopliToday extends LitElement {
     const working = (this.snapshot?.runs ?? []).some((r) =>
       r.steps.some((s) => s.status === "active" && !!s.on_it_until)
     );
+    const full = pet.meals_today >= pet.meals_max;
+    const hasFood = Object.values(pet.food).some((n) => (n ?? 0) > 0);
     return html`
       <section class="card pet-card stage-slot">
         <boopli-stage
+          controls
+          .blubs=${pet.blubs}
+          .canBuy=${pet.can_buy}
+          .owned=${pet.owned}
+          .placed=${pet.placed}
+          @open-shop=${() => (this._shop = true)}
+          @open-inventory=${() => (this._inventory = true)}
           .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
           .mood=${pet.mood}
           .level=${pet.level}
@@ -227,10 +258,70 @@ export class BoopliToday extends LitElement {
           </div>
           <div class="muted small">${t("today.xp_to_the_next_level", { xp: pet.xp_in_level, xp_needed: pet.xp_for_level })}</div>
           <div class="small">${moodLine(pet)}</div>
+          <div class="small muted meals">
+            ${full ? t("common.is_full_for_today", { name: pet.name }) : t("common.meals_today", { eaten: pet.meals_today, max: pet.meals_max })}
+            ${!full && hasFood
+              ? html` <button type="button" class="textlink" @click=${() => (this._inventory = true)}>${t("today.feed")}</button>`
+              : nothing}
+          </div>
         </div>
       </section>
       ${this._toast ? html`<div class="toast" role="status">${this._toast}</div>` : nothing}
+      <boopli-shop
+        .hass=${this.hass}
+        .pet=${pet}
+        .open=${this._shop}
+        @shop-close=${() => (this._shop = false)}
+      ></boopli-shop>
+      <boopli-inventory
+        .hass=${this.hass}
+        .pet=${pet}
+        .open=${this._inventory}
+        @inventory-close=${() => (this._inventory = false)}
+        @open-shop=${() => {
+          this._inventory = false;
+          this._shop = true;
+        }}
+      ></boopli-inventory>
+      ${this._renderQuest()}
     `;
+  }
+
+  /** The one-time pop-up at level 10: the starter quest is done, from here it is slower but reachable. */
+  private _renderQuest() {
+    if (!this._quest) return nothing;
+    return html`<dialog
+      class="quest"
+      aria-label=${t("today.quest_title")}
+      @cancel=${(e: Event) => {
+        e.preventDefault(); // Escape asks the same as the button: the server has to hear it first
+        void this._closeQuest();
+      }}
+    >
+      <h3>${t("today.quest_title")}</h3>
+      <p>${t("today.quest_text")}</p>
+      ${this._questError ? html`<p class="error" role="alert">${this._questError}</p>` : nothing}
+      <button type="button" class="primary" @click=${() => this._closeQuest()}>${t("today.quest_ok")}</button>
+    </dialog>`;
+  }
+
+  /** Tell the server the pop-up was seen. Only when that worked is it closed for good; otherwise it stays so it can be tried again. */
+  private async _closeQuest(): Promise<void> {
+    if (!this.hass) return;
+    try {
+      await questSeen(this.hass);
+      this._questHandled = true;
+      this._questError = "";
+      this._quest = false;
+    } catch (err) {
+      this._questError = errorMessage(err);
+    }
+  }
+
+  protected updated(): void {
+    const dialog = this.renderRoot.querySelector<HTMLDialogElement>("dialog.quest");
+    // A native modal: focus starts on Continue, Escape and the keyboard stay inside, and focus goes back afterwards.
+    if (this._quest && dialog && !dialog.open) dialog.showModal();
   }
 
   /**
@@ -905,6 +996,33 @@ export class BoopliToday extends LitElement {
         background: var(--boopli-accent, var(--primary-color));
         border-radius: 999px;
         transition: width 0.4s ease;
+      }
+      .meals {
+        margin-top: 2px;
+      }
+      .meals .textlink {
+        padding: 0 4px;
+        font-size: inherit;
+      }
+      /* The one-time pop-up at the end of the starter quest: calm, one button. */
+      .quest {
+        max-width: min(420px, 92vw);
+        padding: 22px;
+        border-radius: 16px;
+        background: var(--card-background-color, #1c1c1c);
+        color: var(--primary-text-color, #fff);
+        border: 1px solid var(--divider-color, #444);
+      }
+      .quest::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .quest h3 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+      .quest p {
+        margin: 0 0 16px;
+        line-height: 1.4;
       }
       .toast {
         position: fixed;

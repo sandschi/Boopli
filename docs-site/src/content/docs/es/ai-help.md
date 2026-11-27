@@ -21,9 +21,9 @@ Una tarea clara como «sacar la basura» pasa directamente a los pasos. Si la ta
 
 Cada paso es una acción concreta. El primero es el más fácil para empezar. Los pasos se agrupan por zona (mesa, sillas, suelo…) y la IA puede indicar si hay que esperar un tiempo. Una tarea puede tener hasta 50 pasos. La tarea solo se crea cuando revisas los pasos, haces los cambios que necesites y eliges usarlos.
 
-### Tamaños de los pasos y XP
+### Tamaños de los pasos y Blubs
 
-Cada paso es pequeño, mediano o grande (S, M, L) y vale 10, 15 o 20 XP. Los pasos que escribes tú son pequeños. Hoy muestra el grupo, un contador como «Paso 3 de 8» con una barra de progreso y una celebración cuando terminas la tarea.
+Cada paso es pequeño, mediano o grande (S, M, L) y vale 10, 15 o 20 Blubs. Los pasos que escribes tú son pequeños. Hoy muestra el grupo, un contador como «Paso 3 de 8» con una barra de progreso y una celebración cuando terminas la tarea.
 
 ### Se guarda para la próxima vez
 

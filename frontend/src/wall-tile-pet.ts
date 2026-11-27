@@ -16,6 +16,8 @@ export class WallTilePet extends WallTile {
         .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
         .mood=${pet.mood}
         .level=${pet.level}
+        .owned=${pet.owned ?? []}
+        .placed=${pet.placed ?? {}}
         .away=${pet.away ?? false}
         .activity=${working && !pet.away ? "housework" : ""}
       ></boopli-stage>

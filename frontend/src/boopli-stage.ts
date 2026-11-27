@@ -4,68 +4,11 @@ import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
 import type { Activity, Moment } from "./boopli-pet";
+import { BED_BACK, BED_FRONT, FOOD_BOWL, WATER_BOWL, roomPaint } from "./shop-art";
+import { icon } from "./icon";
 import { t } from "./i18n";
 
 const INK = "#101010";
-
-/** A water bowl on a mat: white ceramic with a blue paw band. Always there from level 1. */
-const WATER_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#7B5BD6" stroke=${INK} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#F4F1FF" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#5B8DEF"/>
-  <circle cx="36" cy="34" r="2.8" fill="#fff"/>
-  <circle cx="31.5" cy="30.6" r="1.5" fill="#fff"/><circle cx="36" cy="29.3" r="1.5" fill="#fff"/><circle cx="40.5" cy="30.6" r="1.5" fill="#fff"/>
-  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#E6E0FF" stroke=${INK} stroke-width="2.5"/>
-  <ellipse cx="36" cy="19.5" rx="22" ry="5" fill="#7FD8FF"/>
-  <ellipse class="ripple" cx="36" cy="19.5" rx="7" ry="1.8" fill="none" stroke="#fff" stroke-width="1.4"/>
-  <path d="M20 18.5 Q26 16.5 32 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
-</svg>`;
-
-/** A food bowl on a mat: warm ceramic with kibble and a bone biscuit. From level 2. */
-const FOOD_BOWL = svg`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43" rx="33" ry="5" fill="#C94F6D" stroke=${INK} stroke-width="2.5"/>
-  <path d="M9 19 Q9 41 36 41 Q63 41 63 19 Z" fill="#FFF1E2" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 35 62 27 L61 32 Q36 40 11 32 Z" fill="#FF9F5A"/>
-  <path d="M30 31.5 a3 3 0 1 1 6 0 a3 3 0 1 1 6 0 q0 4 -6 7 q-6 -3 -6 -7 z" fill="#fff"/>
-  <path d="M14 26 Q14 33 20 37" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <ellipse cx="36" cy="19" rx="27" ry="7" fill="#FFE3C7" stroke=${INK} stroke-width="2.5"/>
-  <ellipse cx="36" cy="18" rx="22" ry="5" fill="#8A5A3A"/>
-  <circle cx="22" cy="15.5" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="29" cy="12.5" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="44" cy="12.8" r="3" fill="#C98A5A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="50" cy="16" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <circle cx="36" cy="15" r="3" fill="#B6784A" stroke=${INK} stroke-width="1.5"/>
-  <g transform="translate(36 8) rotate(-12)">
-    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
-    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
-    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${INK} stroke-width="1.6"/>
-  </g>
-</svg>`;
-
-/** The bed, in two layers: the back (the soft arch, the cushion and a pillow) goes behind the pet... */
-const BED_BACK = svg`<svg viewBox="0 0 120 64" aria-hidden="true">
-  <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
-  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
-  <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
-  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${INK} stroke-width="1.2" stroke-linejoin="round"/>
-  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${INK} stroke-width="2.5"/>
-  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${INK} stroke-width="2.5"/>
-  <path d="M18 34 H37" stroke=${INK} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
-</svg>`;
-
-/** ...and the front (the soft lip at the bottom and the blanket) in front of it, so the pet is IN the bed. */
-const BED_FRONT = svg`<svg viewBox="0 0 120 64" aria-hidden="true">
-  <g class="blanket">
-    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
-    <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
-    <path d="M28 49 Q60 57 92 49" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
-  </g>
-  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
-  <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-</svg>`;
 
 /** A little suitcase: it stands next to the pet while away mode is on. */
 const SUITCASE = svg`<svg viewBox="0 0 50 50" aria-hidden="true">
@@ -76,10 +19,13 @@ const SUITCASE = svg`<svg viewBox="0 0 50 50" aria-hidden="true">
 </svg>`;
 
 /**
- * The scene the pet lives in: a calm room with a floor. What stands in it grows with the level
- * (water bowl at 1, food bowl at 2, a bed at 3), and a suitcase appears while away mode is on.
- * A sleepy or hibernating pet sleeps in the bed, with the blanket pulled over it.
- * The pet itself is `boopli-pet`; this card only arranges the scene around it.
+ * The scene the pet lives in: a calm room with a floor. What stands in it is what the household bought
+ * in the shop (water bowl, food bowl, bed), the wall and the floor wear the colour or pattern put on them,
+ * and a suitcase appears while away mode is on. A sleepy or hibernating pet sleeps in the bed (when it
+ * has one), with the blanket pulled over it. The pet itself is `boopli-pet`; this card only arranges the scene.
+ *
+ * With `controls` (Today) the top left has the Blubs field (opens the shop) and the inventory button.
+ * Without them the room is only a picture (the wall board, the preview).
  */
 export class BoopliStage extends LitElement {
   static properties = {
@@ -91,6 +37,11 @@ export class BoopliStage extends LitElement {
     moment: { type: String },
     momentSeq: { type: Number },
     momentText: { type: String },
+    owned: { attribute: false },
+    placed: { attribute: false },
+    controls: { type: Boolean },
+    blubs: { type: Number },
+    canBuy: { type: Boolean },
   };
 
   declare kind: PetKind;
@@ -101,6 +52,11 @@ export class BoopliStage extends LitElement {
   declare moment: Moment;
   declare momentSeq: number;
   declare momentText: string;
+  declare owned: string[]; // the ids of what the household bought
+  declare placed: { wall?: string; floor?: string };
+  declare controls: boolean; // show the Blubs field and the inventory button
+  declare blubs: number;
+  declare canBuy: boolean; // something new can be bought right now: the Blubs field turns green
 
   constructor() {
     super();
@@ -112,6 +68,39 @@ export class BoopliStage extends LitElement {
     this.moment = "";
     this.momentSeq = 0;
     this.momentText = "";
+    this.owned = [];
+    this.placed = {};
+    this.controls = false;
+    this.blubs = 0;
+    this.canBuy = false;
+  }
+
+  private _open(what: "open-shop" | "open-inventory"): void {
+    this.dispatchEvent(new CustomEvent(what, { bubbles: true, composed: true }));
+  }
+
+  private _renderControls() {
+    if (!this.controls) return nothing;
+    return html`<div class="controls">
+      <button
+        type="button"
+        class="blubs ${this.canBuy ? "buyable" : ""}"
+        aria-label=${t("stage.blubs_open_the_shop", { count: this.blubs })}
+        title=${t("stage.open_the_shop")}
+        @click=${() => this._open("open-shop")}
+      >
+        ${icon("water")}<span class="n">${this.blubs}</span>
+      </button>
+      <button
+        type="button"
+        class="inv"
+        aria-label=${t("stage.open_the_inventory")}
+        title=${t("stage.open_the_inventory")}
+        @click=${() => this._open("open-inventory")}
+      >
+        ${icon("bag-personal-outline")}
+      </button>
+    </div>`;
   }
 
   // The bowl's ripple belongs to the stage, outside the pet, so the stage pauses it itself while the page is hidden.
@@ -131,7 +120,10 @@ export class BoopliStage extends LitElement {
   }
 
   render() {
-    const hasBed = this.level >= 3;
+    const has = (id: string): boolean => this.owned.includes(id);
+    const hasBed = has("bed");
+    const wall = roomPaint(this.placed.wall);
+    const floor = roomPaint(this.placed.floor);
     // While you are away the pet always hibernates, whatever its mood was.
     const mood: Mood = this.away ? "hibernating" : this.mood;
     // While you are away it is not busy either (Today never sends an activity then): the same here, so the preview matches.
@@ -139,10 +131,16 @@ export class BoopliStage extends LitElement {
     // Asleep in the bed, unless it is busy with something.
     const sleeping = hasBed && !activity && (mood === "sleepy" || mood === "hibernating");
     const deep = sleeping && mood === "hibernating";
-    return html`<div class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}" role="group" aria-label=${t("stage.your_pets_room")}>
-      <div class="floor"></div>
-      <div class="prop water">${WATER_BOWL}</div>
-      ${this.level >= 2 ? html`<div class="prop food">${FOOD_BOWL}</div>` : nothing}
+    return html`<div
+      class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""}"
+      style=${wall ? `background:${wall}` : ""}
+      role="group"
+      aria-label=${t("stage.your_pets_room")}
+    >
+      <div class="floor" style=${floor ? `background:${floor}` : ""}></div>
+      ${this._renderControls()}
+      ${has("water_bowl") ? html`<div class="prop water">${WATER_BOWL}</div>` : nothing}
+      ${has("food_bowl") ? html`<div class="prop food">${FOOD_BOWL}</div>` : nothing}
       ${hasBed ? html`<div class="prop bed">${BED_BACK}</div>` : nothing}
       <div class="actor">
         <boopli-pet
@@ -188,6 +186,39 @@ export class BoopliStage extends LitElement {
       .prop {
         position: absolute;
         pointer-events: none;
+      }
+      /* Top left: the Blubs field (opens the shop) and the inventory button. Calm: a quiet frame; only a colour change says "something new". */
+      .controls {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 3;
+        display: flex;
+        gap: 6px;
+      }
+      .controls button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 34px;
+        min-width: 34px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 2px solid color-mix(in srgb, var(--primary-text-color, #888) 35%, transparent);
+        background: color-mix(in srgb, var(--card-background-color, #1c1c1c) 85%, transparent);
+        color: var(--primary-text-color, #fff);
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .controls button.buyable {
+        background: #2e7d32;
+        border-color: #2e7d32;
+        color: #fff;
+      }
+      .controls button:focus-visible {
+        outline: 3px solid var(--boopli-accent, var(--primary-color, #03a9f4));
+        outline-offset: 2px;
       }
       .prop svg {
         display: block;

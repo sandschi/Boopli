@@ -290,6 +290,26 @@ export type Via = "agent" | "claude";
 
 export type Mood = "happy" | "content" | "sleepy" | "sad" | "hibernating";
 
+export type FoodSize = "small" | "medium" | "big";
+
+/** Why an item cannot be bought yet ("" = it can). */
+export type ShopLock = "" | "level" | "achievement" | "requires" | "species";
+
+/** One thing in the shop. Its name and picture live in the panel (shop-art.ts), keyed by `id`. */
+export interface ShopItem {
+  id: string;
+  kind: "extra" | "color" | "pattern" | "food" | "upgrade";
+  price: number; // in Blubs
+  min_level: number;
+  achievement: string;
+  attach_to: string; // the item it sits on ("" = none)
+  requires: string; // an item to buy first
+  food: FoodSize | ""; // for food: its size
+  xp: number; // for food: the XP a meal gives
+  owned: boolean; // food is never "owned": it can be bought again
+  locked: ShopLock;
+}
+
 export interface Pet {
   name: string;
   mood: Mood;
@@ -299,6 +319,15 @@ export interface Pet {
   xp_for_level: number;
   last_activity: string | null;
   away?: boolean; // away mode is on: the mood stays as it was
+  blubs: number; // the household's money
+  food: Partial<Record<FoodSize, number>>; // the food in the inventory
+  meals_today: number;
+  meals_max: number; // the pet is full when it has eaten this many today
+  owned: string[]; // ids of the things bought
+  placed: { wall?: string; floor?: string }; // the colour or pattern on the wall and the floor
+  items: ShopItem[];
+  can_buy: boolean; // something new is unlocked and affordable (food does not count)
+  quest_popup: boolean; // the one-time pop-up at the end of the starter quest is due
 }
 
 /** Away mode: Boopli rests for a few days. */
@@ -349,6 +378,7 @@ export interface Access {
 
 export interface Snapshot {
   access?: Access;
+  version?: string; // Boopli's version, for the header
   now: string;
   time_zone: string;
   ai_timeout?: number; // the longest Boopli waits for the AI agent, in seconds

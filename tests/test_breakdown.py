@@ -260,10 +260,10 @@ def test_no_structure_is_forced_on_the_agent():
     assert not hasattr(bd, "STRUCTURE")
 
 
-# --- the XP and the engine side ---------------------------------------------------
+# --- the Blubs and the engine side ---------------------------------------------------
 
 
-def test_step_sizes_give_10_15_20_xp_and_own_steps_default_to_small():
+def test_step_sizes_give_10_15_20_blubs_and_own_steps_default_to_small():
     assert engine.SIZE_XP == {"small": 10, "medium": 15, "big": 20}
     assert engine.Step.from_dict({"title": "x"}).size == "small"
     assert engine.Step.from_dict({"title": "x", "size": "huge"}).size == "small"
@@ -276,9 +276,9 @@ def test_a_big_step_earns_20_and_the_bonuses_still_add_on_top():
     now = datetime(2026, 11, 21, 12, tzinfo=timezone.utc)
     p = engine.Progress()
     a = engine.award_step(p, "c", "r", now, timezone.utc, None, False, "big")
-    assert a.xp == 20
+    assert a.blubs == 20
     a = engine.award_step(p, "c", "r", now, timezone.utc, now.isoformat(), True, "medium")
-    assert a.xp == 15 + engine.XP_CHORE + engine.XP_QUICK
+    assert a.blubs == 15 + engine.XP_CHORE + engine.XP_QUICK
 
 
 def test_a_run_snapshots_size_and_group():

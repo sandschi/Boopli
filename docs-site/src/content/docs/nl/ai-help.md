@@ -21,9 +21,9 @@ Bij een duidelijke taak zoals “het vuilnis buitenzetten” krijg je meteen sta
 
 Elke stap is één concrete handeling. De eerste is zo makkelijk mogelijk. De stappen staan bij elkaar per plek, bijvoorbeeld tafel, stoelen of vloer. De AI kan aangeven dat je ergens op moet wachten. Een taak kan maximaal 50 stappen hebben. Boopli maakt de taak pas aan als je de stappen hebt bekeken, aangepast en gekozen hebt om ze te gebruiken.
 
-### Grootte van stappen en XP
+### Grootte van stappen en Blubs
 
-Elke stap is klein, middelgroot of groot (S, M, L) en levert 10, 15 of 20 XP op. Stappen die je zelf schrijft zijn klein. Op Vandaag zie je de groep en bijvoorbeeld “Stap 3 van 8”, met een voortgangsbalk. Als een taak klaar is, zie je een feestelijke animatie.
+Elke stap is klein, middelgroot of groot (S, M, L) en levert 10, 15 of 20 Blubs op. Stappen die je zelf schrijft zijn klein. Op Vandaag zie je de groep en bijvoorbeeld “Stap 3 van 8”, met een voortgangsbalk. Als een taak klaar is, zie je een feestelijke animatie.
 
 ### Bewaren voor de volgende keer
 

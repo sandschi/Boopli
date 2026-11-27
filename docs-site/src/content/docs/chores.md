@@ -19,7 +19,7 @@ If a chore comes due while its last run is still open, that round is skipped ins
 
 ### Parts, and setting one aside
 
-Steps are grouped into parts ("Desk", "Sofa", "Floor"), and a chore about a whole room gets one complete part for each thing in the room notes. On Today, **Do <group> later** (for example **Do Desk later**) sets a part's open steps aside as a small chore of its own ("Clean the living room: Desk"). Choose **I’ll start it myself**, **Tomorrow, 9:00** or **Pick a time**. Nothing is lost and nothing becomes overdue: the part waits under **Set aside for later** (**Start now**, **Change time**, **Delete**) and starts by itself at its time, with the usual nudges and XP. You can set aside a part, not a single step inside it (a single step has Snooze), and not the last part of a chore.
+Steps are grouped into parts ("Desk", "Sofa", "Floor"), and a chore about a whole room gets one complete part for each thing in the room notes. On Today, **Do <group> later** (for example **Do Desk later**) sets a part's open steps aside as a small chore of its own ("Clean the living room: Desk"). Choose **I’ll start it myself**, **Tomorrow, 9:00** or **Pick a time**. Nothing is lost and nothing becomes overdue: the part waits under **Set aside for later** (**Start now**, **Change time**, **Delete**) and starts by itself at its time, with the usual nudges and Blubs. You can set aside a part, not a single step inside it (a single step has Snooze), and not the last part of a chore.
 
 ### Wait until this happens
 

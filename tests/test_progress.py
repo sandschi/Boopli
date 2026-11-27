@@ -1,13 +1,15 @@
-"""Tests for XP, levels and the pet's mood."""
+"""Tests for Blubs, XP, levels, the shop, feeding and the pet's mood."""
 
 from __future__ import annotations
 
 import importlib.util
 import json
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+import pytest
 
 _PATH = Path(__file__).parents[1] / "custom_components" / "boopli" / "engine.py"
 _SPEC = importlib.util.spec_from_file_location("boopli_engine_progress", _PATH)
@@ -30,57 +32,94 @@ def give(p, chore="c1", run="r1", now=NOON, active_at=None, chore_done=False):
 # --- levels ----------------------------------------------------------------
 
 
-def test_level_thresholds_are_100_250_450_and_slow_down():
-    assert [engine.level_threshold(n) for n in (1, 2, 3, 4, 5)] == [0, 100, 250, 450, 700]
+def test_level_thresholds_start_at_20_and_reach_540_at_level_10():
+    assert [engine.level_threshold(n) for n in (1, 2, 3, 4, 5)] == [0, 20, 50, 90, 140]
+    assert engine.level_threshold(10) == 540
+
+
+def test_level_2_is_reached_after_the_first_chore():
+    # one step that finishes the chore, quick: 35 Blubs = a medium and a small meal = 20 XP
+    assert engine.level_for(20)[0] == 2
+    assert engine.FOOD["medium"][1] + engine.FOOD["small"][1] == 20
+
+
+def test_from_level_10_each_step_is_about_6_percent_dearer_then_flat_from_level_20():
+    assert engine.level_step(10) == 110
+    steps = [engine.level_step(n) for n in range(10, 20)]
+    assert steps == sorted(steps) and steps[-1] < 200
+    assert all(1.05 < b / a < 1.07 for a, b in zip(steps, steps[1:]))
+    assert {engine.level_step(n) for n in range(20, 60)} == {200}
+    assert engine.level_threshold(21) - engine.level_threshold(20) == 200
+    assert engine.level_threshold(101) - engine.level_threshold(100) == 200  # no maximum level
+
+
+def test_the_curve_matches_the_pace_it_was_made_for():
+    per_day = 45  # about 3 chores a day
+    assert 11 <= engine.level_threshold(10) / per_day <= 13  # level 10 after about 12 days
+    assert 5 * 7 <= engine.level_threshold(20) / per_day <= 7 * 7  # level 20 after about 6 weeks
+    assert 2.5 * 30 <= engine.level_threshold(30) / per_day <= 3.5 * 30  # level 30 after about 3 months
 
 
 def test_level_for_gives_progress_inside_the_level():
-    assert engine.level_for(0) == (1, 0, 100)
-    assert engine.level_for(99) == (1, 99, 100)
-    assert engine.level_for(100) == (2, 0, 150)
-    assert engine.level_for(249) == (2, 149, 150)
-    assert engine.level_for(250) == (3, 0, 200)
-    assert engine.level_for(10_000)[0] > 10
+    assert engine.level_for(0) == (1, 0, 20)
+    assert engine.level_for(19) == (1, 19, 20)
+    assert engine.level_for(20) == (2, 0, 30)
+    assert engine.level_for(49) == (2, 29, 30)
+    assert engine.level_for(50) == (3, 0, 40)
+    assert engine.level_for(10_000)[0] > 20
 
 
-# --- XP --------------------------------------------------------------------
+# --- Blubs -----------------------------------------------------------------
 
 
-def test_a_step_gives_10_xp():
+def test_a_step_gives_10_blubs_and_no_xp():
     p = engine.Progress()
     a = give(p)
-    assert (a.xp, a.total_xp, p.total_xp) == (10, 10, 10)
+    assert (a.blubs, a.total_blubs, p.blubs, p.total_xp) == (10, 10, 10, 0)
+
+
+def test_bigger_steps_give_15_and_20_blubs():
+    sizes = {"small": 10, "medium": 15, "big": 20}
+    for size, blubs in sizes.items():
+        p = engine.Progress()
+        award = engine.award_step(p, "c1", "r1", NOON, TZ, None, False, size)
+        assert award.blubs == blubs, size
 
 
 def test_the_step_that_finishes_the_chore_gives_20_more():
-    assert give(engine.Progress(), chore_done=True).xp == 30
+    assert give(engine.Progress(), chore_done=True).blubs == 30
 
 
 def test_a_quick_answer_gives_5_more_but_a_slow_one_loses_nothing():
     active = NOON - timedelta(minutes=10)
-    assert give(engine.Progress(), active_at=engine.fmt_ts(active)).xp == 15
+    assert give(engine.Progress(), active_at=engine.fmt_ts(active)).blubs == 15
     slow = NOON - timedelta(minutes=11)
-    assert give(engine.Progress(), active_at=engine.fmt_ts(slow)).xp == 10
-    assert give(engine.Progress(), active_at=engine.fmt_ts(NOON - timedelta(days=2))).xp == 10
+    assert give(engine.Progress(), active_at=engine.fmt_ts(slow)).blubs == 10
+    assert give(engine.Progress(), active_at=engine.fmt_ts(NOON - timedelta(days=2))).blubs == 10
 
 
-def test_all_steps_of_one_run_earn_xp_even_beyond_the_run_cap():
+def test_one_step_with_chore_end_and_quick_is_35_blubs():
     p = engine.Progress()
-    assert [give(p, run="r1").xp for _ in range(6)] == [10] * 6
+    assert give(p, chore_done=True, active_at=engine.fmt_ts(NOON - timedelta(minutes=2))).blubs == 35
 
 
-def test_only_the_first_three_runs_of_a_chore_earn_xp_per_day():
+def test_all_steps_of_one_run_earn_blubs_even_beyond_the_run_cap():
     p = engine.Progress()
-    assert [give(p, run=f"r{i}").xp for i in range(5)] == [10, 10, 10, 0, 0]
-    assert give(p, run="r1").xp == 10  # a run that already earned keeps earning
-    assert give(p, chore="other", run="x").xp == 10  # another chore has its own cap
+    assert [give(p, run="r1").blubs for _ in range(6)] == [10] * 6
+
+
+def test_only_the_first_three_runs_of_a_chore_earn_blubs_per_day():
+    p = engine.Progress()
+    assert [give(p, run=f"r{i}").blubs for i in range(5)] == [10, 10, 10, 0, 0]
+    assert give(p, run="r1").blubs == 10  # a run that already earned keeps earning
+    assert give(p, chore="other", run="x").blubs == 10  # another chore has its own cap
 
 
 def test_the_cap_starts_fresh_the_next_day():
     p = engine.Progress()
     for i in range(4):
         give(p, run=f"r{i}")
-    assert give(p, run="r9", now=day(1)).xp == 10
+    assert give(p, run="r9", now=day(1)).blubs == 10
 
 
 def test_a_capped_step_still_counts_as_activity():
@@ -89,31 +128,191 @@ def test_a_capped_step_still_counts_as_activity():
         give(p, run=f"r{i}")
     later = day(1)
     for i in range(3, 6):
-        give(p, run=f"r{i}", now=later)  # the last of these is capped? no: new day
+        give(p, run=f"r{i}", now=later)
     a = give(p, run="r7", now=later)
-    assert a.xp == 0
+    assert a.blubs == 0
     assert p.last_activity == engine.fmt_ts(later)
 
 
-def test_xp_bookkeeping_older_than_a_week_is_dropped():
+def test_bookkeeping_older_than_a_week_is_dropped():
     p = engine.Progress()
     give(p, run="old", now=NOON)
+    p.fed[NOON.date().isoformat()] = 2
     give(p, run="new", now=day(9))
     assert list(p.credited) == [day(9).date().isoformat()]
+    assert p.fed == {}
 
 
-def test_xp_never_goes_down():
-    p = engine.Progress(total_xp=500, started_at=engine.fmt_ts(NOON - timedelta(days=30)))
+def test_nothing_ever_takes_blubs_xp_or_a_level_away():
+    p = engine.Progress(total_xp=500, blubs=70, started_at=engine.fmt_ts(NOON - timedelta(days=30)))
     assert engine.mood_for(p, NOON, TZ) == "hibernating"
-    assert p.total_xp == 500
-    assert engine.level_for(p.total_xp)[0] == 4
+    assert (p.total_xp, p.blubs) == (500, 70)
+    assert engine.level_for(p.total_xp)[0] == 9
 
 
-def test_level_up_is_reported_once():
-    p = engine.Progress(total_xp=95)
-    first = give(p)
+def test_the_start_gift_is_30_blubs_once():
+    p = engine.Progress()
+    assert engine.hand_out_start_gift(p) and p.blubs == 30 == engine.BLUBS_START
+    assert not engine.hand_out_start_gift(p) and p.blubs == 30
+
+
+# --- feeding ---------------------------------------------------------------
+
+
+def test_feeding_costs_food_from_the_stock_and_gives_xp():
+    p = engine.Progress(food={"small": 1, "medium": 2, "big": 1})
+    expected = {"small": 5, "medium": 15, "big": 30}
+    for size, xp in expected.items():
+        meal = engine.feed_pet(p, size, NOON, TZ)
+        assert meal.xp == xp
+    assert p.total_xp == 50 and p.food == {"medium": 1}
+    assert p.fed == {NOON.date().isoformat(): 3}
+
+
+def test_food_prices_match_what_the_pet_gets():
+    assert engine.FOOD == {"small": (10, 5), "medium": (25, 15), "big": (50, 30)}
+    for item in engine.SHOP_ITEMS:
+        if item.kind == engine.KIND_FOOD:
+            assert item.price == engine.FOOD[item.food][0]
+
+
+def test_feeding_needs_food_in_the_stock():
+    p = engine.Progress()
+    with pytest.raises(engine.ShopError):
+        engine.feed_pet(p, "small", NOON, TZ)
+    with pytest.raises(engine.ShopError):
+        engine.feed_pet(p, "huge", NOON, TZ)
+
+
+def test_after_three_meals_the_pet_is_full_and_the_food_stays():
+    p = engine.Progress(food={"small": 5})
+    for _ in range(3):
+        engine.feed_pet(p, "small", NOON, TZ)
+    xp = p.total_xp
+    with pytest.raises(engine.ShopError):
+        engine.feed_pet(p, "small", NOON, TZ)
+    assert p.total_xp == xp and p.food == {"small": 2}
+    engine.feed_pet(p, "small", day(1), TZ)  # the next day it is hungry again
+    assert p.total_xp == xp + 5
+
+
+def test_the_day_is_the_local_day():
+    p = engine.Progress(food={"small": 5})
+    for _ in range(3):
+        engine.feed_pet(p, "small", NOON.replace(hour=23, minute=50), TZ)
+    assert engine.meals_today(p, NOON.replace(hour=23, minute=55), TZ) == 3
+    assert engine.meals_today(p, NOON.replace(hour=23, minute=55) + timedelta(minutes=10), TZ) == 0
+
+
+def test_feeding_can_level_up_and_says_so_once():
+    p = engine.Progress(food={"medium": 2}, total_xp=10)
+    first = engine.feed_pet(p, "medium", NOON, TZ)
     assert first.level_up and first.level == 2
-    assert not give(p, run="r2").level_up
+    assert not engine.feed_pet(p, "medium", NOON, TZ).level_up
+
+
+# --- the shop --------------------------------------------------------------
+
+
+def test_the_shop_items_are_what_the_plan_says():
+    by_id = engine.SHOP_BY_ID
+    assert (by_id["water_bowl"].price, by_id["water_bowl"].min_level) == (30, 1)
+    assert (by_id["food_bowl"].price, by_id["food_bowl"].min_level) == (40, 2)
+    assert (by_id["bed"].price, by_id["bed"].min_level) == (80, 3)
+    assert by_id["color_sky"].price == by_id["pattern_dots"].price == 20
+    assert (by_id["meal_4"].price, by_id["meal_4"].min_level) == (300, 5)
+    assert (by_id["meal_5"].price, by_id["meal_5"].min_level) == (800, 10)
+    assert len(by_id) == len(engine.SHOP_ITEMS)  # ids are unique
+
+
+def test_buying_pays_and_the_item_is_owned_and_cannot_be_bought_twice():
+    p = engine.Progress(blubs=100)
+    engine.buy_item(p, "water_bowl", 1)
+    assert p.blubs == 70 and p.owned == ["water_bowl"]
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(p, "water_bowl", 1)
+    assert p.blubs == 70
+
+
+def test_the_start_gift_exactly_buys_the_water_bowl():
+    p = engine.Progress()
+    engine.hand_out_start_gift(p)
+    engine.buy_item(p, "water_bowl", 1)
+    assert p.blubs == 0
+
+
+def test_a_poor_household_or_a_low_level_cannot_buy():
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(engine.Progress(blubs=29), "water_bowl", 1)
+    rich = engine.Progress(blubs=1000)
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(rich, "food_bowl", 1)  # needs level 2
+    engine.buy_item(rich, "food_bowl", 2)
+    assert rich.blubs == 960
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(rich, "not_an_item", 99)
+
+
+def test_food_is_always_buyable_and_goes_into_the_stock():
+    p = engine.Progress(blubs=100)
+    for item in ("food_small", "food_small", "food_medium", "food_big"):
+        engine.buy_item(p, item, 1)
+    assert p.food == {"small": 2, "medium": 1, "big": 1} and p.blubs == 100 - 10 - 10 - 25 - 50
+    assert p.owned == []
+
+
+def test_an_item_with_an_achievement_stays_locked_until_it_is_reached():
+    item = engine.ShopItem("gold", engine.KIND_COLOR, 10, achievement="chores_100")
+    p = engine.Progress(blubs=100)
+    assert engine.item_locked(p, item, 1) == "achievement"
+    p.achievements.append("chores_100")
+    assert engine.item_locked(p, item, 1) == ""
+
+
+def test_an_attachment_needs_the_item_it_sits_on_and_a_species_item_only_fits_its_pet():
+    gem = engine.ShopItem("gem", engine.KIND_EXTRA, 10, attach_to="water_bowl")
+    p = engine.Progress()
+    assert engine.item_locked(p, gem, 1) == "requires"
+    p.owned.append("water_bowl")
+    assert engine.item_locked(p, gem, 1) == ""
+    hat = engine.ShopItem("hat", engine.KIND_EXTRA, 10, species="cat")
+    assert engine.item_locked(p, hat, 1, "dog") == "species"
+    assert engine.item_locked(p, hat, 1, "cat") == ""
+
+
+def test_the_meal_upgrades_raise_the_limit_for_good_and_build_on_each_other():
+    p = engine.Progress(blubs=2000)
+    assert engine.meals_allowed(p) == 3
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(p, "meal_4", 4)  # level 5
+    with pytest.raises(engine.ShopError):
+        engine.buy_item(p, "meal_5", 10)  # the 4th meal first
+    engine.buy_item(p, "meal_4", 5)
+    assert engine.meals_allowed(p) == 4
+    engine.buy_item(p, "meal_5", 10)
+    assert engine.meals_allowed(p) == 5
+    p.food = {"small": 6}
+    for _ in range(5):
+        engine.feed_pet(p, "small", NOON, TZ)
+    with pytest.raises(engine.ShopError):
+        engine.feed_pet(p, "small", NOON, TZ)
+
+
+def test_a_colour_or_pattern_can_be_put_on_the_wall_or_floor_and_changed_or_removed():
+    p = engine.Progress(owned=["color_sky", "pattern_dots", "water_bowl"])
+    engine.place_item(p, "wall", "color_sky")
+    engine.place_item(p, "floor", "pattern_dots")
+    assert p.placed == {"wall": "color_sky", "floor": "pattern_dots"}
+    engine.place_item(p, "wall", "pattern_dots")
+    assert p.placed["wall"] == "pattern_dots"
+    engine.place_item(p, "wall", "")
+    assert p.placed == {"floor": "pattern_dots"}
+    for place, item in (("ceiling", "color_sky"), ("wall", "water_bowl"), ("wall", "nope")):
+        with pytest.raises(engine.ShopError):
+            engine.place_item(p, place, item)
+    unowned = engine.Progress()
+    with pytest.raises(engine.ShopError):
+        engine.place_item(unowned, "wall", "color_sky")
 
 
 # --- mood ------------------------------------------------------------------
@@ -169,12 +368,41 @@ def test_finishing_a_step_wakes_a_sad_or_hibernating_pet():
 # --- storage ---------------------------------------------------------------
 
 
-def test_progress_roundtrips_and_old_data_without_it_loads():
-    p = engine.Progress()
+def test_progress_roundtrips_with_everything_in_it():
+    p = engine.Progress(food={"small": 2}, owned=["water_bowl"], placed={"wall": "color_sky"}, achievements=["a"])
+    engine.hand_out_start_gift(p)
     give(p, run="r1")
+    engine.feed_pet(p, "small", NOON, TZ)
     again = engine.Progress.from_dict(json.loads(json.dumps(engine.to_dict(p))))
     assert again == p
     assert engine.Progress.from_dict(None) == engine.Progress()
+
+
+def test_progress_from_before_blubs_starts_over_but_keeps_the_mood_dates():
+    old = {
+        "total_xp": 4000,
+        "started_at": "2026-11-01T08:00:00Z",
+        "last_activity": "2026-11-20T08:00:00Z",
+        "egg_found": True,
+        "credited": {"2026-11-20": {"c1": ["r1"]}},
+    }
+    fresh = engine.Progress.from_dict(old)
+    assert fresh == engine.Progress(started_at=old["started_at"], last_activity=old["last_activity"])
+    assert engine.level_for(fresh.total_xp)[0] == 1 and not fresh.gift_given
+    assert engine.reset_progress_data(old)["economy"] == engine.ECONOMY_VERSION
+    assert engine.Progress.from_dict(engine.reset_progress_data(old)).total_xp == 0
+
+
+def test_progress_of_this_version_is_kept_as_it_is():
+    p = engine.Progress(total_xp=300, blubs=12)
+    assert engine.Progress.from_dict(engine.to_dict(p)) == p
+
+
+def test_damaged_progress_data_cannot_give_negative_numbers_or_unknown_places():
+    p = engine.Progress.from_dict(
+        {"economy": 1, "blubs": -5, "food": {"small": -2, "huge": 3}, "placed": {"ceiling": "x", "wall": ""}}
+    )
+    assert p.blubs == 0 and p.food == {"small": 0} and p.placed == {}
 
 
 def test_the_pet_name_defaults_validates_and_roundtrips():
@@ -190,25 +418,24 @@ def test_the_pet_name_defaults_validates_and_roundtrips():
 # --- the Easter egg's one-time gift -----------------------------------------------------
 
 
-def test_easter_egg_gives_ten_xp_only_the_first_time():
+def test_easter_egg_gives_ten_blubs_only_the_first_time():
     progress = engine.Progress()
     first = engine.award_egg(progress, NOON, TZ)
-    assert first.xp == engine.EGG_XP == 10 and first.total_xp == 10 and progress.egg_found
+    assert first.blubs == engine.EGG_BLUBS == 10 and first.total_blubs == 10 and progress.egg_found
     again = engine.award_egg(progress, NOON, TZ)
-    assert again.xp == 0 and again.total_xp == 10 and not again.level_up
+    assert again.blubs == 0 and again.total_blubs == 10
 
 
-def test_easter_egg_is_not_chore_work_and_can_level_up():
-    progress = engine.Progress(total_xp=95)
-    assert engine.award_egg(progress, NOON, TZ).level_up  # 95 + 10 passes level 2 at 100
+def test_easter_egg_is_not_chore_work():
     quiet = engine.Progress()
     award = engine.award_egg(quiet, NOON, TZ)
     assert quiet.last_activity is None and not award.woke_up  # it does not wake the pet
+    assert quiet.total_xp == 0  # and gives no XP: XP only comes from feeding
 
 
 def test_easter_egg_flag_survives_storage():
     progress = engine.Progress()
     engine.award_egg(progress, NOON, TZ)
     again = engine.Progress.from_dict(engine.to_dict(progress))
-    assert again.egg_found and again.total_xp == 10
-    assert not engine.Progress.from_dict({"total_xp": 5}).egg_found
+    assert again.egg_found and again.blubs == 10
+    assert not engine.Progress.from_dict({"economy": 1, "blubs": 5}).egg_found
