@@ -10008,7 +10008,7 @@ var ta = "#101010", na = h`<svg viewBox="0 0 50 50" aria-hidden="true">
 		super.connectedCallback(), document.addEventListener("visibilitychange", this._onVisibility), this._onVisibility();
 	}
 	disconnectedCallback() {
-		this._clearFeed(), document.removeEventListener("visibilitychange", this._onVisibility), super.disconnectedCallback();
+		this._clearFeed(), this._feed = "", document.removeEventListener("visibilitychange", this._onVisibility), super.disconnectedCallback();
 	}
 	render() {
 		let e = (e) => this.owned.includes(e), t = e("bed"), n = Qi(this.placed.wall), r = Qi(this.placed.floor), i = this.away ? "hibernating" : this.mood, a = this.away ? "" : this.activity, o = t && !a && (i === "sleepy" || i === "hibernating"), s = o && i === "hibernating", c = this._feed ? `feed-${this._feed}` : "";
@@ -10633,6 +10633,9 @@ var ia = o`
       height: 100vh;
       min-height: 100vh;
       max-height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
       border-radius: 0;
       border-width: 0;
       box-shadow: none;
@@ -10712,7 +10715,7 @@ var ia = o`
 		if (this.hass && !this._busy) {
 			this._busy = e.id, this._error = "", this._note = "";
 			try {
-				await bn(this.hass, e.id), this._note = S("shop.is_yours", { item: K(e.id) }), e.food || (this._sel = "");
+				await bn(this.hass, e.id), this._note = S("shop.is_yours", { item: K(e.id) }), !e.food && this._sel === e.id && (this._sel = "");
 			} catch (e) {
 				this._error = w(e);
 			} finally {
@@ -10780,12 +10783,11 @@ var ia = o`
               <button type="button" class="shopbtn" aria-label=${S("inventory.inventory")} @click=${() => this._toInventory()}>${O("bag-personal-outline")}<span class="lbl">${S("inventory.inventory")}</span></button>
               <button type="button" class="close" aria-label=${S("common.close")} @click=${() => this._close()}>✕</button>
             </div>
-            <div class="cats" role="tablist">
+            <div class="cats" role="group" aria-label=${S("shop.shop")}>
               ${t.map((e) => m`<button
                   type="button"
-                  role="tab"
                   class="cat ${e === n ? "on" : ""}"
-                  aria-selected=${e === n}
+                  aria-pressed=${e === n}
                   @click=${() => {
 			this._cat = e.id, this._sel = "";
 		}}
@@ -11388,7 +11390,7 @@ var Ua = class extends v {
 		super(), this._questHandled = !1, this._feedPending = !1, this._lastRunIds = [], this.nowMs = Date.now(), this._busy = !1, this._error = "", this._toast = "", this._quick = "", this._park = null, this._removing = "", this._egg = !1, this._shop = !1, this._inventory = !1, this._quest = !1, this._questError = "", this._moment = "", this._momentSeq = 0, this._feedSeq = 0, this._momentText = "";
 	}
 	disconnectedCallback() {
-		super.disconnectedCallback(), window.clearTimeout(this._toastTimer);
+		super.disconnectedCallback(), window.clearTimeout(this._toastTimer), window.clearTimeout(this._feedTimer);
 	}
 	willUpdate(e) {
 		if (q(this.snapshot).all || (this._removing = "", this._quick = ""), !e.has("snapshot") || !this.snapshot?.pet) return;
@@ -11514,7 +11516,9 @@ var Ua = class extends v {
     `;
 	}
 	_closeWindow(e) {
-		e === "shop" ? this._shop = !1 : this._inventory = !1, this._feedPending && !this._shop && !this._inventory && (this._feedPending = !1, window.setTimeout(() => this._feedSeq += 1, 250));
+		e === "shop" ? this._shop = !1 : this._inventory = !1, this._feedPending && !this._shop && !this._inventory && (window.clearTimeout(this._feedTimer), this._feedTimer = window.setTimeout(() => {
+			this._shop || this._inventory || (this._feedPending = !1, this._feedSeq += 1);
+		}, 250));
 	}
 	_renderQuest() {
 		return this._quest ? m`<dialog

@@ -160,6 +160,7 @@ export class BoopliStage extends LitElement {
 
   disconnectedCallback(): void {
     this._clearFeed();
+    this._feed = ""; // not stuck half-way through the scene when it is shown again
     document.removeEventListener("visibilitychange", this._onVisibility);
     super.disconnectedCallback();
   }

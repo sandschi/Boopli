@@ -314,6 +314,9 @@ export const modalStyles = css`
       height: 100vh;
       min-height: 100vh;
       max-height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
       border-radius: 0;
       border-width: 0;
       box-shadow: none;

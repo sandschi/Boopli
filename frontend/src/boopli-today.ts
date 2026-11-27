@@ -103,6 +103,7 @@ export class BoopliToday extends LitElement {
   private _lastRunIds: string[] = [];
   private _lastPet?: Pet;
   private _toastTimer?: number;
+  private _feedTimer?: number;
 
   constructor() {
     super();
@@ -127,6 +128,7 @@ export class BoopliToday extends LitElement {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.clearTimeout(this._toastTimer);
+    window.clearTimeout(this._feedTimer);
   }
 
   protected willUpdate(changed: Map<string, unknown>): void {
@@ -308,8 +310,13 @@ export class BoopliToday extends LitElement {
     if (which === "shop") this._shop = false;
     else this._inventory = false;
     if (this._feedPending && !this._shop && !this._inventory) {
-      this._feedPending = false;
-      window.setTimeout(() => (this._feedSeq += 1), 250); // after the window has faded away
+      window.clearTimeout(this._feedTimer);
+      this._feedTimer = window.setTimeout(() => {
+        // after the window has faded away; if one was opened again meanwhile, the scene keeps waiting for it
+        if (this._shop || this._inventory) return;
+        this._feedPending = false;
+        this._feedSeq += 1;
+      }, 250);
     }
   }
 

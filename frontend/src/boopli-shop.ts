@@ -80,7 +80,7 @@ export class BoopliShop extends LitElement {
     try {
       await shopBuy(this.hass, item.id);
       this._note = t("shop.is_yours", { item: itemName(item.id) });
-      if (!item.food) this._sel = ""; // a bought thing leaves the shop
+      if (!item.food && this._sel === item.id) this._sel = ""; // a bought thing leaves the shop
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -161,13 +161,12 @@ export class BoopliShop extends LitElement {
               <button type="button" class="shopbtn" aria-label=${t("inventory.inventory")} @click=${() => this._toInventory()}>${icon("bag-personal-outline")}<span class="lbl">${t("inventory.inventory")}</span></button>
               <button type="button" class="close" aria-label=${t("common.close")} @click=${() => this._close()}>✕</button>
             </div>
-            <div class="cats" role="tablist">
+            <div class="cats" role="group" aria-label=${t("shop.shop")}>
               ${groups.map(
                 (g) => html`<button
                   type="button"
-                  role="tab"
                   class="cat ${g === group ? "on" : ""}"
-                  aria-selected=${g === group}
+                  aria-pressed=${g === group}
                   @click=${() => {
                     this._cat = g.id;
                     this._sel = "";
