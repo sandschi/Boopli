@@ -786,7 +786,7 @@ var Je = {
 		delete: "Löschen",
 		set_the_schedule_step_by_step: "Zeitplan Schritt für Schritt",
 		remove_step: "Schritt entfernen",
-		part_of_the_task_optional: "Teil der Aufgabe (optional)",
+		part_of_the_task_optional: "Zu welchem Bereich / welcher Phase gehört dieser Schritt? (optional)",
 		for_example_desk: "Zum Beispiel Schreibtisch",
 		custom_wait_in_minutes: "Eigene Wartezeit in Minuten",
 		min: "min",
@@ -1290,7 +1290,7 @@ var Je = {
 		when_i_want: "Ich starte es selbst",
 		tomorrow_9_00: "Morgen um 9:00",
 		pick_a_time: "Zeit wählen",
-		when_should_this_part_come_back: "Wann soll dieser Teil wieder dran sein?",
+		when_should_this_part_come_back: "Wann soll dieser Bereich / diese Phase wieder dran sein?",
 		change_in_settings: "In den Einstellungen ändern",
 		quick_look_first: "Erst kurz schauen",
 		it_started_with_all_its_steps: "Am Anfang waren alle Schritte dabei. Antworte kurz. Dann verschwinden die Schritte, die du heute nicht brauchst.",
@@ -1302,13 +1302,13 @@ var Je = {
 		break_down_a_recurring_chore: "Eine wiederkehrende Aufgabe aufteilen",
 		date_and_time: "Datum und Uhrzeit",
 		set_it: "Uhrzeit speichern",
-		nothing_is_lost_the_steps_wait: "Die Schritte aus diesem Teil werden zu einer eigenen Aufgabe unter „Für später“.",
+		nothing_is_lost_the_steps_wait: "Die Schritte aus diesem Bereich / dieser Phase werden zu einer eigenen Aufgabe unter „Für später“.",
 		remove_it: "Diese Aufgabe und ihre Schritte endgültig löschen?",
 		yes_remove: "Ja, löschen",
 		keep: "Behalten",
 		boopli_is_not_fully_set_up: "Boopli ist noch nicht ganz eingerichtet.",
 		finish_setting_up: "Einrichtung abschließen",
-		do_this_part_later: "Diesen Teil später machen",
+		do_this_part_later: "{group} später machen",
 		ready_when_you_are: "Wenn du bereit bist, geht’s los.",
 		ask_claude_to_break_it_down: "Claude um kleine Schritte bitten",
 		when_should_it_come_back: "Wann soll es wieder dran sein?",
@@ -1325,6 +1325,7 @@ var Je = {
 		and_more_in_the_chores_tab: "und {count} weitere unter „Aufgaben“",
 		step_of_2: "{group}: Schritt {min} von {total}",
 		snoozed_until: "Verschoben bis {time}",
+		snooze_for: "Verschieben um {minutes} min",
 		boopli_checks_in_at: "· Nachfrage frühestens um {time}",
 		since: "seit {time}",
 		in_progress: "In Arbeit",
@@ -1950,7 +1951,7 @@ var Je = {
 		delete: "Delete",
 		set_the_schedule_step_by_step: "Set the schedule step by step",
 		remove_step: "Remove step",
-		part_of_the_task_optional: "Part of the chore (optional)",
+		part_of_the_task_optional: "Which area / phase does this step belong to? (optional)",
 		for_example_desk: "For example: Desk",
 		custom_wait_in_minutes: "Custom wait in minutes",
 		min: "min",
@@ -2454,7 +2455,7 @@ var Je = {
 		when_i_want: "I’ll start it myself",
 		tomorrow_9_00: "Tomorrow, 9:00",
 		pick_a_time: "Pick a time",
-		when_should_this_part_come_back: "When should this part come back?",
+		when_should_this_part_come_back: "When should this area / phase come back?",
 		change_in_settings: "Change in Settings",
 		quick_look_first: "Quick look first",
 		it_started_with_all_its_steps: "It started with all its steps. Answer, and the steps you do not need today disappear.",
@@ -2466,13 +2467,13 @@ var Je = {
 		break_down_a_recurring_chore: "Break down a recurring chore",
 		date_and_time: "Date and time",
 		set_it: "Save time",
-		nothing_is_lost_the_steps_wait: "The steps in this part move to a separate chore under “Set aside for later.”",
+		nothing_is_lost_the_steps_wait: "The steps in this area / phase move to a separate chore under “Set aside for later.”",
 		remove_it: "Permanently delete this chore and its steps?",
 		yes_remove: "Yes, delete",
 		keep: "Keep",
 		boopli_is_not_fully_set_up: "Boopli is not fully set up yet.",
 		finish_setting_up: "Finish setting up",
-		do_this_part_later: "Do this part later",
+		do_this_part_later: "Do {group} later",
 		ready_when_you_are: "Ready when you are.",
 		ask_claude_to_break_it_down: "Ask Claude to break it down",
 		when_should_it_come_back: "When should it come back?",
@@ -2489,6 +2490,7 @@ var Je = {
 		and_more_in_the_chores_tab: "and {count} more in the Chores tab",
 		step_of_2: "{group}: step {min} of {total}",
 		snoozed_until: "Snoozed until {time}",
+		snooze_for: "Snooze {minutes} min",
 		boopli_checks_in_at: "· Check-in due from {time}",
 		since: "since {time}",
 		in_progress: "In progress",
@@ -3114,7 +3116,7 @@ var Je = {
 		delete: "Eliminar",
 		set_the_schedule_step_by_step: "Definir horario paso a paso",
 		remove_step: "Quitar paso",
-		part_of_the_task_optional: "Parte de la tarea (opcional)",
+		part_of_the_task_optional: "¿A qué zona / fase pertenece este paso? (opcional)",
 		for_example_desk: "Por ejemplo: escritorio",
 		custom_wait_in_minutes: "Tiempo de espera personalizado en minutos",
 		min: "min",
@@ -3618,7 +3620,7 @@ var Je = {
 		when_i_want: "La empezaré por mi cuenta",
 		tomorrow_9_00: "Mañana, 9:00",
 		pick_a_time: "Elegir hora",
-		when_should_this_part_come_back: "¿Cuándo quieres retomar esta parte?",
+		when_should_this_part_come_back: "¿Cuándo quieres retomar esta zona / fase?",
 		change_in_settings: "Cambiar en Configuración",
 		quick_look_first: "Primero, un vistazo",
 		it_started_with_all_its_steps: "La tarea empezó con todos sus pasos. Responde y desaparecerán los que no necesites hoy.",
@@ -3630,13 +3632,13 @@ var Je = {
 		break_down_a_recurring_chore: "Dividir una tarea que se repite",
 		date_and_time: "Fecha y hora",
 		set_it: "Guardar hora",
-		nothing_is_lost_the_steps_wait: "Los pasos de esta parte pasan a ser una tarea aparte en «Para más tarde».",
+		nothing_is_lost_the_steps_wait: "Los pasos de esta zona / fase pasan a ser una tarea aparte en «Para más tarde».",
 		remove_it: "¿Eliminar de forma permanente esta tarea y sus pasos?",
 		yes_remove: "Sí, eliminar",
 		keep: "Conservar",
 		boopli_is_not_fully_set_up: "Aún falta configurar parte de Boopli.",
 		finish_setting_up: "Terminar de configurar",
-		do_this_part_later: "Dejar esta parte para más tarde",
+		do_this_part_later: "Dejar «{group}» para más tarde",
 		ready_when_you_are: "Empezamos cuando quieras.",
 		ask_claude_to_break_it_down: "Pedirle a Claude que la divida en pasos",
 		when_should_it_come_back: "¿Cuándo quieres retomarla?",
@@ -3653,6 +3655,7 @@ var Je = {
 		and_more_in_the_chores_tab: "y {count} más en la pestaña «Tareas»",
 		step_of_2: "{group}: paso {min} de {total}",
 		snoozed_until: "Pospuesto hasta las {time}",
+		snooze_for: "Posponer {minutes} min",
 		boopli_checks_in_at: "· Boopli te preguntará cómo vas a partir de las {time}",
 		since: "desde las {time}",
 		in_progress: "En curso",
@@ -4278,7 +4281,7 @@ var Je = {
 		delete: "Supprimer",
 		set_the_schedule_step_by_step: "Planifier étape par étape",
 		remove_step: "Retirer l’étape",
-		part_of_the_task_optional: "Partie de la tâche (facultatif)",
+		part_of_the_task_optional: "À quel espace / quelle phase appartient cette étape ? (facultatif)",
 		for_example_desk: "Par exemple\xA0: bureau",
 		custom_wait_in_minutes: "Temps d’attente personnalisé en minutes",
 		min: "min",
@@ -4782,7 +4785,7 @@ var Je = {
 		when_i_want: "Je lancerai la tâche moi-même",
 		tomorrow_9_00: "Demain, 9\xA0h",
 		pick_a_time: "Choisir une heure",
-		when_should_this_part_come_back: "Quand veux-tu revoir cette partie\xA0?",
+		when_should_this_part_come_back: "Quand veux-tu revoir cet espace / cette phase ?",
 		change_in_settings: "Modifier dans «\xA0Paramètres\xA0»",
 		quick_look_first: "D’abord, un coup d’œil",
 		it_started_with_all_its_steps: "Au départ, toutes les étapes sont là. Réponds et celles dont tu n’as pas besoin aujourd’hui disparaîtront.",
@@ -4794,13 +4797,13 @@ var Je = {
 		break_down_a_recurring_chore: "Découper une tâche récurrente",
 		date_and_time: "Date et heure",
 		set_it: "Enregistrer l’heure",
-		nothing_is_lost_the_steps_wait: "Les étapes de cette partie passent dans une tâche à part, sous «\xA0Pour plus tard\xA0».",
+		nothing_is_lost_the_steps_wait: "Les étapes de cet espace / cette phase passent dans une tâche à part, sous « Pour plus tard ».",
 		remove_it: "Supprimer définitivement cette tâche et ses étapes\xA0?",
 		yes_remove: "Oui, supprimer",
 		keep: "Garder",
 		boopli_is_not_fully_set_up: "Boopli n’est pas encore entièrement configuré.",
 		finish_setting_up: "Terminer la configuration",
-		do_this_part_later: "Faire cette partie plus tard",
+		do_this_part_later: "Faire « {group} » plus tard",
 		ready_when_you_are: "On commence quand tu veux.",
 		ask_claude_to_break_it_down: "Demander à Claude de découper la tâche",
 		when_should_it_come_back: "Quand veux-tu revoir la tâche\xA0?",
@@ -4817,6 +4820,7 @@ var Je = {
 		and_more_in_the_chores_tab: "et {count} autres dans l’onglet «\xA0Tâches\xA0»",
 		step_of_2: "{group}\xA0: étape {min} sur {total}",
 		snoozed_until: "Reporté jusqu’à {time}",
+		snooze_for: "Reporter de {minutes} min",
 		boopli_checks_in_at: "· Boopli te demandera où tu en es à partir de {time}",
 		since: "depuis {time}",
 		in_progress: "En cours",
@@ -5442,7 +5446,7 @@ var Je = {
 		delete: "Wissen",
 		set_the_schedule_step_by_step: "Planning stap voor stap instellen",
 		remove_step: "Stap verwijderen",
-		part_of_the_task_optional: "Deel van de taak (optioneel)",
+		part_of_the_task_optional: "Bij welk gebied / welke fase hoort deze stap? (optioneel)",
 		for_example_desk: "Bijvoorbeeld je bureau",
 		custom_wait_in_minutes: "Eigen wachttijd in minuten",
 		min: "min",
@@ -5946,7 +5950,7 @@ var Je = {
 		when_i_want: "Ik start de taak zelf",
 		tomorrow_9_00: "Morgen om 9:00",
 		pick_a_time: "Kies een tijd",
-		when_should_this_part_come_back: "Wanneer is dit deel weer aan de beurt?",
+		when_should_this_part_come_back: "Wanneer is dit gebied / deze fase weer aan de beurt?",
 		change_in_settings: "Aanpassen in Instellingen",
 		quick_look_first: "Eerst even kijken",
 		it_started_with_all_its_steps: "Alle stappen staan er nog in. Geef antwoord, dan verdwijnen de stappen die je vandaag niet nodig hebt.",
@@ -5958,13 +5962,13 @@ var Je = {
 		break_down_a_recurring_chore: "Een terugkerende taak opdelen",
 		date_and_time: "Datum en tijd",
 		set_it: "Tijd opslaan",
-		nothing_is_lost_the_steps_wait: "De stappen in dit deel komen samen in een aparte taak onder “Voor later”.",
+		nothing_is_lost_the_steps_wait: "De stappen in dit gebied / deze fase komen samen in een aparte taak onder “Voor later”.",
 		remove_it: "Deze taak en de stappen definitief wissen?",
 		yes_remove: "Ja, wissen",
 		keep: "Behouden",
 		boopli_is_not_fully_set_up: "Boopli is nog niet helemaal ingesteld.",
 		finish_setting_up: "Instellen afmaken",
-		do_this_part_later: "Dit deel later doen",
+		do_this_part_later: "{group} later doen",
 		ready_when_you_are: "Begin maar als je er klaar voor bent.",
 		ask_claude_to_break_it_down: "Vraag Claude om kleine stapjes",
 		when_should_it_come_back: "Wanneer is deze taak weer aan de beurt?",
@@ -5981,6 +5985,7 @@ var Je = {
 		and_more_in_the_chores_tab: "en nog {count} onder “Taken”",
 		step_of_2: "{group}: stap {min} van {total}",
 		snoozed_until: "Uitgesteld tot {time}",
+		snooze_for: "{minutes} min uitstellen",
 		boopli_checks_in_at: "· Vanaf {time} vraagt Boopli of je nog bezig bent",
 		since: "sinds {time}",
 		in_progress: "Bezig",
@@ -10271,6 +10276,18 @@ var ba = class extends b {
 			}
 		}
 	}
+	async _snooze(e, t) {
+		if (this.hass && !this._busy) {
+			this._busy = !0, this._error = "";
+			try {
+				await Gt(this.hass, e, t);
+			} catch (e) {
+				this._error = T(e);
+			} finally {
+				this._busy = !1;
+			}
+		}
+	}
 	_defaultPick() {
 		let e = new Date(this.nowMs + 864e5), t = (e) => String(e).padStart(2, "0");
 		return `${e.getFullYear()}-${t(e.getMonth() + 1)}-${t(e.getDate())}T09:00`;
@@ -10545,6 +10562,13 @@ var ba = class extends b {
                     >
                       ${C("today.on_it")}
                     </button>`}
+                <button
+                  class="link"
+                  ?disabled=${this._busy}
+                  @click=${() => this._snooze(t.now.run.id, t.now.step.step_id)}
+                >
+                  ${C("today.snooze_for", { minutes: this.snapshot.settings.snooze_minutes })}
+                </button>
               </div>
               ${va(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : m`<button
                   class="link later-btn"
@@ -10554,7 +10578,7 @@ var ba = class extends b {
 			group: t.now.step.group
 		})}
                 >
-                  ${C("today.do_this_part_later")}
+                  ${C("today.do_this_part_later", { group: t.now.step.group ?? "" })}
                 </button>` : _}
               ${this._error ? m`<div class="error">${this._error}</div>` : _}
             </section>

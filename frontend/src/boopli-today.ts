@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, releaseStep, startChore, type ParkWhen } from "./api";
+import { answerQuestions, awayEnd, completeStep, deleteChore, errorMessage, notOnIt, onIt, partPark, partTime, releaseStep, snoozeStep, startChore, type ParkWhen } from "./api";
 import "./boopli-questions";
 import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
@@ -307,6 +307,20 @@ export class BoopliToday extends LitElement {
     this._error = "";
     try {
       await (on ? onIt : notOnIt)(this.hass, runId, stepId);
+    } catch (err) {
+      this._error = errorMessage(err);
+    } finally {
+      this._busy = false;
+    }
+  }
+
+  /** Push the next nudge of this step back by the snooze length from Settings. */
+  private async _snooze(runId: string, stepId: string): Promise<void> {
+    if (!this.hass || this._busy) return;
+    this._busy = true;
+    this._error = "";
+    try {
+      await snoozeStep(this.hass, runId, stepId);
     } catch (err) {
       this._error = errorMessage(err);
     } finally {
@@ -665,6 +679,13 @@ export class BoopliToday extends LitElement {
                     >
                       ${t("today.on_it")}
                     </button>`}
+                <button
+                  class="link"
+                  ?disabled=${this._busy}
+                  @click=${() => this._snooze(model.now!.run.id, model.now!.step.step_id)}
+                >
+                  ${t("today.snooze_for", { minutes: this.snapshot.settings.snooze_minutes })}
+                </button>
               </div>
               ${(() => {
                 const part = partInfo(model.now!.run, model.now!.step);
@@ -675,7 +696,7 @@ export class BoopliToday extends LitElement {
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({ runId: model.now!.run.id, group: model.now!.step.group })}
                 >
-                  ${t("today.do_this_part_later")}
+                  ${t("today.do_this_part_later", { group: model.now!.step.group ?? "" })}
                 </button>`;
               })()}
               ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
