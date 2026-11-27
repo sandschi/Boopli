@@ -37,7 +37,7 @@ Si ton foyer découvre les Blubs ou avait déjà un animal avant leur arrivée, 
 
 ## La boutique
 
-Sélectionne le champ **Blubs** en haut à gauche de la pièce de ton animal pour ouvrir la boutique. Tu y trouves de la nourriture, des objets pour la pièce, des couleurs et des motifs pour le mur et le sol, et des améliorations. Tu peux acheter de la nourriture autant de fois que tu veux. Un objet acheté quitte la boutique et t’attend dans l’inventaire. Si un objet est encore inaccessible, la raison est affichée. Par exemple, il faut parfois atteindre le niveau 3 ou débloquer un succès. Le champ devient vert si quelque chose se débloque et que tu as assez de Blubs pour l’acheter. C’est le seul signal. Rien ne clignote.
+Sélectionne le champ **Blubs** en haut à gauche de la pièce de ton animal pour ouvrir la boutique. Tu y trouves de la nourriture, des objets pour la pièce, des couleurs et des motifs pour le mur et le sol, et des améliorations. Tu peux acheter de la nourriture autant de fois que tu veux. Un objet acheté quitte la boutique et t’attend dans l’inventaire. Si un objet est encore inaccessible, la raison est affichée. Par exemple, il faut parfois atteindre le niveau 3 ou débloquer un succès. Le champ devient vert si quelque chose se débloque et que tu as assez de Blubs pour l’acheter. C’est le seul signal. Rien ne clignote. Choisis un article dans la boutique pour voir à quoi il sert, puis appuie sur **Acheter** en bas. Le bouton en haut te mène à l’inventaire.
 
 - Le **bol d’eau** (niveau 1), la **gamelle** (niveau 2) et le **lit** (niveau 3) apparaissent dans la pièce dès que tu les achètes.
 - Tu peux mettre **une couleur et un motif** sur le mur ou le sol.
@@ -45,7 +45,7 @@ Sélectionne le champ **Blubs** en haut à gauche de la pièce de ton animal pou
 
 ## L’inventaire
 
-Sélectionne le bouton à côté du champ des Blubs pour ouvrir l’inventaire. Tu peux y donner à manger à ton animal avec ce que tu as en réserve et choisir l’aspect du mur et du sol. Choisis une couleur ou un motif, ou choisis un fond uni. Tu peux changer d’avis à tout moment. Le changement ne te rend pas de Blubs. L’inventaire indique aussi quels objets sont dans la pièce.
+Sélectionne le bouton à côté du champ des Blubs pour ouvrir l’inventaire. Tu peux y donner à manger à ton animal avec ce que tu as en réserve et choisir l’aspect du mur et du sol. Choisis une couleur ou un motif, ou choisis un fond uni. Tu peux changer d’avis à tout moment. Le changement ne te rend pas de Blubs. Choisis un aliment, une couleur ou un motif, puis appuie sur **Nourrir** ou **Appliquer** en bas. L’inventaire indique aussi quels objets sont dans la pièce. Le bouton en haut te mène à la boutique.
 
 ## Couleur d’accent
 

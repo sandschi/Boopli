@@ -37,7 +37,7 @@ Wenn Blubs für deinen Haushalt neu sind oder du schon vorher ein Haustier hatte
 
 ## Der Shop
 
-Wähle das Feld **Blubs** oben links im Zimmer deines Haustiers, um den Shop zu öffnen. Dort gibt es Futter, Dinge fürs Zimmer, Farben und Muster für Wand und Boden und Extras. Futter kannst du immer wieder kaufen. Gekaufte Dinge verschwinden aus dem Shop und warten im Inventar. Bei Dingen, die du noch nicht kaufen kannst, steht der Grund dabei. Manche gibt es zum Beispiel erst ab Level 3 oder mit einem bestimmten Erfolg. Das Feld wird grün, wenn etwas Neues verfügbar ist und du genug Blubs dafür hast. Das ist der einzige Hinweis. Es blinkt nichts.
+Wähle das Feld **Blubs** oben links im Zimmer deines Haustiers, um den Shop zu öffnen. Dort gibt es Futter, Dinge fürs Zimmer, Farben und Muster für Wand und Boden und Extras. Futter kannst du immer wieder kaufen. Gekaufte Dinge verschwinden aus dem Shop und warten im Inventar. Bei Dingen, die du noch nicht kaufen kannst, steht der Grund dabei. Manche gibt es zum Beispiel erst ab Level 3 oder mit einem bestimmten Erfolg. Das Feld wird grün, wenn etwas Neues verfügbar ist und du genug Blubs dafür hast. Das ist der einzige Hinweis. Es blinkt nichts. Wähle im Shop einen Artikel aus, um zu sehen, was er bewirkt, und drück dann unten auf **Kaufen**. Mit der Schaltfläche oben kommst du zum Inventar.
 
 - **Wassernapf** (Level 1), **Futternapf** (Level 2) und **Bett** (Level 3) erscheinen direkt nach dem Kauf im Zimmer.
 - **Eine Farbe und ein Muster** kannst du für die Wand oder den Boden auswählen.
@@ -45,7 +45,7 @@ Wähle das Feld **Blubs** oben links im Zimmer deines Haustiers, um den Shop zu 
 
 ## Das Inventar
 
-Öffne das Inventar über die Schaltfläche neben dem Blubs-Feld. Dort fütterst du dein Haustier mit deinem Futter und wählst aus, wie Wand und Boden aussehen. Du kannst eine Farbe oder ein Muster auswählen oder alles schlicht lassen. Das kannst du jederzeit ändern. Dabei bekommst du keine Blubs zurück. Im Inventar siehst du auch, welche Dinge im Zimmer stehen.
+Öffne das Inventar über die Schaltfläche neben dem Blubs-Feld. Dort fütterst du dein Haustier mit deinem Futter und wählst aus, wie Wand und Boden aussehen. Du kannst eine Farbe oder ein Muster auswählen oder alles schlicht lassen. Das kannst du jederzeit ändern. Dabei bekommst du keine Blubs zurück. Wähle Futter, eine Farbe oder ein Muster aus und drück dann unten auf **Füttern** oder **Anwenden**. Im Inventar siehst du auch, welche Dinge im Zimmer stehen. Mit der Schaltfläche oben kommst du zum Shop.
 
 ## Akzentfarbe
 

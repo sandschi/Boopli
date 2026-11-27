@@ -37,7 +37,7 @@ A household that is new to Blubs, or that had a pet before Blubs existed, starts
 
 ## The shop
 
-Select the **Blubs** field at the top left of the pet's room to open the shop. It sells food (again and again), things for the room, colors and patterns for the wall and the floor, and upgrades. A thing you bought is gone from the shop and waits in your inventory. A thing you cannot buy yet says why: from level 3, for example, or that it needs an achievement. The field turns green when something new is unlocked and you have enough Blubs for it. That is the only sign, nothing blinks.
+Select the **Blubs** field at the top left of the pet's room to open the shop. It sells food (again and again), things for the room, colors and patterns for the wall and the floor, and upgrades. A thing you bought is gone from the shop and waits in your inventory. A thing you cannot buy yet says why: from level 3, for example, or that it needs an achievement. The field turns green when something new is unlocked and you have enough Blubs for it. That is the only sign, nothing blinks. Choose an item in the shop to see what it does, then press **Buy** at the bottom. The button at the top takes you to the inventory.
 
 - **Water bowl** (level 1), **food bowl** (level 2) and **bed** (level 3) appear in the room as soon as you buy them.
 - **A color and a pattern** can be put on the wall or the floor.
@@ -45,7 +45,7 @@ Select the **Blubs** field at the top left of the pet's room to open the shop. I
 
 ## The inventory
 
-Select the button next to the Blubs field to open the inventory. Here you feed the pet from your food, and you choose what the wall and the floor look like: a color, a pattern, or plain. You can change it any time, and nothing is paid back. The inventory also lists the things that stand in the room.
+Select the button next to the Blubs field to open the inventory. Here you feed the pet from your food, and you choose what the wall and the floor look like: a color, a pattern, or plain. You can change it any time, and nothing is paid back. Choose a food, a color or a pattern, then press **Feed** or **Use** at the bottom. The inventory also lists the things that stand in the room. The button at the top takes you to the shop.
 
 ## Accent color
 

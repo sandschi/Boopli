@@ -37,7 +37,7 @@ Si los Blubs son nuevos para tu hogar o ya tenías una mascota antes de que exis
 
 ## La tienda
 
-Selecciona el campo **Blubs** en la parte superior izquierda de la habitación de tu mascota para abrir la tienda. Allí hay comida, objetos para la habitación, colores y diseños para la pared y el suelo, y mejoras. Puedes comprar comida todas las veces que quieras. Cuando compras un objeto, desaparece de la tienda y queda en el inventario. Si todavía no puedes comprar algo, verás el motivo. Por ejemplo, quizá necesites llegar al nivel 3 o conseguir un logro. El campo se pone verde cuando se desbloquea algo nuevo y tienes suficientes Blubs para comprarlo. Ese es el único aviso. Nada parpadea.
+Selecciona el campo **Blubs** en la parte superior izquierda de la habitación de tu mascota para abrir la tienda. Allí hay comida, objetos para la habitación, colores y diseños para la pared y el suelo, y mejoras. Puedes comprar comida todas las veces que quieras. Cuando compras un objeto, desaparece de la tienda y queda en el inventario. Si todavía no puedes comprar algo, verás el motivo. Por ejemplo, quizá necesites llegar al nivel 3 o conseguir un logro. El campo se pone verde cuando se desbloquea algo nuevo y tienes suficientes Blubs para comprarlo. Ese es el único aviso. Nada parpadea. Elige un artículo en la tienda para ver qué hace y pulsa **Comprar** en la parte inferior. El botón de arriba te lleva al inventario.
 
 - El **cuenco de agua** (nivel 1), el **cuenco de comida** (nivel 2) y la **cama** (nivel 3) aparecen en la habitación en cuanto los compras.
 - Puedes poner **un color y un diseño** en la pared o el suelo.
@@ -45,7 +45,7 @@ Selecciona el campo **Blubs** en la parte superior izquierda de la habitación d
 
 ## El inventario
 
-Selecciona el botón junto al campo de Blubs para abrir el inventario. Aquí puedes dar de comer a tu mascota con la comida que has guardado y elegir cómo se ven la pared y el suelo. Elige un color, un diseño o la opción «Liso». Puedes cambiarlo cuando quieras. Los cambios no te devuelven Blubs. En el inventario también ves qué objetos hay en la habitación.
+Selecciona el botón junto al campo de Blubs para abrir el inventario. Aquí puedes dar de comer a tu mascota con la comida que has guardado y elegir cómo se ven la pared y el suelo. Elige un color, un diseño o la opción «Liso». Puedes cambiarlo cuando quieras. Los cambios no te devuelven Blubs. Elige algo de comida, un color o un diseño y pulsa **Dar de comer** o **Aplicar** en la parte inferior. En el inventario también ves qué objetos hay en la habitación. El botón de arriba te lleva a la tienda.
 
 ## Color de acento
 

@@ -37,7 +37,7 @@ Zijn Blubs nieuw voor je huishouden, of had je al een huisdier voordat er Blubs 
 
 ## De winkel
 
-Kies het veld **Blubs** linksboven in de kamer van je huisdier om de winkel te openen. Daar vind je eten, spullen voor de kamer, kleuren en patronen voor de muur en de vloer, en uitbreidingen. Eten kun je steeds opnieuw kopen. Gekochte spullen verdwijnen uit de winkel en staan in je voorraad. Kun je iets nog niet kopen, dan staat de reden erbij. Je hebt bijvoorbeeld level 3 of een bepaalde prestatie nodig. Het veld wordt groen als er iets nieuws vrijkomt en je genoeg Blubs hebt om het te kopen. Dat is het enige seintje. Er knippert niets.
+Kies het veld **Blubs** linksboven in de kamer van je huisdier om de winkel te openen. Daar vind je eten, spullen voor de kamer, kleuren en patronen voor de muur en de vloer, en uitbreidingen. Eten kun je steeds opnieuw kopen. Gekochte spullen verdwijnen uit de winkel en staan in je voorraad. Kun je iets nog niet kopen, dan staat de reden erbij. Je hebt bijvoorbeeld level 3 of een bepaalde prestatie nodig. Het veld wordt groen als er iets nieuws vrijkomt en je genoeg Blubs hebt om het te kopen. Dat is het enige seintje. Er knippert niets. Kies iets in de winkel om te zien wat het doet en druk daarna onderaan op **Kopen**. Met de knop bovenaan ga je naar je voorraad.
 
 - Het **waterbakje** (level 1), het **voerbakje** (level 2) en het **bed** (level 3) verschijnen in de kamer zodra je ze koopt.
 - **Een kleur en een patroon** kun je op de muur of de vloer toepassen.
@@ -45,7 +45,7 @@ Kies het veld **Blubs** linksboven in de kamer van je huisdier om de winkel te o
 
 ## Je voorraad
 
-Kies de knop naast het veld met Blubs om je voorraad te openen. Hier geef je je huisdier eten uit je voorraad en kies je hoe de muur en de vloer eruitzien. Kies een kleur, een patroon of “Effen”. Dat kun je op elk moment veranderen. Je krijgt daarbij geen Blubs terug. In je voorraad zie je ook welke spullen er in de kamer staan.
+Kies de knop naast het veld met Blubs om je voorraad te openen. Hier geef je je huisdier eten uit je voorraad en kies je hoe de muur en de vloer eruitzien. Kies een kleur, een patroon of “Effen”. Dat kun je op elk moment veranderen. Je krijgt daarbij geen Blubs terug. Kies iets te eten, een kleur of een patroon en druk daarna onderaan op **Voeren** of **Toepassen**. In je voorraad zie je ook welke spullen er in de kamer staan. Met de knop bovenaan ga je naar de winkel.
 
 ## Accentkleur
 
