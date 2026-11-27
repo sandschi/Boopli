@@ -701,7 +701,8 @@
     "access_notes": "Boopli nutzen, Räume bearbeiten und ihre Notizen ändern",
     "access_notes_note": "auch der Tab „Mein Zuhause“",
     "access_all": "Alles außer dem, was Administratoren vorbehalten ist",
-    "access_all_note": "auch Aufgaben, Einstellungen, Stupse und Wallboards. Backups, der Token für „Claude fragen“ und diese Auswahl bleiben Administratoren vorbehalten"
+    "access_all_note": "auch Aufgaben, Einstellungen, Stupse und Wallboards. Backups, der Token für „Claude fragen“ und diese Auswahl bleiben Administratoren vorbehalten",
+    "access_change": "Ändern"
   },
   "speakers": {
     "what_kind_of_speaker": "Art des Lautsprechers",

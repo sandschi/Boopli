@@ -701,7 +701,8 @@
     "access_notes": "Utiliser Boopli et modifier les pièces et leurs notes",
     "access_notes_note": "aussi l’onglet « Chez moi »",
     "access_all": "Tout sauf ce qui est réservé aux administrateurs",
-    "access_all_note": "aussi les tâches, les paramètres, les rappels et les Wallboards. Les sauvegardes, le jeton de « Demander à Claude » et ce choix restent réservés aux administrateurs"
+    "access_all_note": "aussi les tâches, les paramètres, les rappels et les Wallboards. Les sauvegardes, le jeton de « Demander à Claude » et ce choix restent réservés aux administrateurs",
+    "access_change": "Modifier"
   },
   "speakers": {
     "what_kind_of_speaker": "Type d’enceinte",

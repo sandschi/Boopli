@@ -114,6 +114,7 @@ export class BoopliSettings extends LitElement {
     _aiNote: { state: true },
     _claudeOpen: { state: true },
     _accessBusy: { state: true },
+    _accessOpen: { state: true },
     _accessError: { state: true },
     _backup: { state: true },
     _languageNote: { state: true },
@@ -133,6 +134,7 @@ export class BoopliSettings extends LitElement {
   declare _aiNote: string;
   declare _accessBusy: boolean; // the choice of who may do what is on its way
   declare _accessError: string;
+  declare _accessOpen: boolean; // the window with the three levels
   declare _claudeOpen: boolean; // the small Ask Claude window on top of the AI help window
   declare _backup: "" | "export" | "import"; // the backup window that is open
   declare _languageNote: string; // why the language could not be changed (a message under the picker)
@@ -157,6 +159,7 @@ export class BoopliSettings extends LitElement {
     this._claudeOpen = false;
     this._accessBusy = false;
     this._accessError = "";
+    this._accessOpen = false;
     this._backup = "";
   }
 
@@ -1085,22 +1088,44 @@ export class BoopliSettings extends LitElement {
         <span class="card-icon">${icon(a.icon)}</span>
         <h3 tabindex="-1">${a.title}</h3>
       </div>
-      <div class="muted small">${t("settings.access_note")}</div>
-      <div class="field" role="radiogroup" aria-label=${a.title}>
-        ${choices.map(
-          (c) => html`<label class="inline">
-            <input
-              type="radio"
-              name="access"
-              .checked=${live(level === c.value)}
-              ?disabled=${this._accessBusy}
-              @change=${() => void this._setAccess(c.value)}
-            />
-            <span>${c.label}<span class="muted small"> — ${c.note}</span></span>
-          </label>`
-        )}
+      <div class="summary">${choices.find((c) => c.value === level)?.label ?? ""}</div>
+      <div class="buttons">
+        <button type="button" class="textlink" aria-label=${a.title} @click=${() => (this._accessOpen = true)}>${t("settings.access_change")}</button>
       </div>
-      ${this._accessError ? html`<div class="error" role="alert">${this._accessError}</div>` : nothing}
+      ${this._accessOpen
+        ? html`<dialog
+            class="sub"
+            aria-label=${a.title}
+            @close=${() => (this._accessOpen = false)}
+            @click=${(e: MouseEvent) => {
+              if (e.target === e.currentTarget) this._accessOpen = false; // the dark area around the window
+            }}
+          >
+            <div class="cwin">
+              <div class="chead">
+                <h3>${icon(a.icon)} ${a.title}</h3>
+                <button type="button" class="cclose" aria-label=${t("common.close")} @click=${() => (this._accessOpen = false)}>✕</button>
+              </div>
+              <div class="muted small">${t("settings.access_note")}</div>
+              <div class="field" role="radiogroup" aria-label=${a.title}>
+                ${choices.map(
+                  (c) => html`<label class="inline">
+                    <input
+                      type="radio"
+                      name="access"
+                      .checked=${live(level === c.value)}
+                      ?disabled=${this._accessBusy}
+                      @change=${() => void this._setAccess(c.value)}
+                    />
+                    <span>${c.label}<span class="muted small"> — ${c.note}</span></span>
+                  </label>`
+                )}
+              </div>
+              ${this._accessError ? html`<div class="error" role="alert">${this._accessError}</div>` : nothing}
+              <div class="cactions"><button type="button" class="primary" @click=${() => (this._accessOpen = false)}>${t("common.done")}</button></div>
+            </div>
+          </dialog>`
+        : nothing}
     </section>`;
   }
 
@@ -1553,6 +1578,11 @@ export class BoopliSettings extends LitElement {
         cursor: pointer;
       }
       .cactions {
+        margin-top: 14px;
+      }
+      .cwin [role="radiogroup"] {
+        display: grid;
+        gap: 14px;
         margin-top: 14px;
       }
       .win {

@@ -1225,7 +1225,8 @@ var Je = {
 		access_notes: "Boopli nutzen, Räume bearbeiten und ihre Notizen ändern",
 		access_notes_note: "auch der Tab „Mein Zuhause“",
 		access_all: "Alles außer dem, was Administratoren vorbehalten ist",
-		access_all_note: "auch Aufgaben, Einstellungen, Stupse und Wallboards. Backups, der Token für „Claude fragen“ und diese Auswahl bleiben Administratoren vorbehalten"
+		access_all_note: "auch Aufgaben, Einstellungen, Stupse und Wallboards. Backups, der Token für „Claude fragen“ und diese Auswahl bleiben Administratoren vorbehalten",
+		access_change: "Ändern"
 	},
 	speakers: {
 		what_kind_of_speaker: "Art des Lautsprechers",
@@ -2390,7 +2391,8 @@ var Je = {
 		access_notes: "Use Boopli and edit the rooms and their notes",
 		access_notes_note: "also the My home tab",
 		access_all: "Everything except the administrator’s own things",
-		access_all_note: "also chores, settings, nudges and wall boards. Backups, the Ask Claude token and this choice stay with administrators"
+		access_all_note: "also chores, settings, nudges and wall boards. Backups, the Ask Claude token and this choice stay with administrators",
+		access_change: "Change"
 	},
 	speakers: {
 		what_kind_of_speaker: "What kind of speaker",
@@ -3555,7 +3557,8 @@ var Je = {
 		access_notes: "Usar Boopli y editar los espacios y sus notas",
 		access_notes_note: "también la pestaña «Mi hogar»",
 		access_all: "Todo salvo lo reservado a los administradores",
-		access_all_note: "también las tareas, la configuración, los recordatorios y los Wallboards. Las copias de seguridad, el token de «Preguntar a Claude» y esta elección siguen reservados a los administradores"
+		access_all_note: "también las tareas, la configuración, los recordatorios y los Wallboards. Las copias de seguridad, el token de «Preguntar a Claude» y esta elección siguen reservados a los administradores",
+		access_change: "Cambiar"
 	},
 	speakers: {
 		what_kind_of_speaker: "Tipo de altavoz",
@@ -4720,7 +4723,8 @@ var Je = {
 		access_notes: "Utiliser Boopli et modifier les pièces et leurs notes",
 		access_notes_note: "aussi l’onglet «\xA0Chez moi\xA0»",
 		access_all: "Tout sauf ce qui est réservé aux administrateurs",
-		access_all_note: "aussi les tâches, les paramètres, les rappels et les Wallboards. Les sauvegardes, le jeton de «\xA0Demander à Claude\xA0» et ce choix restent réservés aux administrateurs"
+		access_all_note: "aussi les tâches, les paramètres, les rappels et les Wallboards. Les sauvegardes, le jeton de «\xA0Demander à Claude\xA0» et ce choix restent réservés aux administrateurs",
+		access_change: "Modifier"
 	},
 	speakers: {
 		what_kind_of_speaker: "Type d’enceinte",
@@ -5885,7 +5889,8 @@ var Je = {
 		access_notes: "Boopli gebruiken en de kamers en hun notities bewerken",
 		access_notes_note: "ook het tabblad “Mijn huis”",
 		access_all: "Alles behalve wat alleen beheerders mogen",
-		access_all_note: "ook taken, instellingen, seintjes en Wallboards. Back-ups, het token voor “Vraag Claude” en deze keuze blijven voorbehouden aan beheerders"
+		access_all_note: "ook taken, instellingen, seintjes en Wallboards. Back-ups, het token voor “Vraag Claude” en deze keuze blijven voorbehouden aan beheerders",
+		access_change: "Wijzigen"
 	},
 	speakers: {
 		what_kind_of_speaker: "Soort luidspreker",
@@ -17376,13 +17381,14 @@ var os = "@address", ss = () => ({
 			_aiNote: { state: !0 },
 			_claudeOpen: { state: !0 },
 			_accessBusy: { state: !0 },
+			_accessOpen: { state: !0 },
 			_accessError: { state: !0 },
 			_backup: { state: !0 },
 			_languageNote: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._languageNote = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._accessBusy = !1, this._accessError = "", this._backup = "";
+		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._languageNote = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._accessBusy = !1, this._accessError = "", this._accessOpen = !1, this._backup = "";
 	}
 	willUpdate() {
 		this._draft && as(this, this._draft.pet_kind, this._draft.accent);
@@ -18158,20 +18164,40 @@ var os = "@address", ss = () => ({
         <span class="card-icon">${k(e.icon)}</span>
         <h3 tabindex="-1">${e.title}</h3>
       </div>
-      <div class="muted small">${C("settings.access_note")}</div>
-      <div class="field" role="radiogroup" aria-label=${e.title}>
-        ${n.map((e) => m`<label class="inline">
-            <input
-              type="radio"
-              name="access"
-              .checked=${uo(t === e.value)}
-              ?disabled=${this._accessBusy}
-              @change=${() => void this._setAccess(e.value)}
-            />
-            <span>${e.label}<span class="muted small"> — ${e.note}</span></span>
-          </label>`)}
+      <div class="summary">${n.find((e) => e.value === t)?.label ?? ""}</div>
+      <div class="buttons">
+        <button type="button" class="textlink" aria-label=${e.title} @click=${() => this._accessOpen = !0}>${C("settings.access_change")}</button>
       </div>
-      ${this._accessError ? m`<div class="error" role="alert">${this._accessError}</div>` : _}
+      ${this._accessOpen ? m`<dialog
+            class="sub"
+            aria-label=${e.title}
+            @close=${() => this._accessOpen = !1}
+            @click=${(e) => {
+			e.target === e.currentTarget && (this._accessOpen = !1);
+		}}
+          >
+            <div class="cwin">
+              <div class="chead">
+                <h3>${k(e.icon)} ${e.title}</h3>
+                <button type="button" class="cclose" aria-label=${C("common.close")} @click=${() => this._accessOpen = !1}>✕</button>
+              </div>
+              <div class="muted small">${C("settings.access_note")}</div>
+              <div class="field" role="radiogroup" aria-label=${e.title}>
+                ${n.map((e) => m`<label class="inline">
+                    <input
+                      type="radio"
+                      name="access"
+                      .checked=${uo(t === e.value)}
+                      ?disabled=${this._accessBusy}
+                      @change=${() => void this._setAccess(e.value)}
+                    />
+                    <span>${e.label}<span class="muted small"> — ${e.note}</span></span>
+                  </label>`)}
+              </div>
+              ${this._accessError ? m`<div class="error" role="alert">${this._accessError}</div>` : _}
+              <div class="cactions"><button type="button" class="primary" @click=${() => this._accessOpen = !1}>${C("common.done")}</button></div>
+            </div>
+          </dialog>` : _}
     </section>`;
 	}
 	async _setAccess(e) {
@@ -18569,6 +18595,11 @@ var os = "@address", ss = () => ({
         cursor: pointer;
       }
       .cactions {
+        margin-top: 14px;
+      }
+      .cwin [role="radiogroup"] {
+        display: grid;
+        gap: 14px;
         margin-top: 14px;
       }
       .win {

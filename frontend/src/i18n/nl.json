@@ -701,7 +701,8 @@
     "access_notes": "Boopli gebruiken en de kamers en hun notities bewerken",
     "access_notes_note": "ook het tabblad “Mijn huis”",
     "access_all": "Alles behalve wat alleen beheerders mogen",
-    "access_all_note": "ook taken, instellingen, seintjes en Wallboards. Back-ups, het token voor “Vraag Claude” en deze keuze blijven voorbehouden aan beheerders"
+    "access_all_note": "ook taken, instellingen, seintjes en Wallboards. Back-ups, het token voor “Vraag Claude” en deze keuze blijven voorbehouden aan beheerders",
+    "access_change": "Wijzigen"
   },
   "speakers": {
     "what_kind_of_speaker": "Soort luidspreker",

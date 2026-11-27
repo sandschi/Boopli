@@ -701,7 +701,8 @@
     "access_notes": "Use Boopli and edit the rooms and their notes",
     "access_notes_note": "also the My home tab",
     "access_all": "Everything except the administrator’s own things",
-    "access_all_note": "also chores, settings, nudges and wall boards. Backups, the Ask Claude token and this choice stay with administrators"
+    "access_all_note": "also chores, settings, nudges and wall boards. Backups, the Ask Claude token and this choice stay with administrators",
+    "access_change": "Change"
   },
   "speakers": {
     "what_kind_of_speaker": "What kind of speaker",

@@ -701,7 +701,8 @@
     "access_notes": "Usar Boopli y editar los espacios y sus notas",
     "access_notes_note": "también la pestaña «Mi hogar»",
     "access_all": "Todo salvo lo reservado a los administradores",
-    "access_all_note": "también las tareas, la configuración, los recordatorios y los Wallboards. Las copias de seguridad, el token de «Preguntar a Claude» y esta elección siguen reservados a los administradores"
+    "access_all_note": "también las tareas, la configuración, los recordatorios y los Wallboards. Las copias de seguridad, el token de «Preguntar a Claude» y esta elección siguen reservados a los administradores",
+    "access_change": "Cambiar"
   },
   "speakers": {
     "what_kind_of_speaker": "Tipo de altavoz",
