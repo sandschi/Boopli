@@ -7913,7 +7913,8 @@ function Bn(e, t, n) {
 	}).format(r)}, ${a}`;
 }
 function Vn(e, t, n) {
-	return Rn(new Date(e), n) === Rn(new Date(t), n);
+	let r = new Date(e);
+	return !Number.isNaN(r.getTime()) && Rn(r, n) === Rn(new Date(t), n);
 }
 function Hn(e) {
 	let t = Math.max(0, Math.round(e));
