@@ -61,6 +61,7 @@ export function furStyle(hex: string): string {
     ["--fur-hi", mix(hex, "#ffffff", 0.7)],
     ["--fur-rim", mix(hex, "#ffffff", 0.35)],
     ["--fur-vest", mix(hex, "#ffffff", 0.1)],
+    ["--fur-line", mix(hex, "#000000", 0.7)],
   ];
   return vars.map(([k, v]) => `${k}:${v}`).join(";");
 }

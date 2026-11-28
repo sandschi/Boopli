@@ -16,6 +16,7 @@ const BODY_BOTTOM = "var(--fur-dark, #170E2E)";
 const VEST = "var(--fur-vest, #3C2C70)";
 const NECK = { x: 100, y: 121, w: 52 }; // where a scarf goes
 const EYE = "#C4B6F0";
+const EYE_LINE = "var(--fur-line, #C4B6F0)"; // the eye arcs and brows: light on the dark coat, dark when a light fur colour is worn
 const NOSE = "#D69AE8";
 const BOW = "#1F9C7C";
 const BOW_DARK = "#0E5C48";
@@ -38,21 +39,21 @@ const TAIL = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
 function eyes(mood: Mood): SVGTemplateResult {
   switch (mood) {
     case "happy":
-      return svg`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "sleepy":
-      return svg`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "hibernating":
-      return svg`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "sad":
       return svg`<g class="eyes">
           <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${EYE}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${DARK}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
           <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${EYE}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${DARK}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
         </g>
-        <path d="M69 69 L90 63" stroke=${EYE} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M131 69 L110 63" stroke=${EYE} stroke-width="3.4" stroke-linecap="round"/>`;
+        <path d="M69 69 L90 63" stroke=${EYE_LINE} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M131 69 L110 63" stroke=${EYE_LINE} stroke-width="3.4" stroke-linecap="round"/>`;
     default:
       return svg`<g class="eyes look">
         <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${EYE}/><circle cx="80" cy="80" r="5" fill=${DARK}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
