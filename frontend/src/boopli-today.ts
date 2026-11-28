@@ -32,6 +32,8 @@ interface ParkAsk {
 /** How far along the part (group) of this step is, and whether it can be set aside. */
 /** How many finished steps the "done today" timeline shows (the rest is counted: "and 3 more"). */
 const DONE_SHOWN = 6;
+/** How many history entries the snapshot carries (the same number as HISTORY_IN_SNAPSHOT in manager.py). */
+const HISTORY_IN_SNAPSHOT = 200;
 
 function partInfo(run: Run, step: StepRun): { done: number; total: number; canPark: boolean } | null {
   if (!step.group) return null;
@@ -618,7 +620,7 @@ export class BoopliToday extends LitElement {
   // --- the lists next to the big step, in the order you read them ---------------------------
 
   /** A list heading with a count, so the parts of the screen are easy to tell apart. */
-  private _heading(title: string, count: number, symbol: string) {
+  private _heading(title: string, count: number | string, symbol: string) {
     return html`<h3 class="sec-title"><span class="seal" aria-hidden="true">${icon(symbol)}</span>${title}<span class="count">${count}</span></h3>`;
   }
 
@@ -777,11 +779,14 @@ export class BoopliToday extends LitElement {
     if (steps.length === 0) return nothing;
     const shown = steps.slice(0, DONE_SHOWN);
     const more = steps.length - shown.length;
+    // The snapshot only carries the latest 200 history entries: if even the oldest one is from today, older steps of
+    // today may be cut off, so the counts are shown as "at least" (the newest rows are always right).
+    const cut = snapshot.history.length >= HISTORY_IN_SNAPSHOT && isToday(snapshot.history[0].ts, this.nowMs, tz);
     const flagged = new Set<string>(); // the newest step of a finished chore is the one that finished it
     return html`
       <section class="sec sec-done soft">
         <span class="mark" aria-hidden="true">${icon("check-all")}</span>
-        ${this._heading(t("today.done_today"), steps.length, "check-all")}
+        ${this._heading(t("today.done_today"), cut ? `${steps.length}+` : steps.length, "check-all")}
         ${shown.map((h) => {
           const auto = h.by === "auto";
           const finished = finishedRuns.has(h.run_id) && !flagged.has(h.run_id);
@@ -794,7 +799,7 @@ export class BoopliToday extends LitElement {
             <span class="hint">${auto && h.reason ? `${h.reason}, ` : ""}${fmtTime(h.ts, tz)}${finished ? html` <span class="fin-flag" aria-hidden="true">${icon("flag-checkered")}</span>` : nothing}</span>
           </div>`;
         })}
-        ${more > 0 ? html`<div class="muted small more">${t("today.and_n_more", { count: more })}</div>` : nothing}
+        ${more > 0 ? html`<div class="muted small more">${t("today.and_n_more", { count: cut ? `${more}+` : more })}</div>` : nothing}
       </section>
     `;
   }
