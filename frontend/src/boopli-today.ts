@@ -4,6 +4,7 @@ import "./boopli-questions";
 import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
+import { petLook } from "./shop-art";
 import { describeWhen, fmtTime, isToday, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-stage";
@@ -392,6 +393,7 @@ export class BoopliToday extends LitElement {
     const pct = (now.done / now.total) * 100;
     const place = Math.min(94, Math.max(6, pct)); // the pet stays inside the bar
     const names = now.total <= 6;
+    const look = petLook(this.snapshot?.pet?.placed); // the rider wears what the pet wears in its room
     return html`<div class="trail">
       <div
         class="track"
@@ -408,6 +410,8 @@ export class BoopliToday extends LitElement {
           still
           .kind=${(this.snapshot?.settings?.pet_kind ?? "slime") as PetKind}
           .mood=${"happy"}
+          .fur=${look.fur}
+          .neck=${look.neck}
         ></boopli-pet>
         <span class="flag">${icon("flag-checkered")}</span>
       </div>

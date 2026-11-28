@@ -1123,6 +1123,11 @@ SHOP_ITEMS: tuple[ShopItem, ...] = (
     ShopItem("color_blue", KIND_COLOR, 30, achievement=achievement_id("steps", TIER_RARE)),
     ShopItem("color_purple", KIND_COLOR, 40, achievement=achievement_id("steps", TIER_EPIC)),
     ShopItem("color_gold", KIND_COLOR, 150, achievement=achievement_id("steps", TIER_LEGENDARY)),
+    # The first items of the modular shop, one for each kind of thing the shop can hold (issue #14).
+    ShopItem("dog_bone", KIND_EXTRA, 40, species="dog"),  # an item of one pet kind
+    ShopItem("bowl_gem", KIND_EXTRA, 120, min_level=5, attach_to="food_bowl"),  # sits on another item
+    ShopItem("scarf_red", KIND_WEAR, 50, min_level=2),  # what the pet wears
+    ShopItem("fur_snow", KIND_FUR, 60, min_level=3),  # the pet's fur colour
     ShopItem("meal_4", KIND_UPGRADE, 300, min_level=5, effect=EFFECT_MEALS, effect_value=1),
     ShopItem("meal_5", KIND_UPGRADE, 800, min_level=10, effect=EFFECT_MEALS, effect_value=1, requires="meal_4"),
     ShopItem("food_small", KIND_FOOD, FOOD[FOOD_SMALL][0], food=FOOD_SMALL),

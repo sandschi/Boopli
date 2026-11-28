@@ -246,6 +246,11 @@ export const PET_NECK: Record<string, string> = {
   scarf_red: "#E8505B",
 };
 
+/** The fur colour and scarf colour a pet wears, from what is put on it (`placed`). "" = nothing: the pet keeps its own look. */
+export function petLook(placed: { fur?: string; neck?: string } | undefined): { fur: string; neck: string } {
+  return { fur: PET_FUR[placed?.fur ?? ""] ?? "", neck: PET_NECK[placed?.neck ?? ""] ?? "" };
+}
+
 /** Where a pet's look goes: the slots of the pet itself (fur and neck), next to the room's wall and floor. */
 export const PET_SLOTS = ["fur", "neck"] as const;
 

@@ -4,7 +4,7 @@ import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
 import type { Activity, Moment } from "./boopli-pet";
-import { PET_FUR, PET_NECK, ROOM_ITEMS, SPOTS, coin, mealBowl, roomPaint, type RoomItem, type Spot } from "./shop-art";
+import { ROOM_ITEMS, SPOTS, coin, petLook, mealBowl, roomPaint, type RoomItem, type Spot } from "./shop-art";
 import { icon } from "./icon";
 import { t } from "./i18n";
 
@@ -205,6 +205,7 @@ export class BoopliStage extends LitElement {
 
   render() {
     const items = this._items();
+    const look = petLook(this.placed);
     const bed = items.find((item) => item.role === "bed");
     const food = items.find((item) => item.role === "food");
     const hasBed = !!bed;
@@ -249,8 +250,8 @@ export class BoopliStage extends LitElement {
           .level=${this.level}
           .away=${this.away}
           .hungry=${this.hungry}
-          .fur=${PET_FUR[this.placed.fur ?? ""] ?? ""}
-          .neck=${PET_NECK[this.placed.neck ?? ""] ?? ""}
+          .fur=${look.fur}
+          .neck=${look.neck}
           .activity=${activity}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}
