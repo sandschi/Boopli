@@ -632,7 +632,23 @@ export class BoopliToday extends LitElement {
       ${model.ready.map(
         (g) => html`<div class="group">
           <div class="group-name strong">${g.run.chore_name}</div>
-          ${g.steps.map((s) => html`<div class="row"><span>${s.title}</span></div>`)}
+          ${g.steps.map(
+            (s) => html`<div class="row">
+              <span class="rowmain">
+                <button
+                  type="button"
+                  class="go"
+                  title=${t("today.done_step", { step: s.title })}
+                  aria-label=${t("today.done_step", { step: s.title })}
+                  ?disabled=${this._busy}
+                  @click=${() => this._done(g.run.id, s.stepId)}
+                >
+                  ${icon("check-bold")}
+                </button>
+                <span>${s.title}</span>
+              </span>
+            </div>`
+          )}
         </div>`
       )}
     </section>`;
@@ -657,8 +673,8 @@ export class BoopliToday extends LitElement {
                   ? html`<button
                       type="button"
                       class="go"
-                      title=${t("common.start_now")}
-                      aria-label=${t("common.start_now")}
+                      title=${t("today.start_step_now", { step: s.title })}
+                      aria-label=${t("today.start_step_now", { step: s.title })}
                       ?disabled=${this._busy}
                       @click=${() => this._release(g.run.id, s.stepId)}
                     >

@@ -803,6 +803,8 @@
     "done_by_itself": "Von selbst erledigt",
     "done_today": "Heute erledigt",
     "and_n_more": "und {count} mehr",
+    "start_step_now": "Jetzt starten: {step}",
+    "done_step": "Fertig: {step}",
     "enjoy_the_quiet_what_is_coming": "Genieß die Ruhe. Unten siehst du, was als Nächstes ansteht.",
     "add_your_first_chore_in_the": "Füge unter „Aufgaben“ deine erste Aufgabe hinzu.",
     "level": "· Level {level}",

@@ -540,10 +540,11 @@ export class BoopliBreakdown extends LitElement {
   }
 
   private _add(afterIndex: number): void {
+    if (this._steps.length >= MAX_STEPS) return; // a full list takes no more (nothing is cut off at the end)
     const group = this._steps[afterIndex]?.group ?? "";
     const steps = [...this._steps];
     steps.splice(afterIndex + 1, 0, { title: "", group, size: "small", wait_minutes: 0 });
-    this._steps = steps.slice(0, MAX_STEPS);
+    this._steps = steps;
   }
 
   private _finish(action: BreakdownResult["action"]): void {
@@ -758,7 +759,7 @@ export class BoopliBreakdown extends LitElement {
         <span class="tools">
           <button type="button" aria-label=${t("ladders.move_up")} ?disabled=${i === 0} @click=${() => this._move(i, -1)}>↑</button>
           <button type="button" aria-label=${t("ladders.move_down")} ?disabled=${i === this._steps.length - 1} @click=${() => this._move(i, 1)}>↓</button>
-          <button type="button" aria-label=${t("breakdown.add_a_step_after_this")} @click=${() => this._add(i)}>+</button>
+          <button type="button" aria-label=${t("breakdown.add_a_step_after_this")} ?disabled=${this._steps.length >= MAX_STEPS} @click=${() => this._add(i)}>+</button>
           <button type="button" aria-label=${t("common.remove")} @click=${() => this._remove(i)}>✕</button>
         </span>
       </div>
@@ -803,7 +804,7 @@ export class BoopliBreakdown extends LitElement {
       ${this._renderChecks()}
       <div class="steps">${steps.map((s, i) => this._renderStep(s, i))}</div>
       <div class="inline-actions">
-        <button type="button" @click=${() => this._add(steps.length - 1)}>${t("breakdown.add_a_step")}</button>
+        <button type="button" ?disabled=${steps.length >= MAX_STEPS} @click=${() => this._add(steps.length - 1)}>${t("breakdown.add_a_step")}</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${t("breakdown.try_again")}</button>
         ${agentOn(this.snapshot) && claudeReady(this.snapshot)
           ? html`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>

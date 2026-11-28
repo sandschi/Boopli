@@ -1327,6 +1327,8 @@ var Ze = {
 		done_by_itself: "Von selbst erledigt",
 		done_today: "Heute erledigt",
 		and_n_more: "und {count} mehr",
+		start_step_now: "Jetzt starten: {step}",
+		done_step: "Fertig: {step}",
 		enjoy_the_quiet_what_is_coming: "Genieß die Ruhe. Unten siehst du, was als Nächstes ansteht.",
 		add_your_first_chore_in_the: "Füge unter „Aufgaben“ deine erste Aufgabe hinzu.",
 		level: "· Level {level}",
@@ -2617,6 +2619,8 @@ var Ze = {
 		done_by_itself: "Done by itself",
 		done_today: "Done today",
 		and_n_more: "and {count} more",
+		start_step_now: "Start now: {step}",
+		done_step: "Done: {step}",
 		enjoy_the_quiet_what_is_coming: "Enjoy the quiet. What is coming up shows below.",
 		add_your_first_chore_in_the: "Add your first chore in the Chores tab.",
 		level: "· Level {level}",
@@ -3907,6 +3911,8 @@ var Ze = {
 		done_by_itself: "Pasos completados automáticamente",
 		done_today: "Completado hoy",
 		and_n_more: "y {count} más",
+		start_step_now: "Empezar ahora: {step}",
+		done_step: "Listo: {step}",
 		enjoy_the_quiet_what_is_coming: "Disfruta de la calma. Abajo puedes ver qué viene después.",
 		add_your_first_chore_in_the: "Añade tu primera tarea en la pestaña «Tareas».",
 		level: "· Nivel {level}",
@@ -5197,6 +5203,8 @@ var Ze = {
 		done_by_itself: "Fait automatiquement",
 		done_today: "Fait aujourd’hui",
 		and_n_more: "et {count} de plus",
+		start_step_now: "Commencer maintenant\xA0: {step}",
+		done_step: "Terminé\xA0: {step}",
 		enjoy_the_quiet_what_is_coming: "Profite du calme. Tu verras la suite juste en dessous.",
 		add_your_first_chore_in_the: "Ajoute ta première tâche dans l’onglet «\xA0Tâches\xA0».",
 		level: "· Niveau {level}",
@@ -6487,6 +6495,8 @@ var Ze = {
 		done_by_itself: "Vanzelf klaar",
 		done_today: "Vandaag afgerond",
 		and_n_more: "en nog {count}",
+		start_step_now: "Nu starten: {step}",
+		done_step: "Klaar: {step}",
 		enjoy_the_quiet_what_is_coming: "Geniet van de rust. Hieronder zie je wat eraan komt.",
 		add_your_first_chore_in_the: "Voeg je eerste taak toe onder “Taken”.",
 		level: "· Level {level}",
@@ -12495,7 +12505,21 @@ var ro = class extends _ {
       ${this._heading(b("today.ready_now"), t, "play-circle-outline")}
       ${e.ready.map((e) => p`<div class="group">
           <div class="group-name strong">${e.run.chore_name}</div>
-          ${e.steps.map((e) => p`<div class="row"><span>${e.title}</span></div>`)}
+          ${e.steps.map((t) => p`<div class="row">
+              <span class="rowmain">
+                <button
+                  type="button"
+                  class="go"
+                  title=${b("today.done_step", { step: t.title })}
+                  aria-label=${b("today.done_step", { step: t.title })}
+                  ?disabled=${this._busy}
+                  @click=${() => this._done(e.run.id, t.stepId)}
+                >
+                  ${E("check-bold")}
+                </button>
+                <span>${t.title}</span>
+              </span>
+            </div>`)}
         </div>`)}
     </section>`;
 	}
@@ -12513,8 +12537,8 @@ var ro = class extends _ {
                 ${t.status === "waiting" ? p`<button
                       type="button"
                       class="go"
-                      title=${b("common.start_now")}
-                      aria-label=${b("common.start_now")}
+                      title=${b("today.start_step_now", { step: t.title })}
+                      aria-label=${b("today.start_step_now", { step: t.title })}
                       ?disabled=${this._busy}
                       @click=${() => this._release(e.run.id, t.stepId)}
                     >
@@ -15136,13 +15160,14 @@ var Oo = () => [
 		this._steps = this._steps.filter((t, n) => n !== e);
 	}
 	_add(e) {
+		if (this._steps.length >= jo) return;
 		let t = this._steps[e]?.group ?? "", n = [...this._steps];
 		n.splice(e + 1, 0, {
 			title: "",
 			group: t,
 			size: "small",
 			wait_minutes: 0
-		}), this._steps = n.slice(0, jo);
+		}), this._steps = n;
 	}
 	_finish(e) {
 		let t = this._steps.filter((e) => e.title.trim()).map((e) => ({
@@ -15328,7 +15353,7 @@ var Oo = () => [
         <span class="tools">
           <button type="button" aria-label=${b("ladders.move_up")} ?disabled=${t === 0} @click=${() => this._move(t, -1)}>↑</button>
           <button type="button" aria-label=${b("ladders.move_down")} ?disabled=${t === this._steps.length - 1} @click=${() => this._move(t, 1)}>↓</button>
-          <button type="button" aria-label=${b("breakdown.add_a_step_after_this")} @click=${() => this._add(t)}>+</button>
+          <button type="button" aria-label=${b("breakdown.add_a_step_after_this")} ?disabled=${this._steps.length >= jo} @click=${() => this._add(t)}>+</button>
           <button type="button" aria-label=${b("common.remove")} @click=${() => this._remove(t)}>✕</button>
         </span>
       </div>
@@ -15365,7 +15390,7 @@ var Oo = () => [
       ${this._renderChecks()}
       <div class="steps">${e.map((e, t) => this._renderStep(e, t))}</div>
       <div class="inline-actions">
-        <button type="button" @click=${() => this._add(e.length - 1)}>${b("breakdown.add_a_step")}</button>
+        <button type="button" ?disabled=${e.length >= jo} @click=${() => this._add(e.length - 1)}>${b("breakdown.add_a_step")}</button>
         <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${b("breakdown.try_again")}</button>
         ${w(this.snapshot) && T(this.snapshot) ? p`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
               ${E("creation")} ${b("breakdown.ask_claude_instead")}

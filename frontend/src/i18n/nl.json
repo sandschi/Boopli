@@ -803,6 +803,8 @@
     "done_by_itself": "Vanzelf klaar",
     "done_today": "Vandaag afgerond",
     "and_n_more": "en nog {count}",
+    "start_step_now": "Nu starten: {step}",
+    "done_step": "Klaar: {step}",
     "enjoy_the_quiet_what_is_coming": "Geniet van de rust. Hieronder zie je wat eraan komt.",
     "add_your_first_chore_in_the": "Voeg je eerste taak toe onder “Taken”.",
     "level": "· Level {level}",
