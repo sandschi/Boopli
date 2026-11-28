@@ -1,6 +1,7 @@
 import { html, svg, type TemplateResult } from "lit";
 import { t } from "./i18n";
 import type { FoodSize } from "./types";
+import type { PetKind } from "./pets";
 
 /**
  * The pictures of the shop items, and what a colour or a pattern looks like in the room.
@@ -153,15 +154,83 @@ export function roomPaint(id: string | undefined): string {
   return (id && ROOM_PAINT[id]) || "";
 }
 
+/**
+ * Where a room item can stand. A spot says where its box is (desktop) and, where it differs, on a phone
+ * (`p…`). `stand` is where the pet stands to eat at an item with the role "food", `sleep` where it lies
+ * in an item with the role "bed". Sizes are in cqh (the room's height), so the card can be as low as you want.
+ */
+export interface Spot {
+  l?: string;
+  r?: string;
+  t?: string;
+  b?: string;
+  w: string;
+  pl?: string;
+  pr?: string;
+  pw?: string;
+  stand?: string;
+  pstand?: string;
+  sleep?: string;
+  psleep?: string;
+}
+
+export type SpotId = "floor-1" | "floor-2" | "floor-right" | "floor-gap" | "wall-left" | "wall-right";
+
+export const SPOTS: Record<SpotId, Spot> = {
+  "floor-1": { l: "7%", b: "3cqh", w: "36cqh", pl: "3%", pw: "30cqh" },
+  "floor-2": {
+    l: "calc(7% + 40cqh)",
+    b: "3cqh",
+    w: "36cqh",
+    pl: "calc(3% + 33cqh)",
+    pw: "30cqh",
+    stand: "calc(7% + 98cqh)",
+    pstand: "calc(3% + 78cqh)",
+  },
+  "floor-right": {
+    r: "3%",
+    b: "3cqh",
+    w: "80cqh",
+    pw: "62cqh",
+    sleep: "calc(100% - 3% - 40cqh)",
+    psleep: "calc(100% - 3% - 31cqh)",
+  },
+  // The small gap between the pet and the bed.
+  "floor-gap": { r: "calc(3% + 84cqh)", b: "3cqh", w: "22cqh", pr: "calc(3% + 66cqh)", pw: "20cqh" },
+  "wall-left": { l: "22%", t: "12cqh", w: "26cqh", pl: "14%", pw: "22cqh" },
+  "wall-right": { r: "22%", t: "12cqh", w: "26cqh", pr: "14%", pw: "22cqh" },
+};
+
+/** What an item does for the pet: it sleeps in a bed and eats at a food bowl. */
+export type RoomRole = "bed" | "food";
+
+/** One thing that stands in the room: its picture and where it stands. */
+export interface RoomItem {
+  id: string;
+  art: TemplateResult;
+  /** A second layer drawn in front of the pet (the lip of the bed), so the pet is IN it. */
+  front?: TemplateResult;
+  spot: SpotId;
+  role?: RoomRole;
+  /** Only for this pet kind (an item of its own); "" or missing = every pet. */
+  species?: PetKind;
+}
+
+/**
+ * Everything that can stand in the room, in drawing order. A new room item is one more row here, one row in
+ * the integration (engine.SHOP_ITEMS) and its name (`shop.item_<id>`) in the language files; the stage draws it.
+ */
+export const ROOM_ITEMS: RoomItem[] = [
+  { id: "water_bowl", art: html`${WATER_BOWL}`, spot: "floor-1" },
+  { id: "food_bowl", art: html`${FOOD_BOWL}`, spot: "floor-2", role: "food" },
+  { id: "bed", art: html`${BED_BACK}`, front: html`${BED_FRONT}`, spot: "floor-right", role: "bed" },
+];
+
 /** The picture of an item, for the shop and the inventory. */
 export function itemArt(id: string): TemplateResult {
+  const room = ROOM_ITEMS.find((item) => item.id === id);
+  if (room) return room.art;
   switch (id) {
-    case "water_bowl":
-      return html`${WATER_BOWL}`;
-    case "food_bowl":
-      return html`${FOOD_BOWL}`;
-    case "bed":
-      return html`${BED_BACK}`;
     case "food_small":
       return html`${FOOD_SMALL}`;
     case "food_medium":

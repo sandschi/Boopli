@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import "../src/boopli-stage";
-import { ROOM_PAINT } from "../src/shop-art";
+import { ROOM_ITEMS as CATALOGUE, ROOM_PAINT } from "../src/shop-art";
 import { PETS, MOODS, type PetKind } from "../src/pets";
 import type { Mood } from "../src/types";
 
@@ -12,8 +12,8 @@ import type { Mood } from "../src/types";
  * Run it with `npm run check` in frontend/ and open http://localhost:5173/dev/items.html
  */
 
-/** The room items that exist (id, in the order of the room). Step 2 of issue #14 replaces this list by the catalogue. */
-const ROOM_ITEMS = ["water_bowl", "food_bowl", "bed"];
+/** The room items that exist, in the order of the room (the catalogue in shop-art.ts). */
+const ROOM_ITEMS = CATALOGUE.map((item) => item.id);
 
 class BoopliItemCheck extends LitElement {
   static properties = { _mood: { state: true } };
