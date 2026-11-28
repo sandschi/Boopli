@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Eten",
     "for_the_room": "Voor de kamer",
+    "for_your_pet": "Voor je huisdier",
     "wall_and_floor": "Muur en vloer",
     "upgrades": "Uitbreidingen",
     "buy": "Kopen",
@@ -1625,7 +1626,12 @@
     "wall": "Muur",
     "floor": "Vloer",
     "plain": "Effen",
-    "no_colours_or_patterns_yet": "Je vindt kleuren en patronen in de winkel."
+    "no_colours_or_patterns_yet": "Je vindt kleuren en patronen in de winkel.",
+    "pet_looks": "Wat {name} draagt",
+    "fur": "Vacht",
+    "neck": "Sjaal",
+    "own_colour": "Eigen kleur",
+    "nothing_worn": "Niets"
   },
   "news": {
     "title_badge": "Nieuwe prestatie!",

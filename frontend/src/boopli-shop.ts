@@ -12,6 +12,7 @@ const GROUPS: { id: string; icon: string; title: () => string; kinds: ShopItem["
   { id: "food", icon: "bowl-mix-outline", title: () => t("shop.food"), kinds: ["food"] },
   { id: "room", icon: "sofa-outline", title: () => t("shop.for_the_room"), kinds: ["extra"] },
   { id: "looks", icon: "palette-outline", title: () => t("shop.wall_and_floor"), kinds: ["color", "pattern"] },
+  { id: "pet", icon: "paw-outline", title: () => t("shop.for_your_pet"), kinds: ["fur", "wear"] },
   { id: "upgrades", icon: "arrow-up-bold-circle-outline", title: () => t("shop.upgrades"), kinds: ["upgrade"] },
 ];
 

@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Comida",
     "for_the_room": "Para la habitación",
+    "for_your_pet": "Para tu mascota",
     "wall_and_floor": "Pared y suelo",
     "upgrades": "Mejoras",
     "buy": "Comprar",
@@ -1625,7 +1626,12 @@
     "wall": "Pared",
     "floor": "Suelo",
     "plain": "Liso",
-    "no_colours_or_patterns_yet": "Encontrarás colores y diseños en la tienda."
+    "no_colours_or_patterns_yet": "Encontrarás colores y diseños en la tienda.",
+    "pet_looks": "Lo que lleva {name}",
+    "fur": "Pelaje",
+    "neck": "Bufanda",
+    "own_colour": "Color propio",
+    "nothing_worn": "Nada"
   },
   "news": {
     "title_badge": "¡Nuevo logro!",

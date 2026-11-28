@@ -298,7 +298,7 @@ export type ShopLock = "" | "level" | "achievement" | "requires" | "species";
 /** One thing in the shop. Its name and picture live in the panel (shop-art.ts), keyed by `id`. */
 export interface ShopItem {
   id: string;
-  kind: "extra" | "color" | "pattern" | "food" | "upgrade";
+  kind: "extra" | "color" | "pattern" | "food" | "upgrade" | "fur" | "wear";
   price: number; // in Blubs
   min_level: number;
   achievement: string;
@@ -324,7 +324,7 @@ export interface Pet {
   meals_today: number;
   meals_max: number; // the pet is full when it has eaten this many today
   owned: string[]; // ids of the things bought
-  placed: { wall?: string; floor?: string }; // the colour or pattern on the wall and the floor
+  placed: { wall?: string; floor?: string; fur?: string; neck?: string }; // what is on the wall and the floor, and the pet's fur colour and scarf
   achievements: string[]; // the ids of the achievements reached
   items: ShopItem[];
   can_buy: boolean; // something new is unlocked and affordable (food does not count)

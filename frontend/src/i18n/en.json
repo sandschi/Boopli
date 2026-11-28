@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Food",
     "for_the_room": "For the room",
+    "for_your_pet": "For your pet",
     "wall_and_floor": "Wall and floor",
     "upgrades": "Upgrades",
     "buy": "Buy",
@@ -1625,7 +1626,12 @@
     "wall": "Wall",
     "floor": "Floor",
     "plain": "Plain",
-    "no_colours_or_patterns_yet": "You can find colours and patterns in the shop."
+    "no_colours_or_patterns_yet": "You can find colours and patterns in the shop.",
+    "pet_looks": "What {name} wears",
+    "fur": "Fur",
+    "neck": "Scarf",
+    "own_colour": "Own color",
+    "nothing_worn": "Nothing"
   },
   "news": {
     "title_badge": "New achievement!",

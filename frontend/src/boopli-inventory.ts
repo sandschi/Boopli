@@ -1,5 +1,5 @@
 import { LitElement, html, css, nothing } from "lit";
-import { errorMessage, feedPet, shopPlace } from "./api";
+import { errorMessage, feedPet, shopPlace, type Place } from "./api";
 import { icon } from "./icon";
 import { modalStyles } from "./modal-styles";
 import { foodArt, itemArt, itemName } from "./shop-art";
@@ -8,6 +8,15 @@ import type { FoodSize, Hass, Pet, ShopItem } from "./types";
 import { t } from "./i18n";
 
 const FOOD_SIZES: FoodSize[] = ["small", "medium", "big"];
+
+/** The places an owned item can be put, with the kinds of item that fit there (the same table as engine.PLACE_KINDS). */
+const PLACES: Record<Place, { kinds: ShopItem["kind"][]; title: () => string; none: () => string }> = {
+  wall: { kinds: ["color", "pattern"], title: () => t("inventory.wall"), none: () => t("inventory.plain") },
+  floor: { kinds: ["color", "pattern"], title: () => t("inventory.floor"), none: () => t("inventory.plain") },
+  fur: { kinds: ["fur"], title: () => t("inventory.fur"), none: () => t("inventory.own_colour") },
+  neck: { kinds: ["wear"], title: () => t("inventory.neck"), none: () => t("inventory.nothing_worn") },
+};
+const isPlace = (kind: string): kind is Place => kind in PLACES;
 
 /**
  * What the household owns, in its own window: the food stock, the colours and patterns for the wall and the floor,
@@ -84,7 +93,7 @@ export class BoopliInventory extends LitElement {
     void this._run(() => feedPet(this.hass!, size), t("inventory.fed_xp", { xp: item?.xp ?? 0 }));
   }
 
-  private _place(place: "wall" | "floor", id: string): void {
+  private _place(place: Place, id: string): void {
     void this._run(() => shopPlace(this.hass!, place, id));
   }
 
@@ -120,17 +129,25 @@ export class BoopliInventory extends LitElement {
     </div>`;
   }
 
-  /** Wall or floor: slots of the owned colours and patterns, and "plain". A tick marks what is in use. */
-  private _paint(pet: Pet, place: "wall" | "floor", title: string) {
-    const looks = pet.items.filter((i) => (i.kind === "color" || i.kind === "pattern") && i.owned);
+  /** A place (wall, floor, fur, neck): slots of the owned items that fit it, and "none". A tick marks what is in use. */
+  private _paint(pet: Pet, place: Place, title: string) {
+    const looks = pet.items.filter((i) => PLACES[place].kinds.includes(i.kind) && i.owned);
     const current = pet.placed[place] ?? "";
     return html`<div class="group">
       <h4>${title}</h4>
       <div class="slots" role="group" aria-label=${title}>
-        ${this._slot(`${place}:`, t("inventory.plain"), html`<span class="swatch plain"></span>`, current === "" ? "✓" : "")}
+        ${this._slot(`${place}:`, PLACES[place].none(), html`<span class="swatch plain"></span>`, current === "" ? "✓" : "")}
         ${looks.map((i) => this._slot(`${place}:${i.id}`, itemName(i.id), itemArt(i.id), current === i.id ? "✓" : ""))}
       </div>
     </div>`;
+  }
+
+  /** What the pet wears (fur colour, scarf): only when the household owns something for it. */
+  private _petLooks(pet: Pet) {
+    const places = (["fur", "neck"] as const).filter((p) => pet.items.some((i) => PLACES[p].kinds.includes(i.kind) && i.owned));
+    if (!places.length) return nothing;
+    return html`<div class="group"><h4>${t("inventory.pet_looks", { name: pet.name })}</h4></div>
+      ${places.map((p) => this._paint(pet, p, PLACES[p].title()))}`;
   }
 
   private _room(pet: Pet) {
@@ -168,14 +185,14 @@ export class BoopliInventory extends LitElement {
         <button type="button" class="go" ?disabled=${full || count <= 0 || this._busy} @click=${() => this._feed(size, item)}>${t("inventory.feed")}</button>
       </div>`;
     }
-    if (kind === "wall" || kind === "floor") {
+    if (isPlace(kind)) {
       const inUse = (pet.placed[kind] ?? "") === id;
-      const name = id ? itemName(id) : t("inventory.plain");
+      const name = id ? itemName(id) : PLACES[kind].none();
       return html`<div class="detail">
         <span class="dpic">${id ? itemArt(id) : html`<span class="swatch plain"></span>`}</span>
         <span class="dtext">
           <div class="dname">${name}</div>
-          <div class="dnote">${kind === "wall" ? t("inventory.wall") : t("inventory.floor")}</div>
+          <div class="dnote">${PLACES[kind].title()}</div>
         </span>
         <button type="button" class="go" ?disabled=${inUse || this._busy} @click=${() => this._place(kind, id)}>
           ${inUse ? t("inventory.in_use") : t("inventory.use")}
@@ -207,7 +224,8 @@ export class BoopliInventory extends LitElement {
             <div class="body">
               ${this._note ? html`<p class="muted note" role="status">${this._note}</p>` : nothing}
               ${this._error ? html`<p class="error note" role="alert">${this._error}</p>` : nothing}
-              ${this._food(pet)}${this._room(pet)}            </div>
+              ${this._food(pet)}${this._room(pet)}${this._petLooks(pet)}
+            </div>
             ${this._detail(pet)}
           </div>`
         : nothing}

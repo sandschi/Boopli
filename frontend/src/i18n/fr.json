@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Nourriture",
     "for_the_room": "Pour la pièce",
+    "for_your_pet": "Pour ton animal",
     "wall_and_floor": "Mur et sol",
     "upgrades": "Améliorations",
     "buy": "Acheter",
@@ -1625,7 +1626,12 @@
     "wall": "Mur",
     "floor": "Sol",
     "plain": "Uni",
-    "no_colours_or_patterns_yet": "Tu trouveras des couleurs et des motifs dans la boutique."
+    "no_colours_or_patterns_yet": "Tu trouveras des couleurs et des motifs dans la boutique.",
+    "pet_looks": "Ce que porte {name}",
+    "fur": "Pelage",
+    "neck": "Écharpe",
+    "own_colour": "Couleur naturelle",
+    "nothing_worn": "Rien"
   },
   "news": {
     "title_badge": "Nouveau succès !",
