@@ -135,7 +135,9 @@ export const ROOM_PAINT: Record<string, string> = {
   color_sky: "#9fd3f5",
   pattern_dots: "radial-gradient(circle, rgba(255,255,255,0.85) 22%, transparent 24%) 0 0 / 18px 18px, #c7b3f0",
   pattern_stripes: "repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 8px, transparent 8px 16px), #f5a3b8",
-  pattern_stars: "radial-gradient(circle, rgba(255,235,120,0.95) 14%, transparent 16%) 0 0 / 22px 22px, #5b6bc0",
+  // a small five-pointed star, repeated (an inline picture, so it is a real star and not a dot)
+  pattern_stars:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon fill='%23ffe978' points='12,3 14.6,9 21,9.5 16.1,13.8 17.7,20.2 12,16.8 6.3,20.2 7.9,13.8 3,9.5 9.4,9'/%3E%3C/svg%3E\") 0 0 / 26px 26px, #5b6bc0",
   pattern_waves: "radial-gradient(circle at 50% 100%, transparent 58%, rgba(255,255,255,0.6) 60% 66%, transparent 68%) 0 0 / 24px 14px, #4fb3bf",
   pattern_checks: "conic-gradient(rgba(255,255,255,0.5) 25%, transparent 0 50%, rgba(255,255,255,0.5) 0 75%, transparent 0) 0 0 / 24px 24px, #f0b27a",
   // the colours of the achievement tiers (steps series)

@@ -26,7 +26,7 @@ export class BoopliNews extends LitElement {
   declare hold: boolean;
 
   private _closedKey = ""; // what the last close covered: it is not shown again from this screen even if the server could not be told
-  private _closing = false;
+  private _closingKey = ""; // the news whose server call is out (another batch can still be closed meanwhile)
 
   constructor() {
     super();
@@ -75,9 +75,9 @@ export class BoopliNews extends LitElement {
 
   /** Close (by the button, or by itself for achievements this panel does not know). The attempt is remembered either way, so a failed call is not repeated in a loop. */
   private async _close(): Promise<void> {
-    if (!this.hass || !this.pet || this._closing) return;
-    this._closing = true;
     const key = this._key();
+    if (!this.hass || !this.pet || this._closingKey === key) return; // a second click on the same news is ignored
+    this._closingKey = key;
     this._closedKey = key;
     this.requestUpdate(); // the window goes at once; the server is told in the background
     try {
@@ -85,7 +85,7 @@ export class BoopliNews extends LitElement {
     } catch {
       // the server did not hear it: it shows again after a reload, but not in a loop here
     } finally {
-      this._closing = false;
+      if (this._closingKey === key) this._closingKey = "";
       this.requestUpdate();
     }
   }

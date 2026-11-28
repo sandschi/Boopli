@@ -309,8 +309,8 @@ export class BoopliBadges extends LitElement {
       }
       .medal {
         position: relative;
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: grid;
         place-items: center;

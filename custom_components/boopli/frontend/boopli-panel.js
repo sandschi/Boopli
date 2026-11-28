@@ -10288,7 +10288,7 @@ var H = "#101010", Hi = h`<svg viewBox="0 0 72 48" aria-hidden="true">
 	color_sky: "#9fd3f5",
 	pattern_dots: "radial-gradient(circle, rgba(255,255,255,0.85) 22%, transparent 24%) 0 0 / 18px 18px, #c7b3f0",
 	pattern_stripes: "repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 8px, transparent 8px 16px), #f5a3b8",
-	pattern_stars: "radial-gradient(circle, rgba(255,235,120,0.95) 14%, transparent 16%) 0 0 / 22px 22px, #5b6bc0",
+	pattern_stars: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon fill='%23ffe978' points='12,3 14.6,9 21,9.5 16.1,13.8 17.7,20.2 12,16.8 6.3,20.2 7.9,13.8 3,9.5 9.4,9'/%3E%3C/svg%3E\") 0 0 / 26px 26px, #5b6bc0",
 	pattern_waves: "radial-gradient(circle at 50% 100%, transparent 58%, rgba(255,255,255,0.6) 60% 66%, transparent 68%) 0 0 / 24px 14px, #4fb3bf",
 	pattern_checks: "conic-gradient(rgba(255,255,255,0.5) 25%, transparent 0 50%, rgba(255,255,255,0.5) 0 75%, transparent 0) 0 0 / 24px 24px, #f0b27a",
 	color_grey: "#aeb4bc",
@@ -11483,7 +11483,7 @@ var xa = class extends v {
 		};
 	}
 	constructor() {
-		super(), this._closedKey = "", this._closing = !1, this.hold = !1;
+		super(), this._closedKey = "", this._closingKey = "", this.hold = !1;
 	}
 	get _levelFrom() {
 		return this.pet?.news?.celebrated_level ?? this.pet?.level ?? 1;
@@ -11508,14 +11508,14 @@ var xa = class extends v {
 		t && !t.open && t.showModal(), !this._levelUp() && this._badges().length === 0 && (this.pet?.news?.achievements.length ?? 0) > 0 && this._key() !== this._closedKey && this._close();
 	}
 	async _close() {
-		if (!this.hass || !this.pet || this._closing) return;
-		this._closing = !0;
 		let e = this._key();
-		this._closedKey = e, this.requestUpdate();
-		try {
-			await Tn(this.hass, this.pet.level, this.pet.news?.achievements ?? []);
-		} catch {} finally {
-			this._closing = !1, this.requestUpdate();
+		if (this.hass && this.pet && this._closingKey !== e) {
+			this._closingKey = e, this._closedKey = e, this.requestUpdate();
+			try {
+				await Tn(this.hass, this.pet.level, this.pet.news?.achievements ?? []);
+			} catch {} finally {
+				this._closingKey === e && (this._closingKey = ""), this.requestUpdate();
+			}
 		}
 	}
 	render() {
@@ -22278,8 +22278,8 @@ var $s = {
       }
       .medal {
         position: relative;
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: grid;
         place-items: center;

@@ -1244,11 +1244,15 @@ class BoopliManager:
             # A run in progress keeps its own snapshot of the steps.
         self.chores[chore.id] = chore
         if existing is None:
-            engine.count_stat(self.progress, engine.STAT_CHORE_CREATED)
-            self._announce(self._reach_achievements(now))
-            self._save()
+            self._count_chore_created()
         self._tick()
         return chore
+
+    def _count_chore_created(self) -> None:
+        """A chore the household made itself (by the editor, the assistant or a quick task) counts toward its achievements."""
+        engine.count_stat(self.progress, engine.STAT_CHORE_CREATED)
+        self._announce(self._reach_achievements(dt_util.utcnow()))
+        self._save()
 
     def delete_chore(self, chore_id: str) -> None:
         """Delete a chore and any run in progress."""
@@ -1533,6 +1537,7 @@ class BoopliManager:
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
+        self._count_chore_created()
         return self.start_chore(chore.id)
 
     # --- AI help: splitting a task into small steps -----------------------------
@@ -2372,6 +2377,7 @@ class BoopliManager:
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
+        self._count_chore_created()
         return self.start_chore(chore.id)
 
     async def async_test_channel(self, data: dict[str, Any]) -> dict[str, Any]:
