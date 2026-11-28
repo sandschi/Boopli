@@ -723,6 +723,9 @@ class Progress:
     streak_day: str = ""  # the local date the streak was last counted
     gift_given: bool = False  # the BLUBS_START were handed out
     quest_seen: bool = False  # the one-time pop-up at LEVEL_QUEST was shown
+    # What the news pop-up has shown so far (level ups, achievements); what is beyond it is still to be shown.
+    celebrated_level: int = 1
+    achievements_seen: list[str] = field(default_factory=list)
     economy: int = ECONOMY_VERSION
 
     @classmethod
@@ -730,9 +733,11 @@ class Progress:
         d = d or {}
         if d and "economy" not in d:
             d = reset_progress_data(d)
+        total_xp = max(0, int(d.get("total_xp", 0) or 0))
+        achievements = [str(x) for x in (d.get("achievements") or [])]
         return cls(
             egg_found=bool(d.get("egg_found", False)),
-            total_xp=max(0, int(d.get("total_xp", 0) or 0)),
+            total_xp=total_xp,
             blubs=max(0, int(d.get("blubs", 0) or 0)),
             started_at=str(d.get("started_at", "")),
             last_activity=d.get("last_activity"),
@@ -744,13 +749,16 @@ class Progress:
             fed={str(k): max(0, int(v or 0)) for k, v in (d.get("fed") or {}).items()},
             owned=[str(x) for x in (d.get("owned") or [])],
             placed={str(k): str(v) for k, v in (d.get("placed") or {}).items() if k in ROOM_PLACES and v},
-            achievements=[str(x) for x in (d.get("achievements") or [])],
+            achievements=achievements,
             stats={str(k): max(0, int(v or 0)) for k, v in (d.get("stats") or {}).items()},
             streak=max(0, int(d.get("streak", 0) or 0)),
             streak_best=max(0, int(d.get("streak_best", 0) or 0)),
             streak_day=str(d.get("streak_day", "") or ""),
             gift_given=bool(d.get("gift_given", False)),
             quest_seen=bool(d.get("quest_seen", False)),
+            # data saved before the news pop-up: everything up to now counts as seen
+            celebrated_level=max(1, int(d.get("celebrated_level", 0) or 0)) if "celebrated_level" in d else level_for(total_xp)[0],
+            achievements_seen=[str(x) for x in d["achievements_seen"]] if "achievements_seen" in d else list(achievements),
         )
 
 
@@ -927,7 +935,9 @@ STAT_FED = "fed"  # meals given to the pet
 STAT_EGG_FOUND = "egg_found"  # the Easter egg (once)
 STAT_STREAK = "streak"  # the longest run of days in a row with a finished step
 STAT_LEVEL = "level"  # the pet's level
-STATS_COUNTED = (STAT_STEP_DONE, STAT_CHORE_DONE, STAT_FED, STAT_EGG_FOUND)
+STAT_CHORE_CREATED = "chore_created"  # chores the household made itself (counted when one is first saved)
+STAT_SETUP_DONE = "setup_done"  # the setup assistant was finished (once)
+STATS_COUNTED = (STAT_STEP_DONE, STAT_CHORE_DONE, STAT_FED, STAT_EGG_FOUND, STAT_CHORE_CREATED, STAT_SETUP_DONE)
 STATS_ALL = (*STATS_COUNTED, STAT_STREAK, STAT_LEVEL)
 
 
@@ -940,8 +950,45 @@ class Achievement:
     target: int
 
 
-# The achievements themselves come with the base content (the engine is what is here).
-ACHIEVEMENTS: tuple[Achievement, ...] = ()
+# The tiers, from the easiest up (named like the rarities players know: grey, green, blue, purple, gold).
+# A new top tier later (platinum, diamond) is one more word here, one more target per series below, and
+# its name and colour in the panel (frontend/src/achievements.ts).
+TIER_COMMON = "common"
+TIER_UNCOMMON = "uncommon"
+TIER_RARE = "rare"
+TIER_EPIC = "epic"
+TIER_LEGENDARY = "legendary"
+TIERS = (TIER_COMMON, TIER_UNCOMMON, TIER_RARE, TIER_EPIC, TIER_LEGENDARY)
+
+# A series: what is counted, and the target for each tier (in the order of TIERS).
+SERIES: tuple[tuple[str, str, tuple[int, ...]], ...] = (
+    ("steps", STAT_STEP_DONE, (1, 10, 50, 250, 1000)),
+    ("chores", STAT_CHORE_DONE, (1, 5, 25, 100, 400)),
+    ("meals", STAT_FED, (1, 5, 25, 100, 300)),
+    ("streak", STAT_STREAK, (3, 7, 13, 25, 50)),
+    ("level", STAT_LEVEL, (2, 3, 5, 15, 30)),
+)
+# One-off achievements (no tiers).
+SINGLE_ACHIEVEMENTS: tuple[tuple[str, str], ...] = (
+    ("egg", STAT_EGG_FOUND),
+    ("first_chore", STAT_CHORE_CREATED),
+    ("setup", STAT_SETUP_DONE),
+)
+
+
+def achievement_id(series: str, tier: str) -> str:
+    """The id of one tier of a series, like "steps_rare" (the panel splits it at the last underscore)."""
+    return f"{series}_{tier}"
+
+
+ACHIEVEMENTS: tuple[Achievement, ...] = (
+    *(
+        Achievement(achievement_id(series, tier), stat, target)
+        for series, stat, targets in SERIES
+        for tier, target in zip(TIERS, targets, strict=True)
+    ),
+    *(Achievement(name, stat, 1) for name, stat in SINGLE_ACHIEVEMENTS),
+)
 
 
 def count_stat(progress: Progress, stat: str, n: int = 1) -> None:
@@ -970,6 +1017,36 @@ def stat_value(progress: Progress, stat: str) -> int:
     if stat == STAT_LEVEL:
         return level_for(progress.total_xp)[0]
     return progress.stats.get(stat, 0)
+
+
+def badge_overview(progress: Progress) -> dict[str, Any]:
+    """What the badges page shows: the series with their targets, the one-offs, and how far the household is.
+
+    `counts` has every STATS_ALL stat (the streak is the best one so far, the level is the current one).
+    """
+    return {
+        "series": [{"id": series, "stat": stat, "targets": list(targets)} for series, stat, targets in SERIES],
+        "singles": [{"id": name, "stat": stat} for name, stat in SINGLE_ACHIEVEMENTS],
+        "counts": {stat: stat_value(progress, stat) for stat in STATS_ALL},
+    }
+
+
+def news_unseen(progress: Progress) -> list[str]:
+    """The achievements reached that the news pop-up has not shown yet (in the order they were reached)."""
+    return [a for a in progress.achievements if a not in progress.achievements_seen]
+
+
+def mark_news_seen(progress: Progress, level: int, achievements: list[str]) -> bool:
+    """The pop-up showed everything up to `level` and these achievements. Only what really exists counts.
+
+    Returns True when something changed (what was reached after the pop-up opened stays to be shown).
+    """
+    before = (progress.celebrated_level, len(progress.achievements_seen))
+    progress.celebrated_level = max(progress.celebrated_level, min(level, level_for(progress.total_xp)[0]))
+    for a in achievements:
+        if a in progress.achievements and a not in progress.achievements_seen:
+            progress.achievements_seen.append(a)
+    return before != (progress.celebrated_level, len(progress.achievements_seen))
 
 
 def reach_achievements(progress: Progress) -> list[Achievement]:
@@ -1027,6 +1104,16 @@ SHOP_ITEMS: tuple[ShopItem, ...] = (
     ShopItem("bed", KIND_EXTRA, 80, min_level=3),
     ShopItem("color_sky", KIND_COLOR, 20),
     ShopItem("pattern_dots", KIND_PATTERN, 20),
+    ShopItem("pattern_stripes", KIND_PATTERN, 25, min_level=2),
+    ShopItem("pattern_stars", KIND_PATTERN, 30, min_level=4),
+    ShopItem("pattern_waves", KIND_PATTERN, 40, min_level=6),
+    ShopItem("pattern_checks", KIND_PATTERN, 40, min_level=8),
+    # One colour for each tier of the steps series, unlocked by reaching it (grey, green, blue, purple, gold).
+    ShopItem("color_grey", KIND_COLOR, 20, achievement=achievement_id("steps", TIER_COMMON)),
+    ShopItem("color_green", KIND_COLOR, 20, achievement=achievement_id("steps", TIER_UNCOMMON)),
+    ShopItem("color_blue", KIND_COLOR, 30, achievement=achievement_id("steps", TIER_RARE)),
+    ShopItem("color_purple", KIND_COLOR, 40, achievement=achievement_id("steps", TIER_EPIC)),
+    ShopItem("color_gold", KIND_COLOR, 150, achievement=achievement_id("steps", TIER_LEGENDARY)),
     ShopItem("meal_4", KIND_UPGRADE, 300, min_level=5, effect=EFFECT_MEALS, effect_value=1),
     ShopItem("meal_5", KIND_UPGRADE, 800, min_level=10, effect=EFFECT_MEALS, effect_value=1, requires="meal_4"),
     ShopItem("food_small", KIND_FOOD, FOOD[FOOD_SMALL][0], food=FOOD_SMALL),

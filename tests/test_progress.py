@@ -448,12 +448,85 @@ def _with_achievements(monkeypatch, *achievements):
     monkeypatch.setattr(engine, "ACHIEVEMENTS", tuple(achievements))
 
 
-def test_there_are_no_base_achievements_yet_and_nothing_breaks_without_them():
-    assert engine.ACHIEVEMENTS == ()
+def test_the_base_achievements_are_five_tiers_of_each_series_plus_three_one_offs():
+    ids = [a.id for a in engine.ACHIEVEMENTS]
+    assert len(ids) == len(set(ids)) == 5 * 5 + 3
+    by_id = {a.id: a for a in engine.ACHIEVEMENTS}
+    assert [by_id[f"steps_{t}"].target for t in engine.TIERS] == [1, 10, 50, 250, 1000]
+    assert [by_id[f"streak_{t}"].target for t in engine.TIERS] == [3, 7, 13, 25, 50]
+    assert [by_id[f"level_{t}"].target for t in engine.TIERS] == [2, 3, 5, 15, 30]
+    assert {"egg", "first_chore", "setup"} <= set(ids)
+    # every target rises tier by tier, and every stat is one the engine counts
+    for _series, stat, targets in engine.SERIES:
+        assert list(targets) == sorted(set(targets))
+        assert stat in engine.STATS_ALL
+    assert all(a.stat in engine.STATS_ALL for a in engine.ACHIEVEMENTS)
+
+
+def test_the_first_step_reaches_the_first_tier_and_nothing_breaks():
     p = engine.Progress()
-    give(p)
     assert engine.reach_achievements(p) == []
-    assert p.achievements == []
+    give(p)
+    assert [a.id for a in engine.reach_achievements(p)] == ["steps_common"]
+    assert p.achievements == ["steps_common"]
+
+
+def test_every_item_that_hangs_on_an_achievement_names_one_that_exists():
+    known = {a.id for a in engine.ACHIEVEMENTS}
+    bound = [i for i in engine.SHOP_ITEMS if i.achievement]
+    assert {i.id for i in bound} >= {"color_grey", "color_green", "color_blue", "color_purple", "color_gold"}
+    assert all(i.achievement in known for i in bound)
+
+
+def test_the_one_offs_are_counted_and_reached():
+    p = engine.Progress()
+    engine.count_stat(p, engine.STAT_CHORE_CREATED)
+    engine.count_stat(p, engine.STAT_SETUP_DONE)
+    assert {a.id for a in engine.reach_achievements(p)} == {"first_chore", "setup"}
+    engine.award_egg(p, NOON, TZ)
+    assert [a.id for a in engine.reach_achievements(p)] == ["egg"]
+
+
+def test_the_badge_overview_lists_the_series_the_one_offs_and_how_far_the_household_is():
+    p = engine.Progress(food={"small": 1})
+    give(p, chore_done=True)
+    engine.feed_pet(p, "small", NOON, TZ)
+    o = engine.badge_overview(p)
+    assert [s["id"] for s in o["series"]] == ["steps", "chores", "meals", "streak", "level"]
+    assert o["series"][0] == {"id": "steps", "stat": "step_done", "targets": [1, 10, 50, 250, 1000]}
+    assert [s["id"] for s in o["singles"]] == ["egg", "first_chore", "setup"]
+    assert set(o["counts"]) == set(engine.STATS_ALL)
+    assert (o["counts"]["step_done"], o["counts"]["chore_done"], o["counts"]["fed"], o["counts"]["level"]) == (1, 1, 1, 1)
+    # every series and every one-off is something the engine can reach
+    ids = {a.id for a in engine.ACHIEVEMENTS}
+    assert all(f"{s['id']}_{t}" in ids for s in o["series"] for t in engine.TIERS)
+    assert all(b["id"] in ids for b in o["singles"])
+
+
+def test_the_news_pop_up_shows_what_is_new_and_marks_only_what_it_showed():
+    p = engine.Progress()
+    p.achievements = ["a", "b"]
+    assert engine.news_unseen(p) == ["a", "b"]
+    assert engine.mark_news_seen(p, 1, ["a"])
+    assert engine.news_unseen(p) == ["b"]  # "b" was reached while the pop-up was open: still to be shown
+    assert not engine.mark_news_seen(p, 1, ["a", "zzz"])  # nothing new, and an id never reached is not remembered
+    assert p.achievements_seen == ["a"]
+
+
+def test_the_news_pop_up_cannot_mark_a_level_that_was_not_reached():
+    p = engine.Progress(total_xp=0)
+    engine.mark_news_seen(p, 50, [])
+    assert p.celebrated_level == 1
+    p.total_xp = engine.level_threshold(3)
+    engine.mark_news_seen(p, 50, [])
+    assert p.celebrated_level == 3
+
+
+def test_data_saved_before_the_news_pop_up_counts_everything_as_seen():
+    old = engine.Progress.from_dict({"economy": 1, "total_xp": engine.level_threshold(4), "achievements": ["x"]})
+    assert old.celebrated_level == 4 and old.achievements_seen == ["x"]
+    again = engine.Progress.from_dict(engine.to_dict(engine.Progress(celebrated_level=2, achievements=["y"])))
+    assert again.celebrated_level == 2 and again.achievements_seen == []
 
 
 def test_finished_steps_and_chores_are_counted_only_when_they_earn_blubs():
