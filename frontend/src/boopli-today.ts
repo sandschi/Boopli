@@ -209,7 +209,8 @@ export class BoopliToday extends LitElement {
     const aiOn = anyAi(this.snapshot); // the agent, or Ask Claude
     return html`
       <section class="card quick">
-        <h3>${t("today.what_do_you_want_to_get")}</h3>
+        <span class="mark" aria-hidden="true">${icon("auto-fix")}</span>
+        <h3><span class="seal" aria-hidden="true">${icon("auto-fix")}</span>${t("today.what_do_you_want_to_get")}</h3>
         ${aiOn
           ? html`
               <textarea
@@ -249,7 +250,6 @@ export class BoopliToday extends LitElement {
       r.steps.some((s) => s.status === "active" && !!s.on_it_until)
     );
     const full = pet.meals_today >= pet.meals_max;
-    const hasFood = Object.values(pet.food).some((n) => (n ?? 0) > 0);
     return html`
       <section class="card pet-card stage-slot">
         <boopli-stage
@@ -276,18 +276,14 @@ export class BoopliToday extends LitElement {
         ></boopli-stage>
         ${this._egg ? html`<boopli-egg @egg-done=${() => (this._egg = false)}></boopli-egg>` : nothing}
         <div class="pet-info">
-          <div class="pet-name">${pet.name} <span class="muted">${t("today.level", { level: pet.level })}</span></div>
+          <span class="mark" aria-hidden="true">${icon("paw")}</span>
+          <div class="pet-name">${pet.name} <span class="lvl">${icon("star-four-points")} ${t("today.level", { level: pet.level }).replace(/^[\s·•]+/, "")}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${pct}%"></div>
           </div>
           <div class="muted small">${t("today.xp_to_the_next_level", { xp: pet.xp_in_level, xp_needed: pet.xp_for_level })}</div>
           <div class="small">${moodLine(pet)}</div>
-          <div class="small muted meals">
-            ${full ? t("common.is_full_for_today", { name: pet.name }) : nothing}
-            ${!full && hasFood
-              ? html` <button type="button" class="textlink" @click=${() => (this._inventory = true)}>${t("today.feed")}</button>`
-              : nothing}
-          </div>
+          ${full ? html`<div class="small muted meals">${t("common.is_full_for_today", { name: pet.name })}</div>` : nothing}
         </div>
       </section>
       ${this._toast ? html`<div class="toast" role="status">${this._toast}</div>` : nothing}
@@ -544,6 +540,7 @@ export class BoopliToday extends LitElement {
     if (!away?.active) return nothing;
     const onNow = !!this.snapshot?.away_now;
     return html`<section class="away-banner ${onNow ? "on" : "planned"}" role="status">
+      <span class="mark" aria-hidden="true">${icon("bag-suitcase")}</span>
       <div class="away-icon" aria-hidden="true">${icon("bag-suitcase")}</div>
       <div class="away-text">
         <div class="away-title">${onNow ? t("today.away_mode_is_on") : t("today.away_mode_is_planned")}</div>
@@ -571,13 +568,18 @@ export class BoopliToday extends LitElement {
   private _renderQuestions() {
     const open = (this.snapshot?.runs ?? []).filter((r) => r.questions_open && (r.questions ?? []).length > 0);
     return open.map(
-      (run) => html`<section class="card ask">
-        <div class="muted small">${run.chore_name}</div>
+      (run) => html`<section class="card now ask">
+        <span class="mark" aria-hidden="true">${icon("help-circle-outline")}</span>
+        <div class="now-head">
+          <span class="seal" aria-hidden="true">${icon("help")}</span>
+          <div class="muted small">${run.chore_name}</div>
+        </div>
         <h2>${t("today.quick_look_first")}</h2>
         <p class="muted small">
           ${t("today.it_started_with_all_its_steps")}
         </p>
         <boopli-questions
+          soft
           .questions=${run.questions ?? []}
           .busy=${this._busy}
           .cancelable=${false}
@@ -613,16 +615,17 @@ export class BoopliToday extends LitElement {
   // --- the lists next to the big step, in the order you read them ---------------------------
 
   /** A list heading with a count, so the parts of the screen are easy to tell apart. */
-  private _heading(title: string, count: number) {
-    return html`<h3 class="sec-title">${title}<span class="count">${count}</span></h3>`;
+  private _heading(title: string, count: number, symbol: string) {
+    return html`<h3 class="sec-title"><span class="seal" aria-hidden="true">${icon(symbol)}</span>${title}<span class="count">${count}</span></h3>`;
   }
 
   /** 1. Other steps that are your turn right now. */
   private _renderReady(model: ReturnType<typeof buildToday>) {
     const count = model.ready.reduce((n, g) => n + g.steps.length, 0);
     if (count === 0) return nothing;
-    return html`<section class="sec">
-      ${this._heading(t("today.ready_now"), count)}
+    return html`<section class="sec sec-ready">
+      <span class="mark" aria-hidden="true">${icon("play-circle-outline")}</span>
+      ${this._heading(t("today.ready_now"), count, "play-circle-outline")}
       ${model.ready.map(
         (g) => html`<div class="group">
           <div class="group-name strong">${g.run.chore_name}</div>
@@ -636,18 +639,34 @@ export class BoopliToday extends LitElement {
   private _renderStill(model: ReturnType<typeof buildToday>, tz: string) {
     const count = model.groups.reduce((n, g) => n + g.steps.length, 0) + model.dueToday.length;
     if (count === 0) return nothing;
-    return html`<section class="sec soft">
-      ${this._heading(t("today.still_to_do_today"), count)}
+    // When some step can be started with the chevrons, the others keep the same space, so all titles start in one line.
+    const anyGo = model.groups.some((g) => g.steps.some((s) => s.status === "waiting"));
+    return html`<section class="sec sec-still soft">
+      <span class="mark" aria-hidden="true">${icon("clock-outline")}</span>
+      ${this._heading(t("today.still_to_do_today"), count, "clock-outline")}
       ${model.groups.map(
         (g) => html`<div class="group">
           <div class="group-name">${g.run.chore_name}</div>
           ${g.steps.map(
             (s) => html`<div class="row">
-              <span>${s.title}</span>
+              <span class="rowmain">
+                ${s.status === "waiting"
+                  ? html`<button
+                      type="button"
+                      class="go"
+                      title=${t("common.start_now")}
+                      aria-label=${t("common.start_now")}
+                      ?disabled=${this._busy}
+                      @click=${() => this._release(g.run.id, s.stepId)}
+                    >
+                      ${icon("chevron-double-right")}
+                    </button>`
+                  : anyGo
+                    ? html`<span class="go-space" aria-hidden="true"></span>`
+                    : nothing}
+                <span>${s.title}</span>
+              </span>
               <span class="hint">${s.hint}</span>
-              ${s.status === "waiting"
-                ? html`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._release(g.run.id, s.stepId)}>${t("common.start_now")}</button>`
-                : nothing}
             </div>`
           )}
         </div>`
@@ -668,8 +687,9 @@ export class BoopliToday extends LitElement {
     if (model.upcoming.length === 0) return nothing;
     const tz = this.snapshot?.time_zone ?? "UTC";
     const shown = model.upcoming.slice(0, 8);
-    return html`<section class="sec soft">
-      ${this._heading(t("today.upcoming"), model.upcoming.length)}
+    return html`<section class="sec sec-upcoming soft">
+      <span class="mark" aria-hidden="true">${icon("calendar-clock")}</span>
+      ${this._heading(t("today.upcoming"), model.upcoming.length, "calendar-clock")}
       ${shown.map(
         (d) => html`<div class="group">
           <div class="row">
@@ -688,8 +708,9 @@ export class BoopliToday extends LitElement {
     const parts = this._parkedParts();
     if (parts.length === 0) return nothing;
     const tz = this.snapshot?.time_zone ?? "UTC";
-    return html`<section class="sec parked">
-      ${this._heading(t("today.set_aside_for_later"), parts.length)}
+    return html`<section class="sec sec-parked parked">
+      <span class="mark" aria-hidden="true">${icon("pause-circle-outline")}</span>
+      ${this._heading(t("today.set_aside_for_later"), parts.length, "pause-circle-outline")}
       ${parts.map(
         (c) => html`<div class="part">
           <div class="part-name">${c.name}</div>
@@ -703,7 +724,7 @@ export class BoopliToday extends LitElement {
                 <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => startChore(this.hass!, c.id))}>
                   ${t("common.start_now")}
                 </button>
-                <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
+                <button class="mild" ?disabled=${this._busy} @click=${() => this._openPark({ choreId: c.id })}>${t("today.change_time")}</button>
                 ${!accessOf(this.snapshot).all
                   ? nothing // taking a chore away is level 3, like changing it
                   : this._removing === c.id
@@ -734,7 +755,8 @@ export class BoopliToday extends LitElement {
     if (items.length === 0) return nothing;
     return html`
       <section class="sec auto soft">
-        ${this._heading(t("today.done_by_itself"), items.length)}
+        <span class="mark" aria-hidden="true">${icon("robot-outline")}</span>
+        ${this._heading(t("today.done_by_itself"), items.length, "robot-outline")}
         ${items.map(
           (h) => html`<div class="row">
             <span>${icon("check")} ${h.chore_name}: ${h.step_title}</span>
@@ -760,7 +782,9 @@ export class BoopliToday extends LitElement {
       <div class="cols"><div class="col">
       ${(setup === "skipped" || setup === "in_progress") && accessOf(this.snapshot).all
         ? html`<section class="card banner">
-            <span>${t("today.boopli_is_not_fully_set_up")}</span>
+            <span class="mark" aria-hidden="true">${icon("rocket-launch-outline")}</span>
+            <span class="seal" aria-hidden="true">${icon("rocket-launch")}</span>
+            <span class="bannertext">${t("today.boopli_is_not_fully_set_up")}</span>
             <button
               class="primary"
               @click=${() =>
@@ -776,9 +800,13 @@ export class BoopliToday extends LitElement {
       ${model.now
         ? html`
             <section class=${model.now.step.on_it_until ? "card now working" : "card now"}>
-              <div class="muted small">
-                ${model.now.run.chore_name}
-                ${model.now.step.group ? html`<span class="tag">${model.now.step.group}</span>` : nothing}
+              <span class="mark" aria-hidden="true">${icon("clipboard-check-outline")}</span>
+              <div class="now-head">
+                <span class="seal" aria-hidden="true">${icon("clipboard-check-outline")}</span>
+                <div class="muted small">
+                  ${model.now.run.chore_name}
+                  ${model.now.step.group ? html`<span class="tag">${model.now.step.group}</span>` : nothing}
+                </div>
               </div>
               <h2>${model.now.step.title}</h2>
               ${model.now.total > 1 ? this._renderTrail(model.now) : nothing}
@@ -878,13 +906,36 @@ export class BoopliToday extends LitElement {
   static styles = [
     sharedStyles,
     css`
+      :host {
+        --pane: var(--card-background-color, #1c1c1c);
+        --gap: 14px; /* the space between two cards, in both columns */
+      }
       .small {
         font-size: 17px;
       }
+      .card.quick {
+        --hue: #8793a6; /* a quiet slate: it must not compete with the step card above it */
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
       .quick h3 {
-        font-size: 18px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        font-weight: 600;
         margin-bottom: 10px;
+      }
+      .quick h3 .seal {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+      }
+      .quick h3 .seal ha-icon {
+        --mdc-icon-size: 20px;
       }
       .quick textarea {
         font: inherit;
@@ -895,6 +946,27 @@ export class BoopliToday extends LitElement {
         border-radius: 10px;
         padding: 10px 12px;
         resize: vertical;
+      }
+      /* The main button of this card takes the card's own colour, not the loud pet green. */
+      .card.quick button.primary {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 62%, #fff 10%), color-mix(in srgb, var(--hue) 62%, #000));
+        border-color: color-mix(in srgb, var(--hue) 55%, transparent);
+        color: #fff;
+      }
+      .card.quick button.primary,
+      .card.quick .quick-actions button {
+        border-radius: 12px;
+      }
+      /* The second button of the quick card: dark and tinted with the card's colour, like "Change time" in the parked card. */
+      .card.quick .quick-actions button:not(.primary),
+      .card.quick .quick-actions button:not(.primary):hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 28%, transparent);
+        color: color-mix(in srgb, var(--hue) 45%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .card.quick .quick-actions button:not(.primary):hover:not(:disabled) {
+        filter: brightness(1.12);
       }
       .quick-actions {
         display: flex;
@@ -967,44 +1039,100 @@ export class BoopliToday extends LitElement {
         color: var(--primary-text-color);
         font-weight: 500;
       }
-      .banner {
+      /* The setup reminder: a calm sky-blue card with the same look as the others. */
+      .card.banner {
+        position: relative;
+        overflow: hidden;
+        --hue: #58a6e8;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
+        gap: 12px 14px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
-        padding: 12px 16px;
+        margin-bottom: var(--gap);
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
+      .card.banner > *:not(.mark) {
+        position: relative;
+      }
+      .card.banner .seal {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+      .bannertext {
+        flex: 1 1 200px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .card.banner button.primary {
+        min-height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
       .away-banner {
+        position: relative;
+        overflow: hidden;
+        --hue: #f2a03d;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 12px 16px;
-        margin-bottom: 16px;
+        margin-bottom: var(--gap);
         padding: 16px 18px;
-        border-radius: 16px;
-        background: var(--warning-color, #ffa600);
-        color: #1a1200;
+        border-radius: 20px;
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 30%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+        color: var(--primary-text-color);
       }
       .away-banner.planned {
-        background: transparent;
-        color: var(--primary-text-color);
-        border: 2px solid var(--warning-color, #ffa600);
+        border-style: dashed;
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 16%, var(--pane)), var(--pane) 65%);
+        box-shadow: none;
+      }
+      .away-banner > * {
+        position: relative;
+      }
+      .away-banner .mark {
+        position: absolute;
+        right: -14px;
+        top: -14px;
+        opacity: 0.1;
+        color: var(--hue);
       }
       .away-icon {
-        font-size: 40px;
-        line-height: 1;
+        flex: none;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(145deg, color-mix(in srgb, var(--hue) 100%, #fff 25%), color-mix(in srgb, var(--hue) 100%, #000 25%));
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3), 0 3px 8px rgba(0, 0, 0, 0.35);
+      }
+      .away-icon ha-icon {
+        --mdc-icon-size: 30px;
+        display: flex;
       }
       .away-text {
         flex: 1 1 220px;
         min-width: 0;
       }
       .away-title {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 700;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
+        color: color-mix(in srgb, var(--hue) 70%, var(--primary-text-color));
       }
       .away-when {
         font-size: 19px;
@@ -1014,7 +1142,7 @@ export class BoopliToday extends LitElement {
       .away-note {
         margin-top: 4px;
         font-size: 17px;
-        opacity: 0.85;
+        color: var(--secondary-text-color);
       }
       .away-actions {
         display: flex;
@@ -1022,31 +1150,59 @@ export class BoopliToday extends LitElement {
         gap: 8px 12px;
         align-items: center;
       }
-      .away-banner.on button.primary {
-        background: #1a1200;
+      .away-banner button.primary {
+        min-height: 44px;
+        padding: 0 20px;
+        font-size: 18px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 100%, #fff 12%), color-mix(in srgb, var(--hue) 72%, #000));
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
         color: #fff;
-        border-color: #1a1200;
-      }
-      .away-banner.on button.link {
-        color: #1a1200;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
       .pet-card {
-        margin-bottom: 8px;
+        margin-bottom: var(--gap);
         padding: 0;
       }
       .pet-info {
-        margin-top: 12px;
-        padding: 0 4px 2px;
+        margin-top: var(--gap);
+        padding: 14px 16px;
         min-width: 0;
+        --hue: var(--boopli-accent, var(--primary-color, #4a90e2));
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
       }
       .pet-name {
-        font-size: 19px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .lvl {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 12px 2px 8px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #3b2a05;
+        background: linear-gradient(140deg, #fff6c2 0%, #f6cf55 22%, #b2801a 50%, #f9e286 72%, #c89322 100%);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+      .lvl ha-icon {
+        --mdc-icon-size: 16px;
+        display: flex;
       }
       .bar {
-        height: 16px;
+        height: 18px;
         border-radius: 999px;
-        background: var(--secondary-background-color);
+        background: rgba(0, 0, 0, 0.35);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         overflow: hidden;
         margin: 10px 0 6px;
       }
@@ -1058,10 +1214,6 @@ export class BoopliToday extends LitElement {
       }
       .meals {
         margin-top: 2px;
-      }
-      .meals .textlink {
-        padding: 0 4px;
-        font-size: inherit;
       }
       /* The one-time pop-up at the end of the starter quest: calm, one button. */
       .quest {
@@ -1107,18 +1259,114 @@ export class BoopliToday extends LitElement {
       .col {
         min-width: 0;
       }
+      /* The big step: a card in the pet's colour, with a seal and a faint symbol behind it. */
       .now,
       .empty {
-        padding: 4px 0 12px;
+        position: relative;
+        overflow: hidden;
+        --hue: var(--boopli-accent, var(--primary-color, #4a90e2));
+        padding: 18px 20px;
+        border-radius: 22px;
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 24%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+      }
+      /* The faint symbol in the corner behind the content: the same on every card, in the card's own colour. */
+      .now,
+      .card.quick,
+      .pet-info,
+      .sec,
+      .card.banner {
+        position: relative;
+        overflow: hidden;
+      }
+      .mark {
+        position: absolute;
+        right: -14px;
+        top: -14px;
+        color: var(--hue);
+        opacity: 0.1;
+        pointer-events: none;
+      }
+      .mark ha-icon {
+        --mdc-icon-size: 104px;
+        display: flex;
+      }
+      .now .mark {
+        right: -18px;
+        top: -18px;
+      }
+      .now .mark ha-icon {
+        --mdc-icon-size: 150px;
+      }
+      .now > *:not(.mark),
+      .card.quick > *:not(.mark),
+      .pet-info > *:not(.mark),
+      .sec > *:not(.mark) {
+        position: relative;
+      }
+      .now-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .seal {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(145deg, color-mix(in srgb, var(--hue) 100%, #fff 25%), color-mix(in srgb, var(--hue) 100%, #000 25%));
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3), 0 3px 8px rgba(0, 0, 0, 0.35);
+      }
+      .seal ha-icon {
+        --mdc-icon-size: 24px;
+        display: flex;
+      }
+      .now .track {
+        height: 22px;
+        background: rgba(0, 0, 0, 0.35);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .now .trail-fill,
+      .fill {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 55%), var(--boopli-accent, var(--primary-color));
+        box-shadow: inset 0 -3px 4px rgba(0, 0, 0, 0.2);
+      }
+      /* The Done button: the pet's colour, in the same soft, curved look as the other buttons (no thick edge underneath). */
+      .now .press.done {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%),
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000)
+        );
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        border-radius: 14px;
+        padding: 10px 48px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      .now .press.done:hover:not(:disabled) {
+        filter: brightness(1.08);
+      }
+      .now .press.done:active:not(:disabled) {
+        transform: translateY(1px);
+        border-bottom-width: 1px;
       }
       /* The cards in a column stand apart from each other, and from the list under them. */
       .now,
       .empty,
       .quick {
-        margin-bottom: 16px;
+        margin-bottom: var(--gap);
       }
-      .quick + .sec {
-        margin-top: 24px;
+      /* The questions of a chore that started with all its steps: a coral card, so it is noticed without shouting. */
+      .card.ask {
+        --hue: #ee8a6b;
+      }
+      .ask h2 {
+        font-size: 28px;
+        margin: 6px 0 4px;
       }
       .now h2 {
         font-size: 34px;
@@ -1140,15 +1388,23 @@ export class BoopliToday extends LitElement {
         padding: 0 22px;
         font-size: 20px;
         border-radius: 14px;
-        border: 2px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
-        color: var(--boopli-accent, var(--primary-color));
-        background: transparent;
         cursor: pointer;
+      }
+      /* "On it": the same soft look as Done, but dark and tinted with the card's colour, so Done keeps the focus. */
+      .now .on-it,
+      .now .on-it:hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 30%, transparent);
+        color: color-mix(in srgb, var(--hue) 55%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .now .on-it:hover:not(:disabled) {
+        filter: brightness(1.12);
       }
       /* A step you said "On it" to: green, so it is clear it was noticed. */
       .now.working {
+        --hue: var(--success-color, #2e7d32);
         border: 2px solid var(--success-color, #2e7d32);
-        background: color-mix(in srgb, var(--success-color, #2e7d32) 12%, var(--card-background-color, transparent));
       }
       .in-progress {
         margin-top: 8px;
@@ -1157,26 +1413,61 @@ export class BoopliToday extends LitElement {
       }
       /* The lists next to the big step: a clear heading, a visible line, calm rows. */
       .sec {
-        margin-bottom: 14px;
-        --line: color-mix(in srgb, var(--primary-text-color) 20%, transparent);
+        margin-bottom: var(--gap);
+        padding: 12px 16px 10px;
+        --hue: #4f9cf0;
+        --line: color-mix(in srgb, var(--primary-text-color) 14%, transparent);
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
+      .sec-ready {
+        --hue: #46c46f;
+      }
+      .sec-still {
+        --hue: #4f9cf0;
+      }
+      .sec-upcoming {
+        --hue: #2fc4a4;
+      }
+      .sec-parked {
+        --hue: #f2a03d;
+      }
+      .sec.auto {
+        --hue: #7f93b3;
       }
       .sec-title {
-        font-size: 18px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        font-weight: 600;
         color: var(--primary-text-color);
-        margin: 0 0 6px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid var(--line);
+        margin: 0 0 8px;
+      }
+      .sec-title .seal {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+      }
+      .sec-title .seal ha-icon {
+        --mdc-icon-size: 20px;
       }
       .count {
-        margin-left: 8px;
-        font-size: 17px;
-        font-weight: 400;
-        color: var(--secondary-text-color);
+        margin-left: auto;
+        min-width: 26px;
+        padding: 1px 9px;
+        border-radius: 999px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary-text-color);
+        background: rgba(0, 0, 0, 0.3);
       }
       .soft .group,
       .soft .more {
-        opacity: 0.7;
+        opacity: 0.88;
       }
       .strong {
         font-weight: 500;
@@ -1194,6 +1485,29 @@ export class BoopliToday extends LitElement {
       .part-name {
         font-size: 18px;
       }
+      /* "Start now" of a set-aside part: the pet's colour in the soft look of the Done button. */
+      .sec-parked .part-actions button.primary {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%),
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000)
+        );
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        border-radius: 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      /* "Change time": the same soft look, but in a muted tone of the card's orange, so "Start now" keeps the focus. */
+      .sec-parked .part-actions button.mild,
+      .sec-parked .part-actions button.mild:hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 26%, transparent);
+        border-radius: 12px;
+        color: color-mix(in srgb, var(--hue) 32%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .sec-parked .part-actions button.mild:hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
       .part-actions,
       .park-buttons,
       .park-pick {
@@ -1203,11 +1517,42 @@ export class BoopliToday extends LitElement {
         gap: 8px;
         margin-top: 8px;
       }
+      /* "When should it come back?": a darker panel inside its card, with the card's colour (--hue) in its buttons. */
       .park-ask {
         margin-top: 14px;
         padding: 12px 14px;
-        border: 1px solid var(--divider-color);
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 30%, transparent);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--hue, #8793a6) 8%, rgba(0, 0, 0, 0.28));
+      }
+      .park-ask button:not(.link):not(.primary),
+      .park-ask button:not(.link):not(.primary):hover:not(:disabled) {
+        min-height: 40px;
         border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue, #8793a6) 17%, var(--pane)), color-mix(in srgb, var(--hue, #8793a6) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 28%, transparent);
+        color: color-mix(in srgb, var(--hue, #8793a6) 40%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .park-ask button:not(.link):not(.primary):hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
+      .park-ask button.primary {
+        min-height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      .park-ask input {
+        font: inherit;
+        color: var(--primary-text-color);
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 30%, transparent);
+        border-radius: 10px;
+        padding: 8px 10px;
+        color-scheme: dark;
       }
       .later-btn,
       .link {
@@ -1243,12 +1588,51 @@ export class BoopliToday extends LitElement {
       .row {
         display: flex;
         justify-content: space-between;
+        align-items: center; /* the middle of the symbol, the title and the time on one line */
         gap: 12px;
         font-size: 17px;
         padding: 2px 0 2px 12px;
       }
       .group > .row:only-child {
         padding-left: 0;
+      }
+      .rowmain {
+        display: flex;
+        align-items: center;
+        gap: 2px; /* the chevrons sit right next to the title */
+        min-width: 0;
+      }
+      /* "Start now" on a waiting step: just two chevrons in the pet's colour (the words are the tooltip). */
+      .row .go {
+        flex: none;
+        width: 22px;
+        height: 28px;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: none;
+        color: var(--boopli-accent, var(--primary-color));
+        /* The letters of this font sit about 2 px below the middle of their line box (room for tall letters above),
+           the symmetric chevrons do not: lower them so both share one visual middle. */
+        position: relative;
+        top: 2px;
+      }
+      .go-space {
+        flex: none;
+        width: 22px;
+      }
+      .row .go ha-icon {
+        --mdc-icon-size: 26px;
+        display: flex;
+      }
+      .row .go:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 22%, transparent);
+      }
+      .row .go:active:not(:disabled) {
+        transform: translateX(1px);
       }
       .hint {
         color: var(--secondary-text-color);

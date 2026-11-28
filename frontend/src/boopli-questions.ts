@@ -17,8 +17,11 @@ export class BoopliQuestions extends LitElement {
     allLabel: { type: String },
     busy: { type: Boolean },
     cancelable: { type: Boolean },
+    soft: { type: Boolean, reflect: true },
     _answers: { state: true },
   };
+
+  declare soft: boolean; // the soft, dark look of the Today cards (the plain look is for the other screens)
 
   declare cancelable: boolean; // show a Cancel button (not when the chore is already running)
 
@@ -35,6 +38,7 @@ export class BoopliQuestions extends LitElement {
     this.allLabel = "";
     this.busy = false;
     this.cancelable = true;
+    this.soft = false;
     this._answers = {};
   }
 
@@ -148,6 +152,30 @@ export class BoopliQuestions extends LitElement {
         gap: 8px;
         align-items: center;
         margin-top: 14px;
+      }
+
+      /* The soft look: dark buttons in the same style as the other Today buttons; only the chosen answer lights up. */
+      :host([soft]) .yn button,
+      :host([soft]) .actions button:not(.link) {
+        min-height: 40px;
+        border-radius: 12px;
+        border: 1px solid color-mix(in srgb, var(--primary-text-color) 16%, transparent);
+        background: linear-gradient(180deg, color-mix(in srgb, var(--primary-text-color) 9%, var(--card-background-color, #1c1c1c)), color-mix(in srgb, var(--primary-text-color) 3%, var(--card-background-color, #1c1c1c)));
+        color: var(--secondary-text-color);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      :host([soft]) .yes.on,
+      :host([soft]) .actions button.primary {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border-color: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      :host([soft]) .no.on {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--error-color, #d93f3f) 100%, #fff 8%), color-mix(in srgb, var(--error-color, #d93f3f) 68%, #000));
+        border-color: color-mix(in srgb, var(--error-color, #d93f3f) 55%, transparent);
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
     `,
   ];
