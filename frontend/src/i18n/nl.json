@@ -801,6 +801,8 @@
     "still_to_do_today": "Vandaag nog te doen",
     "set_aside_for_later": "Voor later",
     "done_by_itself": "Vanzelf klaar",
+    "done_today": "Vandaag afgerond",
+    "and_n_more": "en nog {count}",
     "enjoy_the_quiet_what_is_coming": "Geniet van de rust. Hieronder zie je wat eraan komt.",
     "add_your_first_chore_in_the": "Voeg je eerste taak toe onder “Taken”.",
     "level": "· Level {level}",

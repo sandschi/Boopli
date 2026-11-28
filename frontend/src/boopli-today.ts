@@ -4,7 +4,7 @@ import "./boopli-questions";
 import { agentOn, anyAi } from "./claude";
 import { awayWhen } from "./boopli-away";
 import { buildToday } from "./today";
-import { describeWhen, fmtTime, sinceLabel } from "./time";
+import { describeWhen, fmtTime, isToday, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-stage";
 import "./boopli-shop";
@@ -30,6 +30,9 @@ interface ParkAsk {
 }
 
 /** How far along the part (group) of this step is, and whether it can be set aside. */
+/** How many finished steps the "done today" timeline shows (the rest is counted: "and 3 more"). */
+const DONE_SHOWN = 6;
+
 function partInfo(run: Run, step: StepRun): { done: number; total: number; canPark: boolean } | null {
   if (!step.group) return null;
   const inPart = run.steps.filter((s) => s.group === step.group);
@@ -743,26 +746,39 @@ export class BoopliToday extends LitElement {
     </section>`;
   }
 
-  /** Steps that finished by themselves in the last day, so nothing happens silently. */
-  private _renderAuto() {
+  /**
+   * What was finished today (since midnight, the same day the pet's meals and the lists count by): one timeline of the
+   * household's own steps and the ones that finished by themselves (marked with a robot), newest first. The step that
+   * finished a chore gets a flag. It is the only place that shows what is already done, so nothing happens silently.
+   */
+  private _renderDone() {
     const snapshot = this.snapshot;
     if (!snapshot) return nothing;
-    const since = this.nowMs - 24 * 3600 * 1000;
-    const items = snapshot.history
-      .filter((h) => h.kind === "step_done" && h.by === "auto" && Date.parse(h.ts) >= since)
-      .slice(-3)
-      .reverse();
-    if (items.length === 0) return nothing;
+    const tz = snapshot.time_zone;
+    const today = snapshot.history.filter((h) => isToday(h.ts, this.nowMs, tz));
+    const finishedRuns = new Set(today.filter((h) => h.kind === "chore_done").map((h) => h.run_id));
+    const steps = today.filter((h) => h.kind === "step_done").reverse(); // the history is oldest first
+    if (steps.length === 0) return nothing;
+    const shown = steps.slice(0, DONE_SHOWN);
+    const more = steps.length - shown.length;
+    const flagged = new Set<string>(); // the newest step of a finished chore is the one that finished it
     return html`
-      <section class="sec auto soft">
-        <span class="mark" aria-hidden="true">${icon("robot-outline")}</span>
-        ${this._heading(t("today.done_by_itself"), items.length, "robot-outline")}
-        ${items.map(
-          (h) => html`<div class="row">
-            <span>${icon("check")} ${h.chore_name}: ${h.step_title}</span>
-            <span class="hint">${h.reason ? `${h.reason}, ` : ""}${fmtTime(h.ts, snapshot.time_zone)}</span>
-          </div>`
-        )}
+      <section class="sec sec-done soft">
+        <span class="mark" aria-hidden="true">${icon("check-all")}</span>
+        ${this._heading(t("today.done_today"), steps.length, "check-all")}
+        ${shown.map((h) => {
+          const auto = h.by === "auto";
+          const finished = finishedRuns.has(h.run_id) && !flagged.has(h.run_id);
+          if (finished) flagged.add(h.run_id);
+          return html`<div class="row">
+            <span class="rowmain">
+              <span class="donei ${auto ? "auto" : ""}" title=${auto ? t("today.done_by_itself") : t("common.done")}>${icon(auto ? "home-automation" : "check")}</span>
+              <span class=${finished ? "fin" : ""}>${h.chore_name}: ${h.step_title}</span>
+            </span>
+            <span class="hint">${auto && h.reason ? `${h.reason}, ` : ""}${fmtTime(h.ts, tz)}${finished ? html` <span class="fin-flag" aria-hidden="true">${icon("flag-checkered")}</span>` : nothing}</span>
+          </div>`;
+        })}
+        ${more > 0 ? html`<div class="muted small more">${t("today.and_n_more", { count: more })}</div>` : nothing}
       </section>
     `;
   }
@@ -898,7 +914,7 @@ export class BoopliToday extends LitElement {
       ${this._renderReady(model)}
       ${this._renderStill(model, tz)}
       ${this._renderUpcoming(model)}
-      ${this._renderAuto()}
+      ${this._renderDone()}
       </div></div>
     `;
   }
@@ -1434,7 +1450,7 @@ export class BoopliToday extends LitElement {
       .sec-parked {
         --hue: #f2a03d;
       }
-      .sec.auto {
+      .sec-done {
         --hue: #7f93b3;
       }
       .sec-title {
@@ -1568,10 +1584,10 @@ export class BoopliToday extends LitElement {
         display: block;
         margin-top: 10px;
       }
-      .auto .row {
+      .sec-done .row {
         padding-left: 0;
       }
-      .auto .hint {
+      .sec-done .hint {
         white-space: normal;
         text-align: right;
       }
@@ -1619,6 +1635,32 @@ export class BoopliToday extends LitElement {
            the symmetric chevrons do not: lower them so both share one visual middle. */
         position: relative;
         top: 2px;
+      }
+      /* The done timeline: a tick for the household's own steps, a robot for the ones that finished by themselves. */
+      .donei {
+        flex: none;
+        width: 22px;
+        display: grid;
+        place-items: center;
+        color: var(--success-color, #46c46f);
+      }
+      .donei.auto {
+        color: var(--hue);
+      }
+      .donei ha-icon {
+        --mdc-icon-size: 18px;
+        display: flex;
+      }
+      .sec-done .fin {
+        font-weight: 600;
+      }
+      .sec-done .fin-flag {
+        color: var(--boopli-accent, var(--primary-color));
+      }
+      .sec-done .fin-flag ha-icon {
+        --mdc-icon-size: 16px;
+        display: inline-flex;
+        vertical-align: -0.2em;
       }
       .go-space {
         flex: none;

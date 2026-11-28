@@ -801,6 +801,8 @@
     "still_to_do_today": "Pendiente para hoy",
     "set_aside_for_later": "Para más tarde",
     "done_by_itself": "Pasos completados automáticamente",
+    "done_today": "Completado hoy",
+    "and_n_more": "y {count} más",
     "enjoy_the_quiet_what_is_coming": "Disfruta de la calma. Abajo puedes ver qué viene después.",
     "add_your_first_chore_in_the": "Añade tu primera tarea en la pestaña «Tareas».",
     "level": "· Nivel {level}",

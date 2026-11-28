@@ -801,6 +801,8 @@
     "still_to_do_today": "Still to do today",
     "set_aside_for_later": "Set aside for later",
     "done_by_itself": "Done by itself",
+    "done_today": "Done today",
+    "and_n_more": "and {count} more",
     "enjoy_the_quiet_what_is_coming": "Enjoy the quiet. What is coming up shows below.",
     "add_your_first_chore_in_the": "Add your first chore in the Chores tab.",
     "level": "· Level {level}",

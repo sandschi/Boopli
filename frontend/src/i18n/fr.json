@@ -801,6 +801,8 @@
     "still_to_do_today": "Encore à faire aujourd’hui",
     "set_aside_for_later": "Pour plus tard",
     "done_by_itself": "Fait automatiquement",
+    "done_today": "Fait aujourd’hui",
+    "and_n_more": "et {count} de plus",
     "enjoy_the_quiet_what_is_coming": "Profite du calme. Tu verras la suite juste en dessous.",
     "add_your_first_chore_in_the": "Ajoute ta première tâche dans l’onglet « Tâches ».",
     "level": "· Niveau {level}",
