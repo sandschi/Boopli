@@ -315,6 +315,25 @@ def test_a_colour_or_pattern_can_be_put_on_the_wall_or_floor_and_changed_or_remo
         engine.place_item(unowned, "wall", "color_sky")
 
 
+def test_the_pet_wears_a_fur_colour_and_a_scarf_in_its_own_places(monkeypatch):
+    fur = engine.ShopItem("fur_test", engine.KIND_FUR, 10)
+    scarf = engine.ShopItem("scarf_test", engine.KIND_WEAR, 10)
+    monkeypatch.setitem(engine.SHOP_BY_ID, fur.id, fur)
+    monkeypatch.setitem(engine.SHOP_BY_ID, scarf.id, scarf)
+    p = engine.Progress(owned=["fur_test", "scarf_test", "color_sky"])
+    engine.place_item(p, "fur", "fur_test")
+    engine.place_item(p, "neck", "scarf_test")
+    assert p.placed == {"fur": "fur_test", "neck": "scarf_test"}
+    # each kind only fits its own places
+    for place, item in (("fur", "scarf_test"), ("neck", "fur_test"), ("wall", "fur_test"), ("fur", "color_sky")):
+        with pytest.raises(engine.ShopError):
+            engine.place_item(p, place, item)
+    engine.place_item(p, "neck", "")
+    assert p.placed == {"fur": "fur_test"}
+    # what is worn survives saving and loading
+    assert engine.Progress.from_dict(engine.to_dict(p)).placed == {"fur": "fur_test"}
+
+
 # --- mood ------------------------------------------------------------------
 
 

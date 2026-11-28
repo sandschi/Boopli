@@ -715,7 +715,7 @@ class Progress:
     food: dict[str, int] = field(default_factory=dict)  # food size -> how many are in the inventory
     fed: dict[str, int] = field(default_factory=dict)  # local date -> meals that day
     owned: list[str] = field(default_factory=list)  # ids of the shop items bought
-    placed: dict[str, str] = field(default_factory=dict)  # room place ("wall", "floor") -> item id
+    placed: dict[str, str] = field(default_factory=dict)  # place ("wall", "floor", "fur", "neck": see PLACE_KINDS) -> item id
     achievements: list[str] = field(default_factory=list)  # ids of the achievements reached (never removed)
     stats: dict[str, int] = field(default_factory=dict)  # what the household has done so far: STAT_* -> how often
     streak: int = 0  # days in a row with a finished step, up to streak_day
@@ -1066,8 +1066,17 @@ KIND_COLOR = "color"  # a colour for the wall or the floor
 KIND_PATTERN = "pattern"  # a pattern for the wall or the floor
 KIND_FOOD = "food"  # bought again and again, kept as a stock, fed to the pet
 KIND_UPGRADE = "upgrade"  # works as soon as it is bought (see EFFECT_MEALS)
-ITEM_KINDS = (KIND_EXTRA, KIND_COLOR, KIND_PATTERN, KIND_FOOD, KIND_UPGRADE)
-ROOM_PLACES = ("wall", "floor")  # where a colour or a pattern can be put
+KIND_FUR = "fur"  # a fur colour for the pet
+KIND_WEAR = "wear"  # something the pet wears (a scarf)
+ITEM_KINDS = (KIND_EXTRA, KIND_COLOR, KIND_PATTERN, KIND_FOOD, KIND_UPGRADE, KIND_FUR, KIND_WEAR)
+# Where an owned item can be put, and which kinds of item fit there. A new place (a hat, say) is one more row.
+PLACE_KINDS: dict[str, tuple[str, ...]] = {
+    "wall": (KIND_COLOR, KIND_PATTERN),
+    "floor": (KIND_COLOR, KIND_PATTERN),
+    "fur": (KIND_FUR,),
+    "neck": (KIND_WEAR,),
+}
+ROOM_PLACES = tuple(PLACE_KINDS)  # the places (the room's wall and floor, and the pet's own fur and neck)
 EFFECT_MEALS = "meals"  # one more meal per day before the pet is full
 
 # Food sizes: what it costs in Blubs and what it gives in XP.
@@ -1181,14 +1190,17 @@ def buy_item(progress: Progress, item_id: str, level: int, kind: str = "") -> Sh
 
 
 def place_item(progress: Progress, place: str, item_id: str) -> None:
-    """Put an owned colour or pattern on the wall or the floor, or empty the place with "". Raises ShopError."""
+    """Put an owned item in a place (the wall, the floor, the pet's fur or neck), or empty the place with "". Raises ShopError.
+
+    Which items fit a place is PLACE_KINDS: colours and patterns on the wall and the floor, a fur colour on the fur, a scarf at the neck.
+    """
     if place not in ROOM_PLACES:
         raise ShopError(Msg("That is not a place in the room."))
     if not item_id:
         progress.placed.pop(place, None)
         return
     item = SHOP_BY_ID.get(item_id)
-    if item is None or item.id not in progress.owned or item.kind not in (KIND_COLOR, KIND_PATTERN):
+    if item is None or item.id not in progress.owned or item.kind not in PLACE_KINDS[place]:
         raise ShopError(Msg("You cannot put that in the room."))
     progress.placed[place] = item.id
 
