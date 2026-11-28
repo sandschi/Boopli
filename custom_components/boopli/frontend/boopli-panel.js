@@ -1357,7 +1357,6 @@ var Xe = {
 		waiting_until_you_start_it: "wartet, bis du startest",
 		waits_for_something_to_happen: "wartet, bis etwas passiert",
 		blubs_gained: "+{blubs} Blubs",
-		feed: "Füttern",
 		quest_title: "Erste Quest geschafft",
 		quest_text: "Du hast die erste Quest geschafft. Jetzt beginnt das Abenteuer. Ab jetzt dauert jedes Level etwas länger und bleibt für dich erreichbar.",
 		quest_ok: "Weiter"
@@ -2646,7 +2645,6 @@ var Xe = {
 		waiting_until_you_start_it: "waiting until you start it",
 		waits_for_something_to_happen: "waits for something to happen",
 		blubs_gained: "+{blubs} Blubs",
-		feed: "Feed",
 		quest_title: "Starter quest complete",
 		quest_text: "You finished the starter quest. Now the adventure begins. From here, levels take a little longer. Every level is still within reach.",
 		quest_ok: "Continue"
@@ -3935,7 +3933,6 @@ var Xe = {
 		waiting_until_you_start_it: "en espera hasta que la inicies",
 		waits_for_something_to_happen: "en espera hasta que pase algo",
 		blubs_gained: "+{blubs} Blubs",
-		feed: "Dar de comer",
 		quest_title: "Primera misión completada",
 		quest_text: "Has completado la primera misión. Ahora empieza la aventura. A partir de aquí, cada nivel lleva un poco más de tiempo y sigue a tu alcance.",
 		quest_ok: "Continuar"
@@ -5224,7 +5221,6 @@ var Xe = {
 		waiting_until_you_start_it: "en attendant que tu la lances",
 		waits_for_something_to_happen: "en attente d’un événement",
 		blubs_gained: "+{blubs} Blubs",
-		feed: "Nourrir",
 		quest_title: "Première quête terminée",
 		quest_text: "Tu as terminé la première quête. Maintenant, l’aventure commence. Chaque niveau prend un peu plus de temps et reste à ta portée.",
 		quest_ok: "Continuer"
@@ -6513,7 +6509,6 @@ var Xe = {
 		waiting_until_you_start_it: "wacht tot je begint",
 		waits_for_something_to_happen: "wacht tot er iets gebeurt",
 		blubs_gained: "+{blubs} Blubs",
-		feed: "Voeren",
 		quest_title: "Eerste missie voltooid",
 		quest_text: "Je hebt de eerste missie afgerond. Nu begint het avontuur. Vanaf hier duurt elk level wat langer en blijft het haalbaar.",
 		quest_ok: "Verder"
@@ -7677,11 +7672,15 @@ var w = o`
 			allLabel: { type: String },
 			busy: { type: Boolean },
 			cancelable: { type: Boolean },
+			soft: {
+				type: Boolean,
+				reflect: !0
+			},
 			_answers: { state: !0 }
 		};
 	}
 	constructor() {
-		super(), this.questions = [], this.label = x("chores.start"), this.allLabel = "", this.busy = !1, this.cancelable = !0, this._answers = {};
+		super(), this.questions = [], this.label = x("chores.start"), this.allLabel = "", this.busy = !1, this.cancelable = !0, this.soft = !1, this._answers = {};
 	}
 	_yes(e) {
 		return this._answers[e] ?? !0;
@@ -7790,6 +7789,30 @@ var w = o`
         gap: 8px;
         align-items: center;
         margin-top: 14px;
+      }
+
+      /* The soft look: dark buttons in the same style as the other Today buttons; only the chosen answer lights up. */
+      :host([soft]) .yn button,
+      :host([soft]) .actions button:not(.link) {
+        min-height: 40px;
+        border-radius: 12px;
+        border: 1px solid color-mix(in srgb, var(--primary-text-color) 16%, transparent);
+        background: linear-gradient(180deg, color-mix(in srgb, var(--primary-text-color) 9%, var(--card-background-color, #1c1c1c)), color-mix(in srgb, var(--primary-text-color) 3%, var(--card-background-color, #1c1c1c)));
+        color: var(--secondary-text-color);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      :host([soft]) .yes.on,
+      :host([soft]) .actions button.primary {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border-color: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      :host([soft]) .no.on {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--error-color, #d93f3f) 100%, #fff 8%), color-mix(in srgb, var(--error-color, #d93f3f) 68%, #000));
+        border-color: color-mix(in srgb, var(--error-color, #d93f3f) 55%, transparent);
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
     `];
 	}
@@ -12116,7 +12139,8 @@ var no = class extends v {
 		let e = Nn(this.snapshot);
 		return m`
       <section class="card quick">
-        <h3>${x("today.what_do_you_want_to_get")}</h3>
+        <span class="mark" aria-hidden="true">${D("auto-fix")}</span>
+        <h3><span class="seal" aria-hidden="true">${D("auto-fix")}</span>${x("today.what_do_you_want_to_get")}</h3>
         ${e ? m`
               <textarea
                 rows="2"
@@ -12148,7 +12172,7 @@ var no = class extends v {
 	_renderPet() {
 		let e = this.snapshot?.pet;
 		if (!e) return _;
-		let t = e.xp_for_level > 0 ? Math.round(e.xp_in_level / e.xp_for_level * 100) : 0, n = (this.snapshot?.runs ?? []).some((e) => e.steps.some((e) => e.status === "active" && !!e.on_it_until)), r = e.meals_today >= e.meals_max, i = Object.values(e.food).some((e) => (e ?? 0) > 0);
+		let t = e.xp_for_level > 0 ? Math.round(e.xp_in_level / e.xp_for_level * 100) : 0, n = (this.snapshot?.runs ?? []).some((e) => e.steps.some((e) => e.status === "active" && !!e.on_it_until)), r = e.meals_today >= e.meals_max;
 		return m`
       <section class="card pet-card stage-slot">
         <boopli-stage
@@ -12175,7 +12199,8 @@ var no = class extends v {
         ></boopli-stage>
         ${this._egg ? m`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : _}
         <div class="pet-info">
-          <div class="pet-name">${e.name} <span class="muted">${x("today.level", { level: e.level })}</span></div>
+          <span class="mark" aria-hidden="true">${D("paw")}</span>
+          <div class="pet-name">${e.name} <span class="lvl">${D("star-four-points")} ${x("today.level", { level: e.level }).replace(/^[\s·•]+/, "")}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${t} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${t}%"></div>
           </div>
@@ -12184,10 +12209,7 @@ var no = class extends v {
 			xp_needed: e.xp_for_level
 		})}</div>
           <div class="small">${to(e)}</div>
-          <div class="small muted meals">
-            ${r ? x("common.is_full_for_today", { name: e.name }) : _}
-            ${!r && i ? m` <button type="button" class="textlink" @click=${() => this._inventory = !0}>${x("today.feed")}</button>` : _}
-          </div>
+          ${r ? m`<div class="small muted meals">${x("common.is_full_for_today", { name: e.name })}</div>` : _}
         </div>
       </section>
       ${this._toast ? m`<div class="toast" role="status">${this._toast}</div>` : _}
@@ -12391,6 +12413,7 @@ var no = class extends v {
 		if (!t?.active) return _;
 		let n = !!this.snapshot?.away_now;
 		return m`<section class="away-banner ${n ? "on" : "planned"}" role="status">
+      <span class="mark" aria-hidden="true">${D("bag-suitcase")}</span>
       <div class="away-icon" aria-hidden="true">${D("bag-suitcase")}</div>
       <div class="away-text">
         <div class="away-title">${x(n ? "today.away_mode_is_on" : "today.away_mode_is_planned")}</div>
@@ -12413,13 +12436,18 @@ var no = class extends v {
     </section>`;
 	}
 	_renderQuestions() {
-		return (this.snapshot?.runs ?? []).filter((e) => e.questions_open && (e.questions ?? []).length > 0).map((e) => m`<section class="card ask">
-        <div class="muted small">${e.chore_name}</div>
+		return (this.snapshot?.runs ?? []).filter((e) => e.questions_open && (e.questions ?? []).length > 0).map((e) => m`<section class="card now ask">
+        <span class="mark" aria-hidden="true">${D("help-circle-outline")}</span>
+        <div class="now-head">
+          <span class="seal" aria-hidden="true">${D("help")}</span>
+          <div class="muted small">${e.chore_name}</div>
+        </div>
         <h2>${x("today.quick_look_first")}</h2>
         <p class="muted small">
           ${x("today.it_started_with_all_its_steps")}
         </p>
         <boopli-questions
+          soft
           .questions=${e.questions ?? []}
           .busy=${this._busy}
           .cancelable=${!1}
@@ -12446,13 +12474,14 @@ var no = class extends v {
 			}
 		}
 	}
-	_heading(e, t) {
-		return m`<h3 class="sec-title">${e}<span class="count">${t}</span></h3>`;
+	_heading(e, t, n) {
+		return m`<h3 class="sec-title"><span class="seal" aria-hidden="true">${D(n)}</span>${e}<span class="count">${t}</span></h3>`;
 	}
 	_renderReady(e) {
 		let t = e.ready.reduce((e, t) => e + t.steps.length, 0);
-		return t === 0 ? _ : m`<section class="sec">
-      ${this._heading(x("today.ready_now"), t)}
+		return t === 0 ? _ : m`<section class="sec sec-ready">
+      <span class="mark" aria-hidden="true">${D("play-circle-outline")}</span>
+      ${this._heading(x("today.ready_now"), t, "play-circle-outline")}
       ${e.ready.map((e) => m`<div class="group">
           <div class="group-name strong">${e.run.chore_name}</div>
           ${e.steps.map((e) => m`<div class="row"><span>${e.title}</span></div>`)}
@@ -12461,14 +12490,28 @@ var no = class extends v {
 	}
 	_renderStill(e, t) {
 		let n = e.groups.reduce((e, t) => e + t.steps.length, 0) + e.dueToday.length;
-		return n === 0 ? _ : m`<section class="sec soft">
-      ${this._heading(x("today.still_to_do_today"), n)}
+		if (n === 0) return _;
+		let r = e.groups.some((e) => e.steps.some((e) => e.status === "waiting"));
+		return m`<section class="sec sec-still soft">
+      <span class="mark" aria-hidden="true">${D("clock-outline")}</span>
+      ${this._heading(x("today.still_to_do_today"), n, "clock-outline")}
       ${e.groups.map((e) => m`<div class="group">
           <div class="group-name">${e.run.chore_name}</div>
           ${e.steps.map((t) => m`<div class="row">
-              <span>${t.title}</span>
+              <span class="rowmain">
+                ${t.status === "waiting" ? m`<button
+                      type="button"
+                      class="go"
+                      title=${x("common.start_now")}
+                      aria-label=${x("common.start_now")}
+                      ?disabled=${this._busy}
+                      @click=${() => this._release(e.run.id, t.stepId)}
+                    >
+                      ${D("chevron-double-right")}
+                    </button>` : r ? m`<span class="go-space" aria-hidden="true"></span>` : _}
+                <span>${t.title}</span>
+              </span>
               <span class="hint">${t.hint}</span>
-              ${t.status === "waiting" ? m`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._release(e.run.id, t.stepId)}>${x("common.start_now")}</button>` : _}
             </div>`)}
         </div>`)}
       ${e.dueToday.map((e) => m`<div class="group">
@@ -12482,8 +12525,9 @@ var no = class extends v {
 	_renderUpcoming(e) {
 		if (e.upcoming.length === 0) return _;
 		let t = this.snapshot?.time_zone ?? "UTC", n = e.upcoming.slice(0, 8);
-		return m`<section class="sec soft">
-      ${this._heading(x("today.upcoming"), e.upcoming.length)}
+		return m`<section class="sec sec-upcoming soft">
+      <span class="mark" aria-hidden="true">${D("calendar-clock")}</span>
+      ${this._heading(x("today.upcoming"), e.upcoming.length, "calendar-clock")}
       ${n.map((e) => m`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
@@ -12497,8 +12541,9 @@ var no = class extends v {
 		let e = this._parkedParts();
 		if (e.length === 0) return _;
 		let t = this.snapshot?.time_zone ?? "UTC";
-		return m`<section class="sec parked">
-      ${this._heading(x("today.set_aside_for_later"), e.length)}
+		return m`<section class="sec sec-parked parked">
+      <span class="mark" aria-hidden="true">${D("pause-circle-outline")}</span>
+      ${this._heading(x("today.set_aside_for_later"), e.length, "pause-circle-outline")}
       ${e.map((e) => m`<div class="part">
           <div class="part-name">${e.name}</div>
           <div class="muted small">
@@ -12509,7 +12554,7 @@ var no = class extends v {
                 <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => an(this.hass, e.id))}>
                   ${x("common.start_now")}
                 </button>
-                <button ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${x("today.change_time")}</button>
+                <button class="mild" ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${x("today.change_time")}</button>
                 ${q(this.snapshot).all ? this._removing === e.id ? m`<span class="small">${x("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
@@ -12530,7 +12575,8 @@ var no = class extends v {
 		let t = this.nowMs - 864e5, n = e.history.filter((e) => e.kind === "step_done" && e.by === "auto" && Date.parse(e.ts) >= t).slice(-3).reverse();
 		return n.length === 0 ? _ : m`
       <section class="sec auto soft">
-        ${this._heading(x("today.done_by_itself"), n.length)}
+        <span class="mark" aria-hidden="true">${D("robot-outline")}</span>
+        ${this._heading(x("today.done_by_itself"), n.length, "robot-outline")}
         ${n.map((t) => m`<div class="row">
             <span>${D("check")} ${t.chore_name}: ${t.step_title}</span>
             <span class="hint">${t.reason ? `${t.reason}, ` : ""}${k(t.ts, e.time_zone)}</span>
@@ -12546,7 +12592,9 @@ var no = class extends v {
       ${q(this.snapshot).all ? _ : m`<section class="card"><boopli-away .hass=${this.hass} .snapshot=${this.snapshot} .nowMs=${this.nowMs}></boopli-away></section>`}
       <div class="cols"><div class="col">
       ${(r === "skipped" || r === "in_progress") && q(this.snapshot).all ? m`<section class="card banner">
-            <span>${x("today.boopli_is_not_fully_set_up")}</span>
+            <span class="mark" aria-hidden="true">${D("rocket-launch-outline")}</span>
+            <span class="seal" aria-hidden="true">${D("rocket-launch")}</span>
+            <span class="bannertext">${x("today.boopli_is_not_fully_set_up")}</span>
             <button
               class="primary"
               @click=${() => this.dispatchEvent(new CustomEvent("open-wizard", {
@@ -12560,9 +12608,13 @@ var no = class extends v {
       ${this._renderQuestions()}
       ${t.now ? m`
             <section class=${t.now.step.on_it_until ? "card now working" : "card now"}>
-              <div class="muted small">
-                ${t.now.run.chore_name}
-                ${t.now.step.group ? m`<span class="tag">${t.now.step.group}</span>` : _}
+              <span class="mark" aria-hidden="true">${D("clipboard-check-outline")}</span>
+              <div class="now-head">
+                <span class="seal" aria-hidden="true">${D("clipboard-check-outline")}</span>
+                <div class="muted small">
+                  ${t.now.run.chore_name}
+                  ${t.now.step.group ? m`<span class="tag">${t.now.step.group}</span>` : _}
+                </div>
               </div>
               <h2>${t.now.step.title}</h2>
               ${t.now.total > 1 ? this._renderTrail(t.now) : _}
@@ -12647,13 +12699,36 @@ var no = class extends v {
 	}
 	static {
 		this.styles = [w, o`
+      :host {
+        --pane: var(--card-background-color, #1c1c1c);
+        --gap: 14px; /* the space between two cards, in both columns */
+      }
       .small {
         font-size: 17px;
       }
+      .card.quick {
+        --hue: #8793a6; /* a quiet slate: it must not compete with the step card above it */
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
       .quick h3 {
-        font-size: 18px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        font-weight: 600;
         margin-bottom: 10px;
+      }
+      .quick h3 .seal {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+      }
+      .quick h3 .seal ha-icon {
+        --mdc-icon-size: 20px;
       }
       .quick textarea {
         font: inherit;
@@ -12664,6 +12739,27 @@ var no = class extends v {
         border-radius: 10px;
         padding: 10px 12px;
         resize: vertical;
+      }
+      /* The main button of this card takes the card's own colour, not the loud pet green. */
+      .card.quick button.primary {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 62%, #fff 10%), color-mix(in srgb, var(--hue) 62%, #000));
+        border-color: color-mix(in srgb, var(--hue) 55%, transparent);
+        color: #fff;
+      }
+      .card.quick button.primary,
+      .card.quick .quick-actions button {
+        border-radius: 12px;
+      }
+      /* The second button of the quick card: dark and tinted with the card's colour, like "Change time" in the parked card. */
+      .card.quick .quick-actions button:not(.primary),
+      .card.quick .quick-actions button:not(.primary):hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 28%, transparent);
+        color: color-mix(in srgb, var(--hue) 45%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .card.quick .quick-actions button:not(.primary):hover:not(:disabled) {
+        filter: brightness(1.12);
       }
       .quick-actions {
         display: flex;
@@ -12736,44 +12832,100 @@ var no = class extends v {
         color: var(--primary-text-color);
         font-weight: 500;
       }
-      .banner {
+      /* The setup reminder: a calm sky-blue card with the same look as the others. */
+      .card.banner {
+        position: relative;
+        overflow: hidden;
+        --hue: #58a6e8;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
+        gap: 12px 14px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
-        padding: 12px 16px;
+        margin-bottom: var(--gap);
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
+      .card.banner > *:not(.mark) {
+        position: relative;
+      }
+      .card.banner .seal {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+      .bannertext {
+        flex: 1 1 200px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .card.banner button.primary {
+        min-height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
       .away-banner {
+        position: relative;
+        overflow: hidden;
+        --hue: #f2a03d;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 12px 16px;
-        margin-bottom: 16px;
+        margin-bottom: var(--gap);
         padding: 16px 18px;
-        border-radius: 16px;
-        background: var(--warning-color, #ffa600);
-        color: #1a1200;
+        border-radius: 20px;
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 30%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+        color: var(--primary-text-color);
       }
       .away-banner.planned {
-        background: transparent;
-        color: var(--primary-text-color);
-        border: 2px solid var(--warning-color, #ffa600);
+        border-style: dashed;
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 16%, var(--pane)), var(--pane) 65%);
+        box-shadow: none;
+      }
+      .away-banner > * {
+        position: relative;
+      }
+      .away-banner .mark {
+        position: absolute;
+        right: -14px;
+        top: -14px;
+        opacity: 0.1;
+        color: var(--hue);
       }
       .away-icon {
-        font-size: 40px;
-        line-height: 1;
+        flex: none;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(145deg, color-mix(in srgb, var(--hue) 100%, #fff 25%), color-mix(in srgb, var(--hue) 100%, #000 25%));
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3), 0 3px 8px rgba(0, 0, 0, 0.35);
+      }
+      .away-icon ha-icon {
+        --mdc-icon-size: 30px;
+        display: flex;
       }
       .away-text {
         flex: 1 1 220px;
         min-width: 0;
       }
       .away-title {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 700;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
+        color: color-mix(in srgb, var(--hue) 70%, var(--primary-text-color));
       }
       .away-when {
         font-size: 19px;
@@ -12783,7 +12935,7 @@ var no = class extends v {
       .away-note {
         margin-top: 4px;
         font-size: 17px;
-        opacity: 0.85;
+        color: var(--secondary-text-color);
       }
       .away-actions {
         display: flex;
@@ -12791,31 +12943,59 @@ var no = class extends v {
         gap: 8px 12px;
         align-items: center;
       }
-      .away-banner.on button.primary {
-        background: #1a1200;
+      .away-banner button.primary {
+        min-height: 44px;
+        padding: 0 20px;
+        font-size: 18px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 100%, #fff 12%), color-mix(in srgb, var(--hue) 72%, #000));
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
         color: #fff;
-        border-color: #1a1200;
-      }
-      .away-banner.on button.link {
-        color: #1a1200;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
       }
       .pet-card {
-        margin-bottom: 8px;
+        margin-bottom: var(--gap);
         padding: 0;
       }
       .pet-info {
-        margin-top: 12px;
-        padding: 0 4px 2px;
+        margin-top: var(--gap);
+        padding: 14px 16px;
         min-width: 0;
+        --hue: var(--boopli-accent, var(--primary-color, #4a90e2));
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
       }
       .pet-name {
-        font-size: 19px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .lvl {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 12px 2px 8px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #3b2a05;
+        background: linear-gradient(140deg, #fff6c2 0%, #f6cf55 22%, #b2801a 50%, #f9e286 72%, #c89322 100%);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+      .lvl ha-icon {
+        --mdc-icon-size: 16px;
+        display: flex;
       }
       .bar {
-        height: 16px;
+        height: 18px;
         border-radius: 999px;
-        background: var(--secondary-background-color);
+        background: rgba(0, 0, 0, 0.35);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         overflow: hidden;
         margin: 10px 0 6px;
       }
@@ -12827,10 +13007,6 @@ var no = class extends v {
       }
       .meals {
         margin-top: 2px;
-      }
-      .meals .textlink {
-        padding: 0 4px;
-        font-size: inherit;
       }
       /* The one-time pop-up at the end of the starter quest: calm, one button. */
       .quest {
@@ -12876,18 +13052,114 @@ var no = class extends v {
       .col {
         min-width: 0;
       }
+      /* The big step: a card in the pet's colour, with a seal and a faint symbol behind it. */
       .now,
       .empty {
-        padding: 4px 0 12px;
+        position: relative;
+        overflow: hidden;
+        --hue: var(--boopli-accent, var(--primary-color, #4a90e2));
+        padding: 18px 20px;
+        border-radius: 22px;
+        border: 1px solid color-mix(in srgb, var(--hue) 55%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 24%, var(--pane)), var(--pane) 65%);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+      }
+      /* The faint symbol in the corner behind the content: the same on every card, in the card's own colour. */
+      .now,
+      .card.quick,
+      .pet-info,
+      .sec,
+      .card.banner {
+        position: relative;
+        overflow: hidden;
+      }
+      .mark {
+        position: absolute;
+        right: -14px;
+        top: -14px;
+        color: var(--hue);
+        opacity: 0.1;
+        pointer-events: none;
+      }
+      .mark ha-icon {
+        --mdc-icon-size: 104px;
+        display: flex;
+      }
+      .now .mark {
+        right: -18px;
+        top: -18px;
+      }
+      .now .mark ha-icon {
+        --mdc-icon-size: 150px;
+      }
+      .now > *:not(.mark),
+      .card.quick > *:not(.mark),
+      .pet-info > *:not(.mark),
+      .sec > *:not(.mark) {
+        position: relative;
+      }
+      .now-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .seal {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(145deg, color-mix(in srgb, var(--hue) 100%, #fff 25%), color-mix(in srgb, var(--hue) 100%, #000 25%));
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3), 0 3px 8px rgba(0, 0, 0, 0.35);
+      }
+      .seal ha-icon {
+        --mdc-icon-size: 24px;
+        display: flex;
+      }
+      .now .track {
+        height: 22px;
+        background: rgba(0, 0, 0, 0.35);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .now .trail-fill,
+      .fill {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 55%), var(--boopli-accent, var(--primary-color));
+        box-shadow: inset 0 -3px 4px rgba(0, 0, 0, 0.2);
+      }
+      /* The Done button: the pet's colour, in the same soft, curved look as the other buttons (no thick edge underneath). */
+      .now .press.done {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%),
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000)
+        );
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        border-radius: 14px;
+        padding: 10px 48px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      .now .press.done:hover:not(:disabled) {
+        filter: brightness(1.08);
+      }
+      .now .press.done:active:not(:disabled) {
+        transform: translateY(1px);
+        border-bottom-width: 1px;
       }
       /* The cards in a column stand apart from each other, and from the list under them. */
       .now,
       .empty,
       .quick {
-        margin-bottom: 16px;
+        margin-bottom: var(--gap);
       }
-      .quick + .sec {
-        margin-top: 24px;
+      /* The questions of a chore that started with all its steps: a coral card, so it is noticed without shouting. */
+      .card.ask {
+        --hue: #ee8a6b;
+      }
+      .ask h2 {
+        font-size: 28px;
+        margin: 6px 0 4px;
       }
       .now h2 {
         font-size: 34px;
@@ -12909,15 +13181,23 @@ var no = class extends v {
         padding: 0 22px;
         font-size: 20px;
         border-radius: 14px;
-        border: 2px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
-        color: var(--boopli-accent, var(--primary-color));
-        background: transparent;
         cursor: pointer;
+      }
+      /* "On it": the same soft look as Done, but dark and tinted with the card's colour, so Done keeps the focus. */
+      .now .on-it,
+      .now .on-it:hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 30%, transparent);
+        color: color-mix(in srgb, var(--hue) 55%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .now .on-it:hover:not(:disabled) {
+        filter: brightness(1.12);
       }
       /* A step you said "On it" to: green, so it is clear it was noticed. */
       .now.working {
+        --hue: var(--success-color, #2e7d32);
         border: 2px solid var(--success-color, #2e7d32);
-        background: color-mix(in srgb, var(--success-color, #2e7d32) 12%, var(--card-background-color, transparent));
       }
       .in-progress {
         margin-top: 8px;
@@ -12926,26 +13206,61 @@ var no = class extends v {
       }
       /* The lists next to the big step: a clear heading, a visible line, calm rows. */
       .sec {
-        margin-bottom: 14px;
-        --line: color-mix(in srgb, var(--primary-text-color) 20%, transparent);
+        margin-bottom: var(--gap);
+        padding: 12px 16px 10px;
+        --hue: #4f9cf0;
+        --line: color-mix(in srgb, var(--primary-text-color) 14%, transparent);
+        border-radius: 18px;
+        border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--hue) 20%, var(--pane)), var(--pane) 62%);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+      }
+      .sec-ready {
+        --hue: #46c46f;
+      }
+      .sec-still {
+        --hue: #4f9cf0;
+      }
+      .sec-upcoming {
+        --hue: #2fc4a4;
+      }
+      .sec-parked {
+        --hue: #f2a03d;
+      }
+      .sec.auto {
+        --hue: #7f93b3;
       }
       .sec-title {
-        font-size: 18px;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        font-weight: 600;
         color: var(--primary-text-color);
-        margin: 0 0 6px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid var(--line);
+        margin: 0 0 8px;
+      }
+      .sec-title .seal {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+      }
+      .sec-title .seal ha-icon {
+        --mdc-icon-size: 20px;
       }
       .count {
-        margin-left: 8px;
-        font-size: 17px;
-        font-weight: 400;
-        color: var(--secondary-text-color);
+        margin-left: auto;
+        min-width: 26px;
+        padding: 1px 9px;
+        border-radius: 999px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary-text-color);
+        background: rgba(0, 0, 0, 0.3);
       }
       .soft .group,
       .soft .more {
-        opacity: 0.7;
+        opacity: 0.88;
       }
       .strong {
         font-weight: 500;
@@ -12963,6 +13278,29 @@ var no = class extends v {
       .part-name {
         font-size: 18px;
       }
+      /* "Start now" of a set-aside part: the pet's colour in the soft look of the Done button. */
+      .sec-parked .part-actions button.primary {
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%),
+          color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000)
+        );
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        border-radius: 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      /* "Change time": the same soft look, but in a muted tone of the card's orange, so "Start now" keeps the focus. */
+      .sec-parked .part-actions button.mild,
+      .sec-parked .part-actions button.mild:hover:not(:disabled) {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue) 17%, var(--pane)), color-mix(in srgb, var(--hue) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue) 26%, transparent);
+        border-radius: 12px;
+        color: color-mix(in srgb, var(--hue) 32%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .sec-parked .part-actions button.mild:hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
       .part-actions,
       .park-buttons,
       .park-pick {
@@ -12972,11 +13310,42 @@ var no = class extends v {
         gap: 8px;
         margin-top: 8px;
       }
+      /* "When should it come back?": a darker panel inside its card, with the card's colour (--hue) in its buttons. */
       .park-ask {
         margin-top: 14px;
         padding: 12px 14px;
-        border: 1px solid var(--divider-color);
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 30%, transparent);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--hue, #8793a6) 8%, rgba(0, 0, 0, 0.28));
+      }
+      .park-ask button:not(.link):not(.primary),
+      .park-ask button:not(.link):not(.primary):hover:not(:disabled) {
+        min-height: 40px;
         border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--hue, #8793a6) 17%, var(--pane)), color-mix(in srgb, var(--hue, #8793a6) 8%, var(--pane)));
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 28%, transparent);
+        color: color-mix(in srgb, var(--hue, #8793a6) 40%, var(--primary-text-color));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      .park-ask button:not(.link):not(.primary):hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
+      .park-ask button.primary {
+        min-height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 100%, #fff 12%), color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 74%, #000));
+        border: 1px solid color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 55%, transparent);
+        color: var(--boopli-accent-ink, #fff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+      .park-ask input {
+        font: inherit;
+        color: var(--primary-text-color);
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--hue, #8793a6) 30%, transparent);
+        border-radius: 10px;
+        padding: 8px 10px;
+        color-scheme: dark;
       }
       .later-btn,
       .link {
@@ -13012,12 +13381,51 @@ var no = class extends v {
       .row {
         display: flex;
         justify-content: space-between;
+        align-items: center; /* the middle of the symbol, the title and the time on one line */
         gap: 12px;
         font-size: 17px;
         padding: 2px 0 2px 12px;
       }
       .group > .row:only-child {
         padding-left: 0;
+      }
+      .rowmain {
+        display: flex;
+        align-items: center;
+        gap: 2px; /* the chevrons sit right next to the title */
+        min-width: 0;
+      }
+      /* "Start now" on a waiting step: just two chevrons in the pet's colour (the words are the tooltip). */
+      .row .go {
+        flex: none;
+        width: 22px;
+        height: 28px;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: none;
+        color: var(--boopli-accent, var(--primary-color));
+        /* The letters of this font sit about 2 px below the middle of their line box (room for tall letters above),
+           the symmetric chevrons do not: lower them so both share one visual middle. */
+        position: relative;
+        top: 2px;
+      }
+      .go-space {
+        flex: none;
+        width: 22px;
+      }
+      .row .go ha-icon {
+        --mdc-icon-size: 26px;
+        display: flex;
+      }
+      .row .go:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--boopli-accent, var(--primary-color)) 22%, transparent);
+      }
+      .row .go:active:not(:disabled) {
+        transform: translateX(1px);
       }
       .hint {
         color: var(--secondary-text-color);
