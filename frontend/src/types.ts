@@ -329,6 +329,22 @@ export interface Pet {
   items: ShopItem[];
   can_buy: boolean; // something new is unlocked and affordable (food does not count)
   quest_popup: boolean; // the one-time pop-up at the end of the starter quest is due
+  hungry?: boolean; // nothing eaten yet today (the pet shows it; not while away)
+  news?: PetNews; // what the news pop-up still has to show
+  badges?: BadgeOverview; // what the badges page shows
+}
+
+/** The achievement series (targets per tier), the one-offs, and how far the household is (stat -> count). */
+export interface BadgeOverview {
+  series: { id: string; stat: string; targets: number[] }[];
+  singles: { id: string; stat: string }[];
+  counts: Record<string, number>;
+}
+
+/** What the news pop-up has not shown yet: the level ups after `celebrated_level`, and new achievements. */
+export interface PetNews {
+  celebrated_level: number;
+  achievements: string[];
 }
 
 /** Away mode: Boopli rests for a few days. */

@@ -40,6 +40,7 @@ EXPECTED = {
     "shop_place": ACCESS_USE,
     "feed": ACCESS_USE,
     "quest_seen": ACCESS_USE,
+    "news_seen": ACCESS_USE,
     "part_park": ACCESS_USE,
     "part_time": ACCESS_USE,
     "step_complete": ACCESS_USE,

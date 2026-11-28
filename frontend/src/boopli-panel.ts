@@ -4,6 +4,7 @@ import "./boopli-today";
 import "./boopli-chores";
 import "./boopli-settings";
 import "./boopli-home";
+import "./boopli-badges";
 import "./boopli-wizard";
 import "./boopli-breakdown";
 import "./boopli-wall";
@@ -23,11 +24,12 @@ import { setLanguage, t } from "./i18n";
 // The slime logo in the header: a file next to the bundle (frontend/public), served like the sounds.
 const LOGO = new URL("./slime.png", import.meta.url).href;
 
-type Tab = "today" | "chores" | "home" | "settings";
+type Tab = "today" | "chores" | "badges" | "home" | "settings";
 
 const TAB_LABELS = (): Record<Tab, string> => ({
   today: t("wall_tile_calendar.today"),
   chores: t("common.chores"),
+  badges: t("badges.title"),
   home: t("panel.my_home"),
   settings: t("common.settings"),
 });
@@ -169,7 +171,7 @@ export class BoopliPanel extends LitElement {
   /** The tabs this person may open: Home shows the notes (editing them is level 2), Settings is level 3. */
   private _tabs(): Tab[] {
     const can = accessOf(this._snapshot);
-    return (Object.keys(TAB_LABELS()) as Tab[]).filter((tab) => tab === "today" || tab === "chores" || (tab === "home" ? can.notes : can.all));
+    return (Object.keys(TAB_LABELS()) as Tab[]).filter((tab) => tab === "today" || tab === "chores" || tab === "badges" || (tab === "home" ? can.notes : can.all));
   }
 
   /**
@@ -446,6 +448,7 @@ export class BoopliPanel extends LitElement {
     const unsaved: Record<Tab, boolean> = {
       today: false,
       chores: this._dirty.chore,
+      badges: false,
       home: this._dirty.home,
       settings: this._dirty.settings,
     };
@@ -515,9 +518,11 @@ export class BoopliPanel extends LitElement {
                       .openRequest=${this._choresRequest}
                       @request-handled=${() => (this._choresRequest = null)}
                     ></boopli-chores>`
-                  : tab === "home"
-                    ? html`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>`
-                    : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
+                  : tab === "badges"
+                    ? html`<boopli-badges .snapshot=${this._snapshot}></boopli-badges>`
+                    : tab === "home"
+                      ? html`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>`
+                      : html`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>
       ${this._renderConfirm()}
     `;

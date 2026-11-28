@@ -322,6 +322,14 @@ class BoopliManager:
                 for i in items
             ),
             "quest_popup": level >= engine.LEVEL_QUEST and not self.progress.quest_seen,
+            # nothing to eat today yet (shown by the pet; away mode leaves it as it was)
+            "hungry": not away and engine.meals_today(self.progress, now, self.tz) == 0,
+            "badges": engine.badge_overview(self.progress),
+            # what the news pop-up still has to show: level ups since `celebrated_level`, and new achievements
+            "news": {
+                "celebrated_level": self.progress.celebrated_level,
+                "achievements": engine.news_unseen(self.progress),
+            },
         }
 
     # --- access levels ---------------------------------------------------
@@ -748,6 +756,11 @@ class BoopliManager:
         """The one-time pop-up at the end of the starter quest was shown."""
         if not self.progress.quest_seen:
             self.progress.quest_seen = True
+            self._shop_change()
+
+    def news_seen(self, level: int, achievements: list[str]) -> None:
+        """The news pop-up showed the level ups up to `level` and these achievements."""
+        if engine.mark_news_seen(self.progress, level, achievements):
             self._shop_change()
 
     def _award(
@@ -1195,6 +1208,10 @@ class BoopliManager:
         error = engine.validate_setup(setup)
         if error:
             raise BoopliError(error)
+        if setup.status == engine.SETUP_DONE and self.setup.status != engine.SETUP_DONE:
+            now = dt_util.utcnow()
+            engine.count_stat(self.progress, engine.STAT_SETUP_DONE)
+            self._announce(self._reach_achievements(now))
         self.setup = setup
         self._save()
         self._notify()
@@ -1226,8 +1243,16 @@ class BoopliManager:
                 engine.init_schedule(chore, now, self.tz)
             # A run in progress keeps its own snapshot of the steps.
         self.chores[chore.id] = chore
+        if existing is None:
+            self._count_chore_created()
         self._tick()
         return chore
+
+    def _count_chore_created(self) -> None:
+        """A chore the household made itself (by the editor, the assistant or a quick task) counts toward its achievements."""
+        engine.count_stat(self.progress, engine.STAT_CHORE_CREATED)
+        self._announce(self._reach_achievements(dt_util.utcnow()))
+        self._save()
 
     def delete_chore(self, chore_id: str) -> None:
         """Delete a chore and any run in progress."""
@@ -1512,6 +1537,7 @@ class BoopliManager:
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
+        self._count_chore_created()
         return self.start_chore(chore.id)
 
     # --- AI help: splitting a task into small steps -----------------------------
@@ -2351,6 +2377,7 @@ class BoopliManager:
         if error:
             raise BoopliError(error)
         self.chores[chore.id] = chore
+        self._count_chore_created()
         return self.start_chore(chore.id)
 
     async def async_test_channel(self, data: dict[str, Any]) -> dict[str, Any]:

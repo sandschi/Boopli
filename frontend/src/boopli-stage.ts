@@ -35,6 +35,7 @@ export class BoopliStage extends LitElement {
     mood: { type: String },
     level: { type: Number },
     away: { type: Boolean },
+    hungry: { type: Boolean },
     activity: { type: String },
     moment: { type: String },
     momentSeq: { type: Number },
@@ -54,6 +55,7 @@ export class BoopliStage extends LitElement {
   declare mood: Mood;
   declare level: number;
   declare away: boolean;
+  declare hungry: boolean; // nothing eaten yet today (the pet shows it)
   declare activity: Activity;
   declare moment: Moment;
   declare momentSeq: number;
@@ -75,6 +77,7 @@ export class BoopliStage extends LitElement {
     this.mood = "content";
     this.level = 1;
     this.away = false;
+    this.hungry = false;
     this.activity = "";
     this.moment = "";
     this.momentSeq = 0;
@@ -197,6 +200,7 @@ export class BoopliStage extends LitElement {
           .mood=${mood}
           .level=${this.level}
           .away=${this.away}
+          .hungry=${this.hungry}
           .activity=${activity}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}

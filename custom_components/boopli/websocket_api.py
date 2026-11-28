@@ -66,6 +66,7 @@ def async_register_websocket_commands(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_shop_place)
     websocket_api.async_register_command(hass, ws_feed)
     websocket_api.async_register_command(hass, ws_quest_seen)
+    websocket_api.async_register_command(hass, ws_news_seen)
     websocket_api.async_register_command(hass, ws_part_park)
     websocket_api.async_register_command(hass, ws_part_time)
     websocket_api.async_register_command(hass, ws_step_complete)
@@ -938,6 +939,27 @@ def ws_quest_seen(
         _not_loaded(connection, msg)
         return
     manager.quest_seen()
+    connection.send_result(msg["id"])
+
+
+@_access(ACCESS_USE)
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "boopli/news_seen",
+        vol.Required("level"): vol.All(int, vol.Range(min=1)),
+        vol.Required("achievements"): [str],
+    }
+)
+@callback
+def ws_news_seen(
+    hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """The news pop-up showed the level ups up to `level` and these achievements (for the whole household)."""
+    manager = _manager(hass)
+    if manager is None:
+        _not_loaded(connection, msg)
+        return
+    manager.news_seen(msg["level"], msg["achievements"])
     connection.send_result(msg["id"])
 
 

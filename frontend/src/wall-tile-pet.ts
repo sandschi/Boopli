@@ -19,6 +19,7 @@ export class WallTilePet extends WallTile {
         .owned=${pet.owned ?? []}
         .placed=${pet.placed ?? {}}
         .away=${pet.away ?? false}
+        .hungry=${pet.hungry ?? false}
         .activity=${working && !pet.away ? "housework" : ""}
       ></boopli-stage>
       <div class="normal name">${pet.name} <span class="muted">${t("today.level", { level: pet.level })}</span></div>

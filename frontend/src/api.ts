@@ -449,6 +449,11 @@ export function questSeen(hass: Hass): Promise<void> {
   return hass.callWS({ type: "boopli/quest_seen" });
 }
 
+/** The news pop-up showed the level ups up to `level` and these achievements. */
+export function newsSeen(hass: Hass, level: number, achievements: string[]): Promise<void> {
+  return hass.callWS({ type: "boopli/news_seen", level, achievements });
+}
+
 /** Store the Claude routine's token (empty removes it). It is never sent back. */
 export function claudeToken(hass: Hass, token: string): Promise<ClaudeStatus> {
   return hass.callWS({ type: "boopli/claude_token", token });
