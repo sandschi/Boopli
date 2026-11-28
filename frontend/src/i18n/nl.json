@@ -801,6 +801,10 @@
     "still_to_do_today": "Vandaag nog te doen",
     "set_aside_for_later": "Voor later",
     "done_by_itself": "Vanzelf klaar",
+    "done_today": "Vandaag afgerond",
+    "and_n_more": "en nog {count}",
+    "start_step_now": "Nu starten: {step}",
+    "done_step": "Klaar: {step}",
     "enjoy_the_quiet_what_is_coming": "Geniet van de rust. Hieronder zie je wat eraan komt.",
     "add_your_first_chore_in_the": "Voeg je eerste taak toe onder “Taken”.",
     "level": "· Level {level}",
@@ -833,7 +837,6 @@
     "waiting_until_you_start_it": "wacht tot je begint",
     "waits_for_something_to_happen": "wacht tot er iets gebeurt",
     "blubs_gained": "+{blubs} Blubs",
-    "feed": "Voeren",
     "quest_title": "Eerste missie voltooid",
     "quest_text": "Je hebt de eerste missie afgerond. Nu begint het avontuur. Vanaf hier duurt elk level wat langer en blijft het haalbaar.",
     "quest_ok": "Verder"

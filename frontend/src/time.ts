@@ -57,7 +57,9 @@ export function describeWhen(iso: string, nowMs: number, tz: string): string {
 
 /** Whether an ISO moment falls on the same calendar day as `nowMs`. */
 export function isToday(iso: string, nowMs: number, tz: string): boolean {
-  return dayKey(new Date(iso), tz) === dayKey(new Date(nowMs), tz);
+  const when = new Date(iso);
+  if (Number.isNaN(when.getTime())) return false; // an unreadable time (a damaged backup) must not break the page
+  return dayKey(when, tz) === dayKey(new Date(nowMs), tz);
 }
 
 /** "5 min", "2h", "2h 15m" for a length of time in minutes. */
