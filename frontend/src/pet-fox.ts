@@ -1,5 +1,5 @@
 import { css, svg, type SVGTemplateResult } from "lit";
-import { extras } from "./pet-kit";
+import { extras, scarfArt } from "./pet-kit";
 import { momentArt, workArms, workBehind, workFront, type Activity, type Hands, type Moment } from "./pet-work";
 import type { Mood } from "./types";
 
@@ -9,8 +9,9 @@ import type { Mood } from "./types";
  */
 
 const INK = "#3B2A3F";
-const ORANGE = "#F28A30";
-const ORANGE_DARK = "#D96E1B";
+const ORANGE = "var(--fur, #F28A30)"; // --fur: the fur colour the pet wears (see furStyle in pet-kit)
+const ORANGE_DARK = "var(--fur-dark, #D96E1B)";
+const NECK = { x: 100, y: 118, w: 56 }; // where a scarf goes
 const CREAM = "#F6EDD6";
 const SOCK = "#4B2E3A";
 const TONGUE = "#FF6B8A";
@@ -92,6 +93,8 @@ export interface FoxOptions {
   activity?: Activity;
   moment?: Moment;
   text?: string;
+  /** The colour of a scarf the pet wears (none = no scarf). */
+  neck?: string;
 }
 
 export function foxSvg(mood: Mood, options: FoxOptions = {}): SVGTemplateResult {
@@ -128,6 +131,7 @@ export function foxSvg(mood: Mood, options: FoxOptions = {}): SVGTemplateResult 
       ${activity ? svg`` : svg`<path d="M97 144 V166 M103 144 V166" stroke=${INK} stroke-width="3" stroke-linecap="round"/>`}
       <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${SOCK} stroke=${INK} stroke-width="4"/>
       <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${SOCK} stroke=${INK} stroke-width="4"/>
+      ${scarfArt(options.neck, NECK)}
       <path d=${HEAD} fill=${ORANGE}/>
       <g clip-path="url(#fox-head-clip)">
         <path d=${MASK} fill=${CREAM}/>

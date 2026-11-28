@@ -434,8 +434,11 @@ export function shopBuy(hass: Hass, item: string): Promise<void> {
   return hass.callWS({ type: "boopli/shop_buy", item });
 }
 
-/** Put an owned colour or pattern on the wall or the floor of the room ("" empties the place). */
-export function shopPlace(hass: Hass, place: "wall" | "floor", item: string): Promise<void> {
+/** The places an owned item can be put: the room's wall and floor, and the pet's fur and neck. */
+export type Place = "wall" | "floor" | "fur" | "neck";
+
+/** Put an owned item in a place ("" empties the place). */
+export function shopPlace(hass: Hass, place: Place, item: string): Promise<void> {
   return hass.callWS({ type: "boopli/shop_place", place, item });
 }
 

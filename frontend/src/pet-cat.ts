@@ -1,5 +1,5 @@
 import { css, svg, type SVGTemplateResult } from "lit";
-import { extras } from "./pet-kit";
+import { extras, scarfArt } from "./pet-kit";
 import { momentArt, workArms, workBehind, workFront, type Activity, type Hands, type Moment } from "./pet-work";
 import type { Mood } from "./types";
 
@@ -9,18 +9,20 @@ import type { Mood } from "./types";
  * has a light violet rim line. Built on the same kit as the other pets.
  */
 
-const RIM = "#8C78CC"; // the light outline
+const RIM = "var(--fur-rim, #8C78CC)"; // the light outline
 const DARK = "#1B1133";
-const BODY_TOP = "#2F2054";
-const BODY_BOTTOM = "#170E2E";
-const VEST = "#3C2C70";
+const BODY_TOP = "var(--fur, #2F2054)"; // --fur: the fur colour the pet wears (see furStyle in pet-kit)
+const BODY_BOTTOM = "var(--fur-dark, #170E2E)";
+const VEST = "var(--fur-vest, #3C2C70)";
+const NECK = { x: 100, y: 121, w: 52 }; // where a scarf goes
 const EYE = "#C4B6F0";
+const EYE_LINE = "var(--fur-line, #C4B6F0)"; // the eye arcs and brows: light on the dark coat, dark when a light fur colour is worn
 const NOSE = "#D69AE8";
 const BOW = "#1F9C7C";
 const BOW_DARK = "#0E5C48";
 
 const HANDS: Hands = {
-  color: "#2A1B4A",
+  color: "var(--fur-deep, #2A1B4A)",
   ink: RIM,
   thick: 1.4,
   shoulders: { l: [80, 130], r: [120, 130] },
@@ -37,21 +39,21 @@ const TAIL = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
 function eyes(mood: Mood): SVGTemplateResult {
   switch (mood) {
     case "happy":
-      return svg`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "sleepy":
-      return svg`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "hibernating":
-      return svg`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${EYE} stroke-width="4.5" stroke-linecap="round"/>`;
+      return svg`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${EYE_LINE} stroke-width="4.5" stroke-linecap="round"/>`;
     case "sad":
       return svg`<g class="eyes">
           <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${EYE}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${DARK}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
           <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${EYE}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${DARK}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
         </g>
-        <path d="M69 69 L90 63" stroke=${EYE} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M131 69 L110 63" stroke=${EYE} stroke-width="3.4" stroke-linecap="round"/>`;
+        <path d="M69 69 L90 63" stroke=${EYE_LINE} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M131 69 L110 63" stroke=${EYE_LINE} stroke-width="3.4" stroke-linecap="round"/>`;
     default:
       return svg`<g class="eyes look">
         <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${EYE}/><circle cx="80" cy="80" r="5" fill=${DARK}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
@@ -93,6 +95,8 @@ export interface CatOptions {
   activity?: Activity;
   moment?: Moment;
   text?: string;
+  /** The colour of a scarf the pet wears (none = no scarf; with a scarf the bow tie is left off). */
+  neck?: string;
 }
 
 export function catSvg(mood: Mood, options: CatOptions = {}): SVGTemplateResult {
@@ -127,15 +131,16 @@ export function catSvg(mood: Mood, options: CatOptions = {}): SVGTemplateResult 
       <path d=${BODY} fill="none" stroke=${RIM} stroke-width="3.5" stroke-linejoin="round"/>
       <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${VEST} stroke=${RIM} stroke-width="3.5"/>
       <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${VEST} stroke=${RIM} stroke-width="3.5"/>
+      ${scarfArt(options.neck, NECK)}
       <path d=${HEAD} fill="url(#cat-fill)" stroke=${RIM} stroke-width="3.5" stroke-linejoin="round"/>
       <path d="M62 70 C62 60 70 54 82 52" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.14"/>
       ${whiskers()} ${eyes(mood)}
       <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${NOSE} stroke=${NOSE} stroke-width="2" stroke-linejoin="round"/>
       ${moment === "wake" ? svg`<path d="M100 95 V98" stroke=${EYE} stroke-width="2.8" stroke-linecap="round"/>` : mouth(mood)}
       ${sleepBubble(mood)}
-      <g><path d="M100 121 L80 112 L80 130 Z" fill=${BOW} stroke=${BOW_DARK} stroke-width="2.4" stroke-linejoin="round"/>
+      ${options.neck ? svg`` : svg`<g><path d="M100 121 L80 112 L80 130 Z" fill=${BOW} stroke=${BOW_DARK} stroke-width="2.4" stroke-linejoin="round"/>
         <path d="M100 121 L120 112 L120 130 Z" fill=${BOW} stroke=${BOW_DARK} stroke-width="2.4" stroke-linejoin="round"/>
-        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${BOW_DARK} stroke-width="2.4"/></g>
+        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${BOW_DARK} stroke-width="2.4"/></g>`}
     </g>
     ${workFront(activity, HANDS)}
     ${activity ? svg`` : extras(mood, { z: [10, -30], tear: [-10, -62] })}

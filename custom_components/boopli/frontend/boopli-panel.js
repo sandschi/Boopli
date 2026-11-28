@@ -29,11 +29,11 @@ var e = globalThis, t = e.ShadowRoot && (e.ShadyCSS === void 0 || e.ShadyCSS.nat
 	let t = "";
 	for (let n of e.cssRules) t += n.cssText;
 	return a(t);
-})(e) : e, { is: l, defineProperty: u, getOwnPropertyDescriptor: d, getOwnPropertyNames: ee, getOwnPropertySymbols: te, getPrototypeOf: ne } = Object, re = globalThis, ie = re.trustedTypes, ae = ie ? ie.emptyScript : "", oe = re.reactiveElementPolyfillSupport, se = (e, t) => e, ce = {
+})(e) : e, { is: l, defineProperty: u, getOwnPropertyDescriptor: d, getOwnPropertyNames: f, getOwnPropertySymbols: ee, getPrototypeOf: te } = Object, ne = globalThis, re = ne.trustedTypes, ie = re ? re.emptyScript : "", ae = ne.reactiveElementPolyfillSupport, oe = (e, t) => e, se = {
 	toAttribute(e, t) {
 		switch (t) {
 			case Boolean:
-				e = e ? ae : null;
+				e = e ? ie : null;
 				break;
 			case Object:
 			case Array: e = e == null ? e : JSON.stringify(e);
@@ -58,23 +58,23 @@ var e = globalThis, t = e.ShadowRoot && (e.ShadyCSS === void 0 || e.ShadyCSS.nat
 		}
 		return n;
 	}
-}, le = (e, t) => !l(e, t), ue = {
+}, ce = (e, t) => !l(e, t), le = {
 	attribute: !0,
 	type: String,
-	converter: ce,
+	converter: se,
 	reflect: !1,
 	useDefault: !1,
-	hasChanged: le
+	hasChanged: ce
 };
-Symbol.metadata ??= Symbol("metadata"), re.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
-var de = class extends HTMLElement {
+Symbol.metadata ??= Symbol("metadata"), ne.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+var ue = class extends HTMLElement {
 	static addInitializer(e) {
 		this._$Ei(), (this.l ??= []).push(e);
 	}
 	static get observedAttributes() {
 		return this.finalize(), this._$Eh && [...this._$Eh.keys()];
 	}
-	static createProperty(e, t = ue) {
+	static createProperty(e, t = le) {
 		if (t.state && (t.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(e) && ((t = Object.create(t)).wrapped = !0), this.elementProperties.set(e, t), !t.noAccessor) {
 			let n = Symbol(), r = this.getPropertyDescriptor(e, n, t);
 			r !== void 0 && u(this.prototype, e, r);
@@ -100,17 +100,17 @@ var de = class extends HTMLElement {
 		};
 	}
 	static getPropertyOptions(e) {
-		return this.elementProperties.get(e) ?? ue;
+		return this.elementProperties.get(e) ?? le;
 	}
 	static _$Ei() {
-		if (this.hasOwnProperty(se("elementProperties"))) return;
-		let e = ne(this);
+		if (this.hasOwnProperty(oe("elementProperties"))) return;
+		let e = te(this);
 		e.finalize(), e.l !== void 0 && (this.l = [...e.l]), this.elementProperties = new Map(e.elementProperties);
 	}
 	static finalize() {
-		if (this.hasOwnProperty(se("finalized"))) return;
-		if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(se("properties"))) {
-			let e = this.properties, t = [...ee(e), ...te(e)];
+		if (this.hasOwnProperty(oe("finalized"))) return;
+		if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(oe("properties"))) {
+			let e = this.properties, t = [...f(e), ...ee(e)];
 			for (let n of t) this.createProperty(n, e[n]);
 		}
 		let e = this[Symbol.metadata];
@@ -171,14 +171,14 @@ var de = class extends HTMLElement {
 	_$ET(e, t) {
 		let n = this.constructor.elementProperties.get(e), r = this.constructor._$Eu(e, n);
 		if (r !== void 0 && !0 === n.reflect) {
-			let i = (n.converter?.toAttribute === void 0 ? ce : n.converter).toAttribute(t, n.type);
+			let i = (n.converter?.toAttribute === void 0 ? se : n.converter).toAttribute(t, n.type);
 			this._$Em = e, i == null ? this.removeAttribute(r) : this.setAttribute(r, i), this._$Em = null;
 		}
 	}
 	_$AK(e, t) {
 		let n = this.constructor, r = n._$Eh.get(e);
 		if (r !== void 0 && this._$Em !== r) {
-			let e = n.getPropertyOptions(r), i = typeof e.converter == "function" ? { fromAttribute: e.converter } : e.converter?.fromAttribute === void 0 ? ce : e.converter;
+			let e = n.getPropertyOptions(r), i = typeof e.converter == "function" ? { fromAttribute: e.converter } : e.converter?.fromAttribute === void 0 ? se : e.converter;
 			this._$Em = r;
 			let a = i.fromAttribute(t, e.type);
 			this[r] = a ?? this._$Ej?.get(r) ?? a, this._$Em = null;
@@ -187,7 +187,7 @@ var de = class extends HTMLElement {
 	requestUpdate(e, t, n, r = !1, i) {
 		if (e !== void 0) {
 			let a = this.constructor;
-			if (!1 === r && (i = this[e]), n ??= a.getPropertyOptions(e), !((n.hasChanged ?? le)(i, t) || n.useDefault && n.reflect && i === this._$Ej?.get(e) && !this.hasAttribute(a._$Eu(e, n)))) return;
+			if (!1 === r && (i = this[e]), n ??= a.getPropertyOptions(e), !((n.hasChanged ?? ce)(i, t) || n.useDefault && n.reflect && i === this._$Ej?.get(e) && !this.hasAttribute(a._$Eu(e, n)))) return;
 			this.C(e, t, n);
 		}
 		!1 === this.isUpdatePending && (this._$ES = this._$EP());
@@ -251,88 +251,88 @@ var de = class extends HTMLElement {
 	updated(e) {}
 	firstUpdated(e) {}
 };
-de.elementStyles = [], de.shadowRootOptions = { mode: "open" }, de[se("elementProperties")] = /* @__PURE__ */ new Map(), de[se("finalized")] = /* @__PURE__ */ new Map(), oe?.({ ReactiveElement: de }), (re.reactiveElementVersions ??= []).push("2.1.2");
+ue.elementStyles = [], ue.shadowRootOptions = { mode: "open" }, ue[oe("elementProperties")] = /* @__PURE__ */ new Map(), ue[oe("finalized")] = /* @__PURE__ */ new Map(), ae?.({ ReactiveElement: ue }), (ne.reactiveElementVersions ??= []).push("2.1.2");
 // node_modules/lit-html/lit-html.js
-var fe = globalThis, pe = (e) => e, me = fe.trustedTypes, he = me ? me.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, ge = "$lit$", f = `lit$${Math.random().toFixed(9).slice(2)}$`, _e = "?" + f, ve = `<${_e}>`, ye = document, be = () => ye.createComment(""), xe = (e) => e === null || typeof e != "object" && typeof e != "function", Se = Array.isArray, Ce = (e) => Se(e) || typeof e?.[Symbol.iterator] == "function", we = "[ 	\n\f\r]", Te = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ee = /-->/g, De = />/g, Oe = RegExp(`>|${we}(?:([^\\s"'>=/]+)(${we}*=${we}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ke = /'/g, Ae = /"/g, je = /^(?:script|style|textarea|title)$/i, Me = (e) => (t, ...n) => ({
+var de = globalThis, fe = (e) => e, pe = de.trustedTypes, me = pe ? pe.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, he = "$lit$", p = `lit$${Math.random().toFixed(9).slice(2)}$`, ge = "?" + p, _e = `<${ge}>`, ve = document, ye = () => ve.createComment(""), be = (e) => e === null || typeof e != "object" && typeof e != "function", xe = Array.isArray, Se = (e) => xe(e) || typeof e?.[Symbol.iterator] == "function", Ce = "[ 	\n\f\r]", we = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Te = /-->/g, Ee = />/g, De = RegExp(`>|${Ce}(?:([^\\s"'>=/]+)(${Ce}*=${Ce}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), Oe = /'/g, ke = /"/g, Ae = /^(?:script|style|textarea|title)$/i, je = (e) => (t, ...n) => ({
 	_$litType$: e,
 	strings: t,
 	values: n
-}), p = Me(1), m = Me(2), h = Symbol.for("lit-noChange"), g = Symbol.for("lit-nothing"), Ne = /* @__PURE__ */ new WeakMap(), Pe = ye.createTreeWalker(ye, 129);
-function Fe(e, t) {
-	if (!Se(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
-	return he === void 0 ? t : he.createHTML(t);
+}), m = je(1), h = je(2), g = Symbol.for("lit-noChange"), _ = Symbol.for("lit-nothing"), Me = /* @__PURE__ */ new WeakMap(), Ne = ve.createTreeWalker(ve, 129);
+function Pe(e, t) {
+	if (!xe(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	return me === void 0 ? t : me.createHTML(t);
 }
-var Ie = (e, t) => {
-	let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = Te;
+var Fe = (e, t) => {
+	let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = we;
 	for (let t = 0; t < n; t++) {
 		let n = e[t], s, c, l = -1, u = 0;
-		for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === Te ? c[1] === "!--" ? o = Ee : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = Oe) : (je.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = Oe) : o = De : o === Oe ? c[0] === ">" ? (o = i ?? Te, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? Oe : c[3] === "\"" ? Ae : ke) : o === Ae || o === ke ? o = Oe : o === Ee || o === De ? o = Te : (o = Oe, i = void 0);
-		let d = o === Oe && e[t + 1].startsWith("/>") ? " " : "";
-		a += o === Te ? n + ve : l >= 0 ? (r.push(s), n.slice(0, l) + ge + n.slice(l) + f + d) : n + f + (l === -2 ? t : d);
+		for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === we ? c[1] === "!--" ? o = Te : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = De) : (Ae.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = De) : o = Ee : o === De ? c[0] === ">" ? (o = i ?? we, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? De : c[3] === "\"" ? ke : Oe) : o === ke || o === Oe ? o = De : o === Te || o === Ee ? o = we : (o = De, i = void 0);
+		let d = o === De && e[t + 1].startsWith("/>") ? " " : "";
+		a += o === we ? n + _e : l >= 0 ? (r.push(s), n.slice(0, l) + he + n.slice(l) + p + d) : n + p + (l === -2 ? t : d);
 	}
-	return [Fe(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
-}, Le = class e {
+	return [Pe(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
+}, Ie = class e {
 	constructor({ strings: t, _$litType$: n }, r) {
 		let i;
 		this.parts = [];
-		let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = Ie(t, n);
-		if (this.el = e.createElement(l, r), Pe.currentNode = this.el.content, n === 2 || n === 3) {
+		let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = Fe(t, n);
+		if (this.el = e.createElement(l, r), Ne.currentNode = this.el.content, n === 2 || n === 3) {
 			let e = this.el.content.firstChild;
 			e.replaceWith(...e.childNodes);
 		}
-		for (; (i = Pe.nextNode()) !== null && c.length < s;) {
+		for (; (i = Ne.nextNode()) !== null && c.length < s;) {
 			if (i.nodeType === 1) {
-				if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(ge)) {
-					let t = u[o++], n = i.getAttribute(e).split(f), r = /([.?@])?(.*)/.exec(t);
+				if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(he)) {
+					let t = u[o++], n = i.getAttribute(e).split(p), r = /([.?@])?(.*)/.exec(t);
 					c.push({
 						type: 1,
 						index: a,
 						name: r[2],
 						strings: n,
-						ctor: r[1] === "." ? He : r[1] === "?" ? Ue : r[1] === "@" ? We : Ve
+						ctor: r[1] === "." ? Ve : r[1] === "?" ? He : r[1] === "@" ? Ue : Be
 					}), i.removeAttribute(e);
-				} else e.startsWith(f) && (c.push({
+				} else e.startsWith(p) && (c.push({
 					type: 6,
 					index: a
 				}), i.removeAttribute(e));
-				if (je.test(i.tagName)) {
-					let e = i.textContent.split(f), t = e.length - 1;
+				if (Ae.test(i.tagName)) {
+					let e = i.textContent.split(p), t = e.length - 1;
 					if (t > 0) {
-						i.textContent = me ? me.emptyScript : "";
-						for (let n = 0; n < t; n++) i.append(e[n], be()), Pe.nextNode(), c.push({
+						i.textContent = pe ? pe.emptyScript : "";
+						for (let n = 0; n < t; n++) i.append(e[n], ye()), Ne.nextNode(), c.push({
 							type: 2,
 							index: ++a
 						});
-						i.append(e[t], be());
+						i.append(e[t], ye());
 					}
 				}
 			} else if (i.nodeType === 8) {
-				if (i.data === _e) c.push({
+				if (i.data === ge) c.push({
 					type: 2,
 					index: a
 				});
 				else {
 					let e = -1;
-					for (; (e = i.data.indexOf(f, e + 1)) !== -1;) c.push({
+					for (; (e = i.data.indexOf(p, e + 1)) !== -1;) c.push({
 						type: 7,
 						index: a
-					}), e += f.length - 1;
+					}), e += p.length - 1;
 				}
 			}
 			a++;
 		}
 	}
 	static createElement(e, t) {
-		let n = ye.createElement("template");
+		let n = ve.createElement("template");
 		return n.innerHTML = e, n;
 	}
 };
-function Re(e, t, n = e, r) {
-	if (t === h) return t;
-	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = xe(t) ? void 0 : t._$litDirective$;
-	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = Re(e, i._$AS(e, t.values), i, r)), t;
+function Le(e, t, n = e, r) {
+	if (t === g) return t;
+	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = be(t) ? void 0 : t._$litDirective$;
+	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = Le(e, i._$AS(e, t.values), i, r)), t;
 }
-var ze = class {
+var Re = class {
 	constructor(e, t) {
 		this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = t;
 	}
@@ -343,28 +343,28 @@ var ze = class {
 		return this._$AM._$AU;
 	}
 	u(e) {
-		let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? ye).importNode(t, !0);
-		Pe.currentNode = r;
-		let i = Pe.nextNode(), a = 0, o = 0, s = n[0];
+		let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? ve).importNode(t, !0);
+		Ne.currentNode = r;
+		let i = Ne.nextNode(), a = 0, o = 0, s = n[0];
 		for (; s !== void 0;) {
 			if (a === s.index) {
 				let t;
-				s.type === 2 ? t = new Be(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Ge(i, this, e)), this._$AV.push(t), s = n[++o];
+				s.type === 2 ? t = new ze(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new We(i, this, e)), this._$AV.push(t), s = n[++o];
 			}
-			a !== s?.index && (i = Pe.nextNode(), a++);
+			a !== s?.index && (i = Ne.nextNode(), a++);
 		}
-		return Pe.currentNode = ye, r;
+		return Ne.currentNode = ve, r;
 	}
 	p(e) {
 		let t = 0;
 		for (let n of this._$AV) n !== void 0 && (n.strings === void 0 ? n._$AI(e[t]) : (n._$AI(e, n, t), t += n.strings.length - 2)), t++;
 	}
-}, Be = class e {
+}, ze = class e {
 	get _$AU() {
 		return this._$AM?._$AU ?? this._$Cv;
 	}
 	constructor(e, t, n, r) {
-		this.type = 2, this._$AH = g, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
+		this.type = 2, this._$AH = _, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
 	}
 	get parentNode() {
 		let e = this._$AA.parentNode, t = this._$AM;
@@ -377,7 +377,7 @@ var ze = class {
 		return this._$AB;
 	}
 	_$AI(e, t = this) {
-		e = Re(this, e, t), xe(e) ? e === g || e == null || e === "" ? (this._$AH !== g && this._$AR(), this._$AH = g) : e !== this._$AH && e !== h && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? Ce(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+		e = Le(this, e, t), be(e) ? e === _ || e == null || e === "" ? (this._$AH !== _ && this._$AR(), this._$AH = _) : e !== this._$AH && e !== g && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? Se(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 	}
 	O(e) {
 		return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -386,36 +386,36 @@ var ze = class {
 		this._$AH !== e && (this._$AR(), this._$AH = this.O(e));
 	}
 	_(e) {
-		this._$AH !== g && xe(this._$AH) ? this._$AA.nextSibling.data = e : this.T(ye.createTextNode(e)), this._$AH = e;
+		this._$AH !== _ && be(this._$AH) ? this._$AA.nextSibling.data = e : this.T(ve.createTextNode(e)), this._$AH = e;
 	}
 	$(e) {
-		let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = Le.createElement(Fe(n.h, n.h[0]), this.options)), n);
+		let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = Ie.createElement(Pe(n.h, n.h[0]), this.options)), n);
 		if (this._$AH?._$AD === r) this._$AH.p(t);
 		else {
-			let e = new ze(r, this), n = e.u(this.options);
+			let e = new Re(r, this), n = e.u(this.options);
 			e.p(t), this.T(n), this._$AH = e;
 		}
 	}
 	_$AC(e) {
-		let t = Ne.get(e.strings);
-		return t === void 0 && Ne.set(e.strings, t = new Le(e)), t;
+		let t = Me.get(e.strings);
+		return t === void 0 && Me.set(e.strings, t = new Ie(e)), t;
 	}
 	k(t) {
-		Se(this._$AH) || (this._$AH = [], this._$AR());
+		xe(this._$AH) || (this._$AH = [], this._$AR());
 		let n = this._$AH, r, i = 0;
-		for (let a of t) i === n.length ? n.push(r = new e(this.O(be()), this.O(be()), this, this.options)) : r = n[i], r._$AI(a), i++;
+		for (let a of t) i === n.length ? n.push(r = new e(this.O(ye()), this.O(ye()), this, this.options)) : r = n[i], r._$AI(a), i++;
 		i < n.length && (this._$AR(r && r._$AB.nextSibling, i), n.length = i);
 	}
 	_$AR(e = this._$AA.nextSibling, t) {
 		for (this._$AP?.(!1, !0, t); e !== this._$AB;) {
-			let t = pe(e).nextSibling;
-			pe(e).remove(), e = t;
+			let t = fe(e).nextSibling;
+			fe(e).remove(), e = t;
 		}
 	}
 	setConnected(e) {
 		this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
 	}
-}, Ve = class {
+}, Be = class {
 	get tagName() {
 		return this.element.tagName;
 	}
@@ -423,47 +423,47 @@ var ze = class {
 		return this._$AM._$AU;
 	}
 	constructor(e, t, n, r, i) {
-		this.type = 1, this._$AH = g, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = g;
+		this.type = 1, this._$AH = _, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = _;
 	}
 	_$AI(e, t = this, n, r) {
 		let i = this.strings, a = !1;
-		if (i === void 0) e = Re(this, e, t, 0), a = !xe(e) || e !== this._$AH && e !== h, a && (this._$AH = e);
+		if (i === void 0) e = Le(this, e, t, 0), a = !be(e) || e !== this._$AH && e !== g, a && (this._$AH = e);
 		else {
 			let r = e, o, s;
-			for (e = i[0], o = 0; o < i.length - 1; o++) s = Re(this, r[n + o], t, o), s === h && (s = this._$AH[o]), a ||= !xe(s) || s !== this._$AH[o], s === g ? e = g : e !== g && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
+			for (e = i[0], o = 0; o < i.length - 1; o++) s = Le(this, r[n + o], t, o), s === g && (s = this._$AH[o]), a ||= !be(s) || s !== this._$AH[o], s === _ ? e = _ : e !== _ && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
 		}
 		a && !r && this.j(e);
 	}
 	j(e) {
-		e === g ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
+		e === _ ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
 	}
-}, He = class extends Ve {
+}, Ve = class extends Be {
 	constructor() {
 		super(...arguments), this.type = 3;
 	}
 	j(e) {
-		this.element[this.name] = e === g ? void 0 : e;
+		this.element[this.name] = e === _ ? void 0 : e;
 	}
-}, Ue = class extends Ve {
+}, He = class extends Be {
 	constructor() {
 		super(...arguments), this.type = 4;
 	}
 	j(e) {
-		this.element.toggleAttribute(this.name, !!e && e !== g);
+		this.element.toggleAttribute(this.name, !!e && e !== _);
 	}
-}, We = class extends Ve {
+}, Ue = class extends Be {
 	constructor(e, t, n, r, i) {
 		super(e, t, n, r, i), this.type = 5;
 	}
 	_$AI(e, t = this) {
-		if ((e = Re(this, e, t, 0) ?? g) === h) return;
-		let n = this._$AH, r = e === g && n !== g || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== g && (n === g || r);
+		if ((e = Le(this, e, t, 0) ?? _) === g) return;
+		let n = this._$AH, r = e === _ && n !== _ || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== _ && (n === _ || r);
 		r && this.element.removeEventListener(this.name, this, n), i && this.element.addEventListener(this.name, this, e), this._$AH = e;
 	}
 	handleEvent(e) {
 		typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
 	}
-}, Ge = class {
+}, We = class {
 	constructor(e, t, n) {
 		this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
 	}
@@ -471,33 +471,33 @@ var ze = class {
 		return this._$AM._$AU;
 	}
 	_$AI(e) {
-		Re(this, e);
+		Le(this, e);
 	}
-}, Ke = {
-	M: ge,
-	P: f,
-	A: _e,
+}, Ge = {
+	M: he,
+	P: p,
+	A: ge,
 	C: 1,
-	L: Ie,
-	R: ze,
-	D: Ce,
-	V: Re,
-	I: Be,
-	H: Ve,
-	N: Ue,
-	U: We,
-	B: He,
-	F: Ge
-}, qe = fe.litHtmlPolyfillSupport;
-qe?.(Le, Be), (fe.litHtmlVersions ??= []).push("3.3.3");
-var Je = (e, t, n) => {
+	L: Fe,
+	R: Re,
+	D: Se,
+	V: Le,
+	I: ze,
+	H: Be,
+	N: He,
+	U: Ue,
+	B: Ve,
+	F: We
+}, Ke = de.litHtmlPolyfillSupport;
+Ke?.(Ie, ze), (de.litHtmlVersions ??= []).push("3.3.3");
+var qe = (e, t, n) => {
 	let r = n?.renderBefore ?? t, i = r._$litPart$;
 	if (i === void 0) {
 		let e = n?.renderBefore ?? null;
-		r._$litPart$ = i = new Be(t.insertBefore(be(), e), e, void 0, n ?? {});
+		r._$litPart$ = i = new ze(t.insertBefore(ye(), e), e, void 0, n ?? {});
 	}
 	return i._$AI(e), i;
-}, Ye = globalThis, _ = class extends de {
+}, Je = globalThis, v = class extends ue {
 	constructor() {
 		super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
 	}
@@ -507,7 +507,7 @@ var Je = (e, t, n) => {
 	}
 	update(e) {
 		let t = this.render();
-		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = Je(t, this.renderRoot, this.renderOptions);
+		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = qe(t, this.renderRoot, this.renderOptions);
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -516,13 +516,13 @@ var Je = (e, t, n) => {
 		super.disconnectedCallback(), this._$Do?.setConnected(!1);
 	}
 	render() {
-		return h;
+		return g;
 	}
 };
-_._$litElement$ = !0, _.finalized = !0, Ye.litElementHydrateSupport?.({ LitElement: _ });
-var Xe = Ye.litElementPolyfillSupport;
-Xe?.({ LitElement: _ }), (Ye.litElementVersions ??= []).push("4.2.2");
-var Ze = {
+v._$litElement$ = !0, v.finalized = !0, Je.litElementHydrateSupport?.({ LitElement: v });
+var Ye = Je.litElementPolyfillSupport;
+Ye?.({ LitElement: v }), (Je.litElementVersions ??= []).push("4.2.2");
+var Xe = {
 	common: {
 		delete: "Löschen",
 		save: "Speichern",
@@ -1712,6 +1712,7 @@ var Ze = {
 		n_blubs: "{count} Blubs",
 		food: "Futter",
 		for_the_room: "Für den Raum",
+		for_your_pet: "Für dein Haustier",
 		wall_and_floor: "Wand und Boden",
 		upgrades: "Extras",
 		buy: "Kaufen",
@@ -1740,7 +1741,11 @@ var Ze = {
 		item_color_green: "Grün",
 		item_color_blue: "Blau",
 		item_color_purple: "Lila",
-		item_color_gold: "Gold"
+		item_color_gold: "Gold",
+		item_fur_snow: "Schneeweißes Fell",
+		item_scarf_red: "Roter Schal",
+		item_bowl_gem: "Schmuckstein für den Napf",
+		item_dog_bone: "Hundeknochen"
 	},
 	inventory: {
 		inventory: "Inventar",
@@ -1758,7 +1763,12 @@ var Ze = {
 		wall: "Wand",
 		floor: "Boden",
 		plain: "Schlicht",
-		no_colours_or_patterns_yet: "Farben und Muster findest du im Shop."
+		no_colours_or_patterns_yet: "Farben und Muster findest du im Shop.",
+		pet_looks: "Was {name} trägt",
+		fur: "Fell",
+		neck: "Hals",
+		own_colour: "Eigene Farbe",
+		neck_default: "Standard"
 	},
 	news: {
 		title_badge: "Neuer Erfolg!",
@@ -1814,7 +1824,7 @@ var Ze = {
 		hint_first_chore: "Erstelle deine allererste Aufgabe.",
 		hint_setup: "Richte Boopli fertig ein."
 	}
-}, Qe = {
+}, Ze = {
 	common: {
 		delete: "Delete",
 		save: "Save",
@@ -3004,6 +3014,7 @@ var Ze = {
 		n_blubs: "{count} Blubs",
 		food: "Food",
 		for_the_room: "For the room",
+		for_your_pet: "For your pet",
 		wall_and_floor: "Wall and floor",
 		upgrades: "Upgrades",
 		buy: "Buy",
@@ -3032,7 +3043,11 @@ var Ze = {
 		item_color_green: "Green",
 		item_color_blue: "Blue",
 		item_color_purple: "Purple",
-		item_color_gold: "Gold"
+		item_color_gold: "Gold",
+		item_fur_snow: "Snow fur",
+		item_scarf_red: "Red scarf",
+		item_bowl_gem: "Bowl gem",
+		item_dog_bone: "Dog bone"
 	},
 	inventory: {
 		inventory: "Inventory",
@@ -3050,7 +3065,12 @@ var Ze = {
 		wall: "Wall",
 		floor: "Floor",
 		plain: "Plain",
-		no_colours_or_patterns_yet: "You can find colours and patterns in the shop."
+		no_colours_or_patterns_yet: "You can find colours and patterns in the shop.",
+		pet_looks: "What {name} wears",
+		fur: "Fur",
+		neck: "Neck",
+		own_colour: "Own color",
+		neck_default: "Default"
 	},
 	news: {
 		title_badge: "New achievement!",
@@ -3106,7 +3126,7 @@ var Ze = {
 		hint_first_chore: "Create your very first chore.",
 		hint_setup: "Finish setting up Boopli."
 	}
-}, $e = {
+}, Qe = {
 	common: {
 		delete: "Eliminar",
 		save: "Guardar",
@@ -4296,6 +4316,7 @@ var Ze = {
 		n_blubs: "{count} Blubs",
 		food: "Comida",
 		for_the_room: "Para la habitación",
+		for_your_pet: "Para tu mascota",
 		wall_and_floor: "Pared y suelo",
 		upgrades: "Mejoras",
 		buy: "Comprar",
@@ -4324,7 +4345,11 @@ var Ze = {
 		item_color_green: "Verde",
 		item_color_blue: "Azul",
 		item_color_purple: "Morado",
-		item_color_gold: "Dorado"
+		item_color_gold: "Dorado",
+		item_fur_snow: "Pelaje blanco nieve",
+		item_scarf_red: "Bufanda roja",
+		item_bowl_gem: "Gema para el cuenco",
+		item_dog_bone: "Hueso para perro"
 	},
 	inventory: {
 		inventory: "Inventario",
@@ -4342,7 +4367,12 @@ var Ze = {
 		wall: "Pared",
 		floor: "Suelo",
 		plain: "Liso",
-		no_colours_or_patterns_yet: "Encontrarás colores y diseños en la tienda."
+		no_colours_or_patterns_yet: "Encontrarás colores y diseños en la tienda.",
+		pet_looks: "Lo que lleva {name}",
+		fur: "Pelaje",
+		neck: "Cuello",
+		own_colour: "Color propio",
+		neck_default: "Predeterminado"
 	},
 	news: {
 		title_badge: "¡Nuevo logro!",
@@ -4398,7 +4428,7 @@ var Ze = {
 		hint_first_chore: "Crea tu primera tarea.",
 		hint_setup: "Termina de configurar Boopli."
 	}
-}, et = {
+}, $e = {
 	common: {
 		delete: "Supprimer",
 		save: "Enregistrer",
@@ -5588,6 +5618,7 @@ var Ze = {
 		n_blubs: "{count} Blubs",
 		food: "Nourriture",
 		for_the_room: "Pour la pièce",
+		for_your_pet: "Pour ton animal",
 		wall_and_floor: "Mur et sol",
 		upgrades: "Améliorations",
 		buy: "Acheter",
@@ -5616,7 +5647,11 @@ var Ze = {
 		item_color_green: "Vert",
 		item_color_blue: "Bleu",
 		item_color_purple: "Violet",
-		item_color_gold: "Or"
+		item_color_gold: "Or",
+		item_fur_snow: "Pelage blanc neige",
+		item_scarf_red: "Écharpe rouge",
+		item_bowl_gem: "Gemme pour la gamelle",
+		item_dog_bone: "Os pour chien"
 	},
 	inventory: {
 		inventory: "Inventaire",
@@ -5634,7 +5669,12 @@ var Ze = {
 		wall: "Mur",
 		floor: "Sol",
 		plain: "Uni",
-		no_colours_or_patterns_yet: "Tu trouveras des couleurs et des motifs dans la boutique."
+		no_colours_or_patterns_yet: "Tu trouveras des couleurs et des motifs dans la boutique.",
+		pet_looks: "Ce que porte {name}",
+		fur: "Pelage",
+		neck: "Cou",
+		own_colour: "Couleur naturelle",
+		neck_default: "Par défaut"
 	},
 	news: {
 		title_badge: "Nouveau succès\xA0!",
@@ -5690,7 +5730,7 @@ var Ze = {
 		hint_first_chore: "Crée ta toute première tâche.",
 		hint_setup: "Finis de configurer Boopli."
 	}
-}, tt = {
+}, et = {
 	common: {
 		delete: "Wissen",
 		save: "Opslaan",
@@ -6880,6 +6920,7 @@ var Ze = {
 		n_blubs: "{count} Blubs",
 		food: "Eten",
 		for_the_room: "Voor de kamer",
+		for_your_pet: "Voor je huisdier",
 		wall_and_floor: "Muur en vloer",
 		upgrades: "Uitbreidingen",
 		buy: "Kopen",
@@ -6908,7 +6949,11 @@ var Ze = {
 		item_color_green: "Groen",
 		item_color_blue: "Blauw",
 		item_color_purple: "Paars",
-		item_color_gold: "Goud"
+		item_color_gold: "Goud",
+		item_fur_snow: "Sneeuwwitte vacht",
+		item_scarf_red: "Rode sjaal",
+		item_bowl_gem: "Edelsteen voor het voerbakje",
+		item_dog_bone: "Hondenbot"
 	},
 	inventory: {
 		inventory: "Voorraad",
@@ -6926,7 +6971,12 @@ var Ze = {
 		wall: "Muur",
 		floor: "Vloer",
 		plain: "Effen",
-		no_colours_or_patterns_yet: "Je vindt kleuren en patronen in de winkel."
+		no_colours_or_patterns_yet: "Je vindt kleuren en patronen in de winkel.",
+		pet_looks: "Wat {name} draagt",
+		fur: "Vacht",
+		neck: "Hals",
+		own_colour: "Eigen kleur",
+		neck_default: "Standaard"
 	},
 	news: {
 		title_badge: "Nieuwe prestatie!",
@@ -6982,17 +7032,17 @@ var Ze = {
 		hint_first_chore: "Maak je allereerste taak aan.",
 		hint_setup: "Rond het instellen van Boopli af."
 	}
-}, nt = {
+}, tt = {
 	ATTRIBUTE: 1,
 	CHILD: 2,
 	PROPERTY: 3,
 	BOOLEAN_ATTRIBUTE: 4,
 	EVENT: 5,
 	ELEMENT: 6
-}, rt = (e) => (...t) => ({
+}, nt = (e) => (...t) => ({
 	_$litDirective$: e,
 	values: t
-}), it = class {
+}), rt = class {
 	constructor(e) {}
 	get _$AU() {
 		return this._$AM._$AU;
@@ -7006,13 +7056,13 @@ var Ze = {
 	update(e, t) {
 		return this.render(...t);
 	}
-}, at = class extends it {
+}, it = class extends rt {
 	constructor(e) {
-		if (super(e), this.it = g, e.type !== nt.CHILD) throw Error(this.constructor.directiveName + "() can only be used in child bindings");
+		if (super(e), this.it = _, e.type !== tt.CHILD) throw Error(this.constructor.directiveName + "() can only be used in child bindings");
 	}
 	render(e) {
-		if (e === g || e == null) return this._t = void 0, this.it = e;
-		if (e === h) return e;
+		if (e === _ || e == null) return this._t = void 0, this.it = e;
+		if (e === g) return e;
 		if (typeof e != "string") throw Error(this.constructor.directiveName + "() called with a non-string value");
 		if (e === this.it) return this._t;
 		this.it = e;
@@ -7024,29 +7074,29 @@ var Ze = {
 		};
 	}
 };
-at.directiveName = "unsafeHTML", at.resultType = 1;
-var ot = rt(at);
+it.directiveName = "unsafeHTML", it.resultType = 1;
+var at = nt(it);
 // src/i18n/index.ts
-function st(e, t = "", n = {}) {
+function ot(e, t = "", n = {}) {
 	for (let [r, i] of Object.entries(e)) {
 		let e = t ? `${t}.${r}` : r;
-		typeof i == "string" ? n[e] = i : st(i, e, n);
+		typeof i == "string" ? n[e] = i : ot(i, e, n);
 	}
 	return n;
 }
-var ct = /* #__PURE__ */ Object.assign({
-	"./de.json": Ze,
-	"./en.json": Qe,
-	"./es.json": $e,
-	"./fr.json": et,
-	"./nl.json": tt
-}), v = {};
-for (let [e, t] of Object.entries(ct)) {
+var st = /* #__PURE__ */ Object.assign({
+	"./de.json": Xe,
+	"./en.json": Ze,
+	"./es.json": Qe,
+	"./fr.json": $e,
+	"./nl.json": et
+}), y = {};
+for (let [e, t] of Object.entries(st)) {
 	let n = e.replace("./", "").replace(".json", "").toLowerCase();
-	v[n] = st(t);
+	y[n] = ot(t);
 }
-v.en = st(Qe);
-var y = "en", lt = "fancy", ut = "pseudo", dt = {
+y.en = ot(Ze);
+var b = "en", ct = "fancy", lt = "pseudo", ut = {
 	a: "à",
 	e: "é",
 	i: "ï",
@@ -7068,49 +7118,49 @@ var y = "en", lt = "fancy", ut = "pseudo", dt = {
 	Y: "Ý",
 	Z: "Ž"
 };
-function ft(e) {
-	return e.replace(/(\{\w+\}|<[^>]*>|&\w+;)|([A-Za-z])/g, (e, t, n) => t ?? dt[n] ?? n);
+function dt(e) {
+	return e.replace(/(\{\w+\}|<[^>]*>|&\w+;)|([A-Za-z])/g, (e, t, n) => t ?? ut[n] ?? n);
 }
-var pt = (e) => e === "fancy" || e === ut, mt = "boopli.language";
-function ht() {
+var ft = (e) => e === "fancy" || e === lt, pt = "boopli.language";
+function mt() {
 	try {
-		return localStorage.getItem(mt) ?? "";
+		return localStorage.getItem(pt) ?? "";
 	} catch {
 		return "";
 	}
 }
-function gt(e) {
+function ht(e) {
 	try {
-		return e ? localStorage.setItem(mt, e) : localStorage.removeItem(mt), !0;
+		return e ? localStorage.setItem(pt, e) : localStorage.removeItem(pt), !0;
 	} catch {
 		return !1;
 	}
 }
-var _t = (e) => Object.prototype.hasOwnProperty.call(v, e);
-function vt(e) {
+var gt = (e) => Object.prototype.hasOwnProperty.call(y, e);
+function _t(e) {
 	let t = "";
 	try {
 		t = new URLSearchParams(location.search).get("lang") ?? "";
 	} catch {}
-	let n = (t || ht() || e || "en").toLowerCase();
-	y = pt(n) ? n : [n, n.split("-")[0]].find(_t) ?? "en";
+	let n = (t || mt() || e || "en").toLowerCase();
+	b = ft(n) ? n : [n, n.split("-")[0]].find(gt) ?? "en";
+}
+function vt() {
+	return b;
 }
 function yt() {
-	return y;
+	return ["en", ...Object.keys(y).filter((e) => e !== "en").sort()];
 }
-function bt() {
-	return ["en", ...Object.keys(v).filter((e) => e !== "en").sort()];
-}
-var xt = {
+var bt = {
 	en: "English",
 	de: "Deutsch",
 	nl: "Nederlands",
 	fr: "Français",
 	es: "Español"
 };
-function St(e) {
-	if (e === "fancy") return ft("Fancy English");
-	if (xt[e]) return xt[e];
+function xt(e) {
+	if (e === "fancy") return dt("Fancy English");
+	if (bt[e]) return bt[e];
 	try {
 		let t = new Intl.DisplayNames([e], { type: "language" }).of(e) ?? e;
 		return t.charAt(0).toLocaleUpperCase(e) + t.slice(1);
@@ -7118,93 +7168,93 @@ function St(e) {
 		return e;
 	}
 }
-function Ct(e, t) {
-	let n = pt(y) ? v.en : v[y], r = v.en;
+function St(e, t) {
+	let n = ft(b) ? y.en : y[b], r = y.en;
 	if (t !== void 0) {
-		let i = new Intl.PluralRules(pt(y) ? "en" : y).select(t);
+		let i = new Intl.PluralRules(ft(b) ? "en" : b).select(t);
 		for (let t of [`${e}_${i}`, `${e}_other`]) if (n[t] !== void 0) return n[t];
 		if (n !== r && n[e] !== void 0) return n[e];
 		for (let n of [`${e}_${new Intl.PluralRules("en").select(t)}`, `${e}_other`]) if (r[n] !== void 0) return r[n];
 	}
 	return n[e] ?? r[e];
 }
-function wt(e) {
-	let t = y;
-	y = "en";
+function Ct(e) {
+	let t = b;
+	b = "en";
 	try {
 		return e();
 	} finally {
-		y = t;
+		b = t;
 	}
 }
-function Tt(e) {
-	let t = y;
+function wt(e) {
+	let t = b;
 	try {
-		return bt().map((t) => (y = t, e()));
+		return yt().map((t) => (b = t, e()));
 	} finally {
-		y = t;
+		b = t;
 	}
 }
-function b(e, t) {
-	let n = Ct(e, typeof t?.count == "number" ? t.count : void 0), r = n ?? e;
-	return n !== void 0 && pt(y) && (r = y === ut ? `[${ft(n)}]` : ft(n)), t ? r.replace(/\{(\w+)\}/g, (e, n) => n in t ? String(t[n] ?? "") : e) : r;
+function x(e, t) {
+	let n = St(e, typeof t?.count == "number" ? t.count : void 0), r = n ?? e;
+	return n !== void 0 && ft(b) && (r = b === lt ? `[${dt(n)}]` : dt(n)), t ? r.replace(/\{(\w+)\}/g, (e, n) => n in t ? String(t[n] ?? "") : e) : r;
 }
-var Et = {
+var Tt = {
 	"&": "&amp;",
 	"<": "&lt;",
 	">": "&gt;",
 	"\"": "&quot;",
 	"'": "&#39;"
-}, Dt = (e) => e.replace(/[&<>"']/g, (e) => Et[e]), Ot = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
-function x(e, t) {
+}, Et = (e) => e.replace(/[&<>"']/g, (e) => Tt[e]), Dt = /^<\/?(b|i|em|strong|code)>$|^<br\s*\/?>$/;
+function S(e, t) {
 	let n = {}, r = {};
-	for (let [e, i] of Object.entries(t ?? {})) typeof i == "number" ? n[e] = i : typeof i == "string" ? n[e] = Dt(i) : r[e] = i;
-	let i = b(e, n).replace(/<[^>]*>/g, (e) => Ot.test(e) ? e : Dt(e));
-	return Object.keys(r).length === 0 ? p`${ot(i)}` : p`${i.split(/\{(\w+)\}/).map((e, t) => t % 2 ? r[e] ?? `{${e}}` : ot(e))}`;
+	for (let [e, i] of Object.entries(t ?? {})) typeof i == "number" ? n[e] = i : typeof i == "string" ? n[e] = Et(i) : r[e] = i;
+	let i = x(e, n).replace(/<[^>]*>/g, (e) => Dt.test(e) ? e : Et(e));
+	return Object.keys(r).length === 0 ? m`${at(i)}` : m`${i.split(/\{(\w+)\}/).map((e, t) => t % 2 ? r[e] ?? `{${e}}` : at(e))}`;
 }
-function kt(e) {
-	return v[y]?.[e] !== void 0 || v.en[e] !== void 0;
+function Ot(e) {
+	return y[b]?.[e] !== void 0 || y.en[e] !== void 0;
 }
 // src/api.ts
-function At(e, t) {
+function kt(e, t) {
 	return e.callWS({
 		type: "boopli/settings_save",
 		settings: t
 	});
 }
-function jt(e, t) {
+function At(e, t) {
 	return e.callWS({
 		type: "boopli/access_set",
 		level: t
 	});
 }
-var Mt = [
+var jt = [
 	"settings",
 	"chores",
 	"home",
 	"pet"
 ];
-function Nt(e, t) {
+function Mt(e, t) {
 	return e.callWS({
 		type: "boopli/backup_export",
 		parts: t
 	});
 }
-function Pt(e, t, n) {
+function Nt(e, t, n) {
 	return e.callWS({
 		type: "boopli/backup_preview",
 		backup: t,
 		parts: n
 	});
 }
-function Ft(e, t, n) {
+function Pt(e, t, n) {
 	return e.callWS({
 		type: "boopli/backup_import",
 		backup: t,
 		parts: n
 	});
 }
-function It(e, t, n, r, i = "", a, o = "", s = "agent") {
+function Ft(e, t, n, r, i = "", a, o = "", s = "agent") {
 	return e.callWS({
 		type: "boopli/ai_questions",
 		task: t,
@@ -7216,7 +7266,7 @@ function It(e, t, n, r, i = "", a, o = "", s = "agent") {
 		...a ? { rooms: a } : {}
 	});
 }
-function Lt(e, t, n, r, i = "", a, o = "", s = "agent") {
+function It(e, t, n, r, i = "", a, o = "", s = "agent") {
 	return e.callWS({
 		type: "boopli/ai_steps",
 		task: t,
@@ -7228,7 +7278,7 @@ function Lt(e, t, n, r, i = "", a, o = "", s = "agent") {
 		...a ? { rooms: a } : {}
 	});
 }
-function Rt(e, t, n, r, i, a, o = "") {
+function Lt(e, t, n, r, i, a, o = "") {
 	return e.callWS({
 		type: "boopli/ai_preview",
 		task: t,
@@ -7239,22 +7289,22 @@ function Rt(e, t, n, r, i, a, o = "") {
 		scene: o
 	});
 }
-async function zt(e, t) {
+async function Rt(e, t) {
 	return (await e.callWS({
 		type: "boopli/rooms_guess",
 		task: t
 	})).rooms;
 }
-function Bt(e, t) {
+function zt(e, t) {
 	return e.callWS({
 		type: "boopli/home_save",
 		home: t
 	});
 }
-function Vt(e) {
+function Bt(e) {
 	return e.callWS({ type: "boopli/home_sync" });
 }
-function Ht(e, t, n, r, i = "agent") {
+function Vt(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_questions",
 		room: t,
@@ -7263,7 +7313,7 @@ function Ht(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-function Ut(e, t, n, r, i = "agent") {
+function Ht(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_notes",
 		room: t,
@@ -7272,10 +7322,10 @@ function Ut(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-function Wt(e) {
+function Ut(e) {
 	return e.callWS({ type: "boopli/ai_defaults" });
 }
-function Gt(e, t, n, r = "") {
+function Wt(e, t, n, r = "") {
 	return e.callWS({
 		type: "boopli/task_add",
 		title: t,
@@ -7283,56 +7333,56 @@ function Gt(e, t, n, r = "") {
 		notes: r
 	});
 }
-async function Kt(e, t, n = 5) {
+async function Gt(e, t, n = 5) {
 	return (await e.callWS({
 		type: "boopli/schedule_preview",
 		repeat: t,
 		count: n
 	})).times;
 }
-function qt(e, t, n = "") {
+function Kt(e, t, n = "") {
 	return e.callWS({
 		type: "boopli/setup_save",
 		status: t,
 		step: n
 	});
 }
-function Jt(e, t, n) {
+function qt(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_snooze",
 		run_id: t,
 		step_id: n
 	});
 }
-function Yt(e, t, n) {
+function Jt(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_on_it",
 		run_id: t,
 		step_id: n
 	});
 }
-function Xt(e, t, n) {
+function Yt(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_not_on_it",
 		run_id: t,
 		step_id: n
 	});
 }
-function Zt(e, t) {
+function Xt(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "light",
 		light: t
 	});
 }
-function Qt(e, t) {
+function Zt(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "phone",
 		phone: t
 	});
 }
-function $t(e, t, n, r) {
+function Qt(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "speaker",
@@ -7341,42 +7391,42 @@ function $t(e, t, n, r) {
 		...r ? { sounds: r } : {}
 	});
 }
-function en(e, t) {
+function $t(e, t) {
 	return e.callWS({
 		type: "boopli/test_channel",
 		kind: "alarm_device",
 		alarm_device: t
 	});
 }
-function tn(e, t) {
+function en(e, t) {
 	return e.connection.subscribeMessage(t, { type: "boopli/subscribe" });
 }
-function nn(e, t) {
+function tn(e, t) {
 	return e.callWS({
 		type: "boopli/chore_save",
 		chore: t
 	});
 }
-function rn(e, t) {
+function nn(e, t) {
 	return e.callWS({
 		type: "boopli/chore_delete",
 		chore_id: t
 	});
 }
-function an(e, t) {
+function rn(e, t) {
 	return e.callWS({
 		type: "boopli/chore_skip",
 		chore_id: t
 	});
 }
-function on(e, t, n) {
+function an(e, t, n) {
 	return e.callWS({
 		type: "boopli/chore_start",
 		chore_id: t,
 		...n ? { answers: n } : {}
 	});
 }
-function sn(e, t, n, r) {
+function on(e, t, n, r) {
 	return e.callWS({
 		type: "boopli/away_set",
 		start: t,
@@ -7384,50 +7434,50 @@ function sn(e, t, n, r) {
 		keep_going: r
 	});
 }
-function cn(e) {
+function sn(e) {
 	return e.callWS({ type: "boopli/away_end" });
 }
-function ln(e, t, n) {
+function cn(e, t, n) {
 	return e.callWS({
 		type: "boopli/questions_answer",
 		run_id: t,
 		answers: n
 	});
 }
-function un(e, t, n) {
+function ln(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_release",
 		run_id: t,
 		step_id: n
 	});
 }
-function dn(e, t, n) {
+function un(e, t, n) {
 	return e.callWS({
 		type: "boopli/step_complete",
 		run_id: t,
 		step_id: n
 	});
 }
-function fn(e) {
+function dn(e) {
 	let t = {};
 	for (let [n, r] of Object.entries(e)) {
 		let e = r;
-		t[n] = e && typeof e == "object" && typeof e.key == "string" ? kt(`errors.${e.key}`) ? b(`errors.${e.key}`, fn(e.params ?? {})) : String(e.text ?? "") : r;
+		t[n] = e && typeof e == "object" && typeof e.key == "string" ? Ot(`errors.${e.key}`) ? x(`errors.${e.key}`, dn(e.params ?? {})) : String(e.text ?? "") : r;
 	}
 	return t;
 }
-function pn(e) {
-	return e.note_key && kt(`errors.${e.note_key}`) ? b(`errors.${e.note_key}`, fn(e.note_params ?? {})) : e.note;
+function fn(e) {
+	return e.note_key && Ot(`errors.${e.note_key}`) ? x(`errors.${e.note_key}`, dn(e.note_params ?? {})) : e.note;
 }
-function S(e) {
+function C(e) {
 	if (e && typeof e == "object") {
 		let t = e;
-		if (typeof t.translation_key == "string" && kt(`errors.${t.translation_key}`)) return b(`errors.${t.translation_key}`, fn(t.translation_placeholders ?? {}));
+		if (typeof t.translation_key == "string" && Ot(`errors.${t.translation_key}`)) return x(`errors.${t.translation_key}`, dn(t.translation_placeholders ?? {}));
 		if ("message" in t) return String(t.message);
 	}
-	return b("common.something_went_wrong");
+	return x("common.something_went_wrong");
 }
-function mn(e, t, n, r, i = "agent") {
+function pn(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/room_photos",
 		room: t,
@@ -7436,7 +7486,7 @@ function mn(e, t, n, r, i = "agent") {
 		via: i
 	});
 }
-async function hn(e, t, n = "", r = "", i) {
+async function mn(e, t, n = "", r = "", i) {
 	return (await e.callWS({
 		type: "boopli/chat_prompt",
 		room: n,
@@ -7445,13 +7495,13 @@ async function hn(e, t, n = "", r = "", i) {
 		...i ? { rooms: i } : {}
 	})).prompt;
 }
-function gn(e, t) {
+function hn(e, t) {
 	return e.callWS({
 		type: "boopli/paste_notes",
 		text: t
 	});
 }
-async function _n(e, t, n) {
+async function gn(e, t, n) {
 	return (await e.callWS({
 		type: "boopli/paste_notes",
 		text: t,
@@ -7459,7 +7509,7 @@ async function _n(e, t, n) {
 		rooms: n
 	})).rooms;
 }
-function vn(e, t, n, r, i = "") {
+function _n(e, t, n, r, i = "") {
 	return e.callWS({
 		type: "boopli/part_park",
 		run_id: t,
@@ -7468,7 +7518,7 @@ function vn(e, t, n, r, i = "") {
 		at: i
 	});
 }
-function yn(e, t, n, r = "") {
+function vn(e, t, n, r = "") {
 	return e.callWS({
 		type: "boopli/part_time",
 		chore_id: t,
@@ -7476,7 +7526,7 @@ function yn(e, t, n, r = "") {
 		at: r
 	});
 }
-function bn(e, t, n, r, i = "agent") {
+function yn(e, t, n, r, i = "agent") {
 	return e.callWS({
 		type: "boopli/scene_photos",
 		task: t,
@@ -7485,60 +7535,60 @@ function bn(e, t, n, r, i = "agent") {
 		...r ? { rooms: r } : {}
 	});
 }
-function xn(e) {
+function bn(e) {
 	return e.callWS({ type: "boopli/egg_found" });
 }
-function Sn(e, t) {
+function xn(e, t) {
 	return e.callWS({
 		type: "boopli/shop_buy",
 		item: t
 	});
 }
-function Cn(e, t, n) {
+function Sn(e, t, n) {
 	return e.callWS({
 		type: "boopli/shop_place",
 		place: t,
 		item: n
 	});
 }
-function wn(e, t) {
+function Cn(e, t) {
 	return e.callWS({
 		type: "boopli/feed",
 		size: t
 	});
 }
-function Tn(e) {
+function wn(e) {
 	return e.callWS({ type: "boopli/quest_seen" });
 }
-function En(e, t, n) {
+function Tn(e, t, n) {
 	return e.callWS({
 		type: "boopli/news_seen",
 		level: t,
 		achievements: n
 	});
 }
-function Dn(e, t) {
+function En(e, t) {
 	return e.callWS({
 		type: "boopli/claude_token",
 		token: t
 	});
 }
-function On(e) {
+function Dn(e) {
 	return e.callWS({ type: "boopli/claude_test" });
 }
 // src/fonts.ts
-var kn = [{
+var On = [{
 	file: "Itim-latin.woff2",
 	range: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
 }, {
 	file: "Itim-latin-ext.woff2",
 	range: "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF"
-}], An = "\"Itim\", var(--paper-font-body1_-_font-family, Roboto, sans-serif)", jn = !1;
-function Mn() {
-	if (jn || typeof FontFace > "u" || !document.fonts) return;
-	jn = !0;
+}], kn = "\"Itim\", var(--paper-font-body1_-_font-family, Roboto, sans-serif)", An = !1;
+function jn() {
+	if (An || typeof FontFace > "u" || !document.fonts) return;
+	An = !0;
 	let e = import.meta.url.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-	for (let { file: t, range: n } of kn) new FontFace("Itim", `url(${e}fonts/${t}) format("woff2")`, {
+	for (let { file: t, range: n } of On) new FontFace("Itim", `url(${e}fonts/${t}) format("woff2")`, {
 		style: "normal",
 		weight: "400",
 		unicodeRange: n,
@@ -7546,11 +7596,11 @@ function Mn() {
 	}).load().then((e) => document.fonts.add(e)).catch(() => void 0);
 }
 // src/styles.ts
-var C = o`
+var w = o`
   :host {
     display: block;
     color: var(--primary-text-color);
-    font-family: ${a(An)};
+    font-family: ${a(kn)};
     font-size: 16px; /* Itim reads small, and Home Assistant's own 14px is too little for it */
   }
   button,
@@ -7684,7 +7734,7 @@ var C = o`
     font-size: 17px;
     margin: 8px 0;
   }
-`, Nn = class extends _ {
+`, Mn = class extends v {
 	static {
 		this.properties = {
 			questions: { attribute: !1 },
@@ -7700,7 +7750,7 @@ var C = o`
 		};
 	}
 	constructor() {
-		super(), this.questions = [], this.label = b("chores.start"), this.allLabel = "", this.busy = !1, this.cancelable = !0, this.soft = !1, this._answers = {};
+		super(), this.questions = [], this.label = x("chores.start"), this.allLabel = "", this.busy = !1, this.cancelable = !0, this.soft = !1, this._answers = {};
 	}
 	_yes(e) {
 		return this._answers[e] ?? !0;
@@ -7724,9 +7774,9 @@ var C = o`
 		this._emit("answered", { answers: e });
 	}
 	render() {
-		return p`
+		return m`
       <div class="list">
-        ${this.questions.map((e) => p`<div class="q" role="group" aria-label=${e.text}>
+        ${this.questions.map((e) => m`<div class="q" role="group" aria-label=${e.text}>
             <div class="text">${e.text}</div>
             <div class="yn">
               <button
@@ -7735,7 +7785,7 @@ var C = o`
                 aria-pressed=${this._yes(e.id)}
                 @click=${() => this._set(e.id, !0)}
               >
-                <span aria-hidden="true">✓</span> ${b("common.yes")}
+                <span aria-hidden="true">✓</span> ${x("common.yes")}
               </button>
               <button
                 type="button"
@@ -7743,20 +7793,20 @@ var C = o`
                 aria-pressed=${!this._yes(e.id)}
                 @click=${() => this._set(e.id, !1)}
               >
-                <span aria-hidden="true">✕</span> ${b("common.no")}
+                <span aria-hidden="true">✕</span> ${x("common.no")}
               </button>
             </div>
           </div>`)}
       </div>
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this.busy} @click=${() => this._submit()}>${this.label}</button>
-        ${this.allLabel ? p`<button type="button" ?disabled=${this.busy} @click=${() => this._emit("all-steps")}>${this.allLabel}</button>` : ""}
-        ${this.cancelable ? p`<button type="button" class="link" @click=${() => this._emit("cancel")}>${b("common.cancel")}</button>` : ""}
+        ${this.allLabel ? m`<button type="button" ?disabled=${this.busy} @click=${() => this._emit("all-steps")}>${this.allLabel}</button>` : ""}
+        ${this.cancelable ? m`<button type="button" class="link" @click=${() => this._emit("cancel")}>${x("common.cancel")}</button>` : ""}
       </div>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -7837,35 +7887,35 @@ var C = o`
     `];
 	}
 };
-customElements.define("boopli-questions", Nn);
+customElements.define("boopli-questions", Mn);
 // src/claude.ts
-function w(e) {
+function T(e) {
 	return !!e?.settings.ai?.enabled;
 }
-function T(e) {
+function E(e) {
 	let t = e?.settings.ai;
 	return !!(t?.claude_enabled && t.claude_fire_url && e?.claude?.token_set && e.claude.callback_host);
 }
-function Pn(e) {
-	return w(e) || T(e);
+function Nn(e) {
+	return T(e) || E(e);
 }
-function Fn(e, t) {
+function Pn(e, t) {
 	return t === "claude" ? e?.claude?.wait_seconds ?? 120 : e?.ai_timeout ?? 180;
 }
-function In(e, t) {
+function Fn(e, t) {
 	if (e?.trim()) try {
 		return new URL(e.trim()).hostname;
 	} catch {}
 	return t?.claude?.callback_host || "";
 }
-var Ln = () => wt(() => b("claude.you_are_the_answering_side_of"));
+var In = () => Ct(() => x("claude.you_are_the_answering_side_of"));
 // src/icon.ts
-function E(e) {
-	return p`<ha-icon class="ico" icon="mdi:${e}" aria-hidden="true"></ha-icon>`;
+function D(e) {
+	return m`<ha-icon class="ico" icon="mdi:${e}" aria-hidden="true"></ha-icon>`;
 }
 // src/time.ts
-function D() {
-	let e = new Intl.DateTimeFormat(k(), {
+function O() {
+	let e = new Intl.DateTimeFormat(Bn(), {
 		weekday: "short",
 		timeZone: "UTC"
 	});
@@ -7879,7 +7929,7 @@ function D() {
 		6
 	].map((t) => e.format(new Date(Date.UTC(2024, 0, 1 + t))));
 }
-function O(e, t) {
+function Ln(e, t) {
 	return new Intl.DateTimeFormat("en-GB", {
 		timeZone: t,
 		hour: "2-digit",
@@ -7899,50 +7949,50 @@ function zn(e) {
 	let [t, n, r] = e.split("-").map(Number);
 	return Math.round(Date.UTC(t, n - 1, r) / 864e5);
 }
-function k() {
-	let e = yt();
+function Bn() {
+	let e = vt();
 	return e === "en" || e === "fancy" || e === "pseudo" ? "en-GB" : e;
 }
-function Bn(e, t, n) {
-	let r = new Date(e), i = zn(Rn(r, n)) - zn(Rn(new Date(t), n)), a = O(e, n);
-	return i === 0 ? b("time.today", { time: a }) : i === 1 ? b("time.tomorrow", { time: a }) : `${new Intl.DateTimeFormat(k(), {
+function Vn(e, t, n) {
+	let r = new Date(e), i = zn(Rn(r, n)) - zn(Rn(new Date(t), n)), a = Ln(e, n);
+	return i === 0 ? x("time.today", { time: a }) : i === 1 ? x("time.tomorrow", { time: a }) : `${new Intl.DateTimeFormat(Bn(), {
 		timeZone: n,
 		weekday: "short",
 		day: "numeric",
 		month: "short"
 	}).format(r)}, ${a}`;
 }
-function Vn(e, t, n) {
+function Hn(e, t, n) {
 	let r = new Date(e);
 	return !Number.isNaN(r.getTime()) && Rn(r, n) === Rn(new Date(t), n);
 }
-function Hn(e) {
+function Un(e) {
 	let t = Math.max(0, Math.round(e));
-	if (t < 1) return b("time.less_than_a_minute");
-	if (t < 60) return b("wizard.min", { m: t });
+	if (t < 1) return x("time.less_than_a_minute");
+	if (t < 60) return x("wizard.min", { m: t });
 	let n = Math.floor(t / 60), r = t % 60;
-	return r === 0 ? b("time.hours_short", { h: n }) : b("time.hours_minutes_short", {
+	return r === 0 ? x("time.hours_short", { h: n }) : x("time.hours_minutes_short", {
 		h: n,
 		m: r
 	});
 }
-function Un(e, t) {
-	let n = (new Date(e).getTime() - t) / 6e4;
-	return n <= .5 ? b("time.any_moment_now") : b("time.in_duration", { duration: Hn(n) });
-}
 function Wn(e, t) {
-	return b("time.since", { time: O(e, t) });
+	let n = (new Date(e).getTime() - t) / 6e4;
+	return n <= .5 ? x("time.any_moment_now") : x("time.in_duration", { duration: Un(n) });
 }
-function Gn(e) {
-	return e.length === 1 ? e[0] : e.length === 2 ? b("time.and_2", {
+function Gn(e, t) {
+	return x("time.since", { time: Ln(e, t) });
+}
+function Kn(e) {
+	return e.length === 1 ? e[0] : e.length === 2 ? x("time.and_2", {
 		value: e[0],
 		value2: e[1]
-	}) : b("time.and", {
+	}) : x("time.and", {
 		join: e.slice(0, -1).join(", "),
 		value: e[e.length - 1]
 	});
 }
-function Kn(e) {
+function qn(e) {
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e[String(n)] ?? [];
@@ -7952,33 +8002,33 @@ function Kn(e) {
 		}
 		let i = n;
 		for (; i + 1 < 7 && (e[String(i + 1)] ?? []).join() === r.join();) i++;
-		let a = D(), o = n === i ? a[n] : i === n + 1 ? b("time.and_2", {
+		let a = O(), o = n === i ? a[n] : i === n + 1 ? x("time.and_2", {
 			value: a[n],
 			value2: a[i]
-		}) : b("helpers.day_range", {
+		}) : x("helpers.day_range", {
 			from: a[n],
 			to: a[i]
 		});
-		t.push(`${o} ${Gn(r)}`), n = i + 1;
+		t.push(`${o} ${Kn(r)}`), n = i + 1;
 	}
-	return t.length ? t.join(", ") : b("time.no_days_yet");
+	return t.length ? t.join(", ") : x("time.no_days_yet");
 }
-function qn(e) {
+function Jn(e) {
 	switch (e.type) {
-		case "none": return b("common.on_demand");
-		case "schedule": return Kn(e.days);
-		case "every_n_days": return e.every_n_days === 1 ? b("time.every_day_after_you_finish_at", { time: e.time }) : b("time.days_after_you_finish_at", {
+		case "none": return x("common.on_demand");
+		case "schedule": return qn(e.days);
+		case "every_n_days": return e.every_n_days === 1 ? x("time.every_day_after_you_finish_at", { time: e.time }) : x("time.days_after_you_finish_at", {
 			every_n_days: e.every_n_days,
 			time: e.time
 		});
 	}
 }
 // src/boopli-away.ts
-function Jn(e, t, n) {
+function Yn(e, t, n) {
 	let [r, i, a] = Rn(/* @__PURE__ */ new Date(), n).split("-").map(Number);
 	return `${new Date(Date.UTC(r, i - 1, a + e)).toISOString().slice(0, 10)}T${String(t).padStart(2, "0")}:00`;
 }
-function Yn(e, t) {
+function Xn(e, t) {
 	let n = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
 		timeZone: t,
 		year: "numeric",
@@ -7990,14 +8040,14 @@ function Yn(e, t) {
 	}).formatToParts(new Date(e)).map((e) => [e.type, e.value]));
 	return `${n.year}-${n.month}-${n.day}T${n.hour}:${n.minute}`;
 }
-function Xn(e, t, n, r) {
-	let i = e.until ? b("away.until_2", { when: Bn(e.until, t, n) }) : b("away.until_you_turn_it_off");
-	return r || !e.start ? i : b("away.from_2", {
-		when: Bn(e.start, t, n),
+function Zn(e, t, n, r) {
+	let i = e.until ? x("away.until_2", { when: Vn(e.until, t, n) }) : x("away.until_you_turn_it_off");
+	return r || !e.start ? i : x("away.from_2", {
+		when: Vn(e.start, t, n),
 		until: i
 	});
 }
-var Zn = class extends _ {
+var Qn = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -8018,10 +8068,10 @@ var Zn = class extends _ {
 		return this._changing;
 	}
 	constructor() {
-		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Jn(1, 8, "UTC"), this._open = !1, this._until = Jn(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
+		super(), this._seeded = !1, this.nowMs = Date.now(), this._changing = !1, this._expanded = !1, this._later = !1, this._start = Yn(1, 8, "UTC"), this._open = !1, this._until = Yn(7, 18, "UTC"), this._keep = {}, this._busy = !1, this._error = "";
 	}
 	willUpdate() {
-		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Jn(1, 8, this.snapshot.time_zone), this._until = Jn(7, 18, this.snapshot.time_zone), this._seedKeep());
+		!this._seeded && this.snapshot && (this._seeded = !0, this._start = Yn(1, 8, this.snapshot.time_zone), this._until = Yn(7, 18, this.snapshot.time_zone), this._seedKeep());
 	}
 	_seedKeep() {
 		this._keep = Object.fromEntries(this._chores().map((e) => [e.id, e.keeps_going ?? !1]));
@@ -8031,7 +8081,7 @@ var Zn = class extends _ {
 	}
 	_change(e) {
 		let t = this.snapshot?.time_zone ?? "UTC";
-		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Yn(e.start, t)), this._open = !e.until, e.until && (this._until = Yn(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
+		this._later = !!e.start && new Date(e.start).getTime() > Date.now(), e.start && (this._start = Xn(e.start, t)), this._open = !e.until, e.until && (this._until = Xn(e.until, t)), this._seedKeep(), this._error = "", this._changing = !0, this._expanded = !0;
 	}
 	_toggle() {
 		let e = this._expanded || this._changing;
@@ -8041,9 +8091,9 @@ var Zn = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await sn(this.hass, this._later ? this._start : "", this._open ? "" : this._until, this._keep), this._changing = !1, this._expanded = !1;
+				await on(this.hass, this._later ? this._start : "", this._open ? "" : this._until, this._keep), this._changing = !1, this._expanded = !1;
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -8053,9 +8103,9 @@ var Zn = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await cn(this.hass), this._changing = !1, this._expanded = !1;
+				await sn(this.hass), this._changing = !1, this._expanded = !1;
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -8063,62 +8113,62 @@ var Zn = class extends _ {
 	}
 	_renderOn(e) {
 		let t = !!this.snapshot?.away_now, n = this.snapshot?.time_zone ?? "UTC";
-		return p`
-      <p>${Xn(e, this.nowMs, n, t)}</p>
+		return m`
+      <p>${Zn(e, this.nowMs, n, t)}</p>
       <p class="muted small">
-        ${b(t ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
+        ${x(t ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
       </p>
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-          ${b(t ? "common.back_now" : "common.cancel_it")}
+          ${x(t ? "common.back_now" : "common.cancel_it")}
         </button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._change(e)}>${b("away.change")}</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._change(e)}>${x("away.change")}</button>
       </div>
     `;
 	}
 	_renderForm(e) {
 		let t = this._chores();
-		return p`
+		return m`
       <p class="muted small">
-        ${b("away.boopli_rests_nothing_starts_and_nothing")}
+        ${x("away.boopli_rests_nothing_starts_and_nothing")}
       </p>
 
       <div class="field">
-        <div class="label">${b("away.from")}</div>
+        <div class="label">${x("away.from")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._later ? "" : "on"}" @click=${() => this._later = !1}>${b("away.now")}</button>
-          <button type="button" class="chip ${this._later ? "on" : ""}" @click=${() => this._later = !0}>${b("away.a_date")}</button>
+          <button type="button" class="chip ${this._later ? "" : "on"}" @click=${() => this._later = !1}>${x("away.now")}</button>
+          <button type="button" class="chip ${this._later ? "on" : ""}" @click=${() => this._later = !0}>${x("away.a_date")}</button>
         </div>
-        ${this._later ? p`<input
+        ${this._later ? m`<input
               type="datetime-local"
-              aria-label=${b("away.away_from")}
+              aria-label=${x("away.away_from")}
               .value=${this._start}
               @input=${(e) => this._start = e.target.value}
-            />` : g}
+            />` : _}
       </div>
 
       <div class="field">
-        <div class="label">${b("away.until")}</div>
+        <div class="label">${x("away.until")}</div>
         <div class="chips">
-          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => this._open = !1}>${b("away.a_date")}</button>
+          <button type="button" class="chip ${this._open ? "" : "on"}" @click=${() => this._open = !1}>${x("away.a_date")}</button>
           <button type="button" class="chip ${this._open ? "on" : ""}" @click=${() => this._open = !0}>
-            ${b("away.until_i_turn_it_off")}
+            ${x("away.until_i_turn_it_off")}
           </button>
         </div>
-        ${this._open ? g : p`<input
+        ${this._open ? _ : m`<input
               type="datetime-local"
-              aria-label=${b("away.away_until")}
+              aria-label=${x("away.away_until")}
               .value=${this._until}
               @input=${(e) => this._until = e.target.value}
             />`}
       </div>
 
-      ${t.length ? p`<div class="field">
-            <div class="label">${b("away.these_keep_going_while_im_away")}</div>
-            <div class="muted small">${b("away.tick_what_you_still_want_to")}</div>
+      ${t.length ? m`<div class="field">
+            <div class="label">${x("away.these_keep_going_while_im_away")}</div>
+            <div class="muted small">${x("away.tick_what_you_still_want_to")}</div>
             <div class="keep">
-              ${t.map((e) => p`<label class="inline">
+              ${t.map((e) => m`<label class="inline">
                   <input
                     type="checkbox"
                     .checked=${this._keep[e.id] ?? !1}
@@ -8130,36 +8180,36 @@ var Zn = class extends _ {
                   ${e.name}
                 </label>`)}
             </div>
-          </div>` : g}
+          </div>` : _}
 
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
       <div class="actions">
         <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._submit()}>
-          ${e?.active ? b("away.save_away_mode") : b("away.start_away_mode")}
+          ${e?.active ? x("away.save_away_mode") : x("away.start_away_mode")}
         </button>
-        ${e?.active ? p`<button type="button" class="link" @click=${() => this._changing = !1}>${b("common.cancel")}</button>` : g}
+        ${e?.active ? m`<button type="button" class="link" @click=${() => this._changing = !1}>${x("common.cancel")}</button>` : _}
       </div>
     `;
 	}
 	render() {
-		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${b(n ? "away.on" : "away.planned")}: ${Xn(e, this.nowMs, t, n)}` : b("rung.off");
-		return p`
+		let e = this.snapshot?.away, t = this.snapshot?.time_zone ?? "UTC", n = !!this.snapshot?.away_now, r = this._expanded || this._changing, i = e?.active ? `${x(n ? "away.on" : "away.planned")}: ${Zn(e, this.nowMs, t, n)}` : x("rung.off");
+		return m`
       <div class="head-row">
         <button type="button" class="head" aria-expanded=${r} @click=${() => this._toggle()}>
-          <span class="title">${E("bag-suitcase")} ${b("away.away_mode")}</span>
+          <span class="title">${D("bag-suitcase")} ${x("away.away_mode")}</span>
           <span class="status ${e?.active ? "on" : ""}">${i}</span>
           <span class="chev" aria-hidden="true">${r ? "▾" : "▸"}</span>
         </button>
-        ${e?.active && !r ? p`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
-              ${b(n ? "common.back_now" : "common.cancel_it")}
-            </button>` : g}
+        ${e?.active && !r ? m`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._back()}>
+              ${x(n ? "common.back_now" : "common.cancel_it")}
+            </button>` : _}
       </div>
-      ${!r && this._error ? p`<div class="error" role="alert">${this._error}</div>` : g}
-      ${r ? p`<div class="body">${e?.active && !this._changing ? this._renderOn(e) : this._renderForm(e)}</div>` : g}
+      ${!r && this._error ? m`<div class="error" role="alert">${this._error}</div>` : _}
+      ${r ? m`<div class="body">${e?.active && !this._changing ? this._renderOn(e) : this._renderForm(e)}</div>` : _}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -8250,9 +8300,9 @@ var Zn = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-away", Zn);
+customElements.define("boopli-away", Qn);
 // src/today.ts
-function Qn(e, t) {
+function $n(e, t) {
 	let n = e.time_zone, r = e.runs.flatMap((e) => e.steps.filter((e) => e.status === "active").map((t) => ({
 		run: e,
 		step: t,
@@ -8260,7 +8310,7 @@ function Qn(e, t) {
 		total: e.steps.length
 	}))).sort((e, t) => (e.step.active_at ? Date.parse(e.step.active_at) : Infinity) - (t.step.active_at ? Date.parse(t.step.active_at) : Infinity))[0] ?? null, i = [...e.runs].sort((e, t) => Date.parse(e.started_at) - Date.parse(t.started_at)), a = (e, t) => !(r && r.run.id === e.id && r.step.step_id === t.step_id), o = (e) => {
 		let n = "";
-		return e.status === "active" ? n = b("common.ready_now_hint") : e.status === "waiting" && e.active_at ? n = Un(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = b("today.waits_for_something_to_happen") : e.wait_minutes > 0 && (n = b("today.after_the_step_before", { duration: Hn(e.wait_minutes) })), {
+		return e.status === "active" ? n = x("common.ready_now_hint") : e.status === "waiting" && e.active_at ? n = Wn(e.active_at, t) : e.status === "waiting" && (e.wait_for ?? []).length > 0 ? n = x("today.waits_for_something_to_happen") : e.wait_minutes > 0 && (n = x("today.after_the_step_before", { duration: Un(e.wait_minutes) })), {
 			stepId: e.step_id,
 			title: e.title,
 			status: e.status,
@@ -8280,101 +8330,323 @@ function Qn(e, t) {
 		now: r,
 		ready: s,
 		groups: c,
-		dueToday: u.filter((e) => Vn(e.at, t, n)),
-		upcoming: u.filter((e) => !Vn(e.at, t, n) && Date.parse(e.at) > t)
+		dueToday: u.filter((e) => Hn(e.at, t, n)),
+		upcoming: u.filter((e) => !Hn(e.at, t, n) && Date.parse(e.at) > t)
 	};
 }
+// src/room-art.ts
+var er = "#101010", tr = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+  <path d="M12 3 L20 9 L12 21 L4 9 Z" fill="#5CE1E6" stroke=${er} stroke-width="2" stroke-linejoin="round"/>
+  <path d="M4 9 H20 M9 9 L12 3 L15 9 M9 9 L12 21 M15 9 L12 21" fill="none" stroke="#fff" stroke-width="1.2" stroke-linejoin="round" opacity="0.75"/>
+  <path d="M7.4 7 L9.6 5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/>
+</svg>`, nr = h`<svg viewBox="0 0 56 32" aria-hidden="true">
+  <ellipse cx="28" cy="28" rx="22" ry="3" fill="#000" opacity="0.2"/>
+  <g stroke=${er} stroke-width="2.5" fill="#FFF1D6">
+    <circle cx="9" cy="14" r="5.5"/><circle cx="9" cy="23" r="5.5"/>
+    <circle cx="47" cy="14" r="5.5"/><circle cx="47" cy="23" r="5.5"/>
+  </g>
+  <rect x="10" y="12" width="36" height="12" rx="5" fill="#FFF1D6" stroke=${er} stroke-width="2.5"/>
+  <rect x="6" y="14.5" width="8" height="7" fill="#FFF1D6"/>
+  <rect x="42" y="14.5" width="8" height="7" fill="#FFF1D6"/>
+  <path d="M16 16 H36" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+</svg>`, k = "#101010", rr = h`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
+  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#4FB0F2" stroke=${k} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#fff"/>
+  <circle cx="36" cy="35" r="2.6" fill="#4FB0F2"/>
+  <circle cx="31.8" cy="31.8" r="1.4" fill="#4FB0F2"/><circle cx="36" cy="30.6" r="1.4" fill="#4FB0F2"/><circle cx="40.2" cy="31.8" r="1.4" fill="#4FB0F2"/>
+  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.8"/>
+  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#D8F1FF" stroke=${k} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#2F9BE8"/>
+  <ellipse class="ripple" cx="36" cy="19.6" rx="7" ry="1.9" fill="none" stroke="#fff" stroke-width="1.4"/>
+  <path d="M19 18.6 Q25 16.4 31 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+</svg>`, ir = h`<svg viewBox="0 0 72 48" aria-hidden="true">
+  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
+  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#F08A4B" stroke=${k} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#FFF1E2"/>
+  <circle cx="36" cy="35" r="2.6" fill="#F08A4B"/>
+  <circle cx="31.8" cy="31.8" r="1.4" fill="#F08A4B"/><circle cx="36" cy="30.6" r="1.4" fill="#F08A4B"/><circle cx="40.2" cy="31.8" r="1.4" fill="#F08A4B"/>
+  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.7"/>
+  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#FFE3C7" stroke=${k} stroke-width="2.5"/>
+  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#7A4A2A"/>
+  <g class="kibble">
+    <circle style="--i:6" cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:4" cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:1" cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:0" cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:3" cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:5" cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${k} stroke-width="1.5"/>
+    <circle style="--i:2" cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${k} stroke-width="1.5"/>
+  </g>
+</svg>`, ar = (e) => h`<svg viewBox="0 0 28 20" aria-hidden="true" class="meal ${e ? "full" : "empty"}">
+  <path d="M3 8 Q4 18 14 18 Q24 18 25 8 Z" fill=${e ? "#F08A4B" : "none"} stroke=${e ? k : "currentColor"} stroke-width="2" stroke-linejoin="round" opacity=${e ? 1 : .55}/>
+  <ellipse cx="14" cy="8" rx="11" ry="3.4" fill=${e ? "#7A4A2A" : "none"} stroke=${e ? k : "currentColor"} stroke-width="2" opacity=${e ? 1 : .55}/>
+  ${e ? h`<circle cx="10.5" cy="6.4" r="2.2" fill="#C98A5A" stroke=${k} stroke-width="1.2"/><circle cx="16" cy="5.6" r="2.2" fill="#B6784A" stroke=${k} stroke-width="1.2"/><circle cx="19.5" cy="7.4" r="2" fill="#C98A5A" stroke=${k} stroke-width="1.2"/>` : ""}
+</svg>`, or = h`<svg viewBox="0 0 32 32" aria-hidden="true" class="coin-art">
+  <circle cx="16" cy="16" r="14" fill="#FFC83D" stroke=${k} stroke-width="2"/>
+  <circle cx="16" cy="16" r="10.6" fill="none" stroke="#FFE59A" stroke-width="1.6"/>
+  <path d="M16 6.8 C17.4 9.6 22.6 11.4 22.6 17.6 C22.6 21.6 19.8 24 16 24 C12.2 24 9.4 21.6 9.4 17.6 C9.4 11.4 14.6 9.6 16 6.8 Z" fill="#6BE04B" stroke=${k} stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="13.2" cy="17.6" r="1.3" fill=${k}/><circle cx="18.8" cy="17.6" r="1.3" fill=${k}/>
+  <path d="M14 20.6 Q16 22.2 18 20.6" fill="none" stroke=${k} stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M12.6 12.8 Q13.4 11.2 14.8 10.6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/>
+</svg>`, sr = () => m`<span class="coin" aria-hidden="true">${or}</span>`, cr = h`<svg viewBox="0 0 120 64" aria-hidden="true">
+  <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
+  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${k} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${k} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${k} stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${k} stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${k} stroke-width="2.5"/>
+  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${k} stroke-width="2.5"/>
+  <path d="M18 34 H37" stroke=${k} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
+</svg>`, lr = h`<svg viewBox="0 0 120 64" aria-hidden="true">
+  <g class="blanket">
+    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${k} stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <path d="M28 49 Q60 57 92 49" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+  </g>
+  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${k} stroke-width="3" stroke-linejoin="round"/>
+  <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+</svg>`, A = (e, t, n) => h`<circle cx=${e} cy=${t} r="5.5" fill=${n} stroke=${k} stroke-width="2"/>`, ur = h`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <ellipse cx="24" cy="40" rx="18" ry="4" fill="#000" opacity="0.18"/>
+  ${A(18, 33, "#C98A5A")}${A(29, 34, "#B6784A")}${A(24, 26, "#C98A5A")}
+</svg>`, dr = h`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <ellipse cx="24" cy="41" rx="20" ry="4" fill="#000" opacity="0.18"/>
+  ${A(13, 35, "#B6784A")}${A(24, 36, "#C98A5A")}${A(35, 35, "#B6784A")}
+  ${A(18, 26, "#C98A5A")}${A(30, 26, "#B6784A")}${A(24, 17, "#C98A5A")}
+</svg>`, fr = h`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <ellipse cx="24" cy="43" rx="22" ry="4" fill="#000" opacity="0.18"/>
+  <path d="M8 22 Q24 10 40 22 L43 42 H5 Z" fill="#FFB86B" stroke=${k} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M10 28 Q24 20 38 28" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
+  <g transform="translate(24 34) rotate(-12)">
+    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${k} stroke-width="1.6"/>
+    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${k} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${k} stroke-width="1.6"/>
+    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${k} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${k} stroke-width="1.6"/>
+  </g>
+</svg>`, pr = (e) => h`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <ellipse cx="24" cy="26" rx="21" ry="15" fill="#F4F1FF" stroke=${k} stroke-width="2.5"/>
+  <ellipse cx="24" cy="26" rx="14" ry="9.5" fill="#E6E0FF" stroke=${k} stroke-width="1.5"/>
+  <text x="24" y="31" text-anchor="middle" font-size="14" font-weight="700" fill=${k} font-family="sans-serif">${e}</text>
+</svg>`, mr = (e) => m`<span class="swatch" style="background:${e}"></span>`, hr = {
+	color_sky: "#9fd3f5",
+	pattern_dots: "radial-gradient(circle, rgba(255,255,255,0.85) 22%, transparent 24%) 0 0 / 18px 18px, #c7b3f0",
+	pattern_stripes: "repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 8px, transparent 8px 16px), #f5a3b8",
+	pattern_stars: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon fill='%23ffe978' points='12,3 14.6,9 21,9.5 16.1,13.8 17.7,20.2 12,16.8 6.3,20.2 7.9,13.8 3,9.5 9.4,9'/%3E%3C/svg%3E\") 0 0 / 26px 26px, #5b6bc0",
+	pattern_waves: "radial-gradient(circle at 50% 100%, transparent 58%, rgba(255,255,255,0.6) 60% 66%, transparent 68%) 0 0 / 24px 14px, #4fb3bf",
+	pattern_checks: "conic-gradient(rgba(255,255,255,0.5) 25%, transparent 0 50%, rgba(255,255,255,0.5) 0 75%, transparent 0) 0 0 / 24px 24px, #f0b27a",
+	color_grey: "#aeb4bc",
+	color_green: "#7fcf8a",
+	color_blue: "#6aa8f0",
+	color_purple: "#b07fe0",
+	color_gold: "linear-gradient(135deg, #f7d56a, #d9a62e 55%, #f3cf5e)"
+};
+function gr(e) {
+	return e && hr[e] || "";
+}
+var _r = {
+	"floor-1": {
+		l: "7%",
+		b: "3cqh",
+		w: "36cqh",
+		pl: "3%",
+		pw: "30cqh"
+	},
+	"floor-2": {
+		l: "calc(7% + 40cqh)",
+		b: "3cqh",
+		w: "36cqh",
+		pl: "calc(3% + 33cqh)",
+		pw: "30cqh",
+		stand: "calc(7% + 98cqh)",
+		pstand: "calc(3% + 78cqh)"
+	},
+	"floor-right": {
+		r: "3%",
+		b: "3cqh",
+		w: "80cqh",
+		pw: "62cqh",
+		sleep: "calc(100% - 3% - 40cqh)",
+		psleep: "calc(100% - 3% - 31cqh)"
+	},
+	"floor-gap": {
+		r: "calc(3% + 84cqh)",
+		b: "3cqh",
+		w: "22cqh",
+		pr: "calc(3% + 66cqh)",
+		pw: "20cqh"
+	},
+	"wall-left": {
+		l: "22%",
+		t: "12cqh",
+		w: "26cqh",
+		pl: "14%",
+		pw: "22cqh"
+	},
+	"wall-right": {
+		r: "22%",
+		t: "12cqh",
+		w: "26cqh",
+		pr: "14%",
+		pw: "22cqh"
+	}
+}, vr = [
+	{
+		id: "water_bowl",
+		art: m`${rr}`,
+		spot: "floor-1"
+	},
+	{
+		id: "food_bowl",
+		art: m`${ir}`,
+		spot: "floor-2",
+		role: "food"
+	},
+	{
+		id: "bed",
+		art: m`${cr}`,
+		front: m`${lr}`,
+		spot: "floor-right",
+		role: "bed"
+	},
+	{
+		id: "bowl_gem",
+		art: m`${tr}`,
+		attach: {
+			to: "food_bowl",
+			x: 37,
+			y: 42,
+			w: 26
+		}
+	},
+	{
+		id: "dog_bone",
+		art: m`${nr}`,
+		spot: "floor-gap",
+		species: "dog"
+	}
+], yr = { fur_snow: "#F4F1EA" }, br = { scarf_red: "#E8505B" };
+function xr(e) {
+	return {
+		fur: yr[e?.fur ?? ""] ?? "",
+		neck: br[e?.neck ?? ""] ?? ""
+	};
+}
+var Sr = (e) => h`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M26 24 L28 44 L38 42 L35 22 Z" fill=${e} stroke=${k} stroke-width="2.5" stroke-linejoin="round" opacity="0.85"/>
+  <path d="M6 14 Q24 32 42 14 L40 26 Q24 42 8 26 Z" fill=${e} stroke=${k} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M15 21 L16 31 M24 25 L24 35 M33 21 L32 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+</svg>`;
+function j(e) {
+	let t = vr.find((t) => t.id === e);
+	if (t) return t.art;
+	if (yr[e]) return mr(yr[e]);
+	if (br[e]) return m`${Sr(br[e])}`;
+	switch (e) {
+		case "food_small": return m`${ur}`;
+		case "food_medium": return m`${dr}`;
+		case "food_big": return m`${fr}`;
+		case "meal_4": return m`${pr(4)}`;
+		case "meal_5": return m`${pr(5)}`;
+		default: return mr(hr[e] ?? "var(--divider-color, #888)");
+	}
+}
+function Cr(e) {
+	return j(`food_${e}`);
+}
+function M(e) {
+	return x(`shop.item_${e}`);
+}
 // src/pet-work.ts
-var A = "#101010", $n = {
+var N = "#101010", wr = {
 	levelup: 2800,
 	wake: 2600,
 	tap: 700,
 	done: 1700
 };
-function er() {
-	return m`
+function Tr() {
+	return h`
     <ellipse class="smudge" cx="26" cy="191" rx="20" ry="4.5" fill="#6B4A2E" opacity="0.85"/>
-    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${A} stroke-width="3"/></g>
-    <g transform="translate(198 144)"><g class="bagfall">${nr()}</g></g>`;
+    <g class="tub"><ellipse cx="24" cy="178" rx="22" ry="6" fill="#BFE9FF" stroke=${N} stroke-width="3"/></g>
+    <g transform="translate(198 144)"><g class="bagfall">${Dr()}</g></g>`;
 }
-function tr() {
-	return m`<g class="tub">
-    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${A} stroke-width="3" stroke-linejoin="round"/>
+function Er() {
+	return h`<g class="tub">
+    <path d="M2 178 Q4 199 24 199 Q44 199 46 178 Q24 187 2 178 Z" fill="#5B8DEF" stroke=${N} stroke-width="3" stroke-linejoin="round"/>
     <path d="M9 186 Q10 193 18 195" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${A} stroke-width="1.6"/>
-    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${A} stroke-width="1.4"/>
+    <circle class="suds s1" cx="11" cy="177" r="5" fill="#fff" stroke=${N} stroke-width="1.6"/>
+    <circle class="suds s2" cx="22" cy="173" r="6.5" fill="#fff" stroke=${N} stroke-width="1.6"/>
+    <circle class="suds s3" cx="35" cy="176" r="5" fill="#fff" stroke=${N} stroke-width="1.6"/>
+    <circle class="suds s4" cx="28" cy="179" r="3.6" fill="#fff" stroke=${N} stroke-width="1.4"/>
   </g>`;
 }
-function nr() {
-	return m`<circle r="9" fill="#3F4A5A" stroke=${A} stroke-width="2.5"/>
-    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${A} stroke-width="2.2" stroke-linejoin="round"/>
+function Dr() {
+	return h`<circle r="9" fill="#3F4A5A" stroke=${N} stroke-width="2.5"/>
+    <path d="M-4 -7 L0 -15 L4 -7 Z" fill="#3F4A5A" stroke=${N} stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M-5 -2 Q-3 2 -5 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>`;
 }
-function rr(e) {
+function Or(e) {
 	let t = e.shoulders?.l ?? [46, 150], n = e.shoulders?.r ?? [154, 150], r = e.armD?.l ?? "M46 150 Q28 160 22 180", i = e.armD?.r ?? "M154 150 Q168 158 170 176";
-	return m`
+	return h`
     <g class="arm armL" style="transform-origin:${t[0]}px ${t[1]}px">
-      <path d=${r} fill="none" stroke=${e.ink ?? A} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${r} fill="none" stroke=${e.ink ?? N} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${r} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${A} stroke-width="2.5"/>
+      <circle cx="22" cy="180" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? N} stroke-width="3"/>
+      <g class="cloth"><rect x="10" y="177" width="24" height="14" rx="4" transform="rotate(-8 22 184)" fill="#FFD84D" stroke=${N} stroke-width="2.5"/>
         <path d="M14 184 Q22 181 30 184" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/></g>
       <g class="sock" transform="translate(22 174)">
-        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${A} stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M-5 -14 h10 v14 q0 8 -9 8 h-8 q-5 0 -5 -5 q0 -5 5 -5 h7 z" fill="#fff" stroke=${N} stroke-width="2.2" stroke-linejoin="round"/>
         <path d="M-5 -9 h10 M-5 -5 h10" stroke="#E5484D" stroke-width="2"/>
       </g>
       <circle class="pop p1" cx="8" cy="172" r="4" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p2" cx="36" cy="170" r="3" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
       <circle class="pop p3" cx="24" cy="164" r="5" fill="#fff" fill-opacity="0.5" stroke="#fff" stroke-width="1.6"/>
-      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${A} stroke-width="1.2" stroke-linejoin="round"/>
+      <path class="clean" d="M22 160 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 z" fill="#FFE45C" stroke=${N} stroke-width="1.2" stroke-linejoin="round"/>
     </g>
     <g class="arm armR" style="transform-origin:${n[0]}px ${n[1]}px">
-      <path d=${i} fill="none" stroke=${e.ink ?? A} stroke-width=${13 * e.thick} stroke-linecap="round"/>
+      <path d=${i} fill="none" stroke=${e.ink ?? N} stroke-width=${13 * e.thick} stroke-linecap="round"/>
       <path d=${i} fill="none" stroke=${e.color} stroke-width=${7 * e.thick} stroke-linecap="round"/>
-      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-      <g class="bagarm" transform="translate(170 176)">${nr()}</g>
+      <circle cx="170" cy="177" r=${7.5 * e.thick} fill=${e.color} stroke=${e.ink ?? N} stroke-width="3"/>
+      <g class="bagarm" transform="translate(170 176)">${Dr()}</g>
     </g>`;
 }
-function ir() {
-	return m`${tr()}<g class="bin" transform="translate(184 160)">
-    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${A} stroke-width="3" stroke-linejoin="round"/>
-    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${A} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
-    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${A} stroke-width="2.5"/></g>
+function kr() {
+	return h`${Er()}<g class="bin" transform="translate(184 160)">
+    <path d="M0 6 L26 6 L23 32 L3 32 Z" fill="#9AA7B5" stroke=${N} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M8 11 L9 28 M13 11 V28 M18 11 L17 28" stroke=${N} stroke-width="1.6" opacity="0.45" stroke-linecap="round"/>
+    <g class="lid"><rect x="-2" y="0" width="30" height="7" rx="3" fill="#7D8A99" stroke=${N} stroke-width="2.5"/></g>
   </g>`;
 }
-function ar(e) {
-	let t = m`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>
-    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? A} stroke-width="3"/>`;
-	return m`
-    ${e.typingBehind ? t : m``}
+function Ar(e) {
+	let t = h`<circle class="hand h1" cx="68" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? N} stroke-width="3"/>
+    <circle class="hand h2" cx="132" cy="152" r=${7 * e.thick} fill=${e.color} stroke=${e.ink ?? N} stroke-width="3"/>`;
+	return h`
+    ${e.typingBehind ? t : h``}
     <g class="laptop">
-      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${A} stroke-width="2.5"/>
-      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${A} stroke-width="3"/>
+      <rect x="56" y="184" width="88" height="7" rx="3.5" fill="#6B7486" stroke=${N} stroke-width="2.5"/>
+      <rect x="62" y="150" width="76" height="36" rx="6" fill="#3A4150" stroke=${N} stroke-width="3"/>
       <path d="M100 160 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#8FA3BF" opacity="0.9"/>
     </g>
-    ${e.typingBehind ? m`` : t}
+    ${e.typingBehind ? h`` : t}
     <g class="code" transform="translate(${e.codeAt?.[0] ?? 0} ${e.codeAt?.[1] ?? 0})">
-      <text class="c1" x="84" y="60">${b("pet_work.text")}</text>
+      <text class="c1" x="84" y="60">${x("pet_work.text")}</text>
       <text class="c2" x="104" y="52">{ }</text>
       <text class="c3" x="122" y="62">01</text>
     </g>`;
 }
-function or(e) {
-	return e === "housework" ? er() : m``;
+function jr(e) {
+	return e === "housework" ? Tr() : h``;
 }
-function sr(e, t) {
-	return e === "housework" ? rr(t) : m``;
+function Mr(e, t) {
+	return e === "housework" ? Or(t) : h``;
 }
-function cr(e, t) {
-	return e === "housework" ? ir() : e === "typing" ? ar(t) : m``;
+function Nr(e, t) {
+	return e === "housework" ? kr() : e === "typing" ? Ar(t) : h``;
 }
-var lr = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
-function ur(e, t, n = {}) {
+var Pr = "M0 -9 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z";
+function Fr(e, t, n = {}) {
 	let r = n.mouth ?? [100, 153];
 	switch (e) {
-		case "levelup": return m`${[
+		case "levelup": return h`${[
 			[
 				-70,
 				-52,
@@ -8410,47 +8682,47 @@ function ur(e, t, n = {}) {
 				-84,
 				"#7CFF5B"
 			]
-		].map(([e, t, n], r) => m`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${lr} fill=${n} stroke=${A} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
-      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${A} stroke-width="3"/>
-        <text x="148" y="35" text-anchor="middle">${t || b("pet_work.level_up")}</text></g></g>`;
-		case "done": return m`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
+		].map(([e, t, n], r) => h`<g transform="translate(100 110)"><g class="burst" style="--dx:${e}px;--dy:${t}px;animation-delay:${.45 + r * .04}s"><path d=${Pr} fill=${n} stroke=${N} stroke-width="1.6" stroke-linejoin="round"/></g></g>`)}
+      <g transform="translate(0 ${n.badgeDy ?? 0})"><g class="badge"><rect x="100" y="16" width="96" height="28" rx="14" fill="#FFD166" stroke=${N} stroke-width="3"/>
+        <text x="148" y="35" text-anchor="middle">${t || x("pet_work.level_up")}</text></g></g>`;
+		case "done": return h`<path class="spark d1" d="M30 90 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark d2" d="M170 80 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <g transform="translate(0 ${n.xpDy ?? 0})"><text class="xp" x="100" y="70" text-anchor="middle">${t}</text></g>`;
-		case "tap": return m`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${A} stroke-width="2" stroke-linejoin="round"/></g>`;
-		case "wake": return m`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${A}/>
+		case "tap": return h`<g transform="translate(0 ${n.heartDy ?? 0})"><path class="heart" d="M100 70 c-6 -9 -18 -2 -10 8 l10 9 l10 -9 c8 -10 -4 -17 -10 -8 z" fill="#FF6B8A" stroke=${N} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "wake": return h`<ellipse class="yawn" cx=${r[0]} cy=${r[1]} rx="9" ry="11" fill=${N}/>
         <g transform="translate(${r[0] - 100} ${r[1] - 153})"><path class="yawn tongue" d="M93 160 Q100 152 107 160 Q100 168 93 160 Z" fill="#FF6B8A"/></g>`;
-		default: return m``;
+		default: return h``;
 	}
 }
-var j = 12;
-function M(e, t) {
+var P = 12;
+function F(e, t) {
 	return `@keyframes ${e}{${t.map(([e, t]) => `${e}%{${t}}`).join("")}}`;
 }
-function dr(e, t, n, r, i) {
+function Ir(e, t, n, r, i) {
 	let a = [], o = 0;
 	for (let s = e; s <= t + .001; s += n) a.push([Math.round(s * 100) / 100, o++ % 2 ? i : r]);
 	return a;
 }
-var N = "transform:translate(0px,0px) rotate(0deg)", fr = [
-	[0, N],
-	...dr(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
-	[32, N],
-	[34, N],
-	...dr(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
-	[64, N],
-	[100, N]
-], pr = [
-	[0, `${N};opacity:0`],
-	[64, `${N};opacity:0`],
-	[66, `${N};opacity:1`],
-	[72, `${N};opacity:1`],
+var I = "transform:translate(0px,0px) rotate(0deg)", Lr = [
+	[0, I],
+	...Ir(2, 30, 2, "transform:translate(-5px,0px) rotate(-8deg)", "transform:translate(8px,0px) rotate(8deg)"),
+	[32, I],
+	[34, I],
+	...Ir(36, 62, 3.4, "transform:translate(0px,-5px) rotate(0deg)", "transform:translate(0px,6px) rotate(0deg)"),
+	[64, I],
+	[100, I]
+], Rr = [
+	[0, `${I};opacity:0`],
+	[64, `${I};opacity:0`],
+	[66, `${I};opacity:1`],
+	[72, `${I};opacity:1`],
 	[78, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
 	[84, "transform:translate(14px,-4px) rotate(-62deg);opacity:1"],
-	[90, `${N};opacity:1`],
-	[98, `${N};opacity:1`],
-	[100, `${N};opacity:0`]
+	[90, `${I};opacity:1`],
+	[98, `${I};opacity:1`],
+	[100, `${I};opacity:0`]
 ];
-function mr(e, t) {
+function zr(e, t) {
 	return [
 		[0, "opacity:0"],
 		[Math.max(.1, e - 1), "opacity:0"],
@@ -8460,7 +8732,7 @@ function mr(e, t) {
 		[100, "opacity:0"]
 	];
 }
-function hr(e) {
+function Br(e) {
 	return [
 		[0, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
 		[e, "opacity:0;transform:scale(0.3) translate(0px,0px)"],
@@ -8469,15 +8741,15 @@ function hr(e) {
 		[100, "opacity:0;transform:scale(1.5) translate(0px,-9px)"]
 	];
 }
-var gr = o`
+var Vr = o`
   ${a([
-	M("arm-l", fr),
-	M("arm-r", pr),
-	M("vis-cloth", mr(1, 31)),
-	M("vis-sock", mr(35, 63)),
-	M("vis-bagarm", mr(66, 79.5)),
-	M("vis-bin", mr(63, 98)),
-	M("vis-tub", [
+	F("arm-l", Lr),
+	F("arm-r", Rr),
+	F("vis-cloth", zr(1, 31)),
+	F("vis-sock", zr(35, 63)),
+	F("vis-bagarm", zr(66, 79.5)),
+	F("vis-bin", zr(63, 98)),
+	F("vis-tub", [
 		[0, "opacity:0;transform:scale(0.6)"],
 		[32, "opacity:0;transform:scale(0.6)"],
 		[34, "opacity:1;transform:scale(1)"],
@@ -8485,7 +8757,7 @@ var gr = o`
 		[66, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.6)"]
 	]),
-	M("vis-smudge", [
+	F("vis-smudge", [
 		[0, "opacity:0.85"],
 		[8, "opacity:0.85"],
 		[30, "opacity:0"],
@@ -8493,17 +8765,17 @@ var gr = o`
 		[99, "opacity:0.85"],
 		[100, "opacity:0.85"]
 	]),
-	M("pop-1", hr(4)),
-	M("pop-2", hr(12)),
-	M("pop-3", hr(20)),
-	M("clean-star", [
+	F("pop-1", Br(4)),
+	F("pop-2", Br(12)),
+	F("pop-3", Br(20)),
+	F("clean-star", [
 		[0, "opacity:0;transform:scale(0.2)"],
 		[59, "opacity:0;transform:scale(0.2)"],
 		[61, "opacity:1;transform:scale(1.1)"],
 		[64, "opacity:0;transform:scale(0.6)"],
 		[100, "opacity:0;transform:scale(0.2)"]
 	]),
-	M("bag-fall", [
+	F("bag-fall", [
 		[0, "opacity:0;transform:translateY(0px)"],
 		[79.4, "opacity:0;transform:translateY(0px)"],
 		[79.5, "opacity:1;transform:translateY(0px)"],
@@ -8511,7 +8783,7 @@ var gr = o`
 		[84, "opacity:0;transform:translateY(24px)"],
 		[100, "opacity:0;transform:translateY(24px)"]
 	]),
-	M("lid", [
+	F("lid", [
 		[0, "transform:rotate(0deg)"],
 		[76, "transform:rotate(0deg)"],
 		[79, "transform:rotate(-38deg)"],
@@ -8519,14 +8791,14 @@ var gr = o`
 		[89, "transform:rotate(0deg)"],
 		[100, "transform:rotate(0deg)"]
 	]),
-	M("look-work", [
+	F("look-work", [
 		[0, "transform:translateX(-4px)"],
 		[64, "transform:translateX(-4px)"],
 		[67, "transform:translateX(4px)"],
 		[98, "transform:translateX(4px)"],
 		[100, "transform:translateX(-4px)"]
 	]),
-	M("work-bounce", [
+	F("work-bounce", [
 		[0, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[31, "transform:scale(calc(1 + 0 * var(--k, 1)), calc(1 + 0 * var(--k, 1)))"],
 		[33, "transform:scale(calc(1 + -0.05 * var(--k, 1)), calc(1 + 0.07 * var(--k, 1)))"],
@@ -8580,52 +8852,52 @@ var gr = o`
 
   /* The housework routine: every part runs on the same 12 second loop. */
   .housework .armL {
-    animation: arm-l ${a(String(j))}s ease-in-out infinite;
+    animation: arm-l ${a(String(P))}s ease-in-out infinite;
   }
   .housework .armR {
-    animation: arm-r ${a(String(j))}s ease-in-out infinite;
+    animation: arm-r ${a(String(P))}s ease-in-out infinite;
   }
   .housework .cloth {
-    animation: vis-cloth ${a(String(j))}s linear infinite;
+    animation: vis-cloth ${a(String(P))}s linear infinite;
   }
   .housework .sock {
-    animation: vis-sock ${a(String(j))}s linear infinite;
+    animation: vis-sock ${a(String(P))}s linear infinite;
   }
   .housework .bagarm {
-    animation: vis-bagarm ${a(String(j))}s linear infinite;
+    animation: vis-bagarm ${a(String(P))}s linear infinite;
   }
   .housework .bin {
-    animation: vis-bin ${a(String(j))}s linear infinite;
+    animation: vis-bin ${a(String(P))}s linear infinite;
   }
   .housework .tub {
-    animation: vis-tub ${a(String(j))}s ease-out infinite;
+    animation: vis-tub ${a(String(P))}s ease-out infinite;
   }
   .housework .smudge {
-    animation: vis-smudge ${a(String(j))}s linear infinite;
+    animation: vis-smudge ${a(String(P))}s linear infinite;
   }
   .housework .pop.p1 {
-    animation: pop-1 ${a(String(j))}s linear infinite;
+    animation: pop-1 ${a(String(P))}s linear infinite;
   }
   .housework .pop.p2 {
-    animation: pop-2 ${a(String(j))}s linear infinite;
+    animation: pop-2 ${a(String(P))}s linear infinite;
   }
   .housework .pop.p3 {
-    animation: pop-3 ${a(String(j))}s linear infinite;
+    animation: pop-3 ${a(String(P))}s linear infinite;
   }
   .housework .clean {
-    animation: clean-star ${a(String(j))}s linear infinite;
+    animation: clean-star ${a(String(P))}s linear infinite;
   }
   .housework .bagfall {
-    animation: bag-fall ${a(String(j))}s linear infinite;
+    animation: bag-fall ${a(String(P))}s linear infinite;
   }
   .housework .lid {
-    animation: lid ${a(String(j))}s ease-in-out infinite;
+    animation: lid ${a(String(P))}s ease-in-out infinite;
   }
   .housework .eyes {
-    animation: look-work ${a(String(j))}s ease-in-out infinite;
+    animation: look-work ${a(String(P))}s ease-in-out infinite;
   }
   .housework .jelly {
-    animation: work-bounce ${a(String(j))}s ease-in-out infinite;
+    animation: work-bounce ${a(String(P))}s ease-in-out infinite;
   }
   .suds {
     transform-box: fill-box;
@@ -8764,7 +9036,7 @@ var gr = o`
   }
   .badge text {
     font: 800 17px system-ui, sans-serif;
-    fill: ${a(A)};
+    fill: ${a(N)};
   }
   @keyframes badge {
     0% {
@@ -8809,7 +9081,7 @@ var gr = o`
   .xp {
     font: 800 19px system-ui, sans-serif;
     fill: #fff;
-    stroke: ${a(A)};
+    stroke: ${a(N)};
     stroke-width: 4px;
     paint-order: stroke;
     animation: xp-rise 1.6s ease-out 1 both;
@@ -8917,20 +9189,45 @@ var gr = o`
   .d2 {
     animation-delay: 0.2s;
   }
-`, _r = "#101010";
-function vr(e, t = {}) {
+`, Hr = "#101010";
+function Ur(e, t = {}) {
 	let n = t.z ?? [0, 0], r = t.tear ?? [0, 0];
 	switch (e) {
-		case "sleepy": return m`<g class="zzz" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text></g>`;
-		case "hibernating": return m`<g class="zzz slow" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text><text class="z z3" x="170" y="42">Z</text></g>`;
-		case "sad": return m`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${_r} stroke-width="2" stroke-linejoin="round"/></g>`;
-		case "happy": return m`<path class="spark s1" d="M26 84 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5 z" fill="#FFE45C"/>
+		case "sleepy": return h`<g class="zzz" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text></g>`;
+		case "hibernating": return h`<g class="zzz slow" transform="translate(${n[0]} ${n[1]})"><text class="z z1" x="146" y="84">z</text><text class="z z2" x="158" y="64">z</text><text class="z z3" x="170" y="42">Z</text></g>`;
+		case "sad": return h`<g transform="translate(${r[0]} ${r[1]})"><path class="tear" d="M130 150 q-6 9 0 14 q6 -5 0 -14 z" fill="#5CC8FF" stroke=${Hr} stroke-width="2" stroke-linejoin="round"/></g>`;
+		case "happy": return h`<path class="spark s1" d="M26 84 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5 z" fill="#FFE45C"/>
         <path class="spark s2" d="M176 70 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFE45C"/>
         <path class="spark s3" d="M168 118 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2 -4.5 -4.5 -2 4.5 -2 z" fill="#fff"/>`;
-		default: return m``;
+		default: return h``;
 	}
 }
-var yr = o`
+function L(e, t, n) {
+	let r = (e, t) => parseInt(e.slice(1 + t * 2, 3 + t * 2), 16), i = (i) => Math.round(r(e, i) + (r(t, i) - r(e, i)) * n).toString(16).padStart(2, "0");
+	return `#${i(0)}${i(1)}${i(2)}`;
+}
+function Wr(e) {
+	return [
+		["--fur", e],
+		["--fur-dark", L(e, "#000000", .22)],
+		["--fur-deep", L(e, "#000000", .5)],
+		["--fur-lt", L(e, "#ffffff", .3)],
+		["--fur-hi", L(e, "#ffffff", .7)],
+		["--fur-rim", L(e, "#ffffff", .35)],
+		["--fur-vest", L(e, "#ffffff", .1)],
+		["--fur-line", L(e, "#000000", .7)]
+	].map(([e, t]) => `${e}:${t}`).join(";");
+}
+function Gr(e, t) {
+	if (!e) return h``;
+	let n = t.x - t.w / 2, r = t.x + t.w / 2, i = t.y, a = L(e, "#000000", .25);
+	return h`<g class="scarf">
+    <path d="M${t.x + t.w * .12} ${i + 8} L${t.x + t.w * .12 + 3} ${i + 30} L${t.x + t.w * .12 + 16} ${i + 27} L${t.x + t.w * .12 + 12} ${i + 5} Z" fill=${a} stroke=${Hr} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${n} ${i - 6} Q${t.x} ${i + 10} ${r} ${i - 6} L${r - 2} ${i + 6} Q${t.x} ${i + 22} ${n + 2} ${i + 6} Z" fill=${e} stroke=${Hr} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${n + t.w * .28} ${i + 2} L${n + t.w * .3} ${i + 14} M${n + t.w * .5} ${i + 5} L${n + t.w * .5} ${i + 17} M${n + t.w * .72} ${i + 2} L${n + t.w * .7} ${i + 14}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+  </g>`;
+}
+var Kr = o`
   .pet-art {
     width: 100%;
     height: 100%;
@@ -9229,16 +9526,20 @@ var yr = o`
       transform: translate(8px, -16px) scale(1.1);
     }
   }
-`, P = "#3A1204", F = "#8A2A0B", br = "#6E1F07", xr = "#D79563", I = "#190703", Sr = {
+`, qr = "#3A1204", R = "var(--fur, #8A2A0B)", Jr = "var(--fur-dark, #6E1F07)", Yr = {
+	x: 100,
+	y: 115,
+	w: 78
+}, Xr = "#D79563", z = "#190703", Zr = {
 	l: "M54 130 C40 138 38 158 46 170",
 	r: "M146 130 C160 138 162 158 154 170"
 };
-function Cr(e) {
-	return m`<path d=${e} fill="none" stroke=${P} stroke-width="19.5" stroke-linecap="round"/>
-    <path d=${e} fill="none" stroke=${F} stroke-width="10.5" stroke-linecap="round"/>`;
+function Qr(e) {
+	return h`<path d=${e} fill="none" stroke=${qr} stroke-width="19.5" stroke-linecap="round"/>
+    <path d=${e} fill="none" stroke=${R} stroke-width="10.5" stroke-linecap="round"/>`;
 }
-var wr = {
-	color: F,
+var $r = {
+	color: R,
 	thick: 1.5,
 	shoulders: {
 		l: [54, 130],
@@ -9250,81 +9551,82 @@ var wr = {
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Tr = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", Er = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
-function Dr(e) {
+}, ei = "M54 182 C40 182 36 160 44 138 C52 118 74 110 100 110 C126 110 148 118 156 138 C164 160 160 182 146 182 Z", ti = "M52 80 C52 56 70 42 100 42 C130 42 148 56 148 80 C148 104 130 118 100 118 C70 118 52 104 52 80 Z";
+function ni(e) {
 	switch (e) {
-		case "happy": return m`<path d="M72 72 Q80 61 88 72" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 72 Q120 61 128 72" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return m`<path d="M73 70 Q80 74 87 70" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M113 70 Q120 74 127 70" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M73 68 Q80 76 87 68" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M113 68 Q120 76 127 68" fill="none" stroke=${I} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sad": return m`<g class="eyes">
-          <g class="eye"><ellipse cx="80" cy="72" rx="5.6" ry="7" fill=${I}/><circle cx="78.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="82" cy="75" r="1" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="120" cy="72" rx="5.6" ry="7" fill=${I}/><circle cx="118.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="122" cy="75" r="1" fill="#fff"/></g>
+		case "happy": return h`<path d="M72 72 Q80 61 88 72" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 72 Q120 61 128 72" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<path d="M73 70 Q80 74 87 70" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M113 70 Q120 74 127 70" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M73 68 Q80 76 87 68" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M113 68 Q120 76 127 68" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sad": return h`<g class="eyes">
+          <g class="eye"><ellipse cx="80" cy="72" rx="5.6" ry="7" fill=${z}/><circle cx="78.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="82" cy="75" r="1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="120" cy="72" rx="5.6" ry="7" fill=${z}/><circle cx="118.2" cy="68.8" r="2.1" fill="#fff"/><circle cx="122" cy="75" r="1" fill="#fff"/></g>
         </g>
-        <path d="M71 61 L88 55" stroke=${I} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M129 61 L112 55" stroke=${I} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return m`<g class="eyes look">
-        <g class="eye"><circle cx="80" cy="70" r="5.6" fill=${I}/><circle cx="78.2" cy="67.8" r="1.9" fill="#fff"/></g>
-        <g class="eye"><circle cx="120" cy="70" r="5.6" fill=${I}/><circle cx="118.2" cy="67.8" r="1.9" fill="#fff"/></g>
+        <path d="M71 61 L88 55" stroke=${z} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M129 61 L112 55" stroke=${z} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return h`<g class="eyes look">
+        <g class="eye"><circle cx="80" cy="70" r="5.6" fill=${z}/><circle cx="78.2" cy="67.8" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="120" cy="70" r="5.6" fill=${z}/><circle cx="118.2" cy="67.8" r="1.9" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Or(e) {
+function ri(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .75;
-	return m`<ellipse cx="66" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>
+	return h`<ellipse cx="66" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>
     <ellipse cx="134" cy="88" rx="6" ry="3.6" fill="#FF8FB0" opacity=${t}/>`;
 }
-function kr(e) {
-	let t = m`<path d="M100 93 V98" stroke=${I} stroke-width="3.2" stroke-linecap="round"/>`;
+function ii(e) {
+	let t = h`<path d="M100 93 V98" stroke=${z} stroke-width="3.2" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return m`${t}<path d="M90 98 Q100 118 110 98 Z" fill=${I} stroke=${I} stroke-width="3.2" stroke-linejoin="round"/>
+		case "happy": return h`${t}<path d="M90 98 Q100 118 110 98 Z" fill=${z} stroke=${z} stroke-width="3.2" stroke-linejoin="round"/>
         <path d="M95 108 Q100 102 105 108 Q100 113 95 108 Z" fill="#FF6B8A"/>`;
-		case "sleepy": return m`${t}<ellipse cx="100" cy="104" rx="3.8" ry="3.2" fill=${I}/>`;
-		case "sad": return m`${t}<path d="M92 107 Q100 98 108 107" fill="none" stroke=${I} stroke-width="3.6" stroke-linecap="round"/>`;
-		case "hibernating": return m`${t}<path d="M94 101 Q100 105 106 101" fill="none" stroke=${I} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return m`${t}<path d="M91 98 Q100 108 109 98" fill="none" stroke=${I} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "sleepy": return h`${t}<ellipse cx="100" cy="104" rx="3.8" ry="3.2" fill=${z}/>`;
+		case "sad": return h`${t}<path d="M92 107 Q100 98 108 107" fill="none" stroke=${z} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "hibernating": return h`${t}<path d="M94 101 Q100 105 106 101" fill="none" stroke=${z} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return h`${t}<path d="M91 98 Q100 108 109 98" fill="none" stroke=${z} stroke-width="3.6" stroke-linecap="round"/>`;
 	}
 }
-function Ar(e) {
-	return e === "hibernating" ? m`<g class="snore"><circle cx="112" cy="94" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="91.5" r="1.8" fill="#fff"/></g>` : m``;
+function ai(e) {
+	return e === "hibernating" ? h`<g class="snore"><circle cx="112" cy="94" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="91.5" r="1.8" fill="#fff"/></g>` : h``;
 }
-function jr(e, t = {}) {
+function oi(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
-	return e = n ? "content" : e, m`<svg class="pet-art bear ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
+	return e = n ? "content" : e, h`<svg class="pet-art bear ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="bear-body-clip"><path d=${Tr}/></clipPath>
+      <clipPath id="bear-body-clip"><path d=${ei}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="62" ry="8" fill="#000" opacity="0.22"/>
-    ${or(n)} ${sr(n, wr)}
+    ${jr(n)} ${Mr(n, $r)}
     <g class="jelly">
-      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${F} stroke=${P} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${xr}/></g>
-      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${F} stroke=${P} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${xr}/></g>
-      ${n ? m`` : m`${Cr(Sr.l)}${Cr(Sr.r)}`}
-      <path d=${Tr} fill=${F}/>
+      <g class="ear earL"><circle cx="62" cy="48" r="17" fill=${R} stroke=${qr} stroke-width="4"/><circle cx="63" cy="49" r="9" fill=${Xr}/></g>
+      <g class="ear earR"><circle cx="138" cy="48" r="17" fill=${R} stroke=${qr} stroke-width="4"/><circle cx="137" cy="49" r="9" fill=${Xr}/></g>
+      ${n ? h`` : h`${Qr(Zr.l)}${Qr(Zr.r)}`}
+      <path d=${ei} fill=${R}/>
       <g clip-path="url(#bear-body-clip)">
-        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${br} opacity="0.55"/>
-        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${xr}/>
+        <ellipse cx="100" cy="196" rx="86" ry="30" fill=${Jr} opacity="0.55"/>
+        <ellipse cx="100" cy="152" rx="29" ry="32" fill=${Xr}/>
       </g>
-      <path d=${Tr} fill="none" stroke=${P} stroke-width="4" stroke-linejoin="round"/>
-      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${F} stroke=${P} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${xr}/></g>
-      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${F} stroke=${P} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${xr}/></g>
-      <path d=${Er} fill=${F} stroke=${P} stroke-width="4" stroke-linejoin="round"/>
+      <path d=${ei} fill="none" stroke=${qr} stroke-width="4" stroke-linejoin="round"/>
+      <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${R} stroke=${qr} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${Xr}/></g>
+      <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${R} stroke=${qr} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${Xr}/></g>
+      ${Gr(t.neck, Yr)}
+      <path d=${ti} fill=${R} stroke=${qr} stroke-width="4" stroke-linejoin="round"/>
       <path d="M60 70 C60 58 70 50 82 48" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.16"/>
-      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${xr}/>
-      ${Or(e)} ${Dr(e)}
-      <rect x="88" y="80" width="24" height="14" rx="7" fill=${I}/>
+      <ellipse cx="100" cy="96" rx="25" ry="19" fill=${Xr}/>
+      ${ri(e)} ${ni(e)}
+      <rect x="88" y="80" width="24" height="14" rx="7" fill=${z}/>
       <ellipse cx="94" cy="84" rx="4.5" ry="2" fill="#fff" opacity="0.8"/>
-      ${r === "wake" ? m`<path d="M100 93 V98" stroke=${I} stroke-width="3.2" stroke-linecap="round"/>` : kr(e)}
-      ${Ar(e)}
+      ${r === "wake" ? h`<path d="M100 93 V98" stroke=${z} stroke-width="3.2" stroke-linecap="round"/>` : ii(e)}
+      ${ai(e)}
     </g>
-    ${cr(n, wr)}
-    ${n ? m`` : vr(e, {
+    ${Nr(n, $r)}
+    ${n ? h`` : Ur(e, {
 		z: [10, -30],
 		tear: [-8, -68]
 	})}
-    ${ur(r, t.text ?? "", {
+    ${Fr(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -16,
 		xpDy: -42,
@@ -9332,7 +9634,7 @@ function jr(e, t = {}) {
 	})}
   </svg>`;
 }
-var Mr = o`
+var si = o`
   /* A bear is heavy: it only squashes a third as much as the slime. */
   .bear {
     --k: 0.3;
@@ -9365,9 +9667,13 @@ var Mr = o`
   .bear.sad .ear {
     animation: none;
   }
-`, L = "#8C78CC", Nr = "#1B1133", Pr = "#2F2054", Fr = "#170E2E", Ir = "#3C2C70", R = "#C4B6F0", Lr = "#D69AE8", Rr = "#1F9C7C", zr = "#0E5C48", Br = {
-	color: "#2A1B4A",
-	ink: L,
+`, B = "var(--fur-rim, #8C78CC)", ci = "#1B1133", li = "var(--fur, #2F2054)", ui = "var(--fur-dark, #170E2E)", di = "var(--fur-vest, #3C2C70)", fi = {
+	x: 100,
+	y: 121,
+	w: 52
+}, V = "#C4B6F0", H = "var(--fur-line, #C4B6F0)", pi = "#D69AE8", mi = "#1F9C7C", hi = "#0E5C48", gi = {
+	color: "var(--fur-deep, #2A1B4A)",
+	ink: B,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -9379,93 +9685,94 @@ var Mr = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, Vr = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", Hr = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", Ur = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
-function Wr(e) {
+}, _i = "M72 182 C66 162 68 134 80 120 C88 112 112 112 120 120 C132 134 134 162 128 182 Z", vi = "M54 78 C54 54 74 46 100 46 C126 46 146 54 146 78 C146 102 126 118 100 118 C74 118 54 102 54 78 Z", yi = "M124 176 C168 184 182 156 164 144 C150 135 154 116 174 112";
+function bi(e) {
 	switch (e) {
-		case "happy": return m`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return m`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${R} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sad": return m`<g class="eyes">
-          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${R}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${Nr}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
-          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${R}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${Nr}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
+		case "happy": return h`<path d="M71 84 Q80 71 89 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M111 84 Q120 71 129 84" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<path d="M72 81 Q80 86 88 81" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 81 Q120 86 128 81" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M72 79 Q80 88 88 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M112 79 Q120 88 128 79" fill="none" stroke=${H} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sad": return h`<g class="eyes">
+          <g class="eye"><circle cx="80" cy="82" r="9.5" fill=${V}/><ellipse cx="80" cy="83" rx="5.4" ry="6.6" fill=${ci}/><circle cx="78" cy="80" r="2.2" fill="#fff"/></g>
+          <g class="eye"><circle cx="120" cy="82" r="9.5" fill=${V}/><ellipse cx="120" cy="83" rx="5.4" ry="6.6" fill=${ci}/><circle cx="118" cy="80" r="2.2" fill="#fff"/></g>
         </g>
-        <path d="M69 69 L90 63" stroke=${R} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M131 69 L110 63" stroke=${R} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return m`<g class="eyes look">
-        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${R}/><circle cx="80" cy="80" r="5" fill=${Nr}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
-        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${R}/><circle cx="120" cy="80" r="5" fill=${Nr}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
+        <path d="M69 69 L90 63" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M131 69 L110 63" stroke=${H} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return h`<g class="eyes look">
+        <g class="eye"><circle cx="80" cy="80" r="9.5" fill=${V}/><circle cx="80" cy="80" r="5" fill=${ci}/><circle cx="82" cy="78" r="1.9" fill="#fff"/></g>
+        <g class="eye"><circle cx="120" cy="80" r="9.5" fill=${V}/><circle cx="120" cy="80" r="5" fill=${ci}/><circle cx="122" cy="78" r="1.9" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Gr(e) {
-	let t = m`<path d="M100 95 V98" stroke=${R} stroke-width="2.8" stroke-linecap="round"/>`;
+function xi(e) {
+	let t = h`<path d="M100 95 V98" stroke=${V} stroke-width="2.8" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return m`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${Nr} stroke=${R} stroke-width="2.8" stroke-linejoin="round"/>
+		case "happy": return h`${t}<path d="M91 99 Q100 114 109 99 Z" fill=${ci} stroke=${V} stroke-width="2.8" stroke-linejoin="round"/>
         <path d="M95 106 Q100 101 105 106 Q100 111 95 106 Z" fill="#FF7FA3"/>`;
-		case "sleepy": return m`${t}<ellipse cx="100" cy="104" rx="3.2" ry="2.6" fill=${R}/>`;
-		case "sad": return m`${t}<path d="M92 107 Q100 99 108 107" fill="none" stroke=${R} stroke-width="3" stroke-linecap="round"/>`;
-		case "hibernating": return m`${t}<path d="M95 101 Q100 105 105 101" fill="none" stroke=${R} stroke-width="3" stroke-linecap="round"/>`;
-		default: return m`${t}<path d="M92 100 Q96 106 100 98 Q104 106 108 100" fill="none" stroke=${R} stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "sleepy": return h`${t}<ellipse cx="100" cy="104" rx="3.2" ry="2.6" fill=${V}/>`;
+		case "sad": return h`${t}<path d="M92 107 Q100 99 108 107" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round"/>`;
+		case "hibernating": return h`${t}<path d="M95 101 Q100 105 105 101" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round"/>`;
+		default: return h`${t}<path d="M92 100 Q96 106 100 98 Q104 106 108 100" fill="none" stroke=${V} stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function Kr() {
-	return m`<g class="whiskers" fill="none" stroke=${R} stroke-width="2" stroke-linecap="round" opacity="0.85">
+function Si() {
+	return h`<g class="whiskers" fill="none" stroke=${V} stroke-width="2" stroke-linecap="round" opacity="0.85">
     <path d="M68 92 L34 84"/><path d="M68 97 L32 98"/><path d="M70 102 L38 112"/>
     <path d="M132 92 L166 84"/><path d="M132 97 L168 98"/><path d="M130 102 L162 112"/>
   </g>`;
 }
-function qr(e) {
-	return e === "hibernating" ? m`<g class="snore"><circle cx="113" cy="98" r="7" fill="#E9E0FF" fill-opacity="0.45" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="95.5" r="1.8" fill="#fff"/></g>` : m``;
+function Ci(e) {
+	return e === "hibernating" ? h`<g class="snore"><circle cx="113" cy="98" r="7" fill="#E9E0FF" fill-opacity="0.45" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="95.5" r="1.8" fill="#fff"/></g>` : h``;
 }
-function Jr(e, t = {}) {
+function wi(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
-	return e = n ? "content" : e, m`<svg class="pet-art cat ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
+	return e = n ? "content" : e, h`<svg class="pet-art cat ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <linearGradient id="cat-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color=${Pr}/>
-        <stop offset="1" stop-color=${Fr}/>
+        <stop offset="0" stop-color=${li}/>
+        <stop offset="1" stop-color=${ui}/>
       </linearGradient>
-      <clipPath id="cat-body-clip"><path d=${Vr}/></clipPath>
+      <clipPath id="cat-body-clip"><path d=${_i}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.3"/>
-    ${or(n)} ${sr(n, Br)}
+    ${jr(n)} ${Mr(n, gi)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Ur} fill="none" stroke=${L} stroke-width="17" stroke-linecap="round"/>
-        <path d=${Ur} fill="none" stroke=${Nr} stroke-width="10.5" stroke-linecap="round"/>
+        <path d=${yi} fill="none" stroke=${B} stroke-width="17" stroke-linecap="round"/>
+        <path d=${yi} fill="none" stroke=${ci} stroke-width="10.5" stroke-linecap="round"/>
       </g>
-      <g class="ear earL"><path d="M56 72 C52 52 52 36 56 22 C70 28 84 38 92 50 Z" fill="url(#cat-fill)" stroke=${L} stroke-width="3.5" stroke-linejoin="round"/>
+      <g class="ear earL"><path d="M56 72 C52 52 52 36 56 22 C70 28 84 38 92 50 Z" fill="url(#cat-fill)" stroke=${B} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M63 58 C61 48 61 40 63 33 C70 37 77 42 81 48 Z" fill="#6E5AA8"/></g>
-      <g class="ear earR"><path d="M144 72 C148 52 148 36 144 22 C130 28 116 38 108 50 Z" fill="url(#cat-fill)" stroke=${L} stroke-width="3.5" stroke-linejoin="round"/>
+      <g class="ear earR"><path d="M144 72 C148 52 148 36 144 22 C130 28 116 38 108 50 Z" fill="url(#cat-fill)" stroke=${B} stroke-width="3.5" stroke-linejoin="round"/>
         <path d="M137 58 C139 48 139 40 137 33 C130 37 123 42 119 48 Z" fill="#6E5AA8"/></g>
-      <path d=${Vr} fill="url(#cat-fill)"/>
+      <path d=${_i} fill="url(#cat-fill)"/>
       <g clip-path="url(#cat-body-clip)">
-        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${Ir}/>
+        <path d="M86 116 L100 128 L114 116 L117 176 L83 176 Z" fill=${di}/>
         <path d="M100 128 V176" stroke="#2A1C52" stroke-width="2.4"/>
         <ellipse cx="100" cy="198" rx="70" ry="22" fill="#000" opacity="0.25"/>
       </g>
-      <path d=${Vr} fill="none" stroke=${L} stroke-width="3.5" stroke-linejoin="round"/>
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${Ir} stroke=${L} stroke-width="3.5"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${Ir} stroke=${L} stroke-width="3.5"/>
-      <path d=${Hr} fill="url(#cat-fill)" stroke=${L} stroke-width="3.5" stroke-linejoin="round"/>
+      <path d=${_i} fill="none" stroke=${B} stroke-width="3.5" stroke-linejoin="round"/>
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${di} stroke=${B} stroke-width="3.5"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${di} stroke=${B} stroke-width="3.5"/>
+      ${Gr(t.neck, fi)}
+      <path d=${vi} fill="url(#cat-fill)" stroke=${B} stroke-width="3.5" stroke-linejoin="round"/>
       <path d="M62 70 C62 60 70 54 82 52" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.14"/>
-      ${Kr()} ${Wr(e)}
-      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${Lr} stroke=${Lr} stroke-width="2" stroke-linejoin="round"/>
-      ${r === "wake" ? m`<path d="M100 95 V98" stroke=${R} stroke-width="2.8" stroke-linecap="round"/>` : Gr(e)}
-      ${qr(e)}
-      <g><path d="M100 121 L80 112 L80 130 Z" fill=${Rr} stroke=${zr} stroke-width="2.4" stroke-linejoin="round"/>
-        <path d="M100 121 L120 112 L120 130 Z" fill=${Rr} stroke=${zr} stroke-width="2.4" stroke-linejoin="round"/>
-        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${zr} stroke-width="2.4"/></g>
+      ${Si()} ${bi(e)}
+      <path d="M94.5 89 L105.5 89 L100 96 Z" fill=${pi} stroke=${pi} stroke-width="2" stroke-linejoin="round"/>
+      ${r === "wake" ? h`<path d="M100 95 V98" stroke=${V} stroke-width="2.8" stroke-linecap="round"/>` : xi(e)}
+      ${Ci(e)}
+      ${t.neck ? h`` : h`<g><path d="M100 121 L80 112 L80 130 Z" fill=${mi} stroke=${hi} stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M100 121 L120 112 L120 130 Z" fill=${mi} stroke=${hi} stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="100" cy="121" r="5" fill="#27B592" stroke=${hi} stroke-width="2.4"/></g>`}
     </g>
-    ${cr(n, Br)}
-    ${n ? m`` : vr(e, {
+    ${Nr(n, gi)}
+    ${n ? h`` : Ur(e, {
 		z: [10, -30],
 		tear: [-10, -62]
 	})}
-    ${ur(r, t.text ?? "", {
+    ${Fr(r, t.text ?? "", {
 		mouth: [100, 106],
 		badgeDy: -18,
 		xpDy: -46,
@@ -9473,7 +9780,7 @@ function Jr(e, t = {}) {
 	})}
   </svg>`;
 }
-var Yr = o`
+var Ti = o`
   /* A cat is graceful: it squashes a bit less than the slime. */
   .cat {
     --k: 0.4;
@@ -9551,8 +9858,12 @@ var Yr = o`
       transform: scaleY(1.12);
     }
   }
-`, z = "#2F2E5C", Xr = "#F9A03B", Zr = "#E0821F", Qr = "#FFF4E2", $r = "#9C6A57", ei = "#B8826C", ti = "#FF8FA3", ni = "#FF6B8A", ri = {
-	color: Xr,
+`, U = "#2F2E5C", Ei = "var(--fur, #F9A03B)", Di = "var(--fur-dark, #E0821F)", Oi = {
+	x: 100,
+	y: 116,
+	w: 58
+}, ki = "#FFF4E2", Ai = "#9C6A57", ji = "#B8826C", Mi = "#FF8FA3", Ni = "#FF6B8A", Pi = {
+	color: Ei,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -9564,96 +9875,97 @@ var Yr = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, ii = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", ai = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", oi = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", si = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
-function ci(e) {
+}, Fi = "M122 185 C158 190 186 168 184 136 C183 108 154 98 141 115 C133 128 143 137 151 141 C156 147 150 163 137 167 C129 169 121 167 115 163 Z", Ii = "M72 182 C66 160 68 130 78 116 C86 106 114 106 122 116 C132 130 134 160 128 182 Z", Li = "M50 80 C50 54 72 40 100 40 C128 40 150 54 150 80 C150 106 128 118 100 118 C72 118 50 106 50 80 Z", Ri = "M51 82 Q100 62 149 82 C150 106 128 118 100 118 C72 118 50 106 51 82 Z";
+function zi(e) {
 	switch (e) {
-		case "happy": return m`<path d="M73 85 Q82 72 91 85" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M109 85 Q118 72 127 85" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return m`<path d="M74 82 Q82 87 90 82" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M110 82 Q118 87 126 82" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M74 80 Q82 89 90 80" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M110 80 Q118 89 126 80" fill="none" stroke=${z} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sad": return m`<g class="eyes">
-          <g class="eye"><ellipse cx="82" cy="83" rx="6.6" ry="8.2" fill=${z}/><circle cx="79.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="84.4" cy="86.5" r="1.2" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="118" cy="83" rx="6.6" ry="8.2" fill=${z}/><circle cx="115.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="120.4" cy="86.5" r="1.2" fill="#fff"/></g>
+		case "happy": return h`<path d="M73 85 Q82 72 91 85" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M109 85 Q118 72 127 85" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<path d="M74 82 Q82 87 90 82" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M110 82 Q118 87 126 82" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M74 80 Q82 89 90 80" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M110 80 Q118 89 126 80" fill="none" stroke=${U} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sad": return h`<g class="eyes">
+          <g class="eye"><ellipse cx="82" cy="83" rx="6.6" ry="8.2" fill=${U}/><circle cx="79.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="84.4" cy="86.5" r="1.2" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="118" cy="83" rx="6.6" ry="8.2" fill=${U}/><circle cx="115.8" cy="79.5" r="2.5" fill="#fff"/><circle cx="120.4" cy="86.5" r="1.2" fill="#fff"/></g>
         </g>
-        <path d="M72 71 L91 65" stroke=${z} stroke-width="3.6" stroke-linecap="round"/>
-        <path d="M128 71 L109 65" stroke=${z} stroke-width="3.6" stroke-linecap="round"/>`;
-		default: return m`<g class="eyes look">
-        <g class="eye"><circle cx="82" cy="82" r="7.4" fill=${z}/><circle cx="84.6" cy="79" r="2.7" fill="#fff"/><circle cx="79.6" cy="85" r="1.3" fill="#fff"/></g>
-        <g class="eye"><circle cx="118" cy="82" r="7.4" fill=${z}/><circle cx="120.6" cy="79" r="2.7" fill="#fff"/><circle cx="115.6" cy="85" r="1.3" fill="#fff"/></g>
+        <path d="M72 71 L91 65" stroke=${U} stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M128 71 L109 65" stroke=${U} stroke-width="3.6" stroke-linecap="round"/>`;
+		default: return h`<g class="eyes look">
+        <g class="eye"><circle cx="82" cy="82" r="7.4" fill=${U}/><circle cx="84.6" cy="79" r="2.7" fill="#fff"/><circle cx="79.6" cy="85" r="1.3" fill="#fff"/></g>
+        <g class="eye"><circle cx="118" cy="82" r="7.4" fill=${U}/><circle cx="120.6" cy="79" r="2.7" fill="#fff"/><circle cx="115.6" cy="85" r="1.3" fill="#fff"/></g>
       </g>`;
 	}
 }
-function li(e) {
+function Bi(e) {
 	let t = e === "sad" || e === "hibernating" ? .55 : .9;
-	return m`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${ti} opacity=${t}/>
-    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${ti} opacity=${t}/>`;
+	return h`<ellipse cx="65" cy="98" rx="10" ry="7" fill=${Mi} opacity=${t}/>
+    <ellipse cx="135" cy="98" rx="10" ry="7" fill=${Mi} opacity=${t}/>`;
 }
-function ui(e) {
-	let t = m`<path d="M100 97 V101" stroke=${z} stroke-width="3" stroke-linecap="round"/>`;
+function Vi(e) {
+	let t = h`<path d="M100 97 V101" stroke=${U} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return m`${t}<path d="M88 101 Q100 122 112 101 Z" fill=${z} stroke=${z} stroke-width="3.2" stroke-linejoin="round"/>
-        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${ni}/>`;
-		case "sleepy": return m`${t}<ellipse cx="100" cy="106" rx="3.6" ry="3" fill=${z}/>`;
-		case "sad": return m`${t}<path d="M91 110 Q100 101 109 110" fill="none" stroke=${z} stroke-width="3.6" stroke-linecap="round"/>`;
-		case "hibernating": return m`${t}<path d="M94 104 Q100 108 106 104" fill="none" stroke=${z} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return m`${t}<path d="M90 102 Q95 109 100 101 Q105 109 110 102" fill="none" stroke=${z} stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "happy": return h`${t}<path d="M88 101 Q100 122 112 101 Z" fill=${U} stroke=${U} stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M94 112 Q100 104 106 112 Q100 119 94 112 Z" fill=${Ni}/>`;
+		case "sleepy": return h`${t}<ellipse cx="100" cy="106" rx="3.6" ry="3" fill=${U}/>`;
+		case "sad": return h`${t}<path d="M91 110 Q100 101 109 110" fill="none" stroke=${U} stroke-width="3.6" stroke-linecap="round"/>`;
+		case "hibernating": return h`${t}<path d="M94 104 Q100 108 106 104" fill="none" stroke=${U} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return h`${t}<path d="M90 102 Q95 109 100 101 Q105 109 110 102" fill="none" stroke=${U} stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function di(e) {
-	return e === "hibernating" ? m`<g class="snore"><circle cx="112" cy="97" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="94.5" r="1.8" fill="#fff"/></g>` : m``;
+function Hi(e) {
+	return e === "hibernating" ? h`<g class="snore"><circle cx="112" cy="97" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="109.5" cy="94.5" r="1.8" fill="#fff"/></g>` : h``;
 }
-function fi(e, t = {}) {
+function Ui(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
-	return e = n ? "content" : e, m`<svg class="pet-art dog ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
+	return e = n ? "content" : e, h`<svg class="pet-art dog ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="dog-body-clip"><path d=${ai}/></clipPath>
-      <clipPath id="dog-tail-clip"><path d=${ii}/></clipPath>
-      <clipPath id="dog-head-clip"><path d=${oi}/></clipPath>
+      <clipPath id="dog-body-clip"><path d=${Ii}/></clipPath>
+      <clipPath id="dog-tail-clip"><path d=${Fi}/></clipPath>
+      <clipPath id="dog-head-clip"><path d=${Li}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${or(n)} ${sr(n, ri)}
+    ${jr(n)} ${Mr(n, Pi)}
     <g class="jelly">
       <g class="tail">
-        <path d=${ii} fill=${Xr}/>
+        <path d=${Fi} fill=${Ei}/>
         <g clip-path="url(#dog-tail-clip)">
-          <circle cx="158" cy="118" r="15" fill=${Qr}/>
-          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Zr} stroke-width="8" opacity="0.45"/>
+          <circle cx="158" cy="118" r="15" fill=${ki}/>
+          <path d="M122 182 C150 182 168 168 170 150" fill="none" stroke=${Di} stroke-width="8" opacity="0.45"/>
         </g>
-        <path d=${ii} fill="none" stroke=${z} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${Fi} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${$r} stroke=${z} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${ei} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${$r} stroke=${z} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${ei} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
-      <path d=${ai} fill=${Xr}/>
+      <g class="ear earL"><path d="M64 50 C44 40 24 56 26 86 C27 100 42 104 50 92 C58 80 66 66 64 50 Z" fill=${Ai} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M44 56 C34 62 32 78 36 90" fill="none" stroke=${ji} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <g class="ear earR"><path d="M136 50 C156 40 176 56 174 86 C173 100 158 104 150 92 C142 80 134 66 136 50 Z" fill=${Ai} stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M156 56 C166 62 168 78 164 90" fill="none" stroke=${ji} stroke-width="4" stroke-linecap="round" opacity="0.7"/></g>
+      <path d=${Ii} fill=${Ei}/>
       <g clip-path="url(#dog-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Zr} opacity="0.5"/>
-        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${Qr}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Di} opacity="0.5"/>
+        <path d="M86 108 Q100 130 114 108 L118 170 Q100 178 82 170 Z" fill=${ki}/>
       </g>
-      <path d=${ai} fill="none" stroke=${z} stroke-width="4" stroke-linejoin="round"/>
-      ${n ? m`` : m`<path d="M97 140 V178 M103 140 V178" stroke=${z} stroke-width="3" stroke-linecap="round"/>`}
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${z} stroke-width="4"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${z} stroke-width="4"/>
-      <path d=${oi} fill=${Xr}/>
+      <path d=${Ii} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      ${n ? h`` : h`<path d="M97 140 V178 M103 140 V178" stroke=${U} stroke-width="3" stroke-linecap="round"/>`}
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${U} stroke-width="4"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill="#fff" stroke=${U} stroke-width="4"/>
+      ${Gr(t.neck, Oi)}
+      <path d=${Li} fill=${Ei}/>
       <g clip-path="url(#dog-head-clip)">
-        <path d=${si} fill=${Qr}/>
+        <path d=${Ri} fill=${ki}/>
         <ellipse cx="100" cy="53" rx="7" ry="4" fill="#FFD9A0"/>
       </g>
-      <path d=${oi} fill="none" stroke=${z} stroke-width="4" stroke-linejoin="round"/>
-      ${li(e)} ${ci(e)}
-      <ellipse cx="100" cy="93" rx="6" ry="4.4" fill=${z}/>
+      <path d=${Li} fill="none" stroke=${U} stroke-width="4" stroke-linejoin="round"/>
+      ${Bi(e)} ${zi(e)}
+      <ellipse cx="100" cy="93" rx="6" ry="4.4" fill=${U}/>
       <ellipse cx="98" cy="91.6" rx="1.8" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? m`<path d="M100 97 V101" stroke=${z} stroke-width="3" stroke-linecap="round"/>` : ui(e)}
-      ${di(e)}
+      ${r === "wake" ? h`<path d="M100 97 V101" stroke=${U} stroke-width="3" stroke-linecap="round"/>` : Vi(e)}
+      ${Hi(e)}
     </g>
-    ${cr(n, ri)}
-    ${n ? m`` : vr(e, {
+    ${Nr(n, Pi)}
+    ${n ? h`` : Ur(e, {
 		z: [10, -30],
 		tear: [-8, -58]
 	})}
-    ${ur(r, t.text ?? "", {
+    ${Fr(r, t.text ?? "", {
 		mouth: [100, 110],
 		badgeDy: -14,
 		xpDy: -42,
@@ -9661,7 +9973,7 @@ function fi(e, t = {}) {
 	})}
   </svg>`;
 }
-var pi = o`
+var Wi = o`
   /* A puppy is lively: it squashes about half as much as the slime. */
   .dog {
     --k: 0.5;
@@ -9741,8 +10053,12 @@ var pi = o`
       transform: rotate(9deg);
     }
   }
-`, B = "#3B2A3F", mi = "#F28A30", hi = "#D96E1B", gi = "#F6EDD6", _i = "#4B2E3A", vi = "#FF6B8A", yi = {
-	color: mi,
+`, W = "#3B2A3F", Gi = "var(--fur, #F28A30)", Ki = "var(--fur-dark, #D96E1B)", qi = {
+	x: 100,
+	y: 118,
+	w: 56
+}, Ji = "#F6EDD6", Yi = "#4B2E3A", Xi = "#FF6B8A", Zi = {
+	color: Gi,
 	thick: 1.4,
 	shoulders: {
 		l: [80, 130],
@@ -9754,95 +10070,96 @@ var pi = o`
 	},
 	typingBehind: !0,
 	codeAt: [66, 34]
-}, bi = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", xi = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", Si = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", Ci = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
-function wi(e) {
+}, Qi = "M70 182 C64 160 66 132 78 118 C86 108 114 108 122 118 C134 132 136 160 130 182 Z", $i = "M100 44 C124 44 146 52 154 68 L162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 L46 68 C54 52 76 44 100 44 Z", ea = "M38 90 C60 98 82 82 100 100 C118 82 140 98 162 90 C142 102 128 116 100 124 C72 116 58 102 38 90 Z", ta = "M120 186 C162 194 198 164 192 122 C188 92 170 74 154 84 C146 96 158 108 160 124 C162 148 146 166 120 168 Z";
+function na(e) {
 	switch (e) {
-		case "happy": return m`<path d="M70 84 Q78 72 86 84" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M114 84 Q122 72 130 84" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sleepy": return m`<path d="M71 81 Q78 86 85 81" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M115 81 Q122 86 129 81" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M71 79 Q78 88 85 79" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M115 79 Q122 88 129 79" fill="none" stroke=${B} stroke-width="4.5" stroke-linecap="round"/>`;
-		case "sad": return m`<g class="eyes">
-          <g class="eye"><ellipse cx="78" cy="82" rx="6" ry="7.6" fill=${B}/><circle cx="76" cy="78.8" r="2.3" fill="#fff"/><circle cx="80.2" cy="85.4" r="1.1" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="122" cy="82" rx="6" ry="7.6" fill=${B}/><circle cx="120" cy="78.8" r="2.3" fill="#fff"/><circle cx="124.2" cy="85.4" r="1.1" fill="#fff"/></g>
+		case "happy": return h`<path d="M70 84 Q78 72 86 84" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M114 84 Q122 72 130 84" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<path d="M71 81 Q78 86 85 81" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M115 81 Q122 86 129 81" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M71 79 Q78 88 85 79" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M115 79 Q122 88 129 79" fill="none" stroke=${W} stroke-width="4.5" stroke-linecap="round"/>`;
+		case "sad": return h`<g class="eyes">
+          <g class="eye"><ellipse cx="78" cy="82" rx="6" ry="7.6" fill=${W}/><circle cx="76" cy="78.8" r="2.3" fill="#fff"/><circle cx="80.2" cy="85.4" r="1.1" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="122" cy="82" rx="6" ry="7.6" fill=${W}/><circle cx="120" cy="78.8" r="2.3" fill="#fff"/><circle cx="124.2" cy="85.4" r="1.1" fill="#fff"/></g>
         </g>
-        <path d="M68 70 L87 64" stroke=${B} stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M132 70 L113 64" stroke=${B} stroke-width="3.4" stroke-linecap="round"/>`;
-		default: return m`<g class="eyes look">
-        <g class="eye"><circle cx="78" cy="80" r="6.6" fill=${B}/><circle cx="80.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="75.8" cy="83" r="1.2" fill="#fff"/></g>
-        <g class="eye"><circle cx="122" cy="80" r="6.6" fill=${B}/><circle cx="124.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="119.8" cy="83" r="1.2" fill="#fff"/></g>
+        <path d="M68 70 L87 64" stroke=${W} stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M132 70 L113 64" stroke=${W} stroke-width="3.4" stroke-linecap="round"/>`;
+		default: return h`<g class="eyes look">
+        <g class="eye"><circle cx="78" cy="80" r="6.6" fill=${W}/><circle cx="80.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="75.8" cy="83" r="1.2" fill="#fff"/></g>
+        <g class="eye"><circle cx="122" cy="80" r="6.6" fill=${W}/><circle cx="124.2" cy="77.4" r="2.4" fill="#fff"/><circle cx="119.8" cy="83" r="1.2" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Ti(e) {
+function ra(e) {
 	let t = e === "sad" || e === "hibernating" ? .4 : .7;
-	return m`<ellipse cx="66" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>
+	return h`<ellipse cx="66" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>
     <ellipse cx="134" cy="97" rx="7" ry="4.4" fill="#FFA08A" opacity=${t}/>`;
 }
-function Ei(e) {
-	let t = m`<path d="M100 109 V112" stroke=${B} stroke-width="3" stroke-linecap="round"/>`;
+function ia(e) {
+	let t = h`<path d="M100 109 V112" stroke=${W} stroke-width="3" stroke-linecap="round"/>`;
 	switch (e) {
-		case "happy": return m`${t}<path d="M92 112 Q100 126 108 112 Z" fill=${B} stroke=${B} stroke-width="3" stroke-linejoin="round"/>
-        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${vi}/>`;
-		case "sleepy": return m`${t}<ellipse cx="100" cy="117" rx="3.4" ry="2.8" fill=${B}/>`;
-		case "sad": return m`${t}<path d="M93 119 Q100 112 107 119" fill="none" stroke=${B} stroke-width="3.4" stroke-linecap="round"/>`;
-		case "hibernating": return m`${t}<path d="M95 115 Q100 119 105 115" fill="none" stroke=${B} stroke-width="3.2" stroke-linecap="round"/>`;
-		default: return m`${t}<path d="M92 114 Q96 120 100 112 Q104 120 108 114" fill="none" stroke=${B} stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+		case "happy": return h`${t}<path d="M92 112 Q100 126 108 112 Z" fill=${W} stroke=${W} stroke-width="3" stroke-linejoin="round"/>
+        <path d="M96 118 Q100 114 104 118 Q100 123 96 118 Z" fill=${Xi}/>`;
+		case "sleepy": return h`${t}<ellipse cx="100" cy="117" rx="3.4" ry="2.8" fill=${W}/>`;
+		case "sad": return h`${t}<path d="M93 119 Q100 112 107 119" fill="none" stroke=${W} stroke-width="3.4" stroke-linecap="round"/>`;
+		case "hibernating": return h`${t}<path d="M95 115 Q100 119 105 115" fill="none" stroke=${W} stroke-width="3.2" stroke-linecap="round"/>`;
+		default: return h`${t}<path d="M92 114 Q96 120 100 112 Q104 120 108 114" fill="none" stroke=${W} stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 	}
 }
-function Di(e) {
-	return e === "hibernating" ? m`<g class="snore"><circle cx="113" cy="108" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="105.5" r="1.8" fill="#fff"/></g>` : m``;
+function aa(e) {
+	return e === "hibernating" ? h`<g class="snore"><circle cx="113" cy="108" r="7" fill="#FFF1DD" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="105.5" r="1.8" fill="#fff"/></g>` : h``;
 }
-function Oi(e, t = {}) {
+function oa(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
-	return e = n ? "content" : e, m`<svg class="pet-art fox ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
+	return e = n ? "content" : e, h`<svg class="pet-art fox ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
-      <clipPath id="fox-body-clip"><path d=${bi}/></clipPath>
-      <clipPath id="fox-head-clip"><path d=${xi}/></clipPath>
-      <clipPath id="fox-tail-clip"><path d=${Ci}/></clipPath>
+      <clipPath id="fox-body-clip"><path d=${Qi}/></clipPath>
+      <clipPath id="fox-head-clip"><path d=${$i}/></clipPath>
+      <clipPath id="fox-tail-clip"><path d=${ta}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="56" ry="8" fill="#000" opacity="0.22"/>
-    ${or(n)} ${sr(n, yi)}
+    ${jr(n)} ${Mr(n, Zi)}
     <g class="jelly">
       <g class="tail">
-        <path d=${Ci} fill=${mi}/>
+        <path d=${ta} fill=${Gi}/>
         <g clip-path="url(#fox-tail-clip)">
-          <circle cx="166" cy="86" r="20" fill=${gi}/>
-          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${hi} stroke-width="9" opacity="0.5"/>
+          <circle cx="166" cy="86" r="20" fill=${Ji}/>
+          <path d="M120 188 C166 196 200 164 194 122" fill="none" stroke=${Ki} stroke-width="9" opacity="0.5"/>
         </g>
-        <path d=${Ci} fill="none" stroke=${B} stroke-width="4" stroke-linejoin="round"/>
+        <path d=${ta} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${mi} stroke=${B} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${_i}/></g>
-      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${mi} stroke=${B} stroke-width="4" stroke-linejoin="round"/>
-        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${_i}/></g>
-      <path d=${bi} fill=${mi}/>
+      <g class="ear earL"><path d="M56 64 L50 18 C64 20 84 34 92 50 Z" fill=${Gi} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M60 54 L57 30 C66 34 76 42 80 50 Z" fill=${Yi}/></g>
+      <g class="ear earR"><path d="M144 64 L150 18 C136 20 116 34 108 50 Z" fill=${Gi} stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+        <path d="M140 54 L143 30 C134 34 124 42 120 50 Z" fill=${Yi}/></g>
+      <path d=${Qi} fill=${Gi}/>
       <g clip-path="url(#fox-body-clip)">
-        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${hi} opacity="0.5"/>
-        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${gi}/>
+        <ellipse cx="100" cy="196" rx="70" ry="26" fill=${Ki} opacity="0.5"/>
+        <path d="M86 110 Q100 132 114 110 L118 170 Q100 178 82 170 Z" fill=${Ji}/>
       </g>
-      <path d=${bi} fill="none" stroke=${B} stroke-width="4" stroke-linejoin="round"/>
-      ${n ? m`` : m`<path d="M97 144 V166 M103 144 V166" stroke=${B} stroke-width="3" stroke-linecap="round"/>`}
-      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${_i} stroke=${B} stroke-width="4"/>
-      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${_i} stroke=${B} stroke-width="4"/>
-      <path d=${xi} fill=${mi}/>
+      <path d=${Qi} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+      ${n ? h`` : h`<path d="M97 144 V166 M103 144 V166" stroke=${W} stroke-width="3" stroke-linecap="round"/>`}
+      <ellipse cx="86" cy="180" rx="13" ry="7.5" fill=${Yi} stroke=${W} stroke-width="4"/>
+      <ellipse cx="114" cy="180" rx="13" ry="7.5" fill=${Yi} stroke=${W} stroke-width="4"/>
+      ${Gr(t.neck, qi)}
+      <path d=${$i} fill=${Gi}/>
       <g clip-path="url(#fox-head-clip)">
-        <path d=${Si} fill=${gi}/>
+        <path d=${ea} fill=${Ji}/>
       </g>
-      <path d=${xi} fill="none" stroke=${B} stroke-width="4" stroke-linejoin="round"/>
-      ${Ti(e)} ${wi(e)}
-      <ellipse cx="100" cy="105" rx="6.4" ry="4.6" fill=${B}/>
+      <path d=${$i} fill="none" stroke=${W} stroke-width="4" stroke-linejoin="round"/>
+      ${ra(e)} ${na(e)}
+      <ellipse cx="100" cy="105" rx="6.4" ry="4.6" fill=${W}/>
       <ellipse cx="98" cy="103.4" rx="1.9" ry="1" fill="#fff" opacity="0.7"/>
-      ${r === "wake" ? m`<path d="M100 109 V112" stroke=${B} stroke-width="3" stroke-linecap="round"/>` : Ei(e)}
-      ${Di(e)}
+      ${r === "wake" ? h`<path d="M100 109 V112" stroke=${W} stroke-width="3" stroke-linecap="round"/>` : ia(e)}
+      ${aa(e)}
     </g>
-    ${cr(n, yi)}
-    ${n ? m`` : vr(e, {
+    ${Nr(n, Zi)}
+    ${n ? h`` : Ur(e, {
 		z: [14, -30],
 		tear: [-8, -60]
 	})}
-    ${ur(r, t.text ?? "", {
+    ${Fr(r, t.text ?? "", {
 		mouth: [100, 118],
 		badgeDy: -16,
 		xpDy: -46,
@@ -9850,7 +10167,7 @@ function Oi(e, t = {}) {
 	})}
   </svg>`;
 }
-var ki = o`
+var sa = o`
   /* A fox is light and quick: it squashes a bit less than the slime. */
   .fox {
     --k: 0.4;
@@ -9913,135 +10230,140 @@ var ki = o`
       transform: rotate(6deg);
     }
   }
-`, V = "#101010", Ai = {
-	color: "#4DFF2B",
+`, G = "#101010", ca = {
+	x: 100,
+	y: 167,
+	w: 96
+}, la = {
+	color: "var(--fur-lt, #4DFF2B)",
 	thick: 1,
 	typingBehind: !0
-}, ji = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
-function Mi(e) {
+}, ua = "M100 64 C106 64 108 70 114 73 C146 80 166 108 166 138 C166 164 146 182 118 182 L82 182 C54 182 34 164 34 138 C34 108 54 80 86 73 C92 70 94 64 100 64 Z";
+function da(e) {
 	switch (e) {
-		case "happy": return m`<path d="M70 137 Q80 119 90 137" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>
-        <path d="M110 137 Q120 119 130 137" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>`;
-		case "sleepy": return m`<path d="M71 134 Q80 138 89 134" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>
-        <path d="M111 134 Q120 138 129 134" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M71 132 Q80 141 89 132" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>
-        <path d="M111 132 Q120 141 129 132" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>`;
-		case "sad": return m`<g class="eyes">
-          <g class="eye"><ellipse cx="80" cy="134" rx="6.5" ry="12.5" fill=${V}/><circle cx="77.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="82" cy="140" r="1.3" fill="#fff"/></g>
-          <g class="eye"><ellipse cx="120" cy="134" rx="6.5" ry="12.5" fill=${V}/><circle cx="117.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="122" cy="140" r="1.3" fill="#fff"/></g>
+		case "happy": return h`<path d="M70 137 Q80 119 90 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M110 137 Q120 119 130 137" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<path d="M71 134 Q80 138 89 134" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M111 134 Q120 138 129 134" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M71 132 Q80 141 89 132" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>
+        <path d="M111 132 Q120 141 129 132" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "sad": return h`<g class="eyes">
+          <g class="eye"><ellipse cx="80" cy="134" rx="6.5" ry="12.5" fill=${G}/><circle cx="77.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="82" cy="140" r="1.3" fill="#fff"/></g>
+          <g class="eye"><ellipse cx="120" cy="134" rx="6.5" ry="12.5" fill=${G}/><circle cx="117.8" cy="128.5" r="2.8" fill="#fff"/><circle cx="122" cy="140" r="1.3" fill="#fff"/></g>
         </g>
-        <path d="M68 121 L89 113" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M132 121 L111 113" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
-		default: return m`<g class="eyes look">
-        <g class="eye"><ellipse cx="80" cy="132" rx="6.5" ry="12.5" fill=${V}/><circle cx="77.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="82" cy="138" r="1.3" fill="#fff"/></g>
-        <g class="eye"><ellipse cx="120" cy="132" rx="6.5" ry="12.5" fill=${V}/><circle cx="117.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="122" cy="138" r="1.3" fill="#fff"/></g>
+        <path d="M68 121 L89 113" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M132 121 L111 113" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>`;
+		default: return h`<g class="eyes look">
+        <g class="eye"><ellipse cx="80" cy="132" rx="6.5" ry="12.5" fill=${G}/><circle cx="77.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="82" cy="138" r="1.3" fill="#fff"/></g>
+        <g class="eye"><ellipse cx="120" cy="132" rx="6.5" ry="12.5" fill=${G}/><circle cx="117.8" cy="126.5" r="2.8" fill="#fff"/><circle cx="122" cy="138" r="1.3" fill="#fff"/></g>
       </g>`;
 	}
 }
-function Ni(e) {
+function fa(e) {
 	let t = e === "sad" || e === "hibernating" ? .45 : .85;
-	return m`<ellipse cx="61" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>
+	return h`<ellipse cx="61" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>
     <ellipse cx="139" cy="151" rx="7" ry="4.2" fill="#FF9EC0" opacity=${t}/>`;
 }
-function Pi(e) {
+function pa(e) {
 	switch (e) {
-		case "happy": return m`<path d="M87 147 Q100 176 113 147 Z" fill=${V} stroke=${V} stroke-width="4" stroke-linejoin="round"/>
+		case "happy": return h`<path d="M87 147 Q100 176 113 147 Z" fill=${G} stroke=${G} stroke-width="4" stroke-linejoin="round"/>
         <path d="M93 162 Q100 154 107 162 Q100 170 93 162 Z" fill="#FF6B8A"/>`;
-		case "sleepy": return m`<ellipse cx="100" cy="155" rx="4.5" ry="3.6" fill=${V}/>`;
-		case "sad": return m`<path d="M91 160 Q100 149 109 160" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>`;
-		case "hibernating": return m`<path d="M93 155 Q100 159 107 155" fill="none" stroke=${V} stroke-width="4.5" stroke-linecap="round"/>`;
-		default: return m`<path d="M90 150 Q100 161 110 150" fill="none" stroke=${V} stroke-width="5" stroke-linecap="round"/>`;
+		case "sleepy": return h`<ellipse cx="100" cy="155" rx="4.5" ry="3.6" fill=${G}/>`;
+		case "sad": return h`<path d="M91 160 Q100 149 109 160" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
+		case "hibernating": return h`<path d="M93 155 Q100 159 107 155" fill="none" stroke=${G} stroke-width="4.5" stroke-linecap="round"/>`;
+		default: return h`<path d="M90 150 Q100 161 110 150" fill="none" stroke=${G} stroke-width="5" stroke-linecap="round"/>`;
 	}
 }
-function Fi(e) {
-	return e === "hibernating" ? m`<g class="snore"><circle cx="113" cy="152" r="7" fill="#D8FFE2" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="149.5" r="1.8" fill="#fff"/></g>` : m``;
+function ma(e) {
+	return e === "hibernating" ? h`<g class="snore"><circle cx="113" cy="152" r="7" fill="#D8FFE2" fill-opacity="0.55" stroke="#fff" stroke-width="2"/><circle cx="110.5" cy="149.5" r="1.8" fill="#fff"/></g>` : h``;
 }
-function Ii(e, t = {}) {
+function ha(e, t = {}) {
 	let n = t.activity ?? "", r = t.moment ?? "";
-	return e = n ? "content" : e, m`<svg class="pet-art slime ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
+	return e = n ? "content" : e, h`<svg class="pet-art slime ${e} ${n ? `work ${n}` : ""} ${r}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <radialGradient id="slime-fill" cx="0.36" cy="0.3" r="0.9">
-        <stop offset="0" stop-color="#D4FFC2"/>
-        <stop offset="0.28" stop-color="#7CFF5B"/>
-        <stop offset="0.62" stop-color="#39FF14"/>
-        <stop offset="1" stop-color="#10B83A"/>
+        <stop offset="0" stop-color="var(--fur-hi, #D4FFC2)"/>
+        <stop offset="0.28" stop-color="var(--fur-lt, #7CFF5B)"/>
+        <stop offset="0.62" stop-color="var(--fur, #39FF14)"/>
+        <stop offset="1" stop-color="var(--fur-dark, #10B83A)"/>
       </radialGradient>
-      <clipPath id="slime-clip"><path d=${ji}/></clipPath>
+      <clipPath id="slime-clip"><path d=${ua}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
-    <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
-    ${or(n)} ${sr(n, Ai)}
+    <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="var(--fur, #39FF14)" opacity="0.35"/>
+    ${jr(n)} ${Mr(n, la)}
     <g class="jelly">
-      <path class="body" d=${ji} fill="url(#slime-fill)"/>
+      <path class="body" d=${ua} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
-        <ellipse cx="100" cy="196" rx="84" ry="34" fill="#047A28" opacity="0.38"/>
+        <ellipse cx="100" cy="196" rx="84" ry="34" fill="var(--fur-deep, #047A28)" opacity="0.38"/>
         <ellipse cx="160" cy="132" rx="14" ry="48" fill="#fff" opacity="0.13"/>
         <circle class="bubble b1" cx="146" cy="168" r="6" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.8"/>
         <circle class="bubble b2" cx="132" cy="176" r="3" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.5"/>
         <circle class="bubble b3" cx="54" cy="172" r="4" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.6"/>
       </g>
-      <path class="body-line" d=${ji} fill="none" stroke=${V} stroke-width="5" stroke-linejoin="round"/>
+      <path class="body-line" d=${ua} fill="none" stroke=${G} stroke-width="5" stroke-linejoin="round"/>
       <ellipse cx="76" cy="100" rx="17" ry="9" transform="rotate(-32 76 100)" fill="#fff" opacity="0.4"/>
       <path d="M50 128 C49 108 60 92 78 86" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
       <circle cx="49" cy="143" r="3.6" fill="#fff" opacity="0.65"/>
-      ${Ni(e)} ${Mi(e)}
-      ${r === "wake" ? m`` : Pi(e)} ${Fi(e)}
+      ${fa(e)} ${da(e)}
+      ${r === "wake" ? h`` : pa(e)} ${ma(e)}
+      ${Gr(t.neck, ca)}
     </g>
-    ${cr(n, Ai)}
-    ${n ? m`` : vr(e)}
-    ${ur(r, t.text ?? "")}
+    ${Nr(n, la)}
+    ${n ? h`` : Ur(e)}
+    ${Fr(r, t.text ?? "")}
   </svg>`;
 }
 // src/pets.ts
-var Li = () => [
+var ga = () => [
 	{
 		kind: "slime",
-		label: b("pets.slime"),
+		label: x("pets.slime"),
 		emoji: "🟢",
 		art: !0
 	},
 	{
 		kind: "bear",
-		label: b("pets.bear"),
+		label: x("pets.bear"),
 		emoji: "🐻",
 		art: !0
 	},
 	{
 		kind: "cat",
-		label: b("pets.cat"),
+		label: x("pets.cat"),
 		emoji: "🐱",
 		art: !0
 	},
 	{
 		kind: "dog",
-		label: b("pets.dog"),
+		label: x("pets.dog"),
 		emoji: "🐶",
 		art: !0
 	},
 	{
 		kind: "fox",
-		label: b("pets.fox"),
+		label: x("pets.fox"),
 		emoji: "🦊",
 		art: !0
 	}
-], Ri = [
+], _a = [
 	"happy",
 	"content",
 	"sleepy",
 	"sad",
 	"hibernating"
 ];
-function zi(e) {
-	return Li().find((t) => t.kind === e) ?? Li()[0];
+function va(e) {
+	return ga().find((t) => t.kind === e) ?? ga()[0];
 }
 // src/boopli-pet.ts
-var Bi = {
+var ya = {
 	happy: "✨",
 	content: "",
 	sleepy: "💤",
 	sad: "💧",
 	hibernating: "🌙💤"
-}, Vi = class extends _ {
+}, ba = class extends v {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -10049,6 +10371,8 @@ var Bi = {
 			level: { type: Number },
 			away: { type: Boolean },
 			hungry: { type: Boolean },
+			fur: { type: String },
+			neck: { type: String },
 			still: {
 				type: Boolean,
 				reflect: !0
@@ -10064,7 +10388,7 @@ var Bi = {
 	constructor() {
 		super(), this._momentTimer = 0, this._momentLeft = 0, this._momentSince = 0, this._onVisibility = () => {
 			this.toggleAttribute("paused", document.hidden), document.hidden ? this._momentTimer && (window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._momentLeft = Math.max(0, this._momentLeft - (Date.now() - this._momentSince))) : this._playing && !this._momentTimer && this._startMomentTimer();
-		}, this._taps = [], this.kind = "slime", this.mood = "content", this.level = 1, this.away = !1, this.hungry = !1, this.still = !1, this.activity = "", this.moment = "", this.momentSeq = 0, this.momentText = "", this._playing = "", this._text = "";
+		}, this._taps = [], this.kind = "slime", this.mood = "content", this.level = 1, this.away = !1, this.hungry = !1, this.fur = "", this.neck = "", this.still = !1, this.activity = "", this.moment = "", this.momentSeq = 0, this.momentText = "", this._playing = "", this._text = "";
 	}
 	_startMomentTimer() {
 		this._momentSince = Date.now(), this._momentTimer = window.setTimeout(() => {
@@ -10084,16 +10408,17 @@ var Bi = {
 		e.has("momentSeq") && this.moment && this._play(this.moment, this.momentText);
 	}
 	async _play(e, t = "") {
-		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = $n[e], document.hidden || this._startMomentTimer();
+		window.clearTimeout(this._momentTimer), this._momentTimer = 0, this._playing = "", await this.updateComplete, this.offsetWidth, this._text = t, this._playing = e, this._momentLeft = wr[e], document.hidden || this._startMomentTimer();
 	}
 	_art() {
-		let e = zi(this.kind), t = {
+		let e = va(this.kind), t = {
 			activity: this.activity,
 			moment: this._playing,
-			text: this._text
+			text: this._text,
+			neck: this.neck || void 0
 		};
-		return e.art && e.kind === "slime" ? Ii(this.mood, t) : e.art && e.kind === "bear" ? jr(this.mood, t) : e.art && e.kind === "dog" ? fi(this.mood, t) : e.art && e.kind === "cat" ? Jr(this.mood, t) : e.art && e.kind === "fox" ? Oi(this.mood, t) : p`<span class="emoji" aria-hidden="true">${e.emoji}</span>
-      <span class="badge" aria-hidden="true">${this.away ? "🧳" : Bi[this.mood]}</span>`;
+		return e.art && e.kind === "slime" ? ha(this.mood, t) : e.art && e.kind === "bear" ? oi(this.mood, t) : e.art && e.kind === "dog" ? Ui(this.mood, t) : e.art && e.kind === "cat" ? wi(this.mood, t) : e.art && e.kind === "fox" ? oa(this.mood, t) : m`<span class="emoji" aria-hidden="true">${e.emoji}</span>
+      <span class="badge" aria-hidden="true">${this.away ? "🧳" : ya[this.mood]}</span>`;
 	}
 	_tap() {
 		!this._playing && !this.still && this._play("tap");
@@ -10108,26 +10433,27 @@ var Bi = {
 	}
 	render() {
 		let e = this._showHunger;
-		return p`<div
+		return m`<div
       class="pet ${this.mood} ${e ? "hungry" : ""}"
+      style=${this.fur ? Wr(this.fur) : ""}
       role="img"
-      aria-label=${e ? b("pet.your_pet_is", { mood: b("pet.mood_hungry") }) : b("pet.your_pet_is", { mood: b(`pet.mood_${this.mood}`) })}
+      aria-label=${e ? x("pet.your_pet_is", { mood: x("pet.mood_hungry") }) : x("pet.your_pet_is", { mood: x(`pet.mood_${this.mood}`) })}
       @click=${() => this._tap()}
     >
       ${this._art()}
-      ${e ? p`<span class="hunger" aria-hidden="true"
+      ${e ? m`<span class="hunger" aria-hidden="true"
             ><span class="thought">🍖</span><span class="rumble r1"></span><span class="rumble r2"></span><span class="rumble r3"></span
-          ></span>` : g}
+          ></span>` : _}
     </div>`;
 	}
 	static {
 		this.styles = [
-			yr,
-			Mr,
-			Yr,
-			pi,
-			ki,
-			gr,
+			Kr,
+			si,
+			Ti,
+			Wi,
+			sa,
+			Vr,
 			o`
       :host {
         display: block;
@@ -10248,128 +10574,14 @@ var Bi = {
 		];
 	}
 };
-customElements.define("boopli-pet", Vi);
-// src/shop-art.ts
-var H = "#101010", Hi = m`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
-  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#4FB0F2" stroke=${H} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#fff"/>
-  <circle cx="36" cy="35" r="2.6" fill="#4FB0F2"/>
-  <circle cx="31.8" cy="31.8" r="1.4" fill="#4FB0F2"/><circle cx="36" cy="30.6" r="1.4" fill="#4FB0F2"/><circle cx="40.2" cy="31.8" r="1.4" fill="#4FB0F2"/>
-  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.8"/>
-  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#D8F1FF" stroke=${H} stroke-width="2.5"/>
-  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#2F9BE8"/>
-  <ellipse class="ripple" cx="36" cy="19.6" rx="7" ry="1.9" fill="none" stroke="#fff" stroke-width="1.4"/>
-  <path d="M19 18.6 Q25 16.4 31 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
-</svg>`, Ui = m`<svg viewBox="0 0 72 48" aria-hidden="true">
-  <ellipse cx="36" cy="43.5" rx="31" ry="4" fill="#000" opacity="0.2"/>
-  <path d="M7 19 Q8 43 36 43 Q64 43 65 19 Z" fill="#F08A4B" stroke=${H} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 27 Q36 36 62 27 L60.5 33 Q36 41.5 11.5 33 Z" fill="#FFF1E2"/>
-  <circle cx="36" cy="35" r="2.6" fill="#F08A4B"/>
-  <circle cx="31.8" cy="31.8" r="1.4" fill="#F08A4B"/><circle cx="36" cy="30.6" r="1.4" fill="#F08A4B"/><circle cx="40.2" cy="31.8" r="1.4" fill="#F08A4B"/>
-  <path d="M12 24 Q12.5 34 19 39" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.7"/>
-  <ellipse cx="36" cy="19" rx="29" ry="8" fill="#FFE3C7" stroke=${H} stroke-width="2.5"/>
-  <ellipse cx="36" cy="19.6" rx="23.5" ry="5.6" fill="#7A4A2A"/>
-  <g class="kibble">
-    <circle style="--i:6" cx="23" cy="17" r="3.2" fill="#C98A5A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:4" cx="30" cy="13.5" r="3.2" fill="#B6784A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:1" cx="43" cy="13.8" r="3.2" fill="#C98A5A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:0" cx="50" cy="17.2" r="3.2" fill="#B6784A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:3" cx="36" cy="16" r="3.2" fill="#B6784A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:5" cx="29" cy="20" r="3.2" fill="#C98A5A" stroke=${H} stroke-width="1.5"/>
-    <circle style="--i:2" cx="43" cy="20.4" r="3.2" fill="#C98A5A" stroke=${H} stroke-width="1.5"/>
-  </g>
-</svg>`, Wi = (e) => m`<svg viewBox="0 0 28 20" aria-hidden="true" class="meal ${e ? "full" : "empty"}">
-  <path d="M3 8 Q4 18 14 18 Q24 18 25 8 Z" fill=${e ? "#F08A4B" : "none"} stroke=${e ? H : "currentColor"} stroke-width="2" stroke-linejoin="round" opacity=${e ? 1 : .55}/>
-  <ellipse cx="14" cy="8" rx="11" ry="3.4" fill=${e ? "#7A4A2A" : "none"} stroke=${e ? H : "currentColor"} stroke-width="2" opacity=${e ? 1 : .55}/>
-  ${e ? m`<circle cx="10.5" cy="6.4" r="2.2" fill="#C98A5A" stroke=${H} stroke-width="1.2"/><circle cx="16" cy="5.6" r="2.2" fill="#B6784A" stroke=${H} stroke-width="1.2"/><circle cx="19.5" cy="7.4" r="2" fill="#C98A5A" stroke=${H} stroke-width="1.2"/>` : ""}
-</svg>`, Gi = m`<svg viewBox="0 0 32 32" aria-hidden="true" class="coin-art">
-  <circle cx="16" cy="16" r="14" fill="#FFC83D" stroke=${H} stroke-width="2"/>
-  <circle cx="16" cy="16" r="10.6" fill="none" stroke="#FFE59A" stroke-width="1.6"/>
-  <path d="M16 6.8 C17.4 9.6 22.6 11.4 22.6 17.6 C22.6 21.6 19.8 24 16 24 C12.2 24 9.4 21.6 9.4 17.6 C9.4 11.4 14.6 9.6 16 6.8 Z" fill="#6BE04B" stroke=${H} stroke-width="1.6" stroke-linejoin="round"/>
-  <circle cx="13.2" cy="17.6" r="1.3" fill=${H}/><circle cx="18.8" cy="17.6" r="1.3" fill=${H}/>
-  <path d="M14 20.6 Q16 22.2 18 20.6" fill="none" stroke=${H} stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M12.6 12.8 Q13.4 11.2 14.8 10.6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/>
-</svg>`, Ki = () => p`<span class="coin" aria-hidden="true">${Gi}</span>`, qi = m`<svg viewBox="0 0 120 64" aria-hidden="true">
-  <ellipse cx="60" cy="58" rx="56" ry="5" fill="#000" opacity="0.2"/>
-  <path d="M6 42 Q2 6 60 6 Q118 6 114 42 L114 52 Q60 64 6 52 Z" fill="#A98BFF" stroke=${H} stroke-width="3" stroke-linejoin="round"/>
-  <path d="M14 34 Q18 14 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
-  <path d="M22 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${H} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M60 9 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${H} stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M98 17 l1.6 3.4 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="#FFE45C" stroke=${H} stroke-width="1.2" stroke-linejoin="round"/>
-  <ellipse cx="60" cy="42" rx="47" ry="13" fill="#E3D6FF" stroke=${H} stroke-width="2.5"/>
-  <rect x="12" y="26" width="31" height="17" rx="8.5" fill="#FFF1B8" stroke=${H} stroke-width="2.5"/>
-  <path d="M18 34 H37" stroke=${H} stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.4"/>
-</svg>`, Ji = m`<svg viewBox="0 0 120 64" aria-hidden="true">
-  <g class="blanket">
-    <path d="M18 38 Q24 33 30 38 Q36 33 42 38 Q48 33 54 38 Q60 33 66 38 Q72 33 78 38 Q84 33 90 38 Q96 33 102 38 L104 52 Q60 62 16 52 Z" fill="#FF9EC0" stroke=${H} stroke-width="2.5" stroke-linejoin="round"/>
-    <path d="M22 44 Q60 52 98 44" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
-    <path d="M28 49 Q60 57 92 49" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
-  </g>
-  <path d="M8 44 Q60 60 112 44 Q118 56 104 60 Q60 68 16 60 Q2 56 8 44 Z" fill="#8B5CF6" stroke=${H} stroke-width="3" stroke-linejoin="round"/>
-  <path d="M16 52 Q60 62 104 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-</svg>`, U = (e, t, n) => m`<circle cx=${e} cy=${t} r="5.5" fill=${n} stroke=${H} stroke-width="2"/>`, Yi = m`<svg viewBox="0 0 48 48" aria-hidden="true">
-  <ellipse cx="24" cy="40" rx="18" ry="4" fill="#000" opacity="0.18"/>
-  ${U(18, 33, "#C98A5A")}${U(29, 34, "#B6784A")}${U(24, 26, "#C98A5A")}
-</svg>`, Xi = m`<svg viewBox="0 0 48 48" aria-hidden="true">
-  <ellipse cx="24" cy="41" rx="20" ry="4" fill="#000" opacity="0.18"/>
-  ${U(13, 35, "#B6784A")}${U(24, 36, "#C98A5A")}${U(35, 35, "#B6784A")}
-  ${U(18, 26, "#C98A5A")}${U(30, 26, "#B6784A")}${U(24, 17, "#C98A5A")}
-</svg>`, Zi = m`<svg viewBox="0 0 48 48" aria-hidden="true">
-  <ellipse cx="24" cy="43" rx="22" ry="4" fill="#000" opacity="0.18"/>
-  <path d="M8 22 Q24 10 40 22 L43 42 H5 Z" fill="#FFB86B" stroke=${H} stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M10 28 Q24 20 38 28" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
-  <g transform="translate(24 34) rotate(-12)">
-    <rect x="-9" y="-2.4" width="18" height="4.8" rx="2.4" fill="#F6E3B4" stroke=${H} stroke-width="1.6"/>
-    <circle cx="-9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${H} stroke-width="1.6"/><circle cx="-9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${H} stroke-width="1.6"/>
-    <circle cx="9" cy="-2.8" r="2.8" fill="#F6E3B4" stroke=${H} stroke-width="1.6"/><circle cx="9" cy="2.8" r="2.8" fill="#F6E3B4" stroke=${H} stroke-width="1.6"/>
-  </g>
-</svg>`, Qi = (e) => m`<svg viewBox="0 0 48 48" aria-hidden="true">
-  <ellipse cx="24" cy="26" rx="21" ry="15" fill="#F4F1FF" stroke=${H} stroke-width="2.5"/>
-  <ellipse cx="24" cy="26" rx="14" ry="9.5" fill="#E6E0FF" stroke=${H} stroke-width="1.5"/>
-  <text x="24" y="31" text-anchor="middle" font-size="14" font-weight="700" fill=${H} font-family="sans-serif">${e}</text>
-</svg>`, $i = (e) => p`<span class="swatch" style="background:${e}"></span>`, ea = {
-	color_sky: "#9fd3f5",
-	pattern_dots: "radial-gradient(circle, rgba(255,255,255,0.85) 22%, transparent 24%) 0 0 / 18px 18px, #c7b3f0",
-	pattern_stripes: "repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 8px, transparent 8px 16px), #f5a3b8",
-	pattern_stars: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon fill='%23ffe978' points='12,3 14.6,9 21,9.5 16.1,13.8 17.7,20.2 12,16.8 6.3,20.2 7.9,13.8 3,9.5 9.4,9'/%3E%3C/svg%3E\") 0 0 / 26px 26px, #5b6bc0",
-	pattern_waves: "radial-gradient(circle at 50% 100%, transparent 58%, rgba(255,255,255,0.6) 60% 66%, transparent 68%) 0 0 / 24px 14px, #4fb3bf",
-	pattern_checks: "conic-gradient(rgba(255,255,255,0.5) 25%, transparent 0 50%, rgba(255,255,255,0.5) 0 75%, transparent 0) 0 0 / 24px 24px, #f0b27a",
-	color_grey: "#aeb4bc",
-	color_green: "#7fcf8a",
-	color_blue: "#6aa8f0",
-	color_purple: "#b07fe0",
-	color_gold: "linear-gradient(135deg, #f7d56a, #d9a62e 55%, #f3cf5e)"
-};
-function ta(e) {
-	return e && ea[e] || "";
-}
-function W(e) {
-	switch (e) {
-		case "water_bowl": return p`${Hi}`;
-		case "food_bowl": return p`${Ui}`;
-		case "bed": return p`${qi}`;
-		case "food_small": return p`${Yi}`;
-		case "food_medium": return p`${Xi}`;
-		case "food_big": return p`${Zi}`;
-		case "meal_4": return p`${Qi(4)}`;
-		case "meal_5": return p`${Qi(5)}`;
-		default: return $i(ea[e] ?? "var(--divider-color, #888)");
-	}
-}
-function na(e) {
-	return W(`food_${e}`);
-}
-function G(e) {
-	return b(`shop.item_${e}`);
-}
+customElements.define("boopli-pet", ba);
 // src/boopli-stage.ts
-var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
-  <path d="M17 17 V11 Q17 7 21 7 H29 Q33 7 33 11 V17" fill="none" stroke=${ra} stroke-width="3" stroke-linecap="round"/>
-  <rect x="5" y="16" width="40" height="30" rx="6" fill="#FF8A3D" stroke=${ra} stroke-width="3"/>
-  <path d="M17 16 V46 M33 16 V46" stroke=${ra} stroke-width="2.5" opacity="0.55"/>
-  <rect x="22" y="28" width="6" height="5" rx="1.5" fill="#FFD166" stroke=${ra} stroke-width="2"/>
-</svg>`, aa = class extends _ {
+var xa = "#101010", Sa = h`<svg viewBox="0 0 50 50" aria-hidden="true">
+  <path d="M17 17 V11 Q17 7 21 7 H29 Q33 7 33 11 V17" fill="none" stroke=${xa} stroke-width="3" stroke-linecap="round"/>
+  <rect x="5" y="16" width="40" height="30" rx="6" fill="#FF8A3D" stroke=${xa} stroke-width="3"/>
+  <path d="M17 16 V46 M33 16 V46" stroke=${xa} stroke-width="2.5" opacity="0.55"/>
+  <rect x="22" y="28" width="6" height="5" rx="1.5" fill="#FFD166" stroke=${xa} stroke-width="2"/>
+</svg>`, Ca = class extends v {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -10404,40 +10616,40 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
 		}));
 	}
 	_renderControls() {
-		return this.controls ? p`<div class="controls">
+		return this.controls ? m`<div class="controls">
       <button
         type="button"
         class="blubs ${this.canBuy ? "buyable" : ""}"
-        aria-label=${b("stage.blubs_open_the_shop", { count: this.blubs })}
-        title=${b("stage.open_the_shop")}
+        aria-label=${x("stage.blubs_open_the_shop", { count: this.blubs })}
+        title=${x("stage.open_the_shop")}
         @click=${() => this._open("open-shop")}
       >
-        ${Ki()}<span class="n">${this.blubs}</span>
+        ${sr()}<span class="n">${this.blubs}</span>
       </button>
       <button
         type="button"
         class="inv"
-        aria-label=${b("stage.open_the_inventory")}
-        title=${b("stage.open_the_inventory")}
+        aria-label=${x("stage.open_the_inventory")}
+        title=${x("stage.open_the_inventory")}
         @click=${() => this._open("open-inventory")}
       >
-        ${E("bag-personal-outline")}
+        ${D("bag-personal-outline")}
       </button>
       <span
         class="meals"
         role="img"
-        aria-label=${b("stage.meals_left_today", {
+        aria-label=${x("stage.meals_left_today", {
 			left: Math.max(0, this.mealsMax - this.mealsEaten),
 			max: this.mealsMax
 		})}
-        title=${b("stage.meals_left_today", {
+        title=${x("stage.meals_left_today", {
 			left: Math.max(0, this.mealsMax - this.mealsEaten),
 			max: this.mealsMax
 		})}
       >
-        ${Array.from({ length: this.mealsMax }, (e, t) => Wi(t >= this.mealsEaten))}
+        ${Array.from({ length: this.mealsMax }, (e, t) => ar(t >= this.mealsEaten))}
       </span>
-    </div>` : g;
+    </div>` : _;
 	}
 	_clearFeed() {
 		for (let e of this._feedTimers) window.clearTimeout(e);
@@ -10455,7 +10667,7 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
 		for (let [t, n] of e) this._feedTimers.push(window.setTimeout(() => this._feed = n, t));
 	}
 	updated(e) {
-		e.has("feedSeq") && this.feedSeq > 0 && this.owned.includes("food_bowl") && this._playFeed();
+		e.has("feedSeq") && this.feedSeq > 0 && this._items().some((e) => e.role === "food") && this._playFeed();
 	}
 	connectedCallback() {
 		super.connectedCallback(), document.addEventListener("visibilitychange", this._onVisibility), this._onVisibility();
@@ -10463,38 +10675,62 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
 	disconnectedCallback() {
 		this._clearFeed(), this._feed = "", document.removeEventListener("visibilitychange", this._onVisibility), super.disconnectedCallback();
 	}
+	_items() {
+		let e = vr.filter((e) => this.owned.includes(e.id) && (!e.species || e.species === this.kind));
+		return e.filter((t) => !t.attach || e.some((e) => e.id === t.attach?.to));
+	}
+	_attachments(e, t) {
+		return e.filter((e) => e.attach?.to === t).map((e) => m`<span class="attach" style="left:${e.attach?.x}%;top:${e.attach?.y}%;width:${e.attach?.w}%">${e.art}</span>`);
+	}
+	_spotStyle(e) {
+		return [
+			["l", e.l],
+			["r", e.r],
+			["t", e.t],
+			["b", e.b],
+			["w", e.w],
+			["pl", e.pl],
+			["pr", e.pr],
+			["pw", e.pw]
+		].filter(([, e]) => e).map(([e, t]) => `--${e}:${t}`).join(";");
+	}
 	render() {
-		let e = (e) => this.owned.includes(e), t = e("bed"), n = ta(this.placed.wall), r = ta(this.placed.floor), i = this.away ? "hibernating" : this.mood, a = this.away ? "" : this.activity, o = t && !a && (i === "sleepy" || i === "hibernating"), s = o && i === "hibernating", c = this._feed ? `feed-${this._feed}` : "";
-		return p`<div
-      class="scene ${o ? "sleeping" : ""} ${s ? "deep" : ""} ${c} ${o || a ? "stays" : ""}"
-      style=${n ? `background:${n}` : ""}
+		let e = this._items(), t = xr(this.placed), n = e.find((e) => e.role === "bed"), r = e.find((e) => e.role === "food"), i = !!n, a = n?.spot ? _r[n.spot] : void 0, o = r?.spot ? _r[r.spot] : void 0, s = e.filter((e) => e.spot), c = [
+			a?.sleep && `--sleep:${a.sleep}`,
+			a?.psleep && `--psleep:${a.psleep}`,
+			o?.stand && `--stand:${o.stand}`,
+			o?.pstand && `--pstand:${o.pstand}`
+		], l = gr(this.placed.wall), u = gr(this.placed.floor), d = this.away ? "hibernating" : this.mood, f = this.away ? "" : this.activity, ee = i && !f && (d === "sleepy" || d === "hibernating"), te = ee && d === "hibernating", ne = this._feed ? `feed-${this._feed}` : "";
+		return m`<div
+      class="scene ${ee ? "sleeping" : ""} ${te ? "deep" : ""} ${ne} ${ee || f ? "stays" : ""}"
+      style=${[l && `background:${l}`, ...c].filter(Boolean).join(";")}
       role="group"
-      aria-label=${b("stage.your_pets_room")}
+      aria-label=${x("stage.your_pets_room")}
     >
-      <div class="floor" style=${r ? `background:${r}` : ""}></div>
+      <div class="floor" style=${u ? `background:${u}` : ""}></div>
       ${this._renderControls()}
-      ${e("water_bowl") ? p`<div class="prop water">${Hi}</div>` : g}
-      ${e("food_bowl") ? p`<div class="prop food">${Ui}</div>` : g}
-      ${t ? p`<div class="prop bed">${qi}</div>` : g}
+      ${s.map((t) => m`<div class="prop item role-${t.role ?? "none"}" style=${this._spotStyle(_r[t.spot])}>${t.art}${this._attachments(e, t.id)}</div>`)}
       <div class="actor">
         <boopli-pet
           .kind=${this.kind}
-          .mood=${i}
+          .mood=${d}
           .level=${this.level}
           .away=${this.away}
           .hungry=${this.hungry}
-          .activity=${a}
+          .fur=${t.fur}
+          .neck=${t.neck}
+          .activity=${f}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}
           .momentText=${this.momentText}
         ></boopli-pet>
       </div>
-      ${t ? p`<div class="prop bed front">${Ji}</div>` : g}
-      ${this.away ? p`<div class="prop suitcase">${ia}</div>` : g}
+      ${s.map((e) => e.front ? m`<div class="prop item front role-${e.role ?? "none"}" style=${this._spotStyle(_r[e.spot])}>${e.front}</div>` : _)}
+      ${this.away ? m`<div class="prop suitcase">${Sa}</div>` : _}
     </div>`;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -10600,20 +10836,17 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         overflow: visible;
       }
       /* Everything in the room is sized by the room's height, so the card can be as low as you want. */
-      .water {
-        left: 7%;
-        bottom: 3cqh;
-        width: 36cqh;
+      /* An attachment sits on its item: its box is in percent of the item's picture. */
+      .attach {
+        position: absolute;
       }
-      .food {
-        left: calc(7% + 40cqh);
-        bottom: 3cqh;
-        width: 36cqh;
-      }
-      .bed {
-        right: 3%;
-        bottom: 3cqh;
-        width: 80cqh;
+      /* A room item stands where its spot says (see SPOTS in shop-art.ts). */
+      .item {
+        left: var(--l, auto);
+        right: var(--r, auto);
+        top: var(--t, auto);
+        bottom: var(--b, auto);
+        width: var(--w);
       }
       .suitcase {
         left: calc(50% + 24cqh);
@@ -10632,7 +10865,7 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
       }
       /* Asleep: the pet is in the bed, a little smaller, with the blanket over part of it. */
       .sleeping .actor {
-        left: calc(100% - 3% - 40cqh);
+        left: var(--sleep, 50%);
         bottom: 7cqh;
         transform: translateX(-50%) scale(0.82);
       }
@@ -10650,21 +10883,21 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         transform: translate(0, -1px) scale(0.95, 1);
       }
       /* Feeding: the bowl is empty by itself; the kibble comes when the pet is fed and goes down while it eats. */
-      .food .kibble {
+      .role-food .kibble {
         opacity: 0;
         transform-box: fill-box;
         transform-origin: 50% 100%;
       }
-      .feed-fill .food .kibble,
-      .feed-walk .food .kibble {
+      .feed-fill .role-food .kibble,
+      .feed-walk .role-food .kibble {
         opacity: 1;
         animation: kibble-in 0.45s ease-out;
       }
-      .feed-eat .food .kibble {
+      .feed-eat .role-food .kibble {
         opacity: 1;
       }
       /* Eaten piece by piece, from the pet's side first. */
-      .feed-eat .food .kibble circle {
+      .feed-eat .role-food .kibble circle {
         transform-box: fill-box;
         transform-origin: 50% 50%;
         animation: bite 0.35s ease-in both;
@@ -10672,7 +10905,7 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
       }
       .feed-walk:not(.stays) .actor,
       .feed-eat:not(.stays) .actor {
-        left: calc(7% + 98cqh);
+        left: var(--stand, 50%);
       }
       .feed-eat:not(.stays) .actor {
         animation: chomp 0.6s ease-in-out infinite;
@@ -10731,10 +10964,10 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
           opacity: 0.6;
         }
         .feed-eat .actor,
-        .feed-eat .food .kibble circle,
-        .feed-eat .food .kibble,
-        .feed-fill .food .kibble,
-        .feed-walk .food .kibble {
+        .feed-eat .role-food .kibble circle,
+        .feed-eat .role-food .kibble,
+        .feed-fill .role-food .kibble,
+        .feed-walk .role-food .kibble {
           animation: none;
         }
         .actor,
@@ -10750,24 +10983,17 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
         .actor {
           height: 72cqh;
         }
-        .water {
-          left: 3%;
-          width: 30cqh;
-        }
-        .food {
-          left: calc(3% + 33cqh);
-          width: 30cqh;
-        }
-        .bed {
-          right: 3%;
-          width: 62cqh;
+        .item {
+          left: var(--pl, var(--l, auto));
+          right: var(--pr, var(--r, auto));
+          width: var(--pw, var(--w));
         }
         .sleeping .actor {
-          left: calc(100% - 3% - 31cqh);
+          left: var(--psleep, var(--sleep, 50%));
         }
         .feed-walk:not(.stays) .actor,
         .feed-eat:not(.stays) .actor {
-          left: calc(3% + 78cqh);
+          left: var(--pstand, var(--stand, 50%));
         }
         .suitcase {
           left: calc(50% + 22cqh);
@@ -10777,9 +11003,9 @@ var ra = "#101010", ia = m`<svg viewBox="0 0 50 50" aria-hidden="true">
     `];
 	}
 };
-customElements.define("boopli-stage", aa);
+customElements.define("boopli-stage", Ca);
 // src/modal-styles.ts
-var oa = o`
+var wa = o`
   dialog {
     --wood: color-mix(in srgb, #a8743c 30%, var(--card-background-color, #1c1c1c));
     --wood-dark: color-mix(in srgb, #5b3a17 65%, var(--card-background-color, #1c1c1c));
@@ -11107,32 +11333,38 @@ var oa = o`
       padding: 0 10px;
     }
   }
-`, sa = [
+`, Ta = [
 	{
 		id: "food",
 		icon: "bowl-mix-outline",
-		title: () => b("shop.food"),
+		title: () => x("shop.food"),
 		kinds: ["food"]
 	},
 	{
 		id: "room",
 		icon: "sofa-outline",
-		title: () => b("shop.for_the_room"),
+		title: () => x("shop.for_the_room"),
 		kinds: ["extra"]
 	},
 	{
 		id: "looks",
 		icon: "palette-outline",
-		title: () => b("shop.wall_and_floor"),
+		title: () => x("shop.wall_and_floor"),
 		kinds: ["color", "pattern"]
+	},
+	{
+		id: "pet",
+		icon: "paw-outline",
+		title: () => x("shop.for_your_pet"),
+		kinds: ["fur", "wear"]
 	},
 	{
 		id: "upgrades",
 		icon: "arrow-up-bold-circle-outline",
-		title: () => b("shop.upgrades"),
+		title: () => x("shop.upgrades"),
 		kinds: ["upgrade"]
 	}
-], ca = class extends _ {
+], Ea = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11172,76 +11404,76 @@ var oa = o`
 		if (this.hass && !this._busy) {
 			this._busy = e.id, this._error = "", this._note = "";
 			try {
-				await Sn(this.hass, e.id), this._note = b("shop.is_yours", { item: G(e.id) }), !e.food && this._sel === e.id && (this._sel = "");
+				await xn(this.hass, e.id), this._note = x("shop.is_yours", { item: M(e.id) }), !e.food && this._sel === e.id && (this._sel = "");
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = "";
 			}
 		}
 	}
 	_why(e, t) {
-		return e.locked === "level" ? b("shop.from_level", { level: e.min_level }) : e.locked === "achievement" ? b("shop.needs_an_achievement") : e.locked === "requires" ? b("shop.needs_something_first") : e.price > t.blubs ? b("shop.not_enough_blubs_yet") : "";
+		return e.locked === "level" ? x("shop.from_level", { level: e.min_level }) : e.locked === "achievement" ? x("shop.needs_an_achievement") : e.locked === "requires" ? x("shop.needs_something_first") : e.price > t.blubs ? x("shop.not_enough_blubs_yet") : "";
 	}
 	_slot(e, t) {
 		let n = e.locked !== "" || e.price > t.blubs;
-		return p`<button
+		return m`<button
       type="button"
       class="slot ${this._sel === e.id ? "sel" : ""} ${n ? "dim" : ""}"
       aria-pressed=${this._sel === e.id}
-      aria-label=${G(e.id)}
+      aria-label=${M(e.id)}
       @click=${() => this._sel = e.id}
     >
-      ${e.locked === "" ? g : p`<span class="lock">${E("lock-outline")}</span>`}
-      <span class="pic">${W(e.id)}</span>
-      <span class="tag">${Ki()} ${e.price}</span>
+      ${e.locked === "" ? _ : m`<span class="lock">${D("lock-outline")}</span>`}
+      <span class="pic">${j(e.id)}</span>
+      <span class="tag">${sr()} ${e.price}</span>
     </button>`;
 	}
 	_detail(e) {
 		let t = e.items.find((e) => e.id === this._sel);
-		if (!t) return p`<div class="detail"><span class="dtext muted">${b("shop.tap_something_to_see_more")}</span></div>`;
+		if (!t) return m`<div class="detail"><span class="dtext muted">${x("shop.tap_something_to_see_more")}</span></div>`;
 		let n = this._why(t, e), r = t.locked !== "" || t.price > e.blubs || !!this._busy;
-		return p`<div class="detail">
-      <span class="dpic">${W(t.id)}</span>
+		return m`<div class="detail">
+      <span class="dpic">${j(t.id)}</span>
       <span class="dtext">
-        <div class="dname">${G(t.id)}</div>
-        <div class="dnote">${t.food ? b("inventory.fed_xp", { xp: t.xp }) : g} ${n}</div>
+        <div class="dname">${M(t.id)}</div>
+        <div class="dnote">${t.food ? x("inventory.fed_xp", { xp: t.xp }) : _} ${n}</div>
       </span>
       <button
         type="button"
         class="go"
         ?disabled=${r}
-        aria-label=${b("shop.buy_item_for", {
-			item: G(t.id),
+        aria-label=${x("shop.buy_item_for", {
+			item: M(t.id),
 			price: t.price
 		})}
         @click=${() => this._buy(t)}
       >
-        ${b("shop.buy")} ${Ki()} ${t.price}
+        ${x("shop.buy")} ${sr()} ${t.price}
       </button>
     </div>`;
 	}
 	render() {
-		let e = this.pet, t = e ? sa.map((t) => ({
+		let e = this.pet, t = e ? Ta.map((t) => ({
 			...t,
 			items: e.items.filter((e) => t.kinds.includes(e.kind) && (!e.owned || e.kind === "food")).sort((e, t) => e.price - t.price)
 		})).filter((e) => e.items.length) : [], n = t.find((e) => e.id === this._cat) ?? t[0];
-		return p`<dialog
-      aria-label=${b("shop.shop")}
+		return m`<dialog
+      aria-label=${x("shop.shop")}
       @close=${() => this.open && this._close()}
       @click=${(e) => {
 			e.target === e.currentTarget && this._close();
 		}}
     >
-      ${e ? p`<div class="win">
+      ${e ? m`<div class="win">
             <div class="head">
-              <h3>${E("store-outline")} ${b("shop.shop")}</h3>
-              <span class="wallet" title=${b("shop.your_blubs")}>${Ki()} ${b("shop.n_blubs", { count: e.blubs })}</span>
-              <button type="button" class="shopbtn" aria-label=${b("inventory.inventory")} @click=${() => this._toInventory()}>${E("bag-personal-outline")}<span class="lbl">${b("inventory.inventory")}</span></button>
-              <button type="button" class="close" aria-label=${b("common.close")} @click=${() => this._close()}>✕</button>
+              <h3>${D("store-outline")} ${x("shop.shop")}</h3>
+              <span class="wallet" title=${x("shop.your_blubs")}>${sr()} ${x("shop.n_blubs", { count: e.blubs })}</span>
+              <button type="button" class="shopbtn" aria-label=${x("inventory.inventory")} @click=${() => this._toInventory()}>${D("bag-personal-outline")}<span class="lbl">${x("inventory.inventory")}</span></button>
+              <button type="button" class="close" aria-label=${x("common.close")} @click=${() => this._close()}>✕</button>
             </div>
-            <div class="cats" role="group" aria-label=${b("shop.shop")}>
-              ${t.map((e) => p`<button
+            <div class="cats" role="group" aria-label=${x("shop.shop")}>
+              ${t.map((e) => m`<button
                   type="button"
                   class="cat ${e === n ? "on" : ""}"
                   aria-pressed=${e === n}
@@ -11249,22 +11481,22 @@ var oa = o`
 			this._cat = e.id, this._sel = "";
 		}}
                 >
-                  ${E(e.icon)}<span>${e.title()}</span>
+                  ${D(e.icon)}<span>${e.title()}</span>
                 </button>`)}
             </div>
             <div class="body">
-              ${this._note ? p`<p class="muted note" role="status">${this._note}</p>` : g}
-              ${this._error ? p`<p class="error note" role="alert">${this._error}</p>` : g}
-              ${n ? p`<div class="slots">${n.items.map((t) => this._slot(t, e))}</div>` : g}
+              ${this._note ? m`<p class="muted note" role="status">${this._note}</p>` : _}
+              ${this._error ? m`<p class="error note" role="alert">${this._error}</p>` : _}
+              ${n ? m`<div class="slots">${n.items.map((t) => this._slot(t, e))}</div>` : _}
             </div>
             ${this._detail(e)}
-          </div>` : g}
+          </div>` : _}
     </dialog>`;
 	}
 	static {
 		this.styles = [
-			C,
-			oa,
+			w,
+			wa,
 			o`
       .cat span {
         white-space: nowrap;
@@ -11273,13 +11505,34 @@ var oa = o`
 		];
 	}
 };
-customElements.define("boopli-shop", ca);
+customElements.define("boopli-shop", Ea);
 // src/boopli-inventory.ts
-var la = [
+var Da = [
 	"small",
 	"medium",
 	"big"
-], ua = class extends _ {
+], Oa = {
+	wall: {
+		kinds: ["color", "pattern"],
+		title: () => x("inventory.wall"),
+		none: () => x("inventory.plain")
+	},
+	floor: {
+		kinds: ["color", "pattern"],
+		title: () => x("inventory.floor"),
+		none: () => x("inventory.plain")
+	},
+	fur: {
+		kinds: ["fur"],
+		title: () => x("inventory.fur"),
+		none: () => x("inventory.own_colour")
+	},
+	neck: {
+		kinds: ["wear"],
+		title: () => x("inventory.neck"),
+		none: () => x("inventory.neck_default")
+	}
+}, ka = (e) => e in Oa, Aa = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11317,7 +11570,7 @@ var la = [
 			try {
 				await e(), this._note = t;
 			} catch (e) {
-				this._error = S(e), this.open || this.dispatchEvent(new CustomEvent("inventory-error", {
+				this._error = C(e), this.open || this.dispatchEvent(new CustomEvent("inventory-error", {
 					detail: this._error,
 					bubbles: !0,
 					composed: !0
@@ -11328,13 +11581,16 @@ var la = [
 		}
 	}
 	_feed(e, t) {
-		this._run(() => wn(this.hass, e), b("inventory.fed_xp", { xp: t?.xp ?? 0 }));
+		this._run(() => Cn(this.hass, e), x("inventory.fed_xp", { xp: t?.xp ?? 0 }));
 	}
 	_place(e, t) {
-		this._run(() => Cn(this.hass, e, t));
+		this._run(() => Sn(this.hass, e, t));
+	}
+	_inUse(e, t) {
+		return t ? `${e}, ${x("inventory.in_use")}` : e;
 	}
 	_slot(e, t, n, r = "", i = !1) {
-		return p`<button
+		return m`<button
       type="button"
       class="slot ${this._sel === e ? "sel" : ""} ${i ? "dim" : ""}"
       aria-pressed=${this._sel === e}
@@ -11342,109 +11598,115 @@ var la = [
       @click=${() => this._sel = e}
     >
       <span class="pic">${n}</span>
-      ${r === "" ? g : p`<span class="mark" aria-hidden="true">${r}</span>`}
+      ${r === "" ? _ : m`<span class="mark" aria-hidden="true">${r}</span>`}
     </button>`;
 	}
 	_food(e) {
-		let t = e.meals_today >= e.meals_max, n = la.some((t) => (e.food[t] ?? 0) > 0);
-		return p`<div class="group">
-      <h4>${b("inventory.food")}</h4>
+		let t = e.meals_today >= e.meals_max, n = Da.some((t) => (e.food[t] ?? 0) > 0);
+		return m`<div class="group">
+      <h4>${x("inventory.food")}</h4>
       <p class="muted meals">
-        ${t ? b("common.is_full_for_today", { name: e.name }) : b("common.meals_today", {
+        ${t ? x("common.is_full_for_today", { name: e.name }) : x("common.meals_today", {
 			eaten: e.meals_today,
 			max: e.meals_max
 		})}
       </p>
       <div class="slots">
-        ${la.map((t) => {
+        ${Da.map((t) => {
 			let n = e.food[t] ?? 0;
-			return this._slot(`food:${t}`, `${G(`food_${t}`)} · ${b("inventory.n_in_stock", { count: n })}`, na(t), n, n <= 0);
+			return this._slot(`food:${t}`, `${M(`food_${t}`)} · ${x("inventory.n_in_stock", { count: n })}`, Cr(t), n, n <= 0);
 		})}
       </div>
-      ${n ? g : p`<p class="muted">${b("inventory.no_food_yet")}</p>`}
+      ${n ? _ : m`<p class="muted">${x("inventory.no_food_yet")}</p>`}
     </div>`;
 	}
 	_paint(e, t, n) {
-		let r = e.items.filter((e) => (e.kind === "color" || e.kind === "pattern") && e.owned), i = e.placed[t] ?? "";
-		return p`<div class="group">
+		let r = e.items.filter((e) => Oa[t].kinds.includes(e.kind) && e.owned), i = e.placed[t] ?? "";
+		return m`<div class="group">
       <h4>${n}</h4>
       <div class="slots" role="group" aria-label=${n}>
-        ${this._slot(`${t}:`, b("inventory.plain"), p`<span class="swatch plain"></span>`, i === "" ? "✓" : "")}
-        ${r.map((e) => this._slot(`${t}:${e.id}`, G(e.id), W(e.id), i === e.id ? "✓" : ""))}
+        ${this._slot(`${t}:`, this._inUse(Oa[t].none(), i === ""), m`<span class="swatch plain"></span>`, i === "" ? "✓" : "")}
+        ${r.map((e) => this._slot(`${t}:${e.id}`, this._inUse(M(e.id), i === e.id), j(e.id), i === e.id ? "✓" : ""))}
       </div>
     </div>`;
 	}
+	_petLooks(e) {
+		let t = ["fur", "neck"].filter((t) => e.items.some((e) => Oa[t].kinds.includes(e.kind) && e.owned));
+		return t.length ? m`<div class="group"><h4>${x("inventory.pet_looks", { name: e.name })}</h4></div>
+      ${t.map((t) => this._paint(e, t, Oa[t].title()))}` : _;
+	}
 	_room(e) {
 		let t = e.items.filter((e) => e.owned && e.kind === "extra"), n = e.items.some((e) => (e.kind === "color" || e.kind === "pattern") && e.owned);
-		return p`<div class="group">
-        <h4>${b("inventory.room")}</h4>
-        ${n ? g : p`<p class="muted">${b("inventory.no_colours_or_patterns_yet")}</p>`}
+		return m`<div class="group">
+        <h4>${x("inventory.room")}</h4>
+        ${n ? _ : m`<p class="muted">${x("inventory.no_colours_or_patterns_yet")}</p>`}
       </div>
-      ${n ? p`${this._paint(e, "wall", b("inventory.wall"))}${this._paint(e, "floor", b("inventory.floor"))}` : g}
-      ${t.length ? p`<div class="group">
-            <h4>${b("inventory.unlocked")}</h4>
-            <div class="slots">${t.map((e) => this._slot(`thing:${e.id}`, G(e.id), W(e.id), "", !0))}</div>
-          </div>` : g}`;
+      ${n ? m`${this._paint(e, "wall", x("inventory.wall"))}${this._paint(e, "floor", x("inventory.floor"))}` : _}
+      ${t.length ? m`<div class="group">
+            <h4>${x("inventory.unlocked")}</h4>
+            <div class="slots">${t.map((e) => this._slot(`thing:${e.id}`, M(e.id), j(e.id), "", !0))}</div>
+          </div>` : _}`;
 	}
 	_detail(e) {
 		let [t, ...n] = this._sel.split(":"), r = n.join(":");
-		if (!this._sel) return p`<div class="detail"><span class="dtext muted">${b("inventory.tap_something_to_see_more")}</span></div>`;
+		if (!this._sel) return m`<div class="detail"><span class="dtext muted">${x("inventory.tap_something_to_see_more")}</span></div>`;
 		if (t === "food") {
 			let t = r, n = e.items.find((e) => e.food === t), i = e.food[t] ?? 0, a = e.meals_today >= e.meals_max;
-			return p`<div class="detail">
-        <span class="dpic">${na(t)}</span>
+			return m`<div class="detail">
+        <span class="dpic">${Cr(t)}</span>
         <span class="dtext">
-          <div class="dname">${G(`food_${t}`)}</div>
-          <div class="dnote">${b("inventory.fed_xp", { xp: n?.xp ?? 0 })} · ${b("inventory.n_in_stock", { count: i })}</div>
+          <div class="dname">${M(`food_${t}`)}</div>
+          <div class="dnote">${x("inventory.fed_xp", { xp: n?.xp ?? 0 })} · ${x("inventory.n_in_stock", { count: i })}</div>
         </span>
-        <button type="button" class="go" ?disabled=${a || i <= 0 || this._busy} @click=${() => this._feed(t, n)}>${b("inventory.feed")}</button>
+        <button type="button" class="go" ?disabled=${a || i <= 0 || this._busy} @click=${() => this._feed(t, n)}>${x("inventory.feed")}</button>
       </div>`;
 		}
-		if (t === "wall" || t === "floor") {
-			let n = (e.placed[t] ?? "") === r, i = r ? G(r) : b("inventory.plain");
-			return p`<div class="detail">
-        <span class="dpic">${r ? W(r) : p`<span class="swatch plain"></span>`}</span>
+		if (ka(t)) {
+			let n = (e.placed[t] ?? "") === r, i = r ? M(r) : Oa[t].none();
+			return m`<div class="detail">
+        <span class="dpic">${r ? j(r) : m`<span class="swatch plain"></span>`}</span>
         <span class="dtext">
           <div class="dname">${i}</div>
-          <div class="dnote">${b(t === "wall" ? "inventory.wall" : "inventory.floor")}</div>
+          <div class="dnote">${Oa[t].title()}</div>
         </span>
         <button type="button" class="go" ?disabled=${n || this._busy} @click=${() => this._place(t, r)}>
-          ${b(n ? "inventory.in_use" : "inventory.use")}
+          ${x(n ? "inventory.in_use" : "inventory.use")}
         </button>
       </div>`;
 		}
-		return p`<div class="detail">
-      <span class="dpic">${W(r)}</span>
-      <span class="dtext"><div class="dname">${G(r)}</div></span>
+		return m`<div class="detail">
+      <span class="dpic">${j(r)}</span>
+      <span class="dtext"><div class="dname">${M(r)}</div></span>
     </div>`;
 	}
 	render() {
 		let e = this.pet;
-		return p`<dialog
-      aria-label=${b("inventory.inventory")}
+		return m`<dialog
+      aria-label=${x("inventory.inventory")}
       @close=${() => this.open && this._close()}
       @click=${(e) => {
 			e.target === e.currentTarget && this._close();
 		}}
     >
-      ${e ? p`<div class="win">
+      ${e ? m`<div class="win">
             <div class="head">
-              <h3>${E("bag-personal-outline")} ${b("inventory.inventory")}</h3>
-              <button type="button" class="shopbtn" aria-label=${b("inventory.to_the_shop")} @click=${() => this._toShop()}>${E("store-outline")}<span class="lbl">${b("inventory.to_the_shop")}</span></button>
-              <button type="button" class="close" aria-label=${b("common.close")} @click=${() => this._close()}>✕</button>
+              <h3>${D("bag-personal-outline")} ${x("inventory.inventory")}</h3>
+              <button type="button" class="shopbtn" aria-label=${x("inventory.to_the_shop")} @click=${() => this._toShop()}>${D("store-outline")}<span class="lbl">${x("inventory.to_the_shop")}</span></button>
+              <button type="button" class="close" aria-label=${x("common.close")} @click=${() => this._close()}>✕</button>
             </div>
             <div class="body">
-              ${this._note ? p`<p class="muted note" role="status">${this._note}</p>` : g}
-              ${this._error ? p`<p class="error note" role="alert">${this._error}</p>` : g}
-              ${this._food(e)}${this._room(e)}            </div>
+              ${this._note ? m`<p class="muted note" role="status">${this._note}</p>` : _}
+              ${this._error ? m`<p class="error note" role="alert">${this._error}</p>` : _}
+              ${this._food(e)}${this._room(e)}${this._petLooks(e)}
+            </div>
             ${this._detail(e)}
-          </div>` : g}
+          </div>` : _}
     </dialog>`;
 	}
 	static {
 		this.styles = [
-			C,
-			oa,
+			w,
+			wa,
 			o`
       .meals {
         margin: 0 0 6px;
@@ -11453,7 +11715,7 @@ var la = [
 		];
 	}
 };
-customElements.define("boopli-inventory", ua);
+customElements.define("boopli-inventory", Aa);
 // src/achievements.ts
 var K = [
 	"common",
@@ -11461,29 +11723,29 @@ var K = [
 	"rare",
 	"epic",
 	"legendary"
-], da = {
+], ja = {
 	common: "#aeb4bc",
 	uncommon: "#7fcf8a",
 	rare: "#6aa8f0",
 	epic: "#b07fe0",
 	legendary: "linear-gradient(135deg, #f7d56a, #d9a62e 55%, #f3cf5e)"
-}, fa = {
+}, Ma = {
 	common: "linear-gradient(140deg, #fbfcfd 0%, #c3c9d0 24%, #7f8790 52%, #dfe3e7 74%, #9aa1a9 100%)",
 	uncommon: "linear-gradient(140deg, #e4fbe8 0%, #8fdc9b 24%, #3f9b56 52%, #b4efbe 74%, #55b46b 100%)",
 	rare: "linear-gradient(140deg, #e3efff 0%, #84b6f6 24%, #3a73c4 52%, #a9cdfa 74%, #4f8be0 100%)",
 	epic: "linear-gradient(140deg, #f1e4ff 0%, #bc92ea 24%, #7a45b8 52%, #d2b3f4 74%, #9560d0 100%)",
 	legendary: "linear-gradient(140deg, #fff6c2 0%, #f6cf55 22%, #b2801a 50%, #f9e286 72%, #c89322 100%)"
-}, pa = [
+}, Na = [
 	"steps",
 	"chores",
 	"meals",
 	"streak",
 	"level"
-], ma = [
+], Pa = [
 	"egg",
 	"first_chore",
 	"setup"
-], ha = {
+], Fa = {
 	steps: "shoe-print",
 	chores: "broom",
 	meals: "food-drumstick",
@@ -11492,9 +11754,9 @@ var K = [
 	egg: "cat",
 	first_chore: "clipboard-plus",
 	setup: "rocket-launch"
-}, ga = (e, t) => e.includes(t);
-function _a(e) {
-	if (ga(ma, e)) return {
+}, Ia = (e, t) => e.includes(t);
+function La(e) {
+	if (Ia(Pa, e)) return {
 		id: e,
 		series: "",
 		tier: ""
@@ -11502,23 +11764,23 @@ function _a(e) {
 	let t = e.lastIndexOf("_");
 	if (t < 1) return null;
 	let n = e.slice(0, t), r = e.slice(t + 1);
-	return !ga(pa, n) || !ga(K, r) ? null : {
+	return !Ia(Na, n) || !Ia(K, r) ? null : {
 		id: e,
 		series: n,
 		tier: r
 	};
 }
-function va(e) {
-	return ha[e] ?? "star";
+function Ra(e) {
+	return Fa[e] ?? "star";
 }
-function ya(e) {
-	return e.tier ? b(`news.badge_${e.tier}`, { series: b(`news.series_${e.series}`) }) : b(`news.single_${e.id}`);
+function za(e) {
+	return e.tier ? x(`news.badge_${e.tier}`, { series: x(`news.series_${e.series}`) }) : x(`news.single_${e.id}`);
 }
-function ba(e) {
-	return e.tier ? b(`news.joke_${e.tier}`) : b(`news.joke_${e.id}`);
+function Ba(e) {
+	return e.tier ? x(`news.joke_${e.tier}`) : x(`news.joke_${e.id}`);
 }
 // src/boopli-news.ts
-var xa = class extends _ {
+var Va = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -11533,7 +11795,7 @@ var xa = class extends _ {
 		return this.pet?.news?.celebrated_level ?? this.pet?.level ?? 1;
 	}
 	_badges() {
-		return (this.pet?.news?.achievements ?? []).map(_a).filter((e) => e !== null).sort((e, t) => K.indexOf(t.tier || "common") - K.indexOf(e.tier || "common"));
+		return (this.pet?.news?.achievements ?? []).map(La).filter((e) => e !== null).sort((e, t) => K.indexOf(t.tier || "common") - K.indexOf(e.tier || "common"));
 	}
 	_levelUp() {
 		return !!this.pet && this.pet.level > this._levelFrom;
@@ -11556,7 +11818,7 @@ var xa = class extends _ {
 		if (this.hass && this.pet && this._closingKey !== e) {
 			this._closingKey = e, this._closedKey = e, this.requestUpdate();
 			try {
-				await En(this.hass, this.pet.level, this.pet.news?.achievements ?? []);
+				await Tn(this.hass, this.pet.level, this.pet.news?.achievements ?? []);
 			} catch {} finally {
 				this._closingKey === e && (this._closingKey = ""), this.requestUpdate();
 			}
@@ -11564,11 +11826,11 @@ var xa = class extends _ {
 	}
 	render() {
 		let e = this.pet;
-		if (!e || this.hold || this._key() === this._closedKey) return g;
+		if (!e || this.hold || this._key() === this._closedKey) return _;
 		let t = this._badges(), n = this._levelUp();
-		if (!n && t.length === 0) return g;
-		let r = this._unlocks(), i = n && t.length ? b("news.title_both") : b(n ? "news.title_level" : "news.title_badge"), a = t.length ? ba(t[0]) : b(`news.level_joke_${e.level % 3}`);
-		return p`<dialog
+		if (!n && t.length === 0) return _;
+		let r = this._unlocks(), i = n && t.length ? x("news.title_both") : x(n ? "news.title_level" : "news.title_badge"), a = t.length ? Ba(t[0]) : x(`news.level_joke_${e.level % 3}`);
+		return m`<dialog
       aria-label=${i}
       @cancel=${(e) => {
 			e.preventDefault(), this._close();
@@ -11576,23 +11838,23 @@ var xa = class extends _ {
     >
       <h3>${i}</h3>
       <ul class="list">
-        ${n ? p`<li>
+        ${n ? m`<li>
               <span class="medal level" aria-hidden="true">${e.level}</span>
-              <span class="what">${b("news.level_reached", { level: e.level })}</span>
-            </li>` : g}
-        ${t.map((e) => p`<li>
-            <span class="medal ${e.tier ? `t-${e.tier}` : ""}" style="background:${fa[e.tier || "legendary"]}" aria-hidden="true">${E(va(e.series || e.id))}</span>
-            <span class="what">${ya(e)}</span>
+              <span class="what">${x("news.level_reached", { level: e.level })}</span>
+            </li>` : _}
+        ${t.map((e) => m`<li>
+            <span class="medal ${e.tier ? `t-${e.tier}` : ""}" style="background:${Ma[e.tier || "legendary"]}" aria-hidden="true">${D(Ra(e.series || e.id))}</span>
+            <span class="what">${za(e)}</span>
           </li>`)}
       </ul>
       <p class="joke">${a}</p>
-      ${r.length ? p`<div class="unlocked">
-            <h4>${b("news.unlocked")}</h4>
+      ${r.length ? m`<div class="unlocked">
+            <h4>${x("news.unlocked")}</h4>
             <ul>
-              ${r.map((e) => p`<li><span class="pic">${W(e.id)}</span><span>${G(e.id)}</span></li>`)}
+              ${r.map((e) => m`<li><span class="pic">${j(e.id)}</span><span>${M(e.id)}</span></li>`)}
             </ul>
-          </div>` : g}
-      <button type="button" class="primary" @click=${() => this._close()}>${b("news.ok")}</button>
+          </div>` : _}
+      <button type="button" class="primary" @click=${() => this._close()}>${x("news.ok")}</button>
     </dialog>`;
 	}
 	static {
@@ -11729,14 +11991,14 @@ var xa = class extends _ {
   `;
 	}
 };
-customElements.define("boopli-news", xa);
+customElements.define("boopli-news", Va);
 // src/boopli-egg.ts
-var Sa = 30, Ca = 1.5, wa = .55, Ta = 6.1, Ea = 60 / 140, Da = 260, Oa = 227, ka = new URL("./easter-egg.mp3", "" + import.meta.url).href, Aa = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, ja = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Ma = 12;
-function Na() {
+var Ha = 30, Ua = 1.5, Wa = .55, Ga = 6.1, Ka = 60 / 140, qa = 260, Ja = 227, Ya = new URL("./easter-egg.mp3", "" + import.meta.url).href, Xa = new URL("./easter-egg-intro.webm", "" + import.meta.url).href, Za = new URL("./easter-egg-loop.webm", "" + import.meta.url).href, Qa = 12;
+function $a() {
 	let e = navigator.userAgent, t = /iPhone|iPad|iPod/.test(e) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1, n = /safari/i.test(e) && !/chrome|chromium|crios|fxios|edg|android/i.test(e);
 	return t || n;
 }
-var Pa = class extends _ {
+var eo = class extends v {
 	static {
 		this.properties = {
 			_muted: { state: !0 },
@@ -11748,15 +12010,15 @@ var Pa = class extends _ {
 		super(), this._started = 0, this._lastHop = -1, this._hasSound = !1, this._over = !1, this._muted = !1, this._cat = !1, this._note = !1;
 	}
 	connectedCallback() {
-		if (super.connectedCallback(), Na()) {
-			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Ma * 1e3);
+		if (super.connectedCallback(), $a()) {
+			this._note = !0, this._noteTimer = window.setTimeout(() => this._stop(!0), Qa * 1e3);
 			return;
 		}
 		let e = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? !1;
 		this._cat = !e && document.createElement("video").canPlayType("video/webm; codecs=\"vp9\"") !== "", this._started = performance.now();
 		try {
-			let e = new Audio(ka);
-			e.volume = wa, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
+			let e = new Audio(Ya);
+			e.volume = Wa, e.muted = this._muted, this._audio = e, e.play().then(() => this._hasSound = !0, () => void 0);
 		} catch {}
 		this.dispatchEvent(new CustomEvent("egg-started", {
 			bubbles: !0,
@@ -11774,18 +12036,18 @@ var Pa = class extends _ {
 		e && e.play().catch(() => void 0);
 		let i = !1;
 		if (n) {
-			let e = (window.innerWidth - Da) / 2, t = (window.innerHeight - Oa) / 2;
+			let e = (window.innerWidth - qa) / 2, t = (window.innerHeight - Ja) / 2;
 			n.style.transform = `translate(${e}px, ${t}px) scale(1)`;
 		}
 		let a = () => {
-			let o = this._time(), s = Sa - o, c = Math.max(0, Math.min(1, s / Ca));
-			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = wa * c), s <= 0) this._stop(!0);
+			let o = this._time(), s = Ha - o, c = Math.max(0, Math.min(1, s / Ua));
+			if (r && (r.style.opacity = String(c)), this._audio && (this._audio.volume = Wa * c), s <= 0) this._stop(!0);
 			else {
-				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Ta) {
-					let e = Math.floor((o - Ta) / Ea);
+				if (e && t && !i && (this._hasSound && Math.abs(e.currentTime - o) > .15 && (e.currentTime = o), (e.ended || e.currentTime >= e.duration - .04) && (i = !0, t.hidden = !1, t.play().catch(() => void 0), e.hidden = !0)), n && o >= Ga) {
+					let e = Math.floor((o - Ga) / Ka);
 					if (e !== this._lastHop) {
 						this._lastHop = e;
-						let t = .75 + Math.random() * .7, r = Da * t, i = Oa * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
+						let t = .75 + Math.random() * .7, r = qa * t, i = Ja * t, a = Math.random() * Math.max(1, window.innerWidth - r), o = Math.random() * Math.max(1, window.innerHeight - i);
 						n.style.transform = `translate(${a}px, ${o}px) scale(${t})`;
 					}
 				}
@@ -11804,27 +12066,27 @@ var Pa = class extends _ {
 		this._muted = !this._muted, this._audio && (this._audio.muted = this._muted);
 	}
 	render() {
-		return this._note ? p`<div class="note" role="status">
+		return this._note ? m`<div class="note" role="status">
         <span
-          >${b("egg.here_would_be_an_easter_egg")}</span
+          >${x("egg.here_would_be_an_easter_egg")}</span
         >
-        <button type="button" class="ctl" aria-label=${b("common.close")} @click=${() => this._stop(!0)}>✕</button>
-      </div>` : p`${this._cat ? p`<div class="egg-layer" aria-hidden="true">
+        <button type="button" class="ctl" aria-label=${x("common.close")} @click=${() => this._stop(!0)}>✕</button>
+      </div>` : m`${this._cat ? m`<div class="egg-layer" aria-hidden="true">
             <div class="egg-cat">
-              <video class="intro" src=${Aa} muted playsinline preload="auto"></video>
-              <video class="loop" src=${ja} muted playsinline loop preload="auto" hidden></video>
+              <video class="intro" src=${Xa} muted playsinline preload="auto"></video>
+              <video class="loop" src=${Za} muted playsinline loop preload="auto" hidden></video>
             </div>
           </div>` : ""}
       <div class="controls">
         <button
           type="button"
           class="ctl"
-          aria-label=${this._muted ? b("egg.turn_the_sound_on") : b("egg.turn_the_sound_off")}
+          aria-label=${this._muted ? x("egg.turn_the_sound_on") : x("egg.turn_the_sound_off")}
           @click=${() => this._toggleMute()}
         >
           ${this._muted ? "🔇" : "🔊"}
         </button>
-        <button type="button" class="ctl" aria-label=${b("egg.stop_the_easter_egg")} @click=${() => this._stop(!0)}>${b("egg.stop")}</button>
+        <button type="button" class="ctl" aria-label=${x("egg.stop_the_easter_egg")} @click=${() => this._stop(!0)}>${x("egg.stop")}</button>
       </div>`;
 	}
 	static {
@@ -11899,7 +12161,7 @@ var Pa = class extends _ {
   `;
 	}
 };
-customElements.define("boopli-egg", Pa);
+customElements.define("boopli-egg", eo);
 // src/helpers.ts
 function q(e) {
 	return e?.access ?? {
@@ -11909,12 +12171,12 @@ function q(e) {
 		all: !0
 	};
 }
-var Fa = "amzn_sfx_scifi_alarm_01", Ia = "amzn_sfx_doorbell_chime_01", La = [
+var to = "amzn_sfx_scifi_alarm_01", no = "amzn_sfx_doorbell_chime_01", ro = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], Ra = {
+], io = {
 	start: "07:00",
 	stop: "22:00"
 };
@@ -11925,7 +12187,7 @@ function J(e, t) {
 function Y(e, t, n = []) {
 	return Object.keys(e?.states ?? {}).filter((e) => t.includes(e.split(".")[0]) && !n.includes(e)).sort((t, n) => J(e, t).localeCompare(J(e, n)));
 }
-function za(e, t, n) {
+function ao(e, t, n) {
 	let r;
 	return r = t === "alexa_media" ? Object.keys(e?.services?.notify ?? {}).filter((e) => e.startsWith("alexa_media_") && e !== "alexa_media").sort().map((e) => ({
 		value: e,
@@ -11938,10 +12200,10 @@ function za(e, t, n) {
 		label: J(e, t)
 	})), n && !r.some((e) => e.value === n) && r.unshift({
 		value: n,
-		label: b("speakers.not_found", { current: n })
+		label: x("speakers.not_found", { current: n })
 	}), r;
 }
-function Ba(e) {
+function oo(e) {
 	return {
 		entity_id: e,
 		mode: "blink",
@@ -11956,13 +12218,13 @@ function Ba(e) {
 		start_at: 1
 	};
 }
-function Va(e) {
+function so(e) {
 	return {
 		entity_id: e,
 		cue: {
 			enabled: !0,
 			kind: "alexa",
-			sound: Ia,
+			sound: no,
 			start_at: 1,
 			seconds: 30,
 			repeat_s: 5
@@ -11977,21 +12239,21 @@ function Va(e) {
 		alarm: {
 			enabled: !0,
 			kind: "alexa",
-			sound: Fa,
+			sound: to,
 			start_at: 4,
 			seconds: 30,
 			repeat_s: 5
 		}
 	};
 }
-function Ha(e) {
+function co(e) {
 	return {
 		entity_id: e,
 		seconds: 30,
 		start_at: 4
 	};
 }
-function Ua(e) {
+function lo(e) {
 	let t = parseInt(e.replace("#", ""), 16);
 	return [
 		t >> 16 & 255,
@@ -11999,24 +12261,24 @@ function Ua(e) {
 		t & 255
 	];
 }
-function Wa(e) {
+function uo(e) {
 	return "#" + e.map((e) => e.toString(16).padStart(2, "0")).join("");
 }
 function X(e) {
 	return e.replace("mobile_app_", "");
 }
-var Ga = () => ({
-	normal: b("helpers.level_normal"),
-	high: b("helpers.level_high"),
-	alarm: b("helpers.level_alarm"),
-	alarm_max: b("helpers.level_alarm_max")
-}), Ka = () => ({
-	quiet: b("common.quiet"),
-	one: b("helpers.one_nudge"),
-	escalating: b("helpers.escalating"),
-	persistent: b("helpers.persistent")
+var fo = () => ({
+	normal: x("helpers.level_normal"),
+	high: x("helpers.level_high"),
+	alarm: x("helpers.level_alarm"),
+	alarm_max: x("helpers.level_alarm_max")
+}), po = () => ({
+	quiet: x("common.quiet"),
+	one: x("helpers.one_nudge"),
+	escalating: x("helpers.escalating"),
+	persistent: x("helpers.persistent")
 });
-function qa(e, t) {
+function mo(e, t) {
 	let n = e?.states[t]?.attributes?.supported_color_modes;
 	return !Array.isArray(n) || n.some((e) => [
 		"rgb",
@@ -12026,14 +12288,14 @@ function qa(e, t) {
 		"hs"
 	].includes(String(e)));
 }
-function Ja() {
+function ho() {
 	try {
 		return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 	} catch {
 		return Math.random().toString(16).slice(2, 14).padEnd(12, "0");
 	}
 }
-function Ya(e, t) {
+function go(e, t) {
 	let n = {
 		one: "standard_one",
 		escalating: "standard_escalating",
@@ -12043,47 +12305,47 @@ function Ya(e, t) {
 }
 function Z(e) {
 	let t = {
-		standard_one: ["One nudge", () => b("helpers.one_nudge")],
-		standard_escalating: ["Escalating", () => b("helpers.escalating")],
-		standard_persistent: ["Persistent", () => b("helpers.persistent")]
+		standard_one: ["One nudge", () => x("helpers.one_nudge")],
+		standard_escalating: ["Escalating", () => x("helpers.escalating")],
+		standard_persistent: ["Persistent", () => x("helpers.persistent")]
 	}[e.id];
 	return t && e.name === t[0] ? t[1]() : e.name;
 }
-function Xa(e, t) {
+function _o(e, t) {
 	if (e.startsWith("ladder:")) {
 		let n = t?.find((t) => `ladder:${t.id}` === e);
-		return n ? Z(n) : b("chore_editor.a_ladder_that_is_gone");
+		return n ? Z(n) : x("chore_editor.a_ladder_that_is_gone");
 	}
-	return Ka()[e] ?? e;
+	return po()[e] ?? e;
 }
-function Za(e) {
-	if (!e.enabled) return b("helpers.off_boopli_nudges_at_any_time");
+function vo(e) {
+	if (!e.enabled) return x("helpers.off_boopli_nudges_at_any_time");
 	let t = [], n = 0;
 	for (; n < 7;) {
 		let r = e.days[String(n)] ?? null, i = n;
 		for (; i + 1 < 7 && (e.days[String(i + 1)] ?? null)?.start === r?.start && (e.days[String(i + 1)] ?? null)?.stop === r?.stop;) i++;
-		let a = n === i ? D()[n] : b("helpers.day_range", {
-			from: D()[n],
-			to: D()[i]
+		let a = n === i ? O()[n] : x("helpers.day_range", {
+			from: O()[n],
+			to: O()[i]
 		});
-		t.push(r ? b("helpers.day_hours", {
+		t.push(r ? x("helpers.day_hours", {
 			name: a,
 			start: r.start,
 			stop: r.stop
-		}) : b("helpers.no_limit", { name: a })), n = i + 1;
+		}) : x("helpers.no_limit", { name: a })), n = i + 1;
 	}
-	return b("helpers.nudges_allowed", { hours: t.join(", ") });
+	return x("helpers.nudges_allowed", { hours: t.join(", ") });
 }
-function Qa(e) {
-	let t = e.speech.route === "tts" ? b("helpers.tts_voice") : e.speech.route === "alexa_devices" ? b("helpers.alexa_devices") : b("helpers.alexa_media_player");
-	return e.speech.target && e.speech.enabled ? b("helpers.speaks", { kind: t }) : b("helpers.no_speaking_device_yet", { kind: t });
+function yo(e) {
+	let t = e.speech.route === "tts" ? x("helpers.tts_voice") : e.speech.route === "alexa_devices" ? x("helpers.alexa_devices") : x("helpers.alexa_media_player");
+	return e.speech.target && e.speech.enabled ? x("helpers.speaks", { kind: t }) : x("helpers.no_speaking_device_yet", { kind: t });
 }
-function $a(e) {
-	return e.mode === "indicator" ? b("helpers.status_light_stays_on") : b("helpers.blinks");
+function bo(e) {
+	return e.mode === "indicator" ? x("helpers.status_light_stays_on") : x("helpers.blinks");
 }
 // src/boopli-today.ts
-var eo = 6, to = 200;
-function no(e, t) {
+var xo = 6, So = 200;
+function Co(e, t) {
 	if (!t.group) return null;
 	let n = e.steps.filter((e) => e.group === t.group), r = e.steps.some((e) => e.group !== t.group && e.status !== "done");
 	return {
@@ -12092,16 +12354,16 @@ function no(e, t) {
 		canPark: r
 	};
 }
-function ro(e) {
-	return e.away ? b("today.is_resting_while_you_are_away", { name: e.name }) : {
-		happy: b("today.nice_you_got_things_done_today"),
-		content: b("today.ready_when_you_are"),
-		sleepy: b("today.is_a_bit_sleepy", { name: e.name }),
-		sad: b("today.misses_you_one_step_is_enough", { name: e.name }),
-		hibernating: b("today.is_curled_up_resting_until_you", { name: e.name })
+function wo(e) {
+	return e.away ? x("today.is_resting_while_you_are_away", { name: e.name }) : {
+		happy: x("today.nice_you_got_things_done_today"),
+		content: x("today.ready_when_you_are"),
+		sleepy: x("today.is_a_bit_sleepy", { name: e.name }),
+		sad: x("today.misses_you_one_step_is_enough", { name: e.name }),
+		hibernating: x("today.is_curled_up_resting_until_you", { name: e.name })
 	}[e.mood];
 }
-var io = class extends _ {
+var To = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -12139,9 +12401,9 @@ var io = class extends _ {
 		let a = n ? t.blubs - n.blubs : 0, o = n ? t.total_xp - n.total_xp : 0;
 		if (!n || a <= 0 && o <= 0) return;
 		let s = [];
-		a > 0 && s.push(b("today.blubs_gained", { blubs: a })), o > 0 && s.push(b("today.xp_gained", { xp: o })), this._moment = "done", this._momentText = s.join(" · "), (n.mood === "sleepy" || n.mood === "hibernating") && (this._moment = "wake", this._momentText = ""), t.level > n.level && (this._moment = "levelup", this._momentText = b("today.level_2", { level: t.level })), this._momentSeq += 1;
+		a > 0 && s.push(x("today.blubs_gained", { blubs: a })), o > 0 && s.push(x("today.xp_gained", { xp: o })), this._moment = "done", this._momentText = s.join(" · "), (n.mood === "sleepy" || n.mood === "hibernating") && (this._moment = "wake", this._momentText = ""), t.level > n.level && (this._moment = "levelup", this._momentText = x("today.level_2", { level: t.level })), this._momentSeq += 1;
 		let c = [...s];
-		i.length && c.unshift(b("today.is_done", { value: i[0] })), t.level > n.level && c.push(b("today.level_2", { level: t.level })), (n.mood === "sad" || n.mood === "hibernating") && c.push(b("today.is_awake_welcome_back", { name: t.name })), this._toast = c.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
+		i.length && c.unshift(x("today.is_done", { value: i[0] })), t.level > n.level && c.push(x("today.level_2", { level: t.level })), (n.mood === "sad" || n.mood === "hibernating") && c.push(x("today.is_awake_welcome_back", { name: t.name })), this._toast = c.join("  ·  "), window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
 	}
 	_say(e) {
 		this._toast = e, window.clearTimeout(this._toastTimer), this._toastTimer = window.setTimeout(() => this._toast = "", 5e3);
@@ -12157,26 +12419,26 @@ var io = class extends _ {
 		})), this._quick = "";
 	}
 	_renderQuick() {
-		if (!q(this.snapshot).all) return g;
-		let e = Pn(this.snapshot);
-		return p`
+		if (!q(this.snapshot).all) return _;
+		let e = Nn(this.snapshot);
+		return m`
       <section class="card quick">
-        <span class="mark" aria-hidden="true">${E("auto-fix")}</span>
-        <h3><span class="seal" aria-hidden="true">${E("auto-fix")}</span>${b("today.what_do_you_want_to_get")}</h3>
-        ${e ? p`
+        <span class="mark" aria-hidden="true">${D("auto-fix")}</span>
+        <h3><span class="seal" aria-hidden="true">${D("auto-fix")}</span>${x("today.what_do_you_want_to_get")}</h3>
+        ${e ? m`
               <textarea
                 rows="2"
-                placeholder=${b("today.for_example_clean_the_bathroom")}
+                placeholder=${x("today.for_example_clean_the_bathroom")}
                 .value=${this._quick}
                 @input=${(e) => this._quick = e.target.value}
               ></textarea>
               <div class="quick-actions">
-                <button class="primary" @click=${() => this._openBreakdown("now")}>${E("auto-fix")} ${w(this.snapshot) ? b("common.break_it_down_now") : b("today.ask_claude_to_break_it_down")}</button>
-                <button @click=${() => this._openBreakdown("recurring")}>${E("repeat")} ${b("today.break_down_a_recurring_chore")}</button>
+                <button class="primary" @click=${() => this._openBreakdown("now")}>${D("auto-fix")} ${T(this.snapshot) ? x("common.break_it_down_now") : x("today.ask_claude_to_break_it_down")}</button>
+                <button @click=${() => this._openBreakdown("recurring")}>${D("repeat")} ${x("today.break_down_a_recurring_chore")}</button>
               </div>
-            ` : p`
+            ` : m`
               <p class="muted small">
-                ${b("today.boopli_can_split_a_big_task")}
+                ${x("today.boopli_can_split_a_big_task")}
               </p>
               <button
                 @click=${() => this.dispatchEvent(new CustomEvent("open-wizard", {
@@ -12185,7 +12447,7 @@ var io = class extends _ {
 			composed: !0
 		}))}
               >
-                ${E("robot-outline")} ${b("common.set_up_ai_help")}
+                ${D("robot-outline")} ${x("common.set_up_ai_help")}
               </button>
             `}
       </section>
@@ -12193,9 +12455,9 @@ var io = class extends _ {
 	}
 	_renderPet() {
 		let e = this.snapshot?.pet;
-		if (!e) return g;
+		if (!e) return _;
 		let t = e.xp_for_level > 0 ? Math.round(e.xp_in_level / e.xp_for_level * 100) : 0, n = (this.snapshot?.runs ?? []).some((e) => e.steps.some((e) => e.status === "active" && !!e.on_it_until)), r = e.meals_today >= e.meals_max;
-		return p`
+		return m`
       <section class="card pet-card stage-slot">
         <boopli-stage
           controls
@@ -12219,22 +12481,22 @@ var io = class extends _ {
           .momentText=${this._momentText}
           @egg-found=${() => this._egg = !0}
         ></boopli-stage>
-        ${this._egg ? p`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : g}
+        ${this._egg ? m`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : _}
         <div class="pet-info">
-          <span class="mark" aria-hidden="true">${E("paw")}</span>
-          <div class="pet-name">${e.name} <span class="lvl">${E("star-four-points")} ${b("today.level", { level: e.level }).replace(/^[\s·•]+/, "")}</span></div>
+          <span class="mark" aria-hidden="true">${D("paw")}</span>
+          <div class="pet-name">${e.name} <span class="lvl">${D("star-four-points")} ${x("today.level", { level: e.level }).replace(/^[\s·•]+/, "")}</span></div>
           <div class="bar" role="progressbar" aria-valuenow=${t} aria-valuemin="0" aria-valuemax="100">
             <div class="fill" style="width:${t}%"></div>
           </div>
-          <div class="muted small">${b("today.xp_to_the_next_level", {
+          <div class="muted small">${x("today.xp_to_the_next_level", {
 			xp: e.xp_in_level,
 			xp_needed: e.xp_for_level
 		})}</div>
-          <div class="small">${ro(e)}</div>
-          ${r ? p`<div class="small muted meals">${b("common.is_full_for_today", { name: e.name })}</div>` : g}
+          <div class="small">${wo(e)}</div>
+          ${r ? m`<div class="small muted meals">${x("common.is_full_for_today", { name: e.name })}</div>` : _}
         </div>
       </section>
-      ${this._toast ? p`<div class="toast" role="status">${this._toast}</div>` : g}
+      ${this._toast ? m`<div class="toast" role="status">${this._toast}</div>` : _}
       <boopli-shop
         .hass=${this.hass}
         .pet=${e}
@@ -12268,28 +12530,28 @@ var io = class extends _ {
 		}, 250));
 	}
 	_renderQuest() {
-		return this._quest ? p`<dialog
+		return this._quest ? m`<dialog
       class="quest"
-      aria-label=${b("today.quest_title")}
+      aria-label=${x("today.quest_title")}
       @cancel=${(e) => {
 			e.preventDefault(), this._closeQuest();
 		}}
     >
-      <h3>${b("today.quest_title")}</h3>
-      <p>${b("today.quest_text")}</p>
-      ${this._questError ? p`<p class="error" role="alert">${this._questError}</p>` : g}
-      <button type="button" class="primary" @click=${() => this._closeQuest()}>${b("today.quest_ok")}</button>
-    </dialog>` : g;
+      <h3>${x("today.quest_title")}</h3>
+      <p>${x("today.quest_text")}</p>
+      ${this._questError ? m`<p class="error" role="alert">${this._questError}</p>` : _}
+      <button type="button" class="primary" @click=${() => this._closeQuest()}>${x("today.quest_ok")}</button>
+    </dialog>` : _;
 	}
 	async _closeQuest() {
 		if (this.hass) try {
-			await Tn(this.hass), this._questHandled = !0, this._questError = "", this._quest = !1;
+			await wn(this.hass), this._questHandled = !0, this._questError = "", this._quest = !1;
 		} catch (e) {
 			if (this._questError) {
 				this._questHandled = !0, this._questError = "", this._quest = !1;
 				return;
 			}
-			this._questError = S(e);
+			this._questError = C(e);
 		}
 	}
 	updated() {
@@ -12297,12 +12559,12 @@ var io = class extends _ {
 		this._quest && e && !e.open && e.showModal();
 	}
 	_renderTrail(e) {
-		let t = e.done / e.total * 100, n = Math.min(94, Math.max(6, t)), r = e.total <= 6;
-		return p`<div class="trail">
+		let t = e.done / e.total * 100, n = Math.min(94, Math.max(6, t)), r = e.total <= 6, i = xr(this.snapshot?.pet?.placed);
+		return m`<div class="trail">
       <div
         class="track"
         role="progressbar"
-        aria-label=${b("today.steps_done")}
+        aria-label=${x("today.steps_done")}
         aria-valuenow=${e.done}
         aria-valuemin="0"
         aria-valuemax=${e.total}
@@ -12314,14 +12576,16 @@ var io = class extends _ {
           still
           .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
           .mood=${"happy"}
+          .fur=${i.fur}
+          .neck=${i.neck}
         ></boopli-pet>
-        <span class="flag">${E("flag-checkered")}</span>
+        <span class="flag">${D("flag-checkered")}</span>
       </div>
-      ${r ? p`<ol class="trail-steps">
-            ${e.run.steps.map((t) => p`<li class=${t.status === "done" ? "ok" : t.step_id === e.step.step_id ? "here" : ""}>
-                  ${t.status === "done" ? E("check") : g}${t.title}
+      ${r ? m`<ol class="trail-steps">
+            ${e.run.steps.map((t) => m`<li class=${t.status === "done" ? "ok" : t.step_id === e.step.step_id ? "here" : ""}>
+                  ${t.status === "done" ? D("check") : _}${t.title}
                 </li>`)}
-          </ol>` : p`<div class="muted small">${b("today.step_of", {
+          </ol>` : m`<div class="muted small">${x("today.step_of", {
 			value: e.done + 1,
 			total: e.total
 		})}</div>`}
@@ -12331,9 +12595,9 @@ var io = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await dn(this.hass, e, t);
+				await un(this.hass, e, t);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -12343,9 +12607,9 @@ var io = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await un(this.hass, e, t);
+				await ln(this.hass, e, t);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -12355,9 +12619,9 @@ var io = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await (n ? Yt : Xt)(this.hass, e, t);
+				await (n ? Jt : Yt)(this.hass, e, t);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -12367,9 +12631,9 @@ var io = class extends _ {
 		if (this.hass && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				await Jt(this.hass, e, t);
+				await qt(this.hass, e, t);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -12396,9 +12660,9 @@ var io = class extends _ {
 			else {
 				this._busy = !0, this._error = "";
 				try {
-					t.choreId ? await yn(this.hass, t.choreId, e, t.at) : await vn(this.hass, t.runId ?? "", t.group ?? "", e, t.at), this._park = null;
+					t.choreId ? await vn(this.hass, t.choreId, e, t.at) : await _n(this.hass, t.runId ?? "", t.group ?? "", e, t.at), this._park = null;
 				} catch (e) {
-					this._error = S(e);
+					this._error = C(e);
 				} finally {
 					this._busy = !1;
 				}
@@ -12407,76 +12671,76 @@ var io = class extends _ {
 	}
 	_renderParkAsk() {
 		let e = this._park;
-		return e ? p`<div class="park-ask" role="group" aria-label=${b("today.when_should_this_part_come_back")}>
-      <div class="small">${e.choreId ? b("today.when_should_it_come_back") : b("today.set_aside_when_should_it_come", { group: e.group ?? "" })}</div>
+		return e ? m`<div class="park-ask" role="group" aria-label=${x("today.when_should_this_part_come_back")}>
+      <div class="small">${e.choreId ? x("today.when_should_it_come_back") : x("today.set_aside_when_should_it_come", { group: e.group ?? "" })}</div>
       <div class="park-buttons">
-        <button ?disabled=${this._busy} @click=${() => this._choose("any")}>${b("today.when_i_want")}</button>
-        <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>${b("today.tomorrow_9_00")}</button>
-        <button ?disabled=${this._busy} @click=${() => this._choose("at")}>${b("today.pick_a_time")}</button>
-        <button class="link" @click=${() => this._park = null}>${b("common.cancel")}</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("any")}>${x("today.when_i_want")}</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("tomorrow")}>${x("today.tomorrow_9_00")}</button>
+        <button ?disabled=${this._busy} @click=${() => this._choose("at")}>${x("today.pick_a_time")}</button>
+        <button class="link" @click=${() => this._park = null}>${x("common.cancel")}</button>
       </div>
-      ${e.picking ? p`<div class="park-pick">
+      ${e.picking ? m`<div class="park-pick">
             <input
               type="datetime-local"
-              aria-label=${b("today.date_and_time")}
+              aria-label=${x("today.date_and_time")}
               .value=${e.at}
               @input=${(e) => this._park &&= {
 			...this._park,
 			at: e.target.value
 		}}
             />
-            <button class="primary" ?disabled=${this._busy || !e.at} @click=${() => this._choose("at")}>${b("today.set_it")}</button>
-          </div>` : g}
-      <div class="muted small">${b("today.nothing_is_lost_the_steps_wait")}</div>
-    </div>` : g;
+            <button class="primary" ?disabled=${this._busy || !e.at} @click=${() => this._choose("at")}>${x("today.set_it")}</button>
+          </div>` : _}
+      <div class="muted small">${x("today.nothing_is_lost_the_steps_wait")}</div>
+    </div>` : _;
 	}
 	_renderAway(e) {
 		let t = this.snapshot?.away;
-		if (!t?.active) return g;
+		if (!t?.active) return _;
 		let n = !!this.snapshot?.away_now;
-		return p`<section class="away-banner ${n ? "on" : "planned"}" role="status">
-      <span class="mark" aria-hidden="true">${E("bag-suitcase")}</span>
-      <div class="away-icon" aria-hidden="true">${E("bag-suitcase")}</div>
+		return m`<section class="away-banner ${n ? "on" : "planned"}" role="status">
+      <span class="mark" aria-hidden="true">${D("bag-suitcase")}</span>
+      <div class="away-icon" aria-hidden="true">${D("bag-suitcase")}</div>
       <div class="away-text">
-        <div class="away-title">${b(n ? "today.away_mode_is_on" : "today.away_mode_is_planned")}</div>
-        <div class="away-when">${Xn(t, this.nowMs, e, n)}</div>
+        <div class="away-title">${x(n ? "today.away_mode_is_on" : "today.away_mode_is_planned")}</div>
+        <div class="away-when">${Zn(t, this.nowMs, e, n)}</div>
         <div class="away-note">
-          ${b(n ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
+          ${x(n ? "common.nothing_starts_and_nothing_nudges_you" : "common.boopli_carries_on_as_usual_until")}
         </div>
       </div>
       <div class="away-actions">
-        <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => cn(this.hass))}>
-          ${b(n ? "common.back_now" : "common.cancel_it")}
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._partAction(() => sn(this.hass))}>
+          ${x(n ? "common.back_now" : "common.cancel_it")}
         </button>
-        ${q(this.snapshot).all ? p`<button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", {
+        ${q(this.snapshot).all ? m`<button class="link" @click=${() => this.dispatchEvent(new CustomEvent("goto-settings", {
 			bubbles: !0,
 			composed: !0
 		}))}>
-              ${b("today.change_in_settings")}
-            </button>` : g}
+              ${x("today.change_in_settings")}
+            </button>` : _}
       </div>
     </section>`;
 	}
 	_renderQuestions() {
-		return (this.snapshot?.runs ?? []).filter((e) => e.questions_open && (e.questions ?? []).length > 0).map((e) => p`<section class="card now ask">
-        <span class="mark" aria-hidden="true">${E("help-circle-outline")}</span>
+		return (this.snapshot?.runs ?? []).filter((e) => e.questions_open && (e.questions ?? []).length > 0).map((e) => m`<section class="card now ask">
+        <span class="mark" aria-hidden="true">${D("help-circle-outline")}</span>
         <div class="now-head">
-          <span class="seal" aria-hidden="true">${E("help")}</span>
+          <span class="seal" aria-hidden="true">${D("help")}</span>
           <div class="muted small">${e.chore_name}</div>
         </div>
-        <h2>${b("today.quick_look_first")}</h2>
+        <h2>${x("today.quick_look_first")}</h2>
         <p class="muted small">
-          ${b("today.it_started_with_all_its_steps")}
+          ${x("today.it_started_with_all_its_steps")}
         </p>
         <boopli-questions
           soft
           .questions=${e.questions ?? []}
           .busy=${this._busy}
           .cancelable=${!1}
-          label=${b("common.done")}
-          allLabel=${b("today.keep_all_steps")}
-          @answered=${(t) => this._partAction(() => ln(this.hass, e.id, t.detail.answers))}
-          @all-steps=${() => this._partAction(() => ln(this.hass, e.id, {}))}
+          label=${x("common.done")}
+          allLabel=${x("today.keep_all_steps")}
+          @answered=${(t) => this._partAction(() => cn(this.hass, e.id, t.detail.answers))}
+          @all-steps=${() => this._partAction(() => cn(this.hass, e.id, {}))}
         ></boopli-questions>
       </section>`);
 	}
@@ -12490,33 +12754,33 @@ var io = class extends _ {
 			try {
 				await e();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
 		}
 	}
 	_heading(e, t, n) {
-		return p`<h3 class="sec-title"><span class="seal" aria-hidden="true">${E(n)}</span>${e}<span class="count">${t}</span></h3>`;
+		return m`<h3 class="sec-title"><span class="seal" aria-hidden="true">${D(n)}</span>${e}<span class="count">${t}</span></h3>`;
 	}
 	_renderReady(e) {
 		let t = e.ready.reduce((e, t) => e + t.steps.length, 0);
-		return t === 0 ? g : p`<section class="sec sec-ready">
-      <span class="mark" aria-hidden="true">${E("play-circle-outline")}</span>
-      ${this._heading(b("today.ready_now"), t, "play-circle-outline")}
-      ${e.ready.map((e) => p`<div class="group">
+		return t === 0 ? _ : m`<section class="sec sec-ready">
+      <span class="mark" aria-hidden="true">${D("play-circle-outline")}</span>
+      ${this._heading(x("today.ready_now"), t, "play-circle-outline")}
+      ${e.ready.map((e) => m`<div class="group">
           <div class="group-name strong">${e.run.chore_name}</div>
-          ${e.steps.map((t) => p`<div class="row">
+          ${e.steps.map((t) => m`<div class="row">
               <span class="rowmain">
                 <button
                   type="button"
                   class="go"
-                  title=${b("today.done_step", { step: t.title })}
-                  aria-label=${b("today.done_step", { step: t.title })}
+                  title=${x("today.done_step", { step: t.title })}
+                  aria-label=${x("today.done_step", { step: t.title })}
                   ?disabled=${this._busy}
                   @click=${() => this._done(e.run.id, t.stepId)}
                 >
-                  ${E("check-bold")}
+                  ${D("check-bold")}
                 </button>
                 <span>${t.title}</span>
               </span>
@@ -12526,120 +12790,120 @@ var io = class extends _ {
 	}
 	_renderStill(e, t) {
 		let n = e.groups.reduce((e, t) => e + t.steps.length, 0) + e.dueToday.length;
-		if (n === 0) return g;
+		if (n === 0) return _;
 		let r = e.groups.some((e) => e.steps.some((e) => e.status === "waiting"));
-		return p`<section class="sec sec-still soft">
-      <span class="mark" aria-hidden="true">${E("clock-outline")}</span>
-      ${this._heading(b("today.still_to_do_today"), n, "clock-outline")}
-      ${e.groups.map((e) => p`<div class="group">
+		return m`<section class="sec sec-still soft">
+      <span class="mark" aria-hidden="true">${D("clock-outline")}</span>
+      ${this._heading(x("today.still_to_do_today"), n, "clock-outline")}
+      ${e.groups.map((e) => m`<div class="group">
           <div class="group-name">${e.run.chore_name}</div>
-          ${e.steps.map((t) => p`<div class="row">
+          ${e.steps.map((t) => m`<div class="row">
               <span class="rowmain">
-                ${t.status === "waiting" ? p`<button
+                ${t.status === "waiting" ? m`<button
                       type="button"
                       class="go"
-                      title=${b("today.start_step_now", { step: t.title })}
-                      aria-label=${b("today.start_step_now", { step: t.title })}
+                      title=${x("today.start_step_now", { step: t.title })}
+                      aria-label=${x("today.start_step_now", { step: t.title })}
                       ?disabled=${this._busy}
                       @click=${() => this._release(e.run.id, t.stepId)}
                     >
-                      ${E("chevron-double-right")}
-                    </button>` : r ? p`<span class="go-space" aria-hidden="true"></span>` : g}
+                      ${D("chevron-double-right")}
+                    </button>` : r ? m`<span class="go-space" aria-hidden="true"></span>` : _}
                 <span>${t.title}</span>
               </span>
               <span class="hint">${t.hint}</span>
             </div>`)}
         </div>`)}
-      ${e.dueToday.map((e) => p`<div class="group">
+      ${e.dueToday.map((e) => m`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
-            <span class="hint">${b("today.at", { time: O(e.at, t) })}</span>
+            <span class="hint">${x("today.at", { time: Ln(e.at, t) })}</span>
           </div>
         </div>`)}
     </section>`;
 	}
 	_renderUpcoming(e) {
-		if (e.upcoming.length === 0) return g;
+		if (e.upcoming.length === 0) return _;
 		let t = this.snapshot?.time_zone ?? "UTC", n = e.upcoming.slice(0, 8);
-		return p`<section class="sec sec-upcoming soft">
-      <span class="mark" aria-hidden="true">${E("calendar-clock")}</span>
-      ${this._heading(b("today.upcoming"), e.upcoming.length, "calendar-clock")}
-      ${n.map((e) => p`<div class="group">
+		return m`<section class="sec sec-upcoming soft">
+      <span class="mark" aria-hidden="true">${D("calendar-clock")}</span>
+      ${this._heading(x("today.upcoming"), e.upcoming.length, "calendar-clock")}
+      ${n.map((e) => m`<div class="group">
           <div class="row">
             <span class="group-name">${e.chore.name}</span>
-            <span class="hint">${Bn(e.at, this.nowMs, t)}</span>
+            <span class="hint">${Vn(e.at, this.nowMs, t)}</span>
           </div>
         </div>`)}
-      ${e.upcoming.length > n.length ? p`<div class="muted small more">${b("today.and_more_in_the_chores_tab", { count: e.upcoming.length - n.length })}</div>` : g}
+      ${e.upcoming.length > n.length ? m`<div class="muted small more">${x("today.and_more_in_the_chores_tab", { count: e.upcoming.length - n.length })}</div>` : _}
     </section>`;
 	}
 	_renderParked() {
 		let e = this._parkedParts();
-		if (e.length === 0) return g;
+		if (e.length === 0) return _;
 		let t = this.snapshot?.time_zone ?? "UTC";
-		return p`<section class="sec sec-parked parked">
-      <span class="mark" aria-hidden="true">${E("pause-circle-outline")}</span>
-      ${this._heading(b("today.set_aside_for_later"), e.length, "pause-circle-outline")}
-      ${e.map((e) => p`<div class="part">
+		return m`<section class="sec sec-parked parked">
+      <span class="mark" aria-hidden="true">${D("pause-circle-outline")}</span>
+      ${this._heading(x("today.set_aside_for_later"), e.length, "pause-circle-outline")}
+      ${e.map((e) => m`<div class="part">
           <div class="part-name">${e.name}</div>
           <div class="muted small">
-            ${b("common.steps_count", { count: e.steps.length })} ·
-            ${e.next_due ? b("today.comes_back", { when: Bn(e.next_due, this.nowMs, t) }) : b("today.waiting_until_you_start_it")}
+            ${x("common.steps_count", { count: e.steps.length })} ·
+            ${e.next_due ? x("today.comes_back", { when: Vn(e.next_due, this.nowMs, t) }) : x("today.waiting_until_you_start_it")}
           </div>
-          ${this._park?.choreId === e.id ? this._renderParkAsk() : p`<div class="part-actions">
-                <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => on(this.hass, e.id))}>
-                  ${b("common.start_now")}
+          ${this._park?.choreId === e.id ? this._renderParkAsk() : m`<div class="part-actions">
+                <button class="primary" ?disabled=${this._busy} @click=${() => this._partAction(() => an(this.hass, e.id))}>
+                  ${x("common.start_now")}
                 </button>
-                <button class="mild" ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${b("today.change_time")}</button>
-                ${q(this.snapshot).all ? this._removing === e.id ? p`<span class="small">${b("today.remove_it")}</span>
+                <button class="mild" ?disabled=${this._busy} @click=${() => this._openPark({ choreId: e.id })}>${x("today.change_time")}</button>
+                ${q(this.snapshot).all ? this._removing === e.id ? m`<span class="small">${x("today.remove_it")}</span>
                       <button
                         ?disabled=${this._busy}
                         @click=${() => this._partAction(async () => {
-			await rn(this.hass, e.id), this._removing = "";
+			await nn(this.hass, e.id), this._removing = "";
 		})}
                       >
-                        ${b("today.yes_remove")}
+                        ${x("today.yes_remove")}
                       </button>
-                      <button class="link" @click=${() => this._removing = ""}>${b("today.keep")}</button>` : p`<button class="link" @click=${() => this._removing = e.id}>${b("common.delete")}</button>` : g}
+                      <button class="link" @click=${() => this._removing = ""}>${x("today.keep")}</button>` : m`<button class="link" @click=${() => this._removing = e.id}>${x("common.delete")}</button>` : _}
               </div>`}
         </div>`)}
     </section>`;
 	}
 	_renderDone() {
 		let e = this.snapshot;
-		if (!e) return g;
-		let t = e.time_zone, n = e.history.filter((e) => Vn(e.ts, this.nowMs, t)), r = new Set(n.filter((e) => e.kind === "chore_done").map((e) => e.run_id)), i = n.filter((e) => e.kind === "step_done").reverse();
-		if (i.length === 0) return g;
-		let a = i.slice(0, eo), o = i.length - a.length, s = e.history.length >= to && Vn(e.history[0].ts, this.nowMs, t), c = /* @__PURE__ */ new Set();
-		return p`
+		if (!e) return _;
+		let t = e.time_zone, n = e.history.filter((e) => Hn(e.ts, this.nowMs, t)), r = new Set(n.filter((e) => e.kind === "chore_done").map((e) => e.run_id)), i = n.filter((e) => e.kind === "step_done").reverse();
+		if (i.length === 0) return _;
+		let a = i.slice(0, xo), o = i.length - a.length, s = e.history.length >= So && Hn(e.history[0].ts, this.nowMs, t), c = /* @__PURE__ */ new Set();
+		return m`
       <section class="sec sec-done soft">
-        <span class="mark" aria-hidden="true">${E("check-all")}</span>
-        ${this._heading(b("today.done_today"), s ? `${i.length}+` : i.length, "check-all")}
+        <span class="mark" aria-hidden="true">${D("check-all")}</span>
+        ${this._heading(x("today.done_today"), s ? `${i.length}+` : i.length, "check-all")}
         ${a.map((e) => {
 			let n = e.by === "auto", i = r.has(e.run_id) && !c.has(e.run_id);
-			return i && c.add(e.run_id), p`<div class="row">
+			return i && c.add(e.run_id), m`<div class="row">
             <span class="rowmain">
-              <span class="donei ${n ? "auto" : ""}" title=${b(n ? "today.done_by_itself" : "common.done")}>${E(n ? "home-automation" : "check")}</span>
+              <span class="donei ${n ? "auto" : ""}" title=${x(n ? "today.done_by_itself" : "common.done")}>${D(n ? "home-automation" : "check")}</span>
               <span class=${i ? "fin" : ""}>${e.chore_name}: ${e.step_title}</span>
             </span>
-            <span class="hint">${n && e.reason ? `${e.reason}, ` : ""}${O(e.ts, t)}${i ? p` <span class="fin-flag" aria-hidden="true">${E("flag-checkered")}</span>` : g}</span>
+            <span class="hint">${n && e.reason ? `${e.reason}, ` : ""}${Ln(e.ts, t)}${i ? m` <span class="fin-flag" aria-hidden="true">${D("flag-checkered")}</span>` : _}</span>
           </div>`;
 		})}
-        ${o > 0 ? p`<div class="muted small more">${b("today.and_n_more", { count: s ? `${o}+` : o })}</div>` : g}
+        ${o > 0 ? m`<div class="muted small more">${x("today.and_n_more", { count: s ? `${o}+` : o })}</div>` : _}
       </section>
     `;
 	}
 	render() {
-		if (!this.snapshot) return p`<p class="muted">${b("common.loading")}</p>`;
-		let e = this.snapshot.time_zone, t = Qn(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
-		return p`
+		if (!this.snapshot) return m`<p class="muted">${x("common.loading")}</p>`;
+		let e = this.snapshot.time_zone, t = $n(this.snapshot, this.nowMs), n = this.snapshot.chores.length > 0, r = this.snapshot.setup?.status;
+		return m`
       ${this._renderAway(e)}
-      ${q(this.snapshot).all ? g : p`<section class="card"><boopli-away .hass=${this.hass} .snapshot=${this.snapshot} .nowMs=${this.nowMs}></boopli-away></section>`}
+      ${q(this.snapshot).all ? _ : m`<section class="card"><boopli-away .hass=${this.hass} .snapshot=${this.snapshot} .nowMs=${this.nowMs}></boopli-away></section>`}
       <div class="cols"><div class="col">
-      ${(r === "skipped" || r === "in_progress") && q(this.snapshot).all ? p`<section class="card banner">
-            <span class="mark" aria-hidden="true">${E("rocket-launch-outline")}</span>
-            <span class="seal" aria-hidden="true">${E("rocket-launch")}</span>
-            <span class="bannertext">${b("today.boopli_is_not_fully_set_up")}</span>
+      ${(r === "skipped" || r === "in_progress") && q(this.snapshot).all ? m`<section class="card banner">
+            <span class="mark" aria-hidden="true">${D("rocket-launch-outline")}</span>
+            <span class="seal" aria-hidden="true">${D("rocket-launch")}</span>
+            <span class="bannertext">${x("today.boopli_is_not_fully_set_up")}</span>
             <button
               class="primary"
               @click=${() => this.dispatchEvent(new CustomEvent("open-wizard", {
@@ -12647,70 +12911,70 @@ var io = class extends _ {
 			composed: !0
 		}))}
             >
-              ${b("today.finish_setting_up")}
+              ${x("today.finish_setting_up")}
             </button>
-          </section>` : g}
+          </section>` : _}
       ${this._renderQuestions()}
-      ${t.now ? p`
+      ${t.now ? m`
             <section class=${t.now.step.on_it_until ? "card now working" : "card now"}>
-              <span class="mark" aria-hidden="true">${E("clipboard-check-outline")}</span>
+              <span class="mark" aria-hidden="true">${D("clipboard-check-outline")}</span>
               <div class="now-head">
-                <span class="seal" aria-hidden="true">${E("clipboard-check-outline")}</span>
+                <span class="seal" aria-hidden="true">${D("clipboard-check-outline")}</span>
                 <div class="muted small">
                   ${t.now.run.chore_name}
-                  ${t.now.step.group ? p`<span class="tag">${t.now.step.group}</span>` : g}
+                  ${t.now.step.group ? m`<span class="tag">${t.now.step.group}</span>` : _}
                 </div>
               </div>
               <h2>${t.now.step.title}</h2>
-              ${t.now.total > 1 ? this._renderTrail(t.now) : g}
+              ${t.now.total > 1 ? this._renderTrail(t.now) : _}
               ${(() => {
-			let e = no(t.now.run, t.now.step);
-			return e && e.total > 1 ? p`<div class="muted small">${b("today.step_of_2", {
+			let e = Co(t.now.run, t.now.step);
+			return e && e.total > 1 ? m`<div class="muted small">${x("today.step_of_2", {
 				group: t.now.step.group ?? "",
 				min: Math.min(e.done + 1, e.total),
 				total: e.total
-			})}</div>` : g;
+			})}</div>` : _;
 		})()}
-              ${t.now.step.active_at ? p`<div class="muted small">
-                    ${Wn(t.now.step.active_at, e)}
-                  </div>` : g}
-              ${t.now.step.snoozed_until && Date.parse(t.now.step.snoozed_until) > this.nowMs ? p`<div class="muted small">
-                    ${b("today.snoozed_until", { time: O(t.now.step.snoozed_until, e) })}
-                  </div>` : g}
-              ${t.now.step.on_it_until ? p`<div class="in-progress">
-                    ${E("check-circle")} ${b("today.in_progress")}${t.now.step.on_it_since ? p` ${b("today.since", { time: O(t.now.step.on_it_since, e) })}` : g}
-                    <span class="muted small">${b("today.boopli_checks_in_at", { time: O(t.now.step.on_it_until, e) })}</span>
-                  </div>` : g}
+              ${t.now.step.active_at ? m`<div class="muted small">
+                    ${Gn(t.now.step.active_at, e)}
+                  </div>` : _}
+              ${t.now.step.snoozed_until && Date.parse(t.now.step.snoozed_until) > this.nowMs ? m`<div class="muted small">
+                    ${x("today.snoozed_until", { time: Ln(t.now.step.snoozed_until, e) })}
+                  </div>` : _}
+              ${t.now.step.on_it_until ? m`<div class="in-progress">
+                    ${D("check-circle")} ${x("today.in_progress")}${t.now.step.on_it_since ? m` ${x("today.since", { time: Ln(t.now.step.on_it_since, e) })}` : _}
+                    <span class="muted small">${x("today.boopli_checks_in_at", { time: Ln(t.now.step.on_it_until, e) })}</span>
+                  </div>` : _}
               <div class="now-buttons">
                 <button
                   class="press done"
                   ?disabled=${this._busy}
                   @click=${() => this._done(t.now.run.id, t.now.step.step_id)}
                 >
-                  ${E("check-bold")} ${b("common.done")}
+                  ${D("check-bold")} ${x("common.done")}
                 </button>
-                ${t.now.step.on_it_until ? p`<button
+                ${t.now.step.on_it_until ? m`<button
                       class="link"
                       ?disabled=${this._busy}
                       @click=${() => this._working(t.now.run.id, t.now.step.step_id, !1)}
                     >
-                      ${b("today.not_on_it")}
-                    </button>` : p`<button
+                      ${x("today.not_on_it")}
+                    </button>` : m`<button
                       class="on-it"
                       ?disabled=${this._busy}
                       @click=${() => this._working(t.now.run.id, t.now.step.step_id, !0)}
                     >
-                      ${b("today.on_it")}
+                      ${x("today.on_it")}
                     </button>`}
                 <button
                   class="link"
                   ?disabled=${this._busy}
                   @click=${() => this._snooze(t.now.run.id, t.now.step.step_id)}
                 >
-                  ${b("today.snooze_for", { minutes: this.snapshot.settings.snooze_minutes })}
+                  ${x("today.snooze_for", { minutes: this.snapshot.settings.snooze_minutes })}
                 </button>
               </div>
-              ${no(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : p`<button
+              ${Co(t.now.run, t.now.step)?.canPark ? this._park && this._park.runId === t.now.run.id ? this._renderParkAsk() : m`<button
                   class="link later-btn"
                   ?disabled=${this._busy}
                   @click=${() => this._openPark({
@@ -12718,17 +12982,17 @@ var io = class extends _ {
 			group: t.now.step.group
 		})}
                 >
-                  ${b("today.do_this_part_later", { group: t.now.step.group ?? "" })}
-                </button>` : g}
-              ${this._error ? p`<div class="error">${this._error}</div>` : g}
+                  ${x("today.do_this_part_later", { group: t.now.step.group ?? "" })}
+                </button>` : _}
+              ${this._error ? m`<div class="error">${this._error}</div>` : _}
             </section>
-          ` : p`
+          ` : m`
             <section class="card empty">
-              <h2>${b("today.nothing_needs_you_right_now")}</h2>
+              <h2>${x("today.nothing_needs_you_right_now")}</h2>
               <p class="muted">
-                ${n ? b("today.enjoy_the_quiet_what_is_coming") : q(this.snapshot).all ? b("today.add_your_first_chore_in_the") : b("chores.no_chores_yet_ask_an_admin")}
+                ${n ? x("today.enjoy_the_quiet_what_is_coming") : q(this.snapshot).all ? x("today.add_your_first_chore_in_the") : x("chores.no_chores_yet_ask_an_admin")}
               </p>
-              ${this._error ? p`<div class="error">${this._error}</div>` : g}
+              ${this._error ? m`<div class="error">${this._error}</div>` : _}
             </section>
           `}
       ${this._renderQuick()}
@@ -12743,7 +13007,7 @@ var io = class extends _ {
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         --pane: var(--card-background-color, #1c1c1c);
         --gap: 14px; /* the space between two cards, in both columns */
@@ -13520,9 +13784,9 @@ var io = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-today", io);
+customElements.define("boopli-today", To);
 // src/boopli-triggers.ts
-var ao = {
+var Eo = {
 	binary_sensor: ["on", "off"],
 	switch: ["on", "off"],
 	input_boolean: ["on", "off"],
@@ -13531,15 +13795,15 @@ var ao = {
 	lock: ["locked", "unlocked"],
 	person: ["home", "not_home"],
 	device_tracker: ["home", "not_home"]
-}, oo = [
+}, Do = [
 	"event",
 	"input_button",
 	"button"
 ];
-function so(e) {
+function Oo(e) {
 	return e.state ? "state" : e.above !== null && e.below !== null ? "between" : e.below === null ? e.above === null ? "state" : "above" : "below";
 }
-function co(e) {
+function ko(e) {
 	return {
 		kind: e,
 		entity_id: "",
@@ -13552,7 +13816,7 @@ function co(e) {
 		press: ""
 	};
 }
-var lo = class extends _ {
+var Ao = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13594,7 +13858,7 @@ var lo = class extends _ {
 		} : n));
 	}
 	_add(e) {
-		this._emit([...this.triggers, co(e)]);
+		this._emit([...this.triggers, ko(e)]);
 	}
 	_remove(e) {
 		this._cancelScan(), this._emit(this.triggers.filter((t, n) => n !== e));
@@ -13644,85 +13908,85 @@ var lo = class extends _ {
 				}, "tag_scanned");
 				this._scanning === e ? this._stopScan = t : t();
 			} catch (e) {
-				this._scanning = -1, this._note = b("triggers.scanning_did_not_start_pick_the", { error: S(e) });
+				this._scanning = -1, this._note = x("triggers.scanning_did_not_start_pick_the", { error: C(e) });
 			}
 		}
 	}
 	_renderState(e, t) {
-		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = ao[n] ?? [], a = so(e);
-		return p`
+		let n = e.entity_id.split(".")[0], r = this.hass?.states[e.entity_id], i = Eo[n] ?? [], a = Oo(e);
+		return m`
       <div class="field">
-        <label>${b("triggers.which_entity")}</label>
+        <label>${x("triggers.which_entity")}</label>
         <input
           list="states-list"
-          placeholder=${b("triggers.start_typing_a_name_for_example")}
+          placeholder=${x("triggers.start_typing_a_name_for_example")}
           .value=${e.entity_id}
           @change=${(e) => this._patch(t, { entity_id: e.target.value.trim() })}
         />
-        ${e.entity_id ? r ? p`<div class="muted small">
-                ${x("triggers.now", {
+        ${e.entity_id ? r ? m`<div class="muted small">
+                ${S("triggers.now", {
 			device: this._friendly(e.entity_id),
 			state: r.state
 		})}
-              </div>` : p`<div class="warn small">${b("triggers.not_found_right_now_check_the")}</div>` : g}
+              </div>` : m`<div class="warn small">${x("triggers.not_found_right_now_check_the")}</div>` : _}
       </div>
       <div class="field">
-        <label>${b("triggers.it_finishes_the_step_when_it")}</label>
+        <label>${x("triggers.it_finishes_the_step_when_it")}</label>
         <select
           .value=${a}
           @change=${(e) => this._setCondition(t, e.target.value)}
         >
-          <option value="state" ?selected=${a === "state"}>${b("triggers.is_in_this_state")}</option>
-          <option value="above" ?selected=${a === "above"}>${b("triggers.goes_above_a_number")}</option>
-          <option value="below" ?selected=${a === "below"}>${b("triggers.goes_below_a_number")}</option>
-          <option value="between" ?selected=${a === "between"}>${b("triggers.is_between_two_numbers")}</option>
+          <option value="state" ?selected=${a === "state"}>${x("triggers.is_in_this_state")}</option>
+          <option value="above" ?selected=${a === "above"}>${x("triggers.goes_above_a_number")}</option>
+          <option value="below" ?selected=${a === "below"}>${x("triggers.goes_below_a_number")}</option>
+          <option value="between" ?selected=${a === "between"}>${x("triggers.is_between_two_numbers")}</option>
         </select>
       </div>
-      ${a === "state" ? p`<div class="field">
-            <label>${b("triggers.state")}</label>
+      ${a === "state" ? m`<div class="field">
+            <label>${x("triggers.state")}</label>
             <input
-              placeholder=${b("triggers.for_example_on_off_open")}
+              placeholder=${x("triggers.for_example_on_off_open")}
               .value=${e.state}
               @input=${(e) => this._patch(t, { state: e.target.value })}
             />
             <div class="chips">
-              ${i.map((n) => p`<button
+              ${i.map((n) => m`<button
                   type="button"
                   class="chip ${e.state === n ? "on" : ""}"
                   @click=${() => this._patch(t, { state: n })}
                 >
                   ${n}
                 </button>`)}
-              ${r && !i.includes(r.state) ? p`<button
+              ${r && !i.includes(r.state) ? m`<button
                     type="button"
                     class="chip"
                     @click=${() => this._patch(t, { state: r.state })}
                   >
-                    ${b("triggers.now_2", { state: r.state })}
-                  </button>` : g}
+                    ${x("triggers.now_2", { state: r.state })}
+                  </button>` : _}
             </div>
-          </div>` : p`<div class="row2">
-            ${a === "above" || a === "between" ? p`<div>
-                  <label>${b("triggers.above")}</label>
+          </div>` : m`<div class="row2">
+            ${a === "above" || a === "between" ? m`<div>
+                  <label>${x("triggers.above")}</label>
                   <input
                     type="number"
                     step="any"
                     .value=${e.above === null ? "" : String(e.above)}
                     @input=${(e) => this._patch(t, { above: this._numberOrNull(e.target.value) })}
                   />
-                </div>` : g}
-            ${a === "below" || a === "between" ? p`<div>
-                  <label>${b("triggers.below")}</label>
+                </div>` : _}
+            ${a === "below" || a === "between" ? m`<div>
+                  <label>${x("triggers.below")}</label>
                   <input
                     type="number"
                     step="any"
                     .value=${e.below === null ? "" : String(e.below)}
                     @input=${(e) => this._patch(t, { below: this._numberOrNull(e.target.value) })}
                   />
-                </div>` : g}
+                </div>` : _}
           </div>`}
       <div class="field">
-        <label>${b("triggers.and_stays_that_way_for_minutes")}</label>
+        <label>${x("triggers.and_stays_that_way_for_minutes")}</label>
         <input
           type="number"
           min="0"
@@ -13738,100 +14002,100 @@ var lo = class extends _ {
             .checked=${e.mode === "is"}
             @change=${(e) => this._patch(t, { mode: e.target.checked ? "is" : "happens" })}
           />
-          ${b("triggers.also_count_it_if_it_is")}
+          ${x("triggers.also_count_it_if_it_is")}
         </label>
         <div class="muted small">
-          ${b("triggers.off_the_usual_it_has_to")}
+          ${x("triggers.off_the_usual_it_has_to")}
         </div>
       </div>
     `;
 	}
 	_renderTag(e, t) {
 		let n = this._tags.find((t) => t.tag_id === e.tag_id);
-		return p`
+		return m`
       <div class="field">
-        <label>${b("triggers.which_nfc_tag")}</label>
+        <label>${x("triggers.which_nfc_tag")}</label>
         <div class="scan">
           <select
             @change=${(e) => this._patch(t, { tag_id: e.target.value })}
           >
-            <option value="" .selected=${!e.tag_id}>${b("triggers.pick_a_tag")}</option>
-            ${this._tags.map((t) => p`<option value=${t.tag_id} .selected=${t.tag_id === e.tag_id}>
+            <option value="" .selected=${!e.tag_id}>${x("triggers.pick_a_tag")}</option>
+            ${this._tags.map((t) => m`<option value=${t.tag_id} .selected=${t.tag_id === e.tag_id}>
                 ${t.name || t.tag_id}
               </option>`)}
-            ${e.tag_id && !n ? p`<option value=${e.tag_id} .selected=${!0}>${e.tag_id}</option>` : g}
+            ${e.tag_id && !n ? m`<option value=${e.tag_id} .selected=${!0}>${e.tag_id}</option>` : _}
           </select>
-          ${this._scanning === t ? p`<button type="button" @click=${() => this._cancelScan()}>${b("common.cancel")}</button>` : p`<button type="button" @click=${() => this._scan(t)}>${b("triggers.scan_now")}</button>`}
+          ${this._scanning === t ? m`<button type="button" @click=${() => this._cancelScan()}>${x("common.cancel")}</button>` : m`<button type="button" @click=${() => this._scan(t)}>${x("triggers.scan_now")}</button>`}
         </div>
-        ${this._scanning === t ? p`<div class="muted small">${b("triggers.hold_your_phone_to_the_tag")}</div>` : g}
+        ${this._scanning === t ? m`<div class="muted small">${x("triggers.hold_your_phone_to_the_tag")}</div>` : _}
       </div>
     `;
 	}
 	_renderButton(e, t) {
 		let n = this.hass?.states[e.entity_id], r = n?.attributes?.event_types;
-		return p`
+		return m`
       <div class="field">
-        <label>${b("triggers.which_button")}</label>
+        <label>${x("triggers.which_button")}</label>
         <input
           list="buttons-list"
-          placeholder=${b("triggers.start_typing_a_name_for_example_2")}
+          placeholder=${x("triggers.start_typing_a_name_for_example_2")}
           .value=${e.entity_id}
           @change=${(e) => this._patch(t, { entity_id: e.target.value.trim() })}
         />
-        ${e.entity_id && !n ? p`<div class="warn small">${b("triggers.not_found_right_now_check_the")}</div>` : g}
+        ${e.entity_id && !n ? m`<div class="warn small">${x("triggers.not_found_right_now_check_the")}</div>` : _}
       </div>
       <div class="field">
-        <label>${b("triggers.only_this_kind_of_press_empty")}</label>
+        <label>${x("triggers.only_this_kind_of_press_empty")}</label>
         <input
-          placeholder=${b("triggers.for_example_single_or_double")}
+          placeholder=${x("triggers.for_example_single_or_double")}
           .value=${e.press}
           @input=${(e) => this._patch(t, { press: e.target.value })}
         />
-        ${Array.isArray(r) && r.length ? p`<div class="chips">
-              ${r.map((n) => p`<button
+        ${Array.isArray(r) && r.length ? m`<div class="chips">
+              ${r.map((n) => m`<button
                   type="button"
                   class="chip ${e.press === n ? "on" : ""}"
                   @click=${() => this._patch(t, { press: n })}
                 >
                   ${String(n)}
                 </button>`)}
-            </div>` : g}
+            </div>` : _}
       </div>
     `;
 	}
 	_title(e) {
-		return e.kind === "tag" ? b("triggers.an_nfc_tag_is_scanned") : e.kind === "button" ? b("triggers.a_button_is_pressed") : b("triggers.an_entity_changes_2");
+		return e.kind === "tag" ? x("triggers.an_nfc_tag_is_scanned") : e.kind === "button" ? x("triggers.a_button_is_pressed") : x("triggers.an_entity_changes_2");
 	}
 	render() {
-		return p`
+		return m`
       <datalist id="states-list">
-        ${this._entityIds().map((e) => p`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds().map((e) => m`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
       <datalist id="buttons-list">
-        ${this._entityIds(oo).map((e) => p`<option value=${e}>${this._friendly(e)}</option>`)}
+        ${this._entityIds(Do).map((e) => m`<option value=${e}>${this._friendly(e)}</option>`)}
       </datalist>
-      ${this.triggers.length === 0 ? p`<div class="muted small">
-            ${b(this.purpose === "wait" ? "triggers.add_a_condition_that_makes_this_step_ready" : "triggers.nothing_yet_only_you_finish_this")}
-          </div>` : this.triggers.map((e, t) => p`
-              ${t > 0 ? p`<div class="or muted small">${b("triggers.or")}</div>` : g}
+      ${this.triggers.length === 0 ? m`<div class="muted small">
+            ${x(this.purpose === "wait" ? "triggers.add_a_condition_that_makes_this_step_ready" : "triggers.nothing_yet_only_you_finish_this")}
+          </div>` : this.triggers.map((e, t) => m`
+              ${t > 0 ? m`<div class="or muted small">${x("triggers.or")}</div>` : _}
               <div class="trigger">
                 <div class="trigger-head">
                   <b>${this._title(e)}</b>
-                  <button type="button" aria-label=${b("common.remove")} @click=${() => this._remove(t)}>✕</button>
+                  <button type="button" aria-label=${x("common.remove")} @click=${() => this._remove(t)}>✕</button>
                 </div>
                 ${e.kind === "tag" ? this._renderTag(e, t) : e.kind === "button" ? this._renderButton(e, t) : this._renderState(e, t)}
               </div>
             `)}
-      ${this._note ? p`<div class="warn small">${this._note}</div>` : g}
+      ${this._note ? m`<div class="warn small">${this._note}</div>` : _}
       <div class="chips add">
-        <button type="button" @click=${() => this._add("state")}>${b("triggers.an_entity_changes")}</button>
-        <button type="button" @click=${() => this._add("tag")}>${b("triggers.nfc_tag")}</button>
-        <button type="button" @click=${() => this._add("button")}>${b("triggers.button")}</button>
+        <button type="button" @click=${() => this._add("state")}>${x("triggers.an_entity_changes")}</button>
+        <button type="button" @click=${() => this._add("tag")}>${x("triggers.nfc_tag")}</button>
+        <button type="button" @click=${() => this._add("button")}>${x("triggers.button")}</button>
       </div>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .small {
         font-size: 15px;
       }
@@ -13900,13 +14164,13 @@ var lo = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-triggers", lo);
+customElements.define("boopli-triggers", Ao);
 // src/boopli-picture.ts
-var uo = /\.(jpe?g|png|gif)$/i, fo = /^camera\.[a-z0-9_]+$/;
-function po(e) {
-	return fo.test(e) && !uo.test(e);
+var jo = /\.(jpe?g|png|gif)$/i, Mo = /^camera\.[a-z0-9_]+$/;
+function No(e) {
+	return Mo.test(e) && !jo.test(e);
 }
-var mo = class extends _ {
+var Po = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -13920,7 +14184,7 @@ var mo = class extends _ {
 		super(), this._timer = 0, this._seq = 0, this._seeded = !1, this._emitted = null, this.value = "", this._mode = "none", this._src = "", this._note = "";
 	}
 	willUpdate(e) {
-		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = po(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? po(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
+		this._seeded ? e.has("value") && this.value && this.value !== this._emitted && (this._mode = No(this.value) ? "camera" : "file") : (this._seeded = !0, this._mode = this.value ? No(this.value) ? "camera" : "file" : "none"), e.has("value") && this._preview();
 	}
 	disconnectedCallback() {
 		window.clearTimeout(this._timer), super.disconnectedCallback();
@@ -13942,8 +14206,8 @@ var mo = class extends _ {
 		if (t) {
 			if (this._mode === "camera") {
 				let e = this.hass?.states[t]?.attributes?.entity_picture;
-				typeof e == "string" && e ? this._src = e : this._note = b("picture.this_camera_gives_no_picture_right");
-			} else uo.test(t) ? this._timer = window.setTimeout(async () => {
+				typeof e == "string" && e ? this._src = e : this._note = x("picture.this_camera_gives_no_picture_right");
+			} else jo.test(t) ? this._timer = window.setTimeout(async () => {
 				try {
 					let n = await this.hass?.callWS({
 						type: "media_source/resolve_media",
@@ -13952,39 +14216,39 @@ var mo = class extends _ {
 					});
 					e === this._seq && n?.url && (this._src = n.url);
 				} catch {
-					e === this._seq && (this._note = b("picture.that_file_is_not_in_the"));
+					e === this._seq && (this._note = x("picture.that_file_is_not_in_the"));
 				}
-			}, 500) : this._note = b("picture.use_a_jpg_png_or_gif");
+			}, 500) : this._note = x("picture.use_a_jpg_png_or_gif");
 		}
 	}
 	render() {
-		let e = Y(this.hass, ["camera"]), t = e.length > 0 || po(this.value);
-		return p`
+		let e = Y(this.hass, ["camera"]), t = e.length > 0 || No(this.value);
+		return m`
       <div class="row">
-        <span class="muted small">${b("picture.picture_in_the_phone_notification_optional")}</span>
+        <span class="muted small">${x("picture.picture_in_the_phone_notification_optional")}</span>
         <select
-          aria-label=${b("picture.kind_of_picture")}
+          aria-label=${x("picture.kind_of_picture")}
           @change=${(e) => this._setMode(e.target.value)}
         >
-          <option value="none" ?selected=${this._mode === "none"}>${b("picture.none")}</option>
-          ${t ? p`<option value="camera" ?selected=${this._mode === "camera"}>${b("picture.a_camera")}</option>` : g}
-          <option value="file" ?selected=${this._mode === "file"}>${b("picture.a_picture_file")}</option>
+          <option value="none" ?selected=${this._mode === "none"}>${x("picture.none")}</option>
+          ${t ? m`<option value="camera" ?selected=${this._mode === "camera"}>${x("picture.a_camera")}</option>` : _}
+          <option value="file" ?selected=${this._mode === "file"}>${x("picture.a_picture_file")}</option>
         </select>
       </div>
-      ${this._mode === "camera" ? p`<div class="row">
+      ${this._mode === "camera" ? m`<div class="row">
             <select
-              aria-label=${b("picture.camera")}
+              aria-label=${x("picture.camera")}
               @change=${(e) => this._emit(e.target.value)}
             >
-              <option value="" ?selected=${!this.value}>${b("picture.pick_a_camera")}</option>
-              ${this.value && !e.includes(this.value) ? p`<option value=${this.value} selected>${b("picture.not_found", { value: this.value })}</option>` : g}
-              ${e.map((e) => p`<option value=${e} ?selected=${this.value === e}>${J(this.hass, e)}</option>`)}
+              <option value="" ?selected=${!this.value}>${x("picture.pick_a_camera")}</option>
+              ${this.value && !e.includes(this.value) ? m`<option value=${this.value} selected>${x("picture.not_found", { value: this.value })}</option>` : _}
+              ${e.map((e) => m`<option value=${e} ?selected=${this.value === e}>${J(this.hass, e)}</option>`)}
             </select>
-            <span class="muted small">${b("picture.the_phone_shows_a_fresh_snapshot")}</span>
-          </div>` : g}
-      ${this._mode === "file" ? p`<div class="row">
+            <span class="muted small">${x("picture.the_phone_shows_a_fresh_snapshot")}</span>
+          </div>` : _}
+      ${this._mode === "file" ? m`<div class="row">
             <input
-              aria-label=${b("picture.picture_file")}
+              aria-label=${x("picture.picture_file")}
               placeholder="boopli/pills.jpg"
               maxlength="120"
               .value=${this.value}
@@ -13992,21 +14256,21 @@ var mo = class extends _ {
             />
           </div>
           <div class="muted small">
-            ${x("picture.a_file_in_home_assistants_media")}
-          </div>` : g}
-      ${this._src ? p`<img
+            ${S("picture.a_file_in_home_assistants_media")}
+          </div>` : _}
+      ${this._src ? m`<img
             class="preview"
-            alt=${b("picture.preview_of_the_picture")}
+            alt=${x("picture.preview_of_the_picture")}
             src=${this._src}
             @error=${() => {
-			this._src = "", this._note = this._mode === "camera" ? b("picture.the_picture_could_not_be_loaded") : b("picture.that_file_is_not_in_the_2");
+			this._src = "", this._note = this._mode === "camera" ? x("picture.the_picture_could_not_be_loaded") : x("picture.that_file_is_not_in_the_2");
 		}}
-          />` : g}
-      ${this._note ? p`<div class="note small">${this._note}</div>` : g}
+          />` : _}
+      ${this._note ? m`<div class="note small">${this._note}</div>` : _}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .row {
         display: flex;
         flex-wrap: wrap;
@@ -14040,9 +14304,9 @@ var mo = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-picture", mo);
+customElements.define("boopli-picture", Po);
 // src/boopli-schedule-days.ts
-var ho = [
+var Fo = [
 	0,
 	1,
 	2,
@@ -14050,13 +14314,13 @@ var ho = [
 	4,
 	5,
 	6
-], go = 6;
-function _o(e) {
+], Io = 6;
+function Lo(e) {
 	if (e.length === 0) return "09:00";
 	let [t, n] = e[e.length - 1].split(":").map(Number);
 	return `${String(Math.min(23, (t || 0) + 4)).padStart(2, "0")}:${String(n || 0).padStart(2, "0")}`;
 }
-var vo = class extends _ {
+var Ro = class extends v {
 	static {
 		this.properties = {
 			days: { attribute: !1 },
@@ -14087,52 +14351,52 @@ var vo = class extends _ {
 		n && this._setDay(e, this._times(e).map((e, r) => r === t ? n : e));
 	}
 	_shownDays() {
-		return this.onlyActive ? ho.filter((e) => this._times(e).length > 0) : ho;
+		return this.onlyActive ? Fo.filter((e) => this._times(e).length > 0) : Fo;
 	}
 	render() {
 		let e = this._shownDays();
-		return p`
+		return m`
       <div class="rows">
         ${e.map((t, n) => {
 			let r = this._times(t), i = n > 0 ? e[n - 1] : null, a = r.length > 0;
-			return p`<div class="row ${a ? "" : "off"}">
-            <span class="dayname">${D()[t]}</span>
-            ${this.onlyActive ? g : p`<label class="inline small">
+			return m`<div class="row ${a ? "" : "off"}">
+            <span class="dayname">${O()[t]}</span>
+            ${this.onlyActive ? _ : m`<label class="inline small">
                   <input
                     type="checkbox"
                     .checked=${a}
-                    @change=${(e) => this._setDay(t, e.target.checked ? [_o([])] : [])}
+                    @change=${(e) => this._setDay(t, e.target.checked ? [Lo([])] : [])}
                   />
-                  ${b("schedule_days.runs")}
+                  ${x("schedule_days.runs")}
                 </label>`}
-            ${a ? p`<div class="times">
-                  ${r.map((e, n) => p`<span class="time">
+            ${a ? m`<div class="times">
+                  ${r.map((e, n) => m`<span class="time">
                       <input
                         type="time"
-                        aria-label=${b("schedule_days.time_2", {
-				value: D()[t],
+                        aria-label=${x("schedule_days.time_2", {
+				value: O()[t],
 				n: n + 1
 			})}
                         .value=${e}
                         @change=${(e) => this._setTime(t, n, e.target.value)}
                       />
-                      ${r.length > 1 ? p`<button
+                      ${r.length > 1 ? m`<button
                             type="button"
                             class="x"
-                            aria-label=${b("schedule_days.remove_this_time")}
+                            aria-label=${x("schedule_days.remove_this_time")}
                             @click=${() => this._setDay(t, r.filter((e, t) => t !== n))}
                           >
                             ✕
-                          </button>` : g}
+                          </button>` : _}
                     </span>`)}
-                  ${r.length < go ? p`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, _o(r)])}>${b("schedule_days.time")}</button>` : g}
-                </div>` : p`<span class="muted small">${b("schedule_days.no_run_this_day")}</span>`}
-            ${i === null ? g : p`<button
+                  ${r.length < Io ? m`<button type="button" class="chip" @click=${() => this._setDay(t, [...r, Lo(r)])}>${x("schedule_days.time")}</button>` : _}
+                </div>` : m`<span class="muted small">${x("schedule_days.no_run_this_day")}</span>`}
+            ${i === null ? _ : m`<button
                   type="button"
                   class="chip same"
                   @click=${() => this._setDay(t, [...this._times(i)])}
                 >
-                  ${b("schedule_days.same_as", { value: D()[i] })}
+                  ${x("schedule_days.same_as", { value: O()[i] })}
                 </button>`}
           </div>`;
 		})}
@@ -14140,7 +14404,7 @@ var vo = class extends _ {
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .rows {
         display: flex;
         flex-direction: column;
@@ -14200,9 +14464,9 @@ var vo = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-schedule-days", vo);
+customElements.define("boopli-schedule-days", Ro);
 // src/boopli-schedule-wizard.ts
-var yo = {
+var zo = {
 	none: ["how", "done"],
 	schedule: [
 		"how",
@@ -14217,30 +14481,30 @@ var yo = {
 		"preview",
 		"done"
 	]
-}, bo = () => ({
-	how: b("schedule_wizard.how_often"),
-	days: b("schedule_wizard.which_days"),
-	times: b("schedule_wizard.what_time_on_each_day"),
-	interval: b("schedule_wizard.every_how_many_days"),
-	preview: b("schedule_wizard.the_next_runs"),
-	done: b("common.all_set")
-}), xo = () => [
+}, Bo = () => ({
+	how: x("schedule_wizard.how_often"),
+	days: x("schedule_wizard.which_days"),
+	times: x("schedule_wizard.what_time_on_each_day"),
+	interval: x("schedule_wizard.every_how_many_days"),
+	preview: x("schedule_wizard.the_next_runs"),
+	done: x("common.all_set")
+}), Vo = () => [
 	{
 		value: "none",
-		label: b("common.on_demand"),
-		text: b("schedule_wizard.i_start_it_myself_when_i")
+		label: x("common.on_demand"),
+		text: x("schedule_wizard.i_start_it_myself_when_i")
 	},
 	{
 		value: "schedule",
-		label: b("common.on_certain_days_and_times"),
-		text: b("schedule_wizard.pick_the_days_each_day_gets")
+		label: x("common.on_certain_days_and_times"),
+		text: x("schedule_wizard.pick_the_days_each_day_gets")
 	},
 	{
 		value: "every_n_days",
-		label: b("schedule_wizard.every_few_days_after_i_finish"),
-		text: b("schedule_wizard.it_comes_back_a_number_of")
+		label: x("schedule_wizard.every_few_days_after_i_finish"),
+		text: x("schedule_wizard.it_comes_back_a_number_of")
 	}
-], So = [
+], Ho = [
 	0,
 	1,
 	2,
@@ -14248,7 +14512,7 @@ var yo = {
 	4,
 	5,
 	6
-], Co = class extends _ {
+], Uo = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14270,7 +14534,7 @@ var yo = {
 		!this._draft && this.repeat && (this._before = structuredClone(this.repeat), this._draft = structuredClone(this.repeat));
 	}
 	get _steps() {
-		return yo[this._draft?.type ?? "none"];
+		return zo[this._draft?.type ?? "none"];
 	}
 	get _step() {
 		return this._steps[Math.min(this._index, this._steps.length - 1)];
@@ -14287,21 +14551,21 @@ var yo = {
 		(t[String(e)] ?? []).length > 0 ? delete t[String(e)] : t[String(e)] = ["09:00"], this._patch({ days: t });
 	}
 	_activeDays() {
-		return So.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
+		return Ho.filter((e) => (this._draft?.days[String(e)] ?? []).length > 0);
 	}
 	async _next() {
 		if (!this.hass || !this._draft || this._busy) return;
 		if (this._error = "", this._step === "days" && this._activeDays().length === 0) {
-			this._error = b("schedule_wizard.pick_at_least_one_day");
+			this._error = x("schedule_wizard.pick_at_least_one_day");
 			return;
 		}
 		let e = this._index + 1;
 		if (this._steps[e] === "preview") {
 			this._busy = !0;
 			try {
-				this._preview = await Kt(this.hass, this._draft, 5);
+				this._preview = await Gt(this.hass, this._draft, 5);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 				return;
 			} finally {
 				this._busy = !1;
@@ -14326,9 +14590,9 @@ var yo = {
 		}));
 	}
 	_renderHow(e) {
-		return p`
-      <p>${this.choreName ? x("schedule_wizard.how_often_should_named", { chore: this.choreName }) : b("schedule_wizard.how_often_should_this_chore")}</p>
-      ${xo().map((t) => p`<label class="inline option">
+		return m`
+      <p>${this.choreName ? S("schedule_wizard.how_often_should_named", { chore: this.choreName }) : x("schedule_wizard.how_often_should_this_chore")}</p>
+      ${Vo().map((t) => m`<label class="inline option">
           <input
             type="radio"
             name="how"
@@ -14341,34 +14605,34 @@ var yo = {
 	}
 	_renderDays(e) {
 		let t = this._activeDays();
-		return p`
-      <p>${b("schedule_wizard.tap_the_days_it_should_come")}</p>
+		return m`
+      <p>${x("schedule_wizard.tap_the_days_it_should_come")}</p>
       <div class="chips">
-        ${So.map((e) => p`<button
+        ${Ho.map((e) => m`<button
             type="button"
             class="chip big ${t.includes(e) ? "on" : ""}"
             aria-pressed=${t.includes(e)}
             @click=${() => this._toggleDay(e)}
           >
-            ${D()[e]}
+            ${O()[e]}
           </button>`)}
       </div>
       <div class="chips quick">
         <button
           type="button"
           class="chip"
-          @click=${() => this._patch({ days: Object.fromEntries(So.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
+          @click=${() => this._patch({ days: Object.fromEntries(Ho.map((t) => [String(t), e.days[String(t)]?.length ? e.days[String(t)] : ["09:00"]])) })}
         >
-          ${b("schedule_wizard.every_day")}
+          ${x("schedule_wizard.every_day")}
         </button>
-        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>${b("schedule_wizard.clear")}</button>
+        <button type="button" class="chip" @click=${() => this._patch({ days: {} })}>${x("schedule_wizard.clear")}</button>
       </div>
     `;
 	}
 	_renderTimes(e) {
-		return p`
+		return m`
       <p>
-        ${b("schedule_wizard.what_time_on_each_day_a")}
+        ${x("schedule_wizard.what_time_on_each_day_a")}
       </p>
       <boopli-schedule-days
         .onlyActive=${!0}
@@ -14378,8 +14642,8 @@ var yo = {
     `;
 	}
 	_renderInterval(e) {
-		return p`
-      <p>${b("schedule_wizard.it_comes_back_this_many_days")}</p>
+		return m`
+      <p>${x("schedule_wizard.it_comes_back_this_many_days")}</p>
       <div class="chips">
         ${[
 			2,
@@ -14388,19 +14652,19 @@ var yo = {
 			14,
 			30,
 			90
-		].map((t) => p`<button type="button" class="chip ${e.every_n_days === t ? "on" : ""}" @click=${() => this._patch({ every_n_days: t })}>${b("schedule_wizard.days", { n: t })}</button>`)}
+		].map((t) => m`<button type="button" class="chip ${e.every_n_days === t ? "on" : ""}" @click=${() => this._patch({ every_n_days: t })}>${x("schedule_wizard.days", { n: t })}</button>`)}
         <input
           class="short"
           type="number"
           min="1"
           max="365"
-          aria-label=${b("chore_editor.number_of_days")}
+          aria-label=${x("chore_editor.number_of_days")}
           .value=${String(e.every_n_days)}
           @input=${(e) => this._patch({ every_n_days: Number(e.target.value) || 1 })}
         />
       </div>
       <div class="field">
-        <label for="time">${b("schedule_wizard.at_what_time_of_day")}</label>
+        <label for="time">${x("schedule_wizard.at_what_time_of_day")}</label>
         <input
           id="time"
           type="time"
@@ -14412,28 +14676,28 @@ var yo = {
 	}
 	_renderPreview(e) {
 		let t = this._preview ?? [], n = Date.now();
-		return p`
+		return m`
       <p>
-        ${e.type === "every_n_days" ? b("schedule_wizard.the_first_time_and_then_every") : b("schedule_wizard.this_is_when_it_comes_up")}
+        ${e.type === "every_n_days" ? x("schedule_wizard.the_first_time_and_then_every") : x("schedule_wizard.this_is_when_it_comes_up")}
       </p>
-      ${t.length === 0 ? p`<p class="muted">${b("schedule_wizard.nothing_is_scheduled")}</p>` : p`<ul>${t.map((e) => p`<li>${Bn(e, n, this.timeZone)}</li>`)}</ul>`}
-      ${e.type === "every_n_days" ? p`<p class="muted small">${b("schedule_wizard.after_that_days_after_you_finish", {
+      ${t.length === 0 ? m`<p class="muted">${x("schedule_wizard.nothing_is_scheduled")}</p>` : m`<ul>${t.map((e) => m`<li>${Vn(e, n, this.timeZone)}</li>`)}</ul>`}
+      ${e.type === "every_n_days" ? m`<p class="muted small">${x("schedule_wizard.after_that_days_after_you_finish", {
 			count: e.every_n_days,
 			every_n_days: e.every_n_days,
 			time: e.time
-		})}</p>` : g}
+		})}</p>` : _}
     `;
 	}
 	_renderDone(e) {
-		let t = this._before ? qn(this._before) : "", n = qn(e), r = JSON.stringify(this._before) === JSON.stringify(e);
-		return p`
-      <p>${this.choreName ? x("schedule_wizard.what_changed_for_named", { chore: this.choreName }) : x("schedule_wizard.what_changed_for_this_chore")}</p>
-      ${r ? p`<p class="muted">${b("schedule_wizard.nothing_changed", { after: n })}</p>` : p`<ul><li>${b("schedule_wizard.schedule_changed", {
+		let t = this._before ? Jn(this._before) : "", n = Jn(e), r = JSON.stringify(this._before) === JSON.stringify(e);
+		return m`
+      <p>${this.choreName ? S("schedule_wizard.what_changed_for_named", { chore: this.choreName }) : S("schedule_wizard.what_changed_for_this_chore")}</p>
+      ${r ? m`<p class="muted">${x("schedule_wizard.nothing_changed", { after: n })}</p>` : m`<ul><li>${x("schedule_wizard.schedule_changed", {
 			before: t,
 			after: n
 		})}</li></ul>`}
       <p class="muted small">
-        ${this.saves ? b("schedule_wizard.saving_applies_it_to_the_chore") : b("schedule_wizard.using_it_fills_in_the_chores")}
+        ${this.saves ? x("schedule_wizard.saving_applies_it_to_the_chore") : x("schedule_wizard.using_it_fills_in_the_chores")}
       </p>
     `;
 	}
@@ -14449,42 +14713,42 @@ var yo = {
 	}
 	render() {
 		let e = this._draft;
-		if (!e) return g;
+		if (!e) return _;
 		let t = this._steps, n = this._step, r = n === "done";
-		return p`
+		return m`
       <div class="shell">
-        <nav class="rail" aria-label=${b("common.steps")}>
-          <div class="rail-title">${this.choreName ? b("schedule_wizard.schedule_named", { chore: this.choreName }) : b("schedule_wizard.schedule")}</div>
-          ${t.map((e, t) => p`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
+        <nav class="rail" aria-label=${x("common.steps")}>
+          <div class="rail-title">${this.choreName ? x("schedule_wizard.schedule_named", { chore: this.choreName }) : x("schedule_wizard.schedule")}</div>
+          ${t.map((e, t) => m`<div class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}">
               <span class="mark">${t < this._index ? "✓" : t + 1}</span>
-              <span>${bo()[e]}</span>
+              <span>${Bo()[e]}</span>
             </div>`)}
         </nav>
         <section class="card main">
           <div class="top">
-            <span class="muted small">${b("schedule_wizard.step_of", {
+            <span class="muted small">${x("schedule_wizard.step_of", {
 			value: this._index + 1,
 			count: t.length
 		})}</span>
-            <button type="button" class="link" @click=${() => this._cancel()}>${b("common.close")}</button>
+            <button type="button" class="link" @click=${() => this._cancel()}>${x("common.close")}</button>
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / t.length * 100}%"></div></div>
-          <h2>${bo()[n]}</h2>
+          <h2>${Bo()[n]}</h2>
           ${this._renderStep(e)}
-          ${this._error ? p`<div class="error">${this._error}</div>` : g}
+          ${this._error ? m`<div class="error">${this._error}</div>` : _}
           <div class="actions">
-            ${this._index > 0 ? p`<button type="button" ?disabled=${this._busy} @click=${() => this._back()}>${b("common.back")}</button>` : g}
+            ${this._index > 0 ? m`<button type="button" ?disabled=${this._busy} @click=${() => this._back()}>${x("common.back")}</button>` : _}
             <span class="spacer"></span>
-            ${r ? p`<button type="button" class="primary" @click=${() => this._apply()}>
-                  ${this.saves ? b("schedule_wizard.save_schedule") : b("schedule_wizard.use_this_schedule")}
-                </button>` : p`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>${b("common.next")}</button>`}
+            ${r ? m`<button type="button" class="primary" @click=${() => this._apply()}>
+                  ${this.saves ? x("schedule_wizard.save_schedule") : x("schedule_wizard.use_this_schedule")}
+                </button>` : m`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._next()}>${x("common.next")}</button>`}
           </div>
         </section>
       </div>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .shell {
         display: grid;
         grid-template-columns: 240px minmax(0, 1fr);
@@ -14650,14 +14914,14 @@ var yo = {
     `];
 	}
 };
-customElements.define("boopli-schedule-wizard", Co);
+customElements.define("boopli-schedule-wizard", Uo);
 // src/boopli-wait.ts
-var wo = 30;
-function To(e) {
+var Wo = 30;
+function Go(e) {
 	let t = Math.max(0, Math.round(e));
 	return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 }
-var Eo = class extends _ {
+var Ko = class extends v {
 	static {
 		this.properties = {
 			label: { type: String },
@@ -14669,11 +14933,11 @@ var Eo = class extends _ {
 		};
 	}
 	constructor() {
-		super(), this._since = 0, this._eggShown = !1, this.label = b("common.thinking"), this.pet = "", this.max = 180, this.stoppable = !0, this._elapsed = 0, this._egg = !1;
+		super(), this._since = 0, this._eggShown = !1, this.label = x("common.thinking"), this.pet = "", this.max = 180, this.stoppable = !0, this._elapsed = 0, this._egg = !1;
 	}
 	connectedCallback() {
 		super.connectedCallback(), this._since = Date.now(), this._elapsed = 0, this._timer = window.setInterval(() => {
-			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= wo && (this._eggShown = !0, this._egg = !0);
+			this._elapsed = (Date.now() - this._since) / 1e3, !this._eggShown && this._elapsed >= Wo && (this._eggShown = !0, this._egg = !0);
 		}, 500);
 	}
 	disconnectedCallback() {
@@ -14681,20 +14945,20 @@ var Eo = class extends _ {
 	}
 	_hint() {
 		let e = this._elapsed;
-		return e < 20 ? b("wait.this_usually_takes_under_a_minute") : e < 60 ? b("wait.still_working_free_models_can_be") : e < this.max * .85 ? b("wait.still_working_this_one_is_slow") : b("wait.nearly_at_the_limit_if_there");
+		return e < 20 ? x("wait.this_usually_takes_under_a_minute") : e < 60 ? x("wait.still_working_free_models_can_be") : e < this.max * .85 ? x("wait.still_working_this_one_is_slow") : x("wait.nearly_at_the_limit_if_there");
 	}
 	render() {
 		let e = Math.min(1, this._elapsed / Math.max(1, this.max));
-		return p`<div class="wait" role="status" aria-live="polite">
-      ${this._egg ? p`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : g}
+		return m`<div class="wait" role="status" aria-live="polite">
+      ${this._egg ? m`<boopli-egg @egg-done=${() => this._egg = !1}></boopli-egg>` : _}
       <div class="head">
-        ${this.pet && zi(this.pet).art ? p`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : p`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
+        ${this.pet && va(this.pet).art ? m`<span class="typist"><boopli-pet kind=${this.pet} activity="typing"></boopli-pet></span>` : m`<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>`}
         <span class="label">${this.label}</span>
       </div>
       <div
         class="bar"
         role="progressbar"
-        aria-label=${b("wait.waiting_time_used")}
+        aria-label=${x("wait.waiting_time_used")}
         aria-valuemin="0"
         aria-valuemax=${this.max}
         aria-valuenow=${Math.round(this._elapsed)}
@@ -14702,16 +14966,16 @@ var Eo = class extends _ {
         <div class="fill" style="width:${e * 100}%"></div>
       </div>
       <div class="time">
-        <span>${b("wait.so_far", { time: To(this._elapsed) })}</span>
-        <span>${b("wait.gives_up_after", { time: To(this.max) })}</span>
+        <span>${x("wait.so_far", { time: Go(this._elapsed) })}</span>
+        <span>${x("wait.gives_up_after", { time: Go(this.max) })}</span>
       </div>
       <div class="hint">${this._hint()}</div>
-      ${this.stoppable ? p`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
+      ${this.stoppable ? m`<button type="button" class="link" @click=${() => this.dispatchEvent(new CustomEvent("stop-waiting", {
 			bubbles: !0,
 			composed: !0
 		}))}>
-            ${b("wait.stop_waiting")}
-          </button>` : g}
+            ${x("wait.stop_waiting")}
+          </button>` : _}
     </div>`;
 	}
 	static {
@@ -14812,15 +15076,15 @@ var Eo = class extends _ {
   `;
 	}
 };
-customElements.define("boopli-wait", Eo);
+customElements.define("boopli-wait", Ko);
 // src/photos.ts
-var Do = 8e5;
-async function Oo(e) {
+var qo = 8e5;
+async function Jo(e) {
 	let t = URL.createObjectURL(e);
 	try {
 		let e = await new Promise((e, n) => {
 			let r = new Image();
-			r.onload = () => e(r), r.onerror = () => n(Error(b("photos.this_photo_could_not_be_opened"))), r.src = t;
+			r.onload = () => e(r), r.onerror = () => n(Error(x("photos.this_photo_could_not_be_opened"))), r.src = t;
 		}), n = "";
 		for (let [t, r] of [
 			[1280, .8],
@@ -14830,8 +15094,8 @@ async function Oo(e) {
 			let i = Math.min(1, t / Math.max(e.naturalWidth, e.naturalHeight)), a = document.createElement("canvas");
 			a.width = Math.max(1, Math.round(e.naturalWidth * i)), a.height = Math.max(1, Math.round(e.naturalHeight * i));
 			let o = a.getContext("2d");
-			if (!o) throw Error(b("photos.this_browser_cannot_prepare_photos"));
-			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= Do) break;
+			if (!o) throw Error(x("photos.this_browser_cannot_prepare_photos"));
+			if (o.drawImage(e, 0, 0, a.width, a.height), n = a.toDataURL("image/jpeg", r), n.length <= qo) break;
 		}
 		return n;
 	} finally {
@@ -14839,30 +15103,30 @@ async function Oo(e) {
 	}
 }
 // src/boopli-breakdown.ts
-var ko = () => [
+var Yo = () => [
 	{
 		value: "small",
-		letter: b("breakdown.letter_small"),
-		label: b("breakdown.small_quick_and_easy"),
+		letter: x("breakdown.letter_small"),
+		label: x("breakdown.small_quick_and_easy"),
 		blubs: 10
 	},
 	{
 		value: "medium",
-		letter: b("breakdown.letter_medium"),
-		label: b("breakdown.medium_takes_some_effort"),
+		letter: x("breakdown.letter_medium"),
+		label: x("breakdown.medium_takes_some_effort"),
 		blubs: 15
 	},
 	{
 		value: "big",
-		letter: b("breakdown.letter_big"),
-		label: b("breakdown.big_hard_or_long"),
+		letter: x("breakdown.letter_big"),
+		label: x("breakdown.big_hard_or_long"),
 		blubs: 20
 	}
-], Ao = {
+], Xo = {
 	small: 10,
 	medium: 15,
 	big: 20
-}, jo = 20, Mo = 50, No = class extends _ {
+}, Zo = 20, Qo = 50, $o = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -14919,7 +15183,7 @@ var ko = () => [
 		let e = this._task.trim();
 		return !this.hass || !e || this._roomsTouched || !this._homeOn() ? Promise.resolve() : (this._guessedFor === e && this._guessing || (this._guessedFor = e, this._guessing = (async () => {
 			try {
-				let t = await zt(this.hass, e);
+				let t = await Rt(this.hass, e);
 				if (this._roomsTouched || this._task.trim() !== e) return;
 				let n = new Set(this._notedRooms().map((e) => e.id));
 				this._rooms = t.filter((e) => n.has(e)), this._preview = null;
@@ -14938,24 +15202,24 @@ var ko = () => [
 		if (this.hass) {
 			if (this._preview) this._preview = null;
 			else try {
-				this._preview = await Rt(this.hass, this._task.trim() || b("breakdown.your_task"), this.kind, this._answers, this._notes, this._rooms, this._scene);
+				this._preview = await Lt(this.hass, this._task.trim() || x("breakdown.your_task"), this.kind, this._answers, this._notes, this._rooms, this._scene);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			}
 		}
 	}
 	_renderRooms() {
-		if (!this._homeOn()) return g;
+		if (!this._homeOn()) return _;
 		let e = this._notedRooms();
-		if (e.length === 0) return p`<p class="muted small roomtip">
-        ${b("breakdown.tip_tell_boopli_about_your_rooms")}
-        <button type="button" class="link" @click=${() => this._fire("open-home")}>${b("breakdown.open_my_home")}</button>
+		if (e.length === 0) return m`<p class="muted small roomtip">
+        ${x("breakdown.tip_tell_boopli_about_your_rooms")}
+        <button type="button" class="link" @click=${() => this._fire("open-home")}>${x("breakdown.open_my_home")}</button>
       </p>`;
 		let t = e.filter((e) => this._rooms.includes(e.id));
-		return p`<div class="rooms">
+		return m`<div class="rooms">
       <div class="roomline">
-        <span class="muted small">${b("breakdown.room_notes_the_ai_will_see")}</span>
-        ${e.map((e) => p`<button
+        <span class="muted small">${x("breakdown.room_notes_the_ai_will_see")}</span>
+        ${e.map((e) => m`<button
             type="button"
             class="chip ${this._rooms.includes(e.id) ? "on" : ""}"
             aria-pressed=${this._rooms.includes(e.id)}
@@ -14963,15 +15227,15 @@ var ko = () => [
           >
             ${e.name}
           </button>`)}
-        ${t.length === 0 ? p`<span class="muted small">${b("breakdown.none")}</span>` : g}
+        ${t.length === 0 ? m`<span class="muted small">${x("breakdown.none")}</span>` : _}
         <button type="button" class="link" @click=${() => this._showPreview()}>
-          ${this._preview ? b("breakdown.hide_what_is_sent") : b("breakdown.what_will_the_ai_see")}
+          ${this._preview ? x("breakdown.hide_what_is_sent") : x("breakdown.what_will_the_ai_see")}
         </button>
       </div>
-      ${this._preview ? p`<div class="preview">
-            ${this._preview.shortened ? p`<div class="muted small">${b("breakdown.a_long_note_was_shortened_to")}</div>` : g}
+      ${this._preview ? m`<div class="preview">
+            ${this._preview.shortened ? m`<div class="muted small">${x("breakdown.a_long_note_was_shortened_to")}</div>` : _}
             <pre>${this._preview.instructions}</pre>
-          </div>` : g}
+          </div>` : _}
     </div>`;
 	}
 	async _addPhotos(e) {
@@ -14980,10 +15244,10 @@ var ko = () => [
 		this._error = "", this._looking = !0;
 		try {
 			let n = [];
-			for (let r of Array.from(e).slice(0, t)) n.push(await Oo(r));
-			this._photos = [...this._photos, ...n], e.length > t && (this._error = b("breakdown.up_to_photos_the_rest_were", { max_photos: 4 }));
+			for (let r of Array.from(e).slice(0, t)) n.push(await Jo(r));
+			this._photos = [...this._photos, ...n], e.length > t && (this._error = x("breakdown.up_to_photos_the_rest_were", { max_photos: 4 }));
 		} catch (e) {
-			this._error = S(e);
+			this._error = C(e);
 		}
 		this._looking = !1;
 	}
@@ -14994,21 +15258,21 @@ var ko = () => [
 		this._lookVia = e, this._sending = !0, this._looking = !0;
 		try {
 			if (await this._guess(), t !== this._lookId) return;
-			let n = await bn(this.hass, this._task.trim(), this._photos, this._rooms, e);
+			let n = await yn(this.hass, this._task.trim(), this._photos, this._rooms, e);
 			if (t !== this._lookId) return;
 			this._scene = n.scene, this._photos = [], this._photosOpen = !1, this._preview = null;
 		} catch (e) {
-			t === this._lookId && (this._error = S(e));
+			t === this._lookId && (this._error = C(e));
 		}
 		t === this._lookId && (this._looking = !1, this._sending = !1);
 	}
 	_stopLooking() {
-		this._lookId++, this._looking = !1, this._sending = !1, this._error = b("common.you_stopped_waiting_your_photos_are");
+		this._lookId++, this._looking = !1, this._sending = !1, this._error = x("common.you_stopped_waiting_your_photos_are");
 	}
 	_renderScene() {
-		if (!Pn(this.snapshot)) return g;
-		if (this._scene) return p`<div class="scene">
-        <label for="scene">${b("breakdown.what_the_ai_sees_today_from")}</label>
+		if (!Nn(this.snapshot)) return _;
+		if (this._scene) return m`<div class="scene">
+        <label for="scene">${x("breakdown.what_the_ai_sees_today_from")}</label>
         <textarea
           id="scene"
           rows="5"
@@ -15018,31 +15282,31 @@ var ko = () => [
 			this._scene = e.target.value, this._preview = null;
 		}}
         ></textarea>
-        <div class="muted small">${b("breakdown.the_photos_are_already_gone_this")}</div>
-        <button type="button" class="link" @click=${() => (this._scene = "", this._preview = null)}>${b("breakdown.remove_it")}</button>
+        <div class="muted small">${x("breakdown.the_photos_are_already_gone_this")}</div>
+        <button type="button" class="link" @click=${() => (this._scene = "", this._preview = null)}>${x("breakdown.remove_it")}</button>
       </div>`;
-		if (!this._photosOpen) return p`<div class="scene">
-        <button type="button" @click=${() => this._photosOpen = !0}>${E("camera-outline")} ${b("breakdown.add_photos_of_how_it_looks")}</button>
+		if (!this._photosOpen) return m`<div class="scene">
+        <button type="button" @click=${() => this._photosOpen = !0}>${D("camera-outline")} ${x("breakdown.add_photos_of_how_it_looks")}</button>
       </div>`;
 		let e = this._photos.length >= 4;
-		return p`<div class="scene">
+		return m`<div class="scene">
       <p class="muted small">
-        ${b("breakdown.take_or_pick_up_to_photos", { max_photos: 4 })}
+        ${x("breakdown.take_or_pick_up_to_photos", { max_photos: 4 })}
       </p>
       <div class="thumbs">
-        ${this._photos.map((e, t) => p`<div class="thumb">
-            <img src=${e} alt=${b("breakdown.photo", { n: t + 1 })} />
-            <button type="button" class="x" aria-label=${b("breakdown.remove_photo", { n: t + 1 })} @click=${() => this._photos = this._photos.filter((e, n) => n !== t)}>×</button>
+        ${this._photos.map((e, t) => m`<div class="thumb">
+            <img src=${e} alt=${x("breakdown.photo", { n: t + 1 })} />
+            <button type="button" class="x" aria-label=${x("breakdown.remove_photo", { n: t + 1 })} @click=${() => this._photos = this._photos.filter((e, n) => n !== t)}>×</button>
           </div>`)}
       </div>
-      ${this._sending ? p`<boopli-wait
-            .label=${this._lookVia === "claude" ? b("common.claude_is_looking_at_your_photos") : b("common.the_ai_is_looking_at_your")}
+      ${this._sending ? m`<boopli-wait
+            .label=${this._lookVia === "claude" ? x("common.claude_is_looking_at_your_photos") : x("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${Fn(this.snapshot, this._lookVia)}
+            .max=${Pn(this.snapshot, this._lookVia)}
             @stop-waiting=${() => this._stopLooking()}
-          ></boopli-wait>` : this._looking ? p`<div class="muted" role="status">${b("breakdown.preparing")}</div>` : p`<div class="actions">
+          ></boopli-wait>` : this._looking ? m`<div class="muted" role="status">${x("breakdown.preparing")}</div>` : m`<div class="actions">
             <label class="filebtn ${e ? "off" : ""}">
-              ${this._photos.length ? b("common.add_another_photo") : b("common.take_or_pick_photos")}
+              ${this._photos.length ? x("common.add_another_photo") : x("common.take_or_pick_photos")}
               <input
                 type="file"
                 accept="image/*"
@@ -15054,28 +15318,28 @@ var ko = () => [
 		}}
               />
             </label>
-            ${w(this.snapshot) ? p`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
-                  ${b("breakdown.look_at_the_photos")}
-                </button>` : g}
-            ${T(this.snapshot) ? p`<button
-                  class=${w(this.snapshot) ? "" : "primary"}
+            ${T(this.snapshot) ? m`<button class="primary" ?disabled=${!this._photos.length || !this._task.trim()} @click=${() => this._look("agent")}>
+                  ${x("breakdown.look_at_the_photos")}
+                </button>` : _}
+            ${E(this.snapshot) ? m`<button
+                  class=${T(this.snapshot) ? "" : "primary"}
                   ?disabled=${!this._photos.length || !this._task.trim()}
                   @click=${() => this._look("claude")}
                 >
-                  ${E("creation")} ${b("breakdown.ask_claude_to_look")}
-                </button>` : g}
-            <button type="button" class="link" @click=${() => (this._photosOpen = !1, this._photos = [])}>${b("common.cancel")}</button>
+                  ${D("creation")} ${x("breakdown.ask_claude_to_look")}
+                </button>` : _}
+            <button type="button" class="link" @click=${() => (this._photosOpen = !1, this._photos = [])}>${x("common.cancel")}</button>
           </div>`}
       <div class="muted small">
-        ${w(this.snapshot) ? b("breakdown.the_agent_has_to_be_able") : ""}${T(this.snapshot) ? b("common.claude_gets_each_photo_through_a") : ""}
+        ${T(this.snapshot) ? x("breakdown.the_agent_has_to_be_able") : ""}${E(this.snapshot) ? x("common.claude_gets_each_photo_through_a") : ""}
       </div>
     </div>`;
 	}
 	_aiOn() {
-		return Pn(this.snapshot);
+		return Nn(this.snapshot);
 	}
 	_choose(e) {
-		this._via = e ?? (w(this.snapshot) ? this._via : "claude");
+		this._via = e ?? (T(this.snapshot) ? this._via : "claude");
 	}
 	_fire(e, t) {
 		this.dispatchEvent(new CustomEvent(e, {
@@ -15091,13 +15355,13 @@ var ko = () => [
 			let t = await e();
 			return n === this._askId ? t : null;
 		} catch (e) {
-			return n === this._askId && (this._error = S(e), this._phase = t), null;
+			return n === this._askId && (this._error = C(e), this._phase = t), null;
 		} finally {
 			n === this._askId && (this._busy = !1);
 		}
 	}
 	_stopWaiting() {
-		this._askId++, this._busy = !1, this._phase = this._backPhase, this._error = b("breakdown.you_stopped_waiting_your_task_and");
+		this._askId++, this._busy = !1, this._phase = this._backPhase, this._error = x("breakdown.you_stopped_waiting_your_task_and");
 	}
 	async _begin(e) {
 		if (!this.hass || !this._task.trim()) return;
@@ -15106,7 +15370,7 @@ var ko = () => [
 		this._answers = [], this._round = 0, this._phase = "working", this._backPhase = "task";
 		let n = ++this._askId;
 		if (await this._guess(), n !== this._askId) return;
-		let r = await this._ask(() => It(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, t), "task");
+		let r = await this._ask(() => Ft(this.hass, this._task.trim(), this.kind, [], this._notes, this._rooms, this._scene, t), "task");
 		r && this._showQuestions(r.enough, r.questions);
 	}
 	_showQuestions(e, t) {
@@ -15121,7 +15385,7 @@ var ko = () => [
 				answer: r.join(", ")
 			});
 		}), this._extra.trim() && e.push({
-			question: b("breakdown.anything_else_to_know"),
+			question: x("breakdown.anything_else_to_know"),
 			answer: this._extra.trim()
 		}), e;
 	}
@@ -15129,7 +15393,7 @@ var ko = () => [
 		if (!this.hass) return;
 		let e = [...this._answers, ...this._currentAnswers()];
 		this._answers = e, this._phase = "working";
-		let t = await this._ask(() => It(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene, this._via), "interview");
+		let t = await this._ask(() => Ft(this.hass, this._task.trim(), this.kind, e, this._notes, this._rooms, this._scene, this._via), "interview");
 		t && this._showQuestions(t.enough, t.questions);
 	}
 	async _enough() {
@@ -15142,8 +15406,8 @@ var ko = () => [
 		this._phase = "working", this._backPhase = this._questions.length ? "interview" : "task";
 		let n = ++this._askId;
 		if (await this._guess(), n !== this._askId) return;
-		let r = await this._ask(() => Lt(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, t), this._questions.length ? "interview" : "task");
-		r && (this._steps = r.steps.slice(0, Mo), this._checks = this.kind === "recurring" ? r.questions ?? [] : [], r.summary && !this._notes.includes(r.summary) && (this._notes = [this._notes, r.summary].filter(Boolean).join("\n")), this._phase = "review");
+		let r = await this._ask(() => It(this.hass, this._task.trim(), this.kind, this._answers, this._notes, this._rooms, this._scene, t), this._questions.length ? "interview" : "task");
+		r && (this._steps = r.steps.slice(0, Qo), this._checks = this.kind === "recurring" ? r.questions ?? [] : [], r.summary && !this._notes.includes(r.summary) && (this._notes = [this._notes, r.summary].filter(Boolean).join("\n")), this._phase = "review");
 	}
 	_patchStep(e, t) {
 		this._steps = this._steps.map((n, r) => r === e ? {
@@ -15161,7 +15425,7 @@ var ko = () => [
 		this._steps = this._steps.filter((t, n) => n !== e);
 	}
 	_add(e) {
-		if (this._steps.length >= Mo) return;
+		if (this._steps.length >= Qo) return;
 		let t = this._steps[e]?.group ?? "", n = [...this._steps];
 		n.splice(e + 1, 0, {
 			title: "",
@@ -15176,7 +15440,7 @@ var ko = () => [
 			title: e.title.trim()
 		}));
 		if (t.length === 0) {
-			this._error = b("breakdown.there_is_no_step_yet_add");
+			this._error = x("breakdown.there_is_no_step_yet_add");
 			return;
 		}
 		let n = new Set(t.map((e) => e.only_if).filter(Boolean)), r = this._checks.filter((e) => e.text.trim() && n.has(e.id)).map((e) => ({
@@ -15210,58 +15474,58 @@ var ko = () => [
 		this._fire("breakdown-cancel");
 	}
 	_renderOff() {
-		return p`<section class="card main">
-      <h2>${b("breakdown.ai_help_is_switched_off")}</h2>
+		return m`<section class="card main">
+      <h2>${x("breakdown.ai_help_is_switched_off")}</h2>
       <p>
-        ${b("breakdown.to_split_tasks_into_small_steps")}
+        ${x("breakdown.to_split_tasks_into_small_steps")}
       </p>
       <div class="actions">
-        <button class="primary" @click=${() => this._fire("open-wizard", { wizard: "ai" })}>${b("common.set_up_ai_help")}</button>
-        <button @click=${() => this._cancel()}>${b("common.close")}</button>
+        <button class="primary" @click=${() => this._fire("open-wizard", { wizard: "ai" })}>${x("common.set_up_ai_help")}</button>
+        <button @click=${() => this._cancel()}>${x("common.close")}</button>
       </div>
     </section>`;
 	}
 	_renderTask() {
-		return p`
+		return m`
       <p>
-        ${this.kind === "recurring" ? b("breakdown.what_is_the_chore_i_will") : b("breakdown.what_do_you_want_to_get")}
+        ${this.kind === "recurring" ? x("breakdown.what_is_the_chore_i_will") : x("breakdown.what_do_you_want_to_get")}
       </p>
       <textarea
         rows="3"
-        placeholder=${this.kind === "recurring" ? b("breakdown.for_example_clean_my_room") : b("today.for_example_clean_the_bathroom")}
+        placeholder=${this.kind === "recurring" ? x("breakdown.for_example_clean_my_room") : x("today.for_example_clean_the_bathroom")}
         .value=${this._task}
         @input=${(e) => this._onTaskInput(e.target.value)}
       ></textarea>
       ${this._renderRooms()}
       ${this._renderScene()}
       <div class="actions">
-        ${w(this.snapshot) ? p`<button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin("agent")}>
-              ${this.kind === "recurring" ? b("breakdown.ask_me_about_it") : b("breakdown.break_it_down")}
-            </button>` : g}
-        ${T(this.snapshot) ? p`<button
-              class="${w(this.snapshot) ? "" : "primary "}big"
+        ${T(this.snapshot) ? m`<button class="primary big" ?disabled=${!this._task.trim() || this._busy} @click=${() => this._begin("agent")}>
+              ${this.kind === "recurring" ? x("breakdown.ask_me_about_it") : x("breakdown.break_it_down")}
+            </button>` : _}
+        ${E(this.snapshot) ? m`<button
+              class="${T(this.snapshot) ? "" : "primary "}big"
               ?disabled=${!this._task.trim() || this._busy}
               @click=${() => this._begin("claude")}
             >
-              ${E("creation")} ${b("common.ask_claude")}
-            </button>` : g}
-        <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(w(this.snapshot) ? "agent" : "claude")}>
-          ${b("breakdown.skip_the_questions")}
+              ${D("creation")} ${x("common.ask_claude")}
+            </button>` : _}
+        <button ?disabled=${!this._task.trim() || this._busy} @click=${() => this._loadSteps(T(this.snapshot) ? "agent" : "claude")}>
+          ${x("breakdown.skip_the_questions")}
         </button>
       </div>
-      ${T(this.snapshot) ? p`<div class="muted small">
-            ${b("breakdown.claude_asks_left", { count: this.snapshot?.claude?.fires_left ?? 0 })}
-          </div>` : g}
+      ${E(this.snapshot) ? m`<div class="muted small">
+            ${x("breakdown.claude_asks_left", { count: this.snapshot?.claude?.fires_left ?? 0 })}
+          </div>` : _}
     `;
 	}
 	_renderQuestion(e, t) {
 		let n = this._picked[t] ?? [];
-		return p`<div class="question">
+		return m`<div class="question">
       <div class="qtext">${e.text}</div>
       <div class="chips">
         ${e.options.map((r) => {
 			let i = n.includes(r);
-			return p`<button
+			return m`<button
             type="button"
             class="chip big ${i ? "on" : ""}"
             aria-pressed=${i}
@@ -15277,70 +15541,70 @@ var ko = () => [
       <textarea
         rows="1"
         class="own"
-        placeholder=${b("common.or_write_it_in_your_own")}
+        placeholder=${x("common.or_write_it_in_your_own")}
         .value=${this._typed[t] ?? ""}
         @input=${(e) => this._typed = this._typed.map((n, r) => r === t ? e.target.value : n)}
       ></textarea>
     </div>`;
 	}
 	_renderInterview() {
-		return p`
-      ${this._answers.length ? p`<details class="said">
-            <summary>${b("breakdown.what_you_told_me_so_far", { count: this._answers.length })}</summary>
+		return m`
+      ${this._answers.length ? m`<details class="said">
+            <summary>${x("breakdown.what_you_told_me_so_far", { count: this._answers.length })}</summary>
             <ul>
-              ${this._answers.map((e) => p`<li><span class="muted">${e.question}</span> ${e.answer}</li>`)}
+              ${this._answers.map((e) => m`<li><span class="muted">${e.question}</span> ${e.answer}</li>`)}
             </ul>
-          </details>` : g}
+          </details>` : _}
       <p class="muted small">
-        ${this._round > 1 ? b("breakdown.a_few_more_things_so_the") : b("breakdown.a_few_questions_so_the_steps")} ${b("common.tap_what_fits")}
+        ${this._round > 1 ? x("breakdown.a_few_more_things_so_the") : x("breakdown.a_few_questions_so_the_steps")} ${x("common.tap_what_fits")}
       </p>
       ${this._renderRooms()}
       ${this._renderScene()}
       ${this._questions.map((e, t) => this._renderQuestion(e, t))}
       <div class="question">
-        <div class="qtext">${b("breakdown.anything_else_i_should_know")}</div>
+        <div class="qtext">${x("breakdown.anything_else_i_should_know")}</div>
         <textarea
           rows="2"
           class="own"
-          placeholder=${b("home.optional_long_answers_are_welcome")}
+          placeholder=${x("home.optional_long_answers_are_welcome")}
           .value=${this._extra}
           @input=${(e) => this._extra = e.target.value}
         ></textarea>
       </div>
       <div class="actions">
-        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>${b("home.next_questions")}</button>
-        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>${b("breakdown.enough_go_on")}</button>
+        <button class="primary big" ?disabled=${this._busy} @click=${() => this._send()}>${x("home.next_questions")}</button>
+        <button class="big" ?disabled=${this._busy} @click=${() => this._enough()}>${x("breakdown.enough_go_on")}</button>
       </div>
     `;
 	}
 	_renderWorking() {
-		return p`<boopli-wait
-      .label=${this._via === "claude" ? b("common.asking_claude_this_takes_a_little") : this._answers.length || this._steps.length ? b("breakdown.writing_the_steps") : b("common.thinking")}
+		return m`<boopli-wait
+      .label=${this._via === "claude" ? x("common.asking_claude_this_takes_a_little") : this._answers.length || this._steps.length ? x("breakdown.writing_the_steps") : x("common.thinking")}
       .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-      .max=${Fn(this.snapshot, this._via)}
+      .max=${Pn(this.snapshot, this._via)}
       @stop-waiting=${() => this._stopWaiting()}
     ></boopli-wait>`;
 	}
 	_blubs() {
-		return this._steps.reduce((e, t) => e + Ao[t.size], 0) + jo;
+		return this._steps.reduce((e, t) => e + Xo[t.size], 0) + Zo;
 	}
 	_renderStep(e, t) {
-		return p`
-      ${(t === 0 || this._steps[t - 1].group !== e.group) && e.group ? p`<div class="group">${e.group}</div>` : g}
+		return m`
+      ${(t === 0 || this._steps[t - 1].group !== e.group) && e.group ? m`<div class="group">${e.group}</div>` : _}
       <div class="step">
         <span class="num">${t + 1}</span>
         <input
           class="title"
-          aria-label=${b("breakdown.step", { n: t + 1 })}
-          placeholder=${b("chore_editor.what_to_do")}
+          aria-label=${x("breakdown.step", { n: t + 1 })}
+          placeholder=${x("chore_editor.what_to_do")}
           .value=${e.title}
           @input=${(e) => this._patchStep(t, { title: e.target.value })}
         />
-        <span class="sizes" role="group" aria-label=${b("breakdown.size")}>
-          ${ko().map((n) => p`<button
+        <span class="sizes" role="group" aria-label=${x("breakdown.size")}>
+          ${Yo().map((n) => m`<button
               type="button"
               class="chip size ${e.size === n.value ? "on" : ""}"
-              title=${b("breakdown.blubs", {
+              title=${x("breakdown.blubs", {
 			label: n.label,
 			blubs: n.blubs
 		})}
@@ -15350,92 +15614,92 @@ var ko = () => [
               ${n.letter}
             </button>`)}
         </span>
-        ${e.wait_minutes > 0 ? p`<span class="wait muted small" title=${b("breakdown.time_to_wait_before_this_step")}>${b("breakdown.min", { wait_minutes: e.wait_minutes })}</span>` : g}
+        ${e.wait_minutes > 0 ? m`<span class="wait muted small" title=${x("breakdown.time_to_wait_before_this_step")}>${x("breakdown.min", { wait_minutes: e.wait_minutes })}</span>` : _}
         <span class="tools">
-          <button type="button" aria-label=${b("ladders.move_up")} ?disabled=${t === 0} @click=${() => this._move(t, -1)}>↑</button>
-          <button type="button" aria-label=${b("ladders.move_down")} ?disabled=${t === this._steps.length - 1} @click=${() => this._move(t, 1)}>↓</button>
-          <button type="button" aria-label=${b("breakdown.add_a_step_after_this")} ?disabled=${this._steps.length >= Mo} @click=${() => this._add(t)}>+</button>
-          <button type="button" aria-label=${b("common.remove")} @click=${() => this._remove(t)}>✕</button>
+          <button type="button" aria-label=${x("ladders.move_up")} ?disabled=${t === 0} @click=${() => this._move(t, -1)}>↑</button>
+          <button type="button" aria-label=${x("ladders.move_down")} ?disabled=${t === this._steps.length - 1} @click=${() => this._move(t, 1)}>↓</button>
+          <button type="button" aria-label=${x("breakdown.add_a_step_after_this")} ?disabled=${this._steps.length >= Qo} @click=${() => this._add(t)}>+</button>
+          <button type="button" aria-label=${x("common.remove")} @click=${() => this._remove(t)}>✕</button>
         </span>
       </div>
-      ${this._checks.length ? p`<div class="only-if">
+      ${this._checks.length ? m`<div class="only-if">
             <label>
-              <span class="muted small">${b("breakdown.only_if")}</span>
-              <select aria-label=${b("breakdown.only_if_for_step", { n: t + 1 })} @change=${(e) => this._patchStep(t, { only_if: e.target.value })}>
-                <option value="" ?selected=${!e.only_if}>${b("common.always_there")}</option>
-                ${this._checks.map((t) => p`<option value=${t.id} ?selected=${e.only_if === t.id}>${b("breakdown.yes", { text: t.text })}</option>`)}
+              <span class="muted small">${x("breakdown.only_if")}</span>
+              <select aria-label=${x("breakdown.only_if_for_step", { n: t + 1 })} @change=${(e) => this._patchStep(t, { only_if: e.target.value })}>
+                <option value="" ?selected=${!e.only_if}>${x("common.always_there")}</option>
+                ${this._checks.map((t) => m`<option value=${t.id} ?selected=${e.only_if === t.id}>${x("breakdown.yes", { text: t.text })}</option>`)}
               </select>
             </label>
-          </div>` : g}
+          </div>` : _}
     `;
 	}
 	_renderChecks() {
-		return this._checks.length ? p`<div class="checks">
-      <b>${b("breakdown.questions_asked_each_time_you_start")}</b>
+		return this._checks.length ? m`<div class="checks">
+      <b>${x("breakdown.questions_asked_each_time_you_start")}</b>
       <div class="muted small">
-        ${b("breakdown.today_it_may_look_different_than")}
+        ${x("breakdown.today_it_may_look_different_than")}
       </div>
-      ${this._checks.map((e) => p`<div class="check">
-          <input aria-label=${b("chore_editor.question")} .value=${e.text} @input=${(t) => this._patchCheck(e.id, t.target.value)} />
-          <button type="button" aria-label=${b("chore_editor.remove_this_question")} @click=${() => this._removeCheck(e.id)}>✕</button>
+      ${this._checks.map((e) => m`<div class="check">
+          <input aria-label=${x("chore_editor.question")} .value=${e.text} @input=${(t) => this._patchCheck(e.id, t.target.value)} />
+          <button type="button" aria-label=${x("chore_editor.remove_this_question")} @click=${() => this._removeCheck(e.id)}>✕</button>
         </div>`)}
-    </div>` : g;
+    </div>` : _;
 	}
 	_renderReview() {
 		let e = this._steps, t = this.mode === "editor";
-		return p`
+		return m`
       <p>
-        <b>${b("common.steps_count", { count: e.length })}</b>
-        <span class="muted"> ${b("breakdown.worth_about_blubs_when_all_are", { blubs: this._blubs() })}</span>
+        <b>${x("common.steps_count", { count: e.length })}</b>
+        <span class="muted"> ${x("breakdown.worth_about_blubs_when_all_are", { blubs: this._blubs() })}</span>
       </p>
       ${this._renderChecks()}
       <div class="steps">${e.map((e, t) => this._renderStep(e, t))}</div>
       <div class="inline-actions">
-        <button type="button" ?disabled=${e.length >= Mo} @click=${() => this._add(e.length - 1)}>${b("breakdown.add_a_step")}</button>
-        <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${b("breakdown.try_again")}</button>
-        ${w(this.snapshot) && T(this.snapshot) ? p`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
-              ${E("creation")} ${b("breakdown.ask_claude_instead")}
-            </button>` : g}
-        ${this._answers.length || this._questions.length ? p`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>${b("breakdown.ask_me_again")}</button>` : g}
+        <button type="button" ?disabled=${e.length >= Qo} @click=${() => this._add(e.length - 1)}>${x("breakdown.add_a_step")}</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps()}>${x("breakdown.try_again")}</button>
+        ${T(this.snapshot) && E(this.snapshot) ? m`<button type="button" ?disabled=${this._busy} @click=${() => this._loadSteps("claude")}>
+              ${D("creation")} ${x("breakdown.ask_claude_instead")}
+            </button>` : _}
+        ${this._answers.length || this._questions.length ? m`<button type="button" ?disabled=${this._busy} @click=${() => this._begin()}>${x("breakdown.ask_me_again")}</button>` : _}
       </div>
-      ${this.kind === "recurring" || t ? p`<div class="field">
-            <label for="notes">${b("breakdown.kept_with_the_chore_for_next")}</label>
+      ${this.kind === "recurring" || t ? m`<div class="field">
+            <label for="notes">${x("breakdown.kept_with_the_chore_for_next")}</label>
             <textarea id="notes" rows="2" .value=${this._notes} @input=${(e) => this._notes = e.target.value}></textarea>
-          </div>` : g}
+          </div>` : _}
       <div class="actions">
-        ${t ? this.hasSteps ? p`<button class="primary big" @click=${() => this._finish("replace")}>${b("breakdown.replace_my_steps")}</button>
-                <button class="big" @click=${() => this._finish("append")}>${b("breakdown.add_to_my_steps")}</button>` : p`<button class="primary big" @click=${() => this._finish("replace")}>${b("breakdown.use_these_steps")}</button>` : this.kind === "recurring" ? p`<button class="primary big" @click=${() => this._finish("schedule")}>${b("breakdown.save_and_set_the_schedule")}</button>
-                <button class="big" @click=${() => this._finish("save")}>${b("breakdown.save_without_a_schedule")}</button>` : p`<button class="primary big" @click=${() => this._finish("start")}>${b("common.start_now")}</button>
-                <button class="big" @click=${() => this._finish("save")}>${b("breakdown.save_as_chore")}</button>`}
+        ${t ? this.hasSteps ? m`<button class="primary big" @click=${() => this._finish("replace")}>${x("breakdown.replace_my_steps")}</button>
+                <button class="big" @click=${() => this._finish("append")}>${x("breakdown.add_to_my_steps")}</button>` : m`<button class="primary big" @click=${() => this._finish("replace")}>${x("breakdown.use_these_steps")}</button>` : this.kind === "recurring" ? m`<button class="primary big" @click=${() => this._finish("schedule")}>${x("breakdown.save_and_set_the_schedule")}</button>
+                <button class="big" @click=${() => this._finish("save")}>${x("breakdown.save_without_a_schedule")}</button>` : m`<button class="primary big" @click=${() => this._finish("start")}>${x("common.start_now")}</button>
+                <button class="big" @click=${() => this._finish("save")}>${x("breakdown.save_as_chore")}</button>`}
       </div>
     `;
 	}
 	render() {
-		return this._aiOn() ? p`
+		return this._aiOn() ? m`
       <section class="card main">
         <div class="top">
           <h2>${{
-			task: this.kind === "recurring" ? b("today.break_down_a_recurring_chore") : b("common.break_it_down_now"),
-			interview: b("breakdown.a_few_questions"),
+			task: this.kind === "recurring" ? x("today.break_down_a_recurring_chore") : x("common.break_it_down_now"),
+			interview: x("breakdown.a_few_questions"),
 			working: this._task,
 			review: this._task
 		}[this._phase]}</h2>
-          <button type="button" class="link" @click=${() => this._cancel()}>${b("common.close")}</button>
+          <button type="button" class="link" @click=${() => this._cancel()}>${x("common.close")}</button>
         </div>
-        ${this.externalError ? p`<div class="error">${this.externalError}</div>` : g}
-        ${this._error ? p`<div class="error">
+        ${this.externalError ? m`<div class="error">${this.externalError}</div>` : _}
+        ${this._error ? m`<div class="error">
               ${this._error}
-              ${this._phase === "interview" || this._phase === "task" ? p`<div class="muted small">${b("breakdown.you_can_try_again_or_skip")}</div>` : g}
-            </div>` : g}
-        ${this._phase === "task" ? this._renderTask() : g}
-        ${this._phase === "interview" ? this._renderInterview() : g}
-        ${this._phase === "working" ? this._renderWorking() : g}
-        ${this._phase === "review" ? this._renderReview() : g}
+              ${this._phase === "interview" || this._phase === "task" ? m`<div class="muted small">${x("breakdown.you_can_try_again_or_skip")}</div>` : _}
+            </div>` : _}
+        ${this._phase === "task" ? this._renderTask() : _}
+        ${this._phase === "interview" ? this._renderInterview() : _}
+        ${this._phase === "working" ? this._renderWorking() : _}
+        ${this._phase === "review" ? this._renderReview() : _}
       </section>
     ` : this._renderOff();
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .main {
         padding: 24px;
         max-width: 980px;
@@ -15757,46 +16021,46 @@ var ko = () => [
     `];
 	}
 };
-customElements.define("boopli-breakdown", No);
+customElements.define("boopli-breakdown", $o);
 // src/boopli-chore-editor.ts
-var Po = 8, Fo = () => [{
+var es = 8, ts = () => [{
 	value: "quiet",
-	label: b("chore_editor.quiet_only_shown_in_boopli_no")
-}], Io = () => [
+	label: x("chore_editor.quiet_only_shown_in_boopli_no")
+}], ns = () => [
 	{
 		minutes: 0,
-		label: b("chore_editor.no_wait")
+		label: x("chore_editor.no_wait")
 	},
 	{
 		minutes: 15,
-		label: b("chore_editor.wait_min", { n: 15 })
+		label: x("chore_editor.wait_min", { n: 15 })
 	},
 	{
 		minutes: 30,
-		label: b("chore_editor.wait_min", { n: 30 })
+		label: x("chore_editor.wait_min", { n: 30 })
 	},
 	{
 		minutes: 60,
-		label: b("chore_editor.wait_h", { n: 1 })
+		label: x("chore_editor.wait_h", { n: 1 })
 	},
 	{
 		minutes: 180,
-		label: b("chore_editor.wait_h", { n: 3 })
+		label: x("chore_editor.wait_h", { n: 3 })
 	}
-], Lo = () => [
+], rs = () => [
 	{
 		value: "none",
-		label: b("chore_editor.on_demand_i_start_it")
+		label: x("chore_editor.on_demand_i_start_it")
 	},
 	{
 		value: "schedule",
-		label: b("common.on_certain_days_and_times")
+		label: x("common.on_certain_days_and_times")
 	},
 	{
 		value: "every_n_days",
-		label: b("chore_editor.every_n_days_after_i_finish")
+		label: x("chore_editor.every_n_days_after_i_finish")
 	}
-], Ro = Object.fromEntries([
+], is = Object.fromEntries([
 	0,
 	1,
 	2,
@@ -15804,7 +16068,7 @@ var Po = 8, Fo = () => [{
 	4,
 	5,
 	6
-].map((e) => [String(e), ["09:00"]])), zo = class extends _ {
+].map((e) => [String(e), ["09:00"]])), as = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -15911,7 +16175,7 @@ var Po = 8, Fo = () => [{
 		})), o = [...n, ...(e.questions ?? []).map((e) => ({
 			...e,
 			id: i.get(e.id) ?? e.id
-		}))].slice(0, Po), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
+		}))].slice(0, es), s = this.draft.steps.filter((e) => e.title.trim() !== ""), c = t ? [...s, ...a] : a;
 		this._update({
 			steps: c.slice(0, 50),
 			notes: e.notes,
@@ -15920,7 +16184,7 @@ var Po = 8, Fo = () => [{
 	}
 	_addQuestion() {
 		let e = [...this.draft.questions ?? []];
-		e.length >= Po || (e.push({
+		e.length >= es || (e.push({
 			id: `q${Math.random().toString(36).slice(2, 8)}`,
 			text: ""
 		}), this._update({ questions: e }));
@@ -15941,7 +16205,7 @@ var Po = 8, Fo = () => [{
 		});
 	}
 	_openSuggest() {
-		this.draft.name.trim() ? (this._error = "", this._suggest = !0) : this._error = b("chore_editor.give_the_chore_a_name_first");
+		this.draft.name.trim() ? (this._error = "", this._suggest = !0) : this._error = x("chore_editor.give_the_chore_a_name_first");
 	}
 	_close() {
 		this.dispatchEvent(new CustomEvent("editor-close", {
@@ -15969,7 +16233,7 @@ var Po = 8, Fo = () => [{
 					only_if: e.only_if && n.has(e.only_if) ? e.only_if : "",
 					image: (e.image ?? "").trim()
 				}))
-			}, i = !1, a = this.draft, o = this._given, s = JSON.stringify(a), c = await nn(this.hass, r);
+			}, i = !1, a = this.draft, o = this._given, s = JSON.stringify(a), c = await tn(this.hass, r);
 			return this._given === o ? JSON.stringify(this.draft) === s ? e ? this._close() : (this._update({
 				...r,
 				id: c.id
@@ -15978,7 +16242,7 @@ var Po = 8, Fo = () => [{
 				id: c.id
 			})) : i = !0, !i;
 		} catch (e) {
-			return this._error = S(e), !1;
+			return this._error = C(e), !1;
 		} finally {
 			this._busy = !1;
 		}
@@ -15987,9 +16251,9 @@ var Po = 8, Fo = () => [{
 		if (this.hass && this.draft.id && !this._busy) {
 			this._busy = !0;
 			try {
-				await rn(this.hass, this.draft.id), this._close();
+				await nn(this.hass, this.draft.id), this._close();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -15997,33 +16261,33 @@ var Po = 8, Fo = () => [{
 	}
 	_renderRepeat() {
 		let e = this.draft.repeat;
-		return p`
+		return m`
       <div class="field">
-        <label for="repeat">${b("chore_editor.repeats")}</label>
+        <label for="repeat">${x("chore_editor.repeats")}</label>
         <select
           id="repeat"
           .value=${e.type}
           @change=${(t) => {
-			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? Ro : e.days;
+			let n = t.target.value, r = n === "schedule" && Object.keys(e.days).length === 0 ? is : e.days;
 			this._updateRepeat({
 				type: n,
 				days: r
 			});
 		}}
         >
-          ${Lo().map((t) => p`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
+          ${rs().map((t) => m`<option value=${t.value} ?selected=${t.value === e.type}>${t.label}</option>`)}
         </select>
       </div>
-      ${e.type === "schedule" ? p`<div class="field">
-            <label>${b("chore_editor.each_day_has_its_own_times")}</label>
+      ${e.type === "schedule" ? m`<div class="field">
+            <label>${x("chore_editor.each_day_has_its_own_times")}</label>
             <boopli-schedule-days
               .days=${e.days}
               @days-change=${(e) => this._updateRepeat({ days: e.detail })}
             ></boopli-schedule-days>
-            <div class="muted small summary">${qn(e)}</div>
-          </div>` : g}
-      ${e.type === "every_n_days" ? p`<div class="field">
-              <label for="n">${b("chore_editor.number_of_days")}</label>
+            <div class="muted small summary">${Jn(e)}</div>
+          </div>` : _}
+      ${e.type === "every_n_days" ? m`<div class="field">
+              <label for="n">${x("chore_editor.number_of_days")}</label>
               <input
                 id="n"
                 type="number"
@@ -16034,79 +16298,79 @@ var Po = 8, Fo = () => [{
               />
             </div>
             <div class="field">
-              <label for="time">${b("chore_editor.at")}</label>
+              <label for="time">${x("chore_editor.at")}</label>
               <input
                 id="time"
                 type="time"
                 .value=${e.time}
                 @input=${(e) => this._updateRepeat({ time: e.target.value })}
               />
-            </div>` : g}
+            </div>` : _}
       <div class="field">
-        <button type="button" @click=${() => this._sched = "inline"}>${b("chore_editor.set_the_schedule_step_by_step")}</button>
+        <button type="button" @click=${() => this._sched = "inline"}>${x("chore_editor.set_the_schedule_step_by_step")}</button>
       </div>
     `;
 	}
 	_renderStep(e) {
 		let t = this.draft.steps[e], n = this.draft.steps.length - 1;
-		return p`
+		return m`
       <div class="step">
         <div class="step-head">
           <span class="num">${e + 1}</span>
           <input
-            aria-label=${b("chore_editor.step_title", { n: e + 1 })}
-            placeholder=${b("chore_editor.what_to_do")}
+            aria-label=${x("chore_editor.step_title", { n: e + 1 })}
+            placeholder=${x("chore_editor.what_to_do")}
             .value=${t.title}
             @input=${(t) => this._updateStep(e, { title: t.target.value })}
           />
-          <span class="sizes" role="group" aria-label=${b("chore_editor.size_of_step", { n: e + 1 })}>
+          <span class="sizes" role="group" aria-label=${x("chore_editor.size_of_step", { n: e + 1 })}>
             ${[
 			"small",
 			"medium",
 			"big"
-		].map((n) => p`<button
+		].map((n) => m`<button
                 type="button"
                 class="chip size ${(t.size ?? "small") === n ? "on" : ""}"
-                title="${b(n === "small" ? "chore_editor.small_10_blubs" : n === "medium" ? "chore_editor.medium_15_blubs" : "chore_editor.big_20_blubs")}"
+                title="${x(n === "small" ? "chore_editor.small_10_blubs" : n === "medium" ? "chore_editor.medium_15_blubs" : "chore_editor.big_20_blubs")}"
                 aria-pressed=${(t.size ?? "small") === n}
                 @click=${() => this._updateStep(e, { size: n })}
               >
-                ${b(n === "small" ? "breakdown.letter_small" : n === "medium" ? "breakdown.letter_medium" : "breakdown.letter_big")}
+                ${x(n === "small" ? "breakdown.letter_small" : n === "medium" ? "breakdown.letter_medium" : "breakdown.letter_big")}
               </button>`)}
           </span>
-          <button type="button" aria-label=${b("ladders.move_up")} ?disabled=${e === 0} @click=${() => this._moveStep(e, -1)}>↑</button>
-          <button type="button" aria-label=${b("ladders.move_down")} ?disabled=${e === n} @click=${() => this._moveStep(e, 1)}>↓</button>
-          <button type="button" aria-label=${b("chore_editor.remove_step")} ?disabled=${n === 0} @click=${() => this._removeStep(e)}>✕</button>
+          <button type="button" aria-label=${x("ladders.move_up")} ?disabled=${e === 0} @click=${() => this._moveStep(e, -1)}>↑</button>
+          <button type="button" aria-label=${x("ladders.move_down")} ?disabled=${e === n} @click=${() => this._moveStep(e, 1)}>↓</button>
+          <button type="button" aria-label=${x("chore_editor.remove_step")} ?disabled=${n === 0} @click=${() => this._removeStep(e)}>✕</button>
         </div>
         <div class="part">
-          <label class="muted small" for="part-${e}">${b("chore_editor.part_of_the_task_optional")}</label>
+          <label class="muted small" for="part-${e}">${x("chore_editor.part_of_the_task_optional")}</label>
           <input
             id="part-${e}"
             class="part-input"
             list="parts-list"
             maxlength="40"
-            placeholder=${b("chore_editor.for_example_desk")}
+            placeholder=${x("chore_editor.for_example_desk")}
             .value=${t.group ?? ""}
             @input=${(t) => this._updateStep(e, { group: t.target.value })}
           />
         </div>
-        ${(this.draft.questions ?? []).length ? p`<div class="part">
-              <label class="muted small" for="only-if-${e}">${b("chore_editor.only_if")}</label>
+        ${(this.draft.questions ?? []).length ? m`<div class="part">
+              <label class="muted small" for="only-if-${e}">${x("chore_editor.only_if")}</label>
               <select
                 id="only-if-${e}"
                 class="part-input"
                 @change=${(t) => this._updateStep(e, { only_if: t.target.value })}
               >
-                <option value="" ?selected=${!t.only_if}>${b("common.always_there")}</option>
-                ${(this.draft.questions ?? []).map((e) => p`<option value=${e.id} ?selected=${t.only_if === e.id}>${b("chore_editor.yes", { value: e.text || b("chore_editor.question_without_words") })}</option>`)}
+                <option value="" ?selected=${!t.only_if}>${x("common.always_there")}</option>
+                ${(this.draft.questions ?? []).map((e) => m`<option value=${e.id} ?selected=${t.only_if === e.id}>${x("chore_editor.yes", { value: e.text || x("chore_editor.question_without_words") })}</option>`)}
               </select>
-            </div>` : g}
+            </div>` : _}
         <div class="wait">
           <span class="muted small">
-            ${(t.wait_for ?? []).length > 0 ? b("chore_editor.longest_it_waits_0_as_long") : b("chore_editor.wait_before_this_step")}
+            ${(t.wait_for ?? []).length > 0 ? x("chore_editor.longest_it_waits_0_as_long") : x("chore_editor.wait_before_this_step")}
           </span>
           <div class="chips">
-            ${Io().map((n) => p`<button
+            ${ns().map((n) => m`<button
                 type="button"
                 class="chip ${t.wait_minutes === n.minutes ? "on" : ""}"
                 @click=${() => this._updateStep(e, { wait_minutes: n.minutes })}
@@ -16115,24 +16379,24 @@ var Po = 8, Fo = () => [{
               </button>`)}
             <span class="custom">
               <input
-                aria-label=${b("chore_editor.custom_wait_in_minutes")}
+                aria-label=${x("chore_editor.custom_wait_in_minutes")}
                 type="number"
                 min="0"
                 max="10080"
                 .value=${String(t.wait_minutes)}
                 @input=${(t) => this._updateStep(e, { wait_minutes: Math.max(0, Number(t.target.value) || 0) })}
               />
-              <span class="muted small">${b("chore_editor.min")}</span>
+              <span class="muted small">${x("chore_editor.min")}</span>
             </span>
           </div>
         </div>
         <details class="auto" ?open=${(t.wait_for ?? []).length > 0}>
           <summary>
-            ${b("chore_editor.wait_until_this_happens")}
-            ${(t.wait_for ?? []).length > 0 ? p`<span class="muted small">${b("chore_editor.n_set", { n: (t.wait_for ?? []).length })}</span>` : g}
+            ${x("chore_editor.wait_until_this_happens")}
+            ${(t.wait_for ?? []).length > 0 ? m`<span class="muted small">${x("chore_editor.n_set", { n: (t.wait_for ?? []).length })}</span>` : _}
           </summary>
           <p class="muted small">
-            ${b("chore_editor.the_step_stays_quiet_with_no")}
+            ${x("chore_editor.the_step_stays_quiet_with_no")}
           </p>
           <boopli-triggers
             .hass=${this.hass}
@@ -16143,8 +16407,8 @@ var Po = 8, Fo = () => [{
         </details>
         <details class="auto" ?open=${!!t.image}>
           <summary>
-            ${E("camera-outline")} ${b("chore_editor.picture")}
-            ${t.image ? p`<span class="muted small">${b("chore_editor.set")}</span>` : g}
+            ${D("camera-outline")} ${x("chore_editor.picture")}
+            ${t.image ? m`<span class="muted small">${x("chore_editor.set")}</span>` : _}
           </summary>
           <boopli-picture
             .hass=${this.hass}
@@ -16154,8 +16418,8 @@ var Po = 8, Fo = () => [{
         </details>
         <details class="auto" ?open=${(t.triggers ?? []).length > 0}>
           <summary>
-            ${b("chore_editor.finishes_by_itself_when")}
-            ${(t.triggers ?? []).length > 0 ? p`<span class="muted small">${b("chore_editor.n_set", { n: (t.triggers ?? []).length })}</span>` : g}
+            ${x("chore_editor.finishes_by_itself_when")}
+            ${(t.triggers ?? []).length > 0 ? m`<span class="muted small">${x("chore_editor.n_set", { n: (t.triggers ?? []).length })}</span>` : _}
           </summary>
           <boopli-triggers
             .hass=${this.hass}
@@ -16169,7 +16433,7 @@ var Po = 8, Fo = () => [{
 	}
 	render() {
 		let e = this.draft;
-		return e ? this._suggest ? p`<boopli-breakdown
+		return e ? this._suggest ? m`<boopli-breakdown
         mode="editor"
         .hass=${this.hass}
         .snapshot=${this.snapshot}
@@ -16179,80 +16443,80 @@ var Po = 8, Fo = () => [{
         .hasSteps=${e.steps.some((e) => e.title.trim() !== "")}
         @breakdown-result=${(e) => this._applySuggestion(e.detail)}
         @breakdown-cancel=${() => this._suggest = !1}
-      ></boopli-breakdown>` : this._sched === "off" ? p`
+      ></boopli-breakdown>` : this._sched === "off" ? m`
       <section class="card ${this._isDirty() ? "changed" : ""}">
         <h2>
-          ${e.id ? b("chore_editor.edit_chore") : b("chores.new_chore")}
-          ${this._isDirty() ? p`<span class="unsaved-badge">${b("settings.unsaved")}</span>` : g}
+          ${e.id ? x("chore_editor.edit_chore") : x("chores.new_chore")}
+          ${this._isDirty() ? m`<span class="unsaved-badge">${x("settings.unsaved")}</span>` : _}
         </h2>
 
         <div class="editor-grid">
         <div class="col-a">
         <div class="field">
-          <label for="name">${b("common.name")}</label>
+          <label for="name">${x("common.name")}</label>
           <input
             id="name"
-            placeholder=${b("chore_editor.for_example_dishwasher")}
+            placeholder=${x("chore_editor.for_example_dishwasher")}
             .value=${e.name}
             @input=${(e) => this._update({ name: e.target.value })}
           />
         </div>
 
         <div class="field">
-          <label for="where">${b("chore_editor.where_does_it_make_sense")}</label>
+          <label for="where">${x("chore_editor.where_does_it_make_sense")}</label>
           <select
             id="where"
             .value=${e.where}
             @change=${(e) => this._update({ where: e.target.value })}
           >
-            <option value="home" ?selected=${e.where === "home"}>${b("chore_editor.home_only")}</option>
-            <option value="anywhere" ?selected=${e.where === "anywhere"}>${b("chore_editor.anywhere_for_example_pills")}</option>
+            <option value="home" ?selected=${e.where === "home"}>${x("chore_editor.home_only")}</option>
+            <option value="anywhere" ?selected=${e.where === "anywhere"}>${x("chore_editor.anywhere_for_example_pills")}</option>
           </select>
         </div>
 
         ${this._renderRepeat()}
 
         <div class="field">
-          <label for="style">${b("chore_editor.how_should_boopli_nudge_you")}</label>
+          <label for="style">${x("chore_editor.how_should_boopli_nudge_you")}</label>
           <select
             id="style"
-            .value=${Ya(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
+            .value=${go(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
             @change=${(e) => this._update({ nudge_style: e.target.value })}
           >
-            ${[...Fo(), ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
+            ${[...ts(), ...(this.snapshot?.settings?.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
-			label: e.id.startsWith("standard_") ? Z(e) : b("chore_editor.my_own_ladder", { name: e.name })
-		}))].map((t) => p`<option
+			label: e.id.startsWith("standard_") ? Z(e) : x("chore_editor.my_own_ladder", { name: e.name })
+		}))].map((t) => m`<option
                 value=${t.value}
-                ?selected=${t.value === Ya(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
+                ?selected=${t.value === go(e.nudge_style ?? this.defaultStyle, this.snapshot?.settings?.ladders)}
               >
                 ${t.label}
               </option>`)}
-            ${(e.nudge_style ?? this.defaultStyle).startsWith("ladder:") && !(this.snapshot?.settings?.ladders ?? []).some((t) => `ladder:${t.id}` === (e.nudge_style ?? this.defaultStyle)) ? p`<option value=${e.nudge_style ?? this.defaultStyle} selected>${b("chore_editor.a_ladder_that_is_gone")}</option>` : g}
+            ${(e.nudge_style ?? this.defaultStyle).startsWith("ladder:") && !(this.snapshot?.settings?.ladders ?? []).some((t) => `ladder:${t.id}` === (e.nudge_style ?? this.defaultStyle)) ? m`<option value=${e.nudge_style ?? this.defaultStyle} selected>${x("chore_editor.a_ladder_that_is_gone")}</option>` : _}
           </select>
         </div>
-        ${(this.snapshot?.settings?.lights ?? []).some((e) => qa(this.hass, e.entity_id)) ? p`<div class="field">
-          <label for="lightcolor">${b("chore_editor.light_color_for_this_chore_optional")}</label>
+        ${(this.snapshot?.settings?.lights ?? []).some((e) => mo(this.hass, e.entity_id)) ? m`<div class="field">
+          <label for="lightcolor">${x("chore_editor.light_color_for_this_chore_optional")}</label>
           <div class="colorrow">
             <input
               id="lightcolor"
               type="color"
               class="swatch"
-              .value=${e.light_color ? Wa(e.light_color) : Wa(this.snapshot?.settings?.lights?.[0]?.color ?? [
+              .value=${e.light_color ? uo(e.light_color) : uo(this.snapshot?.settings?.lights?.[0]?.color ?? [
 			255,
 			90,
 			0
 		])}
-              @input=${(e) => this._update({ light_color: Ua(e.target.value) })}
+              @input=${(e) => this._update({ light_color: lo(e.target.value) })}
             />
             <button type="button" class="chip" ?disabled=${!e.light_color} @click=${() => this._update({ light_color: void 0 })}>
-              ${b("chore_editor.use_the_lights_own_color")}
+              ${x("chore_editor.use_the_lights_own_color")}
             </button>
           </div>
           <div class="muted small">
-            ${b("chore_editor.a_status_light_can_mean_something")}
+            ${x("chore_editor.a_status_light_can_mean_something")}
           </div>
-        </div>` : g}
+        </div>` : _}
         <div class="field check">
           <label class="inline">
             <input
@@ -16260,7 +16524,7 @@ var Po = 8, Fo = () => [{
               .checked=${e.ignore_quiet_hours ?? !1}
               @change=${(e) => this._update({ ignore_quiet_hours: e.target.checked })}
             />
-            ${b("chore_editor.nudge_even_in_quiet_hours_for")}
+            ${x("chore_editor.nudge_even_in_quiet_hours_for")}
           </label>
         </div>
         <div class="field check">
@@ -16270,7 +16534,7 @@ var Po = 8, Fo = () => [{
               .checked=${e.keeps_going ?? !1}
               @change=${(e) => this._update({ keeps_going: e.target.checked })}
             />
-            ${b("chore_editor.keeps_going_while_im_away_for")}
+            ${x("chore_editor.keeps_going_while_im_away_for")}
           </label>
         </div>
 
@@ -16278,57 +16542,57 @@ var Po = 8, Fo = () => [{
         <div class="col-b">
         <details class="auto questions" ?open=${(e.questions ?? []).length > 0}>
           <summary>
-            ${b("chore_editor.questions_before_starting")}
-            ${(e.questions ?? []).length > 0 ? p`<span class="muted small">(${(e.questions ?? []).length})</span>` : g}
+            ${x("chore_editor.questions_before_starting")}
+            ${(e.questions ?? []).length > 0 ? m`<span class="muted small">(${(e.questions ?? []).length})</span>` : _}
           </summary>
           <p class="muted small">
-            ${b("chore_editor.asked_every_time_you_start_this")}
+            ${x("chore_editor.asked_every_time_you_start_this")}
           </p>
-          ${(e.questions ?? []).map((e) => p`<div class="question">
+          ${(e.questions ?? []).map((e) => m`<div class="question">
               <input
-                aria-label=${b("chore_editor.question")}
+                aria-label=${x("chore_editor.question")}
                 maxlength="120"
-                placeholder=${b("chore_editor.does_the_table_need_decluttering")}
+                placeholder=${x("chore_editor.does_the_table_need_decluttering")}
                 .value=${e.text}
                 @input=${(t) => this._setQuestion(e.id, t.target.value)}
               />
-              <button type="button" aria-label=${b("chore_editor.remove_this_question")} @click=${() => this._removeQuestion(e.id)}>✕</button>
+              <button type="button" aria-label=${x("chore_editor.remove_this_question")} @click=${() => this._removeQuestion(e.id)}>✕</button>
             </div>`)}
-          <button type="button" ?disabled=${(e.questions ?? []).length >= Po} @click=${() => this._addQuestion()}>
-            ${b("chore_editor.add_a_question")}
+          <button type="button" ?disabled=${(e.questions ?? []).length >= es} @click=${() => this._addQuestion()}>
+            ${x("chore_editor.add_a_question")}
           </button>
         </details>
-        <h3 class="steps-title">${b("common.steps")}</h3>
+        <h3 class="steps-title">${x("common.steps")}</h3>
         <datalist id="parts-list">
-          ${[...new Set(e.steps.map((e) => (e.group ?? "").trim()).filter(Boolean))].map((e) => p`<option value=${e}></option>`)}
+          ${[...new Set(e.steps.map((e) => (e.group ?? "").trim()).filter(Boolean))].map((e) => m`<option value=${e}></option>`)}
         </datalist>
         ${e.steps.map((e, t) => this._renderStep(t))}
         <div class="step-buttons">
-          <button type="button" @click=${() => this._addStep()}>${b("breakdown.add_a_step")}</button>
-          <button type="button" @click=${() => this._openSuggest()}>${E("auto-fix")} ${b("chore_editor.suggest_steps_with_ai")}</button>
+          <button type="button" @click=${() => this._addStep()}>${x("breakdown.add_a_step")}</button>
+          <button type="button" @click=${() => this._openSuggest()}>${D("auto-fix")} ${x("chore_editor.suggest_steps_with_ai")}</button>
         </div>
         </div>
         </div>
 
-        ${this._error ? p`<div class="error">${this._error}</div>` : g}
+        ${this._error ? m`<div class="error">${this._error}</div>` : _}
 
         <div class="actions">
-          <button ?disabled=${this._busy} @click=${() => this._save(!1)}>${b("common.save")}</button>
-          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${b("common.save_and_close")}</button>
-          <button ?disabled=${this._busy} @click=${() => this._close()}>${b("common.cancel")}</button>
-          ${e.id ? this._confirmDelete ? p`<span class="muted small">${b("chore_editor.delete_it_and_anything_in_progress")}</span>
-                  <button class="danger" ?disabled=${this._busy} @click=${() => this._delete()}>${b("chore_editor.yes_delete")}</button>
-                  <button @click=${() => this._confirmDelete = !1}>${b("chore_editor.no")}</button>` : p`<button class="danger" @click=${() => this._confirmDelete = !0}>${b("chore_editor.delete")}</button>` : g}
+          <button ?disabled=${this._busy} @click=${() => this._save(!1)}>${x("common.save")}</button>
+          <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${x("common.save_and_close")}</button>
+          <button ?disabled=${this._busy} @click=${() => this._close()}>${x("common.cancel")}</button>
+          ${e.id ? this._confirmDelete ? m`<span class="muted small">${x("chore_editor.delete_it_and_anything_in_progress")}</span>
+                  <button class="danger" ?disabled=${this._busy} @click=${() => this._delete()}>${x("chore_editor.yes_delete")}</button>
+                  <button @click=${() => this._confirmDelete = !1}>${x("chore_editor.no")}</button>` : m`<button class="danger" @click=${() => this._confirmDelete = !0}>${x("chore_editor.delete")}</button>` : _}
         </div>
       </section>
-      ${this._isDirty() ? p`<div class="savebar" role="status">
-            <span>${x("chore_editor.you_have_unsaved_changes")}</span>
+      ${this._isDirty() ? m`<div class="savebar" role="status">
+            <span>${S("chore_editor.you_have_unsaved_changes")}</span>
             <span class="spacer"></span>
-            <button ?disabled=${this._busy} @click=${() => this._save(!1)}>${b("common.save")}</button>
-            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${b("common.save_and_close")}</button>
-            <button ?disabled=${this._busy} @click=${() => this._close()}>${b("common.discard")}</button>
-          </div>` : g}
-    ` : p`<boopli-schedule-wizard
+            <button ?disabled=${this._busy} @click=${() => this._save(!1)}>${x("common.save")}</button>
+            <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${x("common.save_and_close")}</button>
+            <button ?disabled=${this._busy} @click=${() => this._close()}>${x("common.discard")}</button>
+          </div>` : _}
+    ` : m`<boopli-schedule-wizard
         .hass=${this.hass}
         .repeat=${e.repeat}
         .choreName=${e.name}
@@ -16336,10 +16600,10 @@ var Po = 8, Fo = () => [{
         .saves=${this._sched === "direct"}
         @schedule-apply=${(e) => this._applySchedule(e.detail)}
         @schedule-cancel=${() => this._cancelSchedule()}
-      ></boopli-schedule-wizard>` : g;
+      ></boopli-schedule-wizard>` : _;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .colorrow {
         display: flex;
         flex-wrap: wrap;
@@ -16533,83 +16797,83 @@ var Po = 8, Fo = () => [{
     `];
 	}
 };
-customElements.define("boopli-chore-editor", zo);
+customElements.define("boopli-chore-editor", as);
 // src/templates.ts
-function Bo(e) {
-	let t = new Set(e), n = Ho().map((e) => e.draft.name), r = Tt(() => Ho().map((e) => e.draft.name));
+function os(e) {
+	let t = new Set(e), n = cs().map((e) => e.draft.name), r = wt(() => cs().map((e) => e.draft.name));
 	return (e) => {
 		let i = n.indexOf(e);
 		return t.has(e) || i >= 0 && r.some((e) => t.has(e[i]));
 	};
 }
-var Vo = {
+var ss = {
 	type: "none",
 	time: "09:00",
 	every_n_days: 1,
 	days: {}
-}, Ho = () => [
+}, cs = () => [
 	{
-		label: b("templates.dishwasher"),
+		label: x("templates.dishwasher"),
 		draft: {
-			name: b("templates.dishwasher"),
+			name: x("templates.dishwasher"),
 			where: "home",
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Vo,
+				...ss,
 				days: {}
 			},
 			steps: [
 				{
-					title: b("templates.load_the_dishwasher"),
+					title: x("templates.load_the_dishwasher"),
 					wait_minutes: 0
 				},
 				{
-					title: b("templates.start_the_dishwasher"),
+					title: x("templates.start_the_dishwasher"),
 					wait_minutes: 0
 				},
 				{
-					title: b("templates.open_it_so_it_can_dry"),
+					title: x("templates.open_it_so_it_can_dry"),
 					wait_minutes: 0
 				},
 				{
-					title: b("templates.empty_the_dishwasher"),
+					title: x("templates.empty_the_dishwasher"),
 					wait_minutes: 180
 				}
 			]
 		}
 	},
 	{
-		label: b("templates.laundry"),
+		label: x("templates.laundry"),
 		draft: {
-			name: b("templates.laundry"),
+			name: x("templates.laundry"),
 			where: "home",
 			enabled: !0,
 			one_off: !1,
 			repeat: {
-				...Vo,
+				...ss,
 				days: {}
 			},
 			steps: [
 				{
-					title: b("templates.start_the_washing_machine"),
+					title: x("templates.start_the_washing_machine"),
 					wait_minutes: 0
 				},
 				{
-					title: b("templates.hang_the_laundry_up"),
+					title: x("templates.hang_the_laundry_up"),
 					wait_minutes: 60
 				},
 				{
-					title: b("templates.take_the_laundry_down_and_put"),
+					title: x("templates.take_the_laundry_down_and_put"),
 					wait_minutes: 240
 				}
 			]
 		}
 	},
 	{
-		label: b("templates.trash"),
+		label: x("templates.trash"),
 		draft: {
-			name: b("templates.take_out_the_trash"),
+			name: x("templates.take_out_the_trash"),
 			where: "home",
 			enabled: !0,
 			one_off: !1,
@@ -16620,15 +16884,15 @@ var Vo = {
 				days: { 3: ["19:00"] }
 			},
 			steps: [{
-				title: b("templates.take_out_the_trash"),
+				title: x("templates.take_out_the_trash"),
 				wait_minutes: 0
 			}]
 		}
 	},
 	{
-		label: b("templates.pills"),
+		label: x("templates.pills"),
 		draft: {
-			name: b("templates.take_pills"),
+			name: x("templates.take_pills"),
 			where: "anywhere",
 			enabled: !0,
 			one_off: !1,
@@ -16650,13 +16914,13 @@ var Vo = {
 			ignore_quiet_hours: !0,
 			keeps_going: !0,
 			steps: [{
-				title: b("templates.take_your_pills"),
+				title: x("templates.take_your_pills"),
 				wait_minutes: 0
 			}]
 		}
 	}
 ];
-function Uo() {
+function ls() {
 	return {
 		name: "",
 		where: "home",
@@ -16675,7 +16939,7 @@ function Uo() {
 	};
 }
 // src/boopli-chores.ts
-var Wo = class extends _ {
+var us = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -16786,9 +17050,9 @@ var Wo = class extends _ {
 			else {
 				this._busy = !0;
 				try {
-					await on(this.hass, e.id, t), this._asking = null;
+					await an(this.hass, e.id, t), this._asking = null;
 				} catch (e) {
-					this._error = S(e);
+					this._error = C(e);
 				} finally {
 					this._busy = !1;
 				}
@@ -16802,9 +17066,9 @@ var Wo = class extends _ {
 		if (this.hass && !this._busy) {
 			this._error = "", this._busy = !0;
 			try {
-				await an(this.hass, e.id);
+				await rn(this.hass, e.id);
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._skipping = null, this._busy = !1;
 			}
@@ -16812,8 +17076,8 @@ var Wo = class extends _ {
 		}
 	}
 	render() {
-		if (!this.snapshot) return p`<p class="muted">${b("common.loading")}</p>`;
-		if (this._editing) return p`<boopli-chore-editor
+		if (!this.snapshot) return m`<p class="muted">${x("common.loading")}</p>`;
+		if (this._editing) return m`<boopli-chore-editor
         .hass=${this.hass}
         .draft=${this._editing}
         .defaultStyle=${this.snapshot.settings.default_style}
@@ -16833,24 +17097,24 @@ var Wo = class extends _ {
       ></boopli-chore-editor>`;
 		if (this._asking) {
 			let e = this._asking;
-			return p`<section class="card">
+			return m`<section class="card">
         <h2>${e.name}</h2>
-        <p class="muted">${b("chores.a_quick_look_first_so_the")}</p>
+        <p class="muted">${x("chores.a_quick_look_first_so_the")}</p>
         <boopli-questions
           .questions=${e.questions ?? []}
           .busy=${this._busy}
-          label=${b("chores.start")}
+          label=${x("chores.start")}
           @answered=${(t) => this._start(e, t.detail.answers)}
           @cancel=${() => this._asking = null}
         ></boopli-questions>
-        ${this._error ? p`<div class="error">${this._error}</div>` : g}
+        ${this._error ? m`<div class="error">${this._error}</div>` : _}
       </section>`;
 		}
 		let e = this.snapshot.time_zone, t = new Set(this.snapshot.runs.map((e) => e.chore_id)), n = [...this.snapshot.chores].sort((e, t) => e.name.localeCompare(t.name)), r = q(this.snapshot).all;
-		return p`
-      ${r ? p`<div class="toolbar">
-        <button class="primary" @click=${() => this._editing = Uo()}>
-          ${E("plus")} ${b("chores.new_chore")}
+		return m`
+      ${r ? m`<div class="toolbar">
+        <button class="primary" @click=${() => this._editing = ls()}>
+          ${D("plus")} ${x("chores.new_chore")}
         </button>
         <button
           @click=${() => this.dispatchEvent(new CustomEvent("open-breakdown", {
@@ -16859,56 +17123,56 @@ var Wo = class extends _ {
 			composed: !0
 		}))}
         >
-          ${E("auto-fix")} ${b("chores.new_chore_with_ai")}
+          ${D("auto-fix")} ${x("chores.new_chore_with_ai")}
         </button>
-      </div>` : g}
+      </div>` : _}
 
-      ${r ? p`<div class="templates">
-        <span class="muted small">${b("chores.start_from_a_template")}</span>
-        ${Ho().map((e) => p`<button
+      ${r ? m`<div class="templates">
+        <span class="muted small">${x("chores.start_from_a_template")}</span>
+        ${cs().map((e) => m`<button
             class="chip"
             @click=${() => this._editing = structuredClone(e.draft)}
           >
             ${e.label}
           </button>`)}
-      </div>` : g}
+      </div>` : _}
 
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
-      ${n.length === 0 ? p`<p class="muted empty">
-            ${b(r ? "chores.no_chores_yet_pick_a_template" : "chores.no_chores_yet_ask_an_admin")}
-          </p>` : p`<div class="chore-list">${n.map((n) => p`
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
+      ${n.length === 0 ? m`<p class="muted empty">
+            ${x(r ? "chores.no_chores_yet_pick_a_template" : "chores.no_chores_yet_ask_an_admin")}
+          </p>` : m`<div class="chore-list">${n.map((n) => m`
               <section class="chore">
                 <div class="chore-main">
                   <div class="name">${n.name}</div>
                   <div class="muted small">
-                    ${qn(n.repeat)} · ${n.where === "home" ? b("chore_editor.home_only") : b("chores.anywhere")}
-                    · ${b("common.steps_count", { count: n.steps.length })}
+                    ${Jn(n.repeat)} · ${n.where === "home" ? x("chore_editor.home_only") : x("chores.anywhere")}
+                    · ${x("common.steps_count", { count: n.steps.length })}
                   </div>
                   <div class=${t.has(n.id) ? "status live" : "muted small status"}>
-                    ${t.has(n.id) ? p`${E("progress-clock")} ${b("chores.in_progress")}` : n.enabled && n.next_due ? b("chores.next", { when: Bn(n.next_due, this.nowMs, e) }) : n.repeat.type === "none" ? "" : b("chores.not_scheduled")}
+                    ${t.has(n.id) ? m`${D("progress-clock")} ${x("chores.in_progress")}` : n.enabled && n.next_due ? x("chores.next", { when: Vn(n.next_due, this.nowMs, e) }) : n.repeat.type === "none" ? "" : x("chores.not_scheduled")}
                   </div>
                 </div>
                 <div class="chore-actions">
-                  ${t.has(n.id) ? g : p`<button class="textlink" data-start=${n.id} ?disabled=${this._busy} @click=${() => this._start(n)}>${b("common.start_now")}</button>`}
-                  ${r && n.repeat.type === "none" ? p`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>${b("chores.set_a_schedule")}</button>` : g}
-                  ${r ? p`<button class="textlink quiet" data-edit=${n.id} @click=${() => this._edit(n)}>${b("chores.edit")}</button>` : g}
-                  ${this._canSkip(n, t.has(n.id)) && this._skipping !== n.id ? p`<button class="textlink quiet" data-skip=${n.id} ?disabled=${this._busy} @click=${() => this._askSkip(n, t.has(n.id))}>
-                        ${t.has(n.id) ? b("chores.skip_round") : b("chores.skip_next")}
-                      </button>` : g}
+                  ${t.has(n.id) ? _ : m`<button class="textlink" data-start=${n.id} ?disabled=${this._busy} @click=${() => this._start(n)}>${x("common.start_now")}</button>`}
+                  ${r && n.repeat.type === "none" ? m`<button class="textlink quiet" @click=${() => this._edit(n, !0)}>${x("chores.set_a_schedule")}</button>` : _}
+                  ${r ? m`<button class="textlink quiet" data-edit=${n.id} @click=${() => this._edit(n)}>${x("chores.edit")}</button>` : _}
+                  ${this._canSkip(n, t.has(n.id)) && this._skipping !== n.id ? m`<button class="textlink quiet" data-skip=${n.id} ?disabled=${this._busy} @click=${() => this._askSkip(n, t.has(n.id))}>
+                        ${t.has(n.id) ? x("chores.skip_round") : x("chores.skip_next")}
+                      </button>` : _}
                 </div>
-                ${this._skipping === n.id ? p`<div class="skip-ask">
-                      <span class="small">${t.has(n.id) ? b("chores.skip_running_ask") : b("chores.skip_next_ask")}</span>
+                ${this._skipping === n.id ? m`<div class="skip-ask">
+                      <span class="small">${t.has(n.id) ? x("chores.skip_running_ask") : x("chores.skip_next_ask")}</span>
                       <div class="chore-actions">
-                        <button class="textlink" ?disabled=${this._busy} @click=${() => this._skip(n)}>${b("chores.skip_yes")}</button>
-                        <button class="textlink quiet" ?disabled=${this._busy} @click=${() => this._keepRound(n)}>${b("chores.skip_keep")}</button>
+                        <button class="textlink" ?disabled=${this._busy} @click=${() => this._skip(n)}>${x("chores.skip_yes")}</button>
+                        <button class="textlink quiet" ?disabled=${this._busy} @click=${() => this._keepRound(n)}>${x("chores.skip_keep")}</button>
                       </div>
-                    </div>` : g}
+                    </div>` : _}
               </section>
             `)}</div>`}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .small {
         font-size: 16px;
       }
@@ -16978,27 +17242,27 @@ var Wo = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-chores", Wo);
+customElements.define("boopli-chores", us);
 // node_modules/lit-html/directive-helpers.js
-var { I: Go } = Ke, Ko = (e) => e.strings === void 0, qo = {}, Jo = (e, t = qo) => e._$AH = t, Yo = rt(class extends it {
+var { I: ds } = Ge, fs = (e) => e.strings === void 0, ps = {}, ms = (e, t = ps) => e._$AH = t, hs = nt(class extends rt {
 	constructor(e) {
-		if (super(e), e.type !== nt.PROPERTY && e.type !== nt.ATTRIBUTE && e.type !== nt.BOOLEAN_ATTRIBUTE) throw Error("The `live` directive is not allowed on child or event bindings");
-		if (!Ko(e)) throw Error("`live` bindings can only contain a single expression");
+		if (super(e), e.type !== tt.PROPERTY && e.type !== tt.ATTRIBUTE && e.type !== tt.BOOLEAN_ATTRIBUTE) throw Error("The `live` directive is not allowed on child or event bindings");
+		if (!fs(e)) throw Error("`live` bindings can only contain a single expression");
 	}
 	render(e) {
 		return e;
 	}
 	update(e, [t]) {
-		if (t === h || t === g) return t;
+		if (t === g || t === _) return t;
 		let n = e.element, r = e.name;
-		if (e.type === nt.PROPERTY) {
-			if (t === n[r]) return h;
-		} else if (e.type === nt.BOOLEAN_ATTRIBUTE) {
-			if (!!t === n.hasAttribute(r)) return h;
-		} else if (e.type === nt.ATTRIBUTE && n.getAttribute(r) === t + "") return h;
-		return Jo(e), t;
+		if (e.type === tt.PROPERTY) {
+			if (t === n[r]) return g;
+		} else if (e.type === tt.BOOLEAN_ATTRIBUTE) {
+			if (!!t === n.hasAttribute(r)) return g;
+		} else if (e.type === tt.ATTRIBUTE && n.getAttribute(r) === t + "") return g;
+		return ms(e), t;
 	}
-}), Xo = [
+}), gs = [
 	[
 		"amzn_sfx_scifi_alarm_01",
 		"Scifi Alarm (1)",
@@ -17081,55 +17345,55 @@ var { I: Go } = Ke, Ko = (e) => e.strings === void 0, qo = {}, Jo = (e, t = qo) 
 	id: e,
 	name: t,
 	seconds: n
-})), Zo = new Set(Xo.map((e) => e.id)), Qo = (e) => {
+})), _s = new Set(gs.map((e) => e.id)), vs = (e) => {
 	let t = e.id.replace(/^amzn_sfx_/, "");
-	return kt(`common.alexa_snd_${t}`) ? b(`common.alexa_snd_${t}`) : e.name;
-}, $o = (e, t) => e.localeCompare(t, k(), { numeric: !0 });
-function es(e, t, n) {
-	let r = Zo.has(e), i = Xo.map((e) => ({
+	return Ot(`common.alexa_snd_${t}`) ? x(`common.alexa_snd_${t}`) : e.name;
+}, ys = (e, t) => e.localeCompare(t, Bn(), { numeric: !0 });
+function bs(e, t, n) {
+	let r = _s.has(e), i = gs.map((e) => ({
 		...e,
-		label: Qo(e)
-	})).sort((e, t) => $o(e.label, t.label));
-	return p`
+		label: vs(e)
+	})).sort((e, t) => ys(e.label, t.label));
+	return m`
     <label class="num wide">
-      ${b("common.alexa_sound_which")}
+      ${x("common.alexa_sound_which")}
       <select @change=${(e) => t(e.target.value)}>
-        ${r ? g : p`<option value="" .selected=${Yo(!0)} disabled>${b(e ? "common.alexa_sound_own_in_use" : "common.alexa_sound_pick")}</option>`}
-        ${i.map((t) => p`<option value=${t.id} .selected=${Yo(t.id === e)}>${t.label} · ${t.seconds.toFixed(1)} s</option>`)}
+        ${r ? _ : m`<option value="" .selected=${hs(!0)} disabled>${x(e ? "common.alexa_sound_own_in_use" : "common.alexa_sound_pick")}</option>`}
+        ${i.map((t) => m`<option value=${t.id} .selected=${hs(t.id === e)}>${t.label} · ${t.seconds.toFixed(1)} s</option>`)}
       </select>
     </label>
-    ${n ? p`<div class="soundtest">
-          <button type="button" class="test" ?disabled=${!e} @click=${n.run}>${b("common.test")}</button>
-          ${n.note ? p`<span class="note muted small">${n.note}</span>` : g}
-        </div>` : g}
+    ${n ? m`<div class="soundtest">
+          <button type="button" class="test" ?disabled=${!e} @click=${n.run}>${x("common.test")}</button>
+          ${n.note ? m`<span class="note muted small">${n.note}</span>` : _}
+        </div>` : _}
   `;
 }
 // src/boopli-speakers.ts
-var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
+var xs = "amzn_sfx_scifi_alarm_01", Ss = "amzn_sfx_doorbell_chime_01", Cs = [
 	"siren",
 	"switch",
 	"input_boolean",
 	"script"
-], is = () => [{
+], ws = () => [{
 	value: "alexa",
-	label: b("common.alexa_sound")
+	label: x("common.alexa_sound")
 }, {
 	value: "file",
-	label: b("common.file_in_my_media_folder")
-}], as = () => [
+	label: x("common.file_in_my_media_folder")
+}], Ts = () => [
 	{
 		value: "alexa_media",
-		label: b("helpers.alexa_media_player")
+		label: x("helpers.alexa_media_player")
 	},
 	{
 		value: "alexa_devices",
-		label: b("common.alexa_devices_notify_entity")
+		label: x("common.alexa_devices_notify_entity")
 	},
 	{
 		value: "tts",
-		label: b("common.a_tts_voice_on_this_speaker")
+		label: x("common.a_tts_voice_on_this_speaker")
 	}
-], os = class extends _ {
+], Es = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -17198,7 +17462,7 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			label: this._friendly(e)
 		})), t && !n.some((e) => e.value === t) && n.unshift({
 			value: t,
-			label: b("speakers.not_found", { current: t })
+			label: x("speakers.not_found", { current: t })
 		}), n;
 	}
 	_num(e, t, n) {
@@ -17231,7 +17495,7 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			cue: {
 				enabled: !0,
 				kind: n ? "alexa" : "bundled",
-				sound: n ? ns : "ding",
+				sound: n ? Ss : "ding",
 				start_at: 1,
 				seconds: 30,
 				repeat_s: 5
@@ -17239,7 +17503,7 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			alarm: {
 				enabled: !0,
 				kind: n ? "alexa" : "bundled",
-				sound: n ? ts : "alarm",
+				sound: n ? xs : "alarm",
 				start_at: 4,
 				seconds: 30,
 				repeat_s: 5
@@ -17300,11 +17564,11 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 		let n = `speaker:${e.entity_id}:${t}`, r = this._bump(n), i = (e) => {
 			this._rev[n] === r && this._note(n, e);
 		};
-		i(b("common.sending"));
+		i(x("common.sending"));
 		try {
-			i(pn(await $t(this.hass, e, t)));
+			i(fn(await Qt(this.hass, e, t)));
 		} catch (e) {
-			i(S(e));
+			i(C(e));
 		}
 	}
 	_sounds() {
@@ -17318,10 +17582,10 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 	}
 	_addExtra() {
 		let e = new Set(this._sounds().map((e) => e.name.toLowerCase())), t = this._sounds().length + 1;
-		for (; e.has(b("speakers.sound", { n: t }).toLowerCase());) t++;
+		for (; e.has(x("speakers.sound", { n: t }).toLowerCase());) t++;
 		this._patch({ sounds: [...this._sounds(), {
-			id: Ja(),
-			name: b("speakers.sound", { n: t }),
+			id: ho(),
+			name: x("speakers.sound", { n: t }),
 			kind: "alexa",
 			sound: ""
 		}] });
@@ -17332,50 +17596,50 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 	async _testExtra(e) {
 		let t = `own:${e.id}`, n = this._speakers().filter((t) => (e.kind !== "alexa" || t.speech.route !== "tts") && !this._cannotPlayAlexaSounds(t)), r = n.find((e) => this._here(e)) ?? n[0];
 		if (!r) {
-			this._clearNote(t), this._note(t, b("speakers.add_a_speaker_that_can_play"));
+			this._clearNote(t), this._note(t, x("speakers.add_a_speaker_that_can_play"));
 			return;
 		}
 		if (!this.hass) return;
 		let i = this._bump(t), a = (e) => {
 			this._rev[t] === i && this._note(t, e);
 		};
-		a(b("common.sending"));
+		a(x("common.sending"));
 		try {
-			a(pn(await $t(this.hass, r, `sound:${e.id}`, this._sounds())));
+			a(fn(await Qt(this.hass, r, `sound:${e.id}`, this._sounds())));
 		} catch (e) {
-			a(S(e));
+			a(C(e));
 		}
 	}
 	_soundSummary(e, t) {
-		return t ? e === "bundled" ? b("speakers.built_in_sound") : e === "alexa" ? b("speakers.alexa_sound", { replace: t.replace(/^amzn_sfx_/, "") }) : b("speakers.file", { sound: t }) : b("speakers.no_sound_chosen_yet");
+		return t ? e === "bundled" ? x("speakers.built_in_sound") : e === "alexa" ? x("speakers.alexa_sound", { replace: t.replace(/^amzn_sfx_/, "") }) : x("speakers.file", { sound: t }) : x("speakers.no_sound_chosen_yet");
 	}
 	_soundFields(e, t, n, r, i, a) {
-		return p`
+		return m`
       <label class="num wide">
-        ${b("common.sound_type")}
+        ${x("common.sound_type")}
         <select .value=${e} @change=${(e) => r(e.target.value)}>
-          ${is().map((t) => p`<option value=${t.value} ?selected=${t.value === e}>${t.label}</option>`)}
+          ${ws().map((t) => m`<option value=${t.value} ?selected=${t.value === e}>${t.label}</option>`)}
         </select>
       </label>
-      ${e === "alexa" ? es(t, i, a) : p`<label class="num wide">
-            ${b("speakers.file_for_example_boopli_mp3", { example: n })}
+      ${e === "alexa" ? bs(t, i, a) : m`<label class="num wide">
+            ${x("speakers.file_for_example_boopli_mp3", { example: n })}
             <input type="text" .value=${t} placeholder=${`boopli/${n}.mp3`} @change=${(e) => i(e.target.value.trim())} />
           </label>`}
     `;
 	}
 	_line(e) {
 		let t = e.enabled !== !1, n = !!this._open[e.key] && t;
-		return p`
+		return m`
       <div class="line ${t ? "" : "off"}">
         <div class="lmain">
-          ${e.onToggle ? p`<label class="switch">
+          ${e.onToggle ? m`<label class="switch">
                 <input type="checkbox" .checked=${!!e.enabled} @change=${(t) => e.onToggle(t.target.checked)} />
                 <span class="ltitle">${e.title}</span>
-              </label>` : p`<span class="ltitle">${e.nameInput ?? e.title}</span>`}
-          <span class="lsum muted">${t ? e.summary : b("rung.off")}</span>
-          ${t ? p`<span class="lacts">
-                ${e.from !== void 0 && e.onFrom ? p`<label class="from">
-                      ${b("speakers.from_nudge")}
+              </label>` : m`<span class="ltitle">${e.nameInput ?? e.title}</span>`}
+          <span class="lsum muted">${t ? e.summary : x("rung.off")}</span>
+          ${t ? m`<span class="lacts">
+                ${e.from !== void 0 && e.onFrom ? m`<label class="from">
+                      ${x("speakers.from_nudge")}
                       <input
                         type="number"
                         min="1"
@@ -17386,21 +17650,21 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			n !== void 0 && e.onFrom(n);
 		}}
                       />
-                    </label>` : g}
-                <button type="button" class="test" @click=${() => e.onTest()}>${b("common.test")}</button>
+                    </label>` : _}
+                <button type="button" class="test" @click=${() => e.onTest()}>${x("common.test")}</button>
                 <button type="button" class="textlink quiet" aria-expanded=${n ? "true" : "false"} @click=${() => this._toggle(e.key)}>
-                  ${b("speakers.details")}
+                  ${x("speakers.details")}
                 </button>
-                ${e.onRemove ? p`<button type="button" class="textlink quiet" aria-label=${e.removeLabel ?? b("common.remove")} @click=${() => e.onRemove()}>${b("common.remove")}</button>` : g}
-              </span>` : g}
+                ${e.onRemove ? m`<button type="button" class="textlink quiet" aria-label=${e.removeLabel ?? x("common.remove")} @click=${() => e.onRemove()}>${x("common.remove")}</button>` : _}
+              </span>` : _}
         </div>
-        ${n ? p`<div class="fields">${e.details}</div>` : g}
-        ${this._notes[e.key] ? p`<div class="note muted small">${this._notes[e.key]}</div>` : g}
+        ${n ? m`<div class="fields">${e.details}</div>` : _}
+        ${this._notes[e.key] ? m`<div class="note muted small">${this._notes[e.key]}</div>` : _}
       </div>
     `;
 	}
 	_numField(e, t, n, r, i) {
-		return p`<label class="num">
+		return m`<label class="num">
       ${e}
       <input
         type="number"
@@ -17415,49 +17679,49 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
     </label>`;
 	}
 	_speakerBody(e) {
-		let t = e.speech, n = e.entity_id, r = t.route !== "tts", i = this._targets(t.route, t.target), a = as().find((e) => e.value === t.route)?.label ?? t.route, o = i.find((e) => e.value === t.target)?.label ?? b("speakers.no_device_chosen_yet"), s = !!this._open["spk:" + n], c = [
+		let t = e.speech, n = e.entity_id, r = t.route !== "tts", i = this._targets(t.route, t.target), a = Ts().find((e) => e.value === t.route)?.label ?? t.route, o = i.find((e) => e.value === t.target)?.label ?? x("speakers.no_device_chosen_yet"), s = !!this._open["spk:" + n], c = [
 			...t.route === "alexa_media" ? [{
 				level: "speech_chime",
-				label: b("speakers.test_announcement")
+				label: x("speakers.test_announcement")
 			}] : [],
 			{
 				level: "speech",
-				label: b("speakers.test_talk")
+				label: x("speakers.test_talk")
 			},
 			{
 				level: "cue",
-				label: b("speakers.test_ding")
+				label: x("speakers.test_ding")
 			},
 			{
 				level: "alarm",
-				label: b("speakers.test_alarm")
+				label: x("speakers.test_alarm")
 			}
 		];
-		return p`
+		return m`
       <div class="speaker">
         <div class="shead">
           <h3>${this._friendly(n)}</h3>
           <span class="lsum muted">${a} · ${o}</span>
         </div>
         <div class="tests">
-          ${c.map((t) => p`<button type="button" class="test" @click=${() => void this._test(e, t.level)}>${t.label}</button>`)}
-          <button type="button" class="textlink quiet" aria-expanded=${s ? "true" : "false"} @click=${() => this._toggle("spk:" + n)}>${b("speakers.details")}</button>
+          ${c.map((t) => m`<button type="button" class="test" @click=${() => void this._test(e, t.level)}>${t.label}</button>`)}
+          <button type="button" class="textlink quiet" aria-expanded=${s ? "true" : "false"} @click=${() => this._toggle("spk:" + n)}>${x("speakers.details")}</button>
         </div>
         ${c.map((e) => {
 			let t = this._notes[`speaker:${n}:${e.level}`];
-			return t ? p`<div class="note muted small">${e.label}: ${t}</div>` : g;
+			return t ? m`<div class="note muted small">${e.label}: ${t}</div>` : _;
 		})}
-        ${s ? p`<div class="fields">
+        ${s ? m`<div class="fields">
                 <label class="num wide">
-                  ${b("speakers.what_kind_of_speaker")}
-                  <select aria-label=${b("speakers.what_kind_of_speaker")} @change=${(e) => this._setRoute(n, e.target.value)}>
-                    ${as().map((e) => p`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
+                  ${x("speakers.what_kind_of_speaker")}
+                  <select aria-label=${x("speakers.what_kind_of_speaker")} @change=${(e) => this._setRoute(n, e.target.value)}>
+                    ${Ts().map((e) => m`<option value=${e.value} ?selected=${e.value === t.route}>${e.label}</option>`)}
                   </select>
                 </label>
                 <label class="num wide">
-                  ${b(r ? "common.alexa_device" : "common.voice")}
+                  ${x(r ? "common.alexa_device" : "common.voice")}
                   <select
-                    aria-label=${b(r ? "common.alexa_device" : "common.voice")}
+                    aria-label=${x(r ? "common.alexa_device" : "common.voice")}
                     @change=${(e) => {
 			let t = e.target.value;
 			this._setSpeech(n, {
@@ -17466,26 +17730,26 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			});
 		}}
                   >
-                    <option value="" ?selected=${t.target === ""}>${b("common.choose")}</option>
-                    ${i.map((e) => p`<option value=${e.value} ?selected=${e.value === t.target}>${e.label}</option>`)}
+                    <option value="" ?selected=${t.target === ""}>${x("common.choose")}</option>
+                    ${i.map((e) => m`<option value=${e.value} ?selected=${e.value === t.target}>${e.label}</option>`)}
                   </select>
                 </label>
-                ${t.route === "alexa_devices" && !i.length ? p`<div class="note muted small libhint">${b("speakers.no_alexa_devices_entities_found_is")}</div>` : g}
+                ${t.route === "alexa_devices" && !i.length ? m`<div class="note muted small libhint">${x("speakers.no_alexa_devices_entities_found_is")}</div>` : _}
                 <button
                   type="button"
                   class="textlink quiet"
-                  aria-label=${b("speakers.remove_speaker_2", { device: this._friendly(n) })}
+                  aria-label=${x("speakers.remove_speaker_2", { device: this._friendly(n) })}
                   @click=${() => this._patch({ speakers: this._speakers().filter((e) => e.entity_id !== n) })}
                 >
-                  ${b("speakers.remove_speaker")}
+                  ${x("speakers.remove_speaker")}
                 </button>
-              </div>` : g}
+              </div>` : _}
       </div>
     `;
 	}
 	_toneGroup(e) {
-		let t = this._speakers().filter((t) => this._group(t) === e), n = b(e === "alexa" ? "speakers.alexa_speakers" : "speakers.other_media_players");
-		if (!t.length) return p`<h4>${n}</h4><p class="muted small">${b("speakers.you_have_no_such_speaker_yet")}</p>`;
+		let t = this._speakers().filter((t) => this._group(t) === e), n = x(e === "alexa" ? "speakers.alexa_speakers" : "speakers.other_media_players");
+		if (!t.length) return m`<h4>${n}</h4><p class="muted small">${x("speakers.you_have_no_such_speaker_yet")}</p>`;
 		let r = t[0], i = this._testTarget(t), a = (n, r) => {
 			if ("kind" in r || "sound" in r) for (let e of t) this._clearNote(`speaker:${e.entity_id}:${n}`);
 			this._patch({ speakers: this._speakers().map((t) => this._group(t) === e ? {
@@ -17498,21 +17762,21 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			} : t) });
 		}, o = (n, o, s) => {
 			let c = r[n], l = `shared:${e}:${n}`, u = !!this._open[l];
-			return p`
+			return m`
         <div class="line">
           <div class="lmain">
             <span class="ltitle">${o}</span>
-            <span class="lsum muted">${e === "other" && c.kind === "alexa" ? b("speakers.no_file_chosen_yet") : this._soundSummary(c.kind, c.sound)}</span>
+            <span class="lsum muted">${e === "other" && c.kind === "alexa" ? x("speakers.no_file_chosen_yet") : this._soundSummary(c.kind, c.sound)}</span>
             <span class="lacts">
-              <button type="button" class="textlink quiet" aria-expanded=${u ? "true" : "false"} @click=${() => this._toggle(l)}>${b("speakers.details")}</button>
+              <button type="button" class="textlink quiet" aria-expanded=${u ? "true" : "false"} @click=${() => this._toggle(l)}>${x("speakers.details")}</button>
             </span>
           </div>
-          ${u ? p`<div class="fields">
+          ${u ? m`<div class="fields">
                 ${this._soundPicker(c, r, (e) => a(n, {
 				kind: e.kind,
 				sound: e.sound
 			}))}
-                ${e === "alexa" ? p`${t.some((e) => this._cannotPlayAlexaSounds(e)) ? p`<div class="note muted small soundnote">${b("speakers.alexa_devices_no_amazon_sounds")}</div>` : g}
+                ${e === "alexa" ? m`${t.some((e) => this._cannotPlayAlexaSounds(e)) ? m`<div class="note muted small soundnote">${x("speakers.alexa_devices_no_amazon_sounds")}</div>` : _}
                     ${this._soundFields(c.kind, c.sound, s, (e) => a(n, e === c.kind ? {} : {
 				kind: e,
 				sound: ""
@@ -17522,8 +17786,8 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 					[n]: r[n]
 				}, n),
 				note: this._notes[`speaker:${i.entity_id}:${n}`]
-			})}` : p`<label class="num wide">
-                      ${b("speakers.file_in_my_media_folder_for_example", { example: s })}
+			})}` : m`<label class="num wide">
+                      ${x("speakers.file_in_my_media_folder_for_example", { example: s })}
                       <input type="text" .value=${c.kind === "file" ? c.sound : ""} placeholder=${`boopli/${s}.mp3`} @change=${(e) => {
 				let t = e.target.value.trim();
 				a(n, t ? {
@@ -17535,28 +17799,28 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 				});
 			}} />
                     </label>
-                    <div class="muted small">${b("speakers.leave_empty_for_the_built_in_sound")}</div>`}
-                ${n === "alarm" ? p`${this._numField(b("speakers.rings_for_seconds"), c.seconds, 3, 600, (e) => a(n, { seconds: e }))}
-                    ${this._numField(b("speakers.repeat_every_seconds_0_once"), c.repeat_s, 0, 60, (e) => a(n, { repeat_s: e }))}` : g}
-              </div>` : g}
+                    <div class="muted small">${x("speakers.leave_empty_for_the_built_in_sound")}</div>`}
+                ${n === "alarm" ? m`${this._numField(x("speakers.rings_for_seconds"), c.seconds, 3, 600, (e) => a(n, { seconds: e }))}
+                    ${this._numField(x("speakers.repeat_every_seconds_0_once"), c.repeat_s, 0, 60, (e) => a(n, { repeat_s: e }))}` : _}
+              </div>` : _}
         </div>`;
 		};
-		return p`<h4>${n}</h4>${o("cue", b("speakers.ding"), "ding")} ${o("alarm", b("speakers.alarm_sound"), "alarm")}`;
+		return m`<h4>${n}</h4>${o("cue", x("speakers.ding"), "ding")} ${o("alarm", x("speakers.alarm_sound"), "alarm")}`;
 	}
 	_ownSounds() {
 		let e = this._sounds();
-		return p`
+		return m`
       <p class="muted small">
-        ${b("speakers.one_list_for_all_speakers_pick")}
+        ${x("speakers.one_list_for_all_speakers_pick")}
       </p>
       ${e.map((e) => this._line({
 			key: `own:${e.id}`,
 			title: e.name,
-			nameInput: p`<input
+			nameInput: m`<input
             class="soundname"
             type="text"
             maxlength="30"
-            aria-label=${b("speakers.name_of_the_sound")}
+            aria-label=${x("speakers.name_of_the_sound")}
             .value=${e.name}
             @change=${(t) => this._setExtra(e.id, { name: t.target.value.trim() })}
           />`,
@@ -17571,34 +17835,34 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 				this._setExtra(e.id, { sound: t }), this._clearNote(`own:${e.id}`);
 			}),
 			onRemove: () => this._removeExtra(e.id),
-			removeLabel: b("speakers.remove_the_sound", { name: e.name })
+			removeLabel: x("speakers.remove_the_sound", { name: e.name })
 		}))}
       <button type="button" class="textlink" ?disabled=${e.length >= 60} @click=${() => this._addExtra()}>
-        ${E("plus")} ${b("speakers.add_a_sound")}
+        ${D("plus")} ${x("speakers.add_a_sound")}
       </button>
     `;
 	}
 	_soundPicker(e, t, n) {
 		let r = this._sounds().filter((e) => e.kind !== "alexa" || t.speech.route !== "tts");
-		if (!r.length) return g;
+		if (!r.length) return _;
 		let i = r.find((t) => t.kind === e.kind && t.sound === e.sound);
-		return p`<label class="num wide">
-      ${b("speakers.pick_one_of_your_sounds")}
+		return m`<label class="num wide">
+      ${x("speakers.pick_one_of_your_sounds")}
       <select
-        aria-label=${b("speakers.pick_one_of_your_sounds")}
+        aria-label=${x("speakers.pick_one_of_your_sounds")}
         @change=${(e) => {
 			let t = e.target.value, i = r.find((e) => e.id === t);
 			i && n(i);
 		}}
       >
-        <option value="" ?selected=${!i}>${b(i ? "common.choose" : "speakers.not_one_of_your_sounds")}</option>
-        ${r.map((e) => p`<option value=${e.id} ?selected=${i?.id === e.id}>${e.name}</option>`)}
+        <option value="" ?selected=${!i}>${x(i ? "common.choose" : "speakers.not_one_of_your_sounds")}</option>
+        ${r.map((e) => m`<option value=${e.id} ?selected=${i?.id === e.id}>${e.name}</option>`)}
       </select>
     </label>`;
 	}
 	_subWindow(e, t) {
 		let n = () => this._sub = "";
-		return p`<dialog
+		return m`<dialog
       class="sub"
       aria-label=${e}
       @close=${n}
@@ -17609,49 +17873,49 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
       <div class="win">
         <div class="head">
           <h3>${e}</h3>
-          <button type="button" class="close" aria-label=${b("common.close")} @click=${n}>✕</button>
+          <button type="button" class="close" aria-label=${x("common.close")} @click=${n}>✕</button>
         </div>
         ${t}
-        <div class="actions"><button type="button" class="primary" @click=${n}>${b("common.done")}</button></div>
+        <div class="actions"><button type="button" class="primary" @click=${n}>${x("common.done")}</button></div>
       </div>
     </dialog>`;
 	}
 	_renderSub(e) {
 		if (this._sub === "add") {
 			let t = e.speakers.map((e) => e.entity_id), n = this._ids(["media_player"], t);
-			return this._subWindow(b("speakers.add_a_speaker"), p`<div class="row">
-          <select aria-label=${b("speakers.add_a_speaker")} .value=${this._addSpeaker} @change=${(e) => this._addSpeaker = e.target.value}>
-            <option value="">${b("speakers.choose_a_media_player")}</option>
-            ${n.map((e) => p`<option value=${e} ?selected=${e === this._addSpeaker}>${this._friendly(e)}</option>`)}
+			return this._subWindow(x("speakers.add_a_speaker"), m`<div class="row">
+          <select aria-label=${x("speakers.add_a_speaker")} .value=${this._addSpeaker} @change=${(e) => this._addSpeaker = e.target.value}>
+            <option value="">${x("speakers.choose_a_media_player")}</option>
+            ${n.map((e) => m`<option value=${e} ?selected=${e === this._addSpeaker}>${this._friendly(e)}</option>`)}
           </select>
-          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>${b("common.add")}</button>
+          <button type="button" ?disabled=${!this._addSpeaker} @click=${() => this._add()}>${x("common.add")}</button>
         </div>`);
 		}
-		return this._sub === "tone" ? this._subWindow(b("speakers.ding_and_alarm_sound"), p`<p class="muted small">
-            ${b("speakers.one_setting_for_each_kind_of")}
+		return this._sub === "tone" ? this._subWindow(x("speakers.ding_and_alarm_sound"), m`<p class="muted small">
+            ${x("speakers.one_setting_for_each_kind_of")}
           </p>
-          ${this._toneGroup("alexa")} ${this._toneGroup("other")}`) : this._sub === "own" ? this._subWindow(b("speakers.your_own_sounds"), this._ownSounds()) : this._sub === "say" ? this._subWindow(b("speakers.what_the_speakers_say"), p`<input
+          ${this._toneGroup("alexa")} ${this._toneGroup("other")}`) : this._sub === "own" ? this._subWindow(x("speakers.your_own_sounds"), this._ownSounds()) : this._sub === "say" ? this._subWindow(x("speakers.what_the_speakers_say"), m`<input
             id="sentence"
             type="text"
-            aria-label=${b("speakers.what_the_speakers_say")}
+            aria-label=${x("speakers.what_the_speakers_say")}
             .value=${e.speech_template}
             @change=${(e) => this._patch({ speech_template: e.target.value.trim() })}
           />
-          <div class="muted small hintline">${b("speakers.use_chore_for_the_chore_name")}</div>`) : g;
+          <div class="muted small hintline">${x("speakers.use_chore_for_the_chore_name")}</div>`) : _;
 	}
 	_renderSpeakers(e) {
-		let t = (e, t, n) => p`<button type="button" class="textlink" @click=${() => this._sub = e}>${E(t)} ${n}</button>`;
-		return p`
+		let t = (e, t, n) => m`<button type="button" class="textlink" @click=${() => this._sub = e}>${D(t)} ${n}</button>`;
+		return m`
       <section class="card">
-        <h2>${E("volume-high")} ${b("speakers.speakers")}</h2>
+        <h2>${D("volume-high")} ${x("speakers.speakers")}</h2>
         <p class="muted small">
-          ${b("speakers.press_a_test_link_to_hear")}
+          ${x("speakers.press_a_test_link_to_hear")}
         </p>
         <div class="topbtns">
-          ${t("add", "plus", b("speakers.add_a_speaker"))} ${t("tone", "music-note", b("speakers.ding_and_alarm_sound"))}
-          ${t("own", "playlist-music", b("speakers.your_own_sounds"))} ${t("say", "message-text-outline", b("speakers.what_the_speakers_say"))}
+          ${t("add", "plus", x("speakers.add_a_speaker"))} ${t("tone", "music-note", x("speakers.ding_and_alarm_sound"))}
+          ${t("own", "playlist-music", x("speakers.your_own_sounds"))} ${t("say", "message-text-outline", x("speakers.what_the_speakers_say"))}
         </div>
-        ${e.speakers.length ? e.speakers.map((e) => this._speakerBody(e)) : p`<p class="muted">${b("speakers.no_speaker_yet_press_add_a")}</p>`}
+        ${e.speakers.length ? e.speakers.map((e) => this._speakerBody(e)) : m`<p class="muted">${x("speakers.no_speaker_yet_press_add_a")}</p>`}
         ${this._renderSub(e)}
       </section>
     `;
@@ -17665,39 +17929,39 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 	async _testDevice(e) {
 		if (!this.hass) return;
 		let t = `device:${e.entity_id}`;
-		this._note(t, b("common.sending"));
+		this._note(t, x("common.sending"));
 		try {
-			this._note(t, pn(await en(this.hass, e)));
+			this._note(t, fn(await $t(this.hass, e)));
 		} catch (e) {
-			this._note(t, S(e));
+			this._note(t, C(e));
 		}
 	}
 	_renderDevices(e) {
-		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(rs, t);
-		return p`
+		let t = e.alarm_devices.map((e) => e.entity_id), n = this._ids(Cs, t);
+		return m`
       <section class="card">
-        <h2>${E("bell-ring-outline")} ${b("speakers.alarm_devices")}</h2>
+        <h2>${D("bell-ring-outline")} ${x("speakers.alarm_devices")}</h2>
         <p class="muted small">
-          ${b("speakers.a_siren_switch_or_script_that")}
+          ${x("speakers.a_siren_switch_or_script_that")}
         </p>
         ${e.alarm_devices.map((t) => this._line({
 			key: `device:${t.entity_id}`,
 			title: this._friendly(t.entity_id),
-			summary: b("speakers.on_for_s", { seconds: t.seconds }),
+			summary: x("speakers.on_for_s", { seconds: t.seconds }),
 			onTest: () => void this._testDevice(t),
-			details: this._numField(b("common.on_for_seconds"), t.seconds, 3, 600, (e) => this._updateDevice(t.entity_id, { seconds: e })),
+			details: this._numField(x("common.on_for_seconds"), t.seconds, 3, 600, (e) => this._updateDevice(t.entity_id, { seconds: e })),
 			onRemove: () => this._patch({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) }),
-			removeLabel: b("speakers.remove_alarm_device", { device: this._friendly(t.entity_id) })
+			removeLabel: x("speakers.remove_alarm_device", { device: this._friendly(t.entity_id) })
 		}))}
-        <h3 class="sec">${b("speakers.add_an_alarm_device")}</h3>
+        <h3 class="sec">${x("speakers.add_an_alarm_device")}</h3>
         <div class="row">
           <select
-            aria-label=${b("speakers.add_an_alarm_device")}
+            aria-label=${x("speakers.add_an_alarm_device")}
             .value=${this._addDevice}
             @change=${(e) => this._addDevice = e.target.value}
           >
-            <option value="">${b("speakers.choose_a_siren_switch_or_script")}</option>
-            ${n.map((e) => p`<option value=${e} ?selected=${e === this._addDevice}>${this._friendly(e)}</option>`)}
+            <option value="">${x("speakers.choose_a_siren_switch_or_script")}</option>
+            ${n.map((e) => m`<option value=${e} ?selected=${e === this._addDevice}>${this._friendly(e)}</option>`)}
           </select>
           <button
             type="button"
@@ -17710,7 +17974,7 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 			}] }), this._addDevice = "";
 		}}
           >
-            ${b("common.add")}
+            ${x("common.add")}
           </button>
         </div>
       </section>
@@ -17718,13 +17982,13 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
 	}
 	render() {
 		let e = this.settings;
-		if (!e) return g;
+		if (!e) return _;
 		let t = this.show || "all";
-		return p`${t === "devices" ? g : this._renderSpeakers(e)}
-    ${t === "speakers" ? g : this._renderDevices(e)}`;
+		return m`${t === "devices" ? _ : this._renderSpeakers(e)}
+    ${t === "speakers" ? _ : this._renderDevices(e)}`;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -17986,31 +18250,31 @@ var ts = "amzn_sfx_scifi_alarm_01", ns = "amzn_sfx_doorbell_chime_01", rs = [
     `];
 	}
 };
-customElements.define("boopli-speakers", os);
+customElements.define("boopli-speakers", Es);
 // src/boopli-rung.ts
-var ss = 1, cs = 720, ls = () => [
+var Ds = 1, Os = 720, ks = () => [
 	{
 		value: "normal",
-		label: b("common.normal_notification")
+		label: x("common.normal_notification")
 	},
 	{
 		value: "high",
-		label: b("common.high_priority_pops_up")
+		label: x("common.high_priority_pops_up")
 	},
 	{
 		value: "alarm",
-		label: b("common.alarm_volume")
+		label: x("common.alarm_volume")
 	},
 	{
 		value: "alarm_max",
-		label: b("rung.max_volume")
+		label: x("rung.max_volume")
 	}
 ];
-function us(e, t = []) {
+function As(e, t = []) {
 	let n = [], r = e.speech?.route !== "tts", i = (e) => !!e?.sound && (e.kind !== "alexa" || r);
 	i(e.cue) && n.push({
 		value: "cue",
-		label: b("rung.a_ding")
+		label: x("rung.a_ding")
 	});
 	for (let e of t) e.sound && (e.kind !== "alexa" || r) && n.push({
 		value: `sound:${e.id}`,
@@ -18018,16 +18282,16 @@ function us(e, t = []) {
 	});
 	return e.speech?.target && (n.push({
 		value: "speech",
-		label: b("rung.speaks")
+		label: x("rung.speaks")
 	}), e.speech.route === "alexa_media" && n.push({
 		value: "speech_chime",
-		label: b("rung.speaks_with_chime")
+		label: x("rung.speaks_with_chime")
 	})), i(e.alarm) && n.push({
 		value: "alarm",
-		label: b("rung.alarm")
+		label: x("rung.alarm")
 	}), n;
 }
-var ds = class extends _ {
+var js = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -18086,113 +18350,113 @@ var ds = class extends _ {
 	_setGap(e) {
 		let t = Math.round(Number(e.value));
 		if (e.value.trim() === "" || Number.isNaN(t)) {
-			e.value = String(this.rung?.gap ?? ss);
+			e.value = String(this.rung?.gap ?? Ds);
 			return;
 		}
-		let n = Math.min(cs, Math.max(ss, t));
+		let n = Math.min(Os, Math.max(Ds, t));
 		e.value = String(n), this._change((e) => e.gap = n);
 	}
 	render() {
 		let e = this.settings, t = this.rung;
-		if (!e || !t) return g;
+		if (!e || !t) return _;
 		let n = this.index + 1, r = !e.phones.length && !e.lights.length && !e.speakers.length && !e.alarm_devices.length;
-		return p`
-      ${this.gap && this.index > 0 ? p`<label class="gap">
-            ${b("rung.wait")}
+		return m`
+      ${this.gap && this.index > 0 ? m`<label class="gap">
+            ${x("rung.wait")}
             <input
               type="number"
-              min=${ss}
-              max=${cs}
+              min=${Ds}
+              max=${Os}
               .value=${String(t.gap)}
-              aria-label=${b("ladders.minutes_before_nudge", { n })}
+              aria-label=${x("ladders.minutes_before_nudge", { n })}
               @change=${(e) => this._setGap(e.target)}
             />
-            ${b("rung.minutes_after_the_previous_nudge")}
-          </label>` : g}
-      ${r ? p`<p class="muted small">
-            ${b("rung.set_up_a_phone_light_speaker")}
-          </p>` : g}
+            ${x("rung.minutes_after_the_previous_nudge")}
+          </label>` : _}
+      ${r ? m`<p class="muted small">
+            ${x("rung.set_up_a_phone_light_speaker")}
+          </p>` : _}
       <div class="devs">
-        ${e.phones.map((e) => p`<label class="dev">
-            <span>${E("cellphone")} ${X(e.service)}</span>
+        ${e.phones.map((e) => m`<label class="dev">
+            <span>${D("cellphone")} ${X(e.service)}</span>
             <select
-              aria-label=${b("rung.at_nudge", {
+              aria-label=${x("rung.at_nudge", {
 			phone: X(e.service),
 			n
 		})}
               @change=${(t) => this._setPhone(e.service, t.target.value)}
             >
-              <option value="" ?selected=${!t.phones[e.service]}>${b("rung.off")}</option>
-              ${ls().map((n) => p`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
+              <option value="" ?selected=${!t.phones[e.service]}>${x("rung.off")}</option>
+              ${ks().map((n) => m`<option value=${n.value} ?selected=${t.phones[e.service] === n.value}>${n.label}</option>`)}
             </select>
           </label>`)}
         ${e.lights.map((e) => {
 			let r = t.lights[e.entity_id], i = J(this.hass, e.entity_id);
-			return p`<div class="devblock">
+			return m`<div class="devblock">
             <label class="dev">
-              <span>${E("lightbulb-outline")} ${i}</span>
+              <span>${D("lightbulb-outline")} ${i}</span>
               <select
-                aria-label=${b("rung.at_nudge_2", {
+                aria-label=${x("rung.at_nudge_2", {
 				name: i,
 				n
 			})}
                 @change=${(t) => this._setLight(e.entity_id, t.target.value)}
               >
-                <option value="" ?selected=${!r}>${b("rung.off")}</option>
-                <option value="blink" ?selected=${r?.mode === "blink"}>${b("rung.blink")}</option>
-                <option value="indicator" ?selected=${r?.mode === "indicator"}>${b("rung.status_light_stays_on_until_you")}</option>
-                <option value="own" ?selected=${r?.mode === ""}>${b("rung.as_set_for_the_light")}</option>
+                <option value="" ?selected=${!r}>${x("rung.off")}</option>
+                <option value="blink" ?selected=${r?.mode === "blink"}>${x("rung.blink")}</option>
+                <option value="indicator" ?selected=${r?.mode === "indicator"}>${x("rung.status_light_stays_on_until_you")}</option>
+                <option value="own" ?selected=${r?.mode === ""}>${x("rung.as_set_for_the_light")}</option>
               </select>
             </label>
-            ${r && qa(this.hass, e.entity_id) ? p`<div class="dev colorrow">
-                  <span>${b("settings.color")}</span>
+            ${r && mo(this.hass, e.entity_id) ? m`<div class="dev colorrow">
+                  <span>${x("settings.color")}</span>
                   <input
                     type="color"
                     class="swatch"
-                    aria-label=${b("rung.color_at_nudge", {
+                    aria-label=${x("rung.color_at_nudge", {
 				name: i,
 				n
 			})}
-                    .value=${Wa(r.color ?? e.color)}
-                    @input=${(t) => this._setLightColor(e.entity_id, Ua(t.target.value))}
+                    .value=${uo(r.color ?? e.color)}
+                    @input=${(t) => this._setLightColor(e.entity_id, lo(t.target.value))}
                   />
                   <button type="button" class="chip" ?disabled=${!r.color} @click=${() => this._setLightColor(e.entity_id, null)}>
-                    ${b("rung.use_the_normal_color")}
+                    ${x("rung.use_the_normal_color")}
                   </button>
-                </div>` : g}
+                </div>` : _}
           </div>`;
 		})}
         ${e.speakers.map((r) => {
-			let i = us(r, e.sounds), a = t.speakers[r.entity_id], o = J(this.hass, r.entity_id);
-			return p`<label class="dev">
-            <span>${E("volume-high")} ${o}</span>
+			let i = As(r, e.sounds), a = t.speakers[r.entity_id], o = J(this.hass, r.entity_id);
+			return m`<label class="dev">
+            <span>${D("volume-high")} ${o}</span>
             <select
-              aria-label=${b("rung.at_nudge_2", {
+              aria-label=${x("rung.at_nudge_2", {
 				name: o,
 				n
 			})}
               ?disabled=${!i.length && !a}
               @change=${(e) => this._setSpeaker(r.entity_id, e.target.value)}
             >
-              <option value="" ?selected=${!a}>${i.length ? b("rung.off") : b("rung.no_sound_set_up")}</option>
-              ${i.map((e) => p`<option value=${e.value} ?selected=${a === e.value}>${e.label}</option>`)}
-              ${a && !i.some((e) => e.value === a) ? p`<option value=${a} selected>${b("rung.not_available_any_more")}</option>` : g}
+              <option value="" ?selected=${!a}>${i.length ? x("rung.off") : x("rung.no_sound_set_up")}</option>
+              ${i.map((e) => m`<option value=${e.value} ?selected=${a === e.value}>${e.label}</option>`)}
+              ${a && !i.some((e) => e.value === a) ? m`<option value=${a} selected>${x("rung.not_available_any_more")}</option>` : _}
             </select>
           </label>`;
 		})}
-        ${e.alarm_devices.map((e) => p`<label class="dev check">
+        ${e.alarm_devices.map((e) => m`<label class="dev check">
             <input
               type="checkbox"
               .checked=${t.alarms.includes(e.entity_id)}
               @change=${(t) => this._toggle(e.entity_id, t.target.checked)}
             />
-            <span>${E("bell-ring-outline")} ${J(this.hass, e.entity_id)}</span>
+            <span>${D("bell-ring-outline")} ${J(this.hass, e.entity_id)}</span>
           </label>`)}
       </div>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -18270,16 +18534,16 @@ var ds = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-rung", ds);
+customElements.define("boopli-rung", js);
 // src/boopli-ladders.ts
-var fs = 30, ps = 12, ms = 1, hs = 720, gs = 40, _s = () => [{
+var Ms = 30, Ns = 12, Ps = 1, Fs = 720, Is = 40, Ls = () => [{
 	value: "quiet",
-	label: b("ladders.quiet_no_nudges")
+	label: x("ladders.quiet_no_nudges")
 }];
-function vs(e) {
+function Rs(e) {
 	return structuredClone(e);
 }
-var ys = class extends _ {
+var zs = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -18324,7 +18588,7 @@ var ys = class extends _ {
 	}
 	_add() {
 		let e = this.settings;
-		if (!e || this._ladders.length >= fs) return;
+		if (!e || this._ladders.length >= Ms) return;
 		let t = {
 			gap: 5,
 			phones: Object.fromEntries(e.phones.map((e) => [e.service, e.level])),
@@ -18332,8 +18596,8 @@ var ys = class extends _ {
 			speakers: {},
 			alarms: []
 		}, n = {
-			id: Ja(),
-			name: this._uniqueName(b("ladders.my_ladder")),
+			id: ho(),
+			name: this._uniqueName(x("ladders.my_ladder")),
 			rungs: [t],
 			repeat_last: !1
 		};
@@ -18341,16 +18605,16 @@ var ys = class extends _ {
 	}
 	_delete(e) {
 		let t = `ladder:${e.id}`, n = (this.snapshot?.chores ?? []).filter((e) => e.nudge_style === t).map((e) => e.name);
-		n.length ? this._note = b("ladders.is_used_by_pick_another_nudge", {
+		n.length ? this._note = x("ladders.is_used_by_pick_another_nudge", {
 			name: e.name,
 			join: n.sort().join(", ")
-		}) : this.settings?.default_style === t ? this._note = b("ladders.is_the_style_for_new_chores", { name: e.name }) : (this._patch(this._ladders.filter((t) => t.id !== e.id)), this._open === e.id && (this._open = ""));
+		}) : this.settings?.default_style === t ? this._note = x("ladders.is_the_style_for_new_chores", { name: e.name }) : (this._patch(this._ladders.filter((t) => t.id !== e.id)), this._open === e.id && (this._open = ""));
 	}
 	_addRung(e) {
 		this._edit(e, (e) => {
-			if (e.rungs.length >= ps) return;
+			if (e.rungs.length >= Ns) return;
 			let t = e.rungs[e.rungs.length - 1];
-			e.rungs.push(t ? vs(t) : {
+			e.rungs.push(t ? Rs(t) : {
 				gap: 5,
 				phones: {},
 				lights: {},
@@ -18361,7 +18625,7 @@ var ys = class extends _ {
 	}
 	_duplicateRung(e, t) {
 		this._edit(e, (e) => {
-			e.rungs.length >= ps || e.rungs.splice(t + 1, 0, vs(e.rungs[t]));
+			e.rungs.length >= Ns || e.rungs.splice(t + 1, 0, Rs(e.rungs[t]));
 		});
 	}
 	_removeRung(e, t) {
@@ -18382,61 +18646,61 @@ var ys = class extends _ {
 			r && (n.value = String(r.gap));
 			return;
 		}
-		let i = Math.min(hs, Math.max(ms, r));
+		let i = Math.min(Fs, Math.max(Ps, r));
 		n.value = String(i), this._editRung(e, t, (e) => e.gap = i);
 	}
 	_who(e) {
 		let t = [];
-		for (let [n, r] of Object.entries(e.phones)) t.push(`${X(n)} (${Ga()[r] ?? r})`);
+		for (let [n, r] of Object.entries(e.phones)) t.push(`${X(n)} (${fo()[r] ?? r})`);
 		for (let [n, r] of Object.entries(e.lights)) {
-			let e = r.mode === "indicator" ? b("ladders.how_status_light") : r.mode === "blink" ? b("ladders.how_blink") : "";
-			t.push(`${J(this.hass, n)}${e ? ` (${e}${r.color ? b("ladders.how_own_color") : ""})` : ""}`);
+			let e = r.mode === "indicator" ? x("ladders.how_status_light") : r.mode === "blink" ? x("ladders.how_blink") : "";
+			t.push(`${J(this.hass, n)}${e ? ` (${e}${r.color ? x("ladders.how_own_color") : ""})` : ""}`);
 		}
 		for (let [n, r] of Object.entries(e.speakers)) {
 			let e = this.settings?.speakers.find((e) => e.entity_id === n);
 			if (!e) {
-				t.push(b("ladders.not_set_up_any_more", { device: J(this.hass, n) }));
+				t.push(x("ladders.not_set_up_any_more", { device: J(this.hass, n) }));
 				continue;
 			}
-			let i = us(e, this.settings?.sounds).find((e) => e.value === r)?.label ?? r;
+			let i = As(e, this.settings?.sounds).find((e) => e.value === r)?.label ?? r;
 			t.push(`${J(this.hass, n)} (${i.toLowerCase()})`);
 		}
-		for (let n of e.alarms) t.push(b("ladders.alarm", { device: J(this.hass, n) }));
-		return t.length ? t.join(", ") : b("ladders.nothing");
+		for (let n of e.alarms) t.push(x("ladders.alarm", { device: J(this.hass, n) }));
+		return t.length ? t.join(", ") : x("ladders.nothing");
 	}
 	_lines(e) {
-		let t = e.rungs.map((e, t) => t === 0 ? b("ladders.nudge_1_right_away", { who: this._who(e) }) : b("ladders.nudge_min_later", {
+		let t = e.rungs.map((e, t) => t === 0 ? x("ladders.nudge_1_right_away", { who: this._who(e) }) : x("ladders.nudge_min_later", {
 			n: t + 1,
 			gap: e.gap,
 			who: this._who(e)
 		})), n = e.rungs[e.rungs.length - 1];
-		return t.push(e.repeat_last && n ? b("ladders.then_it_repeats_the_last_nudge", { gap: n.gap }) : b("ladders.then_it_stops")), t;
+		return t.push(e.repeat_last && n ? x("ladders.then_it_repeats_the_last_nudge", { gap: n.gap }) : x("ladders.then_it_stops")), t;
 	}
 	_renderRung(e, t, n) {
 		let r = e.rungs.length > 1;
-		return p`<div class="rung">
+		return m`<div class="rung">
       <div class="rung-head">
-        <b>${b("ladders.nudge", { value: n + 1 })}</b>
-        ${n === 0 && !(e.rungs.length === 1 && e.repeat_last) ? p`<span class="muted small">${b("ladders.right_away")}</span>` : p`<label class="gap">
-              ${b(n === 0 ? "ladders.right_away_then_repeats_every" : "rung.wait")}
+        <b>${x("ladders.nudge", { value: n + 1 })}</b>
+        ${n === 0 && !(e.rungs.length === 1 && e.repeat_last) ? m`<span class="muted small">${x("ladders.right_away")}</span>` : m`<label class="gap">
+              ${x(n === 0 ? "ladders.right_away_then_repeats_every" : "rung.wait")}
               <input
                 type="number"
-                min=${ms}
-                max=${hs}
+                min=${Ps}
+                max=${Fs}
                 .value=${String(t.gap)}
-                aria-label=${b("ladders.minutes_before_nudge", { n: n + 1 })}
+                aria-label=${x("ladders.minutes_before_nudge", { n: n + 1 })}
                 @change=${(t) => this._setGap(e.id, n, t.target)}
               />
-              ${b("chore_editor.min")}
+              ${x("chore_editor.min")}
             </label>`}
         <span class="spacer"></span>
-        <button class="chip" title=${b("ladders.move_up")} aria-label=${b("ladders.move_nudge_up", { n: n + 1 })} ?disabled=${n === 0}
+        <button class="chip" title=${x("ladders.move_up")} aria-label=${x("ladders.move_nudge_up", { n: n + 1 })} ?disabled=${n === 0}
           @click=${() => this._moveRung(e.id, n, -1)}>↑</button>
-        <button class="chip" title=${b("ladders.move_down")} aria-label=${b("ladders.move_nudge_down", { n: n + 1 })} ?disabled=${n === e.rungs.length - 1}
+        <button class="chip" title=${x("ladders.move_down")} aria-label=${x("ladders.move_nudge_down", { n: n + 1 })} ?disabled=${n === e.rungs.length - 1}
           @click=${() => this._moveRung(e.id, n, 1)}>↓</button>
-        <button class="chip" title=${b("ladders.copy_this_nudge")} aria-label=${b("ladders.copy_nudge", { n: n + 1 })} ?disabled=${e.rungs.length >= ps}
+        <button class="chip" title=${x("ladders.copy_this_nudge")} aria-label=${x("ladders.copy_nudge", { n: n + 1 })} ?disabled=${e.rungs.length >= Ns}
           @click=${() => this._duplicateRung(e.id, n)}>⧉</button>
-        <button class="chip" title=${b("ladders.remove_this_nudge")} aria-label=${b("ladders.remove_nudge", { n: n + 1 })} ?disabled=${!r}
+        <button class="chip" title=${x("ladders.remove_this_nudge")} aria-label=${x("ladders.remove_nudge", { n: n + 1 })} ?disabled=${!r}
           @click=${() => this._removeRung(e.id, n)}>✕</button>
       </div>
       <boopli-rung
@@ -18449,86 +18713,86 @@ var ys = class extends _ {
     </div>`;
 	}
 	_renderEditor(e) {
-		return p`<div class="editor">
+		return m`<div class="editor">
       <div class="field">
-        <label for="name-${e.id}">${b("common.name")}</label>
+        <label for="name-${e.id}">${x("common.name")}</label>
         <input
           id="name-${e.id}"
-          maxlength=${gs}
+          maxlength=${Is}
           .value=${Z(e)}
           @input=${(t) => this._edit(e.id, (e) => e.name = t.target.value)}
         />
       </div>
       ${e.rungs.map((t, n) => this._renderRung(e, t, n))}
       <div class="row">
-        <button ?disabled=${e.rungs.length >= ps} @click=${() => this._addRung(e.id)}>${b("ladders.add_a_nudge")}</button>
-        <span class="muted small">${b("ladders.of", {
+        <button ?disabled=${e.rungs.length >= Ns} @click=${() => this._addRung(e.id)}>${x("ladders.add_a_nudge")}</button>
+        <span class="muted small">${x("ladders.of", {
 			count: e.rungs.length,
-			max_nudges: ps
+			max_nudges: Ns
 		})}</span>
       </div>
       <div class="field">
-        <label for="end-${e.id}">${b("ladders.after_the_last_nudge")}</label>
+        <label for="end-${e.id}">${x("ladders.after_the_last_nudge")}</label>
         <select
           id="end-${e.id}"
           @change=${(t) => this._edit(e.id, (e) => e.repeat_last = t.target.value === "repeat")}
         >
-          <option value="stop" ?selected=${!e.repeat_last}>${b("common.stop")}</option>
-          <option value="repeat" ?selected=${e.repeat_last}>${b("ladders.repeat_the_last_nudge_until_i")}</option>
+          <option value="stop" ?selected=${!e.repeat_last}>${x("common.stop")}</option>
+          <option value="repeat" ?selected=${e.repeat_last}>${x("ladders.repeat_the_last_nudge_until_i")}</option>
         </select>
       </div>
       <div class="summary">
-        <b class="small">${b("ladders.what_it_will_do")}</b>
-        ${this._lines(e).map((e) => p`<div class="small">${e}</div>`)}
+        <b class="small">${x("ladders.what_it_will_do")}</b>
+        ${this._lines(e).map((e) => m`<div class="small">${e}</div>`)}
       </div>
     </div>`;
 	}
 	render() {
 		let e = this.settings;
-		if (!e) return g;
+		if (!e) return _;
 		let t = this._ladders;
-		return p`<section class="card">
-      <h2>${E("stairs")} ${b("common.nudge_it_your_way")}</h2>
+		return m`<section class="card">
+      <h2>${D("stairs")} ${x("common.nudge_it_your_way")}</h2>
       <p class="muted small">
-        ${b("ladders.build_your_own_ladder_of_nudges")}
+        ${x("ladders.build_your_own_ladder_of_nudges")}
       </p>
       <div class="field">
-        <label for="default-style">${b("ladders.use_for_new_chores")}</label>
+        <label for="default-style">${x("ladders.use_for_new_chores")}</label>
         <select
           id="default-style"
           @change=${(e) => this._patch(t, { default_style: e.target.value })}
         >
-          ${_s().map((t) => p`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
-          ${t.map((t) => p`<option value=${`ladder:${t.id}`} ?selected=${`ladder:${t.id}` === e.default_style}>
-              ${Z(t) || b("ladders.no_name")}
+          ${Ls().map((t) => m`<option value=${t.value} ?selected=${t.value === e.default_style}>${t.label}</option>`)}
+          ${t.map((t) => m`<option value=${`ladder:${t.id}`} ?selected=${`ladder:${t.id}` === e.default_style}>
+              ${Z(t) || x("ladders.no_name")}
 
             </option>`)}
-          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? p`<option value=${e.default_style} selected>${Xa(e.default_style, t)}</option>` : g}
+          ${e.default_style.startsWith("ladder:") && !t.some((t) => `ladder:${t.id}` === e.default_style) ? m`<option value=${e.default_style} selected>${_o(e.default_style, t)}</option>` : _}
         </select>
       </div>
-      ${t.length === 0 ? p`<p class="muted">${b("ladders.no_ladders_yet_the_built_in")}</p>` : t.map((e) => {
+      ${t.length === 0 ? m`<p class="muted">${x("ladders.no_ladders_yet_the_built_in")}</p>` : t.map((e) => {
 			let t = this._open === e.id;
-			return p`<div class="ladder">
+			return m`<div class="ladder">
               <div class="lhead">
-                <b class="lname">${Z(e) || b("ladders.no_name")}</b>
-                <span class="muted small">${b("common.nudges_count", { count: e.rungs.length })}</span>
+                <b class="lname">${Z(e) || x("ladders.no_name")}</b>
+                <span class="muted small">${x("common.nudges_count", { count: e.rungs.length })}</span>
                 <span class="spacer"></span>
                 <button class="chip" aria-expanded=${t ? "true" : "false"} @click=${() => this._open = t ? "" : e.id}>
-                  ${b(t ? "common.close" : "chores.edit")}
+                  ${x(t ? "common.close" : "chores.edit")}
                 </button>
-                ${e.id.startsWith("standard_") ? g : p`<button class="chip danger" @click=${() => this._delete(e)}>${b("chore_editor.delete")}</button>`}
+                ${e.id.startsWith("standard_") ? _ : m`<button class="chip danger" @click=${() => this._delete(e)}>${x("chore_editor.delete")}</button>`}
               </div>
-              ${t ? this._renderEditor(e) : p`<div class="summary">${this._lines(e).map((e) => p`<div class="small">${e}</div>`)}</div>`}
+              ${t ? this._renderEditor(e) : m`<div class="summary">${this._lines(e).map((e) => m`<div class="small">${e}</div>`)}</div>`}
             </div>`;
 		})}
-      ${this._note ? p`<div class="error" role="alert">${this._note}</div>` : g}
+      ${this._note ? m`<div class="error" role="alert">${this._note}</div>` : _}
       <div class="row">
-        <button class="primary" ?disabled=${t.length >= fs} @click=${() => this._add()}>${b("ladders.new_ladder")}</button>
+        <button class="primary" ?disabled=${t.length >= Ms} @click=${() => this._add()}>${x("ladders.new_ladder")}</button>
       </div>
     </section>`;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -18620,9 +18884,9 @@ var ys = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-ladders", ys);
+customElements.define("boopli-ladders", zs);
 // src/boopli-pet-picker.ts
-var bs = class extends _ {
+var Bs = class extends v {
 	static {
 		this.properties = {
 			value: { type: String },
@@ -18640,19 +18904,19 @@ var bs = class extends _ {
 		}));
 	}
 	_key(e, t) {
-		let n = Li().length - 1, r = t;
+		let n = ga().length - 1, r = t;
 		if (e.key === "ArrowRight" || e.key === "ArrowDown") r = t === n ? 0 : t + 1;
 		else if (e.key === "ArrowLeft" || e.key === "ArrowUp") r = t === 0 ? n : t - 1;
 		else if (e.key === "Home") r = 0;
 		else if (e.key === "End") r = n;
 		else return;
-		e.preventDefault(), this._pick(Li()[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
+		e.preventDefault(), this._pick(ga()[r].kind), (this.shadowRoot?.querySelectorAll("button.choice")[r])?.focus();
 	}
 	render() {
-		let e = zi(this.value);
-		return p`
-      <div class="grid" role="radiogroup" aria-label=${b("common.your_pet")}>
-        ${Li().map((t, n) => p`<button
+		let e = va(this.value);
+		return m`
+      <div class="grid" role="radiogroup" aria-label=${x("common.your_pet")}>
+        ${ga().map((t, n) => m`<button
             type="button"
             role="radio"
             class="choice ${t.kind === e.kind ? "on" : ""}"
@@ -18663,11 +18927,11 @@ var bs = class extends _ {
           >
             <span class="pic"><boopli-pet .kind=${t.kind} .mood=${"content"} still></boopli-pet></span>
             <span class="name">${t.label}</span>
-            ${t.art ? "" : p`<span class="soon">${b("pet_picker.art_soon")}</span>`}
+            ${t.art ? "" : m`<span class="soon">${x("pet_picker.art_soon")}</span>`}
           </button>`)}
       </div>
-      ${this.moods ? p`<div class="moods" aria-label=${b("pet_picker.in_every_mood", { label: e.label })}>
-            ${Ri.map((t) => p`<div class="mood">
+      ${this.moods ? m`<div class="moods" aria-label=${x("pet_picker.in_every_mood", { label: e.label })}>
+            ${_a.map((t) => m`<div class="mood">
                 <span class="pic"><boopli-pet .kind=${e.kind} .mood=${t} still></boopli-pet></span>
                 <span class="small muted">${t}</span>
               </div>`)}
@@ -18675,7 +18939,7 @@ var bs = class extends _ {
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -18735,39 +18999,39 @@ var bs = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-pet-picker", bs);
+customElements.define("boopli-pet-picker", Bs);
 // src/boopli-pet-preview.ts
-var xs = () => [
+var Vs = () => [
 	{
 		value: "levelup",
-		label: b("pet_preview.level_up")
+		label: x("pet_preview.level_up")
 	},
 	{
 		value: "wake",
-		label: b("pet_preview.waking_up")
+		label: x("pet_preview.waking_up")
 	},
 	{
 		value: "tap",
-		label: b("pet_preview.tap")
+		label: x("pet_preview.tap")
 	},
 	{
 		value: "done",
-		label: b("pet_preview.step_done")
+		label: x("pet_preview.step_done")
 	}
-], Ss = () => [
+], Hs = () => [
 	{
 		value: "",
-		label: b("pet_preview.nothing")
+		label: x("pet_preview.nothing")
 	},
 	{
 		value: "housework",
-		label: b("pet_preview.housework")
+		label: x("pet_preview.housework")
 	},
 	{
 		value: "typing",
-		label: b("pet_preview.typing")
+		label: x("pet_preview.typing")
 	}
-], Cs = class extends _ {
+], Us = class extends v {
 	static {
 		this.properties = {
 			kind: { type: String },
@@ -18793,25 +19057,25 @@ var xs = () => [
 		this._dialog()?.close();
 	}
 	_play(e) {
-		this._moment = e, this._text = e === "levelup" ? b("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : e === "done" ? b("today.blubs_gained", { blubs: 10 }) : "", this._seq += 1;
+		this._moment = e, this._text = e === "levelup" ? x("pet_preview.level_up_n", { n: Math.min(this._level + 1, 99) }) : e === "done" ? x("today.blubs_gained", { blubs: 10 }) : "", this._seq += 1;
 	}
 	_chip(e, t, n) {
-		return p`<button type="button" class="chip ${t ? "on" : ""}" aria-pressed=${t} @click=${n}>${e}</button>`;
+		return m`<button type="button" class="chip ${t ? "on" : ""}" aria-pressed=${t} @click=${n}>${e}</button>`;
 	}
 	render() {
-		let e = zi(this.kind);
-		return p`
-      <button type="button" class="open" @click=${() => this._open()}>${b("pet_preview.preview_your_pet")}</button>
+		let e = va(this.kind);
+		return m`
+      <button type="button" class="open" @click=${() => this._open()}>${x("pet_preview.preview_your_pet")}</button>
       <dialog
-        aria-label=${b("pet_preview.preview_of_your_pet")}
+        aria-label=${x("pet_preview.preview_of_your_pet")}
         @click=${(e) => {
 			e.target === e.currentTarget && this._close();
 		}}
       >
         <div class="win">
           <div class="head">
-            <h3>${b("pet_preview.preview", { label: e.label })}</h3>
-            <button type="button" class="close" aria-label=${b("common.close")} @click=${() => this._close()}>✕</button>
+            <h3>${x("pet_preview.preview", { label: e.label })}</h3>
+            <button type="button" class="close" aria-label=${x("common.close")} @click=${() => this._close()}>✕</button>
           </div>
           <boopli-stage
             .kind=${this.kind}
@@ -18828,50 +19092,50 @@ var xs = () => [
             .momentSeq=${this._seq}
             .momentText=${this._text}
           ></boopli-stage>
-          ${e.art ? "" : p`<p class="muted small">${b("pet_preview.has_no_animated_art_yet_so", { label: e.label })}</p>`}
+          ${e.art ? "" : m`<p class="muted small">${x("pet_preview.has_no_animated_art_yet_so", { label: e.label })}</p>`}
 
           <div class="group">
-            <div class="label">${b("pet_preview.mood")}</div>
-            <div class="chips">${Ri.map((e) => this._chip(b(`pet.mood_${e}`), this._mood === e, () => this._mood = e))}</div>
+            <div class="label">${x("pet_preview.mood")}</div>
+            <div class="chips">${_a.map((e) => this._chip(x(`pet.mood_${e}`), this._mood === e, () => this._mood = e))}</div>
           </div>
           <div class="group">
-            <div class="label">${b("pet_preview.busy_with")}</div>
+            <div class="label">${x("pet_preview.busy_with")}</div>
             <div class="chips">
-              ${Ss().map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
+              ${Hs().map((e) => this._chip(e.label, this._activity === e.value, () => this._activity = e.value))}
             </div>
           </div>
           <div class="group">
-            <div class="label">${b("pet_preview.moments_they_play_once")}</div>
+            <div class="label">${x("pet_preview.moments_they_play_once")}</div>
             <div class="chips">
-              ${xs().map((e) => p`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
+              ${Vs().map((e) => m`<button type="button" class="chip" @click=${() => this._play(e.value)}>${e.label}</button>`)}
             </div>
           </div>
           <div class="group row">
             <label class="inline">
-              ${b("pet_preview.level_n", { n: this._level })}
+              ${x("pet_preview.level_n", { n: this._level })}
               <input
                 type="range"
                 min="1"
                 max="5"
                 step="1"
                 .value=${String(this._level)}
-                aria-label=${b("pet_preview.level")}
+                aria-label=${x("pet_preview.level")}
                 @input=${(e) => this._level = Number(e.target.value)}
               />
             </label>
             <label class="inline">
               <input type="checkbox" .checked=${this._away} @change=${(e) => this._away = e.target.checked} />
-              ${b("pet_preview.away_mode_suitcase")}
+              ${x("pet_preview.away_mode_suitcase")}
             </label>
           </div>
-          <p class="muted small">${b("pet_preview.the_room_shows_what_you_bought")}</p>
-          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${b("common.close")}</button></div>
+          <p class="muted small">${x("pet_preview.the_room_shows_what_you_bought")}</p>
+          <div class="actions"><button type="button" class="primary" @click=${() => this._close()}>${x("common.close")}</button></div>
         </div>
       </dialog>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: block;
       }
@@ -18966,9 +19230,9 @@ var xs = () => [
     `];
 	}
 };
-customElements.define("boopli-pet-preview", Cs);
+customElements.define("boopli-pet-preview", Us);
 // src/diff.ts
-function ws(e, t, n) {
+function Ws(e, t, n) {
 	let r = new Map(e.map((e) => [n(e), e])), i = new Map(t.map((e) => [n(e), e]));
 	return {
 		added: [...i].filter(([e]) => !r.has(e)).map(([, e]) => e),
@@ -18979,106 +19243,106 @@ function ws(e, t, n) {
 		}))
 	};
 }
-function Ts(e, t, n, r) {
+function Gs(e, t, n, r) {
 	let i = [];
-	return t.enabled !== n.enabled && i.push(b("diff.sound_state", {
+	return t.enabled !== n.enabled && i.push(x("diff.sound_state", {
 		name: e,
-		state: n.enabled ? b("common.state_on") : b("common.state_off")
-	})), n.enabled && (t.sound !== n.sound && i.push(b("diff.sound", {
+		state: n.enabled ? x("common.state_on") : x("common.state_off")
+	})), n.enabled && (t.sound !== n.sound && i.push(x("diff.sound", {
 		name: e,
 		before: t.sound,
 		after: n.sound
-	})), t.start_at !== n.start_at && i.push(b("diff.starts_at_nudge", {
+	})), t.start_at !== n.start_at && i.push(x("diff.starts_at_nudge", {
 		name: e,
 		before: t.start_at,
 		after: n.start_at
-	})), r && t.seconds !== n.seconds && i.push(b("diff.lasts_s", {
+	})), r && t.seconds !== n.seconds && i.push(x("diff.lasts_s", {
 		name: e,
 		before: t.seconds,
 		after: n.seconds
-	})), r && t.repeat_s !== n.repeat_s && i.push(b("diff.repeats_every_s", {
+	})), r && t.repeat_s !== n.repeat_s && i.push(x("diff.repeats_every_s", {
 		name: e,
 		before: t.repeat_s,
 		after: n.repeat_s
 	}))), i;
 }
-function Es(e, t) {
-	let n = [...Ts(b("diff.sound_ding"), e.cue, t.cue, !1), ...Ts(b("diff.sound_alarm"), e.alarm, t.alarm, !0)];
-	return e.speech.enabled !== t.speech.enabled && n.push(b("diff.speech_state", { state: t.speech.enabled ? b("common.state_on") : b("common.state_off") })), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(b("diff.speech_goes_to", { target: t.speech.target || b("diff.nothing") })), e.speech.start_at !== t.speech.start_at && n.push(b("diff.speech_starts_at_nudge", {
+function Ks(e, t) {
+	let n = [...Gs(x("diff.sound_ding"), e.cue, t.cue, !1), ...Gs(x("diff.sound_alarm"), e.alarm, t.alarm, !0)];
+	return e.speech.enabled !== t.speech.enabled && n.push(x("diff.speech_state", { state: t.speech.enabled ? x("common.state_on") : x("common.state_off") })), t.speech.enabled && ((e.speech.target !== t.speech.target || e.speech.route !== t.speech.route) && n.push(x("diff.speech_goes_to", { target: t.speech.target || x("diff.nothing") })), e.speech.start_at !== t.speech.start_at && n.push(x("diff.speech_starts_at_nudge", {
 		before: e.speech.start_at,
 		after: t.speech.start_at
 	}))), n;
 }
-function Ds(e, t, n) {
+function qs(e, t, n) {
 	let r = (e) => J(n, e), i = [];
-	e.pet_name !== t.pet_name && i.push(b("diff.pet_name", {
+	e.pet_name !== t.pet_name && i.push(x("diff.pet_name", {
 		before: e.pet_name,
 		after: t.pet_name
-	})), (e.pet_kind ?? "slime") !== (t.pet_kind ?? "slime") && i.push(b("diff.pet_kind", {
+	})), (e.pet_kind ?? "slime") !== (t.pet_kind ?? "slime") && i.push(x("diff.pet_kind", {
 		before: e.pet_kind ?? "slime",
 		after: t.pet_kind ?? "slime"
-	})), (e.accent ?? "") !== (t.accent ?? "") && i.push(b("diff.accent_colour", {
-		before: e.accent || b("diff.the_pets_own"),
-		after: t.accent || b("diff.the_pets_own")
+	})), (e.accent ?? "") !== (t.accent ?? "") && i.push(x("diff.accent_colour", {
+		before: e.accent || x("diff.the_pets_own"),
+		after: t.accent || x("diff.the_pets_own")
 	}));
-	let a = ws(e.phones, t.phones, (e) => e.service);
-	a.added.forEach((e) => i.push(b("diff.phone_added", {
+	let a = Ws(e.phones, t.phones, (e) => e.service);
+	a.added.forEach((e) => i.push(x("diff.phone_added", {
 		phone: X(e.service),
-		level: Ga()[e.level] ?? e.level
-	}))), a.removed.forEach((e) => i.push(b("diff.phone_removed", { phone: X(e.service) }))), a.kept.forEach(({ before: e, after: t }) => {
-		e.level !== t.level && i.push(b("diff.level", {
+		level: fo()[e.level] ?? e.level
+	}))), a.removed.forEach((e) => i.push(x("diff.phone_removed", { phone: X(e.service) }))), a.kept.forEach(({ before: e, after: t }) => {
+		e.level !== t.level && i.push(x("diff.level", {
 			phone: X(t.service),
-			before: Ga()[e.level],
-			after: Ga()[t.level]
-		})), e.start_at !== t.start_at && i.push(b("diff.starts_at_nudge_2", {
+			before: fo()[e.level],
+			after: fo()[t.level]
+		})), e.start_at !== t.start_at && i.push(x("diff.starts_at_nudge_2", {
 			phone: X(t.service),
 			before: e.start_at,
 			after: t.start_at
 		}));
 	});
 	let o = e.quiet_hours, s = t.quiet_hours;
-	if (o.enabled !== s.enabled && i.push(b("diff.quiet_hours_state", {
-		before: o.enabled ? b("common.state_on") : b("common.state_off"),
-		after: s.enabled ? b("common.state_on") : b("common.state_off")
+	if (o.enabled !== s.enabled && i.push(x("diff.quiet_hours_state", {
+		before: o.enabled ? x("common.state_on") : x("common.state_off"),
+		after: s.enabled ? x("common.state_on") : x("common.state_off")
 	})), s.enabled) {
 		let e = (e, t) => {
 			let n = e.days[String(t)] ?? null;
-			return n ? b("diff.hours_range", {
+			return n ? x("diff.hours_range", {
 				start: n.start,
 				stop: n.stop
-			}) : b("diff.no_limit");
+			}) : x("diff.no_limit");
 		};
-		D().forEach((t, n) => {
-			let r = o.enabled ? e(o, n) : b("diff.any_time"), a = e(s, n);
+		O().forEach((t, n) => {
+			let r = o.enabled ? e(o, n) : x("diff.any_time"), a = e(s, n);
 			r !== a && i.push(`${t}: ${r} → ${a}`);
 		});
 	}
-	e.snooze_minutes !== t.snooze_minutes && i.push(b("diff.snooze_min", {
+	e.snooze_minutes !== t.snooze_minutes && i.push(x("diff.snooze_min", {
 		before: e.snooze_minutes,
 		after: t.snooze_minutes
-	})), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(b("diff.wait_for_your_answers_min", {
+	})), (e.question_wait_minutes ?? 30) !== (t.question_wait_minutes ?? 30) && i.push(x("diff.wait_for_your_answers_min", {
 		before: e.question_wait_minutes ?? 30,
 		after: t.question_wait_minutes ?? 30
-	})), (e.check_in_minutes ?? 30) !== (t.check_in_minutes ?? 30) && i.push(b("diff.check_in_after_on_it_min", {
+	})), (e.check_in_minutes ?? 30) !== (t.check_in_minutes ?? 30) && i.push(x("diff.check_in_after_on_it_min", {
 		before: e.check_in_minutes ?? 30,
 		after: t.check_in_minutes ?? 30
-	})), e.default_style !== t.default_style && i.push(b("diff.default_style", {
-		before: Xa(e.default_style, e.ladders),
-		after: Xa(t.default_style, t.ladders)
+	})), e.default_style !== t.default_style && i.push(x("diff.default_style", {
+		before: _o(e.default_style, e.ladders),
+		after: _o(t.default_style, t.ladders)
 	}));
 	let c = new Map((e.sounds ?? []).map((e) => [e.id, e.name])), l = new Map((t.sounds ?? []).map((e) => [e.id, e.name]));
-	for (let [e, t] of l) c.has(e) || i.push(b("diff.sound_added", { label: t }));
-	for (let [e, t] of c) l.has(e) || i.push(b("diff.sound_removed", { label: t }));
+	for (let [e, t] of l) c.has(e) || i.push(x("diff.sound_added", { label: t }));
+	for (let [e, t] of c) l.has(e) || i.push(x("diff.sound_removed", { label: t }));
 	for (let n of t.sounds ?? []) {
 		let t = (e.sounds ?? []).find((e) => e.id === n.id);
-		t && (t.name !== n.name || t.kind !== n.kind || t.sound !== n.sound) && i.push(b("diff.sound_changed", { name: n.name }));
+		t && (t.name !== n.name || t.kind !== n.kind || t.sound !== n.sound) && i.push(x("diff.sound_changed", { name: n.name }));
 	}
-	let u = ws(e.boards ?? [], t.boards ?? [], (e) => e.id);
-	u.added.forEach((e) => i.push(b("diff.wall_board_added_tiles", {
+	let u = Ws(e.boards ?? [], t.boards ?? [], (e) => e.id);
+	u.added.forEach((e) => i.push(x("diff.wall_board_added_tiles", {
 		name: e.name,
 		count: e.tiles.length
-	}))), u.removed.forEach((e) => i.push(b("diff.wall_board_removed", { name: e.name }))), u.kept.forEach(({ before: e, after: t }) => {
-		e.name !== t.name && i.push(b("diff.wall_board_renamed", {
+	}))), u.removed.forEach((e) => i.push(x("diff.wall_board_removed", { name: e.name }))), u.kept.forEach(({ before: e, after: t }) => {
+		e.name !== t.name && i.push(x("diff.wall_board_renamed", {
 			before: e.name,
 			after: t.name
 		})), JSON.stringify({
@@ -19091,14 +19355,14 @@ function Ds(e, t, n) {
 			r: t.rows,
 			n: t.night,
 			t: t.tiles
-		}) && i.push(b("diff.wall_board_changed", { name: t.name }));
+		}) && i.push(x("diff.wall_board_changed", { name: t.name }));
 	});
-	let d = ws(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
-	d.added.forEach((e) => i.push(b("diff.nudge_ladder_added_nudges", {
+	let d = Ws(e.ladders ?? [], t.ladders ?? [], (e) => e.id);
+	d.added.forEach((e) => i.push(x("diff.nudge_ladder_added_nudges", {
 		name: Z(e),
 		count: e.rungs.length
-	}))), d.removed.forEach((e) => i.push(b("diff.nudge_ladder_removed", { name: Z(e) }))), d.kept.forEach(({ before: e, after: t }) => {
-		e.name !== t.name && i.push(b("diff.nudge_ladder_renamed", {
+	}))), d.removed.forEach((e) => i.push(x("diff.nudge_ladder_removed", { name: Z(e) }))), d.kept.forEach(({ before: e, after: t }) => {
+		e.name !== t.name && i.push(x("diff.nudge_ladder_renamed", {
 			before: Z(e),
 			after: Z(t)
 		})), JSON.stringify({
@@ -19107,71 +19371,71 @@ function Ds(e, t, n) {
 		}) !== JSON.stringify({
 			r: t.rungs,
 			x: t.repeat_last
-		}) && i.push(b("diff.nudge_ladder_changed", { name: Z(t) }));
+		}) && i.push(x("diff.nudge_ladder_changed", { name: Z(t) }));
 	});
-	let ee = ws(e.lights, t.lights, (e) => e.entity_id);
-	ee.added.forEach((e) => i.push(b("diff.reminder_light_added", {
+	let f = Ws(e.lights, t.lights, (e) => e.entity_id);
+	f.added.forEach((e) => i.push(x("diff.reminder_light_added", {
 		name: r(e.entity_id),
-		light: $a(e)
-	}))), ee.removed.forEach((e) => i.push(b("diff.reminder_light_removed", { name: r(e.entity_id) }))), ee.kept.forEach(({ before: e, after: t }) => {
+		light: bo(e)
+	}))), f.removed.forEach((e) => i.push(x("diff.reminder_light_removed", { name: r(e.entity_id) }))), f.kept.forEach(({ before: e, after: t }) => {
 		let n = r(t.entity_id);
-		e.mode !== t.mode && i.push(`${n}: ${$a(e)} → ${$a(t)}`), e.color.join() !== t.color.join() && i.push(b("diff.color_changed", { n })), e.blink_ms !== t.blink_ms && i.push(b("diff.blink_length_ms", {
+		e.mode !== t.mode && i.push(`${n}: ${bo(e)} → ${bo(t)}`), e.color.join() !== t.color.join() && i.push(x("diff.color_changed", { n })), e.blink_ms !== t.blink_ms && i.push(x("diff.blink_length_ms", {
 			n,
 			before: e.blink_ms,
 			after: t.blink_ms
-		})), e.repeats !== t.repeats && i.push(b("diff.blinks", {
+		})), e.repeats !== t.repeats && i.push(x("diff.blinks", {
 			n,
 			before: e.repeats,
 			after: t.repeats
-		})), e.gap_ms !== t.gap_ms && i.push(b("diff.pause_ms", {
+		})), e.gap_ms !== t.gap_ms && i.push(x("diff.pause_ms", {
 			n,
 			before: e.gap_ms,
 			after: t.gap_ms
-		})), e.start_at !== t.start_at && i.push(b("diff.starts_at_nudge_3", {
+		})), e.start_at !== t.start_at && i.push(x("diff.starts_at_nudge_3", {
 			n,
 			before: e.start_at,
 			after: t.start_at
 		}));
 	});
-	let te = ws(e.speakers, t.speakers, (e) => e.entity_id);
-	te.added.forEach((e) => i.push(b("diff.speaker_added", { name: r(e.entity_id) }))), te.removed.forEach((e) => i.push(b("diff.speaker_removed", { name: r(e.entity_id) }))), te.kept.forEach(({ before: e, after: t }) => Es(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(b("diff.spoken_sentence", {
+	let ee = Ws(e.speakers, t.speakers, (e) => e.entity_id);
+	ee.added.forEach((e) => i.push(x("diff.speaker_added", { name: r(e.entity_id) }))), ee.removed.forEach((e) => i.push(x("diff.speaker_removed", { name: r(e.entity_id) }))), ee.kept.forEach(({ before: e, after: t }) => Ks(e, t).forEach((e) => i.push(`${r(t.entity_id)}: ${e}`))), e.speech_template !== t.speech_template && i.push(x("diff.spoken_sentence", {
 		before: e.speech_template,
 		after: t.speech_template
 	}));
-	let ne = ws(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
-	if (ne.added.forEach((e) => i.push(b("diff.alarm_device_added", { name: r(e.entity_id) }))), ne.removed.forEach((e) => i.push(b("diff.alarm_device_removed", { name: r(e.entity_id) }))), ne.kept.forEach(({ before: e, after: t }) => {
-		e.seconds !== t.seconds && i.push(b("diff.on_for_s", {
+	let te = Ws(e.alarm_devices, t.alarm_devices, (e) => e.entity_id);
+	if (te.added.forEach((e) => i.push(x("diff.alarm_device_added", { name: r(e.entity_id) }))), te.removed.forEach((e) => i.push(x("diff.alarm_device_removed", { name: r(e.entity_id) }))), te.kept.forEach(({ before: e, after: t }) => {
+		e.seconds !== t.seconds && i.push(x("diff.on_for_s", {
 			name: r(t.entity_id),
 			before: e.seconds,
 			after: t.seconds
-		})), e.start_at !== t.start_at && i.push(b("diff.starts_at_nudge_4", {
+		})), e.start_at !== t.start_at && i.push(x("diff.starts_at_nudge_4", {
 			name: r(t.entity_id),
 			before: e.start_at,
 			after: t.start_at
 		}));
-	}), e.ai.enabled !== t.ai.enabled && i.push(b("diff.ai_help_state", {
-		before: e.ai.enabled ? b("common.state_on") : b("common.state_off"),
-		after: t.ai.enabled ? b("common.state_on") : b("common.state_off")
+	}), e.ai.enabled !== t.ai.enabled && i.push(x("diff.ai_help_state", {
+		before: e.ai.enabled ? x("common.state_on") : x("common.state_off"),
+		after: t.ai.enabled ? x("common.state_on") : x("common.state_off")
 	})), e.ai.entity_id !== t.ai.entity_id) {
-		let n = (e) => e ? r(e) : b("diff.the_home_assistant_default");
-		i.push(b("diff.ai_agent", {
+		let n = (e) => e ? r(e) : x("diff.the_home_assistant_default");
+		i.push(x("diff.ai_agent", {
 			before: n(e.ai.entity_id),
 			after: n(t.ai.entity_id)
 		}));
 	}
 	if ((e.ai.photo_entity_id ?? "") !== (t.ai.photo_entity_id ?? "")) {
-		let n = (e) => e ? r(e) : b("diff.the_same_agent");
-		i.push(b("diff.agent_for_photos", {
+		let n = (e) => e ? r(e) : x("diff.the_same_agent");
+		i.push(x("diff.agent_for_photos", {
 			before: n(e.ai.photo_entity_id ?? ""),
 			after: n(t.ai.photo_entity_id ?? "")
 		}));
 	}
-	if (!!e.ai.claude_enabled != !!t.ai.claude_enabled && i.push(b("diff.ask_claude_state", {
-		before: e.ai.claude_enabled ? b("common.state_on") : b("common.state_off"),
-		after: t.ai.claude_enabled ? b("common.state_on") : b("common.state_off")
-	})), (e.ai.claude_fire_url ?? "") !== (t.ai.claude_fire_url ?? "") && i.push(b("diff.claude_routine_address_changed")), (e.ai.claude_ha_url ?? "") !== (t.ai.claude_ha_url ?? "") && i.push(b("diff.home_assistant_address_for_claude_changed")), e.ai.questions_prompt !== t.ai.questions_prompt && i.push(b("diff.ai_questions_prompt_changed")), e.ai.steps_prompt !== t.ai.steps_prompt && i.push(b("diff.ai_steps_prompt_changed")), (e.ai.chat_room_prompt ?? "") !== (t.ai.chat_room_prompt ?? "") && i.push(b("diff.chat_prompt_for_one_room_changed")), (e.ai.chat_home_prompt ?? "") !== (t.ai.chat_home_prompt ?? "") && i.push(b("diff.chat_prompt_for_the_whole_home")), e.presence_entity !== t.presence_entity) {
-		let n = (e) => e ? r(e) : b("diff.not_set");
-		i.push(b("diff.where_you_are", {
+	if (!!e.ai.claude_enabled != !!t.ai.claude_enabled && i.push(x("diff.ask_claude_state", {
+		before: e.ai.claude_enabled ? x("common.state_on") : x("common.state_off"),
+		after: t.ai.claude_enabled ? x("common.state_on") : x("common.state_off")
+	})), (e.ai.claude_fire_url ?? "") !== (t.ai.claude_fire_url ?? "") && i.push(x("diff.claude_routine_address_changed")), (e.ai.claude_ha_url ?? "") !== (t.ai.claude_ha_url ?? "") && i.push(x("diff.home_assistant_address_for_claude_changed")), e.ai.questions_prompt !== t.ai.questions_prompt && i.push(x("diff.ai_questions_prompt_changed")), e.ai.steps_prompt !== t.ai.steps_prompt && i.push(x("diff.ai_steps_prompt_changed")), (e.ai.chat_room_prompt ?? "") !== (t.ai.chat_room_prompt ?? "") && i.push(x("diff.chat_prompt_for_one_room_changed")), (e.ai.chat_home_prompt ?? "") !== (t.ai.chat_home_prompt ?? "") && i.push(x("diff.chat_prompt_for_the_whole_home")), e.presence_entity !== t.presence_entity) {
+		let n = (e) => e ? r(e) : x("diff.not_set");
+		i.push(x("diff.where_you_are", {
 			before: n(e.presence_entity),
 			after: n(t.presence_entity)
 		}));
@@ -19179,29 +19443,29 @@ function Ds(e, t, n) {
 	return i;
 }
 // src/boopli-backup.ts
-var Os = 8388608, ks = ".adhd", As = () => ({
+var Js = 8388608, Ys = ".adhd", Xs = () => ({
 	settings: {
-		title: b("common.settings"),
-		text: b("backup.devices_timing_nudge_ladders_wall_boards")
+		title: x("common.settings"),
+		text: x("backup.devices_timing_nudge_ladders_wall_boards")
 	},
 	chores: {
-		title: b("common.chores"),
-		text: b("backup.every_chore_with_its_steps_questions")
+		title: x("common.chores"),
+		text: x("backup.every_chore_with_its_steps_questions")
 	},
 	home: {
-		title: b("backup.rooms_and_notes"),
-		text: b("backup.the_rooms_of_my_home_and")
+		title: x("backup.rooms_and_notes"),
+		text: x("backup.the_rooms_of_my_home_and")
 	},
 	pet: {
-		title: b("backup.pet_and_history"),
-		text: b("backup.your_pets_level_and_xp_and")
+		title: x("backup.pet_and_history"),
+		text: x("backup.your_pets_level_and_xp_and")
 	}
 });
-function js() {
+function Zs() {
 	let e = /* @__PURE__ */ new Date(), t = (e) => String(e).padStart(2, "0");
 	return `${e.getFullYear()}-${t(e.getMonth() + 1)}-${t(e.getDate())}`;
 }
-var Ms = class extends _ {
+var Qs = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -19223,17 +19487,17 @@ var Ms = class extends _ {
 				bubbles: !0,
 				composed: !0
 			}));
-		}, this._copyName = "", this.mode = "export", this._parts = [...Mt], this._file = null, this._preview = null, this._busy = !1, this._error = "", this._done = [];
+		}, this._copyName = "", this.mode = "export", this._parts = [...jt], this._file = null, this._preview = null, this._busy = !1, this._error = "", this._done = [];
 	}
 	firstUpdated() {
 		this.renderRoot.querySelector("dialog")?.showModal();
 	}
 	_toggle(e, t) {
-		this._parts = Mt.filter((n) => n === e ? t : this._parts.includes(n)), this._error = "", this.mode === "import" && this._file && this._look();
+		this._parts = jt.filter((n) => n === e ? t : this._parts.includes(n)), this._error = "", this.mode === "import" && this._file && this._look();
 	}
 	async _download(e) {
 		if (!this.hass) return null;
-		let t = await Nt(this.hass, e), n = `boopli-backup-${js()}${ks}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
+		let t = await Mt(this.hass, e), n = `boopli-backup-${Zs()}${Ys}`, r = URL.createObjectURL(new Blob([JSON.stringify(t, null, 2)], { type: "application/octet-stream" })), i = document.createElement("a");
 		return i.href = r, i.download = n, document.body.appendChild(i), i.click(), i.remove(), window.setTimeout(() => URL.revokeObjectURL(r), 1e4), n;
 	}
 	async _export() {
@@ -19241,9 +19505,9 @@ var Ms = class extends _ {
 			this._busy = !0, this._error = "";
 			try {
 				let e = await this._download(this._parts);
-				this._done = [b("backup.saved_3", { name: e }), b("backup.keep_it_somewhere_private_it_holds")];
+				this._done = [x("backup.saved_3", { name: e }), x("backup.keep_it_somewhere_private_it_holds")];
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -19253,10 +19517,10 @@ var Ms = class extends _ {
 		if (!this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				let e = await this._download([...Mt]);
+				let e = await this._download([...jt]);
 				this._error = "", this._copyName = e ?? "";
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1, this.requestUpdate();
 			}
@@ -19265,30 +19529,30 @@ var Ms = class extends _ {
 	async _choose(e) {
 		let t = e.target.files?.[0];
 		if (!t || !this.hass) return;
-		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > Os) {
-			this._error = b("backup.this_file_is_too_big_to");
+		if (this._error = "", this._file = null, this._preview = null, this._copyName = "", t.size > Js) {
+			this._error = x("backup.this_file_is_too_big_to");
 			return;
 		}
 		let n;
 		try {
 			n = JSON.parse(await t.text());
 		} catch {
-			this._error = b("backup.this_is_not_a_boopli_backup");
+			this._error = x("backup.this_is_not_a_boopli_backup");
 			return;
 		}
-		typeof n != "object" || !n || Array.isArray(n) ? this._error = b("backup.this_is_not_a_boopli_backup") : (this._file = {
+		typeof n != "object" || !n || Array.isArray(n) ? this._error = x("backup.this_is_not_a_boopli_backup") : (this._file = {
 			name: t.name,
 			data: n
-		}, this._parts = [...Mt], await this._look(!0));
+		}, this._parts = [...jt], await this._look(!0));
 	}
 	async _look(e = !1) {
 		if (this.hass && this._file) {
 			this._busy = !0;
 			try {
-				let t = e ? [] : this._parts, n = await Pt(this.hass, this._file.data, t);
+				let t = e ? [] : this._parts, n = await Nt(this.hass, this._file.data, t);
 				this._preview = n, e && (this._parts = [...n.parts]), this._error = n.selection_error;
 			} catch (t) {
-				this._error = S(t), e && (this._preview = null, this._file = null);
+				this._error = C(t), e && (this._preview = null, this._file = null);
 			} finally {
 				this._busy = !1;
 			}
@@ -19298,31 +19562,31 @@ var Ms = class extends _ {
 		if (!this._busy && this.hass && this._file && this._parts.length) {
 			this._busy = !0, this._error = "";
 			try {
-				let e = await Ft(this.hass, this._file.data, this._parts);
+				let e = await Pt(this.hass, this._file.data, this._parts);
 				this._done = [
-					b("backup.imported_list", { list: e.imported.map((e) => As()[e].title.toLowerCase()).join(", ") }),
-					...e.imported.includes("chores") ? [b("backup.chores_set_up_now", { count: e.chores })] : [],
-					...e.runs_ended ? [b("backup.runs_ended_with_replaced", { count: e.runs_ended })] : []
+					x("backup.imported_list", { list: e.imported.map((e) => Xs()[e].title.toLowerCase()).join(", ") }),
+					...e.imported.includes("chores") ? [x("backup.chores_set_up_now", { count: e.chores })] : [],
+					...e.runs_ended ? [x("backup.runs_ended_with_replaced", { count: e.runs_ended })] : []
 				];
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
 		}
 	}
 	_renderParts(e, t) {
-		let n = (e) => t ? e === "settings" ? b("backup.wall_boards_and_text", {
+		let n = (e) => t ? e === "settings" ? x("backup.wall_boards_and_text", {
 			count: t.boards,
-			text: As()[e].text
-		}) : e === "chores" ? b("backup.count_chores", { count: t.chores }) : e === "home" ? b("backup.count_rooms", { count: t.rooms }) : b("backup.level_things_done_on_record", {
+			text: Xs()[e].text
+		}) : e === "chores" ? x("backup.count_chores", { count: t.chores }) : e === "home" ? x("backup.count_rooms", { count: t.rooms }) : x("backup.level_things_done_on_record", {
 			level: t.level,
 			history: t.history
-		}) : As()[e].text;
-		return p`<div class="parts" role="group" aria-label=${b("backup.what_to_include")}>
-      ${Mt.filter((t) => e.includes(t)).map((e) => p`<label class="part">
+		}) : Xs()[e].text;
+		return m`<div class="parts" role="group" aria-label=${x("backup.what_to_include")}>
+      ${jt.filter((t) => e.includes(t)).map((e) => m`<label class="part">
           <input type="checkbox" .checked=${this._parts.includes(e)} ?disabled=${this._busy} @change=${(t) => this._toggle(e, t.target.checked)} />
-          <span><b>${As()[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
+          <span><b>${Xs()[e].title}</b><br /><span class="muted small">${n(e)}</span></span>
         </label>`)}
     </div>`;
 	}
@@ -19330,79 +19594,79 @@ var Ms = class extends _ {
 		let e = this.snapshot?.settings, t = this._preview?.settings;
 		if (!e || !t || !this._parts.includes("settings")) return [];
 		try {
-			return Ds(e, t, this.hass);
+			return qs(e, t, this.hass);
 		} catch {
 			return null;
 		}
 	}
 	_renderExport() {
-		return p`
-      <h2>${E("content-save-outline")} ${b("common.export_a_backup")}</h2>
-      <p>${b("backup.save_your_setup_to_one_file")}</p>
-      ${this._renderParts([...Mt])}
+		return m`
+      <h2>${D("content-save-outline")} ${x("common.export_a_backup")}</h2>
+      <p>${x("backup.save_your_setup_to_one_file")}</p>
+      ${this._renderParts([...jt])}
       <p class="muted small">
-        ${x("backup.the_file_ends_in_and_is", { extension: ks })}
+        ${S("backup.the_file_ends_in_and_is", { extension: Ys })}
       </p>
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? b("common.saving") : b("backup.download_backup")}</button>
-        <button ?disabled=${this._busy} @click=${this._close}>${b("common.close")}</button>
+        <button class="primary" ?disabled=${this._busy || !this._parts.length} @click=${() => this._export()}>${this._busy ? x("common.saving") : x("backup.download_backup")}</button>
+        <button ?disabled=${this._busy} @click=${this._close}>${x("common.close")}</button>
       </div>
     `;
 	}
 	_renderImport() {
 		let e = this._preview, t = this._changes();
-		return p`
-      <h2>${E("content-save-outline")} ${b("common.import_a_backup")}</h2>
+		return m`
+      <h2>${D("content-save-outline")} ${x("common.import_a_backup")}</h2>
       <div class="field">
-        <label for="file">${b("backup.choose_a_backup_file", { extension: ks })}</label>
-        <input id="file" type="file" accept="${ks},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
+        <label for="file">${x("backup.choose_a_backup_file", { extension: Ys })}</label>
+        <input id="file" type="file" accept="${Ys},.json,application/json" ?disabled=${this._busy} @change=${(e) => void this._choose(e)} />
       </div>
-      ${e && this._file ? p`
+      ${e && this._file ? m`
             <p class="muted small">
-              ${this._file.name}${e.exported_at ? p`${b("backup.saved_2", { date: new Date(e.exported_at).toLocaleString() })}` : g}${e.boopli_version ? p`${b("backup.boopli", { version: e.boopli_version })}` : g}
+              ${this._file.name}${e.exported_at ? m`${x("backup.saved_2", { date: new Date(e.exported_at).toLocaleString() })}` : _}${e.boopli_version ? m`${x("backup.boopli", { version: e.boopli_version })}` : _}
             </p>
-            <p>${b("backup.pick_what_to_bring_in")}</p>
+            <p>${x("backup.pick_what_to_bring_in")}</p>
             ${this._renderParts(e.parts, e.counts)}
-            ${t === null ? p`<div class="warn" role="status">${b("backup.the_list_of_changes_to_the")}</div>` : t.length ? p`<div class="changes"><b>${b("backup.the_settings_would_change_like_this")}</b>
-                    <ul>${t.slice(0, 12).map((e) => p`<li>${e}</li>`)}</ul>
-                    ${t.length > 12 ? p`<span class="muted small">${b("backup.and_more", { value: t.length - 12 })}</span>` : g}</div>` : g}
-            ${e.missing_entities_total || e.missing_services.length ? p`<div class="warn" role="status">
-                  <b>${b("backup.this_install_does_not_have_everything")}</b>
-                  ${e.missing_entities_total ? p`<div class="small">${b("backup.not_found_list", { list: e.missing_entities.join(", ") + (e.missing_entities_total > e.missing_entities.length ? " " + b("backup.and_n_more", { n: e.missing_entities_total - e.missing_entities.length }) : "") })}</div>` : g}
-                  ${e.missing_services.length ? p`<div class="small">${b("backup.phones_not_found", { join: e.missing_services.join(", ") })}</div>` : g}
-                  <div class="small muted">${b("backup.they_are_kept_but_do_nothing")}</div>
-                </div>` : g}
-            ${e.runs_ended ? p`<div class="warn" role="status">${b("backup.runs_ending", { count: e.runs_ended })}</div>` : g}
+            ${t === null ? m`<div class="warn" role="status">${x("backup.the_list_of_changes_to_the")}</div>` : t.length ? m`<div class="changes"><b>${x("backup.the_settings_would_change_like_this")}</b>
+                    <ul>${t.slice(0, 12).map((e) => m`<li>${e}</li>`)}</ul>
+                    ${t.length > 12 ? m`<span class="muted small">${x("backup.and_more", { value: t.length - 12 })}</span>` : _}</div>` : _}
+            ${e.missing_entities_total || e.missing_services.length ? m`<div class="warn" role="status">
+                  <b>${x("backup.this_install_does_not_have_everything")}</b>
+                  ${e.missing_entities_total ? m`<div class="small">${x("backup.not_found_list", { list: e.missing_entities.join(", ") + (e.missing_entities_total > e.missing_entities.length ? " " + x("backup.and_n_more", { n: e.missing_entities_total - e.missing_entities.length }) : "") })}</div>` : _}
+                  ${e.missing_services.length ? m`<div class="small">${x("backup.phones_not_found", { join: e.missing_services.join(", ") })}</div>` : _}
+                  <div class="small muted">${x("backup.they_are_kept_but_do_nothing")}</div>
+                </div>` : _}
+            ${e.runs_ended ? m`<div class="warn" role="status">${x("backup.runs_ending", { count: e.runs_ended })}</div>` : _}
             <p class="small">
-              ${x("backup.importing_replaces")}
-              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${b("backup.save_a_copy_of_what_i")}</button>
-              ${this._copyName ? p`<span class="muted">${b("backup.saved", { name: this._copyName })}</span>` : g}
+              ${S("backup.importing_replaces")}
+              <button class="link" ?disabled=${this._busy} @click=${() => this._saveCopy()}>${x("backup.save_a_copy_of_what_i")}</button>
+              ${this._copyName ? m`<span class="muted">${x("backup.saved", { name: this._copyName })}</span>` : _}
             </p>
-          ` : g}
+          ` : _}
       <div class="foot">
-        <button class="primary" ?disabled=${this._busy || !e || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? b("backup.working") : b("settings.import")}</button>
-        <button ?disabled=${this._busy} @click=${this._close}>${b("common.cancel")}</button>
+        <button class="primary" ?disabled=${this._busy || !e || !this._parts.length || !!this._error} @click=${() => this._import()}>${this._busy ? x("backup.working") : x("settings.import")}</button>
+        <button ?disabled=${this._busy} @click=${this._close}>${x("common.cancel")}</button>
       </div>
     `;
 	}
 	render() {
-		return p`<dialog
+		return m`<dialog
       class="modal"
-      aria-label=${b("backup.backup")}
+      aria-label=${x("backup.backup")}
       @close=${this._closed}
       @cancel=${(e) => this._busy && e.preventDefault()}
       @click=${(e) => e.target === e.currentTarget && this._close()}
     >
       <div class="box">
-        ${this._done.length ? p`<h2>${E("check-circle-outline")} ${b("common.done")}</h2>
-              ${this._done.map((e) => p`<p>${e}</p>`)}
-              <div class="foot"><button class="primary" @click=${this._close}>${b("common.close")}</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
-        ${this._error ? p`<div class="error" role="alert">${this._error}</div>` : g}
+        ${this._done.length ? m`<h2>${D("check-circle-outline")} ${x("common.done")}</h2>
+              ${this._done.map((e) => m`<p>${e}</p>`)}
+              <div class="foot"><button class="primary" @click=${this._close}>${x("common.close")}</button></div>` : this.mode === "export" ? this._renderExport() : this._renderImport()}
+        ${this._error ? m`<div class="error" role="alert">${this._error}</div>` : _}
       </div>
     </dialog>`;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         display: contents;
       }
@@ -19511,9 +19775,9 @@ var Ms = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-backup", Ms);
+customElements.define("boopli-backup", Qs);
 // src/boopli-claude.ts
-var Ns = class extends _ {
+var $s = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -19543,25 +19807,25 @@ var Ns = class extends _ {
 		if (!this.hass) return !1;
 		this._busy = !0, this._bad = !1;
 		try {
-			return await Dn(this.hass, this._token), this._token = "", this._changing = !1, this._note = b("claude.token_saved_boopli_keeps_it_out"), !0;
+			return await En(this.hass, this._token), this._token = "", this._changing = !1, this._note = x("claude.token_saved_boopli_keeps_it_out"), !0;
 		} catch (e) {
-			return this._bad = !0, this._note = S(e), !1;
+			return this._bad = !0, this._note = C(e), !1;
 		} finally {
 			this._busy = !1;
 		}
 	}
 	async _removeToken() {
-		this._token = "", await this._saveToken() && (this._note = b("claude.token_removed"));
+		this._token = "", await this._saveToken() && (this._note = x("claude.token_removed"));
 	}
 	async _test() {
 		if (this.hass) {
-			this._busy = !0, this._bad = !1, this._note = b("claude.asking_claude_this_can_take_up");
+			this._busy = !0, this._bad = !1, this._note = x("claude.asking_claude_this_can_take_up");
 			try {
 				this.beforeTest && await this.beforeTest();
-				let e = await On(this.hass);
-				this._note = b("claude.it_works_claude_answered_in_seconds", { seconds: e.seconds });
+				let e = await Dn(this.hass);
+				this._note = x("claude.it_works_claude_answered_in_seconds", { seconds: e.seconds });
 			} catch (e) {
-				this._bad = !0, this._note = S(e);
+				this._bad = !0, this._note = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -19569,11 +19833,11 @@ var Ns = class extends _ {
 	}
 	render() {
 		let e = this.ai;
-		if (!e) return g;
+		if (!e) return _;
 		let t = this.snapshot?.claude, n = !!t?.token_set, r = !!(e.claude_enabled && e.claude_fire_url?.trim() && n), i = this._busy || !r || !!this.blocked;
-		return p`
-      ${this.hideIntro ? g : p`<p class="muted small">
-            ${x("claude.claude_is_an_extra_next_to", { item: b("common.ask_claude") })}
+		return m`
+      ${this.hideIntro ? _ : m`<p class="muted small">
+            ${S("claude.claude_is_an_extra_next_to", { item: x("common.ask_claude") })}
           </p>`}
       <label class="inline">
         <input
@@ -19581,10 +19845,10 @@ var Ns = class extends _ {
           .checked=${!!e.claude_enabled}
           @change=${(e) => this._patch({ claude_enabled: e.target.checked })}
         />
-        ${b("common.switch_ask_claude_on")}
+        ${x("common.switch_ask_claude_on")}
       </label>
       <div class="field">
-        <label for="claude-url">${b("claude.the_routines_fire_address")}</label>
+        <label for="claude-url">${x("claude.the_routines_fire_address")}</label>
         <input
           id="claude-url"
           type="url"
@@ -19595,54 +19859,54 @@ var Ns = class extends _ {
         />
       </div>
       <div class="field">
-        <label for="claude-token">${b("claude.the_routines_token")}</label>
-        ${n && !this._changing ? p`<div class="row">
-              <span>${b("claude.token_is_saved")}</span>
-              <button type="button" ?disabled=${this._busy} @click=${() => this._changing = !0}>${b("claude.replace")}</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>${b("common.remove")}</button>
-            </div>` : p`<div class="row">
+        <label for="claude-token">${x("claude.the_routines_token")}</label>
+        ${n && !this._changing ? m`<div class="row">
+              <span>${x("claude.token_is_saved")}</span>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._changing = !0}>${x("claude.replace")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeToken()}>${x("common.remove")}</button>
+            </div>` : m`<div class="row">
               <input
                 id="claude-token"
                 type="password"
                 autocomplete="off"
                 spellcheck="false"
-                placeholder=${b("claude.paste_the_token_here")}
+                placeholder=${x("claude.paste_the_token_here")}
                 .value=${this._token}
                 @input=${(e) => this._token = e.target.value}
               />
               <button type="button" ?disabled=${this._busy || !this._token.trim()} @click=${() => this._saveToken()}>
-                ${b("claude.save_token")}
+                ${x("claude.save_token")}
               </button>
             </div>`}
       </div>
       <details>
-        <summary class="muted small">${b("claude.advanced_home_assistants_web_address")}</summary>
+        <summary class="muted small">${x("claude.advanced_home_assistants_web_address")}</summary>
         <div class="field">
-          <label for="claude-ha">${b("claude.where_the_routine_sends_its_answer")}</label>
+          <label for="claude-ha">${x("claude.where_the_routine_sends_its_answer")}</label>
           <input
             id="claude-ha"
             type="url"
             autocomplete="off"
-            placeholder=${b("claude.leave_empty_to_use_home_assistants")}
+            placeholder=${x("claude.leave_empty_to_use_home_assistants")}
             .value=${e.claude_ha_url ?? ""}
             @change=${(e) => this._patch({ claude_ha_url: e.target.value.trim() })}
           />
-          <div class="muted small">${b("claude.it_must_be_reachable_from_the")}</div>
+          <div class="muted small">${x("claude.it_must_be_reachable_from_the")}</div>
         </div>
       </details>
       <div class="row">
-        <button type="button" ?disabled=${i} @click=${() => this._test()}>${b("claude.test_claude")}</button>
-        ${this.blocked ? p`<span class="muted small">${this.blocked}</span>` : g}
-        ${t ? p`<span class="muted small">${b("claude.of_asks_left_this_hour", {
+        <button type="button" ?disabled=${i} @click=${() => this._test()}>${x("claude.test_claude")}</button>
+        ${this.blocked ? m`<span class="muted small">${this.blocked}</span>` : _}
+        ${t ? m`<span class="muted small">${x("claude.of_asks_left_this_hour", {
 			fires_left: t.fires_left,
 			fires_per_hour: t.fires_per_hour
-		})}</span>` : g}
+		})}</span>` : _}
       </div>
-      ${this._note ? p`<div class=${this._bad ? "error" : "note muted small"} role="status">${this._note}</div>` : g}
+      ${this._note ? m`<div class=${this._bad ? "error" : "note muted small"} role="status">${this._note}</div>` : _}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .small {
         font-size: 15px;
       }
@@ -19685,101 +19949,101 @@ var Ns = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-claude", Ns);
+customElements.define("boopli-claude", $s);
 // src/accent.ts
-var Ps = {
+var ec = {
 	slime: "#5ee05a",
 	bear: "#d79563",
 	dog: "#f5b544",
 	fox: "#f28a30",
 	cat: "#a894e8"
-}, Fs = () => [
+}, tc = () => [
 	{
-		name: b("accent.green"),
+		name: x("accent.green"),
 		hex: "#5ee05a"
 	},
 	{
-		name: b("accent.teal"),
+		name: x("accent.teal"),
 		hex: "#3fd1b5"
 	},
 	{
-		name: b("accent.blue"),
+		name: x("accent.blue"),
 		hex: "#4fb3f0"
 	},
 	{
-		name: b("accent.lilac"),
+		name: x("accent.lilac"),
 		hex: "#a894e8"
 	},
 	{
-		name: b("accent.pink"),
+		name: x("accent.pink"),
 		hex: "#f07db0"
 	},
 	{
-		name: b("accent.coral"),
+		name: x("accent.coral"),
 		hex: "#f0605d"
 	},
 	{
-		name: b("accent.orange"),
+		name: x("accent.orange"),
 		hex: "#f28a30"
 	},
 	{
-		name: b("accent.gold"),
+		name: x("accent.gold"),
 		hex: "#f5b544"
 	}
-], Is = /^#[0-9a-f]{6}$/i;
-function Ls(e) {
-	return typeof e == "string" && Is.test(e);
+], nc = /^#[0-9a-f]{6}$/i;
+function rc(e) {
+	return typeof e == "string" && nc.test(e);
 }
-function Rs(e, t) {
-	return Ls(t) ? t.toLowerCase() : Ps[e ?? "slime"] ?? Ps.slime;
+function ic(e, t) {
+	return rc(t) ? t.toLowerCase() : ec[e ?? "slime"] ?? ec.slime;
 }
-function zs(e) {
+function ac(e) {
 	return [
 		1,
 		3,
 		5
 	].map((t) => parseInt(e.slice(t, t + 2), 16));
 }
-function Bs(e) {
-	let [t, n, r] = zs(e).map((e) => {
+function oc(e) {
+	let [t, n, r] = ac(e).map((e) => {
 		let t = e / 255;
 		return t <= .03928 ? t / 12.92 : ((t + .055) / 1.055) ** 2.4;
 	});
 	return .2126 * t + .7152 * n + .0722 * r;
 }
-function Vs(e) {
-	let t = Bs(e), n = (t + .05) / (Bs("#14210f") + .05), r = 1.05 / (t + .05);
+function sc(e) {
+	let t = oc(e), n = (t + .05) / (oc("#14210f") + .05), r = 1.05 / (t + .05);
 	return Math.max(n, r) < 4.5 ? "#000000" : n >= r ? "#14210f" : "#ffffff";
 }
-function Hs(e) {
-	let [t, n, r] = zs(e).map((e) => Math.round(e * .62));
+function cc(e) {
+	let [t, n, r] = ac(e).map((e) => Math.round(e * .62));
 	return `#${[
 		t,
 		n,
 		r
 	].map((e) => e.toString(16).padStart(2, "0")).join("")}`;
 }
-function Us(e, t, n) {
-	let r = Rs(t, n);
-	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", Vs(r)), e.style.setProperty("--boopli-accent-deep", Hs(r));
+function lc(e, t, n) {
+	let r = ic(t, n);
+	e.style.setProperty("--boopli-accent", r), e.style.setProperty("--boopli-accent-ink", sc(r)), e.style.setProperty("--boopli-accent-deep", cc(r));
 }
 // src/boopli-settings.ts
-var Ws = "@address", Gs = () => ({
+var uc = "@address", dc = () => ({
 	phone: {
 		icon: "cellphone",
-		title: b("settings.phone"),
+		title: x("settings.phone"),
 		wizard: "phone",
 		keys: ["phones"]
 	},
 	lights: {
 		icon: "lightbulb-outline",
-		title: b("settings.reminder_lights"),
+		title: x("settings.reminder_lights"),
 		wizard: "lights",
 		keys: ["lights"]
 	},
 	speakers: {
 		icon: "volume-high",
-		title: b("speakers.speakers"),
+		title: x("speakers.speakers"),
 		wizard: "speakers",
 		keys: [
 			"speakers",
@@ -19789,19 +20053,19 @@ var Ws = "@address", Gs = () => ({
 	},
 	alarms: {
 		icon: "bell-ring-outline",
-		title: b("speakers.alarm_devices"),
+		title: x("speakers.alarm_devices"),
 		wizard: "alarms",
 		keys: ["alarm_devices"]
 	},
 	quiet: {
 		icon: "weather-night",
-		title: b("settings.quiet_hours"),
+		title: x("settings.quiet_hours"),
 		wizard: "quiet",
 		keys: ["quiet_hours"]
 	},
 	timing: {
 		icon: "alarm",
-		title: b("settings.snooze_and_timing"),
+		title: x("settings.snooze_and_timing"),
 		wizard: "nudging",
 		keys: [
 			"snooze_minutes",
@@ -19811,19 +20075,19 @@ var Ws = "@address", Gs = () => ({
 	},
 	ladders: {
 		icon: "stairs",
-		title: b("common.nudge_it_your_way"),
+		title: x("common.nudge_it_your_way"),
 		wizard: "ladders",
 		keys: ["ladders", "default_style"]
 	},
 	presence: {
 		icon: "map-marker-outline",
-		title: b("common.where_you_are"),
+		title: x("common.where_you_are"),
 		wizard: "presence",
 		keys: ["presence_entity"]
 	},
 	pet: {
 		icon: "paw",
-		title: b("settings.your_pet_and_accent_colour"),
+		title: x("settings.your_pet_and_accent_colour"),
 		wizard: "pet",
 		keys: [
 			"pet_name",
@@ -19833,34 +20097,34 @@ var Ws = "@address", Gs = () => ({
 	},
 	wall: {
 		icon: "monitor-dashboard",
-		title: b("common.wall_board"),
+		title: x("common.wall_board"),
 		wizard: "wall",
 		keys: ["boards"]
 	},
 	ai: {
 		icon: "robot-outline",
-		title: b("settings.ai_help"),
+		title: x("settings.ai_help"),
 		wizard: "ai",
 		keys: ["ai"]
 	},
 	backup: {
 		icon: "content-save-outline",
-		title: b("backup.backup"),
+		title: x("backup.backup"),
 		keys: []
 	},
 	access: {
 		icon: "account-lock-outline",
-		title: b("settings.access_title"),
+		title: x("settings.access_title"),
 		keys: []
 	},
 	language: {
 		icon: "translate",
-		title: b("settings.language"),
+		title: x("settings.language"),
 		keys: []
 	}
-}), Ks = () => [
+}), fc = () => [
 	{
-		title: b("settings.devices"),
+		title: x("settings.devices"),
 		areas: [
 			"phone",
 			"lights",
@@ -19869,7 +20133,7 @@ var Ws = "@address", Gs = () => ({
 		]
 	},
 	{
-		title: b("settings.timing"),
+		title: x("settings.timing"),
 		areas: [
 			"quiet",
 			"timing",
@@ -19878,7 +20142,7 @@ var Ws = "@address", Gs = () => ({
 		]
 	},
 	{
-		title: b("settings.extras"),
+		title: x("settings.extras"),
 		areas: [
 			"pet",
 			"wall",
@@ -19888,33 +20152,33 @@ var Ws = "@address", Gs = () => ({
 			"language"
 		]
 	}
-], qs = Ks().flatMap((e) => e.areas), Js = () => [
+], pc = fc().flatMap((e) => e.areas), mc = () => [
 	{
 		value: "normal",
-		label: b("common.normal_notification")
+		label: x("common.normal_notification")
 	},
 	{
 		value: "high",
-		label: b("common.high_priority_pops_up")
+		label: x("common.high_priority_pops_up")
 	},
 	{
 		value: "alarm",
-		label: b("common.alarm_volume")
+		label: x("common.alarm_volume")
 	},
 	{
 		value: "alarm_max",
-		label: b("common.max_volume_not_on_every_phone")
+		label: x("common.max_volume_not_on_every_phone")
 	}
-], Ys = () => [{
+], hc = () => [{
 	value: "blink",
-	label: b("rung.blink")
+	label: x("rung.blink")
 }, {
 	value: "indicator",
-	label: b("settings.indicator_lamp_on_until_done")
-}], Xs = {
+	label: x("settings.indicator_lamp_on_until_done")
+}], gc = {
 	start: "07:00",
 	stop: "22:00"
-}, Zs = class extends _ {
+}, _c = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -19941,7 +20205,7 @@ var Ws = "@address", Gs = () => ({
 		super(), this._justSaved = !1, this._lastDirty = !1, this._flashTimer = 0, this._addLight = "", this._busy = !1, this._message = "", this._languageNote = "", this._error = "", this._notes = {}, this._modal = "", this._flash = "", this._defaults = null, this._aiNote = "", this._claudeOpen = !1, this._accessBusy = !1, this._accessError = "", this._accessOpen = !1, this._backup = "";
 	}
 	willUpdate() {
-		this._draft && Us(this, this._draft.pet_kind, this._draft.accent);
+		this._draft && lc(this, this._draft.pet_kind, this._draft.accent);
 		let e = this.snapshot?.settings;
 		if (e) {
 			if (!this._draft || !this._base) this._base = structuredClone(e), this._draft = structuredClone(e);
@@ -19977,7 +20241,7 @@ var Ws = "@address", Gs = () => ({
 		return !t || !n ? !1 : e.some((e) => JSON.stringify(t[e]) !== JSON.stringify(n[e]));
 	}
 	_badge(...e) {
-		return this._changed(...e) ? p`<span class="unsaved-badge">${b("settings.unsaved")}</span>` : g;
+		return this._changed(...e) ? m`<span class="unsaved-badge">${x("settings.unsaved")}</span>` : _;
 	}
 	_cardClass(...e) {
 		return this._changed(...e) ? "card changed" : "card";
@@ -19987,9 +20251,9 @@ var Ws = "@address", Gs = () => ({
 		this._busy = !0, this._error = "", this._message = "";
 		let e = structuredClone(this._draft);
 		try {
-			return await At(this.hass, e), this._justSaved = !0, this._base = e, this._message = b("common.saved"), !0;
+			return await kt(this.hass, e), this._justSaved = !0, this._base = e, this._message = x("common.saved"), !0;
 		} catch (e) {
-			return this._error = S(e), !1;
+			return this._error = C(e), !1;
 		} finally {
 			this._busy = !1;
 		}
@@ -20049,16 +20313,16 @@ var Ws = "@address", Gs = () => ({
 	async _testPhone(e) {
 		if (!this.hass || !this._draft) return;
 		let t = this._draft.phones.find((t) => t.service === e)?.level ?? "normal";
-		this._note(`phone:${e}`, b("common.sending"));
+		this._note(`phone:${e}`, x("common.sending"));
 		try {
-			let n = await Qt(this.hass, {
+			let n = await Zt(this.hass, {
 				service: e,
 				level: t,
 				start_at: 1
 			});
-			this._note(`phone:${e}`, pn(n));
+			this._note(`phone:${e}`, fn(n));
 		} catch (t) {
-			this._note(`phone:${e}`, S(t));
+			this._note(`phone:${e}`, C(t));
 		}
 	}
 	_addSelectedLight() {
@@ -20107,19 +20371,19 @@ var Ws = "@address", Gs = () => ({
 	}
 	async _testLight(e) {
 		if (this.hass) {
-			this._note(`light:${e.entity_id}`, b("common.testing"));
+			this._note(`light:${e.entity_id}`, x("common.testing"));
 			try {
-				let t = await Zt(this.hass, e);
-				this._note(`light:${e.entity_id}`, pn(t));
+				let t = await Xt(this.hass, e);
+				this._note(`light:${e.entity_id}`, fn(t));
 			} catch (t) {
-				this._note(`light:${e.entity_id}`, S(t));
+				this._note(`light:${e.entity_id}`, C(t));
 			}
 		}
 	}
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(D().map((e, t) => [String(t), { ...Xs }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(O().map((e, t) => [String(t), { ...gc }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -20137,7 +20401,7 @@ var Ws = "@address", Gs = () => ({
 	}
 	_copyMondayToAll() {
 		if (!this._draft) return;
-		let e = this._draft.quiet_hours, t = e.days[0], n = Object.fromEntries(D().map((e, n) => [String(n), t ? { ...t } : null]));
+		let e = this._draft.quiet_hours, t = e.days[0], n = Object.fromEntries(O().map((e, n) => [String(n), t ? { ...t } : null]));
 		this._set({ quiet_hours: {
 			...e,
 			days: n
@@ -20148,15 +20412,15 @@ var Ws = "@address", Gs = () => ({
 	}
 	_renderPhones(e) {
 		let t = this._phoneServices();
-		return p`
+		return m`
       <section class=${this._cardClass("phones")}>
-        <h2>${b("settings.phones")} ${this._badge("phones")}</h2>
+        <h2>${x("settings.phones")} ${this._badge("phones")}</h2>
         <p class="muted small">
-          ${b("settings.boopli_sends_a_notification_with_done")}
+          ${x("settings.boopli_sends_a_notification_with_done")}
         </p>
-        ${t.length === 0 ? p`<p class="muted">${b("settings.no_phones_with_the_home_assistant")}</p>` : t.map((t) => {
+        ${t.length === 0 ? m`<p class="muted">${x("settings.no_phones_with_the_home_assistant")}</p>` : t.map((t) => {
 			let n = e.phones.find((e) => e.service === t), r = this._notes[`phone:${t}`];
-			return p`
+			return m`
                 <div class="row">
                   <label class="inline">
                     <input
@@ -20167,16 +20431,16 @@ var Ws = "@address", Gs = () => ({
                     ${t.replace("mobile_app_", "")}
                   </label>
                   <select
-                    aria-label=${b("settings.notification_level")}
+                    aria-label=${x("settings.notification_level")}
                     ?disabled=${!n}
                     .value=${n?.level ?? "normal"}
                     @change=${(e) => this._setPhoneLevel(t, e.target.value)}
                   >
-                    ${Js().map((e) => p`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
+                    ${mc().map((e) => m`<option value=${e.value} ?selected=${e.value === (n?.level ?? "normal")}>${e.label}</option>`)}
                   </select>
-                  <button @click=${() => this._testPhone(t)}>${b("common.test")}</button>
+                  <button @click=${() => this._testPhone(t)}>${x("common.test")}</button>
                 </div>
-                ${r ? p`<div class="note muted small">${r}</div>` : g}
+                ${r ? m`<div class="note muted small">${r}</div>` : _}
               `;
 		})}
       </section>
@@ -20184,41 +20448,41 @@ var Ws = "@address", Gs = () => ({
 	}
 	_renderLights(e) {
 		let t = this._lightChoices();
-		return p`
+		return m`
       <section class=${this._cardClass("lights")}>
-        <h2>${b("settings.reminder_lights")} ${this._badge("lights")}</h2>
+        <h2>${x("settings.reminder_lights")} ${this._badge("lights")}</h2>
         <p class="muted small">
-          ${b("settings.boopli_blinks_a_light_itself_and")}
+          ${x("settings.boopli_blinks_a_light_itself_and")}
         </p>
         ${e.lights.map((e) => {
 			let t = this._notes[`light:${e.entity_id}`], n = e.entity_id, r = e.mode === "blink";
-			return p`
+			return m`
             <div class="row">
               <div class="grow">
                 <div>${this._friendly(n)}</div>
-                ${this.hass?.states[n] ? g : p`<div class="muted small">${b("settings.not_found_right_now")}</div>`}
+                ${this.hass?.states[n] ? _ : m`<div class="muted small">${x("settings.not_found_right_now")}</div>`}
               </div>
               <select
-                aria-label=${b("settings.light_mode")}
+                aria-label=${x("settings.light_mode")}
                 .value=${e.mode}
                 @change=${(e) => this._setLightMode(n, e.target.value)}
               >
-                ${Ys().map((t) => p`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
+                ${hc().map((t) => m`<option value=${t.value} ?selected=${t.value === e.mode}>${t.label}</option>`)}
               </select>
-              ${qa(this.hass, n) ? p`<input
+              ${mo(this.hass, n) ? m`<input
                     type="color"
                     class="swatch"
-                    aria-label=${b("settings.color")}
+                    aria-label=${x("settings.color")}
                     .value=${this._rgbToHex(e.color)}
                     @input=${(e) => this._patchLight(n, { color: this._hexToRgb(e.target.value) })}
-                  />` : g}
-              <button @click=${() => this._testLight(e)}>${b("common.test")}</button>
-              <button aria-label=${b("settings.remove_light")} @click=${() => this._removeLight(n)}>✕</button>
+                  />` : _}
+              <button @click=${() => this._testLight(e)}>${x("common.test")}</button>
+              <button aria-label=${x("settings.remove_light")} @click=${() => this._removeLight(n)}>✕</button>
             </div>
-            ${r ? p`
+            ${r ? m`
                   <div class="blinkopts">
                     <label>
-                      ${b("wizard.blink_length_ms")}
+                      ${x("wizard.blink_length_ms")}
                       <input
                         type="number"
                         min="100"
@@ -20229,7 +20493,7 @@ var Ws = "@address", Gs = () => ({
                       />
                     </label>
                     <label>
-                      ${b("settings.blinks")}
+                      ${x("settings.blinks")}
                       <input
                         type="number"
                         min="1"
@@ -20239,7 +20503,7 @@ var Ws = "@address", Gs = () => ({
                       />
                     </label>
                     <label>
-                      ${b("settings.pause_between_ms")}
+                      ${x("settings.pause_between_ms")}
                       <input
                         type="number"
                         min="0"
@@ -20251,33 +20515,33 @@ var Ws = "@address", Gs = () => ({
                     </label>
                   </div>
                   <div class="muted small hint">
-                    ${b("settings.a_light_in_your_home_can")}
+                    ${x("settings.a_light_in_your_home_can")}
                   </div>
-                ` : g}
-            ${t ? p`<div class="note muted small">${t}</div>` : g}
+                ` : _}
+            ${t ? m`<div class="note muted small">${t}</div>` : _}
           `;
 		})}
         <div class="row add">
           <select
-            aria-label=${b("settings.add_a_light")}
+            aria-label=${x("settings.add_a_light")}
             .value=${this._addLight}
             @change=${(e) => this._addLight = e.target.value}
           >
-            <option value="">${b("settings.add_a_light_2")}</option>
-            ${t.map((e) => p`<option value=${e} ?selected=${e === this._addLight}>${this._friendly(e)}</option>`)}
+            <option value="">${x("settings.add_a_light_2")}</option>
+            ${t.map((e) => m`<option value=${e} ?selected=${e === this._addLight}>${this._friendly(e)}</option>`)}
           </select>
-          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>${b("common.add")}</button>
+          <button ?disabled=${!this._addLight} @click=${() => this._addSelectedLight()}>${x("common.add")}</button>
         </div>
       </section>
     `;
 	}
 	_renderQuiet(e) {
 		let t = e.quiet_hours;
-		return p`
+		return m`
       <section class=${this._cardClass("quiet_hours")}>
-        <h2>${b("settings.quiet_hours")} ${this._badge("quiet_hours")}</h2>
+        <h2>${x("settings.quiet_hours")} ${this._badge("quiet_hours")}</h2>
         <p class="muted small">
-          ${b("settings.nudges_wait_outside_these_times_set")}
+          ${x("settings.nudges_wait_outside_these_times_set")}
         </p>
         <label class="inline">
           <input
@@ -20285,78 +20549,78 @@ var Ws = "@address", Gs = () => ({
             .checked=${t.enabled}
             @change=${(e) => this._setQuiet(e.target.checked)}
           />
-          ${b("settings.hold_nudges_outside_these_hours")}
+          ${x("settings.hold_nudges_outside_these_hours")}
         </label>
-        ${t.enabled ? p`
-              ${D().map((e, n) => {
+        ${t.enabled ? m`
+              ${O().map((e, n) => {
 			let r = t.days[String(n)] ?? null;
-			return p`
+			return m`
                   <div class="row day">
                     <span class="dayname">${e}</span>
                     <label class="inline small">
                       <input
                         type="checkbox"
                         .checked=${r === null}
-                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...Xs })}
+                        @change=${(e) => this._setDay(n, e.target.checked ? null : { ...gc })}
                       />
-                      ${b("common.no_limit")}
+                      ${x("common.no_limit")}
                     </label>
-                    ${r ? p`
-                          <span class="muted small">${b("common.from")}</span>
+                    ${r ? m`
+                          <span class="muted small">${x("common.from")}</span>
                           <input
                             type="time"
-                            aria-label=${b("settings.nudges_start", { name: e })}
+                            aria-label=${x("settings.nudges_start", { name: e })}
                             .value=${r.start}
                             @input=${(e) => this._setDay(n, {
 				...r,
 				start: e.target.value
 			})}
                           />
-                          <span class="muted small">${b("common.until")}</span>
+                          <span class="muted small">${x("common.until")}</span>
                           <input
                             type="time"
-                            aria-label=${b("settings.nudges_stop", { name: e })}
+                            aria-label=${x("settings.nudges_stop", { name: e })}
                             .value=${r.stop}
                             @input=${(e) => this._setDay(n, {
 				...r,
 				stop: e.target.value
 			})}
                           />
-                        ` : g}
+                        ` : _}
                   </div>
                 `;
 		})}
-              <button class="chip" @click=${() => this._copyMondayToAll()}>${b("common.copy_monday_to_all_days")}</button>
-            ` : g}
+              <button class="chip" @click=${() => this._copyMondayToAll()}>${x("common.copy_monday_to_all_days")}</button>
+            ` : _}
       </section>
     `;
 	}
 	_renderPresence(e) {
-		return p`
+		return m`
       <section class=${this._cardClass("presence_entity")}>
         <div class="field">
-          <label for="presence">${b("settings.where_you_are_optional")}</label>
+          <label for="presence">${x("settings.where_you_are_optional")}</label>
           <select
             id="presence"
             .value=${e.presence_entity}
             @change=${(e) => this._set({ presence_entity: e.target.value })}
           >
-            <option value="" ?selected=${e.presence_entity === ""}>${b("settings.none_assume_i_am_home")}</option>
-            ${this._persons().map((t) => p`<option value=${t} ?selected=${t === e.presence_entity}>${this._friendly(t)}</option>`)}
+            <option value="" ?selected=${e.presence_entity === ""}>${x("settings.none_assume_i_am_home")}</option>
+            ${this._persons().map((t) => m`<option value=${t} ?selected=${t === e.presence_entity}>${this._friendly(t)}</option>`)}
           </select>
           <div class="muted small">
-            ${b("settings.presence_note")}
-            ${this.snapshot ? this.snapshot.is_home ? b("settings.right_now_home") : b("settings.right_now_away") : g}
+            ${x("settings.presence_note")}
+            ${this.snapshot ? this.snapshot.is_home ? x("settings.right_now_home") : x("settings.right_now_away") : _}
           </div>
         </div>
       </section>
     `;
 	}
 	_renderPet(e) {
-		return p`
+		return m`
       <section class=${this._cardClass("pet_name", "pet_kind", "accent")}>
         <div class="field">
-          <label for="petname">${b("settings.your_pets_name")}</label>
+          <label for="petname">${x("settings.your_pets_name")}</label>
           <input
             id="petname"
             maxlength="30"
@@ -20365,7 +20629,7 @@ var Ws = "@address", Gs = () => ({
           />
         </div>
         <div class="field">
-          <label>${b("common.your_pet")}</label>
+          <label>${x("common.your_pet")}</label>
           <boopli-pet-picker
             moods
             .value=${e.pet_kind ?? "slime"}
@@ -20378,21 +20642,21 @@ var Ws = "@address", Gs = () => ({
     `;
 	}
 	_renderAccent(e) {
-		let t = Rs(e.pet_kind, ""), n = Ls(e.accent) ? e.accent.toLowerCase() : "", r = (e) => this._set({ accent: e });
-		return p`<div class="field">
-      <label id="accent-label">${b("settings.accent_colour")}</label>
+		let t = ic(e.pet_kind, ""), n = rc(e.accent) ? e.accent.toLowerCase() : "", r = (e) => this._set({ accent: e });
+		return m`<div class="field">
+      <label id="accent-label">${x("settings.accent_colour")}</label>
       <div class="swatches" role="group" aria-labelledby="accent-label">
         <button
           type="button"
           class="acc own ${n ? "" : "on"}"
           style="--sw:${t}"
           aria-pressed=${n ? "false" : "true"}
-          title=${b("settings.your_pets_own_colour")}
+          title=${x("settings.your_pets_own_colour")}
           @click=${() => r("")}
         >
-          ${b("settings.pets_colour")}
+          ${x("settings.pets_colour")}
         </button>
-        ${Fs().map((e) => p`<button
+        ${tc().map((e) => m`<button
             type="button"
             class="acc dot ${n === e.hex ? "on" : ""}"
             style="--sw:${e.hex}"
@@ -20401,12 +20665,12 @@ var Ws = "@address", Gs = () => ({
             title=${e.name}
             @click=${() => r(e.hex)}
           ></button>`)}
-        <label class="acc custom" title=${b("settings.pick_any_colour")}>
-          ${b("settings.custom")}
+        <label class="acc custom" title=${x("settings.pick_any_colour")}>
+          ${x("settings.custom")}
           <input
             type="color"
             .value=${n || t}
-            aria-label=${b("settings.custom_accent_colour")}
+            aria-label=${x("settings.custom_accent_colour")}
             @input=${(e) => r(e.target.value)}
           />
         </label>
@@ -20414,10 +20678,10 @@ var Ws = "@address", Gs = () => ({
     </div>`;
 	}
 	_renderTiming(e) {
-		return p`
+		return m`
       <section class=${this._cardClass("snooze_minutes", "question_wait_minutes", "check_in_minutes")}>
         <div class="field">
-          <label for="snooze">${b("settings.snooze_length_minutes")}</label>
+          <label for="snooze">${x("settings.snooze_length_minutes")}</label>
           <input
             id="snooze"
             type="number"
@@ -20428,7 +20692,7 @@ var Ws = "@address", Gs = () => ({
           />
         </div>
         <div class="field">
-          <label for="qwait">${b("settings.how_long_the_first_nudge_waits")}</label>
+          <label for="qwait">${x("settings.how_long_the_first_nudge_waits")}</label>
           <input
             id="qwait"
             type="number"
@@ -20438,11 +20702,11 @@ var Ws = "@address", Gs = () => ({
             @input=${(e) => this._set({ question_wait_minutes: Number(e.target.value) || 30 })}
           />
           <div class="muted small">
-            ${b("settings.for_chores_that_start_by_themselves")}
+            ${x("settings.for_chores_that_start_by_themselves")}
           </div>
         </div>
         <div class="field">
-          <label for="checkin">${b("settings.after_on_it_boopli_asks_still")}</label>
+          <label for="checkin">${x("settings.after_on_it_boopli_asks_still")}</label>
           <input
             id="checkin"
             type="number"
@@ -20452,7 +20716,7 @@ var Ws = "@address", Gs = () => ({
             @input=${(e) => this._set({ check_in_minutes: Number(e.target.value) || 30 })}
           />
           <div class="muted small">
-            ${b("settings.when_you_press_on_it_on")}
+            ${x("settings.when_you_press_on_it_on")}
           </div>
         </div>
       </section>
@@ -20466,7 +20730,7 @@ var Ws = "@address", Gs = () => ({
 	}
 	async _loadDefaults() {
 		if (!this._defaults && this.hass) try {
-			this._defaults = await Wt(this.hass);
+			this._defaults = await Ut(this.hass);
 		} catch {
 			this._defaults = {
 				questions_prompt: "",
@@ -20478,20 +20742,20 @@ var Ws = "@address", Gs = () => ({
 	}
 	async _testAi() {
 		if (this.hass) {
-			this._aiNote = b("settings.asking_the_agent");
+			this._aiNote = x("settings.asking_the_agent");
 			try {
-				let e = await Lt(this.hass, b("common.make_a_cup_of_tea"), "now", []);
-				this._aiNote = b("common.agent_test_works", {
+				let e = await It(this.hass, x("common.make_a_cup_of_tea"), "now", []);
+				this._aiNote = x("common.agent_test_works", {
 					count: e.steps.length,
-					first: e.steps[0]?.title ?? b("common.none")
+					first: e.steps[0]?.title ?? x("common.none")
 				});
 			} catch (e) {
-				this._aiNote = S(e);
+				this._aiNote = C(e);
 			}
 		}
 	}
 	_renderAi(e) {
-		let t = Y(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => p`
+		let t = Y(this.hass, ["ai_task"]), n = e.ai, r = this._defaults, i = this._changed("ai"), a = (e, t) => m`
       <div class="field">
         <label for="ai-${e}">${t}</label>
         <textarea
@@ -20504,15 +20768,15 @@ var Ws = "@address", Gs = () => ({
 		}}
         ></textarea>
         <button type="button" class="chip" ?disabled=${!n[e]} @click=${() => this._setAi({ [e]: "" })}>
-          ${b("settings.reset_to_the_built_in_prompt")}
+          ${x("settings.reset_to_the_built_in_prompt")}
         </button>
       </div>
     `;
-		return p`
+		return m`
       <section class=${this._cardClass("ai")}>
-        <h2>${b("settings.ai_help")} ${this._badge("ai")}</h2>
+        <h2>${x("settings.ai_help")} ${this._badge("ai")}</h2>
         <p class="muted small">
-          ${b("settings.boopli_can_split_a_task_into")}
+          ${x("settings.boopli_can_split_a_task_into")}
         </p>
         <div class="aitop">
           <label class="inline">
@@ -20521,27 +20785,27 @@ var Ws = "@address", Gs = () => ({
               .checked=${n.enabled}
               @change=${(e) => this._setAi({ enabled: e.target.checked })}
             />
-            ${b("common.switch_ai_help_on")}
+            ${x("common.switch_ai_help_on")}
           </label>
-          <button type="button" ?disabled=${i || !n.enabled} @click=${() => this._testAi()}>${b("settings.test_the_agent")}</button>
-          ${q(this.snapshot).admin ? p`<button type="button" @click=${() => this._claudeOpen = !0}>
-                ${E("creation")} ${b("settings.ask_claude_extra")}${n.claude_enabled ? b("settings.claude_on_suffix") : ""}
-              </button>` : g}
+          <button type="button" ?disabled=${i || !n.enabled} @click=${() => this._testAi()}>${x("settings.test_the_agent")}</button>
+          ${q(this.snapshot).admin ? m`<button type="button" @click=${() => this._claudeOpen = !0}>
+                ${D("creation")} ${x("settings.ask_claude_extra")}${n.claude_enabled ? x("settings.claude_on_suffix") : ""}
+              </button>` : _}
         </div>
-        ${i ? p`<div class="muted small">${b("settings.save_first_to_test")}</div>` : g}
-        ${this._aiNote ? p`<div class="note muted small">${this._aiNote}</div>` : g}
+        ${i ? m`<div class="muted small">${x("settings.save_first_to_test")}</div>` : _}
+        ${this._aiNote ? m`<div class="note muted small">${this._aiNote}</div>` : _}
         <div class="field">
-          <label for="ai-agent">${b("settings.which_ai_agent")}</label>
+          <label for="ai-agent">${x("settings.which_ai_agent")}</label>
           <select id="ai-agent" @change=${(e) => this._setAi({ entity_id: e.target.value })}>
-            <option value="" .selected=${n.entity_id === ""}>${b("wizard.home_assistant_default")}</option>
-            ${t.map((e) => p`<option value=${e} .selected=${e === n.entity_id}>${J(this.hass, e)}</option>`)}
-            ${n.entity_id && !t.includes(n.entity_id) ? p`<option value=${n.entity_id} selected>${b("settings.not_found", { entity_id: n.entity_id })}</option>` : g}
+            <option value="" .selected=${n.entity_id === ""}>${x("wizard.home_assistant_default")}</option>
+            ${t.map((e) => m`<option value=${e} .selected=${e === n.entity_id}>${J(this.hass, e)}</option>`)}
+            ${n.entity_id && !t.includes(n.entity_id) ? m`<option value=${n.entity_id} selected>${x("settings.not_found", { entity_id: n.entity_id })}</option>` : _}
           </select>
-          ${t.length === 0 ? p`<div class="muted small">${b("settings.no_ai_task_agent_found_in")}</div>` : g}
+          ${t.length === 0 ? m`<div class="muted small">${x("settings.no_ai_task_agent_found_in")}</div>` : _}
         </div>
-        ${this._claudeOpen ? p`<dialog
+        ${this._claudeOpen ? m`<dialog
               class="sub"
-              aria-label=${b("common.ask_claude")}
+              aria-label=${x("common.ask_claude")}
               @close=${() => this._claudeOpen = !1}
               @click=${(e) => {
 			e.target === e.currentTarget && (this._claudeOpen = !1);
@@ -20549,115 +20813,115 @@ var Ws = "@address", Gs = () => ({
             >
               <div class="cwin">
                 <div class="chead">
-                  <h3>${E("creation")} ${b("settings.ask_claude_extra")}</h3>
-                  <button type="button" class="cclose" aria-label=${b("common.close")} @click=${() => this._claudeOpen = !1}>✕</button>
+                  <h3>${D("creation")} ${x("settings.ask_claude_extra")}</h3>
+                  <button type="button" class="cclose" aria-label=${x("common.close")} @click=${() => this._claudeOpen = !1}>✕</button>
                 </div>
                 <boopli-claude
                   .hass=${this.hass}
                   .snapshot=${this.snapshot}
                   .ai=${n}
-                  .blocked=${i ? b("settings.save_first_to_test") : ""}
+                  .blocked=${i ? x("settings.save_first_to_test") : ""}
                   @ai-patch=${(e) => this._setAi(e.detail)}
                 ></boopli-claude>
-                <div class="cactions"><button type="button" class="primary" @click=${() => this._claudeOpen = !1}>${b("common.done")}</button></div>
+                <div class="cactions"><button type="button" class="primary" @click=${() => this._claudeOpen = !1}>${x("common.done")}</button></div>
               </div>
-            </dialog>` : g}
+            </dialog>` : _}
         <details @toggle=${(e) => e.target.open && this._loadDefaults()}>
-          <summary class="muted small">${b("settings.advanced_agent_for_photos_and_the")}</summary>
+          <summary class="muted small">${x("settings.advanced_agent_for_photos_and_the")}</summary>
           <div class="field">
-            <label for="ai-photo-agent">${b("settings.agent_for_room_photos")}</label>
+            <label for="ai-photo-agent">${x("settings.agent_for_room_photos")}</label>
             <select
               id="ai-photo-agent"
               @change=${(e) => this._setAi({ photo_entity_id: e.target.value })}
             >
-              <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>${b("settings.the_same_agent_as_above")}</option>
-              ${t.map((e) => p`<option value=${e} .selected=${e === n.photo_entity_id}>${J(this.hass, e)}</option>`)}
-              ${n.photo_entity_id && !t.includes(n.photo_entity_id) ? p`<option value=${n.photo_entity_id} selected>${b("settings.not_found_2", { photo_entity_id: n.photo_entity_id })}</option>` : g}
+              <option value="" .selected=${(n.photo_entity_id ?? "") === ""}>${x("settings.the_same_agent_as_above")}</option>
+              ${t.map((e) => m`<option value=${e} .selected=${e === n.photo_entity_id}>${J(this.hass, e)}</option>`)}
+              ${n.photo_entity_id && !t.includes(n.photo_entity_id) ? m`<option value=${n.photo_entity_id} selected>${x("settings.not_found_2", { photo_entity_id: n.photo_entity_id })}</option>` : _}
             </select>
             <div class="muted small">
-              ${b("settings.only_used_when_you_describe_a")}
+              ${x("settings.only_used_when_you_describe_a")}
             </div>
           </div>
           <p class="muted small">
-            ${b("settings.these_are_the_instructions_given_to")}
+            ${x("settings.these_are_the_instructions_given_to")}
           </p>
-          ${a("questions_prompt", b("settings.questions_prompt"))} ${a("steps_prompt", b("settings.steps_prompt"))}
-          <h3>${b("settings.prompts_you_copy_into_your_own")}</h3>
+          ${a("questions_prompt", x("settings.questions_prompt"))} ${a("steps_prompt", x("settings.steps_prompt"))}
+          <h3>${x("settings.prompts_you_copy_into_your_own")}</h3>
           <p class="muted small">
-            ${b("settings.these_are_the_texts_the_in")}
+            ${x("settings.these_are_the_texts_the_in")}
           </p>
-          ${a("chat_room_prompt", b("settings.chat_prompt_for_one_room"))} ${a("chat_home_prompt", b("settings.chat_prompt_for_the_whole_home"))}
+          ${a("chat_room_prompt", x("settings.chat_prompt_for_one_room"))} ${a("chat_home_prompt", x("settings.chat_prompt_for_the_whole_home"))}
         </details>
       </section>
     `;
 	}
 	_dimLines() {
 		return [
-			b("settings.no_phone_set_up_yet"),
-			b("settings.no_reminder_lights_yet"),
-			b("settings.no_speakers_yet"),
-			b("settings.no_alarm_devices_yet"),
-			b("settings.no_ladders_of_your_own_yet"),
-			b("settings.not_set_boopli_assumes_you_are"),
-			b("settings.off_splits_big_tasks_into_tiny"),
-			b("helpers.off_boopli_nudges_at_any_time")
+			x("settings.no_phone_set_up_yet"),
+			x("settings.no_reminder_lights_yet"),
+			x("settings.no_speakers_yet"),
+			x("settings.no_alarm_devices_yet"),
+			x("settings.no_ladders_of_your_own_yet"),
+			x("settings.not_set_boopli_assumes_you_are"),
+			x("settings.off_splits_big_tasks_into_tiny"),
+			x("helpers.off_boopli_nudges_at_any_time")
 		];
 	}
 	_summary(e, t) {
 		let n = (e) => J(this.hass, e);
 		switch (e) {
-			case "phone": return t.phones.length ? t.phones.map((e) => `${X(e.service)}: ${Ga()[e.level] ?? e.level}`) : [b("settings.no_phone_set_up_yet")];
-			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${$a(e)}`) : [b("settings.no_reminder_lights_yet")];
-			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${Qa(e)}`) : [b("settings.no_speakers_yet")];
-			case "alarms": return t.alarm_devices.length ? t.alarm_devices.map((e) => b("settings.on_for_s", {
+			case "phone": return t.phones.length ? t.phones.map((e) => `${X(e.service)}: ${fo()[e.level] ?? e.level}`) : [x("settings.no_phone_set_up_yet")];
+			case "lights": return t.lights.length ? t.lights.map((e) => `${n(e.entity_id)}: ${bo(e)}`) : [x("settings.no_reminder_lights_yet")];
+			case "speakers": return t.speakers.length ? t.speakers.map((e) => `${n(e.entity_id)}: ${yo(e)}`) : [x("settings.no_speakers_yet")];
+			case "alarms": return t.alarm_devices.length ? t.alarm_devices.map((e) => x("settings.on_for_s", {
 				name: n(e.entity_id),
 				seconds: e.seconds
-			})) : [b("settings.no_alarm_devices_yet")];
-			case "quiet": return [Za(t.quiet_hours)];
+			})) : [x("settings.no_alarm_devices_yet")];
+			case "quiet": return [vo(t.quiet_hours)];
 			case "timing": return [
-				b("settings.snooze_minutes", { snooze_minutes: t.snooze_minutes }),
-				b("settings.still_on_it_after_minutes", { value: t.check_in_minutes ?? 30 }),
-				b("settings.first_nudge_waits_minutes_for_your", { value: t.question_wait_minutes ?? 30 })
+				x("settings.snooze_minutes", { snooze_minutes: t.snooze_minutes }),
+				x("settings.still_on_it_after_minutes", { value: t.check_in_minutes ?? 30 }),
+				x("settings.first_nudge_waits_minutes_for_your", { value: t.question_wait_minutes ?? 30 })
 			];
 			case "ladders": {
 				let e = t.ladders ?? [];
 				return [
-					b("settings.new_chores", { style: Xa(t.default_style, e) }),
-					...e.map((e) => b("settings.ladder_nudges", {
+					x("settings.new_chores", { style: _o(t.default_style, e) }),
+					...e.map((e) => x("settings.ladder_nudges", {
 						name: Z(e),
 						count: e.rungs.length
 					})),
-					...e.length ? [] : [b("settings.no_ladders_of_your_own_yet")]
+					...e.length ? [] : [x("settings.no_ladders_of_your_own_yet")]
 				];
 			}
 			case "wall": {
 				let e = {
-					dim: b("settings.night_dims"),
-					black: b("settings.night_goes_black"),
-					off: b("settings.night_stays_on")
+					dim: x("settings.night_dims"),
+					black: x("settings.night_goes_black"),
+					off: x("settings.night_stays_on")
 				};
-				return (t.boards ?? []).map((t) => b("settings.board_summary", {
+				return (t.boards ?? []).map((t) => x("settings.board_summary", {
 					name: t.name,
 					count: t.tiles.length,
 					night: e[t.night] ?? t.night
 				}));
 			}
-			case "presence": return [t.presence_entity ? n(t.presence_entity) : b("settings.not_set_boopli_assumes_you_are")];
-			case "pet": return [b("settings.the", {
+			case "presence": return [t.presence_entity ? n(t.presence_entity) : x("settings.not_set_boopli_assumes_you_are")];
+			case "pet": return [x("settings.the", {
 				pet_name: t.pet_name,
-				value: zi(t.pet_kind).label
-			}), Ls(t.accent) ? b("settings.accent_colour_2", { value: t.accent.toLowerCase() }) : b("settings.accent_colour_your_pets_own")];
-			case "backup": return [b("settings.save_your_whole_setup_to_one")];
+				value: va(t.pet_kind).label
+			}), rc(t.accent) ? x("settings.accent_colour_2", { value: t.accent.toLowerCase() }) : x("settings.accent_colour_your_pets_own")];
+			case "backup": return [x("settings.save_your_whole_setup_to_one")];
 			case "language":
 			case "access": return [];
-			case "ai": return [t.ai?.enabled ? b("settings.on_using", { agent: t.ai.entity_id ? n(t.ai.entity_id) : b("settings.the_home_assistant_default_agent") }) : b("settings.off_splits_big_tasks_into_tiny"), ...t.ai?.claude_enabled ? [b("settings.ask_claude_is_on")] : []];
+			case "ai": return [t.ai?.enabled ? x("settings.on_using", { agent: t.ai.entity_id ? n(t.ai.entity_id) : x("settings.the_home_assistant_default_agent") }) : x("settings.off_splits_big_tasks_into_tiny"), ...t.ai?.claude_enabled ? [x("settings.ask_claude_is_on")] : []];
 		}
 	}
 	_renderLanguageCard() {
-		let e = Gs().language, t = ht(), n = [...bt(), lt], r = new URLSearchParams(location.search).get("lang") ?? "", i = r ? Ws : t;
-		return p`<section id="card-language" class="card area">
+		let e = dc().language, t = mt(), n = [...yt(), ct], r = new URLSearchParams(location.search).get("lang") ?? "", i = r ? uc : t;
+		return m`<section id="card-language" class="card area">
       <div class="card-head">
-        <span class="card-icon">${E(e.icon)}</span>
+        <span class="card-icon">${D(e.icon)}</span>
         <h3 tabindex="-1">${e.title}</h3>
       </div>
       <div class="field">
@@ -20667,24 +20931,24 @@ var Ws = "@address", Gs = () => ({
           .value=${i}
           @change=${(e) => {
 			let t = e.target, n = t.value;
-			if (n === Ws) return;
+			if (n === uc) return;
 			if (this.renderRoot.querySelector("boopli-away")?.editing) {
-				t.value = i, this._languageNote = b("settings.language_save_first");
+				t.value = i, this._languageNote = x("settings.language_save_first");
 				return;
 			}
-			if (!gt(n)) {
-				t.value = i, this._languageNote = b("settings.language_storage_blocked");
+			if (!ht(n)) {
+				t.value = i, this._languageNote = x("settings.language_storage_blocked");
 				return;
 			}
 			let r = new URL(location.href);
 			r.searchParams.delete("lang"), history.replaceState(null, "", r), location.reload();
 		}}
         >
-          ${r ? p`<option value=${Ws} selected>${b("settings.language_from_address", { code: r })}</option>` : g}
-          <option value="" ?selected=${i === ""}>${b("settings.language_same_as_home_assistant")}</option>
-          ${n.map((e) => p`<option value=${e} ?selected=${i === e}>${St(e)}</option>`)}
+          ${r ? m`<option value=${uc} selected>${x("settings.language_from_address", { code: r })}</option>` : _}
+          <option value="" ?selected=${i === ""}>${x("settings.language_same_as_home_assistant")}</option>
+          ${n.map((e) => m`<option value=${e} ?selected=${i === e}>${xt(e)}</option>`)}
         </select>
-        <div class="muted small">${this._isDirty() ? b("settings.language_save_first") : this._languageNote || b("settings.language_note")}</div>
+        <div class="muted small">${this._isDirty() ? x("settings.language_save_first") : this._languageNote || x("settings.language_note")}</div>
       </div>
     </section>`;
 	}
@@ -20692,36 +20956,36 @@ var Ws = "@address", Gs = () => ({
 		return e === "backup" || e === "access" ? q(this.snapshot).admin : !0;
 	}
 	_renderAccessCard() {
-		let e = Gs().access, t = q(this.snapshot).level, n = [
+		let e = dc().access, t = q(this.snapshot).level, n = [
 			{
 				value: 1,
-				label: b("settings.access_use"),
-				note: b("settings.access_use_note")
+				label: x("settings.access_use"),
+				note: x("settings.access_use_note")
 			},
 			{
 				value: 2,
-				label: b("settings.access_notes"),
-				note: b("settings.access_notes_note")
+				label: x("settings.access_notes"),
+				note: x("settings.access_notes_note")
 			},
 			{
 				value: 3,
-				label: b("settings.access_all"),
-				note: b("settings.access_all_note")
+				label: x("settings.access_all"),
+				note: x("settings.access_all_note")
 			}
 		];
-		return p`<section id="card-access" class="card area">
+		return m`<section id="card-access" class="card area">
       <div class="card-head">
-        <span class="card-icon">${E(e.icon)}</span>
+        <span class="card-icon">${D(e.icon)}</span>
         <h3 tabindex="-1">${e.title}</h3>
       </div>
       <div class="summary">${n.find((e) => e.value === t)?.label ?? ""}</div>
       <div class="buttons">
         <button type="button" class="textlink" aria-label=${e.title} @click=${() => {
 			this._accessError = "", this._accessOpen = !0;
-		}}>${b("settings.access_change")}</button>
+		}}>${x("settings.access_change")}</button>
       </div>
-      ${!this._accessOpen && this._accessError ? p`<div class="error" role="alert">${this._accessError}</div>` : g}
-      ${this._accessOpen ? p`<dialog
+      ${!this._accessOpen && this._accessError ? m`<div class="error" role="alert">${this._accessError}</div>` : _}
+      ${this._accessOpen ? m`<dialog
             class="sub"
             aria-label=${e.title}
             @close=${() => this._accessOpen = !1}
@@ -20731,35 +20995,35 @@ var Ws = "@address", Gs = () => ({
           >
             <div class="cwin">
               <div class="chead">
-                <h3>${E(e.icon)} ${e.title}</h3>
-                <button type="button" class="cclose" aria-label=${b("common.close")} @click=${() => this._accessOpen = !1}>✕</button>
+                <h3>${D(e.icon)} ${e.title}</h3>
+                <button type="button" class="cclose" aria-label=${x("common.close")} @click=${() => this._accessOpen = !1}>✕</button>
               </div>
-              <div class="muted small">${b("settings.access_note")}</div>
+              <div class="muted small">${x("settings.access_note")}</div>
               <div class="field" role="radiogroup" aria-label=${e.title}>
-                ${n.map((e) => p`<label class="inline">
+                ${n.map((e) => m`<label class="inline">
                     <input
                       type="radio"
                       name="access"
-                      .checked=${Yo(t === e.value)}
+                      .checked=${hs(t === e.value)}
                       ?disabled=${this._accessBusy}
                       @change=${() => void this._setAccess(e.value)}
                     />
                     <span>${e.label}<span class="muted small"> — ${e.note}</span></span>
                   </label>`)}
               </div>
-              ${this._accessError ? p`<div class="error" role="alert">${this._accessError}</div>` : g}
-              <div class="cactions"><button type="button" class="primary" @click=${() => this._accessOpen = !1}>${b("common.done")}</button></div>
+              ${this._accessError ? m`<div class="error" role="alert">${this._accessError}</div>` : _}
+              <div class="cactions"><button type="button" class="primary" @click=${() => this._accessOpen = !1}>${x("common.done")}</button></div>
             </div>
-          </dialog>` : g}
+          </dialog>` : _}
     </section>`;
 	}
 	async _setAccess(e) {
 		if (this.hass && !this._accessBusy) {
 			this._accessBusy = !0, this._accessError = "";
 			try {
-				await jt(this.hass, e);
+				await At(this.hass, e);
 			} catch (e) {
-				this._accessError = S(e);
+				this._accessError = C(e);
 			} finally {
 				this._accessBusy = !1;
 			}
@@ -20768,24 +21032,24 @@ var Ws = "@address", Gs = () => ({
 	_card(e, t) {
 		if (e === "language") return this._renderLanguageCard();
 		if (e === "access") return this._renderAccessCard();
-		let n = Gs()[e], r = this._changed(...n.keys);
-		return p`<section id="card-${e}" class="card area ${e === "pet" ? "accented" : ""} ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
+		let n = dc()[e], r = this._changed(...n.keys);
+		return m`<section id="card-${e}" class="card area ${e === "pet" ? "accented" : ""} ${r ? "changed" : ""} ${this._flash === e ? "flash" : ""}">
       <div class="card-head">
-        <span class="card-icon">${E(n.icon)}</span>
+        <span class="card-icon">${D(n.icon)}</span>
         <h3 tabindex="-1">
           ${n.title}
-          ${r ? p`<span class="unsaved-badge">${b("settings.unsaved")}</span>` : g}
+          ${r ? m`<span class="unsaved-badge">${x("settings.unsaved")}</span>` : _}
         </h3>
       </div>
       <div class="summary">
-        ${this._summary(e, t).map((n) => p`<div class=${this._dimLines().includes(n) ? "muted" : ""}>${e === "pet" && Ls(t.accent) && n === this._summary(e, t)[1] ? p`<span class="accent-dot"></span>` : g}${n}</div>`)}
+        ${this._summary(e, t).map((n) => m`<div class=${this._dimLines().includes(n) ? "muted" : ""}>${e === "pet" && rc(t.accent) && n === this._summary(e, t)[1] ? m`<span class="accent-dot"></span>` : _}${n}</div>`)}
       </div>
       <div class="buttons">
-        ${e === "backup" ? p`<button type="button" class="textlink" aria-label=${b("common.export_a_backup")} @click=${() => this._backup = "export"}>${b("settings.export")}</button>
-              <button type="button" class="textlink quiet" aria-label=${b("common.import_a_backup")} ?disabled=${this._isDirty()} @click=${() => this._backup = "import"}>${b("settings.import")}</button>` : p`<button type="button" class="textlink" aria-label=${b("settings.guide_me_2", { title: n.title })} @click=${() => this._openWizard(n.wizard)}>${b("settings.guide_me")}</button>`}
-        ${e === "backup" ? g : e === "wall" ? p`<button type="button" class="textlink quiet" aria-label=${b("settings.edit_on_the_wall")} @click=${() => this._editWall()}>${b("settings.edit_on_the_wall")}</button>` : p`<button type="button" class="textlink quiet" aria-label=${b("settings.advanced_2", { title: n.title })} ?disabled=${this._busy} @click=${() => this._openArea(e)}>${b("settings.advanced")}</button>`}
+        ${e === "backup" ? m`<button type="button" class="textlink" aria-label=${x("common.export_a_backup")} @click=${() => this._backup = "export"}>${x("settings.export")}</button>
+              <button type="button" class="textlink quiet" aria-label=${x("common.import_a_backup")} ?disabled=${this._isDirty()} @click=${() => this._backup = "import"}>${x("settings.import")}</button>` : m`<button type="button" class="textlink" aria-label=${x("settings.guide_me_2", { title: n.title })} @click=${() => this._openWizard(n.wizard)}>${x("settings.guide_me")}</button>`}
+        ${e === "backup" ? _ : e === "wall" ? m`<button type="button" class="textlink quiet" aria-label=${x("settings.edit_on_the_wall")} @click=${() => this._editWall()}>${x("settings.edit_on_the_wall")}</button>` : m`<button type="button" class="textlink quiet" aria-label=${x("settings.advanced_2", { title: n.title })} ?disabled=${this._busy} @click=${() => this._openArea(e)}>${x("settings.advanced")}</button>`}
       </div>
-      ${e === "backup" && this._isDirty() ? p`<p class="muted small">${b("settings.save_or_discard_your_unsaved_changes")}</p>` : g}
+      ${e === "backup" && this._isDirty() ? m`<p class="muted small">${x("settings.save_or_discard_your_unsaved_changes")}</p>` : _}
     </section>`;
 	}
 	_editWall() {
@@ -20816,27 +21080,27 @@ var Ws = "@address", Gs = () => ({
 		switch (e) {
 			case "phone": return this._renderPhones(t);
 			case "lights": return this._renderLights(t);
-			case "speakers": return p`<boopli-speakers plain show="speakers" .hass=${this.hass} .settings=${t} @settings-patch=${n}></boopli-speakers>`;
-			case "alarms": return p`<boopli-speakers plain show="devices" .hass=${this.hass} .settings=${t} @settings-patch=${n}></boopli-speakers>`;
+			case "speakers": return m`<boopli-speakers plain show="speakers" .hass=${this.hass} .settings=${t} @settings-patch=${n}></boopli-speakers>`;
+			case "alarms": return m`<boopli-speakers plain show="devices" .hass=${this.hass} .settings=${t} @settings-patch=${n}></boopli-speakers>`;
 			case "quiet": return this._renderQuiet(t);
 			case "timing": return this._renderTiming(t);
-			case "wall": return g;
-			case "ladders": return p`<boopli-ladders
+			case "wall": return _;
+			case "ladders": return m`<boopli-ladders
           plain
           .hass=${this.hass}
           .settings=${t}
           .snapshot=${this.snapshot}
           @settings-patch=${n}
         ></boopli-ladders>`;
-			case "backup": return g;
+			case "backup": return _;
 			case "presence": return this._renderPresence(t);
 			case "pet": return this._renderPet(t);
 			case "ai": return this._renderAi(t);
 		}
 	}
 	_renderModal(e) {
-		let t = this._modal ? Gs()[this._modal] : null;
-		return p`<dialog
+		let t = this._modal ? dc()[this._modal] : null;
+		return m`<dialog
       aria-labelledby="win-title"
       @cancel=${(e) => {
 			e.preventDefault(), this._keep();
@@ -20845,22 +21109,22 @@ var Ws = "@address", Gs = () => ({
 			e.target === e.currentTarget && this._keep();
 		}}
     >
-      ${t && this._modal ? p`<div class="win">
+      ${t && this._modal ? m`<div class="win">
             <div class="win-head ${this._modal === "ai" ? "noline" : ""}">
-              <h2 id="win-title">${E(t.icon)} ${t.title}</h2>
-              <button type="button" class="close" aria-label=${b("settings.keep_for_later_and_close")} ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
+              <h2 id="win-title">${D(t.icon)} ${t.title}</h2>
+              <button type="button" class="close" aria-label=${x("settings.keep_for_later_and_close")} ?disabled=${this._busy} @click=${() => this._keep()}>✕</button>
             </div>
             <div class="win-body plain">${this._areaContent(this._modal, e)}</div>
-            ${this._error ? p`<div class="error" role="alert">${this._error}</div>` : g}
+            ${this._error ? m`<div class="error" role="alert">${this._error}</div>` : _}
             <div class="win-foot">
-              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>${b("settings.save_and_close")}</button>
-              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>${b("settings.discard_and_close")}</button>
-              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>${b("settings.keep_for_later")}</button>
+              <button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._saveClose()}>${x("settings.save_and_close")}</button>
+              <button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._discardClose()}>${x("settings.discard_and_close")}</button>
+              <button type="button" ?disabled=${this._busy} @click=${() => this._keep()}>${x("settings.keep_for_later")}</button>
               <p class="muted small hint-line">
-                ${b("settings.keep_for_later_closes_this_window")}
+                ${x("settings.keep_for_later_closes_this_window")}
               </p>
             </div>
-          </div>` : g}
+          </div>` : _}
     </dialog>`;
 	}
 	_show(e) {
@@ -20872,37 +21136,37 @@ var Ws = "@address", Gs = () => ({
 		}), window.clearTimeout(this._flashTimer), this._flashTimer = window.setTimeout(() => this._flash = "", 2600);
 	}
 	_renderSaveBar() {
-		if (!this._isDirty()) return g;
-		let e = qs.filter((e) => this._changed(...Gs()[e].keys));
-		return p`${this._error && !this._modal ? p`<div class="error" role="alert">${this._error}</div>` : g}
+		if (!this._isDirty()) return _;
+		let e = pc.filter((e) => this._changed(...dc()[e].keys));
+		return m`${this._error && !this._modal ? m`<div class="error" role="alert">${this._error}</div>` : _}
       <div class="savebar" role="status">
         <div class="where">
-          <b aria-hidden="true">●</b> ${b("settings.unsaved_changes_in")}
-          ${e.map((e) => p`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${Gs()[e].title}</button>`)}
+          <b aria-hidden="true">●</b> ${x("settings.unsaved_changes_in")}
+          ${e.map((e) => m`<button type="button" class="chip where-chip" @click=${() => this._show(e)}>${dc()[e].title}</button>`)}
         </div>
         <span class="spacer"></span>
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${b("common.save")}</button>
-        <button ?disabled=${this._busy} @click=${() => this.discard()}>${b("settings.discard_all")}</button>
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._save()}>${x("common.save")}</button>
+        <button ?disabled=${this._busy} @click=${() => this.discard()}>${x("settings.discard_all")}</button>
       </div>`;
 	}
 	render() {
 		let e = this._draft;
-		return e ? p`
+		return e ? m`
       <section class="card away-card ${this.snapshot?.away?.active ? "on" : ""}">
         <boopli-away .hass=${this.hass} .snapshot=${this.snapshot}></boopli-away>
       </section>
-      ${Ks().map((t) => p`<h2 class="group">${t.title}</h2>
+      ${fc().map((t) => m`<h2 class="group">${t.title}</h2>
           <div class="cards">${t.areas.filter((e) => this._shown(e)).map((t) => this._card(t, e))}</div>`)}
       <p class="muted small">
-        ${b("settings.want_to_do_all_of_it")}
-        <button type="button" class="chip" @click=${() => this._openWizard("first")}>${b("settings.run_the_first_setup_again")}</button>
+        ${x("settings.want_to_do_all_of_it")}
+        <button type="button" class="chip" @click=${() => this._openWizard("first")}>${x("settings.run_the_first_setup_again")}</button>
       </p>
       ${this._renderModal(e)} ${this._renderSaveBar()}
-      ${this._backup ? p`<boopli-backup .hass=${this.hass} .snapshot=${this.snapshot} .mode=${this._backup} @backup-close=${() => this._backup = ""}></boopli-backup>` : g}
-    ` : p`<p class="muted">${b("common.loading")}</p>`;
+      ${this._backup ? m`<boopli-backup .hass=${this.hass} .snapshot=${this.snapshot} .mode=${this._backup} @backup-close=${() => this._backup = ""}></boopli-backup>` : _}
+    ` : m`<p class="muted">${x("common.loading")}</p>`;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       textarea {
         font: inherit;
         width: 100%;
@@ -21410,13 +21674,13 @@ var Ws = "@address", Gs = () => ({
     `];
 	}
 };
-customElements.define("boopli-settings", Zs);
+customElements.define("boopli-settings", _c);
 // src/boopli-home.ts
-var Qs = 2e3;
-function $s() {
+var vc = 2e3;
+function yc() {
 	return `r${Math.random().toString(36).slice(2, 10)}`;
 }
-var ec = class extends _ {
+var bc = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -21440,7 +21704,7 @@ var ec = class extends _ {
 		e && (!this._draft || !this._base ? (this._base = structuredClone(e), this._draft = structuredClone(e)) : this._justSaved && JSON.stringify(e) !== JSON.stringify(this._base) && (this._base = structuredClone(e), this._draft = structuredClone(e), this._justSaved = !1));
 	}
 	updated() {
-		!this._synced && this.hass && (this._synced = !0, Vt(this.hass).then((e) => {
+		!this._synced && this.hass && (this._synced = !0, Bt(this.hass).then((e) => {
 			this._isDirty() || (this._base = structuredClone(e), this._draft = structuredClone(e));
 		}).catch(() => void 0));
 		let e = this._isDirty();
@@ -21464,9 +21728,9 @@ var ec = class extends _ {
 		if (!this.hass || !this._draft || this._busy) return !1;
 		this._busy = !0, this._error = "", this._message = "";
 		try {
-			return await Bt(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = b("common.saved"), !0;
+			return await zt(this.hass, this._draft), this._justSaved = !0, this._base = structuredClone(this._draft), this._message = x("common.saved"), !0;
 		} catch (e) {
-			return this._error = S(e), !1;
+			return this._error = C(e), !1;
 		} finally {
 			this._busy = !1;
 		}
@@ -21488,7 +21752,7 @@ var ec = class extends _ {
 		e && this._draft && (this._draft = {
 			...this._draft,
 			rooms: [...this._draft.rooms, {
-				id: $s(),
+				id: yc(),
 				name: e,
 				area_id: "",
 				notes: "",
@@ -21503,7 +21767,7 @@ var ec = class extends _ {
 		});
 	}
 	_aiOn() {
-		return Pn(this.snapshot);
+		return Nn(this.snapshot);
 	}
 	_room(e) {
 		return this._draft?.rooms.find((t) => t.id === e);
@@ -21563,12 +21827,12 @@ var ec = class extends _ {
 		this._patchTool({ working: !0 });
 		try {
 			let t = [];
-			for (let r of Array.from(e).slice(0, n)) t.push(await Oo(r));
+			for (let r of Array.from(e).slice(0, n)) t.push(await Jo(r));
 			let i = this._tool;
 			if (i?.kind !== "photos" || i.roomId !== r) return;
-			this._patchTool({ photos: [...i.photos, ...t] }), e.length > n && (this._error = b("home.up_to_photos_per_room_the", { max_photos: 4 }));
+			this._patchTool({ photos: [...i.photos, ...t] }), e.length > n && (this._error = x("home.up_to_photos_per_room_the", { max_photos: 4 }));
 		} catch (e) {
-			this._error = S(e);
+			this._error = C(e);
 		}
 		let i = this._tool;
 		i?.kind === "photos" && i.roomId === r && this._patchTool({ working: !1 });
@@ -21584,12 +21848,12 @@ var ec = class extends _ {
 			via: e
 		});
 		try {
-			let i = await mn(this.hass, n.name, n.notes, t.photos, e);
+			let i = await pn(this.hass, n.name, n.notes, t.photos, e);
 			if (r !== this._run) return;
 			this._review(n.id, "photos", i.notes, e);
 		} catch (e) {
 			if (r !== this._run) return;
-			this._error = S(e), this._patchTool({
+			this._error = C(e), this._patchTool({
 				working: !1,
 				sending: !1
 			});
@@ -21599,7 +21863,7 @@ var ec = class extends _ {
 		this._run++, this._tool?.kind === "photos" ? (this._patchTool({
 			working: !1,
 			sending: !1
-		}), this._error = b("common.you_stopped_waiting_your_photos_are")) : (this._iv = null, this._error = b("home.you_stopped_waiting_nothing_was_changed"));
+		}), this._error = x("common.you_stopped_waiting_your_photos_are")) : (this._iv = null, this._error = x("home.you_stopped_waiting_nothing_was_changed"));
 	}
 	_liveRooms() {
 		return (this._draft?.rooms ?? []).filter((e) => !e.hidden);
@@ -21623,7 +21887,7 @@ var ec = class extends _ {
 		if (!this.hass || e?.kind !== "chat") return;
 		let t = e.roomId ? this._room(e.roomId) : void 0, n = ++this._promptAsk;
 		try {
-			let r = await hn(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
+			let r = await mn(this.hass, e.include, t?.name ?? "", t?.notes ?? "", t ? void 0 : this._liveRooms().map((e) => ({
 				name: e.name,
 				notes: e.notes
 			})));
@@ -21633,7 +21897,7 @@ var ec = class extends _ {
 				copied: !1
 			});
 		} catch (e) {
-			n === this._promptAsk && (this._error = S(e));
+			n === this._promptAsk && (this._error = C(e));
 		}
 	}
 	async _copyPrompt() {
@@ -21646,7 +21910,7 @@ var ec = class extends _ {
 			let e = this.renderRoot.querySelector("#promptbox");
 			e && (e.select(), t = document.execCommand("copy"));
 		}
-		this._patchTool({ copied: t }), t || (this._error = b("home.copying_did_not_work_here_select"));
+		this._patchTool({ copied: t }), t || (this._error = x("home.copying_did_not_work_here_select"));
 	}
 	async _readPasted() {
 		let e = this._tool;
@@ -21654,10 +21918,10 @@ var ec = class extends _ {
 			this._error = "", this._patchTool({ working: !0 });
 			try {
 				if (e.roomId) {
-					let t = await gn(this.hass, e.pasted);
+					let t = await hn(this.hass, e.pasted);
 					this._review(e.roomId, "paste", t.notes);
 				} else {
-					let t = await _n(this.hass, e.pasted, this._liveRooms().map((e) => ({
+					let t = await gn(this.hass, e.pasted, this._liveRooms().map((e) => ({
 						id: e.id,
 						name: e.name
 					})));
@@ -21670,7 +21934,7 @@ var ec = class extends _ {
 					};
 				}
 			} catch (e) {
-				this._error = S(e), this._patchTool({ working: !1 });
+				this._error = C(e), this._patchTool({ working: !1 });
 			}
 		}
 	}
@@ -21686,12 +21950,12 @@ var ec = class extends _ {
 		if (e?.kind !== "flat" || !this._draft) return;
 		let t = [...this._draft.rooms], n = 0;
 		for (let r of e.items) {
-			let e = r.notes.trim().slice(0, Qs);
+			let e = r.notes.trim().slice(0, vc);
 			r.on && e && (n += 1, r.id && t.some((e) => e.id === r.id) ? t = t.map((t) => t.id === r.id ? {
 				...t,
 				notes: e
 			} : t) : t.push({
-				id: $s(),
+				id: yc(),
 				name: r.name,
 				area_id: "",
 				notes: e,
@@ -21701,7 +21965,7 @@ var ec = class extends _ {
 		this._draft = {
 			...this._draft,
 			rooms: t
-		}, this._tool = null, this._message = n ? b("home.notes_are_in", { count: n }) : b("home.nothing_was_used");
+		}, this._tool = null, this._message = n ? x("home.notes_are_in", { count: n }) : x("home.nothing_was_used");
 	}
 	async _askQuestions(e) {
 		let t = this._iv, n = t && this._room(t.roomId);
@@ -21714,7 +21978,7 @@ var ec = class extends _ {
 		};
 		let i = ++this._run;
 		try {
-			let a = await Ht(this.hass, n.name, n.notes, e, t.via);
+			let a = await Vt(this.hass, n.name, n.notes, e, t.via);
 			if (i !== this._run) return;
 			if (a.enough || a.questions.length === 0) {
 				await this._writeNotes(e, r);
@@ -21732,7 +21996,7 @@ var ec = class extends _ {
 			};
 		} catch (e) {
 			if (i !== this._run) return;
-			this._error = S(e), this._iv = r;
+			this._error = C(e), this._iv = r;
 		}
 	}
 	async _writeNotes(e, t) {
@@ -21746,7 +22010,7 @@ var ec = class extends _ {
 		};
 		let a = ++this._run;
 		try {
-			let t = await Ut(this.hass, r.name, r.notes, e, n.via);
+			let t = await Ht(this.hass, r.name, r.notes, e, n.via);
 			if (a !== this._run) return;
 			this._iv = {
 				...n,
@@ -21756,7 +22020,7 @@ var ec = class extends _ {
 			};
 		} catch (e) {
 			if (a !== this._run) return;
-			this._error = S(e), this._iv = i;
+			this._error = C(e), this._iv = i;
 		}
 	}
 	_currentAnswers(e) {
@@ -21768,7 +22032,7 @@ var ec = class extends _ {
 				answer: i.join(", ")
 			});
 		}), e.extra.trim() && t.push({
-			question: b("home.anything_else_about_this_room"),
+			question: x("home.anything_else_about_this_room"),
 			answer: e.extra.trim()
 		}), t;
 	}
@@ -21780,16 +22044,16 @@ var ec = class extends _ {
 	}
 	_acceptNotes() {
 		let e = this._iv;
-		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, Qs) }), this._iv = null);
+		e && (this._patchRoom(e.roomId, { notes: e.result.trim().slice(0, vc) }), this._iv = null);
 	}
 	_renderQuestion(e, t, n) {
 		let r = n.picked[t] ?? [];
-		return p`<div class="question">
+		return m`<div class="question">
       <div class="qtext">${e.text}</div>
       <div class="chips">
         ${e.options.map((n) => {
 			let i = r.includes(n);
-			return p`<button
+			return m`<button
             type="button"
             class="chip big ${i ? "on" : ""}"
             aria-pressed=${i}
@@ -21805,7 +22069,7 @@ var ec = class extends _ {
       <textarea
         rows="1"
         class="own"
-        placeholder=${b("common.or_write_it_in_your_own")}
+        placeholder=${x("common.or_write_it_in_your_own")}
         .value=${n.typed[t] ?? ""}
         @input=${(e) => this._patchIv({ typed: (this._iv?.typed ?? []).map((n, r) => r === t ? e.target.value : n) })}
       ></textarea>
@@ -21813,60 +22077,60 @@ var ec = class extends _ {
 	}
 	_renderInterview(e) {
 		let t = this._room(e.roomId);
-		return p`<section class="card interview">
+		return m`<section class="card interview">
       <div class="top">
-        <h2>${b("home.room_let_me_ask", { room: t?.name ?? b("home.room") })}</h2>
-        <button type="button" class="link" @click=${() => (this._run += 1, this._iv = null)}>${b("common.cancel")}</button>
+        <h2>${x("home.room_let_me_ask", { room: t?.name ?? x("home.room") })}</h2>
+        <button type="button" class="link" @click=${() => (this._run += 1, this._iv = null)}>${x("common.cancel")}</button>
       </div>
-      ${this._error ? p`<div class="error" role="alert">${this._error}</div>` : g}
-      ${e.phase === "working" ? p`<boopli-wait
-            .label=${e.via === "claude" ? b("common.asking_claude_this_takes_a_little") : e.answers.length ? b("home.writing_the_notes") : b("common.thinking")}
+      ${this._error ? m`<div class="error" role="alert">${this._error}</div>` : _}
+      ${e.phase === "working" ? m`<boopli-wait
+            .label=${e.via === "claude" ? x("common.asking_claude_this_takes_a_little") : e.answers.length ? x("home.writing_the_notes") : x("common.thinking")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${Fn(this.snapshot, e.via)}
+            .max=${Pn(this.snapshot, e.via)}
             @stop-waiting=${() => this._stopWaiting()}
-          ></boopli-wait>` : g}
-      ${e.phase === "questions" ? p`
+          ></boopli-wait>` : _}
+      ${e.phase === "questions" ? m`
             <p class="muted small">
-              ${e.round > 1 ? b("home.a_few_more_things") : b("home.a_few_quick_questions_about_this")} ${b("common.tap_what_fits")}
+              ${e.round > 1 ? x("home.a_few_more_things") : x("home.a_few_quick_questions_about_this")} ${x("common.tap_what_fits")}
             </p>
             ${e.questions.map((t, n) => this._renderQuestion(t, n, e))}
             <div class="question">
-              <div class="qtext">${b("home.anything_else_about_this_room")}</div>
+              <div class="qtext">${x("home.anything_else_about_this_room")}</div>
               <textarea
                 rows="2"
                 class="own"
-                placeholder=${b("home.optional_long_answers_are_welcome")}
+                placeholder=${x("home.optional_long_answers_are_welcome")}
                 .value=${e.extra}
                 @input=${(e) => this._patchIv({ extra: e.target.value })}
               ></textarea>
             </div>
             <div class="actions">
               <button class="primary big" @click=${() => this._askQuestions([...e.answers, ...this._currentAnswers(e)])}>
-                ${b("home.next_questions")}
+                ${x("home.next_questions")}
               </button>
               <button class="big" @click=${() => this._writeNotes([...e.answers, ...this._currentAnswers(e)])}>
-                ${b("home.enough_write_the_notes")}
+                ${x("home.enough_write_the_notes")}
               </button>
             </div>
-          ` : g}
-      ${e.phase === "review" ? p`
+          ` : _}
+      ${e.phase === "review" ? m`
             <p>
-              ${e.source === "paste" ? b("home.this_is_what_i_read_from") : e.source === "photos" ? b("home.this_is_what_the_ai_saw") : b("home.this_is_what_i_would_write")}
-              ${b("home.change_anything_that_is_wrong")} ${t?.notes ? p`<b>${b("home.it_replaces_the_notes_you_have")}</b>` : g} ${b("home.nothing_is_saved_until_you_press")}
+              ${e.source === "paste" ? x("home.this_is_what_i_read_from") : e.source === "photos" ? x("home.this_is_what_the_ai_saw") : x("home.this_is_what_i_would_write")}
+              ${x("home.change_anything_that_is_wrong")} ${t?.notes ? m`<b>${x("home.it_replaces_the_notes_you_have")}</b>` : _} ${x("home.nothing_is_saved_until_you_press")}
             </p>
             <textarea
               rows="8"
               class="notes"
-              aria-label=${b("home.proposed_notes")}
+              aria-label=${x("home.proposed_notes")}
               .value=${e.result}
               @input=${(e) => this._patchIv({ result: e.target.value })}
             ></textarea>
             <div class="actions">
-              <button class="primary big" ?disabled=${!e.result.trim()} @click=${() => this._acceptNotes()}>${b("home.use_these_notes")}</button>
-              ${e.source !== "paste" && this._aiOn() ? p`<button class="big" @click=${() => this._askQuestions(e.answers)}>${b("home.ask_me_more")}</button>` : g}
-              <button class="big" @click=${() => this._iv = null}>${b("home.throw_away")}</button>
+              <button class="primary big" ?disabled=${!e.result.trim()} @click=${() => this._acceptNotes()}>${x("home.use_these_notes")}</button>
+              ${e.source !== "paste" && this._aiOn() ? m`<button class="big" @click=${() => this._askQuestions(e.answers)}>${x("home.ask_me_more")}</button>` : _}
+              <button class="big" @click=${() => this._iv = null}>${x("home.throw_away")}</button>
             </div>
-          ` : g}
+          ` : _}
     </section>`;
 	}
 	_renderTool(e) {
@@ -21874,28 +22138,28 @@ var ec = class extends _ {
 	}
 	_renderPhotos(e) {
 		let t = this._room(e.roomId), n = e.photos.length >= 4;
-		return p`<section class="card interview">
+		return m`<section class="card interview">
       <div class="top">
-        <h2>${b("home.room_describe_it_from_photos", { room: t?.name ?? b("home.room") })}</h2>
-        <button type="button" class="link" ?disabled=${e.sending} @click=${() => this._tool = null}>${b("common.cancel")}</button>
+        <h2>${x("home.room_describe_it_from_photos", { room: t?.name ?? x("home.room") })}</h2>
+        <button type="button" class="link" ?disabled=${e.sending} @click=${() => this._tool = null}>${x("common.cancel")}</button>
       </div>
       <p class="muted">
-        ${b("home.take_or_pick_up_to_photos", { max_photos: 4 })}
+        ${x("home.take_or_pick_up_to_photos", { max_photos: 4 })}
       </p>
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
-      ${e.sending ? p`<boopli-wait
-            .label=${e.via === "claude" ? b("common.claude_is_looking_at_your_photos") : b("common.the_ai_is_looking_at_your")}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
+      ${e.sending ? m`<boopli-wait
+            .label=${e.via === "claude" ? x("common.claude_is_looking_at_your_photos") : x("common.the_ai_is_looking_at_your")}
             .pet=${this.snapshot?.settings?.pet_kind ?? "slime"}
-            .max=${Fn(this.snapshot, e.via)}
+            .max=${Pn(this.snapshot, e.via)}
             @stop-waiting=${() => this._stopWaiting()}
-          ></boopli-wait>` : p`
+          ></boopli-wait>` : m`
             <div class="thumbs">
-              ${e.photos.map((t, n) => p`<div class="thumb">
-                  <img src=${t} alt=${b("breakdown.photo", { n: n + 1 })} />
+              ${e.photos.map((t, n) => m`<div class="thumb">
+                  <img src=${t} alt=${x("breakdown.photo", { n: n + 1 })} />
                   <button
                     type="button"
                     class="x"
-                    aria-label=${b("breakdown.remove_photo", { n: n + 1 })}
+                    aria-label=${x("breakdown.remove_photo", { n: n + 1 })}
                     @click=${() => this._patchTool({ photos: e.photos.filter((e, t) => t !== n) })}
                   >
                     ×
@@ -21904,7 +22168,7 @@ var ec = class extends _ {
             </div>
             <div class="actions">
               <label class="filebtn big ${n || e.working ? "off" : ""}">
-                ${e.working ? b("breakdown.preparing") : e.photos.length ? b("common.add_another_photo") : b("common.take_or_pick_photos")}
+                ${e.working ? x("breakdown.preparing") : e.photos.length ? x("common.add_another_photo") : x("common.take_or_pick_photos")}
                 <input
                   type="file"
                   accept="image/*"
@@ -21916,38 +22180,38 @@ var ec = class extends _ {
 		}}
                 />
               </label>
-              ${w(this.snapshot) ? p`<button class="primary big" ?disabled=${!e.photos.length || e.working} @click=${() => this._sendPhotos("agent")}>
-                    ${b("home.describe_the_room")}
-                  </button>` : g}
-              ${T(this.snapshot) ? p`<button
-                    class="${w(this.snapshot) ? "" : "primary "}big"
+              ${T(this.snapshot) ? m`<button class="primary big" ?disabled=${!e.photos.length || e.working} @click=${() => this._sendPhotos("agent")}>
+                    ${x("home.describe_the_room")}
+                  </button>` : _}
+              ${E(this.snapshot) ? m`<button
+                    class="${T(this.snapshot) ? "" : "primary "}big"
                     ?disabled=${!e.photos.length || e.working}
                     @click=${() => this._sendPhotos("claude")}
                   >
-                    ${E("creation")} ${b("home.ask_claude_to_describe_it")}
-                  </button>` : g}
+                    ${D("creation")} ${x("home.ask_claude_to_describe_it")}
+                  </button>` : _}
             </div>
             <p class="muted small">
-              ${w(this.snapshot) ? b("home.the_agent_has_to_be_able") : ""}${T(this.snapshot) ? b("common.claude_gets_each_photo_through_a") : ""}
+              ${T(this.snapshot) ? x("home.the_agent_has_to_be_able") : ""}${E(this.snapshot) ? x("common.claude_gets_each_photo_through_a") : ""}
             </p>
           `}
     </section>`;
 	}
 	_renderChat(e) {
 		let t = e.roomId ? this._room(e.roomId) : void 0, n = !e.roomId;
-		return p`<section class="card interview">
+		return m`<section class="card interview">
       <div class="top">
-        <h2>${b("home.room_talk_it_out_in_your_own_ai_chat", { room: n ? b("home.my_whole_home") : t?.name ?? b("home.room") })}</h2>
-        <button type="button" class="link" @click=${() => this._tool = null}>${b("common.cancel")}</button>
+        <h2>${x("home.room_talk_it_out_in_your_own_ai_chat", { room: n ? x("home.my_whole_home") : t?.name ?? x("home.room") })}</h2>
+        <button type="button" class="link" @click=${() => this._tool = null}>${x("common.cancel")}</button>
       </div>
       <p class="muted">
-        ${b("home.use_any_chat_you_like_for")}
+        ${x("home.use_any_chat_you_like_for")}
       </p>
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
       <ol class="stepslist">
         <li>
-          ${x("home.copy_this_and_paste_it")}
-          ${this._hasNotes(e.roomId) ? p`<label class="inline">
+          ${S("home.copy_this_and_paste_it")}
+          ${this._hasNotes(e.roomId) ? m`<label class="inline">
                 <input
                   type="checkbox"
                   .checked=${e.include}
@@ -21958,31 +22222,31 @@ var ec = class extends _ {
 			}), this._loadPrompt();
 		}}
                 />
-                ${b("home.include_what_i_have_written_so")}
-              </label>` : g}
+                ${x("home.include_what_i_have_written_so")}
+              </label>` : _}
           <textarea id="promptbox" class="promptbox" rows="7" readonly .value=${e.prompt}></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!e.prompt} @click=${() => this._copyPrompt()}>
-              ${e.copied ? b("home.copied") : b("home.copy_the_prompt")}
+              ${e.copied ? x("home.copied") : x("home.copy_the_prompt")}
             </button>
           </div>
         </li>
         <li>
-          ${x("home.with_the_chat_when_you_say", { item: b("home.talk_it_through") })}
+          ${S("home.with_the_chat_when_you_say", { item: x("home.talk_it_through") })}
         </li>
         <li>
-          ${x("home.copy_the_notes_it_gives_back")}
+          ${S("home.copy_the_notes_it_gives_back")}
           <textarea
             class="pastebox"
             rows="6"
-            aria-label=${b("home.pasted_notes")}
-            placeholder=${b(n ? "home.paste_example_whole" : "home.paste_example_room")}
+            aria-label=${x("home.pasted_notes")}
+            placeholder=${x(n ? "home.paste_example_whole" : "home.paste_example_room")}
             .value=${e.pasted}
             @input=${(e) => this._patchTool({ pasted: e.target.value })}
           ></textarea>
           <div class="actions">
             <button class="primary big" ?disabled=${!e.pasted.trim() || e.working} @click=${() => this._readPasted()}>
-              ${e.working ? b("home.reading") : b("home.read_the_notes")}
+              ${e.working ? x("home.reading") : x("home.read_the_notes")}
             </button>
           </div>
         </li>
@@ -21991,27 +22255,27 @@ var ec = class extends _ {
 	}
 	_renderFlat(e) {
 		let t = e.items.filter((e) => e.on && e.notes.trim()).length;
-		return p`<section class="card interview">
+		return m`<section class="card interview">
       <div class="top">
-        <h2>${b("home.my_whole_home_what_i_found")}</h2>
-        <button type="button" class="link" @click=${() => this._tool = null}>${b("common.cancel")}</button>
+        <h2>${x("home.my_whole_home_what_i_found")}</h2>
+        <button type="button" class="link" @click=${() => this._tool = null}>${x("common.cancel")}</button>
       </div>
       <p>
-        ${b("home.here_are_the_rooms_in_what")}
+        ${x("home.here_are_the_rooms_in_what")}
       </p>
       ${e.items.map((e, t) => {
 			let n = e.id ? this._room(e.id) : void 0;
-			return p`<div class="question">
+			return m`<div class="question">
           <label class="inline qtext">
             <input type="checkbox" .checked=${e.on} @change=${(e) => this._patchFlat(t, { on: e.target.checked })} />
             ${e.name}
-            <span class="tag">${e.id ? b("home.your_room") : b("home.new_room")}</span>
+            <span class="tag">${e.id ? x("home.your_room") : x("home.new_room")}</span>
           </label>
-          ${n?.notes.trim() ? p`<div class="muted small">${b("home.it_replaces_the_notes_this_room")}</div>` : g}
+          ${n?.notes.trim() ? m`<div class="muted small">${x("home.it_replaces_the_notes_this_room")}</div>` : _}
           <textarea
             class="notes"
             rows="5"
-            aria-label=${b("home.notes_for", { name: e.name })}
+            aria-label=${x("home.notes_for", { name: e.name })}
             .value=${e.notes}
             @input=${(e) => this._patchFlat(t, { notes: e.target.value })}
           ></textarea>
@@ -22019,70 +22283,70 @@ var ec = class extends _ {
 		})}
       <div class="actions">
         <button class="primary big" ?disabled=${t === 0} @click=${() => this._applyFlat()}>
-          ${b("home.use_rooms", { count: t })}
+          ${x("home.use_rooms", { count: t })}
         </button>
-        <button class="big" @click=${() => this._tool = null}>${b("home.throw_away")}</button>
+        <button class="big" @click=${() => this._tool = null}>${x("home.throw_away")}</button>
       </div>
     </section>`;
 	}
 	_renderRoom(e) {
-		let t = w(this.snapshot), n = T(this.snapshot);
-		return p`<section class="room ${this._roomChanged(e.id) ? "changed" : ""}">
+		let t = T(this.snapshot), n = E(this.snapshot);
+		return m`<section class="room ${this._roomChanged(e.id) ? "changed" : ""}">
       <div class="head">
         <input
           class="name"
-          aria-label=${b("home.room_name")}
+          aria-label=${x("home.room_name")}
           .value=${e.name}
           @input=${(t) => this._patchRoom(e.id, { name: t.target.value })}
         />
-        ${this._roomChanged(e.id) ? p`<span class="unsaved-badge">${b("settings.unsaved")}</span>` : g}
+        ${this._roomChanged(e.id) ? m`<span class="unsaved-badge">${x("settings.unsaved")}</span>` : _}
       </div>
-      ${e.area_id ? p`<div class="muted small">${b("home.from_your_home_assistant_areas")}</div>` : p`<div class="muted small">${b("home.added_by_you")}</div>`}
-      <label for="n-${e.id}">${b("home.what_should_the_ai_know_about")}</label>
+      ${e.area_id ? m`<div class="muted small">${x("home.from_your_home_assistant_areas")}</div>` : m`<div class="muted small">${x("home.added_by_you")}</div>`}
+      <label for="n-${e.id}">${x("home.what_should_the_ai_know_about")}</label>
       <textarea
         id="n-${e.id}"
         class="notes"
         rows="5"
-        maxlength=${Qs}
-        placeholder=${b("home.for_example_dishwasher_is_under_the")}
+        maxlength=${vc}
+        placeholder=${x("home.for_example_dishwasher_is_under_the")}
         .value=${e.notes}
         @input=${(t) => this._patchRoom(e.id, { notes: t.target.value })}
       ></textarea>
       <div class="row-actions">
-        ${t ? p`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e)}>
-              ${E("auto-fix")} ${b("home.let_the_ai_ask_me")}
-            </button>` : g}
-        ${t || n ? p`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openPhotos(e)}>
-              ${E("camera-outline")} ${b("home.from_photos")}
-            </button>` : g}
-        ${n ? p`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e, "claude")}>
-              ${E("creation")} ${b("home.let_claude_ask_me")}
-            </button>` : g}
+        ${t ? m`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e)}>
+              ${D("auto-fix")} ${x("home.let_the_ai_ask_me")}
+            </button>` : _}
+        ${t || n ? m`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openPhotos(e)}>
+              ${D("camera-outline")} ${x("home.from_photos")}
+            </button>` : _}
+        ${n ? m`<button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._startInterview(e, "claude")}>
+              ${D("creation")} ${x("home.let_claude_ask_me")}
+            </button>` : _}
         <button type="button" class="textlink" ?disabled=${!e.name.trim() || this._busy} @click=${() => this._openChat(e)}>
-          ${E("chat-outline")} ${b("home.in_my_own_chat")}
+          ${D("chat-outline")} ${x("home.in_my_own_chat")}
         </button>
         <span class="spacer"></span>
-        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(e)}>${e.area_id ? b("home.hide") : b("common.delete")}</button>
+        <button type="button" class="textlink quiet" @click=${() => this._removeRoom(e)}>${e.area_id ? x("home.hide") : x("common.delete")}</button>
       </div>
     </section>`;
 	}
 	_renderSaveBar() {
-		return this._isDirty() ? p`<div class="savebar" role="status">
-      <span>${x("chore_editor.you_have_unsaved_changes")}</span>
+		return this._isDirty() ? m`<div class="savebar" role="status">
+      <span>${S("chore_editor.you_have_unsaved_changes")}</span>
       <span class="spacer"></span>
-      <button class="primary" ?disabled=${this._busy} @click=${() => this.save()}>${b("common.save")}</button>
-      <button ?disabled=${this._busy} @click=${() => this.discard()}>${b("common.discard")}</button>
-    </div>` : g;
+      <button class="primary" ?disabled=${this._busy} @click=${() => this.save()}>${x("common.save")}</button>
+      <button ?disabled=${this._busy} @click=${() => this.discard()}>${x("common.discard")}</button>
+    </div>` : _;
 	}
 	render() {
 		let e = this._draft;
-		if (!e) return p`<p class="muted">${b("common.loading")}</p>`;
-		if (this._iv) return p`${this._renderInterview(this._iv)}${this._renderSaveBar()}`;
-		if (this._tool) return p`${this._renderTool(this._tool)}${this._renderSaveBar()}`;
+		if (!e) return m`<p class="muted">${x("common.loading")}</p>`;
+		if (this._iv) return m`${this._renderInterview(this._iv)}${this._renderSaveBar()}`;
+		if (this._tool) return m`${this._renderTool(this._tool)}${this._renderSaveBar()}`;
 		let t = e.rooms.filter((e) => !e.hidden), n = e.rooms.filter((e) => e.hidden);
-		return p`
+		return m`
       <p class="intro">
-        ${b("home.tell_boopli_about_your_rooms_so")}
+        ${x("home.tell_boopli_about_your_rooms_so")}
       </p>
       <label class="switch">
         <input
@@ -22095,45 +22359,45 @@ var ec = class extends _ {
 			}, this._message = "";
 		}}
         />
-        <span>${b("home.send_room_notes_to_the_ai")}</span>
+        <span>${x("home.send_room_notes_to_the_ai")}</span>
       </label>
-      ${this._aiOn() ? g : p`<p class="muted small">
-            ${b("home.ai_help_is_off_so_the")}
+      ${this._aiOn() ? _ : m`<p class="muted small">
+            ${x("home.ai_help_is_off_so_the")}
           </p>`}
       <div class="whole">
-        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${E("chat-outline")} ${b("home.talk_through_my_whole_home_in")}</button>
-        <span class="muted small">${b("home.copy_a_prompt_talk_it_out")}</span>
+        <button type="button" class="textlink" @click=${() => this._openChat(null)}>${D("chat-outline")} ${x("home.talk_through_my_whole_home_in")}</button>
+        <span class="muted small">${x("home.copy_a_prompt_talk_it_out")}</span>
       </div>
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
-      ${this._message ? p`<div class="ok">${this._message}</div>` : g}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
+      ${this._message ? m`<div class="ok">${this._message}</div>` : _}
       <div class="grid">${t.map((e) => this._renderRoom(e))}</div>
       <div class="add">
-        <label for="newroom">${b("home.add_a_room_or_place")}</label>
+        <label for="newroom">${x("home.add_a_room_or_place")}</label>
         <div class="add-row">
           <input
             id="newroom"
-            placeholder=${b("home.for_example_balcony")}
+            placeholder=${x("home.for_example_balcony")}
             .value=${this._newName}
             @input=${(e) => this._newName = e.target.value}
             @keydown=${(e) => {
 			e.key === "Enter" && this._addRoom();
 		}}
           />
-          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>${b("common.add")}</button>
+          <button type="button" class="primary" ?disabled=${!this._newName.trim()} @click=${() => this._addRoom()}>${x("common.add")}</button>
         </div>
       </div>
-      ${n.length ? p`<details class="hiddenrooms" ?open=${this._showHidden} @toggle=${(e) => this._showHidden = e.target.open}>
-            <summary>${b("home.hidden_rooms", { count: n.length })}</summary>
-            ${n.map((e) => p`<div class="hiddenrow">
+      ${n.length ? m`<details class="hiddenrooms" ?open=${this._showHidden} @toggle=${(e) => this._showHidden = e.target.open}>
+            <summary>${x("home.hidden_rooms", { count: n.length })}</summary>
+            ${n.map((e) => m`<div class="hiddenrow">
                 <span>${e.name}</span>
-                <button type="button" @click=${() => this._patchRoom(e.id, { hidden: !1 })}>${b("home.show_again")}</button>
+                <button type="button" @click=${() => this._patchRoom(e.id, { hidden: !1 })}>${x("home.show_again")}</button>
               </div>`)}
-          </details>` : g}
+          </details>` : _}
       ${this._renderSaveBar()}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       h2 {
         font-size: 22px;
         margin-bottom: 8px;
@@ -22472,47 +22736,47 @@ var ec = class extends _ {
     `];
 	}
 };
-customElements.define("boopli-home", ec);
+customElements.define("boopli-home", bc);
 // src/boopli-badges.ts
-var tc = {
+var xc = {
 	steps: "#4f9cf0",
 	chores: "#2fc4a4",
 	meals: "#f2a03d",
 	streak: "#f0614a",
 	level: "#a46bf0"
-}, nc = "#e0a84a", rc = class extends _ {
+}, Sc = "#e0a84a", Cc = class extends v {
 	static {
 		this.properties = { snapshot: { attribute: !1 } };
 	}
 	_medal(e, t, n, r, i) {
-		let a = `${b(`badges.tier_${e}`)}: ${r}`;
-		return p`<li class="medal-box ${t ? "got" : ""} ${n ? "next" : ""}" title=${a}>
+		let a = `${x(`badges.tier_${e}`)}: ${r}`;
+		return m`<li class="medal-box ${t ? "got" : ""} ${n ? "next" : ""}" title=${a}>
       <span
         class="medal t-${e}"
-        style=${t ? `background:${fa[e]}` : ""}
+        style=${t ? `background:${Ma[e]}` : ""}
         role="img"
-        aria-label=${`${a}${t ? `, ${b("badges.earned")}` : ""}`}
-        >${E(i)}</span
+        aria-label=${`${a}${t ? `, ${x("badges.earned")}` : ""}`}
+        >${D(i)}</span
       >
       <span class="target">${r}</span>
     </li>`;
 	}
 	render() {
 		let e = this.snapshot?.pet, t = e?.badges;
-		if (!e || !t) return p`<p class="muted">${b("common.loading")}</p>`;
+		if (!e || !t) return m`<p class="muted">${x("common.loading")}</p>`;
 		let n = new Set(e.achievements ?? []), r = t.singles.filter((e) => n.has(e.id) || e.id !== "egg"), i = t.series.reduce((e, t) => e + t.targets.length, 0) + r.length, a = t.series.reduce((e, t) => e + t.targets.filter((e, r) => n.has(`${t.id}_${K[r]}`)).length, 0) + r.filter((e) => n.has(e.id)).length;
-		return p`
-      <h2>${b("badges.title")}</h2>
-      <p class="intro muted">${b("badges.intro")}</p>
-      <section class="hero" aria-label=${b("badges.total", {
+		return m`
+      <h2>${x("badges.title")}</h2>
+      <p class="intro muted">${x("badges.intro")}</p>
+      <section class="hero" aria-label=${x("badges.total", {
 			n: a,
 			m: i
 		})}>
-        <span class="trophy" aria-hidden="true">${E("trophy")}</span>
+        <span class="trophy" aria-hidden="true">${D("trophy")}</span>
         <div class="herotext">
           <div class="bignum"><b>${a}</b> / ${i}</div>
           <div class="herobar"><div class="herofill" style=${`width:${i ? a / i * 100 : 0}%`}></div></div>
-          <div class="herolabel">${b("badges.total", {
+          <div class="herolabel">${x("badges.total", {
 			n: a,
 			m: i
 		})}</div>
@@ -22520,29 +22784,29 @@ var tc = {
       </section>
       <div class="series">
         ${t.series.map((e) => {
-			let r = t.counts[e.stat] ?? 0, i = (t) => n.has(`${e.id}_${K[t]}`), a = e.targets.findIndex((e, t) => !i(t)), o = a === -1 ? void 0 : e.targets[a], s = e.targets.filter((e, t) => i(t)).length, c = s > 0 ? K[Math.max(...e.targets.map((e, t) => i(t) ? t : -1))] : "", l = a > 0 ? e.targets[a - 1] : 0, u = o === void 0 ? 100 : Math.max(0, Math.min(100, (r - l) / (o - l) * 100)), d = va(e.id), ee = a === -1 ? da.legendary : da[K[a]];
-			return p`<section class="card top-${c}" style=${`--hue:${tc[e.id] ?? nc}`}>
-            <span class="mark" aria-hidden="true">${E(d)}</span>
+			let r = t.counts[e.stat] ?? 0, i = (t) => n.has(`${e.id}_${K[t]}`), a = e.targets.findIndex((e, t) => !i(t)), o = a === -1 ? void 0 : e.targets[a], s = e.targets.filter((e, t) => i(t)).length, c = s > 0 ? K[Math.max(...e.targets.map((e, t) => i(t) ? t : -1))] : "", l = a > 0 ? e.targets[a - 1] : 0, u = o === void 0 ? 100 : Math.max(0, Math.min(100, (r - l) / (o - l) * 100)), d = Ra(e.id), f = a === -1 ? ja.legendary : ja[K[a]];
+			return m`<section class="card top-${c}" style=${`--hue:${xc[e.id] ?? Sc}`}>
+            <span class="mark" aria-hidden="true">${D(d)}</span>
             <div class="head">
-              <span class="seal" aria-hidden="true">${E(d)}</span>
+              <span class="seal" aria-hidden="true">${D(d)}</span>
               <div class="titles">
-                <h3>${b(`news.series_${e.id}`)}</h3>
-                <p class="about">${b(`badges.about_${e.id}`)}</p>
+                <h3>${x(`news.series_${e.id}`)}</h3>
+                <p class="about">${x(`badges.about_${e.id}`)}</p>
               </div>
               <span class="count">${r}</span>
             </div>
             <ul class="medals">
               ${e.targets.map((e, t) => this._medal(K[t], i(t), t === a, e, d))}
             </ul>
-            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow=${Math.round(u)} aria-label=${b(`news.series_${e.id}`)}>
-              <div class="fill" style=${`width:${u}%;background:${ee}`}></div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow=${Math.round(u)} aria-label=${x(`news.series_${e.id}`)}>
+              <div class="fill" style=${`width:${u}%;background:${f}`}></div>
             </div>
             <p class="nextline">
-              <span>${o === void 0 ? b("badges.all_earned") : b("badges.next", {
+              <span>${o === void 0 ? x("badges.all_earned") : x("badges.next", {
 				target: o,
 				left: Math.max(0, o - r)
 			})}</span>
-              <span class="nofm">${b("badges.n_of_m", {
+              <span class="nofm">${x("badges.n_of_m", {
 				n: s,
 				m: e.targets.length
 			})}</span>
@@ -22550,20 +22814,20 @@ var tc = {
           </section>`;
 		})}
       </div>
-      <h3 class="oneoffs">${b("badges.one_offs")}</h3>
+      <h3 class="oneoffs">${x("badges.one_offs")}</h3>
       <ul class="singles">
         ${r.map((e) => {
 			let t = n.has(e.id);
-			return p`<li class=${t ? "got" : ""} style=${`--hue:${nc}`}>
-            <span class="medal small" style=${t ? `background:${fa.legendary}` : ""} aria-hidden="true">${E(va(e.id))}</span>
-            <span>${b(t ? `news.single_${e.id}` : `badges.hint_${e.id}`)}</span>
+			return m`<li class=${t ? "got" : ""} style=${`--hue:${Sc}`}>
+            <span class="medal small" style=${t ? `background:${Ma.legendary}` : ""} aria-hidden="true">${D(Ra(e.id))}</span>
+            <span>${x(t ? `news.single_${e.id}` : `badges.hint_${e.id}`)}</span>
           </li>`;
 		})}
       </ul>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         --pane: var(--card-background-color, #1c1c1c);
       }
@@ -22926,9 +23190,9 @@ var tc = {
     `];
 	}
 };
-customElements.define("boopli-badges", rc);
+customElements.define("boopli-badges", Cc);
 // src/wall-tile.ts
-var Q = class extends _ {
+var Q = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -22966,7 +23230,7 @@ var Q = class extends _ {
     border-top: 3px solid var(--divider-color);
     border-radius: 0;
     padding: 12px 8px 0;
-    font-family: ${a(An)};
+    font-family: ${a(kn)};
   }
   :host([hidden]) {
     display: none;
@@ -23036,23 +23300,23 @@ var Q = class extends _ {
     color: var(--error-color, #db4437);
     font-size: clamp(12px, 3.2cqw, 18px);
   }
-`, ic = class extends Q {
+`, wc = class extends Q {
 	render() {
-		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(k(), {
+		let e = this.snapshot?.time_zone, t = new Date(this.nowMs || Date.now()), n = new Intl.DateTimeFormat(Bn(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
 			hour12: this.text("format", "24h") === "12h"
-		}).format(t), r = new Intl.DateTimeFormat(k(), {
+		}).format(t), r = new Intl.DateTimeFormat(Bn(), {
 			timeZone: e,
 			weekday: "long",
 			day: "numeric",
 			month: "long"
 		}).format(t);
-		return p`<div class="center">
+		return m`<div class="center">
       <div>
         <div class="huge">${n}</div>
-        ${this.flag("date", !0) ? p`<div class="normal muted">${r}</div>` : ""}
+        ${this.flag("date", !0) ? m`<div class="normal muted">${r}</div>` : ""}
       </div>
     </div>`;
 	}
@@ -23060,14 +23324,14 @@ var Q = class extends _ {
 		this.styles = [$, o``];
 	}
 };
-customElements.define("wall-tile-clock", ic);
+customElements.define("wall-tile-clock", wc);
 // src/wall-tile-pet.ts
-var ac = class extends Q {
+var Tc = class extends Q {
 	render() {
 		let e = this.snapshot?.pet;
-		if (!e) return p`<div class="center muted normal">${b("common.loading")}</div>`;
+		if (!e) return m`<div class="center muted normal">${x("common.loading")}</div>`;
 		let t = (this.snapshot?.runs ?? []).some((e) => e.steps.some((e) => e.status === "active" && !!e.on_it_until));
-		return p`<div class="wrap">
+		return m`<div class="wrap">
       <boopli-stage
         .kind=${this.snapshot?.settings?.pet_kind ?? "slime"}
         .mood=${e.mood}
@@ -23078,7 +23342,7 @@ var ac = class extends Q {
         .hungry=${e.hungry ?? !1}
         .activity=${t && !e.away ? "housework" : ""}
       ></boopli-stage>
-      <div class="normal name">${e.name} <span class="muted">${b("today.level", { level: e.level })}</span></div>
+      <div class="normal name">${e.name} <span class="muted">${x("today.level", { level: e.level })}</span></div>
     </div>`;
 	}
 	static {
@@ -23104,9 +23368,9 @@ var ac = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-pet", ac);
+customElements.define("wall-tile-pet", Tc);
 // src/wall-tile-due.ts
-var oc = class extends Q {
+var Ec = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -23123,36 +23387,36 @@ var oc = class extends Q {
 			try {
 				await e();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
 		}
 	}
 	render() {
-		if (!this.snapshot) return p`<div class="center muted normal">${b("common.loading")}</div>`;
-		let e = Qn(this.snapshot, this.nowMs).now;
-		if (!e) return p`<div class="center"><div><div class="big">${b("wall_tile_due.all_clear")}</div><div class="normal muted">${b("wall_tile_due.nothing_is_due_right_now")}</div></div></div>`;
+		if (!this.snapshot) return m`<div class="center muted normal">${x("common.loading")}</div>`;
+		let e = $n(this.snapshot, this.nowMs).now;
+		if (!e) return m`<div class="center"><div><div class="big">${x("wall_tile_due.all_clear")}</div><div class="normal muted">${x("wall_tile_due.nothing_is_due_right_now")}</div></div></div>`;
 		let { run: t, step: n } = e, r = !!n.on_it_until;
-		return p`<div class="due">
+		return m`<div class="due">
       <div class="label">${t.chore_name}</div>
       <div class="big title">${n.title}</div>
-      ${e.total > 1 ? p`<div class="small muted">${b("today.step_of", {
+      ${e.total > 1 ? m`<div class="small muted">${x("today.step_of", {
 			value: e.done + 1,
 			total: e.total
-		})}</div>` : g}
+		})}</div>` : _}
       <div class="actions">
-        <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => dn(this.hass, t.id, n.step_id))}>
-          ${b("common.done")}
+        <button class="primary" ?disabled=${this._busy} @click=${() => this._act(() => un(this.hass, t.id, n.step_id))}>
+          ${x("common.done")}
         </button>
-        <button ?disabled=${this._busy} @click=${() => this._act(() => (r ? Xt : Yt)(this.hass, t.id, n.step_id))}>
-          ${b(r ? "wall_tile_due.not_yet" : "today.on_it")}
+        <button ?disabled=${this._busy} @click=${() => this._act(() => (r ? Yt : Jt)(this.hass, t.id, n.step_id))}>
+          ${x(r ? "wall_tile_due.not_yet" : "today.on_it")}
         </button>
-        <button ?disabled=${this._busy} @click=${() => this._act(() => Jt(this.hass, t.id, n.step_id))}>
-          ${b("wizard.snooze")}
+        <button ?disabled=${this._busy} @click=${() => this._act(() => qt(this.hass, t.id, n.step_id))}>
+          ${x("wizard.snooze")}
         </button>
       </div>
-      ${this._error ? p`<div class="error">${this._error}</div>` : g}
+      ${this._error ? m`<div class="error">${this._error}</div>` : _}
     </div>`;
 	}
 	static {
@@ -23200,15 +23464,15 @@ var oc = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-due-now", oc);
+customElements.define("wall-tile-due-now", Ec);
 // src/wall-tile-next.ts
-var sc = class extends Q {
+var Dc = class extends Q {
 	render() {
-		if (!this.snapshot) return p`<div class="center muted normal">${b("common.loading")}</div>`;
-		let e = this.snapshot.time_zone, t = Qn(this.snapshot, this.nowMs), n = [
+		if (!this.snapshot) return m`<div class="center muted normal">${x("common.loading")}</div>`;
+		let e = this.snapshot.time_zone, t = $n(this.snapshot, this.nowMs), n = [
 			...t.ready.flatMap((e) => e.steps.map((t) => ({
 				title: `${e.run.chore_name}: ${t.title}`,
-				when: b("common.ready_now_hint")
+				when: x("common.ready_now_hint")
 			}))),
 			...t.groups.flatMap((e) => e.steps.map((t) => ({
 				title: `${e.run.chore_name}: ${t.title}`,
@@ -23216,15 +23480,15 @@ var sc = class extends Q {
 			}))),
 			...t.dueToday.map((t) => ({
 				title: t.chore.name,
-				when: b("wall_tile_next.at_time", { time: O(t.at, e) })
+				when: x("wall_tile_next.at_time", { time: Ln(t.at, e) })
 			})),
 			...t.upcoming.map((t) => ({
 				title: t.chore.name,
-				when: Bn(t.at, this.nowMs, e)
+				when: Vn(t.at, this.nowMs, e)
 			}))
 		].slice(0, this.num("count", 3));
-		return p`<div class="label">${b("wall_tile_next.coming_up")}</div>
-      ${n.length ? n.map((e) => p`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${e.when}</span></div>`) : p`<div class="normal muted">${b("wall_tile_next.nothing_planned")}</div>`}`;
+		return m`<div class="label">${x("wall_tile_next.coming_up")}</div>
+      ${n.length ? n.map((e) => m`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${e.when}</span></div>`) : m`<div class="normal muted">${x("wall_tile_next.nothing_planned")}</div>`}`;
 	}
 	static {
 		this.styles = [$, o`
@@ -23245,9 +23509,9 @@ var sc = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-coming-up", sc);
+customElements.define("wall-tile-coming-up", Dc);
 // src/wall-tile-entity.ts
-var cc = {
+var Oc = {
 	light: ["homeassistant", "toggle"],
 	switch: ["homeassistant", "toggle"],
 	input_boolean: ["homeassistant", "toggle"],
@@ -23259,7 +23523,7 @@ var cc = {
 	scene: ["scene", "turn_on"],
 	button: ["button", "press"],
 	input_button: ["input_button", "press"]
-}, lc = {
+}, kc = {
 	light: "lightbulb-outline",
 	switch: "power-plug-outline",
 	input_boolean: "toggle-switch-outline",
@@ -23274,27 +23538,27 @@ var cc = {
 	button: "gesture-tap-button",
 	person: "account-outline",
 	media_player: "speaker"
-}, uc = class extends Q {
+}, Ac = class extends Q {
 	_tap() {
-		let e = this.text("entity_id"), t = cc[e.split(".")[0]];
+		let e = this.text("entity_id"), t = Oc[e.split(".")[0]];
 		if (this.preview || !this.hass?.callService || !t || this.text("tap", "toggle") !== "toggle") return;
 		let [n, r] = t;
 		this.hass.callService(n, r, { entity_id: e });
 	}
 	render() {
 		let e = this.text("entity_id");
-		if (!e) return p`<div class="center muted normal">${b("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
-		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || J(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = cc[n]?.[1], s = !!o && this.text("tap", "toggle") === "toggle" && !this.preview, c = p`<div class="icon big">${E(lc[n] ?? "shape-outline")}</div>
+		if (!e) return m`<div class="center muted normal">${x("wall_tile_entity.pick_an_entity_in_the_board")}</div>`;
+		let t = this.hass?.states[e], n = e.split(".")[0], r = this.text("name") || J(this.hass, e), i = typeof t?.attributes?.unit_of_measurement == "string" ? ` ${t.attributes.unit_of_measurement}` : "", a = t?.state === "on", o = Oc[n]?.[1], s = !!o && this.text("tap", "toggle") === "toggle" && !this.preview, c = m`<div class="icon big">${D(kc[n] ?? "shape-outline")}</div>
       <div>
         <div class="label">${r}</div>
-        <div class="big">${t ? `${t.state}${i}` : b("wall_tile_entity.not_found")}</div>
+        <div class="big">${t ? `${t.state}${i}` : x("wall_tile_entity.not_found")}</div>
       </div>`;
-		if (!s) return p`<div class="ent ${a ? "on" : ""}">${c}</div>`;
-		let l = t?.state ?? b("wall_tile_entity.not_found"), u = b(o === "toggle" ? "wall_tile_entity.toggle_entity" : o === "press" ? "wall_tile_entity.press_button" : n === "script" ? "wall_tile_entity.run_script" : "wall_tile_entity.tap_label", {
+		if (!s) return m`<div class="ent ${a ? "on" : ""}">${c}</div>`;
+		let l = t?.state ?? x("wall_tile_entity.not_found"), u = x(o === "toggle" ? "wall_tile_entity.toggle_entity" : o === "press" ? "wall_tile_entity.press_button" : n === "script" ? "wall_tile_entity.run_script" : "wall_tile_entity.tap_label", {
 			name: r,
 			state: l
 		});
-		return p`<button type="button" class="ent tap ${a ? "on" : ""}" aria-label=${u} @click=${() => this._tap()}>${c}</button>`;
+		return m`<button type="button" class="ent tap ${a ? "on" : ""}" aria-label=${u} @click=${() => this._tap()}>${c}</button>`;
 	}
 	static {
 		this.styles = [$, o`
@@ -23331,9 +23595,9 @@ var cc = {
     `];
 	}
 };
-customElements.define("wall-tile-entity", uc);
+customElements.define("wall-tile-entity", Ac);
 // src/wall-tile-weather.ts
-var dc = {
+var jc = {
 	"clear-night": "weather-night",
 	cloudy: "weather-cloudy",
 	exceptional: "alert-outline",
@@ -23349,15 +23613,15 @@ var dc = {
 	sunny: "weather-sunny",
 	windy: "weather-windy",
 	"windy-variant": "weather-windy-variant"
-}, fc = class extends Q {
+}, Mc = class extends Q {
 	render() {
 		let e = this.text("entity_id");
-		if (!e) return p`<div class="center muted normal">${b("wall_tile_weather.pick_a_weather_entity_in_the")}</div>`;
+		if (!e) return m`<div class="center muted normal">${x("wall_tile_weather.pick_a_weather_entity_in_the")}</div>`;
 		let t = this.hass?.states[e];
-		if (!t) return p`<div class="center muted normal">${b("wall_tile_weather.weather_not_found")}</div>`;
-		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : b("wall_tile_weather.humidity", { percent: n.humidity });
-		return p`<div class="w">
-      <div class="huge sky">${E(dc[t.state] ?? "thermometer")}</div>
+		if (!t) return m`<div class="center muted normal">${x("wall_tile_weather.weather_not_found")}</div>`;
+		let n = t.attributes, r = n.temperature === void 0 ? "" : `${n.temperature}${n.temperature_unit ?? "°"}`, i = n.humidity === void 0 ? "" : x("wall_tile_weather.humidity", { percent: n.humidity });
+		return m`<div class="w">
+      <div class="huge sky">${D(jc[t.state] ?? "thermometer")}</div>
       <div>
         <div class="big">${r}</div>
         <div class="normal">${t.state.replace(/-/g, " ")}</div>
@@ -23386,9 +23650,9 @@ var dc = {
     `];
 	}
 };
-customElements.define("wall-tile-weather", fc);
+customElements.define("wall-tile-weather", Mc);
 // src/wall-tile-calendar.ts
-function pc(e, t) {
+function Nc(e, t) {
 	let n = new Intl.DateTimeFormat("en-US", {
 		timeZone: t,
 		year: "numeric",
@@ -23403,7 +23667,7 @@ function pc(e, t) {
 		time: `${n.hour}:${n.minute}`
 	};
 }
-var mc = 6e5, hc = 7, gc = class extends Q {
+var Pc = 6e5, Fc = 7, Ic = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -23415,7 +23679,7 @@ var mc = 6e5, hc = 7, gc = class extends Q {
 		super(), this._loadedFor = "", this._seq = 0, this._events = [], this._error = "";
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), mc);
+		super.connectedCallback(), this._timer = window.setInterval(() => void this._load(!0), Pc);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer);
@@ -23431,13 +23695,13 @@ var mc = 6e5, hc = 7, gc = class extends Q {
 		}
 		if (!this.hass?.callApi || !e && this._loadedFor === t) return;
 		this._loadedFor !== t && (this._events = [], this._error = ""), this._loadedFor = t;
-		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + hc * 864e5);
+		let n = ++this._seq, r = /* @__PURE__ */ new Date(), i = new Date(r.getTime() + Fc * 864e5);
 		try {
 			let e = await this.hass.callApi("GET", `calendars/${t}?start=${encodeURIComponent(r.toISOString())}&end=${encodeURIComponent(i.toISOString())}`);
 			if (n !== this._seq) return;
 			let a = this.snapshot?.time_zone;
 			this._events = e.map((e) => {
-				let t = e.summary ?? b("wall_tile_calendar.no_title");
+				let t = e.summary ?? x("wall_tile_calendar.no_title");
 				if (!e.start.dateTime) {
 					let n = String(e.start.date ?? "");
 					return /^\d{4}-\d{2}-\d{2}$/.test(n) ? {
@@ -23450,7 +23714,7 @@ var mc = 6e5, hc = 7, gc = class extends Q {
 				}
 				let n = Date.parse(e.start.dateTime);
 				if (Number.isNaN(n)) return null;
-				let { day: r, time: i } = pc(n, a);
+				let { day: r, time: i } = Nc(n, a);
 				return {
 					title: t,
 					at: n,
@@ -23460,20 +23724,20 @@ var mc = 6e5, hc = 7, gc = class extends Q {
 				};
 			}).filter((e) => e !== null).sort((e, t) => e.key < t.key ? -1 : +(e.key > t.key)), this._error = "";
 		} catch {
-			n === this._seq && (this._error = b("wall_tile_calendar.could_not_read_the_calendar"));
+			n === this._seq && (this._error = x("wall_tile_calendar.could_not_read_the_calendar"));
 		}
 	}
 	_when(e) {
 		let t = this.snapshot?.time_zone, n = (e) => {
 			let t = /* @__PURE__ */ new Date(`${e}T12:00:00Z`);
 			return t.setUTCDate(t.getUTCDate() + 1), t.toISOString().slice(0, 10);
-		}, r = pc(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? b("wall_tile_calendar.today") : i === n(r) ? b("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(k(), {
+		}, r = Nc(this.nowMs || Date.now(), t).day, i = e.day, a = i === r ? x("wall_tile_calendar.today") : i === n(r) ? x("wall_tile_calendar.tomorrow") : new Intl.DateTimeFormat(Bn(), {
 			timeZone: "UTC",
 			weekday: "short",
 			day: "numeric",
 			month: "short"
 		}).format(/* @__PURE__ */ new Date(`${i}T12:00:00Z`));
-		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(k(), {
+		return e.allDay ? a : `${a} ${new Intl.DateTimeFormat(Bn(), {
 			timeZone: t,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -23481,10 +23745,10 @@ var mc = 6e5, hc = 7, gc = class extends Q {
 		}).format(new Date(e.at))}`;
 	}
 	render() {
-		if (!this.text("entity_id")) return p`<div class="center muted normal">${b("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
-		let e = pc(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
-		return p`<div class="label">${b("wall_tile_calendar.calendar")}</div>
-      ${this._error ? p`<div class="error">${this._error}</div>` : t.length ? t.map((e) => p`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : p`<div class="normal muted">${b("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
+		if (!this.text("entity_id")) return m`<div class="center muted normal">${x("wall_tile_calendar.pick_a_calendar_in_the_board")}</div>`;
+		let e = Nc(this.nowMs || Date.now(), this.snapshot?.time_zone).day, t = this._events.filter((t) => t.day >= e).slice(0, this.num("count", 4));
+		return m`<div class="label">${x("wall_tile_calendar.calendar")}</div>
+      ${this._error ? m`<div class="error">${this._error}</div>` : t.length ? t.map((e) => m`<div class="row normal"><span class="t">${e.title}</span><span class="muted small">${this._when(e)}</span></div>`) : m`<div class="normal muted">${x("wall_tile_calendar.nothing_in_the_next_week")}</div>`}`;
 	}
 	static {
 		this.styles = [$, o`
@@ -23505,9 +23769,9 @@ var mc = 6e5, hc = 7, gc = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-calendar", gc);
+customElements.define("wall-tile-calendar", Ic);
 // src/wall-tile-camera.ts
-var _c = class extends Q {
+var Lc = class extends Q {
 	static {
 		this.properties = {
 			...Q.properties,
@@ -23530,9 +23794,9 @@ var _c = class extends Q {
 	}
 	render() {
 		let e = this.text("entity_id");
-		if (!e) return p`<div class="center muted normal">${b("wall_tile_camera.pick_a_camera_in_the_board")}</div>`;
+		if (!e) return m`<div class="center muted normal">${x("wall_tile_camera.pick_a_camera_in_the_board")}</div>`;
 		let t = this.hass?.states[e]?.attributes?.entity_picture;
-		return typeof t == "string" ? p`<img src=${`${t}${t.includes("?") ? "&" : "?"}t=${this._tick}`} alt=${b("wall_tile_camera.camera_picture")} />` : p`<div class="center muted normal">${b("wall_tile_camera.no_picture_from_this_camera")}</div>`;
+		return typeof t == "string" ? m`<img src=${`${t}${t.includes("?") ? "&" : "?"}t=${this._tick}`} alt=${x("wall_tile_camera.camera_picture")} />` : m`<div class="center muted normal">${x("wall_tile_camera.no_picture_from_this_camera")}</div>`;
 	}
 	static {
 		this.styles = [$, o`
@@ -23548,29 +23812,29 @@ var _c = class extends Q {
     `];
 	}
 };
-customElements.define("wall-tile-camera", _c);
+customElements.define("wall-tile-camera", Lc);
 // src/wall-tile-note.ts
-var vc = class extends Q {
+var Rc = class extends Q {
 	render() {
 		let e = this.text("text").trim();
-		return e ? p`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : p`<div class="center muted normal">${b("wall_tile_note.write_a_note_in_the_board")}</div>`;
+		return e ? m`<div class="center"><div class=${this.flag("big") ? "big" : "normal"}>${e}</div></div>` : m`<div class="center muted normal">${x("wall_tile_note.write_a_note_in_the_board")}</div>`;
 	}
 	static {
 		this.styles = [$, o`.center div { white-space: pre-line; }`];
 	}
 };
-customElements.define("wall-tile-note", vc);
+customElements.define("wall-tile-note", Rc);
 // src/wall-layout.ts
-function yc(e, t) {
+function zc(e, t) {
 	return e.x < t.x + t.w && t.x < e.x + e.w && e.y < t.y + t.h && t.y < e.y + e.h;
 }
-function bc(e) {
+function Bc(e) {
 	return e.reduce((e, t) => Math.max(e, t.y + t.h), 0);
 }
-function xc(e) {
+function Vc(e) {
 	return e.reduce((e, t) => Math.max(e, t.x + t.w), 0);
 }
-function Sc(e, t, n = "") {
+function Hc(e, t, n = "") {
 	let r = e.map((e) => ({
 		...e,
 		options: e.options
@@ -23579,7 +23843,7 @@ function Sc(e, t, n = "") {
 	let o = r.filter((e) => e !== a).sort((e, t) => e.y - t.y || e.x - t.x);
 	for (let e of o) {
 		for (;;) {
-			let t = i.filter((t) => yc(t, e));
+			let t = i.filter((t) => zc(t, e));
 			if (!t.length) break;
 			e.y = Math.max(...t.map((e) => e.y + e.h));
 		}
@@ -23588,9 +23852,9 @@ function Sc(e, t, n = "") {
 	}
 	return r;
 }
-function Cc(e, t, n, r, i) {
+function Uc(e, t, n, r, i) {
 	r = Math.min(r, t);
-	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => yc({
+	for (let a = 0; a + i <= n; a++) for (let n = 0; n + r <= t; n++) if (!e.some((e) => zc({
 		x: n,
 		y: a,
 		w: r,
@@ -23601,7 +23865,7 @@ function Cc(e, t, n, r, i) {
 	};
 	return null;
 }
-function wc(e, t) {
+function Wc(e, t) {
 	return t === 2 ? e.map((e) => ({
 		...e,
 		x: e.x * 2,
@@ -23617,55 +23881,55 @@ function wc(e, t) {
 	}));
 }
 // src/wall-tiles.ts
-var Tc = () => [
+var Gc = () => [
 	{
 		type: "clock",
-		label: b("wall_tiles.clock"),
+		label: x("wall_tiles.clock"),
 		icon: "clock-outline",
-		blurb: b("wall_tiles.the_time_and_the_date"),
+		blurb: x("wall_tiles.the_time_and_the_date"),
 		defaultW: 4,
 		defaultH: 2,
 		options: [{
 			key: "format",
-			label: b("wall_tiles.clock"),
+			label: x("wall_tiles.clock"),
 			kind: "choice",
 			default: "24h",
-			choices: [["24h", b("wall_tiles.hours_24")], ["12h", b("wall_tiles.hours_12")]]
+			choices: [["24h", x("wall_tiles.hours_24")], ["12h", x("wall_tiles.hours_12")]]
 		}, {
 			key: "date",
-			label: b("wall_tiles.show_the_date"),
+			label: x("wall_tiles.show_the_date"),
 			kind: "bool",
 			default: !0
 		}]
 	},
 	{
 		type: "pet",
-		label: b("wall_tiles.pet"),
+		label: x("wall_tiles.pet"),
 		icon: "paw",
-		blurb: b("wall_tiles.your_pet_in_its_room"),
+		blurb: x("wall_tiles.your_pet_in_its_room"),
 		defaultW: 6,
 		defaultH: 4,
 		options: []
 	},
 	{
 		type: "due_now",
-		label: b("wall_tiles.due_now"),
+		label: x("wall_tiles.due_now"),
 		icon: "check-circle-outline",
-		blurb: b("wall_tiles.what_is_due_now_with_done"),
+		blurb: x("wall_tiles.what_is_due_now_with_done"),
 		defaultW: 6,
 		defaultH: 4,
 		options: []
 	},
 	{
 		type: "coming_up",
-		label: b("wall_tile_next.coming_up"),
+		label: x("wall_tile_next.coming_up"),
 		icon: "calendar-clock",
-		blurb: b("wall_tiles.what_comes_next"),
+		blurb: x("wall_tiles.what_comes_next"),
 		defaultW: 6,
 		defaultH: 3,
 		options: [{
 			key: "count",
-			label: b("wall_tiles.how_many_to_show"),
+			label: x("wall_tiles.how_many_to_show"),
 			kind: "int",
 			default: 3,
 			min: 1,
@@ -23674,43 +23938,43 @@ var Tc = () => [
 	},
 	{
 		type: "entity",
-		label: b("wall_tiles.entity"),
+		label: x("wall_tiles.entity"),
 		icon: "toggle-switch-outline",
-		blurb: b("wall_tiles.any_sensor_or_switch_a_tap"),
+		blurb: x("wall_tiles.any_sensor_or_switch_a_tap"),
 		defaultW: 2,
 		defaultH: 2,
 		options: [
 			{
 				key: "entity_id",
-				label: b("wall_tiles.entity"),
+				label: x("wall_tiles.entity"),
 				kind: "entity",
 				default: ""
 			},
 			{
 				key: "name",
-				label: b("wall_tiles.name_optional"),
+				label: x("wall_tiles.name_optional"),
 				kind: "text",
 				default: ""
 			},
 			{
 				key: "tap",
-				label: b("wall_tiles.a_tap"),
+				label: x("wall_tiles.a_tap"),
 				kind: "choice",
 				default: "toggle",
-				choices: [["toggle", b("wall_tiles.tap_switches_it")], ["none", b("wall_tiles.tap_does_nothing")]]
+				choices: [["toggle", x("wall_tiles.tap_switches_it")], ["none", x("wall_tiles.tap_does_nothing")]]
 			}
 		]
 	},
 	{
 		type: "weather",
-		label: b("wall_tiles.weather"),
+		label: x("wall_tiles.weather"),
 		icon: "weather-partly-cloudy",
-		blurb: b("wall_tiles.the_weather_now"),
+		blurb: x("wall_tiles.the_weather_now"),
 		defaultW: 4,
 		defaultH: 2,
 		options: [{
 			key: "entity_id",
-			label: b("wall_tiles.weather"),
+			label: x("wall_tiles.weather"),
 			kind: "entity",
 			default: "",
 			domains: ["weather"]
@@ -23718,20 +23982,20 @@ var Tc = () => [
 	},
 	{
 		type: "calendar",
-		label: b("wall_tile_calendar.calendar"),
+		label: x("wall_tile_calendar.calendar"),
 		icon: "calendar-month-outline",
-		blurb: b("wall_tiles.the_next_events"),
+		blurb: x("wall_tiles.the_next_events"),
 		defaultW: 6,
 		defaultH: 4,
 		options: [{
 			key: "entity_id",
-			label: b("wall_tile_calendar.calendar"),
+			label: x("wall_tile_calendar.calendar"),
 			kind: "entity",
 			default: "",
 			domains: ["calendar"]
 		}, {
 			key: "count",
-			label: b("wall_tiles.how_many_to_show"),
+			label: x("wall_tiles.how_many_to_show"),
 			kind: "int",
 			default: 4,
 			min: 1,
@@ -23740,20 +24004,20 @@ var Tc = () => [
 	},
 	{
 		type: "camera",
-		label: b("picture.camera"),
+		label: x("picture.camera"),
 		icon: "camera-outline",
-		blurb: b("wall_tiles.a_picture_from_a_camera"),
+		blurb: x("wall_tiles.a_picture_from_a_camera"),
 		defaultW: 6,
 		defaultH: 4,
 		options: [{
 			key: "entity_id",
-			label: b("picture.camera"),
+			label: x("picture.camera"),
 			kind: "entity",
 			default: "",
 			domains: ["camera"]
 		}, {
 			key: "refresh_s",
-			label: b("wall_tiles.new_picture_every_seconds"),
+			label: x("wall_tiles.new_picture_every_seconds"),
 			kind: "int",
 			default: 10,
 			min: 5,
@@ -23762,38 +24026,38 @@ var Tc = () => [
 	},
 	{
 		type: "note",
-		label: b("wall_tiles.note"),
+		label: x("wall_tiles.note"),
 		icon: "note-text-outline",
-		blurb: b("wall_tiles.some_words_you_write"),
+		blurb: x("wall_tiles.some_words_you_write"),
 		defaultW: 4,
 		defaultH: 2,
 		options: [{
 			key: "text",
-			label: b("wall_tiles.text"),
+			label: x("wall_tiles.text"),
 			kind: "text",
 			default: "",
 			long: !0
 		}, {
 			key: "big",
-			label: b("wall_tiles.big_letters"),
+			label: x("wall_tiles.big_letters"),
 			kind: "bool",
 			default: !1
 		}]
 	}
-], Ec = { due_now: [3, 2] };
-function Dc(e) {
-	return Tc().find((t) => t.type === e);
+], Kc = { due_now: [3, 2] };
+function qc(e) {
+	return Gc().find((t) => t.type === e);
 }
-function Oc(e, t = [], n = 16, r = 9) {
-	let i = Dc(e), a = {};
+function Jc(e, t = [], n = 16, r = 9) {
+	let i = qc(e), a = {};
 	for (let e of i?.options ?? []) a[e.key] = e.default;
-	let [o, s] = Ec[e] ?? [1, 1];
+	let [o, s] = Kc[e] ?? [1, 1];
 	if (n < o || r < s) return null;
 	let c = Math.max(o, Math.min(Math.round((i?.defaultW ?? 2) * n / 16), n)), l = Math.max(s, Math.min(Math.round((i?.defaultH ?? 2) * r / 9), r));
 	for (;;) {
-		let i = Cc(t, n, r, c, l);
+		let i = Uc(t, n, r, c, l);
 		if (i) return {
-			id: Ja(),
+			id: ho(),
 			type: e,
 			...i,
 			w: c,
@@ -23804,19 +24068,19 @@ function Oc(e, t = [], n = 16, r = 9) {
 		(c >= l ? c > o : l <= s) ? --c : --l;
 	}
 }
-function kc(e = 16, t = 9) {
-	let n = Oc("clock", [], e, t), r = Oc("due_now", [n], e, t);
+function Yc(e = 16, t = 9) {
+	let n = Jc("clock", [], e, t), r = Jc("due_now", [n], e, t);
 	return r ? [n, r] : [n];
 }
-function Ac(e, t) {
+function Xc(e, t) {
 	let n = e ?? [], r = t.trim().toLowerCase();
 	return r && n.find((e) => e.name.toLowerCase() === r || e.id === t) || n[0];
 }
-function jc(e) {
+function Zc(e) {
 	return `${location.origin}${location.pathname}?wall=${encodeURIComponent(e.name)}`;
 }
 // src/boopli-wizard.ts
-var Mc = {
+var Qc = {
 	first: [
 		"welcome",
 		"phone",
@@ -23865,110 +24129,110 @@ var Mc = {
 	],
 	ladders: ["lad_start", "done"],
 	wall: ["wall_start", "done"]
-}, Nc = [
+}, $c = [
 	"spk_pick",
 	"spk_ding",
 	"spk_speech",
 	"spk_alarm",
 	"alarm_devices"
-], Pc = () => ({
-	first: b("wizard.first_setup"),
-	phone: b("wizard.phone_setup"),
-	quiet: b("wizard.quiet_hours_setup"),
-	lights: b("wizard.reminder_lights_setup"),
-	speakers: b("wizard.speaker_setup"),
-	alarms: b("wizard.alarm_devices_setup"),
-	presence: b("common.where_you_are"),
-	nudging: b("wizard.snooze_and_style"),
-	pet: b("common.your_pet"),
-	ai: b("wizard.ai_help_setup"),
-	ladders: b("common.nudge_it_your_way"),
-	wall: b("common.wall_board")
-}), Fc = 10, Ic = 30, Lc = () => ({
-	welcome: b("wizard.welcome"),
-	phone: b("wizard.your_phone"),
-	phone_detail: b("wizard.phone_details"),
-	quiet: b("settings.quiet_hours"),
-	nudging: b("wizard.snooze_and_style"),
-	lights: b("settings.reminder_lights"),
-	lights_detail: b("wizard.light_details"),
-	speaker_gate: b("wizard.speaker_reminders"),
-	spk_pick: b("wizard.pick_a_speaker"),
-	spk_ding: b("wizard.a_small_ding"),
-	spk_speech: b("wizard.a_spoken_sentence"),
-	spk_alarm: b("wizard.an_alarm_sound"),
-	spk_when: b("wizard.when_it_joins_in"),
-	alarm_devices: b("speakers.alarm_devices"),
-	alarm_detail: b("wizard.alarm_device_details"),
-	presence: b("common.where_you_are"),
-	pet: b("common.your_pet"),
-	ai_intro: b("settings.ai_help"),
-	ai_agent: b("wizard.your_ai_agent"),
-	claude_intro: b("settings.ask_claude_extra"),
-	claude_make: b("wizard.make_the_routine"),
-	claude_paste: b("wizard.connect_it"),
-	chores: b("wizard.first_chores"),
-	lad_start: b("wizard.what_do_you_want_to_do"),
-	lad_name: b("wizard.name_your_ladder"),
-	lad_nudge: b("wizard.a_nudge"),
-	lad_more: b("wizard.another_nudge"),
-	lad_end: b("wizard.how_it_ends"),
-	lad_delete: b("wizard.delete_a_ladder"),
-	wall_start: b("wizard.which_board"),
-	done: b("common.all_set")
-}), Rc = [
+], el = () => ({
+	first: x("wizard.first_setup"),
+	phone: x("wizard.phone_setup"),
+	quiet: x("wizard.quiet_hours_setup"),
+	lights: x("wizard.reminder_lights_setup"),
+	speakers: x("wizard.speaker_setup"),
+	alarms: x("wizard.alarm_devices_setup"),
+	presence: x("common.where_you_are"),
+	nudging: x("wizard.snooze_and_style"),
+	pet: x("common.your_pet"),
+	ai: x("wizard.ai_help_setup"),
+	ladders: x("common.nudge_it_your_way"),
+	wall: x("common.wall_board")
+}), tl = 10, nl = 30, rl = () => ({
+	welcome: x("wizard.welcome"),
+	phone: x("wizard.your_phone"),
+	phone_detail: x("wizard.phone_details"),
+	quiet: x("settings.quiet_hours"),
+	nudging: x("wizard.snooze_and_style"),
+	lights: x("settings.reminder_lights"),
+	lights_detail: x("wizard.light_details"),
+	speaker_gate: x("wizard.speaker_reminders"),
+	spk_pick: x("wizard.pick_a_speaker"),
+	spk_ding: x("wizard.a_small_ding"),
+	spk_speech: x("wizard.a_spoken_sentence"),
+	spk_alarm: x("wizard.an_alarm_sound"),
+	spk_when: x("wizard.when_it_joins_in"),
+	alarm_devices: x("speakers.alarm_devices"),
+	alarm_detail: x("wizard.alarm_device_details"),
+	presence: x("common.where_you_are"),
+	pet: x("common.your_pet"),
+	ai_intro: x("settings.ai_help"),
+	ai_agent: x("wizard.your_ai_agent"),
+	claude_intro: x("settings.ask_claude_extra"),
+	claude_make: x("wizard.make_the_routine"),
+	claude_paste: x("wizard.connect_it"),
+	chores: x("wizard.first_chores"),
+	lad_start: x("wizard.what_do_you_want_to_do"),
+	lad_name: x("wizard.name_your_ladder"),
+	lad_nudge: x("wizard.a_nudge"),
+	lad_more: x("wizard.another_nudge"),
+	lad_end: x("wizard.how_it_ends"),
+	lad_delete: x("wizard.delete_a_ladder"),
+	wall_start: x("wizard.which_board"),
+	done: x("common.all_set")
+}), il = [
 	"phone_detail",
 	"lights_detail",
 	"spk_when",
 	"alarm_detail"
-], zc = () => [{
+], al = () => [{
 	value: "quiet",
-	label: b("common.quiet"),
-	text: b("wizard.only_shown_in_boopli_never_nudges")
-}], Bc = () => [
+	label: x("common.quiet"),
+	text: x("wizard.only_shown_in_boopli_never_nudges")
+}], ol = () => [
 	{
 		value: "normal",
-		label: b("common.normal_notification")
+		label: x("common.normal_notification")
 	},
 	{
 		value: "high",
-		label: b("common.high_priority_pops_up")
+		label: x("common.high_priority_pops_up")
 	},
 	{
 		value: "alarm",
-		label: b("common.alarm_volume")
+		label: x("common.alarm_volume")
 	},
 	{
 		value: "alarm_max",
-		label: b("common.max_volume_not_on_every_phone")
+		label: x("common.max_volume_not_on_every_phone")
 	}
-], Vc = () => [
+], sl = () => [
 	{
 		value: "alexa_media",
-		label: b("helpers.alexa_media_player")
+		label: x("helpers.alexa_media_player")
 	},
 	{
 		value: "alexa_devices",
-		label: b("common.alexa_devices_notify_entity")
+		label: x("common.alexa_devices_notify_entity")
 	},
 	{
 		value: "tts",
-		label: b("common.a_tts_voice_on_this_speaker")
+		label: x("common.a_tts_voice_on_this_speaker")
 	}
-], Hc = () => [
+], cl = () => [
 	{
 		value: "alexa",
-		label: b("common.alexa_sound")
+		label: x("common.alexa_sound")
 	},
 	{
 		value: "file",
-		label: b("common.file_in_my_media_folder")
+		label: x("common.file_in_my_media_folder")
 	},
 	{
 		value: "bundled",
-		label: b("speakers.built_in_sound")
+		label: x("speakers.built_in_sound")
 	}
-], Uc = [
+], ll = [
 	0,
 	1,
 	2,
@@ -23976,7 +24240,7 @@ var Mc = {
 	4,
 	5,
 	6
-], Wc = class extends _ {
+], ul = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -24012,16 +24276,16 @@ var Mc = {
 	}
 	willUpdate() {
 		if (this._started || !this.snapshot) return;
-		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = Mc[this.wizard].filter((e) => q(this.snapshot).admin || !e.startsWith("claude_"));
+		this._started = !0, this._saved = structuredClone(this.snapshot.settings), this._baseline = structuredClone(this.snapshot.settings), this._draft = structuredClone(this.snapshot.settings), this._steps = Qc[this.wizard].filter((e) => q(this.snapshot).admin || !e.startsWith("claude_"));
 		let e = this.startAt;
-		if (this._first && Nc.includes(e)) {
+		if (this._first && $c.includes(e)) {
 			let e = this._steps.indexOf("speaker_gate");
-			this._steps.splice(e + 1, 0, ...Nc);
+			this._steps.splice(e + 1, 0, ...$c);
 		}
 		let t = this._steps.indexOf(e);
 		this._index = t >= 0 ? t : 0;
-		let n = Bo(this.snapshot.chores.map((e) => e.name));
-		this._picked = Ho().filter((e) => !n(e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
+		let n = os(this.snapshot.chores.map((e) => e.name));
+		this._picked = cs().filter((e) => !n(e.draft.name)).map((e) => e.label), this.snapshot.settings.speakers.length === 1 && (this._speaker = this.snapshot.settings.speakers[0].entity_id), this._enter();
 	}
 	_set(e) {
 		this._draft &&= {
@@ -24047,7 +24311,7 @@ var Mc = {
 		if (!(e.trim() === "" || Number.isNaN(r))) return Math.min(n, Math.max(t, r));
 	}
 	_numField(e, t, n, r, i, a = 1) {
-		return p`<label class="num">
+		return m`<label class="num">
       ${e}
       <input
         type="number"
@@ -24098,10 +24362,10 @@ var Mc = {
 			this._busy = !0, this._error = "";
 			try {
 				if (e === 1 && t === "next") {
-					if (this._step === "spk_pick" && !this._speaker) throw Error(b("wizard.pick_a_speaker_or_press_skip"));
+					if (this._step === "spk_pick" && !this._speaker) throw Error(x("wizard.pick_a_speaker_or_press_skip"));
 					this._step === "lad_start" && this._startLadderWork(), this._step === "wall_start" && this._startBoardWork(), this._step === "lad_name" && this._ensureLadder();
 					let e = structuredClone(this._draft);
-					this._adoptLadders(await At(this.hass, e), e);
+					this._adoptLadders(await kt(this.hass, e), e);
 				}
 				e === 1 && t === "skip" && (this._draft = structuredClone(this._saved), this._step === "chores" && (this._picked = [])), t === "more" && (this._steps[this._index + 1] !== "lad_nudge" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
@@ -24110,13 +24374,13 @@ var Mc = {
 					...this._steps.slice(this._index + 1)
 				]), this._rungAt(this._nudgesBefore(this._index + 1))), t === "gate" && (this._steps = [
 					...this._steps.slice(0, this._index + 1),
-					...Nc,
+					...$c,
 					...this._steps.slice(this._index + 1)
 				]);
 				let n = Math.max(0, Math.min(this._index + e, this._steps.length - 1));
-				this._steps[n] === "lad_nudge" && this._rungAt(this._nudgesBefore(n)), this._first && await qt(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
+				this._steps[n] === "lad_nudge" && this._rungAt(this._nudgesBefore(n)), this._first && await Kt(this.hass, "in_progress", this._steps[n]), this._index = n, this._enter();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -24135,9 +24399,9 @@ var Mc = {
 		if (this.hass && !this._busy) {
 			this._busy = !0;
 			try {
-				this._first && await qt(this.hass, "skipped", this._step), this._close();
+				this._first && await Kt(this.hass, "skipped", this._step), this._close();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -24147,8 +24411,8 @@ var Mc = {
 		if (this.hass && this._draft && !this._busy) {
 			this._busy = !0, this._error = "";
 			try {
-				if (await At(this.hass, this._draft), this._first) {
-					for (let e of Ho().filter((e) => this._picked.includes(e.label))) await nn(this.hass, {
+				if (await kt(this.hass, this._draft), this._first) {
+					for (let e of cs().filter((e) => this._picked.includes(e.label))) await tn(this.hass, {
 						...e.draft,
 						repeat: {
 							type: "none",
@@ -24157,11 +24421,11 @@ var Mc = {
 							days: {}
 						}
 					}), this._picked = this._picked.filter((t) => t !== e.label);
-					await qt(this.hass, "done", "");
+					await Kt(this.hass, "done", "");
 				}
 				this._close();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
@@ -24195,37 +24459,37 @@ var Mc = {
 		let t = e.boards ?? [];
 		if (this._boardPick) {
 			let e = t.find((e) => e.id === this._boardPick);
-			if (!e) throw Error(b("wizard.pick_a_board_first"));
+			if (!e) throw Error(x("wizard.pick_a_board_first"));
 			this._boardId = e.id;
 			return;
 		}
 		let n = this._boardName.trim();
-		if (!n) throw Error(b("wizard.give_the_new_board_a_name"));
-		if (t.length >= Fc) throw Error(b("wizard.you_have_boards_the_most_edit", { max_boards: Fc }));
-		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(b("wizard.there_is_already_a_board_called", { name: n }));
+		if (!n) throw Error(x("wizard.give_the_new_board_a_name"));
+		if (t.length >= tl) throw Error(x("wizard.you_have_boards_the_most_edit", { max_boards: tl }));
+		if (t.some((e) => e.name.toLowerCase() === n.toLowerCase())) throw Error(x("wizard.there_is_already_a_board_called", { name: n }));
 		let r = {
-			id: Ja(),
+			id: ho(),
 			name: n,
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: kc(16, 9)
+			tiles: Yc(16, 9)
 		};
 		this._boardId = r.id, this._boardPick = r.id, this._set({ boards: [...t, r] });
 	}
 	_renderWallStart(e) {
 		let t = e.boards ?? [];
-		return p`
-      <p>${b("wizard.a_board_is_a_grid_of")}</p>
+		return m`
+      <p>${x("wizard.a_board_is_a_grid_of")}</p>
       <div class="field">
-        <label for="boardpick">${b("wizard.which_board")}</label>
+        <label for="boardpick">${x("wizard.which_board")}</label>
         <select id="boardpick" @change=${(e) => this._boardPick = e.target.value}>
-          <option value="" ?selected=${!this._boardPick}>${b("wizard.a_new_board")}</option>
-          ${t.map((e) => p`<option value=${e.id} ?selected=${this._boardPick === e.id}>${e.name}</option>`)}
+          <option value="" ?selected=${!this._boardPick}>${x("wizard.a_new_board")}</option>
+          ${t.map((e) => m`<option value=${e.id} ?selected=${this._boardPick === e.id}>${e.name}</option>`)}
         </select>
       </div>
-      ${this._boardPick ? g : p`<div class="field">
-            <label for="boardname">${b("wizard.name_of_the_new_board")}</label>
+      ${this._boardPick ? _ : m`<div class="field">
+            <label for="boardname">${x("wizard.name_of_the_new_board")}</label>
             <input id="boardname" maxlength="40" .value=${this._boardName} @input=${(e) => this._boardName = e.target.value} />
           </div>`}
     `;
@@ -24245,7 +24509,7 @@ var Mc = {
 				];
 				return;
 			}
-			if (e.length >= Ic) throw Error(b("wizard.you_have_ladders_the_most_edit", { max_ladders: Ic }));
+			if (e.length >= nl) throw Error(x("wizard.you_have_ladders_the_most_edit", { max_ladders: nl }));
 			this._ladderId = "", this._ladderName = "", this._steps = [
 				"lad_start",
 				"lad_name",
@@ -24257,7 +24521,7 @@ var Mc = {
 			return;
 		}
 		let t = this._ladderPick || (e.length === 1 ? e[0].id : ""), n = e.find((e) => e.id === t);
-		if (!n) throw Error(b("wizard.pick_a_ladder_first"));
+		if (!n) throw Error(x("wizard.pick_a_ladder_first"));
 		this._ladderPick = n.id, this._ladderId = n.id, this._ladderName = n.name, this._steps = this._ladderAction === "edit" ? [
 			"lad_start",
 			"lad_name",
@@ -24283,14 +24547,14 @@ var Mc = {
 		if (!e || !t) return;
 		let n = `ladder:${e.id}`, r = (this.snapshot?.chores ?? []).filter((e) => e.nudge_style === n).map((e) => e.name).sort();
 		if (r.length) {
-			this._error = b("ladders.is_used_by_pick_another_nudge", {
+			this._error = x("ladders.is_used_by_pick_another_nudge", {
 				name: Z(e),
 				join: r.join(", ")
 			});
 			return;
 		}
 		if (t.default_style === n) {
-			this._error = b("ladders.is_the_style_for_new_chores", { name: Z(e) });
+			this._error = x("ladders.is_the_style_for_new_chores", { name: Z(e) });
 			return;
 		}
 		let i = t;
@@ -24300,7 +24564,7 @@ var Mc = {
 		let e = this._draft;
 		if (!e) return;
 		let t = this._ladderName.trim();
-		if (!t) throw Error(b("wizard.give_the_ladder_a_name"));
+		if (!t) throw Error(x("wizard.give_the_ladder_a_name"));
 		if (this._ladder()) {
 			this._patchLadder((e) => ({
 				...e,
@@ -24308,8 +24572,8 @@ var Mc = {
 			}));
 			return;
 		}
-		if ((e.ladders ?? []).length >= Ic) throw Error(b("wizard.you_have_ladders_the_most_edit", { max_ladders: Ic }));
-		let n = Ja();
+		if ((e.ladders ?? []).length >= nl) throw Error(x("wizard.you_have_ladders_the_most_edit", { max_ladders: nl }));
+		let n = ho();
 		this._ladderId = n, this._createdId = n, this._set({ ladders: [...e.ladders ?? [], {
 			id: n,
 			name: t,
@@ -24335,10 +24599,10 @@ var Mc = {
 		}));
 	}
 	_title(e, t) {
-		return e === "lad_nudge" ? b("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : Lc()[e];
+		return e === "lad_nudge" ? x("wizard.nudge", { n: this._nudgesBefore(t) + 1 }) : rl()[e];
 	}
 	_renderLadStart(e) {
-		let t = e.ladders ?? [], n = t.length === 0, r = t.filter((e) => !e.id.startsWith("standard_")), i = (e, t, n, r = !1) => p`<label class="inline option">
+		let t = e.ladders ?? [], n = t.length === 0, r = t.filter((e) => !e.id.startsWith("standard_")), i = (e, t, n, r = !1) => m`<label class="inline option">
       <input
         type="radio"
         name="ladact"
@@ -24348,46 +24612,46 @@ var Mc = {
       />
       <span><b>${t}</b> <span class="muted small">${n}</span></span>
     </label>`;
-		return p`
-      ${i("create", b("wizard.create_a_ladder"), t.length >= Ic ? b("wizard.you_have_ladders_the_most", { max_ladders: Ic }) : b("wizard.a_new_list_of_nudges"), t.length >= Ic)}
-      ${i("edit", b("wizard.edit_a_ladder"), b(n ? "wizard.you_have_no_ladders_yet" : "wizard.change_its_name_its_nudges_or"), n)}
-      ${i("delete", b("wizard.delete_a_ladder"), r.length === 0 ? b("wizard.only_your_own_ladders_can_be") : b("wizard.remove_one_of_your_own_that"), r.length === 0)}
-      ${this._ladderAction !== "create" && !n ? p`<div class="field">
-            <label for="ladpick">${b("wizard.which_ladder")}</label>
+		return m`
+      ${i("create", x("wizard.create_a_ladder"), t.length >= nl ? x("wizard.you_have_ladders_the_most", { max_ladders: nl }) : x("wizard.a_new_list_of_nudges"), t.length >= nl)}
+      ${i("edit", x("wizard.edit_a_ladder"), x(n ? "wizard.you_have_no_ladders_yet" : "wizard.change_its_name_its_nudges_or"), n)}
+      ${i("delete", x("wizard.delete_a_ladder"), r.length === 0 ? x("wizard.only_your_own_ladders_can_be") : x("wizard.remove_one_of_your_own_that"), r.length === 0)}
+      ${this._ladderAction !== "create" && !n ? m`<div class="field">
+            <label for="ladpick">${x("wizard.which_ladder")}</label>
             <select id="ladpick" .value=${this._ladderPick} @change=${(e) => this._ladderPick = e.target.value}>
-              <option value="" ?selected=${!this._ladderPick}>${b("wizard.pick_a_ladder")}</option>
-              ${(this._ladderAction === "delete" ? r : t).map((e) => p`<option value=${e.id} ?selected=${this._ladderPick === e.id}>
-                  ${Z(e)} (${b("common.nudges_count", { count: e.rungs.length })})
+              <option value="" ?selected=${!this._ladderPick}>${x("wizard.pick_a_ladder")}</option>
+              ${(this._ladderAction === "delete" ? r : t).map((e) => m`<option value=${e.id} ?selected=${this._ladderPick === e.id}>
+                  ${Z(e)} (${x("common.nudges_count", { count: e.rungs.length })})
                 </option>`)}
             </select>
-          </div>` : g}
+          </div>` : _}
     `;
 	}
 	_renderLadDelete() {
 		let e = this._ladder();
-		if (!e) return p`<p class="muted">${b("wizard.pick_a_ladder_first")}</p>`;
+		if (!e) return m`<p class="muted">${x("wizard.pick_a_ladder_first")}</p>`;
 		let t = `ladder:${e.id}`, n = (this.snapshot?.chores ?? []).filter((e) => e.nudge_style === t).map((e) => e.name).sort();
-		return p`
-      <p>${x("wizard.delete_the_ladder_this_cannot_be", { name: Z(e) })}</p>
-      ${n.length ? p`<p class="muted">${b("wizard.it_is_used_by_pick_another", { join: n.join(", ") })}</p>` : g}
+		return m`
+      <p>${S("wizard.delete_the_ladder_this_cannot_be", { name: Z(e) })}</p>
+      ${n.length ? m`<p class="muted">${x("wizard.it_is_used_by_pick_another", { join: n.join(", ") })}</p>` : _}
       <div class="gate">
         <button type="button" class="danger big" ?disabled=${this._busy || n.length > 0} @click=${() => this._deleteLadder()}>
-          ${b("wizard.delete_this_ladder")}
+          ${x("wizard.delete_this_ladder")}
         </button>
       </div>
     `;
 	}
 	_renderLadName() {
-		return p`
+		return m`
       <p>
-        ${b("wizard.a_ladder_is_a_list_of")}
+        ${x("wizard.a_ladder_is_a_list_of")}
       </p>
       <div class="field">
-        <label for="ladname">${b("common.name")}</label>
+        <label for="ladname">${x("common.name")}</label>
         <input
           id="ladname"
           maxlength="40"
-          placeholder=${b("wizard.for_example_pills")}
+          placeholder=${x("wizard.for_example_pills")}
           .value=${this._ladderName}
           @input=${(e) => this._ladderName = e.target.value}
         />
@@ -24396,9 +24660,9 @@ var Mc = {
 	}
 	_renderLadNudge(e) {
 		let t = this._nudgesBefore(this._index), n = this._ladder()?.rungs[t];
-		return n ? p`
+		return n ? m`
       <p>
-        ${b(t === 0 ? "wizard.the_first_nudge_goes_out_right" : "wizard.how_long_should_boopli_wait_for")}
+        ${x(t === 0 ? "wizard.the_first_nudge_goes_out_right" : "wizard.how_long_should_boopli_wait_for")}
       </p>
       <boopli-rung
         gap
@@ -24408,46 +24672,46 @@ var Mc = {
         .index=${t}
         @rung-change=${(e) => this._setRung(t, e.detail)}
       ></boopli-rung>
-      ${(this._ladder()?.rungs.length ?? 0) > 1 ? p`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(t)}>${b("ladders.remove_this_nudge")}</button></p>` : g}
-    ` : p`<p class="muted">${b("wizard.give_the_ladder_a_name_first")}</p>`;
+      ${(this._ladder()?.rungs.length ?? 0) > 1 ? m`<p><button type="button" class="danger" ?disabled=${this._busy} @click=${() => this._removeNudge(t)}>${x("ladders.remove_this_nudge")}</button></p>` : _}
+    ` : m`<p class="muted">${x("wizard.give_the_ladder_a_name_first")}</p>`;
 	}
 	_renderLadMore() {
 		let e = this._ladder()?.rungs.length ?? 0;
-		return p`
-      <p>${b("wizard.this_ladder_has_nudges", { count: e })}</p>
+		return m`
+      <p>${x("wizard.this_ladder_has_nudges", { count: e })}</p>
       <div class="gate">
         <button type="button" class="primary big" ?disabled=${this._busy || e >= 12} @click=${() => this._go(1, "more")}>
-          ${b("wizard.add_another_nudge")}
+          ${x("wizard.add_another_nudge")}
         </button>
-        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>${b("wizard.thats_all")}</button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1)}>${x("wizard.thats_all")}</button>
       </div>
-      ${e >= 12 ? p`<p class="muted small">${b("wizard.12_nudges_is_the_most")}</p>` : g}
+      ${e >= 12 ? m`<p class="muted small">${x("wizard.12_nudges_is_the_most")}</p>` : _}
     `;
 	}
 	_renderLadEnd(e) {
 		let t = this._ladder();
-		if (!t) return p`<p class="muted">${b("wizard.give_the_ladder_a_name_first")}</p>`;
+		if (!t) return m`<p class="muted">${x("wizard.give_the_ladder_a_name_first")}</p>`;
 		let n = `ladder:${t.id}`;
-		return p`
-      <p>${b("wizard.what_should_happen_after_the_last")}</p>
+		return m`
+      <p>${x("wizard.what_should_happen_after_the_last")}</p>
       <label class="inline option">
         <input type="radio" name="end" .checked=${!t.repeat_last} @change=${() => this._patchLadder((e) => ({
 			...e,
 			repeat_last: !1
 		}))} />
-        <span><b>${b("common.stop")}</b> <span class="muted small">${b("wizard.no_more_nudges_after_the_last")}</span></span>
+        <span><b>${x("common.stop")}</b> <span class="muted small">${x("wizard.no_more_nudges_after_the_last")}</span></span>
       </label>
       <label class="inline option">
         <input type="radio" name="end" .checked=${t.repeat_last} @change=${() => this._patchLadder((e) => ({
 			...e,
 			repeat_last: !0
 		}))} />
-        <span><b>${b("wizard.repeat_the_last_nudge")}</b> <span class="muted small">${b("wizard.until_you_answer")}</span></span>
+        <span><b>${x("wizard.repeat_the_last_nudge")}</b> <span class="muted small">${x("wizard.until_you_answer")}</span></span>
       </label>
-      ${t.repeat_last && t.rungs.length === 1 ? this._numField(b("wizard.repeat_every_minutes"), t.rungs[0].gap, 1, 720, (e) => this._setRung(0, {
+      ${t.repeat_last && t.rungs.length === 1 ? this._numField(x("wizard.repeat_every_minutes"), t.rungs[0].gap, 1, 720, (e) => this._setRung(0, {
 			...t.rungs[0],
 			gap: e
-		})) : g}
+		})) : _}
       <p>
         <label class="inline option">
           <input
@@ -24455,16 +24719,16 @@ var Mc = {
             .checked=${e.default_style === n}
             @change=${(e) => this._set({ default_style: e.target.checked ? n : this._baseline?.default_style && this._baseline.default_style !== n ? this._baseline.default_style : n === "ladder:standard_escalating" ? "ladder:standard_one" : "ladder:standard_escalating" })}
           />
-          <span><b>${b("wizard.use_it_for_new_chores")}</b></span>
+          <span><b>${x("wizard.use_it_for_new_chores")}</b></span>
         </label>
       </p>
-      <p class="muted small">${b("wizard.you_pick_a_ladder_for_a")}</p>
+      <p class="muted small">${x("wizard.you_pick_a_ladder_for_a")}</p>
     `;
 	}
 	_setQuiet(e) {
 		if (!this._draft) return;
 		let t = this._draft.quiet_hours.days;
-		e && Object.keys(t).length === 0 && (t = Object.fromEntries(Uc.map((e) => [String(e), { ...Ra }]))), this._set({ quiet_hours: {
+		e && Object.keys(t).length === 0 && (t = Object.fromEntries(ll.map((e) => [String(e), { ...io }]))), this._set({ quiet_hours: {
 			enabled: e,
 			days: t
 		} });
@@ -24490,32 +24754,32 @@ var Mc = {
 		let e = this._draft.quiet_hours, t = e.days[0] ?? null;
 		this._set({ quiet_hours: {
 			...e,
-			days: Object.fromEntries(Uc.map((e) => [String(e), t ? { ...t } : null]))
+			days: Object.fromEntries(ll.map((e) => [String(e), t ? { ...t } : null]))
 		} });
 	}
 	async _try(e, t) {
-		this._note(e, b("common.testing"));
+		this._note(e, x("common.testing"));
 		try {
-			this._note(e, pn(await t()));
+			this._note(e, fn(await t()));
 		} catch (t) {
-			this._note(e, S(t));
+			this._note(e, C(t));
 		}
 	}
 	_noteLine(e) {
 		let t = this._notes[e];
-		return t ? p`<div class="muted small note">${t}</div>` : g;
+		return t ? m`<div class="muted small note">${t}</div>` : _;
 	}
 	_renderWelcome(e) {
-		return p`
+		return m`
       <p>
-        ${b("wizard.boopli_breaks_chores_into_small_steps")}
+        ${x("wizard.boopli_breaks_chores_into_small_steps")}
       </p>
       ${this._renderPet(e)}
     `;
 	}
 	_renderPet(e) {
-		return p`<div class="field">
-      <label for="petname">${b("wizard.what_should_your_pet_be_called")}</label>
+		return m`<div class="field">
+      <label for="petname">${x("wizard.what_should_your_pet_be_called")}</label>
       <input
         id="petname"
         maxlength="30"
@@ -24524,7 +24788,7 @@ var Mc = {
       />
     </div>
     <div class="field">
-      <label>${b("wizard.pick_your_pet")}</label>
+      <label>${x("wizard.pick_your_pet")}</label>
       <boopli-pet-picker
         .value=${e.pet_kind ?? "slime"}
         @pet-kind-change=${(e) => this._set({ pet_kind: e.detail })}
@@ -24533,19 +24797,19 @@ var Mc = {
 	}
 	_renderPhone(e) {
 		let t = this._phones();
-		return p`
+		return m`
       <p>
-        ${x("wizard.which_phone_should_get_booplis_notifications", {
-			item: b("common.done"),
-			item2: b("wizard.snooze")
+        ${S("wizard.which_phone_should_get_booplis_notifications", {
+			item: x("common.done"),
+			item2: x("wizard.snooze")
 		})}
       </p>
-      ${t.length === 0 ? p`<p class="muted">
-            ${b("wizard.no_phone_with_the_home_assistant")}
-          </p>` : p`<div class="list">
+      ${t.length === 0 ? m`<p class="muted">
+            ${x("wizard.no_phone_with_the_home_assistant")}
+          </p>` : m`<div class="list">
             ${t.map((t) => {
 			let n = e.phones.find((e) => e.service === t);
-			return p`<div class="choice">
+			return m`<div class="choice">
                 <label class="inline">
                   <input
                     type="checkbox"
@@ -24561,12 +24825,12 @@ var Mc = {
                   />
                   ${X(t)}
                 </label>
-                <button type="button" @click=${() => this._try(`phone:${t}`, () => Qt(this.hass, {
+                <button type="button" @click=${() => this._try(`phone:${t}`, () => Zt(this.hass, {
 				service: t,
 				level: n?.level ?? "normal",
 				start_at: 1
 			}))}>
-                  ${b("wizard.send_a_test")}
+                  ${x("wizard.send_a_test")}
                 </button>
                 ${this._noteLine(`phone:${t}`)}
               </div>`;
@@ -24575,25 +24839,25 @@ var Mc = {
     `;
 	}
 	_renderPhoneDetail(e) {
-		return e.phones.length === 0 ? p`<p class="muted">${b("wizard.no_phone_is_set_up_yet")}</p>` : p`
+		return e.phones.length === 0 ? m`<p class="muted">${x("wizard.no_phone_is_set_up_yet")}</p>` : m`
       <p>
-        ${b("wizard.how_loud_should_each_phone_be")}
+        ${x("wizard.how_loud_should_each_phone_be")}
       </p>
       <div class="list">
-        ${e.phones.map((t) => p`<div class="choice col">
+        ${e.phones.map((t) => m`<div class="choice col">
             <b>${X(t.service)}</b>
             <label class="num">
-              ${b("settings.notification_level")}
+              ${x("settings.notification_level")}
               <select
                 @change=${(n) => this._set({ phones: e.phones.map((e) => e.service === t.service ? {
 			...e,
 			level: n.target.value
 		} : e) })}
               >
-                ${Bc().map((e) => p`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
+                ${ol().map((e) => m`<option value=${e.value} .selected=${e.value === t.level}>${e.label}</option>`)}
               </select>
             </label>
-            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Qt(this.hass, t))}>${b("wizard.send_a_test")}</button>
+            <button type="button" @click=${() => this._try(`phone:${t.service}`, () => Zt(this.hass, t))}>${x("wizard.send_a_test")}</button>
             ${this._noteLine(`phone:${t.service}`)}
           </div>`)}
       </div>
@@ -24601,9 +24865,9 @@ var Mc = {
 	}
 	_renderQuiet(e) {
 		let t = e.quiet_hours;
-		return p`
+		return m`
       <p>
-        ${b("wizard.should_boopli_stay_quiet_at_certain")}
+        ${x("wizard.should_boopli_stay_quiet_at_certain")}
       </p>
       <label class="inline option">
         <input
@@ -24611,61 +24875,61 @@ var Mc = {
           .checked=${t.enabled}
           @change=${(e) => this._setQuiet(e.target.checked)}
         />
-        ${b("wizard.hold_nudges_outside_the_times_below")}
+        ${x("wizard.hold_nudges_outside_the_times_below")}
       </label>
-      ${t.enabled ? p`
+      ${t.enabled ? m`
             <div class="days">
-              ${Uc.map((e) => {
+              ${ll.map((e) => {
 			let n = t.days[String(e)] ?? null;
-			return p`<div class="dayrow">
-                  <span class="dayname">${D()[e]}</span>
+			return m`<div class="dayrow">
+                  <span class="dayname">${O()[e]}</span>
                   <label class="inline small">
                     <input
                       type="checkbox"
                       .checked=${n === null}
-                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...Ra })}
+                      @change=${(t) => this._setDay(e, t.target.checked ? null : { ...io })}
                     />
-                    ${b("common.no_limit")}
+                    ${x("common.no_limit")}
                   </label>
-                  ${n ? p`<span class="muted small">${b("common.from")}</span>
+                  ${n ? m`<span class="muted small">${x("common.from")}</span>
                         <input
                           type="time"
-                          aria-label=${b("wizard.from", { value: D()[e] })}
+                          aria-label=${x("wizard.from", { value: O()[e] })}
                           .value=${n.start}
                           @input=${(t) => this._setDay(e, {
 				...n,
 				start: t.target.value
 			})}
                         />
-                        <span class="muted small">${b("common.until")}</span>
+                        <span class="muted small">${x("common.until")}</span>
                         <input
                           type="time"
-                          aria-label=${b("wizard.until", { value: D()[e] })}
+                          aria-label=${x("wizard.until", { value: O()[e] })}
                           .value=${n.stop}
                           @input=${(t) => this._setDay(e, {
 				...n,
 				stop: t.target.value
 			})}
-                        />` : g}
-                  ${e > 0 ? p`<button type="button" class="chip" @click=${() => this._copyDayAbove(e)}>${b("schedule_days.same_as", { value: D()[e - 1] })}</button>` : g}
+                        />` : _}
+                  ${e > 0 ? m`<button type="button" class="chip" @click=${() => this._copyDayAbove(e)}>${x("schedule_days.same_as", { value: O()[e - 1] })}</button>` : _}
                 </div>`;
 		})}
             </div>
-            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>${b("common.copy_monday_to_all_days")}</button>
-          ` : g}
+            <button type="button" class="chip" @click=${() => this._copyMondayToAll()}>${x("common.copy_monday_to_all_days")}</button>
+          ` : _}
     `;
 	}
 	_renderNudging(e) {
-		return p`
+		return m`
       <div class="field">
-        <label for="snooze">${b("wizard.when_you_press_snooze_how_many")}</label>
+        <label for="snooze">${x("wizard.when_you_press_snooze_how_many")}</label>
         <div class="chips">
           ${[
 			5,
 			10,
 			15,
 			30
-		].map((t) => p`<button type="button" class="chip ${e.snooze_minutes === t ? "on" : ""}" @click=${() => this._set({ snooze_minutes: t })}>${b("wizard.min", { m: t })}</button>`)}
+		].map((t) => m`<button type="button" class="chip ${e.snooze_minutes === t ? "on" : ""}" @click=${() => this._set({ snooze_minutes: t })}>${x("wizard.min", { m: t })}</button>`)}
           <input
             id="snooze"
             class="short"
@@ -24677,15 +24941,15 @@ var Mc = {
           />
         </div>
       </div>
-      <p>${b("wizard.how_should_new_chores_nudge_you")}</p>
-      ${[...zc(), ...(e.ladders ?? []).map((e) => ({
+      <p>${x("wizard.how_should_new_chores_nudge_you")}</p>
+      ${[...al(), ...(e.ladders ?? []).map((e) => ({
 			value: `ladder:${e.id}`,
 			label: Z(e),
-			text: p`
-            ${e.id.startsWith("standard_") ? g : p`<span class="sequence-type">${b("wizard.your_own_ladder").trimEnd()}</span>`}
-            <span>${b("wizard.ladder_nudges_sentence", { count: e.rungs.length })}</span>
+			text: m`
+            ${e.id.startsWith("standard_") ? _ : m`<span class="sequence-type">${x("wizard.your_own_ladder").trimEnd()}</span>`}
+            <span>${x("wizard.ladder_nudges_sentence", { count: e.rungs.length })}</span>
           `
-		}))].map((t) => p`<label class="inline option">
+		}))].map((t) => m`<label class="inline option">
           <input type="radio" name="style" .checked=${e.default_style === t.value} @change=${() => this._set({ default_style: t.value })} />
           <span><b>${t.label}</b> <span class="muted small">${t.text}</span></span>
         </label>`)}
@@ -24693,31 +24957,31 @@ var Mc = {
 	}
 	_renderLights(e) {
 		let t = Y(this.hass, ["light"]);
-		return p`
+		return m`
       <p>
-        ${x("wizard.which_lights_should_remind_you_each", {
-			item: b("wizard.blinks"),
-			item2: b("wizard.status_light")
+        ${S("wizard.which_lights_should_remind_you_each", {
+			item: x("wizard.blinks"),
+			item2: x("wizard.status_light")
 		})}
       </p>
-      ${t.length === 0 ? p`<p class="muted">${b("wizard.no_lights_found")}</p>` : p`<div class="list grid">
+      ${t.length === 0 ? m`<p class="muted">${x("wizard.no_lights_found")}</p>` : m`<div class="list grid">
             ${t.map((t) => {
 			let n = e.lights.find((e) => e.entity_id === t);
-			return p`<div class="choice col">
+			return m`<div class="choice col">
                 <label class="inline">
                   <input
                     type="checkbox"
                     .checked=${!!n}
                     @change=${(n) => {
 				let r = n.target.checked, i = e.lights.filter((e) => e.entity_id !== t);
-				this._set({ lights: r ? [...i, Ba(t)] : i });
+				this._set({ lights: r ? [...i, oo(t)] : i });
 			}}
                   />
                   ${this._fn(t)}
                 </label>
                 <!-- always shown (greyed out until the light is ticked), so every card is the same height -->
                 <div class="radios ${n ? "" : "off"}">
-                  ${["blink", "indicator"].map((r) => p`<label class="inline small">
+                  ${["blink", "indicator"].map((r) => m`<label class="inline small">
                       <input
                         type="radio"
                         name="mode-${t}"
@@ -24728,20 +24992,20 @@ var Mc = {
 				mode: r
 			} : e) })}
                       />
-                      ${b(r === "blink" ? "settings.blinks" : "wizard.status_light_stays_on_until_done")}
+                      ${x(r === "blink" ? "settings.blinks" : "wizard.status_light_stays_on_until_done")}
                     </label>`)}
-                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => Zt(this.hass, n))}>${b("common.test")}</button>
+                  <button type="button" ?disabled=${!n} @click=${() => n && this._try(`light:${t}`, () => Xt(this.hass, n))}>${x("common.test")}</button>
                 </div>
-                ${n ? this._noteLine(`light:${t}`) : g}
+                ${n ? this._noteLine(`light:${t}`) : _}
               </div>`;
 		})}
           </div>`}
     `;
 	}
 	_renderLightDetail(e) {
-		return e.lights.length === 0 ? p`<p class="muted">${b("wizard.no_reminder_light_is_set_up")}</p>` : p`
+		return e.lights.length === 0 ? m`<p class="muted">${x("wizard.no_reminder_light_is_set_up")}</p>` : m`
       <p>
-        ${b("wizard.fine_tune_each_light_a_light")}
+        ${x("wizard.fine_tune_each_light_a_light")}
       </p>
       <div class="list grid">
         ${e.lights.map((t) => {
@@ -24749,16 +25013,16 @@ var Mc = {
 				...e,
 				...n
 			} : e) });
-			return p`<div class="choice col">
+			return m`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
-            ${qa(this.hass, t.entity_id) ? p`<label class="num">
-                  ${b("settings.color")}
-                  <input type="color" class="swatch" .value=${Wa(t.color)} @input=${(e) => n({ color: Ua(e.target.value) })} />
-                </label>` : p`<span class="muted small">${b("wizard.this_light_only_goes_on_and")}</span>`}
-            ${t.mode === "blink" ? p`${this._numField(b("wizard.blink_length_ms"), t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
-                ${this._numField(b("wizard.number_of_blinks"), t.repeats, 1, 5, (e) => n({ repeats: e }))}
-                ${this._numField(b("wizard.pause_between_blinks_ms"), t.gap_ms, 0, 3e4, (e) => n({ gap_ms: e }), 100)}` : p`<span class="muted small">${b("wizard.a_status_light_has_no_blink")}</span>`}
-            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => Zt(this.hass, t))}>${b("common.test")}</button>
+            ${mo(this.hass, t.entity_id) ? m`<label class="num">
+                  ${x("settings.color")}
+                  <input type="color" class="swatch" .value=${uo(t.color)} @input=${(e) => n({ color: lo(e.target.value) })} />
+                </label>` : m`<span class="muted small">${x("wizard.this_light_only_goes_on_and")}</span>`}
+            ${t.mode === "blink" ? m`${this._numField(x("wizard.blink_length_ms"), t.blink_ms, 100, 3e4, (e) => n({ blink_ms: e }), 100)}
+                ${this._numField(x("wizard.number_of_blinks"), t.repeats, 1, 5, (e) => n({ repeats: e }))}
+                ${this._numField(x("wizard.pause_between_blinks_ms"), t.gap_ms, 0, 3e4, (e) => n({ gap_ms: e }), 100)}` : m`<span class="muted small">${x("wizard.a_status_light_has_no_blink")}</span>`}
+            <button type="button" @click=${() => this._try(`light:${t.entity_id}`, () => Xt(this.hass, t))}>${x("common.test")}</button>
             ${this._noteLine(`light:${t.entity_id}`)}
           </div>`;
 		})}
@@ -24766,35 +25030,35 @@ var Mc = {
     `;
 	}
 	_renderGate() {
-		return p`
+		return m`
       <p>
-        ${b("wizard.do_you_want_speaker_reminders_a")}
+        ${x("wizard.do_you_want_speaker_reminders_a")}
       </p>
       <div class="gate">
-        <button type="button" class="primary big" ?disabled=${this._busy} @click=${() => this._go(1, "gate")}>${b("wizard.set_up_speakers")}</button>
-        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${b("wizard.skip")}</button>
+        <button type="button" class="primary big" ?disabled=${this._busy} @click=${() => this._go(1, "gate")}>${x("wizard.set_up_speakers")}</button>
+        <button type="button" class="big" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${x("wizard.skip")}</button>
       </div>
     `;
 	}
 	_renderSpkPick(e) {
 		let t = Y(this.hass, ["media_player"]);
-		return p`
-      <p>${b("wizard.which_speaker_do_you_want_to")}</p>
-      ${t.length === 0 ? p`<p class="muted">${b("wizard.no_speakers_media_players_found")}</p>` : p`<div class="list grid">
+		return m`
+      <p>${x("wizard.which_speaker_do_you_want_to")}</p>
+      ${t.length === 0 ? m`<p class="muted">${x("wizard.no_speakers_media_players_found")}</p>` : m`<div class="list grid">
             ${t.map((t) => {
 			let n = e.speakers.find((e) => e.entity_id === t);
-			return p`<label class="inline option card-choice">
+			return m`<label class="inline option card-choice">
                 <input
                   type="radio"
                   name="speaker"
                   .checked=${this._speaker === t}
                   @change=${() => {
-				this._speaker = t, n || this._set({ speakers: [...e.speakers, Va(t)] });
+				this._speaker = t, n || this._set({ speakers: [...e.speakers, so(t)] });
 			}}
                 />
                 <span>
                   ${this._fn(t)}
-                  ${n ? p`<span class="muted small">${x("wizard.set_up", { speaker: Qa(n) })}</span>` : g}
+                  ${n ? m`<span class="muted small">${S("wizard.set_up", { speaker: yo(n) })}</span>` : _}
                 </span>
               </label>`;
 		})}
@@ -24812,30 +25076,30 @@ var Mc = {
 		});
 	}
 	_noSpeaker() {
-		return p`<p class="muted">${b("wizard.pick_a_speaker_first_press_back")}</p>`;
+		return m`<p class="muted">${x("wizard.pick_a_speaker_first_press_back")}</p>`;
 	}
 	_soundBlock(e, t, n, r) {
 		let i = t[e];
-		return p`
-      <p>${b("wizard.which_nudge_plays_it_is_set", { intro: n })}</p>
-      ${p`<div class="fields">
+		return m`
+      <p>${x("wizard.which_nudge_plays_it_is_set", { intro: n })}</p>
+      ${m`<div class="fields">
             <label class="num">
-              ${b("common.sound_type")}
+              ${x("common.sound_type")}
               <select @change=${(t) => this._patchSound(e, t.target.value === i.kind ? {} : {
 			kind: t.target.value,
 			sound: t.target.value === "bundled" ? e === "cue" ? "ding" : "alarm" : ""
 		})}>
-                ${Hc().filter((e) => e.value !== "alexa" || t.speech.route !== "tts").map((e) => p`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
+                ${cl().filter((e) => e.value !== "alexa" || t.speech.route !== "tts").map((e) => m`<option value=${e.value} .selected=${e.value === i.kind}>${e.label}</option>`)}
               </select>
             </label>
-            ${i.kind === "alexa" ? es(i.sound, (t) => this._patchSound(e, { sound: t })) : i.kind === "bundled" ? g : p`<label class="num wide">
-                    ${b("wizard.file_in_the_media_folder_or")}
+            ${i.kind === "alexa" ? bs(i.sound, (t) => this._patchSound(e, { sound: t })) : i.kind === "bundled" ? _ : m`<label class="num wide">
+                    ${x("wizard.file_in_the_media_folder_or")}
                     <input .value=${i.sound} @input=${(t) => this._patchSound(e, { sound: t.target.value })} />
                   </label>
-                  <div class="muted small">${x("wizard.for_example_boopli_ding_mp3_in")}</div>`}
-            ${e === "alarm" ? p`${this._numField(b("wizard.lasts_seconds"), i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
-                ${this._numField(b("wizard.repeats_every_seconds_0_once"), i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : g}
-            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => $t(this.hass, t, r))}>${b("common.test")}</button></div>
+                  <div class="muted small">${S("wizard.for_example_boopli_ding_mp3_in")}</div>`}
+            ${e === "alarm" ? m`${this._numField(x("wizard.lasts_seconds"), i.seconds, 3, 600, (e) => this._patchSound("alarm", { seconds: e }))}
+                ${this._numField(x("wizard.repeats_every_seconds_0_once"), i.repeat_s, 0, 60, (e) => this._patchSound("alarm", { repeat_s: e }))}` : _}
+            <div><button type="button" @click=${() => this._try(`spk:${r}`, () => Qt(this.hass, t, r))}>${x("common.test")}</button></div>
             ${this._noteLine(`spk:${r}`)}
           </div>`}
     `;
@@ -24847,12 +25111,12 @@ var Mc = {
 				...t.speech,
 				...e
 			}
-		})), i = za(this.hass, n.route, n.target);
-		return p`
-      <p>${b("wizard.the_speaker_says_the_step_out")}</p>
-      ${p`<div class="fields">
+		})), i = ao(this.hass, n.route, n.target);
+		return m`
+      <p>${x("wizard.the_speaker_says_the_step_out")}</p>
+      ${m`<div class="fields">
             <label class="num">
-              ${b("wizard.how")}
+              ${x("wizard.how")}
               <select
                 @change=${(e) => {
 			let t = e.target.value, n = (e, n) => t === "tts" && e.kind === "alexa" ? {
@@ -24873,38 +25137,38 @@ var Mc = {
 			}));
 		}}
               >
-                ${Vc().map((e) => p`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
+                ${sl().map((e) => m`<option value=${e.value} .selected=${e.value === n.route}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num">
-              ${n.route === "tts" ? b("common.voice") : b("common.alexa_device")}
+              ${n.route === "tts" ? x("common.voice") : x("common.alexa_device")}
               <select @change=${(e) => r({
 			target: e.target.value,
 			enabled: !!e.target.value
 		})}>
-                <option value="" .selected=${n.target === ""}>${b("common.choose")}</option>
-                ${i.map((e) => p`<option value=${e.value} .selected=${e.value === n.target}>${e.label}</option>`)}
+                <option value="" .selected=${n.target === ""}>${x("common.choose")}</option>
+                ${i.map((e) => m`<option value=${e.value} .selected=${e.value === n.target}>${e.label}</option>`)}
               </select>
             </label>
             <label class="num wide">
-              ${b("wizard.the_sentence_chore_and_step_are")}
+              ${x("wizard.the_sentence_chore_and_step_are")}
               <input .value=${t.speech_template} @input=${(e) => this._set({ speech_template: e.target.value })} />
             </label>
-            <div><button type="button" @click=${() => this._try("spk:speech", () => $t(this.hass, e, "speech"))}>${b("common.test")}</button></div>
+            <div><button type="button" @click=${() => this._try("spk:speech", () => Qt(this.hass, e, "speech"))}>${x("common.test")}</button></div>
             ${this._noteLine("spk:speech")}
           </div>`}
     `;
 	}
 	_renderSpkWhen(e) {
-		return p`
+		return m`
       <p>
-        ${x("wizard.joins_the_standard_nudges_one_nudge", {
+        ${S("wizard.joins_the_standard_nudges_one_nudge", {
 			name: this._fn(e.entity_id),
-			item: b("common.nudge_it_your_way")
+			item: x("common.nudge_it_your_way")
 		})}
       </p>
       <div class="actions inline-actions">
-        <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>${b("wizard.add_another_speaker")}</button>
+        <button type="button" ?disabled=${this._busy} @click=${() => this._addAnotherSpeaker()}>${x("wizard.add_another_speaker")}</button>
       </div>
     `;
 	}
@@ -24913,58 +25177,58 @@ var Mc = {
 			this._busy = !0;
 			try {
 				let e = structuredClone(this._draft);
-				this._adoptLadders(await At(this.hass, e), e), this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
+				this._adoptLadders(await kt(this.hass, e), e), this._speaker = "", this._index = this._steps.indexOf("spk_pick"), this._enter();
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
 		}
 	}
 	_renderAlarmDevices(e) {
-		let t = Y(this.hass, La, e.alarm_devices.map((e) => e.entity_id));
-		return p`
+		let t = Y(this.hass, ro, e.alarm_devices.map((e) => e.entity_id));
+		return m`
       <p>
-        ${b("wizard.optional_a_siren_switch_or_script")}
+        ${x("wizard.optional_a_siren_switch_or_script")}
       </p>
       <div class="list">
-        ${e.alarm_devices.map((t) => p`<div class="choice">
+        ${e.alarm_devices.map((t) => m`<div class="choice">
             <span class="grow">${this._fn(t.entity_id)}</span>
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => en(this.hass, t))}>${b("wizard.test_3_s")}</button>
-            <button type="button" aria-label=${b("common.remove")} @click=${() => this._set({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}>✕</button>
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => $t(this.hass, t))}>${x("wizard.test_3_s")}</button>
+            <button type="button" aria-label=${x("common.remove")} @click=${() => this._set({ alarm_devices: e.alarm_devices.filter((e) => e.entity_id !== t.entity_id) })}>✕</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`)}
       </div>
       <div class="choice">
         <select class="grow" @change=${(e) => this._addDevice = e.target.value}>
-          <option value="" .selected=${this._addDevice === ""}>${b("wizard.add_a_siren_switch_or_script")}</option>
-          ${t.map((e) => p`<option value=${e} .selected=${e === this._addDevice}>${this._fn(e)}</option>`)}
+          <option value="" .selected=${this._addDevice === ""}>${x("wizard.add_a_siren_switch_or_script")}</option>
+          ${t.map((e) => m`<option value=${e} .selected=${e === this._addDevice}>${this._fn(e)}</option>`)}
         </select>
         <button
           type="button"
           ?disabled=${!this._addDevice}
           @click=${() => {
-			this._set({ alarm_devices: [...e.alarm_devices, Ha(this._addDevice)] }), this._addDevice = "";
+			this._set({ alarm_devices: [...e.alarm_devices, co(this._addDevice)] }), this._addDevice = "";
 		}}
         >
-          ${b("common.add")}
+          ${x("common.add")}
         </button>
       </div>
     `;
 	}
 	_renderAlarmDetail(e) {
-		return e.alarm_devices.length === 0 ? p`<p class="muted">${b("wizard.no_alarm_device_is_set_up")}</p>` : p`
-      <p>${b("wizard.how_long_should_each_device_stay")}</p>
+		return e.alarm_devices.length === 0 ? m`<p class="muted">${x("wizard.no_alarm_device_is_set_up")}</p>` : m`
+      <p>${x("wizard.how_long_should_each_device_stay")}</p>
       <div class="list grid">
         ${e.alarm_devices.map((t) => {
 			let n = (n) => this._set({ alarm_devices: e.alarm_devices.map((e) => e.entity_id === t.entity_id ? {
 				...e,
 				...n
 			} : e) });
-			return p`<div class="choice col">
+			return m`<div class="choice col">
             <b>${this._fn(t.entity_id)}</b>
-            ${this._numField(b("common.on_for_seconds"), t.seconds, 1, 600, (e) => n({ seconds: e }))}
-            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => en(this.hass, t))}>${b("wizard.test_3_s")}</button>
+            ${this._numField(x("common.on_for_seconds"), t.seconds, 1, 600, (e) => n({ seconds: e }))}
+            <button type="button" @click=${() => this._try(`alarm:${t.entity_id}`, () => $t(this.hass, t))}>${x("wizard.test_3_s")}</button>
             ${this._noteLine(`alarm:${t.entity_id}`)}
           </div>`;
 		})}
@@ -24973,29 +25237,29 @@ var Mc = {
 	}
 	_renderPresence(e) {
 		let t = Y(this.hass, ["person"]);
-		return p`
+		return m`
       <p>
-        ${b("wizard.if_boopli_knows_where_you_are")}
+        ${x("wizard.if_boopli_knows_where_you_are")}
       </p>
       <div class="field">
-        <label for="presence">${b("wizard.which_person_are_you")}</label>
+        <label for="presence">${x("wizard.which_person_are_you")}</label>
         <select id="presence" @change=${(e) => this._set({ presence_entity: e.target.value })}>
-          <option value="" .selected=${e.presence_entity === ""}>${b("wizard.skip_assume_i_am_home")}</option>
-          ${t.map((t) => p`<option value=${t} .selected=${t === e.presence_entity}>${this._fn(t)}</option>`)}
+          <option value="" .selected=${e.presence_entity === ""}>${x("wizard.skip_assume_i_am_home")}</option>
+          ${t.map((t) => m`<option value=${t} .selected=${t === e.presence_entity}>${this._fn(t)}</option>`)}
         </select>
       </div>
     `;
 	}
 	_renderChores() {
-		let e = Bo((this.snapshot?.chores ?? []).map((e) => e.name));
-		return p`
+		let e = os((this.snapshot?.chores ?? []).map((e) => e.name));
+		return m`
       <p>
-        ${b("wizard.some_chores_to_start_with_untick")}
+        ${x("wizard.some_chores_to_start_with_untick")}
       </p>
       <div class="list">
-        ${Ho().map((t) => {
+        ${cs().map((t) => {
 			let n = e(t.draft.name);
-			return p`<label class="inline option">
+			return m`<label class="inline option">
             <input
               type="checkbox"
               ?disabled=${n}
@@ -25007,7 +25271,7 @@ var Mc = {
             />
             <span>
               <b>${t.draft.name}</b>
-              <span class="muted small">${n ? b("wizard.already_added") : t.draft.steps.map((e) => e.title).join(" → ")}</span>
+              <span class="muted small">${n ? x("wizard.already_added") : t.draft.steps.map((e) => e.title).join(" → ")}</span>
             </span>
           </label>`;
 		})}
@@ -25015,12 +25279,12 @@ var Mc = {
     `;
 	}
 	_renderAiIntro(e) {
-		return p`
+		return m`
       <p>
-        ${x("wizard.boopli_can_split_a_big_task", { item: b("wizard.your_own") })}
+        ${S("wizard.boopli_can_split_a_big_task", { item: x("wizard.your_own") })}
       </p>
       <p class="muted">
-        ${b("wizard.boopli_sends_nothing_by_itself_when")}
+        ${x("wizard.boopli_sends_nothing_by_itself_when")}
       </p>
       <label class="inline option">
         <input
@@ -25031,60 +25295,60 @@ var Mc = {
 			enabled: t.target.checked
 		} })}
         />
-        ${b("common.switch_ai_help_on")}
+        ${x("common.switch_ai_help_on")}
       </label>
     `;
 	}
 	_renderAiAgent(e) {
 		let t = Y(this.hass, ["ai_task"]);
-		return e.ai.enabled ? p`
-      <p>${b("wizard.which_ai_agent_should_boopli_use")}</p>
+		return e.ai.enabled ? m`
+      <p>${x("wizard.which_ai_agent_should_boopli_use")}</p>
       <div class="field">
         <select @change=${(t) => this._set({ ai: {
 			...e.ai,
 			entity_id: t.target.value
 		} })}>
-          <option value="" .selected=${e.ai.entity_id === ""}>${b("wizard.home_assistant_default")}</option>
-          ${t.map((t) => p`<option value=${t} .selected=${t === e.ai.entity_id}>${this._fn(t)}</option>`)}
+          <option value="" .selected=${e.ai.entity_id === ""}>${x("wizard.home_assistant_default")}</option>
+          ${t.map((t) => m`<option value=${t} .selected=${t === e.ai.entity_id}>${this._fn(t)}</option>`)}
         </select>
-        ${t.length === 0 ? p`<div class="muted small">${b("wizard.no_ai_task_agent_found_yet")}</div>` : g}
+        ${t.length === 0 ? m`<div class="muted small">${x("wizard.no_ai_task_agent_found_yet")}</div>` : _}
       </div>
-      <p class="muted small">${b("wizard.press_the_button_to_save_and")}</p>
+      <p class="muted small">${x("wizard.press_the_button_to_save_and")}</p>
       <div class="actions inline-actions">
         <button
           type="button"
           ?disabled=${this._busy}
           @click=${() => this._testAiAgent(e)}
         >
-          ${b("wizard.save_and_test_the_agent")}
+          ${x("wizard.save_and_test_the_agent")}
         </button>
       </div>
       ${this._noteLine("ai:test")}
-    ` : p`<p class="muted">${b("wizard.ai_help_is_off_go_back")}</p>`;
+    ` : m`<p class="muted">${x("wizard.ai_help_is_off_go_back")}</p>`;
 	}
 	async _testAiAgent(e) {
 		if (this.hass) {
-			this._note("ai:test", b("wizard.saving_and_asking_the_agent"));
+			this._note("ai:test", x("wizard.saving_and_asking_the_agent"));
 			try {
 				let t = structuredClone(e);
-				this._adoptLadders(await At(this.hass, t), t);
-				let n = await Lt(this.hass, b("common.make_a_cup_of_tea"), "now", []);
-				this._note("ai:test", b("common.agent_test_works", {
+				this._adoptLadders(await kt(this.hass, t), t);
+				let n = await It(this.hass, x("common.make_a_cup_of_tea"), "now", []);
+				this._note("ai:test", x("common.agent_test_works", {
 					count: n.steps.length,
-					first: n.steps[0]?.title ?? b("common.none")
+					first: n.steps[0]?.title ?? x("common.none")
 				}));
 			} catch (e) {
-				this._note("ai:test", S(e));
+				this._note("ai:test", C(e));
 			}
 		}
 	}
 	_renderClaudeIntro(e) {
-		return p`
+		return m`
       <p>
-        ${x("wizard.is_an_extra_button_next_to", { item: b("common.ask_claude") })}
+        ${S("wizard.is_an_extra_button_next_to", { item: x("common.ask_claude") })}
       </p>
       <p class="muted">
-        ${x("wizard.it_uses_you_make_a_small", { item: b("wizard.your_own_claude_account") })}
+        ${S("wizard.it_uses_you_make_a_small", { item: x("wizard.your_own_claude_account") })}
       </p>
       <label class="inline option">
         <input
@@ -25095,49 +25359,49 @@ var Mc = {
 			claude_enabled: t.target.checked
 		} })}
         />
-        ${b("common.switch_ask_claude_on")}
+        ${x("common.switch_ask_claude_on")}
       </label>
-      <p class="muted small">${b("wizard.not_interested_press_skip_or_go")}</p>
+      <p class="muted small">${x("wizard.not_interested_press_skip_or_go")}</p>
     `;
 	}
 	async _copyRoutinePrompt() {
 		try {
-			await navigator.clipboard.writeText(Ln()), this._note("claude:copy", b("wizard.copied"));
+			await navigator.clipboard.writeText(In()), this._note("claude:copy", x("wizard.copied"));
 		} catch {
-			this._note("claude:copy", b("wizard.your_browser_did_not_allow_copying"));
+			this._note("claude:copy", x("wizard.your_browser_did_not_allow_copying"));
 		}
 	}
 	_renderClaudeMake(e) {
-		if (!e.ai.claude_enabled) return p`<p class="muted">${b("wizard.ask_claude_is_off_go_back")}</p>`;
-		let t = In(e.ai.claude_ha_url, this.snapshot);
-		return p`
-      <p>${x("wizard.do_this_once_on_claude_ai")}</p>
+		if (!e.ai.claude_enabled) return m`<p class="muted">${x("wizard.ask_claude_is_off_go_back")}</p>`;
+		let t = Fn(e.ai.claude_ha_url, this.snapshot);
+		return m`
+      <p>${S("wizard.do_this_once_on_claude_ai")}</p>
       <ol class="how">
-        <li>${x("wizard.make_a_new_routine_name_it", { item: b("wizard.boopli") })}</li>
+        <li>${S("wizard.make_a_new_routine_name_it", { item: x("wizard.boopli") })}</li>
         <li>
-          ${b("wizard.paste_this_as_its_instructions")}
-          <textarea class="code" rows="6" readonly aria-label=${b("wizard.routine_instructions")} .value=${Ln()}></textarea>
+          ${x("wizard.paste_this_as_its_instructions")}
+          <textarea class="code" rows="6" readonly aria-label=${x("wizard.routine_instructions")} .value=${In()}></textarea>
           <div class="actions inline-actions">
-            <button type="button" @click=${() => this._copyRoutinePrompt()}>${b("wizard.copy_the_instructions")}</button>
+            <button type="button" @click=${() => this._copyRoutinePrompt()}>${x("wizard.copy_the_instructions")}</button>
           </div>
           ${this._noteLine("claude:copy")}
         </li>
         <li>
-          ${x("wizard.make_an_environment")}
-          ${t ? p`<code>${t}</code>` : p`${x("wizard.home_assistant_address_unknown")}`}
+          ${S("wizard.make_an_environment")}
+          ${t ? m`<code>${t}</code>` : m`${S("wizard.home_assistant_address_unknown")}`}
         </li>
-        <li>${x("wizard.add_an_to_the_routine_and", {
-			item: b("wizard.api_trigger"),
-			item2: b("wizard.generate_token")
+        <li>${S("wizard.add_an_to_the_routine_and", {
+			item: x("wizard.api_trigger"),
+			item2: x("wizard.generate_token")
 		})}</li>
-        <li>${x("wizard.leave_every_connector_gmail_calendar_and", { item: b("wizard.off") })}</li>
+        <li>${S("wizard.leave_every_connector_gmail_calendar_and", { item: x("wizard.off") })}</li>
       </ol>
-      <p class="muted small">${b("wizard.claudes_screens_change_now_and_then")}</p>
+      <p class="muted small">${x("wizard.claudes_screens_change_now_and_then")}</p>
     `;
 	}
 	_renderClaudePaste(e) {
-		return e.ai.claude_enabled ? p`
-      <p>${b("wizard.paste_the_routines_fire_address_and")}</p>
+		return e.ai.claude_enabled ? m`
+      <p>${x("wizard.paste_the_routines_fire_address_and")}</p>
       <boopli-claude
         .hass=${this.hass}
         .snapshot=${this.snapshot}
@@ -25146,15 +25410,15 @@ var Mc = {
         .beforeTest=${async () => {
 			if (!this.hass) return;
 			let t = structuredClone(e);
-			this._adoptLadders(await At(this.hass, t), t);
+			this._adoptLadders(await kt(this.hass, t), t);
 		}}
         @ai-patch=${(t) => this._set({ ai: {
 			...e.ai,
 			...t.detail
 		} })}
       ></boopli-claude>
-      <p class="muted small">${b("wizard.the_test_saves_your_settings_first")}</p>
-    ` : p`<p class="muted">${b("wizard.ask_claude_is_off_go_back")}</p>`;
+      <p class="muted small">${x("wizard.the_test_saves_your_settings_first")}</p>
+    ` : m`<p class="muted">${x("wizard.ask_claude_is_off_go_back")}</p>`;
 	}
 	_editOnWall() {
 		let e = this._board();
@@ -25168,15 +25432,15 @@ var Mc = {
 		})));
 	}
 	_renderDone(e) {
-		let t = this._baseline ? Ds(this._baseline, e, this.hass) : [], n = Ho().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
-		return this._first && n.length && t.push(b("wizard.chores_added", { join: n.join(", ") })), p`
-      <p>${x(this._first ? "wizard.what_changed_before_setup" : "wizard.what_changed_in_setup")}</p>
-      ${t.length === 0 ? p`<p class="muted">${b("wizard.nothing_changed")}</p>` : p`<ul>${t.map((e) => p`<li>${e}</li>`)}</ul>`}
-      ${this.wizard === "wall" && this._board() ? p`<p>${b("wizard.next_put_the_tiles_where_you")}</p>
-            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${b("wizard.edit_it_on_the_wall")}</button></p>
-            <p class="small">${x("wizard.link_for_the_tablets_start_page", { value: jc(this._board()) })}</p>` : g}
+		let t = this._baseline ? qs(this._baseline, e, this.hass) : [], n = cs().filter((e) => this._picked.includes(e.label)).map((e) => e.draft.name);
+		return this._first && n.length && t.push(x("wizard.chores_added", { join: n.join(", ") })), m`
+      <p>${S(this._first ? "wizard.what_changed_before_setup" : "wizard.what_changed_in_setup")}</p>
+      ${t.length === 0 ? m`<p class="muted">${x("wizard.nothing_changed")}</p>` : m`<ul>${t.map((e) => m`<li>${e}</li>`)}</ul>`}
+      ${this.wizard === "wall" && this._board() ? m`<p>${x("wizard.next_put_the_tiles_where_you")}</p>
+            <p><button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._editOnWall()}>${x("wizard.edit_it_on_the_wall")}</button></p>
+            <p class="small">${S("wizard.link_for_the_tablets_start_page", { value: Zc(this._board()) })}</p>` : _}
       <p class="muted small">
-        ${b("wizard.everything_can_be_changed_again_in")}
+        ${x("wizard.everything_can_be_changed_again_in")}
       </p>
     `;
 	}
@@ -25198,9 +25462,9 @@ var Mc = {
 			case "lights_detail": return this._renderLightDetail(e);
 			case "speaker_gate": return this._renderGate();
 			case "spk_pick": return this._renderSpkPick(e);
-			case "spk_ding": return t ? this._soundBlock("cue", t, b("wizard.a_short_friendly_sound_the_gentlest"), "cue") : this._noSpeaker();
+			case "spk_ding": return t ? this._soundBlock("cue", t, x("wizard.a_short_friendly_sound_the_gentlest"), "cue") : this._noSpeaker();
 			case "spk_speech": return t ? this._renderSpkSpeech(t, e) : this._noSpeaker();
-			case "spk_alarm": return t ? this._soundBlock("alarm", t, b("wizard.a_loud_sound_that_repeats_for"), "alarm") : this._noSpeaker();
+			case "spk_alarm": return t ? this._soundBlock("alarm", t, x("wizard.a_loud_sound_that_repeats_for"), "alarm") : this._noSpeaker();
 			case "spk_when": return t ? this._renderSpkWhen(t) : this._noSpeaker();
 			case "alarm_devices": return this._renderAlarmDevices(e);
 			case "alarm_detail": return this._renderAlarmDetail(e);
@@ -25218,13 +25482,13 @@ var Mc = {
 	}
 	render() {
 		let e = this._draft;
-		if (!e) return p`<p class="muted">${b("common.loading")}</p>`;
+		if (!e) return m`<p class="muted">${x("common.loading")}</p>`;
 		let t = this._step, n = t === "done", r = t === "speaker_gate" || t === "lad_more" || t === "lad_delete", i = this._steps.length - 1;
-		return p`
+		return m`
       <div class="shell">
-        <nav class="rail" aria-label=${b("common.steps")}>
-          <div class="rail-title">${Pc()[this.wizard]}</div>
-          ${this._steps.map((e, t) => p`<button
+        <nav class="rail" aria-label=${x("common.steps")}>
+          <div class="rail-title">${el()[this.wizard]}</div>
+          ${this._steps.map((e, t) => m`<button
               type="button"
               class="rail-item ${t === this._index ? "current" : ""} ${t < this._index ? "past" : ""}"
               ?disabled=${t >= this._index}
@@ -25236,33 +25500,33 @@ var Mc = {
         </nav>
         <section class="card main">
           <div class="top">
-            <span class="muted small">${b("schedule_wizard.step_of", {
+            <span class="muted small">${x("schedule_wizard.step_of", {
 			value: this._index + 1,
 			count: this._steps.length
 		})}</span>
-            ${n && this._first ? g : p`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._leave()}>
-                  ${this._first ? b("wizard.skip_for_now") : b("common.close")}
+            ${n && this._first ? _ : m`<button type="button" class="link" ?disabled=${this._busy} @click=${() => this._leave()}>
+                  ${this._first ? x("wizard.skip_for_now") : x("common.close")}
                 </button>`}
           </div>
           <div class="bar"><div class="fill" style="width:${(this._index + 1) / this._steps.length * 100}%"></div></div>
           <h2>${this._title(t, this._index)}</h2>
-          ${Rc.includes(t) ? p`<div class="muted small optional">${b("wizard.optional_details_skip_if_the_defaults")}</div>` : g}
+          ${il.includes(t) ? m`<div class="muted small optional">${x("wizard.optional_details_skip_if_the_defaults")}</div>` : _}
           ${this._renderStep(e)}
-          ${this._error ? p`<div class="error">${this._error}</div>` : g}
+          ${this._error ? m`<div class="error">${this._error}</div>` : _}
           <div class="actions">
-            ${this._index > 0 ? p`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1)}>${b("common.back")}</button>` : g}
+            ${this._index > 0 ? m`<button type="button" ?disabled=${this._busy} @click=${() => this._go(-1)}>${x("common.back")}</button>` : _}
             <span class="spacer"></span>
-            ${n ? p`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
-                  ${this._first ? b("wizard.finish") : b("settings.save_and_close")}
-                </button>` : r ? g : p`${t === "lad_name" || t === "lad_start" || t === "lad_nudge" ? g : p`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${b("wizard.skip")}</button>`}
-                    <button type="button" class="primary" ?disabled=${this._busy || this._index >= i} @click=${() => this._go(1)}>${b("common.next")}</button>`}
+            ${n ? m`<button type="button" class="primary" ?disabled=${this._busy} @click=${() => this._finish()}>
+                  ${this._first ? x("wizard.finish") : x("settings.save_and_close")}
+                </button>` : r ? _ : m`${t === "lad_name" || t === "lad_start" || t === "lad_nudge" ? _ : m`<button type="button" ?disabled=${this._busy} @click=${() => this._go(1, "skip")}>${x("wizard.skip")}</button>`}
+                    <button type="button" class="primary" ?disabled=${this._busy || this._index >= i} @click=${() => this._go(1)}>${x("common.next")}</button>`}
           </div>
         </section>
       </div>
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       .shell {
         display: grid;
         grid-template-columns: 240px minmax(0, 1fr);
@@ -25580,31 +25844,31 @@ var Mc = {
     `];
 	}
 };
-customElements.define("boopli-wizard", Wc);
+customElements.define("boopli-wizard", ul);
 // node_modules/lit-html/static.js
-var Gc = Symbol.for(""), Kc = (e) => {
-	if (e?.r === Gc) return e?._$litStatic$;
-}, qc = (e) => ({
+var dl = Symbol.for(""), fl = (e) => {
+	if (e?.r === dl) return e?._$litStatic$;
+}, pl = (e) => ({
 	_$litStatic$: e,
-	r: Gc
-}), Jc = /* @__PURE__ */ new Map(), Yc = ((e) => (t, ...n) => {
+	r: dl
+}), ml = /* @__PURE__ */ new Map(), hl = ((e) => (t, ...n) => {
 	let r = n.length, i, a, o = [], s = [], c, l = 0, u = !1;
 	for (; l < r;) {
-		for (c = t[l]; l < r && (a = n[l], (i = Kc(a)) !== void 0);) c += i + t[++l], u = !0;
+		for (c = t[l]; l < r && (a = n[l], (i = fl(a)) !== void 0);) c += i + t[++l], u = !0;
 		l !== r && s.push(a), o.push(c), l++;
 	}
 	if (l === r && o.push(t[r]), u) {
 		let e = o.join("$$lit$$");
-		(t = Jc.get(e)) === void 0 && (o.raw = o, Jc.set(e, t = o)), n = s;
+		(t = ml.get(e)) === void 0 && (o.raw = o, ml.set(e, t = o)), n = s;
 	}
 	return e(t, ...n);
-})(p);
+})(m);
 // src/wall-night.ts
-function Xc(e) {
+function gl(e) {
 	let t = /^(\d{1,2}):(\d{1,2})$/.exec(String(e).trim());
 	return !t || Number(t[1]) > 23 || Number(t[2]) > 59 ? NaN : Number(t[1]) * 60 + Number(t[2]);
 }
-function Zc(e, t, n) {
+function _l(e, t, n) {
 	if (!e?.enabled) return !1;
 	let r = new Date(t), i = new Intl.DateTimeFormat("en-GB", {
 		timeZone: n,
@@ -25622,11 +25886,11 @@ function Zc(e, t, n) {
 		"Sun"
 	].indexOf(i.weekday), o = e.days?.[String(a)];
 	if (!o) return !1;
-	let s = Number(i.hour) * 60 + Number(i.minute), c = Xc(o.start), l = Xc(o.stop);
+	let s = Number(i.hour) * 60 + Number(i.minute), c = gl(o.start), l = gl(o.stop);
 	return Number.isNaN(c) || Number.isNaN(l) ? !1 : s < c || s >= l;
 }
 // src/boopli-wall.ts
-var Qc = 3e4, $c = class extends _ {
+var vl = 3e4, yl = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -25649,7 +25913,7 @@ var Qc = 3e4, $c = class extends _ {
 		super(), this._onVisible = () => {
 			document.visibilityState === "visible" && this._keepAwake();
 		}, this._wake = () => {
-			this._awakeUntil = Date.now() + Qc, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
+			this._awakeUntil = Date.now() + vl, window.clearTimeout(this._awakeTimer), this._awakeTimer = window.setTimeout(() => this.requestUpdate(), 30100);
 		}, this._down = (e) => {
 			if (!this.pickable || e.button > 0 || this._drag) return;
 			let t = e.target, n = t.dataset?.id, r = this._board();
@@ -25685,7 +25949,7 @@ var Qc = 3e4, $c = class extends _ {
 				...i,
 				w: Math.max(1, Math.min(r.cx - i.x + 1, r.cols - i.x)),
 				h: Math.max(1, Math.min(r.cy - i.y + 1, r.rows - i.y))
-			}, o = Sc(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
+			}, o = Hc(n.tiles.map((e) => e.id === t.id ? a : e), n.rows, t.id);
 			o && (this._live = o);
 		}, this._up = (e) => {
 			let t = this._drag;
@@ -25728,48 +25992,48 @@ var Qc = 3e4, $c = class extends _ {
 		} catch {}
 	}
 	_board() {
-		return this.board ?? Ac(this.snapshot?.settings?.boards, this.boardName);
+		return this.board ?? Xc(this.snapshot?.settings?.boards, this.boardName);
 	}
 	render() {
 		let e = this._board();
-		if (!this.snapshot || !e) return p`<div class="note">${this.snapshot ? this.canEdit ? b("wall.no_board_yet_make_one_in") : b("wall.no_board_yet_ask_an_admin") : b("common.loading")}</div>
-        ${this.preview ? g : p`<div class="controls"><button type="button" aria-label=${b("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
+		if (!this.snapshot || !e) return m`<div class="note">${this.snapshot ? this.canEdit ? x("wall.no_board_yet_make_one_in") : x("wall.no_board_yet_ask_an_admin") : x("common.loading")}</div>
+        ${this.preview ? _ : m`<div class="controls"><button type="button" aria-label=${x("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button></div>`}`;
-		let t = this.snapshot.time_zone, n = !this.preview && !!Qn(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && Zc(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
-		return p`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
-      ${a ? p`<div class="away" role="status">${E("bag-suitcase")} <b>${b("wall.away_mode_is_on")}</b> <span>${Xn(a, this.nowMs, t, !0)}</span></div>` : g}
+		let t = this.snapshot.time_zone, n = !this.preview && !!$n(this.snapshot, this.nowMs).now, r = !this.preview && e.night !== "off" && _l(this.snapshot.settings?.quiet_hours, this.nowMs || Date.now(), t) && !n && Date.now() >= this._awakeUntil, i = !this.preview && this.hass?.connected === !1, a = !this.preview && this.snapshot.away_now ? this.snapshot.away : null;
+		return m`<div class="wall ${r ? `night-${e.night}` : ""}" @pointerdown=${this._wake}>
+      ${a ? m`<div class="away" role="status">${D("bag-suitcase")} <b>${x("wall.away_mode_is_on")}</b> <span>${Zn(a, this.nowMs, t, !0)}</span></div>` : _}
       <div class="stage">
       <div class="grid" style="--cols:${e.columns};--rows:${e.rows}" @pointerdown=${this._down} @pointermove=${this._move} @pointerup=${this._up} @pointercancel=${this._cancel}>
-        ${this.pickable ? this._ghosts(e) : g}
-        ${(this._live ?? e.tiles).filter((e) => !!Dc(e.type)).map((e) => p`<div
+        ${this.pickable ? this._ghosts(e) : _}
+        ${(this._live ?? e.tiles).filter((e) => !!qc(e.type)).map((e) => m`<div
               class="cell ${this.selectedId === e.id ? "selected" : ""} ${this._drag?.id === e.id ? "dragging" : ""}"
               style="--x:${e.x};--y:${e.y};--w:${e.w};--h:${e.h}"
-            >${Yc`<${qc(`wall-tile-${e.type.replace(/_/g, "-")}`)}
+            >${hl`<${pl(`wall-tile-${e.type.replace(/_/g, "-")}`)}
               .hass=${this.hass}
               .snapshot=${this.snapshot}
               .nowMs=${this.nowMs}
               .options=${e.options}
               .preview=${this.preview}
-            ></${qc(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? p`<button type="button" class="shield" data-id=${e.id} aria-label=${b("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
-                  <span class="handle" data-id=${e.id} data-resize title=${b("wall.drag_to_resize")}></span>
-                  <button type="button" class="del" aria-label=${b("wall.remove_this_tile")} title=${b("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
+            ></${pl(`wall-tile-${e.type.replace(/_/g, "-")}`)}>`}${this.pickable ? m`<button type="button" class="shield" data-id=${e.id} aria-label=${x("wall.edit_this_tile", { replace: e.type.replace(/_/g, " ") })} @click=${(t) => t.detail === 0 && this._pick(e.id)}></button>
+                  <span class="handle" data-id=${e.id} data-resize title=${x("wall.drag_to_resize")}></span>
+                  <button type="button" class="del" aria-label=${x("wall.remove_this_tile")} title=${x("wall.remove_this_tile")} @click=${() => this.dispatchEvent(new CustomEvent("tile-remove", {
 			detail: e.id,
 			bubbles: !0,
 			composed: !0
-		}))}>✕</button>` : g}</div>`)}
+		}))}>✕</button>` : _}</div>`)}
       </div>
       </div>
-      ${r && e.night === "black" ? p`<div class="black">${this._time(t)}</div>` : g}
-      ${i ? p`<div class="down" role="status">${b("wall.reconnecting_to_home_assistant")}</div>` : g}
-      ${this.preview ? g : p`<div class="controls">
-            ${this.canEdit ? p`<button type="button" aria-label=${b("wall.edit_this_board")} title=${b("wall.edit_this_board")} @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", {
+      ${r && e.night === "black" ? m`<div class="black">${this._time(t)}</div>` : _}
+      ${i ? m`<div class="down" role="status">${x("wall.reconnecting_to_home_assistant")}</div>` : _}
+      ${this.preview ? _ : m`<div class="controls">
+            ${this.canEdit ? m`<button type="button" aria-label=${x("wall.edit_this_board")} title=${x("wall.edit_this_board")} @click=${() => this.dispatchEvent(new CustomEvent("wall-edit", {
 			bubbles: !0,
 			composed: !0
-		}))}>${E("pencil")}</button>` : g}
-            <button type="button" aria-label=${b("wall.full_screen")} @click=${this._fullscreen}>${E("fullscreen")}</button>
-            <button type="button" aria-label=${b("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
+		}))}>${D("pencil")}</button>` : _}
+            <button type="button" aria-label=${x("wall.full_screen")} @click=${this._fullscreen}>${D("fullscreen")}</button>
+            <button type="button" aria-label=${x("wall.back_to_boopli")} @click=${() => this.dispatchEvent(new CustomEvent("wall-exit", {
 			bubbles: !0,
 			composed: !0
 		}))}>✕</button>
@@ -25778,7 +26042,7 @@ var Qc = 3e4, $c = class extends _ {
 	}
 	_ghosts(e) {
 		let t = [];
-		for (let n = 0; n < e.rows; n++) for (let r = 0; r < e.columns; r++) t.push(p`<div class="ghost" style="grid-column:${r + 1};grid-row:${n + 1}"></div>`);
+		for (let n = 0; n < e.rows; n++) for (let r = 0; r < e.columns; r++) t.push(m`<div class="ghost" style="grid-column:${r + 1};grid-row:${n + 1}"></div>`);
 		return t;
 	}
 	_pick(e) {
@@ -25807,7 +26071,7 @@ var Qc = 3e4, $c = class extends _ {
 		};
 	}
 	_time(e) {
-		return new Intl.DateTimeFormat(k(), {
+		return new Intl.DateTimeFormat(Bn(), {
 			timeZone: e,
 			hour: "2-digit",
 			minute: "2-digit",
@@ -25818,7 +26082,7 @@ var Qc = 3e4, $c = class extends _ {
 		this.styles = o`
     :host {
       display: block;
-      font-family: ${a(An)};
+      font-family: ${a(kn)};
       color: var(--primary-text-color);
     }
     * {
@@ -26002,9 +26266,9 @@ var Qc = 3e4, $c = class extends _ {
   `;
 	}
 };
-customElements.define("boopli-wall", $c);
+customElements.define("boopli-wall", yl);
 // src/boopli-wall-edit.ts
-var el = 10, tl = 30, nl = 40, rl = [
+var bl = 10, xl = 30, Sl = 40, Cl = [
 	"sensor",
 	"binary_sensor",
 	"light",
@@ -26021,30 +26285,30 @@ var el = 10, tl = 30, nl = 40, rl = [
 	"automation",
 	"person",
 	"media_player"
-], il = () => [
-	["dim", b("wall_edit.dim_the_screen")],
-	["black", b("wall_edit.black_with_a_small_clock")],
-	["off", b("wall_edit.keep_as_it_is")]
-], al = () => [
+], wl = () => [
+	["dim", x("wall_edit.dim_the_screen")],
+	["black", x("wall_edit.black_with_a_small_clock")],
+	["off", x("wall_edit.keep_as_it_is")]
+], Tl = () => [
 	[
 		"window",
-		b("wall_edit.this_window"),
-		b("wall_edit.show_the_board_in_the_shape")
+		x("wall_edit.this_window"),
+		x("wall_edit.show_the_board_in_the_shape")
 	],
 	[
 		"wide",
 		"16:9",
-		b("wall_edit.a_tv_or_a_tablet_lying")
+		x("wall_edit.a_tv_or_a_tablet_lying")
 	],
 	[
 		"tall",
-		b("wall_edit.upright"),
-		b("wall_edit.a_tablet_hung_upright_9_16")
+		x("wall_edit.upright"),
+		x("wall_edit.a_tablet_hung_upright_9_16")
 	]
-], ol = {
+], El = {
 	wide: [1280, 720],
 	tall: [720, 1280]
-}, sl = class extends _ {
+}, Dl = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -26079,7 +26343,7 @@ var el = 10, tl = 30, nl = 40, rl = [
 		let e = this.snapshot.settings.boards ?? [];
 		if (this._boards && (this._dirty || JSON.stringify(e) === this._base)) return;
 		let t = structuredClone(e), n = this._boards ? this._id : "";
-		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || Ac(t, this.boardName)?.id || t[0]?.id || "";
+		this._base = JSON.stringify(t), this._boards = t, this._id = n && t.find((e) => e.id === n)?.id || Xc(t, this.boardName)?.id || t[0]?.id || "";
 	}
 	_merged(e) {
 		let t = this._boards ?? [], n = new Map(JSON.parse(this._base).map((e) => [e.id, e])), r = new Map([...n].map(([e, t]) => [e, JSON.stringify(t)])), i = new Map(t.map((e) => [e.id, e])), a = [];
@@ -26125,7 +26389,7 @@ var el = 10, tl = 30, nl = 40, rl = [
 		return this._cur?.tiles.find((e) => e.id === this._sel);
 	}
 	_screen() {
-		return this._view === "window" ? this._win : ol[this._view];
+		return this._view === "window" ? this._win : El[this._view];
 	}
 	_edit(e) {
 		let t = this._cur;
@@ -26142,7 +26406,7 @@ var el = 10, tl = 30, nl = 40, rl = [
 	_pick(e) {
 		this._sel = e.detail;
 		let t = this._cur?.tiles.find((t) => t.id === e.detail)?.type ?? "";
-		this._modal = Dc(t)?.options.length ? "tile" : "";
+		this._modal = qc(t)?.options.length ? "tile" : "";
 	}
 	_uniqueName(e) {
 		let t = new Set((this._boards ?? []).map((e) => e.name.toLowerCase()));
@@ -26152,14 +26416,14 @@ var el = 10, tl = 30, nl = 40, rl = [
 		return `${e} ${n}`;
 	}
 	_newBoard() {
-		if (!this._boards || this._boards.length >= el) return;
+		if (!this._boards || this._boards.length >= bl) return;
 		let e = {
-			id: Ja(),
-			name: this._uniqueName(b("wall_edit.my_board")),
+			id: ho(),
+			name: this._uniqueName(x("wall_edit.my_board")),
 			columns: 16,
 			rows: 9,
 			night: "dim",
-			tiles: kc(16, 9)
+			tiles: Yc(16, 9)
 		};
 		this._boards = [...this._boards, e], this._id = e.id, this._sel = "";
 	}
@@ -26170,12 +26434,12 @@ var el = 10, tl = 30, nl = 40, rl = [
 	_addTile(e) {
 		let t = this._cur;
 		if (!t) return;
-		if (t.tiles.length >= tl) {
-			this._error = b("wall_edit.a_board_can_have_tiles_at", { max_tiles: tl }), this._modal = "";
+		if (t.tiles.length >= xl) {
+			this._error = x("wall_edit.a_board_can_have_tiles_at", { max_tiles: xl }), this._modal = "";
 			return;
 		}
-		let n = Oc(e, t.tiles, t.columns, t.rows);
-		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = Dc(e)?.options.length ? "tile" : "") : (this._error = b("wall_edit.every_cell_of_this_board_is"), this._modal = "");
+		let n = Jc(e, t.tiles, t.columns, t.rows);
+		n ? (this._edit((e) => e.tiles.push(n)), this._sel = n.id, this._modal = qc(e)?.options.length ? "tile" : "") : (this._error = x("wall_edit.every_cell_of_this_board_is"), this._modal = "");
 	}
 	_remove(e = this._sel) {
 		this._edit((t) => t.tiles = t.tiles.filter((t) => t.id !== e)), e === this._sel && (this._sel = ""), this._modal = "";
@@ -26186,12 +26450,12 @@ var el = 10, tl = 30, nl = 40, rl = [
 	_resize(e, t) {
 		let n = this._cur, r = this._tile;
 		if (!n || !r) return;
-		let i = Sc(n.tiles.map((i) => i.id === r.id ? {
+		let i = Hc(n.tiles.map((i) => i.id === r.id ? {
 			...i,
 			w: Math.max(1, Math.min(e, n.columns - i.x)),
 			h: Math.max(1, Math.min(t, n.rows - i.y))
 		} : i), n.rows, r.id);
-		i ? this._edit((e) => e.tiles = i) : this._error = b("wall_edit.there_is_no_room_for_that");
+		i ? this._edit((e) => e.tiles = i) : this._error = x("wall_edit.there_is_no_room_for_that");
 	}
 	_setGrid(e, t) {
 		let n = this._cur;
@@ -26199,8 +26463,8 @@ var el = 10, tl = 30, nl = 40, rl = [
 			columns: e,
 			rows: t
 		};
-		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = xc(n.tiles), o = bc(n.tiles);
-		return r < a || i < o ? (this._error = b("wall_edit.some_tiles_reach_to_column_and", {
+		let r = Math.max(2, Math.min(32, e)), i = Math.max(2, Math.min(18, t)), a = Vc(n.tiles), o = Bc(n.tiles);
+		return r < a || i < o ? (this._error = x("wall_edit.some_tiles_reach_to_column_and", {
 			columns: a,
 			rows: o
 		}), {
@@ -26216,13 +26480,13 @@ var el = 10, tl = 30, nl = 40, rl = [
 	_scaleGrid(e) {
 		let t = this._cur;
 		if (!t) return;
-		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = wc(t.tiles, n);
-		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? b("wall_edit.by_is_the_finest_grid", {
+		let n = e ? 2 : .5, r = t.columns * n, i = t.rows * n, a = Wc(t.tiles, n);
+		!Number.isInteger(r) || !Number.isInteger(i) || r < 2 || i < 2 || r > 32 || i > 18 ? this._error = e ? x("wall_edit.by_is_the_finest_grid", {
 			columns_max: 32,
 			rows_max: 18
-		}) : b("wall_edit.this_grid_cannot_be_made_coarser") : a ? this._edit((e) => {
+		}) : x("wall_edit.this_grid_cannot_be_made_coarser") : a ? this._edit((e) => {
 			e.columns = r, e.rows = i, e.tiles = a;
-		}) : this._error = b("wall_edit.some_tiles_do_not_line_up");
+		}) : this._error = x("wall_edit.some_tiles_do_not_line_up");
 	}
 	_matchScreen() {
 		let e = this._cur;
@@ -26249,19 +26513,19 @@ var el = 10, tl = 30, nl = 40, rl = [
 		if (this.hass && e && this._boards && !this._busy) {
 			this._busy = !0, this._error = "", this._askDiscard = !1;
 			try {
-				await At(this.hass, {
+				await kt(this.hass, {
 					...e,
 					boards: this._merged(e.boards ?? [])
 				}), this._exit(this._cur?.name ?? "");
 			} catch (e) {
-				this._error = S(e);
+				this._error = C(e);
 			} finally {
 				this._busy = !1;
 			}
 		}
 	}
 	_numField(e, t, n, r, i, a) {
-		return p`<div class="field">
+		return m`<div class="field">
       <label for=${e}>${t}</label>
       <input id=${e} type="number" min=${r} max=${i} .value=${String(n)} @change=${(e) => {
 			let t = e.target, o = Math.round(Number(t.value)), s = t.value.trim() === "" || Number.isNaN(o) ? n : Math.min(i, Math.max(r, o)), c = a(s);
@@ -26272,112 +26536,112 @@ var el = 10, tl = 30, nl = 40, rl = [
 	_renderField(e, t) {
 		let n = e.options[t.key] ?? t.default, r = `f-${e.id}-${t.key}`;
 		switch (t.kind) {
-			case "bool": return p`<label class="inline"><input type="checkbox" .checked=${n === !0} @change=${(e) => this._setOption(t.key, e.target.checked)} /> ${t.label}</label>`;
-			case "choice": return p`<div class="field"><label for=${r}>${t.label}</label>
+			case "bool": return m`<label class="inline"><input type="checkbox" .checked=${n === !0} @change=${(e) => this._setOption(t.key, e.target.checked)} /> ${t.label}</label>`;
+			case "choice": return m`<div class="field"><label for=${r}>${t.label}</label>
           <select id=${r} @change=${(e) => this._setOption(t.key, e.target.value)}>
-            ${(t.choices ?? []).map(([e, t]) => p`<option value=${e} ?selected=${n === e}>${t}</option>`)}
+            ${(t.choices ?? []).map(([e, t]) => m`<option value=${e} ?selected=${n === e}>${t}</option>`)}
           </select></div>`;
 			case "int": return this._numField(r, t.label, Number(n), t.min ?? 0, t.max ?? 999, (e) => {
 				this._setOption(t.key, e);
 			});
 			case "entity": {
-				let i = Y(this.hass, t.domains ?? rl), a = `dl-${e.id}-${t.key}`;
-				return p`<div class="field"><label for=${r}>${t.label}</label>
-          <input id=${r} list=${a} placeholder=${b("wall_edit.start_typing_a_name")} .value=${String(n)}
+				let i = Y(this.hass, t.domains ?? Cl), a = `dl-${e.id}-${t.key}`;
+				return m`<div class="field"><label for=${r}>${t.label}</label>
+          <input id=${r} list=${a} placeholder=${x("wall_edit.start_typing_a_name")} .value=${String(n)}
             @change=${(e) => this._setOption(t.key, e.target.value.trim())} />
-          <datalist id=${a}>${i.map((e) => p`<option value=${e}>${J(this.hass, e)}</option>`)}</datalist>
-          ${n && !this.hass?.states[String(n)] ? p`<div class="error small">${b("wall_edit.was_not_found", { value: String(n) })}</div>` : g}</div>`;
+          <datalist id=${a}>${i.map((e) => m`<option value=${e}>${J(this.hass, e)}</option>`)}</datalist>
+          ${n && !this.hass?.states[String(n)] ? m`<div class="error small">${x("wall_edit.was_not_found", { value: String(n) })}</div>` : _}</div>`;
 			}
-			default: return p`<div class="field"><label for=${r}>${t.label}</label>
-          ${t.long ? p`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : p`<input id=${r} maxlength=${nl} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
+			default: return m`<div class="field"><label for=${r}>${t.label}</label>
+          ${t.long ? m`<textarea id=${r} rows="3" maxlength="300" .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)}></textarea>` : m`<input id=${r} maxlength=${Sl} .value=${String(n)} @change=${(e) => this._setOption(t.key, e.target.value)} />`}</div>`;
 		}
 	}
 	_renderTileModal(e) {
 		let t = this._tile;
-		if (!t) return g;
-		let n = Dc(t.type);
-		return p`
-      <div class="mhead"><h2>${E(n?.icon ?? "shape-outline")} ${n?.label ?? t.type}</h2></div>
-      ${n?.options.length ? p`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : g}
+		if (!t) return _;
+		let n = qc(t.type);
+		return m`
+      <div class="mhead"><h2>${D(n?.icon ?? "shape-outline")} ${n?.label ?? t.type}</h2></div>
+      ${n?.options.length ? m`<div class="opts">${n.options.map((e) => this._renderField(t, e))}</div>` : _}
       <div class="srow">
-        ${this._numField("tw", b("wall_edit.cells_wide"), t.w, 1, e.columns - t.x, (e) => (this._resize(e, t.h), this._tile?.w))}
-        ${this._numField("th", b("wall_edit.cells_tall"), t.h, 1, e.rows - t.y, (e) => (this._resize(t.w, e), this._tile?.h))}
+        ${this._numField("tw", x("wall_edit.cells_wide"), t.w, 1, e.columns - t.x, (e) => (this._resize(e, t.h), this._tile?.w))}
+        ${this._numField("th", x("wall_edit.cells_tall"), t.h, 1, e.rows - t.y, (e) => (this._resize(t.w, e), this._tile?.h))}
       </div>
       <div class="mfoot">
-        <button class="danger" @click=${() => this._remove()}>${b("wall.remove_this_tile")}</button>
+        <button class="danger" @click=${() => this._remove()}>${x("wall.remove_this_tile")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => this._modal = ""}>${b("common.done")}</button>
+        <button class="primary" @click=${() => this._modal = ""}>${x("common.done")}</button>
       </div>
     `;
 	}
 	_renderBoardModal(e) {
-		return p`
-      <div class="mhead"><h2>${E("monitor-dashboard")} ${b("wall_edit.this_board")}</h2></div>
+		return m`
+      <div class="mhead"><h2>${D("monitor-dashboard")} ${x("wall_edit.this_board")}</h2></div>
       <div class="field">
-        <label for="bname">${b("common.name")}</label>
-        <input id="bname" maxlength=${nl} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
+        <label for="bname">${x("common.name")}</label>
+        <input id="bname" maxlength=${Sl} .value=${e.name} @change=${(e) => this._edit((t) => t.name = e.target.value.trim())} />
       </div>
       <div class="srow">
-        ${this._numField("bcols", b("wall_edit.columns"), e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
-        ${this._numField("brows", b("wall_edit.rows"), e.rows, 2, 18, (t) => this._setGrid(e.columns, t).rows)}
-        <button title=${b("wall_edit.choose_the_rows_that_make_the")} @click=${() => this._matchScreen()}>${b("wall_edit.match_this_screen")}</button>
+        ${this._numField("bcols", x("wall_edit.columns"), e.columns, 2, 32, (t) => this._setGrid(t, e.rows).columns)}
+        ${this._numField("brows", x("wall_edit.rows"), e.rows, 2, 18, (t) => this._setGrid(e.columns, t).rows)}
+        <button title=${x("wall_edit.choose_the_rows_that_make_the")} @click=${() => this._matchScreen()}>${x("wall_edit.match_this_screen")}</button>
       </div>
       <div class="srow">
-        <button @click=${() => this._scaleGrid(!0)}>${b("wall_edit.finer_grid_cells_half_as_big")}</button>
-        <button @click=${() => this._scaleGrid(!1)}>${b("wall_edit.coarser_grid_cells_twice_as_big")}</button>
+        <button @click=${() => this._scaleGrid(!0)}>${x("wall_edit.finer_grid_cells_half_as_big")}</button>
+        <button @click=${() => this._scaleGrid(!1)}>${x("wall_edit.coarser_grid_cells_twice_as_big")}</button>
       </div>
-      <p class="muted small">${b("wall_edit.the_board_is_a_grid_of")}</p>
+      <p class="muted small">${x("wall_edit.the_board_is_a_grid_of")}</p>
       <div class="field">
-        <label for="bnight">${b("wall_edit.at_night")}</label>
+        <label for="bnight">${x("wall_edit.at_night")}</label>
         <select id="bnight" @change=${(e) => this._edit((t) => t.night = e.target.value)}>
-          ${il().map(([t, n]) => p`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
+          ${wl().map(([t, n]) => m`<option value=${t} ?selected=${e.night === t}>${n}</option>`)}
         </select>
       </div>
-      <p class="muted small">${b("wall_edit.night_is_when_quiet_hours_are")}</p>
-      <p class="small">${x("wall_edit.link_for_the_tablets_start_page", { link: jc(e) })}</p>
+      <p class="muted small">${x("wall_edit.night_is_when_quiet_hours_are")}</p>
+      <p class="small">${S("wall_edit.link_for_the_tablets_start_page", { link: Zc(e) })}</p>
       <div class="mfoot">
-        <button ?disabled=${(this._boards?.length ?? 0) >= el} @click=${() => this._newBoard()}>${b("wall_edit.new_board")}</button>
-        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${b("wall_edit.delete_this_board")}</button>
+        <button ?disabled=${(this._boards?.length ?? 0) >= bl} @click=${() => this._newBoard()}>${x("wall_edit.new_board")}</button>
+        <button class="danger" ?disabled=${(this._boards?.length ?? 0) < 2} @click=${() => this._deleteBoard()}>${x("wall_edit.delete_this_board")}</button>
         <span class="spacer"></span>
-        <button class="primary" @click=${() => this._modal = ""}>${b("common.done")}</button>
+        <button class="primary" @click=${() => this._modal = ""}>${x("common.done")}</button>
       </div>
     `;
 	}
 	_renderAddModal() {
-		return p`
-      <div class="mhead"><h2>${b("wall_edit.add_a_tile")}</h2></div>
-      <div class="adds" role="group" aria-label=${b("wall_edit.add_a_tile_2")}>
-        ${Tc().map((e) => p`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${E(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
+		return m`
+      <div class="mhead"><h2>${x("wall_edit.add_a_tile")}</h2></div>
+      <div class="adds" role="group" aria-label=${x("wall_edit.add_a_tile_2")}>
+        ${Gc().map((e) => m`<button class="addtile" @click=${() => this._addTile(e.type)}><span class="emoji">${D(e.icon)}</span><b>${e.label}</b><span class="muted small">${e.blurb}</span></button>`)}
       </div>
-      <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>${b("common.cancel")}</button></div>
+      <div class="mfoot"><span class="spacer"></span><button @click=${() => this._modal = ""}>${x("common.cancel")}</button></div>
     `;
 	}
 	render() {
 		let e = this._cur;
-		if (!this._boards || !e) return p`<div class="load">${b("common.loading")}</div>`;
+		if (!this._boards || !e) return m`<div class="load">${x("common.loading")}</div>`;
 		let [t, n] = this._screen(), r = this._stage[0] > 0 && this._stage[1] > 0 ? Math.min(1, this._stage[0] / t, this._stage[1] / n) : 1;
-		return p`
+		return m`
       <div class="edit">
-        <div class="bar" role="toolbar" aria-label=${b("wall_edit.edit_the_wall_board")} ?inert=${this._busy}>
+        <div class="bar" role="toolbar" aria-label=${x("wall_edit.edit_the_wall_board")} ?inert=${this._busy}>
           <label class="pick">
-            <span class="muted small">${b("wall_edit.board")}</span>
-            <select aria-label=${b("wall_edit.board")} @change=${(e) => {
+            <span class="muted small">${x("wall_edit.board")}</span>
+            <select aria-label=${x("wall_edit.board")} @change=${(e) => {
 			this._id = e.target.value, this._sel = "", this._modal = "";
 		}}>
-              ${this._boards.map((t) => p`<option value=${t.id} ?selected=${t.id === e.id}>${t.name || b("ladders.no_name")}</option>`)}
+              ${this._boards.map((t) => m`<option value=${t.id} ?selected=${t.id === e.id}>${t.name || x("ladders.no_name")}</option>`)}
             </select>
           </label>
-          <button @click=${() => this._modal = "board"}>${E("cog-outline")} ${b("wall_edit.board")}</button>
-          <button @click=${() => this._modal = "add"}>${b("wall_edit.add_tile")}</button>
-          <div class="views" role="group" aria-label=${b("wall_edit.show_it_as")}>
-            ${al().map(([e, t, n]) => p`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
+          <button @click=${() => this._modal = "board"}>${D("cog-outline")} ${x("wall_edit.board")}</button>
+          <button @click=${() => this._modal = "add"}>${x("wall_edit.add_tile")}</button>
+          <div class="views" role="group" aria-label=${x("wall_edit.show_it_as")}>
+            ${Tl().map(([e, t, n]) => m`<button class=${this._view === e ? "on" : ""} title=${n} aria-pressed=${this._view === e} @click=${() => this._view = e}>${t}</button>`)}
           </div>
-          <span class="hint muted small">${b("wall_edit.drag_to_move_drag_the_corner")}</span>
+          <span class="hint muted small">${x("wall_edit.drag_to_move_drag_the_corner")}</span>
           <span class="spacer"></span>
-          ${this._askDiscard ? p`<span class="small">${b("wall_edit.throw_away_your_changes")}</span>
-                <button class="danger" @click=${() => this._exit(this._savedName())}>${b("wall_edit.yes_discard")}</button>
-                <button @click=${() => this._askDiscard = !1}>${b("wall_edit.keep_editing")}</button>` : p`<button ?disabled=${this._busy} @click=${() => this._cancel()}>${b("common.cancel")}</button>
-                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? b("common.saving") : b("common.save")}</button>`}
+          ${this._askDiscard ? m`<span class="small">${x("wall_edit.throw_away_your_changes")}</span>
+                <button class="danger" @click=${() => this._exit(this._savedName())}>${x("wall_edit.yes_discard")}</button>
+                <button @click=${() => this._askDiscard = !1}>${x("wall_edit.keep_editing")}</button>` : m`<button ?disabled=${this._busy} @click=${() => this._cancel()}>${x("common.cancel")}</button>
+                <button class="primary" ?disabled=${this._busy || !this._dirty} @click=${() => this._save()}>${this._busy ? x("common.saving") : x("common.save")}</button>`}
         </div>
         <div class="stage" ?inert=${this._busy}>
           <div class="slot" style="width:${t * r}px;height:${n * r}px">
@@ -26397,10 +26661,10 @@ var el = 10, tl = 30, nl = 40, rl = [
             </div>
           </div>
         </div>
-        ${this._error && !this._modal ? p`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>${b("wall_edit.ok")}</button></div>` : g}
+        ${this._error && !this._modal ? m`<div class="toast" role="alert">${this._error} <button @click=${() => this._error = ""}>${x("wall_edit.ok")}</button></div>` : _}
         <dialog
           class="modal"
-          aria-label=${b("wall_edit.edit_the_board")}
+          aria-label=${x("wall_edit.edit_the_board")}
           ?inert=${this._busy}
           @close=${() => {
 			this._modal &&= "";
@@ -26408,8 +26672,8 @@ var el = 10, tl = 30, nl = 40, rl = [
           @click=${(e) => e.target === e.currentTarget && (this._modal = "")}
         >
           <div class="box">
-            ${this._modal === "tile" ? this._renderTileModal(e) : this._modal === "board" ? this._renderBoardModal(e) : this._modal === "add" ? this._renderAddModal() : g}
-            ${this._error && this._modal ? p`<div class="error" role="alert">${this._error}</div>` : g}
+            ${this._modal === "tile" ? this._renderTileModal(e) : this._modal === "board" ? this._renderBoardModal(e) : this._modal === "add" ? this._renderAddModal() : _}
+            ${this._error && this._modal ? m`<div class="error" role="alert">${this._error}</div>` : _}
           </div>
         </dialog>
       </div>
@@ -26424,7 +26688,7 @@ var el = 10, tl = 30, nl = 40, rl = [
       display: block;
       color: var(--primary-text-color);
       background: var(--primary-background-color);
-      font-family: ${a(An)};
+      font-family: ${a(kn)};
     }
     * {
       box-sizing: border-box;
@@ -26641,15 +26905,15 @@ var el = 10, tl = 30, nl = 40, rl = [
   `;
 	}
 };
-customElements.define("boopli-wall-edit", sl);
+customElements.define("boopli-wall-edit", Dl);
 // src/boopli-panel.ts
-var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
-	today: b("wall_tile_calendar.today"),
-	chores: b("common.chores"),
-	badges: b("badges.title"),
-	home: b("panel.my_home"),
-	settings: b("common.settings")
-}), ul = class extends _ {
+var Ol = new URL("./slime.png", "" + import.meta.url).href, kl = () => ({
+	today: x("wall_tile_calendar.today"),
+	chores: x("common.chores"),
+	badges: x("badges.title"),
+	home: x("panel.my_home"),
+	settings: x("common.settings")
+}), Al = class extends v {
 	static {
 		this.properties = {
 			hass: { attribute: !1 },
@@ -26675,7 +26939,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 			this._dirty = {
 				...this._dirty,
 				[t]: n
-			}, r && (this._accessNote = b("panel.access_lowered_discarded")), this._settleConfirm();
+			}, r && (this._accessNote = x("panel.access_lowered_discarded")), this._settleConfirm();
 		}, this._beforeUnload = (e) => {
 			this._hasUnsaved && (e.preventDefault(), e.returnValue = "");
 		}, this._onOpenWizard = async (e) => {
@@ -26699,13 +26963,13 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 			let t = e.detail;
 			this._breakdownError = "";
 			try {
-				t.action === "start" ? (await Gt(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await nn(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
+				t.action === "start" ? (await Wt(this.hass, t.task, t.steps, t.notes), this._breakdown = null, this._tab = "today") : t.action === "save" ? (await tn(this.hass, this._draftFrom(t)), this._breakdown = null, this._tab = "chores") : t.action === "schedule" && (this._choresRequest = {
 					id: ++this._requestId,
 					draft: this._draftFrom(t),
 					schedule: !0
 				}, this._breakdown = null, this._tab = "chores");
 			} catch (e) {
-				this._breakdownError = S(e);
+				this._breakdownError = C(e);
 			}
 		}, this._closeWall = () => {
 			this._wall = null, this._wallEdit = !1;
@@ -26744,7 +27008,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 	}
 	_tabs() {
 		let e = q(this._snapshot);
-		return Object.keys(ll()).filter((t) => t === "today" || t === "chores" || t === "badges" || (t === "home" ? e.notes : e.all));
+		return Object.keys(kl()).filter((t) => t === "today" || t === "chores" || t === "badges" || (t === "home" ? e.notes : e.all));
 	}
 	_dropRevoked() {
 		let e = q(this._snapshot), t = !1;
@@ -26755,7 +27019,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 				[e]: !1
 			}, t = !0);
 		}
-		!e.all && (this._wizard || this._breakdown) && (this._wizard = null, this._breakdown = null, t = !0), !e.all && this._wallEdit && (this._wallEdit = !1, t = !0), t && (this._accessNote = b("panel.access_lowered_discarded")), this._settleConfirm();
+		!e.all && (this._wizard || this._breakdown) && (this._wizard = null, this._breakdown = null, t = !0), !e.all && this._wallEdit && (this._wallEdit = !1, t = !0), t && (this._accessNote = x("panel.access_lowered_discarded")), this._settleConfirm();
 	}
 	_settleConfirm() {
 		this._confirm && !this._hasUnsaved && this._confirm("discard");
@@ -26764,7 +27028,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 		this._accessNote = "", this._tabs().includes(e) && (e !== this._tab || this._wizard) && await this._guard() && this._tabs().includes(e) && (this._wizard = null, this._breakdown = null, this._tab = e);
 	}
 	_openWizard(e) {
-		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && qt(this.hass, "in_progress", e.startAt).catch(() => void 0);
+		this._breakdown = null, this._wizard = e, this.hass && e.wizard === "first" && Kt(this.hass, "in_progress", e.startAt).catch(() => void 0);
 	}
 	_draftFrom(e) {
 		return {
@@ -26790,19 +27054,19 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback(), Mn(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
+		super.connectedCallback(), jn(), this._timer = window.setInterval(() => this._nowMs = Date.now(), 3e4), window.addEventListener("beforeunload", this._beforeUnload);
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), window.clearInterval(this._timer), window.removeEventListener("beforeunload", this._beforeUnload), this._unsub?.(), this._unsub = void 0, this._subscribing = !1;
 	}
 	willUpdate(e) {
-		if (e.has("hass") && this.hass && vt(this.hass.language), e.has("_snapshot")) {
+		if (e.has("hass") && this.hass && _t(this.hass.language), e.has("_snapshot")) {
 			let e = this._snapshot?.settings;
-			Us(this, e?.pet_kind, e?.accent);
+			lc(this, e?.pet_kind, e?.accent);
 		}
 	}
 	updated() {
-		this.hass && !this._unsub && !this._subscribing && (this._subscribing = !0, tn(this.hass, (e) => {
+		this.hass && !this._unsub && !this._subscribing && (this._subscribing = !0, en(this.hass, (e) => {
 			this._snapshot = e, this._dropRevoked(), this._nowMs = Date.now(), this._connectionError = "", this._autoChecked || (this._autoChecked = !0, e.setup?.status === "new" && q(e).all && this._openWizard({
 				wizard: "first",
 				startAt: ""
@@ -26810,7 +27074,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 		}).then((e) => {
 			this._unsub = e;
 		}).catch(() => {
-			this._connectionError = b("panel.could_not_reach_boopli_is_the");
+			this._connectionError = x("panel.could_not_reach_boopli_is_the");
 		}).finally(() => {
 			this._subscribing = !1;
 		}));
@@ -26822,27 +27086,27 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 		}));
 	}
 	_renderConfirm() {
-		if (!this._confirm) return g;
+		if (!this._confirm) return _;
 		let e = (e) => () => this._confirm?.(e);
-		return p`<div class="backdrop" role="dialog" aria-modal="true" aria-label=${b("panel.unsaved_changes")}>
+		return m`<div class="backdrop" role="dialog" aria-modal="true" aria-label=${x("panel.unsaved_changes")}>
       <div class="card dialog">
-        <h2>${b("panel.you_have_unsaved_changes")}</h2>
-        <p class="muted">${b("panel.leave_without_saving_and_they_are")}</p>
+        <h2>${x("panel.you_have_unsaved_changes")}</h2>
+        <p class="muted">${x("panel.leave_without_saving_and_they_are")}</p>
         <div class="dialog-actions">
-          <button class="primary" @click=${e("save")}>${b("common.save")}</button>
-          <button class="danger" @click=${e("discard")}>${b("common.discard")}</button>
-          <button @click=${e("stay")}>${b("panel.stay")}</button>
+          <button class="primary" @click=${e("save")}>${x("common.save")}</button>
+          <button class="danger" @click=${e("discard")}>${x("common.discard")}</button>
+          <button @click=${e("stay")}>${x("panel.stay")}</button>
         </div>
       </div>
     </div>`;
 	}
 	_renderAwayBar() {
 		let e = this._snapshot?.away;
-		if (!e?.active || (this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown) return g;
+		if (!e?.active || (this._tab === "today" || this._tab === "settings") && !this._wizard && !this._breakdown) return _;
 		let t = !!this._snapshot?.away_now, n = this._snapshot?.time_zone ?? "UTC";
-		return p`<div class="away-bar" role="status">
-      <span>${E("bag-suitcase")} <b>${b(t ? "wall.away_mode_is_on" : "panel.away_mode_is_planned")}</b> ${Xn(e, this._nowMs, n, t)}</span>
-      ${q(this._snapshot).all ? p`<button type="button" @click=${() => this._selectTab("settings")}>${b(t ? "panel.back_now" : "away.change")}</button>` : g}
+		return m`<div class="away-bar" role="status">
+      <span>${D("bag-suitcase")} <b>${x(t ? "wall.away_mode_is_on" : "panel.away_mode_is_planned")}</b> ${Zn(e, this._nowMs, n, t)}</span>
+      ${q(this._snapshot).all ? m`<button type="button" @click=${() => this._selectTab("settings")}>${x(t ? "panel.back_now" : "away.change")}</button>` : _}
     </div>`;
 	}
 	async _openWall(e = "", t = !1) {
@@ -26853,7 +27117,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 	}
 	render() {
 		let e = q(this._snapshot), t = this._tabs().includes(this._tab) ? this._tab : "today";
-		if (this._wall !== null && this._wallEdit && e.all) return p`<boopli-wall-edit
+		if (this._wall !== null && this._wallEdit && e.all) return m`<boopli-wall-edit
         .hass=${this.hass}
         .snapshot=${this._snapshot}
         .nowMs=${this._nowMs}
@@ -26864,7 +27128,7 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 			t.searchParams.set("wall", this._wall), history.replaceState(null, "", t);
 		}}
       ></boopli-wall-edit>`;
-		if (this._wall !== null) return p`<boopli-wall
+		if (this._wall !== null) return m`<boopli-wall
         .hass=${this.hass}
         .snapshot=${this._snapshot}
         .nowMs=${this._nowMs}
@@ -26880,23 +27144,23 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 			home: this._dirty.home,
 			settings: this._dirty.settings
 		};
-		return p`
+		return m`
       <header>
-        ${this.narrow ? p`<button class="menu" aria-label=${b("panel.open_sidebar")} @click=${this._toggleSidebar}>${E("menu")}</button>` : g}
-        <img class="logo" src=${cl} alt="" width="32" height="32" />
-        <h1>${b("wizard.boopli")}</h1>
-        ${this._snapshot?.version ? p`<span class="ver">${b("panel.version", { version: this._snapshot.version })}</span>` : g}
+        ${this.narrow ? m`<button class="menu" aria-label=${x("panel.open_sidebar")} @click=${this._toggleSidebar}>${D("menu")}</button>` : _}
+        <img class="logo" src=${Ol} alt="" width="32" height="32" />
+        <h1>${x("wizard.boopli")}</h1>
+        ${this._snapshot?.version ? m`<span class="ver">${x("panel.version", { version: this._snapshot.version })}</span>` : _}
         <nav>
-          ${this._tabs().map((e) => p`<button
+          ${this._tabs().map((e) => m`<button
               class="tab ${t === e && !this._wizard ? "on" : ""}"
               @click=${() => this._selectTab(e)}
             >
-              ${ll()[e]}
-              ${n[e] ? p`<span class="dot" title=${b("panel.unsaved_changes")} aria-label=${b("panel.unsaved_changes")}></span>` : g}
+              ${kl()[e]}
+              ${n[e] ? m`<span class="dot" title=${x("panel.unsaved_changes")} aria-label=${x("panel.unsaved_changes")}></span>` : _}
             </button>`)}
         </nav>
         <span class="grow"></span>
-        <button class="wallbtn" title=${b("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(Ac(this._snapshot?.settings?.boards, "")?.name ?? "")}>${E("monitor-dashboard")} ${b("panel.wall_view")}</button>
+        <button class="wallbtn" title=${x("panel.show_a_board_for_a_screen")} @click=${() => this._openWall(Xc(this._snapshot?.settings?.boards, "")?.name ?? "")}>${D("monitor-dashboard")} ${x("panel.wall_view")}</button>
       </header>
       ${this._renderAwayBar()}
       <main
@@ -26908,17 +27172,17 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
 			let t = e.detail ?? {};
 			this._openWall(t.name ?? "", !!t.edit);
 		}}
-        @egg-started=${() => this.hass && void xn(this.hass).catch(() => void 0)}
+        @egg-started=${() => this.hass && void bn(this.hass).catch(() => void 0)}
         @dirty-change=${this._onDirty}
       >
-        ${this._accessNote ? p`<p class="muted" role="status">${this._accessNote}</p>` : g}
-        ${this._connectionError ? p`<p class="error">${this._connectionError}</p>` : this._wizard ? p`<boopli-wizard
+        ${this._accessNote ? m`<p class="muted" role="status">${this._accessNote}</p>` : _}
+        ${this._connectionError ? m`<p class="error">${this._connectionError}</p>` : this._wizard ? m`<boopli-wizard
                 .hass=${this.hass}
                 .snapshot=${this._snapshot}
                 .wizard=${this._wizard.wizard}
                 .startAt=${this._wizard.startAt}
                 @wizard-close=${() => this._wizard = null}
-              ></boopli-wizard>` : this._breakdown ? p`<boopli-breakdown
+              ></boopli-wizard>` : this._breakdown ? m`<boopli-breakdown
                   .hass=${this.hass}
                   .snapshot=${this._snapshot}
                   .kind=${this._breakdown.kind}
@@ -26926,19 +27190,19 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
                   .externalError=${this._breakdownError}
                   @breakdown-result=${this._onBreakdownResult}
                   @breakdown-cancel=${() => this._breakdown = null}
-                ></boopli-breakdown>` : t === "today" ? p`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>` : t === "chores" ? p`<boopli-chores
+                ></boopli-breakdown>` : t === "today" ? m`<boopli-today .hass=${this.hass} .snapshot=${this._snapshot} .nowMs=${this._nowMs}></boopli-today>` : t === "chores" ? m`<boopli-chores
                       .hass=${this.hass}
                       .snapshot=${this._snapshot}
                       .nowMs=${this._nowMs}
                       .openRequest=${this._choresRequest}
                       @request-handled=${() => this._choresRequest = null}
-                    ></boopli-chores>` : t === "badges" ? p`<boopli-badges .snapshot=${this._snapshot}></boopli-badges>` : t === "home" ? p`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>` : p`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
+                    ></boopli-chores>` : t === "badges" ? m`<boopli-badges .snapshot=${this._snapshot}></boopli-badges>` : t === "home" ? m`<boopli-home .hass=${this.hass} .snapshot=${this._snapshot}></boopli-home>` : m`<boopli-settings .hass=${this.hass} .snapshot=${this._snapshot}></boopli-settings>`}
       </main>
       ${this._renderConfirm()}
     `;
 	}
 	static {
-		this.styles = [C, o`
+		this.styles = [w, o`
       :host {
         min-height: 100%;
         background: var(--primary-background-color);
@@ -27104,5 +27368,5 @@ var cl = new URL("./slime.png", "" + import.meta.url).href, ll = () => ({
     `];
 	}
 };
-customElements.define("boopli-panel", ul);
-export { ul as BoopliPanel };
+customElements.define("boopli-panel", Al);
+export { Al as BoopliPanel };

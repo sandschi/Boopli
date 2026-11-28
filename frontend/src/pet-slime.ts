@@ -1,5 +1,5 @@
 import { svg, type SVGTemplateResult } from "lit";
-import { extras } from "./pet-kit";
+import { extras, scarfArt } from "./pet-kit";
 import { momentArt, workArms, workBehind, workFront, type Activity, type Hands, type Moment } from "./pet-work";
 import type { Mood } from "./types";
 
@@ -13,7 +13,8 @@ import type { Mood } from "./types";
 
 const INK = "#101010";
 /** The slime has no limbs: its "hands" are small jelly arms in the same green. */
-const SLIME_HANDS: Hands = { color: "#4DFF2B", thick: 1, typingBehind: true };
+const NECK = { x: 100, y: 167, w: 96 }; // where a scarf goes
+const SLIME_HANDS: Hands = { color: "var(--fur-lt, #4DFF2B)", thick: 1, typingBehind: true };
 
 // A round jelly: wide, with a soft little tip on top and a short flat bottom to sit on.
 const BODY =
@@ -89,6 +90,8 @@ export interface SlimeOptions {
   moment?: Moment;
   /** The words of a moment: "Level 6!" or "+10 XP". */
   text?: string;
+  /** The colour of a scarf the pet wears (none = no scarf). */
+  neck?: string;
 }
 
 export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateResult {
@@ -99,20 +102,20 @@ export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateRes
   return svg`<svg class="pet-art slime ${mood} ${activity ? `work ${activity}` : ""} ${moment}" viewBox="0 0 200 200" aria-hidden="true">
     <defs>
       <radialGradient id="slime-fill" cx="0.36" cy="0.3" r="0.9">
-        <stop offset="0" stop-color="#D4FFC2"/>
-        <stop offset="0.28" stop-color="#7CFF5B"/>
-        <stop offset="0.62" stop-color="#39FF14"/>
-        <stop offset="1" stop-color="#10B83A"/>
+        <stop offset="0" stop-color="var(--fur-hi, #D4FFC2)"/>
+        <stop offset="0.28" stop-color="var(--fur-lt, #7CFF5B)"/>
+        <stop offset="0.62" stop-color="var(--fur, #39FF14)"/>
+        <stop offset="1" stop-color="var(--fur-dark, #10B83A)"/>
       </radialGradient>
       <clipPath id="slime-clip"><path d=${BODY}/></clipPath>
     </defs>
     <ellipse class="shadow" cx="100" cy="187" rx="58" ry="8" fill="#000" opacity="0.22"/>
-    <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="#39FF14" opacity="0.35"/>
+    <ellipse class="puddle" cx="100" cy="184" rx="66" ry="9" fill="var(--fur, #39FF14)" opacity="0.35"/>
     ${workBehind(activity)} ${workArms(activity, SLIME_HANDS)}
     <g class="jelly">
       <path class="body" d=${BODY} fill="url(#slime-fill)"/>
       <g clip-path="url(#slime-clip)">
-        <ellipse cx="100" cy="196" rx="84" ry="34" fill="#047A28" opacity="0.38"/>
+        <ellipse cx="100" cy="196" rx="84" ry="34" fill="var(--fur-deep, #047A28)" opacity="0.38"/>
         <ellipse cx="160" cy="132" rx="14" ry="48" fill="#fff" opacity="0.13"/>
         <circle class="bubble b1" cx="146" cy="168" r="6" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.8"/>
         <circle class="bubble b2" cx="132" cy="176" r="3" fill="#fff" fill-opacity="0.1" stroke="#fff" stroke-opacity="0.38" stroke-width="1.5"/>
@@ -124,6 +127,7 @@ export function slimeSvg(mood: Mood, options: SlimeOptions = {}): SVGTemplateRes
       <circle cx="49" cy="143" r="3.6" fill="#fff" opacity="0.65"/>
       ${cheeks(mood)} ${eyes(mood)}
       ${moment === "wake" ? svg`` : mouth(mood)} ${sleepBubble(mood)}
+      ${scarfArt(options.neck, NECK)}
     </g>
     ${workFront(activity, SLIME_HANDS)}
     ${activity ? svg`` : extras(mood)}

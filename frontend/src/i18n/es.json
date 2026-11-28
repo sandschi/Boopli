@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Comida",
     "for_the_room": "Para la habitación",
+    "for_your_pet": "Para tu mascota",
     "wall_and_floor": "Pared y suelo",
     "upgrades": "Mejoras",
     "buy": "Comprar",
@@ -1607,7 +1608,11 @@
     "item_color_green": "Verde",
     "item_color_blue": "Azul",
     "item_color_purple": "Morado",
-    "item_color_gold": "Dorado"
+    "item_color_gold": "Dorado",
+    "item_fur_snow": "Pelaje blanco nieve",
+    "item_scarf_red": "Bufanda roja",
+    "item_bowl_gem": "Gema para el cuenco",
+    "item_dog_bone": "Hueso para perro"
   },
   "inventory": {
     "inventory": "Inventario",
@@ -1625,7 +1630,12 @@
     "wall": "Pared",
     "floor": "Suelo",
     "plain": "Liso",
-    "no_colours_or_patterns_yet": "Encontrarás colores y diseños en la tienda."
+    "no_colours_or_patterns_yet": "Encontrarás colores y diseños en la tienda.",
+    "pet_looks": "Lo que lleva {name}",
+    "fur": "Pelaje",
+    "neck": "Cuello",
+    "own_colour": "Color propio",
+    "neck_default": "Predeterminado"
   },
   "news": {
     "title_badge": "¡Nuevo logro!",

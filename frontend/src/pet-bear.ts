@@ -1,5 +1,5 @@
 import { css, svg, type SVGTemplateResult } from "lit";
-import { extras } from "./pet-kit";
+import { extras, scarfArt } from "./pet-kit";
 import { momentArt, workArms, workBehind, workFront, type Activity, type Hands, type Moment } from "./pet-work";
 import type { Mood } from "./types";
 
@@ -10,8 +10,9 @@ import type { Mood } from "./types";
  */
 
 const INK = "#3A1204";
-const FUR = "#8A2A0B";
-const FUR_DARK = "#6E1F07";
+const FUR = "var(--fur, #8A2A0B)"; // --fur: the fur colour the pet wears (see furStyle in pet-kit)
+const FUR_DARK = "var(--fur-dark, #6E1F07)";
+const NECK = { x: 100, y: 115, w: 78 }; // where a scarf goes
 const TAN = "#D79563";
 const NOSE = "#190703";
 
@@ -96,6 +97,8 @@ export interface BearOptions {
   activity?: Activity;
   moment?: Moment;
   text?: string;
+  /** The colour of a scarf the pet wears (none = no scarf). */
+  neck?: string;
 }
 
 export function bearSvg(mood: Mood, options: BearOptions = {}): SVGTemplateResult {
@@ -120,6 +123,7 @@ export function bearSvg(mood: Mood, options: BearOptions = {}): SVGTemplateResul
       <path d=${BODY} fill="none" stroke=${INK} stroke-width="4" stroke-linejoin="round"/>
       <g class="foot"><ellipse cx="72" cy="178" rx="19" ry="10" fill=${FUR} stroke=${INK} stroke-width="4"/><ellipse cx="72" cy="180" rx="10" ry="5" fill=${TAN}/></g>
       <g class="foot"><ellipse cx="128" cy="178" rx="19" ry="10" fill=${FUR} stroke=${INK} stroke-width="4"/><ellipse cx="128" cy="180" rx="10" ry="5" fill=${TAN}/></g>
+      ${scarfArt(options.neck, NECK)}
       <path d=${HEAD} fill=${FUR} stroke=${INK} stroke-width="4" stroke-linejoin="round"/>
       <path d="M60 70 C60 58 70 50 82 48" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.16"/>
       <ellipse cx="100" cy="96" rx="25" ry="19" fill=${TAN}/>

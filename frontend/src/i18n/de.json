@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Futter",
     "for_the_room": "Für den Raum",
+    "for_your_pet": "Für dein Haustier",
     "wall_and_floor": "Wand und Boden",
     "upgrades": "Extras",
     "buy": "Kaufen",
@@ -1607,7 +1608,11 @@
     "item_color_green": "Grün",
     "item_color_blue": "Blau",
     "item_color_purple": "Lila",
-    "item_color_gold": "Gold"
+    "item_color_gold": "Gold",
+    "item_fur_snow": "Schneeweißes Fell",
+    "item_scarf_red": "Roter Schal",
+    "item_bowl_gem": "Schmuckstein für den Napf",
+    "item_dog_bone": "Hundeknochen"
   },
   "inventory": {
     "inventory": "Inventar",
@@ -1625,7 +1630,12 @@
     "wall": "Wand",
     "floor": "Boden",
     "plain": "Schlicht",
-    "no_colours_or_patterns_yet": "Farben und Muster findest du im Shop."
+    "no_colours_or_patterns_yet": "Farben und Muster findest du im Shop.",
+    "pet_looks": "Was {name} trägt",
+    "fur": "Fell",
+    "neck": "Hals",
+    "own_colour": "Eigene Farbe",
+    "neck_default": "Standard"
   },
   "news": {
     "title_badge": "Neuer Erfolg!",

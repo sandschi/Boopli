@@ -1579,6 +1579,7 @@
     "n_blubs": "{count} Blubs",
     "food": "Food",
     "for_the_room": "For the room",
+    "for_your_pet": "For your pet",
     "wall_and_floor": "Wall and floor",
     "upgrades": "Upgrades",
     "buy": "Buy",
@@ -1607,7 +1608,11 @@
     "item_color_green": "Green",
     "item_color_blue": "Blue",
     "item_color_purple": "Purple",
-    "item_color_gold": "Gold"
+    "item_color_gold": "Gold",
+    "item_fur_snow": "Snow fur",
+    "item_scarf_red": "Red scarf",
+    "item_bowl_gem": "Bowl gem",
+    "item_dog_bone": "Dog bone"
   },
   "inventory": {
     "inventory": "Inventory",
@@ -1625,7 +1630,12 @@
     "wall": "Wall",
     "floor": "Floor",
     "plain": "Plain",
-    "no_colours_or_patterns_yet": "You can find colours and patterns in the shop."
+    "no_colours_or_patterns_yet": "You can find colours and patterns in the shop.",
+    "pet_looks": "What {name} wears",
+    "fur": "Fur",
+    "neck": "Neck",
+    "own_colour": "Own color",
+    "neck_default": "Default"
   },
   "news": {
     "title_badge": "New achievement!",

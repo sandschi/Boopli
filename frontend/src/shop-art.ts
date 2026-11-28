@@ -1,6 +1,8 @@
 import { html, svg, type TemplateResult } from "lit";
 import { t } from "./i18n";
 import type { FoodSize } from "./types";
+import type { PetKind } from "./pets";
+import { BONE, GEM } from "./room-art";
 
 /**
  * The pictures of the shop items, and what a colour or a pattern looks like in the room.
@@ -153,15 +155,119 @@ export function roomPaint(id: string | undefined): string {
   return (id && ROOM_PAINT[id]) || "";
 }
 
+/**
+ * Where a room item can stand. A spot says where its box is (desktop) and, where it differs, on a phone
+ * (`p…`). `stand` is where the pet stands to eat at an item with the role "food", `sleep` where it lies
+ * in an item with the role "bed". Sizes are in cqh (the room's height), so the card can be as low as you want.
+ */
+export interface Spot {
+  l?: string;
+  r?: string;
+  t?: string;
+  b?: string;
+  w: string;
+  pl?: string;
+  pr?: string;
+  pw?: string;
+  stand?: string;
+  pstand?: string;
+  sleep?: string;
+  psleep?: string;
+}
+
+export type SpotId = "floor-1" | "floor-2" | "floor-right" | "floor-gap" | "wall-left" | "wall-right";
+
+export const SPOTS: Record<SpotId, Spot> = {
+  "floor-1": { l: "7%", b: "3cqh", w: "36cqh", pl: "3%", pw: "30cqh" },
+  "floor-2": {
+    l: "calc(7% + 40cqh)",
+    b: "3cqh",
+    w: "36cqh",
+    pl: "calc(3% + 33cqh)",
+    pw: "30cqh",
+    stand: "calc(7% + 98cqh)",
+    pstand: "calc(3% + 78cqh)",
+  },
+  "floor-right": {
+    r: "3%",
+    b: "3cqh",
+    w: "80cqh",
+    pw: "62cqh",
+    sleep: "calc(100% - 3% - 40cqh)",
+    psleep: "calc(100% - 3% - 31cqh)",
+  },
+  // The small gap between the pet and the bed.
+  "floor-gap": { r: "calc(3% + 84cqh)", b: "3cqh", w: "22cqh", pr: "calc(3% + 66cqh)", pw: "20cqh" },
+  "wall-left": { l: "22%", t: "12cqh", w: "26cqh", pl: "14%", pw: "22cqh" },
+  "wall-right": { r: "22%", t: "12cqh", w: "26cqh", pr: "14%", pw: "22cqh" },
+};
+
+/** What an item does for the pet: it sleeps in a bed and eats at a food bowl. */
+export type RoomRole = "bed" | "food";
+
+/** One thing that stands in the room: its picture and where it stands. */
+export interface RoomItem {
+  id: string;
+  art: TemplateResult;
+  /** A second layer drawn in front of the pet (the lip of the bed), so the pet is IN it. */
+  front?: TemplateResult;
+  /** Where it stands. Missing for an attachment: that sits on another item (`attach`). */
+  spot?: SpotId;
+  /** An attachment: it sits on the item `to` (a gem on a bowl) and is only drawn with it. x, y and w are percent of that item's picture. */
+  attach?: { to: string; x: number; y: number; w: number };
+  role?: RoomRole;
+  /** Only for this pet kind (an item of its own); "" or missing = every pet. */
+  species?: PetKind;
+}
+
+/**
+ * Everything that can stand in the room, in drawing order. A new room item is one more row here, one row in
+ * the integration (engine.SHOP_ITEMS) and its name (`shop.item_<id>`) in the language files; the stage draws it.
+ */
+export const ROOM_ITEMS: RoomItem[] = [
+  { id: "water_bowl", art: html`${WATER_BOWL}`, spot: "floor-1" },
+  { id: "food_bowl", art: html`${FOOD_BOWL}`, spot: "floor-2", role: "food" },
+  { id: "bed", art: html`${BED_BACK}`, front: html`${BED_FRONT}`, spot: "floor-right", role: "bed" },
+  // Starter items (issue #14): one for each kind of thing the room can hold. Not in the shop yet (see engine.SHOP_ITEMS).
+  { id: "bowl_gem", art: html`${GEM}`, attach: { to: "food_bowl", x: 37, y: 42, w: 26 } },
+  { id: "dog_bone", art: html`${BONE}`, spot: "floor-gap", species: "dog" },
+];
+
+/**
+ * What a pet can wear. A fur colour changes the pet's main colour (every pet's drawing reads it); a neck item
+ * is worn at the neck (a scarf). Each has a colour here; its price and rules live in engine.SHOP_ITEMS.
+ * A new colour or scarf is one more row here, one in the integration and its name in the language files.
+ */
+export const PET_FUR: Record<string, string> = {
+  fur_snow: "#F4F1EA",
+};
+
+export const PET_NECK: Record<string, string> = {
+  scarf_red: "#E8505B",
+};
+
+/** The fur colour and scarf colour a pet wears, from what is put on it (`placed`). "" = nothing: the pet keeps its own look. */
+export function petLook(placed: { fur?: string; neck?: string } | undefined): { fur: string; neck: string } {
+  return { fur: PET_FUR[placed?.fur ?? ""] ?? "", neck: PET_NECK[placed?.neck ?? ""] ?? "" };
+}
+
+/** Where a pet's look goes: the slots of the pet itself (fur and neck), next to the room's wall and floor. */
+export const PET_SLOTS = ["fur", "neck"] as const;
+
+/** A scarf as a picture, for the shop and the inventory. */
+const scarfPicture = (color: string) => svg`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M26 24 L28 44 L38 42 L35 22 Z" fill=${color} stroke=${INK} stroke-width="2.5" stroke-linejoin="round" opacity="0.85"/>
+  <path d="M6 14 Q24 32 42 14 L40 26 Q24 42 8 26 Z" fill=${color} stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M15 21 L16 31 M24 25 L24 35 M33 21 L32 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+</svg>`;
+
 /** The picture of an item, for the shop and the inventory. */
 export function itemArt(id: string): TemplateResult {
+  const room = ROOM_ITEMS.find((item) => item.id === id);
+  if (room) return room.art;
+  if (PET_FUR[id]) return swatch(PET_FUR[id]);
+  if (PET_NECK[id]) return html`${scarfPicture(PET_NECK[id])}`;
   switch (id) {
-    case "water_bowl":
-      return html`${WATER_BOWL}`;
-    case "food_bowl":
-      return html`${FOOD_BOWL}`;
-    case "bed":
-      return html`${BED_BACK}`;
     case "food_small":
       return html`${FOOD_SMALL}`;
     case "food_medium":

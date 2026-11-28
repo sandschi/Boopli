@@ -3,7 +3,7 @@ import { bearCss, bearSvg } from "./pet-bear";
 import { catCss, catSvg } from "./pet-cat";
 import { dogCss, dogSvg } from "./pet-dog";
 import { foxCss, foxSvg } from "./pet-fox";
-import { kitCss, workCss } from "./pet-kit";
+import { furStyle, kitCss, workCss } from "./pet-kit";
 import { slimeSvg } from "./pet-slime";
 import { MOMENT_MS, type Activity, type Moment } from "./pet-work";
 import { petInfo, type PetKind } from "./pets";
@@ -36,6 +36,8 @@ export class BoopliPet extends LitElement {
     level: { type: Number },
     away: { type: Boolean },
     hungry: { type: Boolean },
+    fur: { type: String },
+    neck: { type: String },
     still: { type: Boolean, reflect: true },
     activity: { type: String },
     moment: { type: String },
@@ -50,6 +52,8 @@ export class BoopliPet extends LitElement {
   declare level: number;
   declare away: boolean; // away mode is on: the stage shows a suitcase; here only the emoji pets get a badge
   declare hungry: boolean; // nothing to eat yet today: a rumbling belly and a thought of food (only over a content or happy mood)
+  declare fur: string; // the fur colour it wears (#rrggbb); "" = its own colour
+  declare neck: string; // the colour of the scarf it wears (#rrggbb); "" = none
   declare still: boolean; // draw it without moving (small previews)
   declare activity: Activity; // busy with housework or typing
   declare moment: Moment; // which moment to play when momentSeq changes
@@ -69,6 +73,8 @@ export class BoopliPet extends LitElement {
     this.level = 1;
     this.away = false;
     this.hungry = false;
+    this.fur = "";
+    this.neck = "";
     this.still = false;
     this.activity = "";
     this.moment = "";
@@ -134,7 +140,7 @@ export class BoopliPet extends LitElement {
 
   private _art() {
     const info = petInfo(this.kind);
-    const options = { activity: this.activity, moment: this._playing, text: this._text };
+    const options = { activity: this.activity, moment: this._playing, text: this._text, neck: this.neck || undefined };
     if (info.art && info.kind === "slime") return slimeSvg(this.mood, options);
     if (info.art && info.kind === "bear") return bearSvg(this.mood, options);
     if (info.art && info.kind === "dog") return dogSvg(this.mood, options);
@@ -166,6 +172,7 @@ export class BoopliPet extends LitElement {
     const hungry = this._showHunger;
     return html`<div
       class="pet ${this.mood} ${hungry ? "hungry" : ""}"
+      style=${this.fur ? furStyle(this.fur) : ""}
       role="img"
       aria-label=${hungry ? t("pet.your_pet_is", { mood: t("pet.mood_hungry") }) : t("pet.your_pet_is", { mood: t(`pet.mood_${this.mood}`) })}
       @click=${() => this._tap()}

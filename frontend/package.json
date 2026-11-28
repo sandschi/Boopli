@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node scripts/i18n-check.mjs && vite build",
     "typecheck": "tsc --noEmit",
-    "i18n:check": "node scripts/i18n-check.mjs"
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "check": "vite --open /dev/items.html"
   },
   "dependencies": {
     "lit": "^3.3.3"

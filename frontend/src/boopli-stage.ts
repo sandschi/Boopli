@@ -4,7 +4,7 @@ import { sharedStyles } from "./styles";
 import type { PetKind } from "./pets";
 import type { Mood } from "./types";
 import type { Activity, Moment } from "./boopli-pet";
-import { BED_BACK, BED_FRONT, FOOD_BOWL, WATER_BOWL, coin, mealBowl, roomPaint } from "./shop-art";
+import { ROOM_ITEMS, SPOTS, coin, petLook, mealBowl, roomPaint, type RoomItem, type Spot } from "./shop-art";
 import { icon } from "./icon";
 import { t } from "./i18n";
 
@@ -41,7 +41,7 @@ export class BoopliStage extends LitElement {
     momentSeq: { type: Number },
     momentText: { type: String },
     owned: { attribute: false },
-    placed: { attribute: false },
+    placed: { attribute: false }, // wall and floor (colours, patterns) and the pet's own slots (fur, neck)
     controls: { type: Boolean },
     blubs: { type: Number },
     canBuy: { type: Boolean },
@@ -61,7 +61,7 @@ export class BoopliStage extends LitElement {
   declare momentSeq: number;
   declare momentText: string;
   declare owned: string[]; // the ids of what the household bought
-  declare placed: { wall?: string; floor?: string };
+  declare placed: { wall?: string; floor?: string; fur?: string; neck?: string };
   declare controls: boolean; // show the Blubs field and the inventory button
   declare blubs: number;
   declare canBuy: boolean; // something new can be bought right now: the Blubs field turns green
@@ -147,7 +147,7 @@ export class BoopliStage extends LitElement {
   }
 
   protected updated(changed: Map<string, unknown>): void {
-    if (changed.has("feedSeq") && this.feedSeq > 0 && this.owned.includes("food_bowl")) this._playFeed();
+    if (changed.has("feedSeq") && this.feedSeq > 0 && this._items().some((item) => item.role === "food")) this._playFeed();
   }
 
   // The bowl's ripple belongs to the stage, outside the pet, so the stage pauses it itself while the page is hidden.
@@ -168,9 +168,57 @@ export class BoopliStage extends LitElement {
     super.disconnectedCallback();
   }
 
+  /** What stands in the room: the owned room items (in drawing order) that fit this pet. */
+  private _items(): RoomItem[] {
+    const mine = ROOM_ITEMS.filter((item) => this.owned.includes(item.id) && (!item.species || item.species === this.kind));
+    // An attachment is only there together with the item it sits on.
+    return mine.filter((item) => !item.attach || mine.some((other) => other.id === item.attach?.to));
+  }
+
+  /** What is drawn on the item `id`: the attachments that sit on it. */
+  private _attachments(items: RoomItem[], id: string) {
+    return items
+      .filter((item) => item.attach?.to === id)
+      .map(
+        (item) =>
+          html`<span class="attach" style="left:${item.attach?.x}%;top:${item.attach?.y}%;width:${item.attach?.w}%">${item.art}</span>`,
+      );
+  }
+
+  /** The inline style that puts an item in its spot (the CSS reads these variables, the phone ones on a phone). */
+  private _spotStyle(spot: Spot): string {
+    const vars: [string, string | undefined][] = [
+      ["l", spot.l],
+      ["r", spot.r],
+      ["t", spot.t],
+      ["b", spot.b],
+      ["w", spot.w],
+      ["pl", spot.pl],
+      ["pr", spot.pr],
+      ["pw", spot.pw],
+    ];
+    return vars
+      .filter(([, v]) => v)
+      .map(([k, v]) => `--${k}:${v}`)
+      .join(";");
+  }
+
   render() {
-    const has = (id: string): boolean => this.owned.includes(id);
-    const hasBed = has("bed");
+    const items = this._items();
+    const look = petLook(this.placed);
+    const bed = items.find((item) => item.role === "bed");
+    const food = items.find((item) => item.role === "food");
+    const hasBed = !!bed;
+    // Where the pet lies down and where it stands to eat: set by the items that have those roles.
+    const bedSpot = bed?.spot ? SPOTS[bed.spot] : undefined;
+    const foodSpot = food?.spot ? SPOTS[food.spot] : undefined;
+    const standing = items.filter((item) => item.spot);
+    const roleVars = [
+      bedSpot?.sleep && `--sleep:${bedSpot.sleep}`,
+      bedSpot?.psleep && `--psleep:${bedSpot.psleep}`,
+      foodSpot?.stand && `--stand:${foodSpot.stand}`,
+      foodSpot?.pstand && `--pstand:${foodSpot.pstand}`,
+    ];
     const wall = roomPaint(this.placed.wall);
     const floor = roomPaint(this.placed.floor);
     // While you are away the pet always hibernates, whatever its mood was.
@@ -185,15 +233,16 @@ export class BoopliStage extends LitElement {
     const stays = sleeping || !!activity;
     return html`<div
       class="scene ${sleeping ? "sleeping" : ""} ${deep ? "deep" : ""} ${feed} ${stays ? "stays" : ""}"
-      style=${wall ? `background:${wall}` : ""}
+      style=${[wall && `background:${wall}`, ...roleVars].filter(Boolean).join(";")}
       role="group"
       aria-label=${t("stage.your_pets_room")}
     >
       <div class="floor" style=${floor ? `background:${floor}` : ""}></div>
       ${this._renderControls()}
-      ${has("water_bowl") ? html`<div class="prop water">${WATER_BOWL}</div>` : nothing}
-      ${has("food_bowl") ? html`<div class="prop food">${FOOD_BOWL}</div>` : nothing}
-      ${hasBed ? html`<div class="prop bed">${BED_BACK}</div>` : nothing}
+      ${standing.map(
+        (item) =>
+          html`<div class="prop item role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot!])}>${item.art}${this._attachments(items, item.id)}</div>`,
+      )}
       <div class="actor">
         <boopli-pet
           .kind=${this.kind}
@@ -201,13 +250,19 @@ export class BoopliStage extends LitElement {
           .level=${this.level}
           .away=${this.away}
           .hungry=${this.hungry}
+          .fur=${look.fur}
+          .neck=${look.neck}
           .activity=${activity}
           .moment=${this.moment}
           .momentSeq=${this.momentSeq}
           .momentText=${this.momentText}
         ></boopli-pet>
       </div>
-      ${hasBed ? html`<div class="prop bed front">${BED_FRONT}</div>` : nothing}
+      ${standing.map((item) =>
+        item.front
+          ? html`<div class="prop item front role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot!])}>${item.front}</div>`
+          : nothing,
+      )}
       ${this.away ? html`<div class="prop suitcase">${SUITCASE}</div>` : nothing}
     </div>`;
   }
@@ -320,20 +375,17 @@ export class BoopliStage extends LitElement {
         overflow: visible;
       }
       /* Everything in the room is sized by the room's height, so the card can be as low as you want. */
-      .water {
-        left: 7%;
-        bottom: 3cqh;
-        width: 36cqh;
+      /* An attachment sits on its item: its box is in percent of the item's picture. */
+      .attach {
+        position: absolute;
       }
-      .food {
-        left: calc(7% + 40cqh);
-        bottom: 3cqh;
-        width: 36cqh;
-      }
-      .bed {
-        right: 3%;
-        bottom: 3cqh;
-        width: 80cqh;
+      /* A room item stands where its spot says (see SPOTS in shop-art.ts). */
+      .item {
+        left: var(--l, auto);
+        right: var(--r, auto);
+        top: var(--t, auto);
+        bottom: var(--b, auto);
+        width: var(--w);
       }
       .suitcase {
         left: calc(50% + 24cqh);
@@ -352,7 +404,7 @@ export class BoopliStage extends LitElement {
       }
       /* Asleep: the pet is in the bed, a little smaller, with the blanket over part of it. */
       .sleeping .actor {
-        left: calc(100% - 3% - 40cqh);
+        left: var(--sleep, 50%);
         bottom: 7cqh;
         transform: translateX(-50%) scale(0.82);
       }
@@ -370,21 +422,21 @@ export class BoopliStage extends LitElement {
         transform: translate(0, -1px) scale(0.95, 1);
       }
       /* Feeding: the bowl is empty by itself; the kibble comes when the pet is fed and goes down while it eats. */
-      .food .kibble {
+      .role-food .kibble {
         opacity: 0;
         transform-box: fill-box;
         transform-origin: 50% 100%;
       }
-      .feed-fill .food .kibble,
-      .feed-walk .food .kibble {
+      .feed-fill .role-food .kibble,
+      .feed-walk .role-food .kibble {
         opacity: 1;
         animation: kibble-in 0.45s ease-out;
       }
-      .feed-eat .food .kibble {
+      .feed-eat .role-food .kibble {
         opacity: 1;
       }
       /* Eaten piece by piece, from the pet's side first. */
-      .feed-eat .food .kibble circle {
+      .feed-eat .role-food .kibble circle {
         transform-box: fill-box;
         transform-origin: 50% 50%;
         animation: bite 0.35s ease-in both;
@@ -392,7 +444,7 @@ export class BoopliStage extends LitElement {
       }
       .feed-walk:not(.stays) .actor,
       .feed-eat:not(.stays) .actor {
-        left: calc(7% + 98cqh);
+        left: var(--stand, 50%);
       }
       .feed-eat:not(.stays) .actor {
         animation: chomp 0.6s ease-in-out infinite;
@@ -451,10 +503,10 @@ export class BoopliStage extends LitElement {
           opacity: 0.6;
         }
         .feed-eat .actor,
-        .feed-eat .food .kibble circle,
-        .feed-eat .food .kibble,
-        .feed-fill .food .kibble,
-        .feed-walk .food .kibble {
+        .feed-eat .role-food .kibble circle,
+        .feed-eat .role-food .kibble,
+        .feed-fill .role-food .kibble,
+        .feed-walk .role-food .kibble {
           animation: none;
         }
         .actor,
@@ -470,24 +522,17 @@ export class BoopliStage extends LitElement {
         .actor {
           height: 72cqh;
         }
-        .water {
-          left: 3%;
-          width: 30cqh;
-        }
-        .food {
-          left: calc(3% + 33cqh);
-          width: 30cqh;
-        }
-        .bed {
-          right: 3%;
-          width: 62cqh;
+        .item {
+          left: var(--pl, var(--l, auto));
+          right: var(--pr, var(--r, auto));
+          width: var(--pw, var(--w));
         }
         .sleeping .actor {
-          left: calc(100% - 3% - 31cqh);
+          left: var(--psleep, var(--sleep, 50%));
         }
         .feed-walk:not(.stays) .actor,
         .feed-eat:not(.stays) .actor {
-          left: calc(3% + 78cqh);
+          left: var(--pstand, var(--stand, 50%));
         }
         .suitcase {
           left: calc(50% + 22cqh);
