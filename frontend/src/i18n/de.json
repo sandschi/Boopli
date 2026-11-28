@@ -1608,7 +1608,11 @@
     "item_color_green": "Grün",
     "item_color_blue": "Blau",
     "item_color_purple": "Lila",
-    "item_color_gold": "Gold"
+    "item_color_gold": "Gold",
+    "item_fur_snow": "Schneeweißes Fell",
+    "item_scarf_red": "Roter Schal",
+    "item_bowl_gem": "Schmuckstein für den Napf",
+    "item_dog_bone": "Hundeknochen"
   },
   "inventory": {
     "inventory": "Inventar",
@@ -1629,9 +1633,9 @@
     "no_colours_or_patterns_yet": "Farben und Muster findest du im Shop.",
     "pet_looks": "Was {name} trägt",
     "fur": "Fell",
-    "neck": "Schal",
+    "neck": "Hals",
     "own_colour": "Eigene Farbe",
-    "nothing_worn": "Nichts"
+    "neck_default": "Standard"
   },
   "news": {
     "title_badge": "Neuer Erfolg!",

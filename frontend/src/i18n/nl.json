@@ -1608,7 +1608,11 @@
     "item_color_green": "Groen",
     "item_color_blue": "Blauw",
     "item_color_purple": "Paars",
-    "item_color_gold": "Goud"
+    "item_color_gold": "Goud",
+    "item_fur_snow": "Sneeuwwitte vacht",
+    "item_scarf_red": "Rode sjaal",
+    "item_bowl_gem": "Edelsteen voor het voerbakje",
+    "item_dog_bone": "Hondenbot"
   },
   "inventory": {
     "inventory": "Voorraad",
@@ -1629,9 +1633,9 @@
     "no_colours_or_patterns_yet": "Je vindt kleuren en patronen in de winkel.",
     "pet_looks": "Wat {name} draagt",
     "fur": "Vacht",
-    "neck": "Sjaal",
+    "neck": "Hals",
     "own_colour": "Eigen kleur",
-    "nothing_worn": "Niets"
+    "neck_default": "Standaard"
   },
   "news": {
     "title_badge": "Nieuwe prestatie!",

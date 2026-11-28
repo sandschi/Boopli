@@ -14,7 +14,7 @@ const PLACES: Record<Place, { kinds: ShopItem["kind"][]; title: () => string; no
   wall: { kinds: ["color", "pattern"], title: () => t("inventory.wall"), none: () => t("inventory.plain") },
   floor: { kinds: ["color", "pattern"], title: () => t("inventory.floor"), none: () => t("inventory.plain") },
   fur: { kinds: ["fur"], title: () => t("inventory.fur"), none: () => t("inventory.own_colour") },
-  neck: { kinds: ["wear"], title: () => t("inventory.neck"), none: () => t("inventory.nothing_worn") },
+  neck: { kinds: ["wear"], title: () => t("inventory.neck"), none: () => t("inventory.neck_default") },
 };
 const isPlace = (kind: string): kind is Place => kind in PLACES;
 
@@ -97,6 +97,11 @@ export class BoopliInventory extends LitElement {
     void this._run(() => shopPlace(this.hass!, place, id));
   }
 
+  /** The name a screen reader says for a slot: with "In use" added for what is on right now (the tick is only a picture). */
+  private _inUse(label: string, inUse: boolean): string {
+    return inUse ? `${label}, ${t("inventory.in_use")}` : label;
+  }
+
   /** One slot. `mark` is the small badge in the corner (the count, or a tick for what is in use). */
   private _slot(key: string, label: string, art: unknown, mark: string | number = "", dim = false) {
     return html`<button
@@ -136,8 +141,8 @@ export class BoopliInventory extends LitElement {
     return html`<div class="group">
       <h4>${title}</h4>
       <div class="slots" role="group" aria-label=${title}>
-        ${this._slot(`${place}:`, PLACES[place].none(), html`<span class="swatch plain"></span>`, current === "" ? "✓" : "")}
-        ${looks.map((i) => this._slot(`${place}:${i.id}`, itemName(i.id), itemArt(i.id), current === i.id ? "✓" : ""))}
+        ${this._slot(`${place}:`, this._inUse(PLACES[place].none(), current === ""), html`<span class="swatch plain"></span>`, current === "" ? "✓" : "")}
+        ${looks.map((i) => this._slot(`${place}:${i.id}`, this._inUse(itemName(i.id), current === i.id), itemArt(i.id), current === i.id ? "✓" : ""))}
       </div>
     </div>`;
   }

@@ -1608,7 +1608,11 @@
     "item_color_green": "Vert",
     "item_color_blue": "Bleu",
     "item_color_purple": "Violet",
-    "item_color_gold": "Or"
+    "item_color_gold": "Or",
+    "item_fur_snow": "Pelage blanc neige",
+    "item_scarf_red": "Écharpe rouge",
+    "item_bowl_gem": "Gemme pour la gamelle",
+    "item_dog_bone": "Os pour chien"
   },
   "inventory": {
     "inventory": "Inventaire",
@@ -1629,9 +1633,9 @@
     "no_colours_or_patterns_yet": "Tu trouveras des couleurs et des motifs dans la boutique.",
     "pet_looks": "Ce que porte {name}",
     "fur": "Pelage",
-    "neck": "Écharpe",
+    "neck": "Cou",
     "own_colour": "Couleur naturelle",
-    "nothing_worn": "Rien"
+    "neck_default": "Par défaut"
   },
   "news": {
     "title_badge": "Nouveau succès !",

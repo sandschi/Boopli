@@ -1741,7 +1741,11 @@ var Xe = {
 		item_color_green: "Grün",
 		item_color_blue: "Blau",
 		item_color_purple: "Lila",
-		item_color_gold: "Gold"
+		item_color_gold: "Gold",
+		item_fur_snow: "Schneeweißes Fell",
+		item_scarf_red: "Roter Schal",
+		item_bowl_gem: "Schmuckstein für den Napf",
+		item_dog_bone: "Hundeknochen"
 	},
 	inventory: {
 		inventory: "Inventar",
@@ -1762,9 +1766,9 @@ var Xe = {
 		no_colours_or_patterns_yet: "Farben und Muster findest du im Shop.",
 		pet_looks: "Was {name} trägt",
 		fur: "Fell",
-		neck: "Schal",
+		neck: "Hals",
 		own_colour: "Eigene Farbe",
-		nothing_worn: "Nichts"
+		neck_default: "Standard"
 	},
 	news: {
 		title_badge: "Neuer Erfolg!",
@@ -3039,7 +3043,11 @@ var Xe = {
 		item_color_green: "Green",
 		item_color_blue: "Blue",
 		item_color_purple: "Purple",
-		item_color_gold: "Gold"
+		item_color_gold: "Gold",
+		item_fur_snow: "Snow fur",
+		item_scarf_red: "Red scarf",
+		item_bowl_gem: "Bowl gem",
+		item_dog_bone: "Dog bone"
 	},
 	inventory: {
 		inventory: "Inventory",
@@ -3060,9 +3068,9 @@ var Xe = {
 		no_colours_or_patterns_yet: "You can find colours and patterns in the shop.",
 		pet_looks: "What {name} wears",
 		fur: "Fur",
-		neck: "Scarf",
+		neck: "Neck",
 		own_colour: "Own color",
-		nothing_worn: "Nothing"
+		neck_default: "Default"
 	},
 	news: {
 		title_badge: "New achievement!",
@@ -4337,7 +4345,11 @@ var Xe = {
 		item_color_green: "Verde",
 		item_color_blue: "Azul",
 		item_color_purple: "Morado",
-		item_color_gold: "Dorado"
+		item_color_gold: "Dorado",
+		item_fur_snow: "Pelaje blanco nieve",
+		item_scarf_red: "Bufanda roja",
+		item_bowl_gem: "Gema para el cuenco",
+		item_dog_bone: "Hueso para perro"
 	},
 	inventory: {
 		inventory: "Inventario",
@@ -4358,9 +4370,9 @@ var Xe = {
 		no_colours_or_patterns_yet: "Encontrarás colores y diseños en la tienda.",
 		pet_looks: "Lo que lleva {name}",
 		fur: "Pelaje",
-		neck: "Bufanda",
+		neck: "Cuello",
 		own_colour: "Color propio",
-		nothing_worn: "Nada"
+		neck_default: "Predeterminado"
 	},
 	news: {
 		title_badge: "¡Nuevo logro!",
@@ -5635,7 +5647,11 @@ var Xe = {
 		item_color_green: "Vert",
 		item_color_blue: "Bleu",
 		item_color_purple: "Violet",
-		item_color_gold: "Or"
+		item_color_gold: "Or",
+		item_fur_snow: "Pelage blanc neige",
+		item_scarf_red: "Écharpe rouge",
+		item_bowl_gem: "Gemme pour la gamelle",
+		item_dog_bone: "Os pour chien"
 	},
 	inventory: {
 		inventory: "Inventaire",
@@ -5656,9 +5672,9 @@ var Xe = {
 		no_colours_or_patterns_yet: "Tu trouveras des couleurs et des motifs dans la boutique.",
 		pet_looks: "Ce que porte {name}",
 		fur: "Pelage",
-		neck: "Écharpe",
+		neck: "Cou",
 		own_colour: "Couleur naturelle",
-		nothing_worn: "Rien"
+		neck_default: "Par défaut"
 	},
 	news: {
 		title_badge: "Nouveau succès\xA0!",
@@ -6933,7 +6949,11 @@ var Xe = {
 		item_color_green: "Groen",
 		item_color_blue: "Blauw",
 		item_color_purple: "Paars",
-		item_color_gold: "Goud"
+		item_color_gold: "Goud",
+		item_fur_snow: "Sneeuwwitte vacht",
+		item_scarf_red: "Rode sjaal",
+		item_bowl_gem: "Edelsteen voor het voerbakje",
+		item_dog_bone: "Hondenbot"
 	},
 	inventory: {
 		inventory: "Voorraad",
@@ -6954,9 +6974,9 @@ var Xe = {
 		no_colours_or_patterns_yet: "Je vindt kleuren en patronen in de winkel.",
 		pet_looks: "Wat {name} draagt",
 		fur: "Vacht",
-		neck: "Sjaal",
+		neck: "Hals",
 		own_colour: "Eigen kleur",
-		nothing_worn: "Niets"
+		neck_default: "Standaard"
 	},
 	news: {
 		title_badge: "Nieuwe prestatie!",
@@ -11502,7 +11522,7 @@ var Ta = [
 	neck: {
 		kinds: ["wear"],
 		title: () => x("inventory.neck"),
-		none: () => x("inventory.nothing_worn")
+		none: () => x("inventory.neck_default")
 	}
 }, Da = (e) => e in Ea, Oa = class extends v {
 	static {
@@ -11558,6 +11578,9 @@ var Ta = [
 	_place(e, t) {
 		this._run(() => Sn(this.hass, e, t));
 	}
+	_inUse(e, t) {
+		return t ? `${e}, ${x("inventory.in_use")}` : e;
+	}
 	_slot(e, t, n, r = "", i = !1) {
 		return m`<button
       type="button"
@@ -11594,8 +11617,8 @@ var Ta = [
 		return m`<div class="group">
       <h4>${n}</h4>
       <div class="slots" role="group" aria-label=${n}>
-        ${this._slot(`${t}:`, Ea[t].none(), m`<span class="swatch plain"></span>`, i === "" ? "✓" : "")}
-        ${r.map((e) => this._slot(`${t}:${e.id}`, G(e.id), W(e.id), i === e.id ? "✓" : ""))}
+        ${this._slot(`${t}:`, this._inUse(Ea[t].none(), i === ""), m`<span class="swatch plain"></span>`, i === "" ? "✓" : "")}
+        ${r.map((e) => this._slot(`${t}:${e.id}`, this._inUse(G(e.id), i === e.id), W(e.id), i === e.id ? "✓" : ""))}
       </div>
     </div>`;
 	}

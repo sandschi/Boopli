@@ -1608,7 +1608,11 @@
     "item_color_green": "Green",
     "item_color_blue": "Blue",
     "item_color_purple": "Purple",
-    "item_color_gold": "Gold"
+    "item_color_gold": "Gold",
+    "item_fur_snow": "Snow fur",
+    "item_scarf_red": "Red scarf",
+    "item_bowl_gem": "Bowl gem",
+    "item_dog_bone": "Dog bone"
   },
   "inventory": {
     "inventory": "Inventory",
@@ -1629,9 +1633,9 @@
     "no_colours_or_patterns_yet": "You can find colours and patterns in the shop.",
     "pet_looks": "What {name} wears",
     "fur": "Fur",
-    "neck": "Scarf",
+    "neck": "Neck",
     "own_colour": "Own color",
-    "nothing_worn": "Nothing"
+    "neck_default": "Default"
   },
   "news": {
     "title_badge": "New achievement!",
