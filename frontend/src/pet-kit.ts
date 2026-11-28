@@ -40,6 +40,52 @@ export function extras(mood: Mood, at: ExtrasAt = {}): SVGTemplateResult {
   }
 }
 
+/** Mix two #rrggbb colours: amount 0 gives `a`, 1 gives `b`. */
+function mix(a: string, b: string, amount: number): string {
+  const n = (hex: string, i: number) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+  const part = (i: number) => Math.round(n(a, i) + (n(b, i) - n(a, i)) * amount).toString(16).padStart(2, "0");
+  return `#${part(0)}${part(1)}${part(2)}`;
+}
+
+/**
+ * The fur colour a pet wears, as the CSS variables its drawing reads (--fur and its shades). A pet without
+ * them keeps its own colours, because every drawing has its own colour as the fallback: var(--fur, #8A2A0B).
+ * `hex` is the main colour (#rrggbb); the shades are mixed from it.
+ */
+export function furStyle(hex: string): string {
+  const vars: [string, string][] = [
+    ["--fur", hex],
+    ["--fur-dark", mix(hex, "#000000", 0.22)],
+    ["--fur-deep", mix(hex, "#000000", 0.5)],
+    ["--fur-lt", mix(hex, "#ffffff", 0.3)],
+    ["--fur-hi", mix(hex, "#ffffff", 0.7)],
+    ["--fur-rim", mix(hex, "#ffffff", 0.35)],
+    ["--fur-vest", mix(hex, "#ffffff", 0.1)],
+  ];
+  return vars.map(([k, v]) => `${k}:${v}`).join(";");
+}
+
+/** Where a scarf sits on a pet: the middle of the neck (x, y) and how wide it is, in the pet's 200 x 200 drawing. */
+export interface NeckAt {
+  x: number;
+  y: number;
+  w: number;
+}
+
+/** A scarf around the neck with one end hanging down. Drawn before the head, so the chin lies over it. `color` empty = no scarf. */
+export function scarfArt(color: string | undefined, at: NeckAt): SVGTemplateResult {
+  if (!color) return svg``;
+  const l = at.x - at.w / 2;
+  const r = at.x + at.w / 2;
+  const y = at.y;
+  const dark = mix(color, "#000000", 0.25);
+  return svg`<g class="scarf">
+    <path d="M${at.x + at.w * 0.12} ${y + 8} L${at.x + at.w * 0.12 + 3} ${y + 30} L${at.x + at.w * 0.12 + 16} ${y + 27} L${at.x + at.w * 0.12 + 12} ${y + 5} Z" fill=${dark} stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${l} ${y - 6} Q${at.x} ${y + 10} ${r} ${y - 6} L${r - 2} ${y + 6} Q${at.x} ${y + 22} ${l + 2} ${y + 6} Z" fill=${color} stroke=${INK} stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${l + at.w * 0.28} ${y + 2} L${l + at.w * 0.3} ${y + 14} M${l + at.w * 0.5} ${y + 5} L${l + at.w * 0.5} ${y + 17} M${l + at.w * 0.72} ${y + 2} L${l + at.w * 0.7} ${y + 14}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+  </g>`;
+}
+
 export const kitCss = css`
   .pet-art {
     width: 100%;

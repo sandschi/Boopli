@@ -233,10 +233,35 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: "dog_bone", art: html`${BONE}`, spot: "floor-gap", species: "dog" },
 ];
 
+/**
+ * What a pet can wear. A fur colour changes the pet's main colour (every pet's drawing reads it); a neck item
+ * is worn at the neck (a scarf). Each has a colour here; its price and rules live in engine.SHOP_ITEMS.
+ * A new colour or scarf is one more row here, one in the integration and its name in the language files.
+ */
+export const PET_FUR: Record<string, string> = {
+  fur_snow: "#F4F1EA",
+};
+
+export const PET_NECK: Record<string, string> = {
+  scarf_red: "#E8505B",
+};
+
+/** Where a pet's look goes: the slots of the pet itself (fur and neck), next to the room's wall and floor. */
+export const PET_SLOTS = ["fur", "neck"] as const;
+
+/** A scarf as a picture, for the shop and the inventory. */
+const scarfPicture = (color: string) => svg`<svg viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M26 24 L28 44 L38 42 L35 22 Z" fill=${color} stroke=${INK} stroke-width="2.5" stroke-linejoin="round" opacity="0.85"/>
+  <path d="M6 14 Q24 32 42 14 L40 26 Q24 42 8 26 Z" fill=${color} stroke=${INK} stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M15 21 L16 31 M24 25 L24 35 M33 21 L32 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+</svg>`;
+
 /** The picture of an item, for the shop and the inventory. */
 export function itemArt(id: string): TemplateResult {
   const room = ROOM_ITEMS.find((item) => item.id === id);
   if (room) return room.art;
+  if (PET_FUR[id]) return swatch(PET_FUR[id]);
+  if (PET_NECK[id]) return html`${scarfPicture(PET_NECK[id])}`;
   switch (id) {
     case "food_small":
       return html`${FOOD_SMALL}`;

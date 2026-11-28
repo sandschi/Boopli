@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import "../src/boopli-stage";
-import { ROOM_ITEMS as CATALOGUE, ROOM_PAINT } from "../src/shop-art";
+import { PET_FUR, PET_NECK, ROOM_ITEMS as CATALOGUE, ROOM_PAINT } from "../src/shop-art";
 import { PETS, MOODS, type PetKind } from "../src/pets";
 import type { Mood } from "../src/types";
 
@@ -24,7 +24,12 @@ class BoopliItemCheck extends LitElement {
     this._mood = "content";
   }
 
-  private _stage(kind: PetKind, owned: string[], placed: { wall?: string; floor?: string } = {}, mood: Mood = this._mood) {
+  private _stage(
+    kind: PetKind,
+    owned: string[],
+    placed: { wall?: string; floor?: string; fur?: string; neck?: string } = {},
+    mood: Mood = this._mood,
+  ) {
     return html`<boopli-stage .kind=${kind} .mood=${mood} .level=${4} .owned=${owned} .placed=${placed}></boopli-stage>`;
   }
 
@@ -59,6 +64,19 @@ class BoopliItemCheck extends LitElement {
         ${Object.keys(ROOM_PAINT).map(
           (id) =>
             html`<figure>${this._stage("slime", [], { wall: id, floor: id })}<figcaption>${id}</figcaption></figure>`,
+        )}
+      </div>
+
+      <h2>What a pet wears (fur colour, scarf)</h2>
+      <div class="grid">
+        ${kinds.flatMap((kind) =>
+          Object.keys(PET_FUR).flatMap((fur) =>
+            Object.keys(PET_NECK).flatMap((neck) => [
+              html`<figure>${this._stage(kind, [], { fur })}<figcaption>${kind}: ${fur}</figcaption></figure>`,
+              html`<figure>${this._stage(kind, [], { neck })}<figcaption>${kind}: ${neck}</figcaption></figure>`,
+              html`<figure>${this._stage(kind, [], { fur, neck })}<figcaption>${kind}: ${fur} and ${neck}</figcaption></figure>`,
+            ]),
+          ),
         )}
       </div>
 
