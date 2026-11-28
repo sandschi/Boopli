@@ -41,8 +41,17 @@ class BoopliItemCheck extends LitElement {
 
       <h2>Room items</h2>
       <div class="grid">
-        ${ROOM_ITEMS.map((id) => html`<figure>${this._stage("slime", [id])}<figcaption>${id}</figcaption></figure>`)}
-        <figure>${this._stage("slime", ROOM_ITEMS)}<figcaption>all room items together</figcaption></figure>
+        ${CATALOGUE.map((item) => {
+          // An attachment is shown with the item it sits on, an item of one pet kind with that pet.
+          const owned = item.attach ? [item.attach.to, item.id] : [item.id];
+          const note = [item.attach && `on ${item.attach.to}`, item.species && `only for the ${item.species}`, !item.spot && !item.attach && "no place"]
+            .filter(Boolean)
+            .join(", ");
+          return html`<figure>
+            ${this._stage(item.species ?? "slime", owned)}<figcaption>${item.id}${note ? ` (${note})` : ""}</figcaption>
+          </figure>`;
+        })}
+        <figure>${this._stage("dog", ROOM_ITEMS)}<figcaption>all room items together (dog, so its own item shows)</figcaption></figure>
       </div>
 
       <h2>Colours and patterns (wall and floor)</h2>

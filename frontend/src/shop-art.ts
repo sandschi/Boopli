@@ -2,6 +2,7 @@ import { html, svg, type TemplateResult } from "lit";
 import { t } from "./i18n";
 import type { FoodSize } from "./types";
 import type { PetKind } from "./pets";
+import { BONE, GEM } from "./room-art";
 
 /**
  * The pictures of the shop items, and what a colour or a pattern looks like in the room.
@@ -210,7 +211,10 @@ export interface RoomItem {
   art: TemplateResult;
   /** A second layer drawn in front of the pet (the lip of the bed), so the pet is IN it. */
   front?: TemplateResult;
-  spot: SpotId;
+  /** Where it stands. Missing for an attachment: that sits on another item (`attach`). */
+  spot?: SpotId;
+  /** An attachment: it sits on the item `to` (a gem on a bowl) and is only drawn with it. x, y and w are percent of that item's picture. */
+  attach?: { to: string; x: number; y: number; w: number };
   role?: RoomRole;
   /** Only for this pet kind (an item of its own); "" or missing = every pet. */
   species?: PetKind;
@@ -224,6 +228,9 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: "water_bowl", art: html`${WATER_BOWL}`, spot: "floor-1" },
   { id: "food_bowl", art: html`${FOOD_BOWL}`, spot: "floor-2", role: "food" },
   { id: "bed", art: html`${BED_BACK}`, front: html`${BED_FRONT}`, spot: "floor-right", role: "bed" },
+  // Starter items (issue #14): one for each kind of thing the room can hold. Not in the shop yet (see engine.SHOP_ITEMS).
+  { id: "bowl_gem", art: html`${GEM}`, attach: { to: "food_bowl", x: 37, y: 42, w: 26 } },
+  { id: "dog_bone", art: html`${BONE}`, spot: "floor-gap", species: "dog" },
 ];
 
 /** The picture of an item, for the shop and the inventory. */

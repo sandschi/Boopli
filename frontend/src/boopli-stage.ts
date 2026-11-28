@@ -170,7 +170,19 @@ export class BoopliStage extends LitElement {
 
   /** What stands in the room: the owned room items (in drawing order) that fit this pet. */
   private _items(): RoomItem[] {
-    return ROOM_ITEMS.filter((item) => this.owned.includes(item.id) && (!item.species || item.species === this.kind));
+    const mine = ROOM_ITEMS.filter((item) => this.owned.includes(item.id) && (!item.species || item.species === this.kind));
+    // An attachment is only there together with the item it sits on.
+    return mine.filter((item) => !item.attach || mine.some((other) => other.id === item.attach?.to));
+  }
+
+  /** What is drawn on the item `id`: the attachments that sit on it. */
+  private _attachments(items: RoomItem[], id: string) {
+    return items
+      .filter((item) => item.attach?.to === id)
+      .map(
+        (item) =>
+          html`<span class="attach" style="left:${item.attach?.x}%;top:${item.attach?.y}%;width:${item.attach?.w}%">${item.art}</span>`,
+      );
   }
 
   /** The inline style that puts an item in its spot (the CSS reads these variables, the phone ones on a phone). */
@@ -197,8 +209,9 @@ export class BoopliStage extends LitElement {
     const food = items.find((item) => item.role === "food");
     const hasBed = !!bed;
     // Where the pet lies down and where it stands to eat: set by the items that have those roles.
-    const bedSpot = bed ? SPOTS[bed.spot] : undefined;
-    const foodSpot = food ? SPOTS[food.spot] : undefined;
+    const bedSpot = bed?.spot ? SPOTS[bed.spot] : undefined;
+    const foodSpot = food?.spot ? SPOTS[food.spot] : undefined;
+    const standing = items.filter((item) => item.spot);
     const roleVars = [
       bedSpot?.sleep && `--sleep:${bedSpot.sleep}`,
       bedSpot?.psleep && `--psleep:${bedSpot.psleep}`,
@@ -225,7 +238,10 @@ export class BoopliStage extends LitElement {
     >
       <div class="floor" style=${floor ? `background:${floor}` : ""}></div>
       ${this._renderControls()}
-      ${items.map((item) => html`<div class="prop item role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot])}>${item.art}</div>`)}
+      ${standing.map(
+        (item) =>
+          html`<div class="prop item role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot!])}>${item.art}${this._attachments(items, item.id)}</div>`,
+      )}
       <div class="actor">
         <boopli-pet
           .kind=${this.kind}
@@ -239,7 +255,11 @@ export class BoopliStage extends LitElement {
           .momentText=${this.momentText}
         ></boopli-pet>
       </div>
-      ${items.map((item) => (item.front ? html`<div class="prop item front role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot])}>${item.front}</div>` : nothing))}
+      ${standing.map((item) =>
+        item.front
+          ? html`<div class="prop item front role-${item.role ?? "none"}" style=${this._spotStyle(SPOTS[item.spot!])}>${item.front}</div>`
+          : nothing,
+      )}
       ${this.away ? html`<div class="prop suitcase">${SUITCASE}</div>` : nothing}
     </div>`;
   }
@@ -352,6 +372,10 @@ export class BoopliStage extends LitElement {
         overflow: visible;
       }
       /* Everything in the room is sized by the room's height, so the card can be as low as you want. */
+      /* An attachment sits on its item: its box is in percent of the item's picture. */
+      .attach {
+        position: absolute;
+      }
       /* A room item stands where its spot says (see SPOTS in shop-art.ts). */
       .item {
         left: var(--l, auto);
