@@ -8,14 +8,15 @@ import { describeWhen, fmtTime, sinceLabel } from "./time";
 import { sharedStyles } from "./styles";
 import "./boopli-stage";
 import "./boopli-shop";
+import type { BoopliShop } from "./boopli-shop";
 import "./boopli-inventory";
+import "./boopli-news";
 import "./boopli-pet";
 import { icon } from "./icon";
 import type { PetKind } from "./pets";
 import type { Moment } from "./boopli-pet";
 import "./boopli-egg";
 import { accessOf } from "./helpers";
-import { achievementName } from "./achievements";
 import type { Chore, Hass, Mood, Pet, Run, Snapshot, StepRun } from "./types";
 import { t } from "./i18n";
 
@@ -177,11 +178,6 @@ export class BoopliToday extends LitElement {
     const parts = [...gains];
     if (finished.length) parts.unshift(t("today.is_done", { value: finished[0] }));
     if (pet.level > before.level) parts.push(t("today.level_2", { level: pet.level }));
-    // An achievement reached just now: a quiet line in the same message, never a pop-up.
-    for (const id of pet.achievements ?? []) {
-      const name = (before.achievements ?? []).includes(id) ? "" : achievementName(id);
-      if (name) parts.push(t("today.achievement_reached", { name }));
-    }
     if (before.mood === "sad" || before.mood === "hibernating")
       parts.push(t("today.is_awake_welcome_back", { name: pet.name }));
     this._toast = parts.join("  ·  ");
@@ -271,6 +267,7 @@ export class BoopliToday extends LitElement {
           .mood=${pet.mood}
           .level=${pet.level}
           .away=${pet.away ?? false}
+          .hungry=${pet.hungry ?? false}
           .activity=${working && !pet.away ? "housework" : ""}
           .moment=${this._moment}
           .momentSeq=${this._momentSeq}
@@ -309,14 +306,22 @@ export class BoopliToday extends LitElement {
         .pet=${pet}
         .open=${this._inventory}
         @inventory-close=${() => this._closeWindow("inventory")}
-        @inventory-error=${(e: CustomEvent<string>) => this._say(e.detail)}
+        @inventory-error=${(e: CustomEvent<string>) => this._inventoryError(e.detail)}
         @open-shop=${() => {
           this._inventory = false;
           this._shop = true;
         }}
       ></boopli-inventory>
       ${this._renderQuest()}
+      <boopli-news .hass=${this.hass} .pet=${pet} .hold=${this._shop || this._inventory || this._quest}></boopli-news>
     `;
+  }
+
+  /** A failed inventory action that ended after the inventory was closed: the shop (if it covers Today now) says it, else Today. */
+  private _inventoryError(text: string): void {
+    const shop = this.renderRoot.querySelector<BoopliShop>("boopli-shop");
+    if (this._shop && shop) shop.showError(text);
+    else this._say(text);
   }
 
   /** Close the shop or the inventory; a meal given while it was open now plays its eating scene (unless the other one is still open). */

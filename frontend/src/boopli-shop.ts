@@ -64,6 +64,12 @@ export class BoopliShop extends LitElement {
     } else if (!this.open && dialog.open) dialog.close();
   }
 
+  /** An error from elsewhere (a meal that failed after the window was switched to the shop) shows in this window. */
+  showError(text: string): void {
+    this._error = text;
+    this._note = "";
+  }
+
   private _close(): void {
     this.dispatchEvent(new CustomEvent("shop-close", { bubbles: true, composed: true }));
   }

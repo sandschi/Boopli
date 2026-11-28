@@ -134,6 +134,16 @@ const swatch = (css: string) => html`<span class="swatch" style="background:${cs
 export const ROOM_PAINT: Record<string, string> = {
   color_sky: "#9fd3f5",
   pattern_dots: "radial-gradient(circle, rgba(255,255,255,0.85) 22%, transparent 24%) 0 0 / 18px 18px, #c7b3f0",
+  pattern_stripes: "repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 8px, transparent 8px 16px), #f5a3b8",
+  pattern_stars: "radial-gradient(circle, rgba(255,235,120,0.95) 14%, transparent 16%) 0 0 / 22px 22px, #5b6bc0",
+  pattern_waves: "radial-gradient(circle at 50% 100%, transparent 58%, rgba(255,255,255,0.6) 60% 66%, transparent 68%) 0 0 / 24px 14px, #4fb3bf",
+  pattern_checks: "conic-gradient(rgba(255,255,255,0.5) 25%, transparent 0 50%, rgba(255,255,255,0.5) 0 75%, transparent 0) 0 0 / 24px 24px, #f0b27a",
+  // the colours of the achievement tiers (steps series)
+  color_grey: "#aeb4bc",
+  color_green: "#7fcf8a",
+  color_blue: "#6aa8f0",
+  color_purple: "#b07fe0",
+  color_gold: "linear-gradient(135deg, #f7d56a, #d9a62e 55%, #f3cf5e)",
 };
 
 /** The CSS background of a wall or floor with this item on it ("" when it has none). */

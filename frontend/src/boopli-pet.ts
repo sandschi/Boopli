@@ -1,4 +1,4 @@
-import { LitElement, html, css, type PropertyValues } from "lit";
+import { LitElement, html, css, nothing, type PropertyValues } from "lit";
 import { bearCss, bearSvg } from "./pet-bear";
 import { catCss, catSvg } from "./pet-cat";
 import { dogCss, dogSvg } from "./pet-dog";
@@ -35,6 +35,7 @@ export class BoopliPet extends LitElement {
     mood: { type: String },
     level: { type: Number },
     away: { type: Boolean },
+    hungry: { type: Boolean },
     still: { type: Boolean, reflect: true },
     activity: { type: String },
     moment: { type: String },
@@ -48,6 +49,7 @@ export class BoopliPet extends LitElement {
   declare mood: Mood;
   declare level: number;
   declare away: boolean; // away mode is on: the stage shows a suitcase; here only the emoji pets get a badge
+  declare hungry: boolean; // nothing to eat yet today: a rumbling belly and a thought of food (only over a content or happy mood)
   declare still: boolean; // draw it without moving (small previews)
   declare activity: Activity; // busy with housework or typing
   declare moment: Moment; // which moment to play when momentSeq changes
@@ -66,6 +68,7 @@ export class BoopliPet extends LitElement {
     this.mood = "content";
     this.level = 1;
     this.away = false;
+    this.hungry = false;
     this.still = false;
     this.activity = "";
     this.moment = "";
@@ -154,14 +157,25 @@ export class BoopliPet extends LitElement {
     }
   }
 
+  /** Hungry only shows over a calm mood: a sleepy, sad or hibernating pet shows that first, and away mode leaves it as it was. */
+  private get _showHunger(): boolean {
+    return this.hungry && !this.away && (this.mood === "happy" || this.mood === "content");
+  }
+
   render() {
+    const hungry = this._showHunger;
     return html`<div
-      class="pet ${this.mood}"
+      class="pet ${this.mood} ${hungry ? "hungry" : ""}"
       role="img"
-      aria-label=${t("pet.your_pet_is", { mood: t(`pet.mood_${this.mood}`) })}
+      aria-label=${hungry ? t("pet.your_pet_is", { mood: t("pet.mood_hungry") }) : t("pet.your_pet_is", { mood: t(`pet.mood_${this.mood}`) })}
       @click=${() => this._tap()}
     >
       ${this._art()}
+      ${hungry
+        ? html`<span class="hunger" aria-hidden="true"
+            ><span class="thought">🍖</span><span class="rumble r1"></span><span class="rumble r2"></span><span class="rumble r3"></span
+          ></span>`
+        : nothing}
     </div>`;
   }
 
@@ -199,6 +213,67 @@ export class BoopliPet extends LitElement {
         top: 4%;
         font-size: 24cqh;
       }
+      /* Hungry: a thought of food above, and three small rumble marks that pulse at the belly. Drawn over every pet, the same. */
+      .hunger {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .thought {
+        position: absolute;
+        right: 14%;
+        top: 2%;
+        font-size: 20cqh;
+        line-height: 1;
+        padding: 3cqh 4cqh;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        animation: hunger-bob 2.6s ease-in-out infinite;
+      }
+      .rumble {
+        position: absolute;
+        bottom: 26%;
+        width: 6%;
+        height: 2.4cqh;
+        border-radius: 999px;
+        background: currentColor;
+        opacity: 0;
+        animation: hunger-rumble 1.8s ease-in-out infinite;
+      }
+      .rumble.r1 {
+        left: 22%;
+        transform: rotate(-24deg);
+      }
+      .rumble.r2 {
+        left: 47%;
+        animation-delay: 0.25s;
+      }
+      .rumble.r3 {
+        right: 22%;
+        transform: rotate(24deg);
+        animation-delay: 0.5s;
+      }
+      @keyframes hunger-bob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3cqh);
+        }
+      }
+      @keyframes hunger-rumble {
+        0%,
+        55%,
+        100% {
+          opacity: 0;
+        }
+        20%,
+        40% {
+          opacity: 0.55;
+        }
+      }
       .sad .emoji {
         filter: grayscale(0.5);
       }
@@ -222,6 +297,9 @@ export class BoopliPet extends LitElement {
         }
         .tear {
           opacity: 1 !important;
+        }
+        .rumble {
+          opacity: 0.4 !important;
         }
       }
     `,
